@@ -182,18 +182,20 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   const is404 = isRouteErrorResponse(error) && error.status === 404;
+  const is403 = isRouteErrorResponse(error) && error.status === 403;
   return (
     <div className="min-h-screen flex flex-col">
     <Navbar />
     <main className="flex-1 bg-zinc-50">
       <div className="container mx-auto max-w-xl px-4 py-24 text-center">
-        <p className="text-sm font-semibold text-brand-700">{is404 ? "404" : "Something went wrong"}</p>
+        <p className="text-sm font-semibold text-brand-700">{is404 ? "404" : is403 ? "403" : "Something went wrong"}</p>
         <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">
-          {is404 ? "We couldn't find that page" : "This page didn't load"}
+          {is404 ? "We couldn't find that page" : is403 ? "Access restricted" : "This page didn't load"}
         </h1>
         <p className="mt-3 text-base text-zinc-600">
           {is404
             ? "It may have moved, or the link might be wrong."
+            : is403 ? "Your account does not have permission to open this page. Admin access requires an explicitly authorized account."
             : details}
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">

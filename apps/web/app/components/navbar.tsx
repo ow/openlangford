@@ -13,7 +13,6 @@ import {
   Building2,
   CheckCircle2,
   Mic,
-  Activity,
   Landmark,
   LogOut,
   Menu,
@@ -22,8 +21,7 @@ import {
   Bell,
   Settings,
   ArrowLeftRight,
-  UserCheck,
-  GitMerge,
+  ShieldCheck,
 } from "lucide-react";
 import { siteName } from "../lib/site-name";
 import { useSiteFlags } from "../lib/use-site-flags";
@@ -208,40 +206,13 @@ export function Navbar() {
                 >
                   <Bell className="h-4 w-4" />
                 </Link>
-                <Link
-                  to="/speaker-alias"
-                  className="text-zinc-400 hover:text-zinc-600 transition-colors"
-                  title="Speaker Aliases"
-                >
-                  <Mic className="h-4 w-4" />
-                </Link>
                 {isAdmin && (
                   <Link
-                    to="/admin/profiles"
-                    className="text-zinc-400 hover:text-brand-600 transition-colors"
-                    title="Profile review"
-                    aria-label="Profile review"
+                    to="/admin"
+                    className="text-sm font-semibold text-brand-700 transition-colors hover:text-brand-900"
+                    aria-label="Admin area"
                   >
-                    <UserCheck className="h-4 w-4" />
-                  </Link>
-                )}
-                {isAdmin && (
-                  <Link
-                    to="/admin/matters"
-                    className="text-zinc-400 hover:text-brand-600 transition-colors"
-                    title="Matter merge review"
-                    aria-label="Matter merge review"
-                  >
-                    <GitMerge className="h-4 w-4" />
-                  </Link>
-                )}
-                {isAdmin && (
-                  <Link
-                    to="/admin/pipeline"
-                    className="text-zinc-400 hover:text-emerald-600 transition-colors"
-                    title="Pipeline Ops"
-                  >
-                    <Activity className="h-4 w-4" />
+                    Admin
                   </Link>
                 )}
                 <Link
@@ -339,18 +310,12 @@ export function Navbar() {
                   icon={Settings}
                   isActive={isLinkActive("/settings")}
                 />
-                <MobileNavLink
-                  name="Speaker Aliases"
-                  href="/speaker-alias"
-                  icon={Mic}
-                  isActive={isLinkActive("/speaker-alias")}
-                />
                 {isAdmin && (
                   <MobileNavLink
-                    name="Pipeline Ops"
-                    href="/admin/pipeline"
-                    icon={Activity}
-                    isActive={isLinkActive("/admin/pipeline")}
+                    name="Admin area"
+                    href="/admin"
+                    icon={ShieldCheck}
+                    isActive={isLinkActive("/admin")}
                   />
                 )}
                 <MobileNavLink
