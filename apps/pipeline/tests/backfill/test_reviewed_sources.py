@@ -332,8 +332,12 @@ def native_image_decisions_case(case):
 
 
 @pytest.mark.parametrize('with_date_review',[False,True])
-def test_native_image_admission_whitelists_two_new_decisions_and_preserves_existing_unknown(scan_review,with_date_review):
+@pytest.mark.parametrize('with_review_hold',[False,True])
+def test_native_image_admission_whitelists_two_new_decisions_and_preserves_existing_unknown(scan_review,with_date_review,with_review_hold):
     meeting,review,root=native_image_decisions_case(scan_review)
+    hold={'reason':'Earlier report-to-current-proceeding association remains unresolved',
+          'authority':'diagnostic_only_no_fact_or_key_authority'}
+    if with_review_hold:review['remaining_holds']=[hold]
     if with_date_review:review['header_date']={'date':meeting['meeting_date'],'authority':'reviewed_original_header'}
     source=reviews.source_from_review(review,meeting=meeting,root=root,
         people=[{'id':1,'name':'Colby Harder'},{'id':2,'name':'Kimberley Guiry'}],cache_dir=root/'cache',
@@ -349,6 +353,19 @@ def test_native_image_admission_whitelists_two_new_decisions_and_preserves_exist
     assert all(m['meta']['individual_vote_coverage']=='not_recorded' for m in plan['new_motions'])
     persisted=[old]+[{**m,'id':i+11,'meeting_id':77,'agenda_item_id':99} for i,m in enumerate(plan['new_motions'])]
     assert plan_meeting(meeting,persisted,[],source)['new_motions']==[]
+    # Account for the fourth occurrence as an already persisted row. With no
+    # parser/allowlist gaps left, only the explicit review note prevents a
+    # misleading fully-accounted receipt; it cannot change existing facts.
+    persisted.append({'id':13,'meeting_id':77,'agenda_item_id':99,
+                      'text_content':UNREVIEWED_BODY,'result':'CARRIED','meta':{}})
+    persisted_before=deepcopy(persisted)
+    complete=plan_meeting(meeting,persisted,[],source)
+    assert complete['new_motions']==[] and persisted==persisted_before
+    assert complete['source_report']['unmapped_legacy_ids']==[]
+    assert complete['source_report']['unparsed_formal_occurrence_leads']==[]
+    assert complete['source_report']['unbound_outcome_leads']==[]
+    assert complete['held']==([hold] if with_review_hold else [])
+    assert remaining_coverage(complete)==('review_required' if with_review_hold else 'source_occurrences_accounted_for')
 
 
 @pytest.mark.parametrize('change',['body','result','page','page_evidence','review','authority','scope','parsing'])

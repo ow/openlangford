@@ -241,8 +241,10 @@ def source_from_review(review, *, meeting, root, people, cache_dir, project_ref,
         source.update(operative_views=views,present=[],header_attendance=None,
                       source_date_evidence={'method':'reviewed_original_scan_header','review_sha256':digest(review),
                                             'raw_ocr_header':source['source_header']},
-                      roster_unknown=['scan_not_attendance_or_ballot_authority'],
-                      source_review_holds=review.get('remaining_holds',[]))
+                      roster_unknown=['scan_not_attendance_or_ballot_authority'])
+    # Reviewed notes stay diagnostic across native and scanned admissions;
+    # their presence cannot grant operative, source-key or ballot authority.
+    source['source_review_holds']=review.get('remaining_holds',[])
     return source
 
 
