@@ -172,7 +172,8 @@ generic legacy “That [the] meeting be adjourned.” claim and a complete revie
 “The Chair adjourned the meeting at H:MMam/pm.” or “Mayor Young adjourned the
 meeting at H:MMam/pm.” narrative (also explicit “a.m.”/“p.m.” spelling). Mayor
 narration permits only “Mayor” or “Acting Mayor” followed by one proper surname,
-with no actor ID assignment. The qualified legacy phrase “That the Special
+with no actor ID assignment. “That Council adjourn the meeting.” is supported
+only when both catalog and source classifications are Council. The qualified legacy phrase “That the Special
 Council meeting be adjourned.” is supported only in this timed correspondence
 when the catalog type is Special Council, both classifications are Council,
 and the original header explicitly says Special Council Minutes. It is not a

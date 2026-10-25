@@ -192,13 +192,15 @@ ADJOURNMENT_CASE = {**NARRATION_CASE, 'legacy':'Adjournment of the meeting.'}
 ACTING_MAYOR_CASE = {**MAYOR_CASE,
     'printed':'Acting Mayor Wade adjourned the meeting at 9:36 pm.',
     'native':'Acting Mayor Wade adjourned the meeting at 9:36 pm.'}
+COUNCIL_ADJOURNMENT_CASE = {**ACTING_MAYOR_CASE,
+    'legacy':'That Council adjourn the meeting.'}
 SPECIAL_COUNCIL_CASE = {**NARRATION_CASE,
     'legacy':'THAT the Special Council meeting be adjourned.',
     'meeting_type':'Special Council','source_label':'Special Council Minutes'}
 
 
 @pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE,MOTION_CASE,MOTION_MAYOR_CASE,ADJOURNMENT_CASE,
-    ACTING_MAYOR_CASE,SPECIAL_COUNCIL_CASE],indirect=True)
+    ACTING_MAYOR_CASE,SPECIAL_COUNCIL_CASE,COUNCIL_ADJOURNMENT_CASE],indirect=True)
 def test_explicit_reviewed_adjournment_narration_preserves_generic_claim_without_certifying_transcription(case):
     context,rows,review=case;before=deepcopy(rows)
     motions,report=plan(context,rows)
@@ -270,6 +272,7 @@ def test_typed_adjournment_review_does_not_admit_arbitrary_paraphrase_or_ambiguo
     {**ADJOURNMENT_CASE,'formal':'Adjournment of the meeting.'},
     {**ACTING_MAYOR_CASE,'formal':'That the meeting be adjourned.'},
     {**SPECIAL_COUNCIL_CASE,'formal':'THAT the Special Council meeting be adjourned.'},
+    {**COUNCIL_ADJOURNMENT_CASE,'formal':'That Council adjourn the meeting.'},
     {**MOTION_CASE,'formal':'Thatthemeetingbeadjourned.'},
     {**MOTION_CASE,'formal':'Thatthemeetingbeadjourned'}],indirect=True)
 @pytest.mark.parametrize('missing_envelopes',[False,True])
