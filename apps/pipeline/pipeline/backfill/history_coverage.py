@@ -59,7 +59,11 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
                     'source_review_evidence':source['source_review_evidence']}
         return {**base, 'coverage': 'source_unavailable', 'reason': source['error']}
     base.update(source_file=source['source_file'], source_sha256=source['source_sha256'],
-                source_url=source.get('source_url'), parsed_blocks=len(source.get('blocks', [])))
+                source_url=source.get('source_url'), parsed_blocks=len(source.get('blocks', [])),
+                source_date=source.get('local_date'), source_date_evidence=source.get('source_date_evidence'))
+    different_day = bool(source.get('local_date') and source['local_date'] != meeting['meeting_date'])
+    base['source_date_comparison'] = ('different_day' if different_day else
+        'same_day' if source.get('local_date') else 'unknown')
     if source.get('source_review_evidence'):
         base['source_review_evidence']=source['source_review_evidence']
     # Existing rows only supply an agenda parent when their complete literal
@@ -70,6 +74,14 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
     planned, report = canonical_motion_plan(proposals, {'status': 'available', 'meeting': meeting,
                                                        'source': source, 'meeting_claim_inventory': claims, **(review_scope or {})}, motions)
     base.update(source_report=report, held=[*source.get('source_review_holds', []), *report.get('held', [])])
+    if different_day:
+        # The legacy body matcher tolerates a one-day calendar difference, but
+        # additive catch-up must not silently publish facts under the wrong day.
+        # Keep both original dates and all other diagnostics for separate review.
+        base['held'].append({'reason': 'catalog_source_date_mismatch',
+            'catalog_date': meeting['meeting_date'], 'source_date': source['local_date'],
+            'authority': 'coverage_diagnostic_only_no_date_correction'})
+        return {**base, 'coverage': 'source_validation_held', 'reason': 'catalog_source_date_mismatch'}
     if report['status'] != 'source_authoritative':
         return {**base, 'coverage': 'source_validation_held'}
     for item in planned:

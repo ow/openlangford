@@ -8,6 +8,17 @@ The source URL/date and exact original file must be bound before additions.
 Run from `apps/pipeline` using the normal configured interpreter. Credentials stay
 in the existing environment file; never copy them into manifests or receipts.
 
+Audits retain the loaded `source_date`, its evidence and
+`source_date_comparison`. Any different source/catalog day holds additive
+catch-up as `source_validation_held`, including a one-day difference tolerated
+by the legacy body matcher. Both dates, existing rows and all source diagnostics
+remain unchanged. This is not a timezone conversion or permission to correct a
+date. Review the mapped original/calendar identity separately, perform only an
+approved guarded correction, then regenerate the source review and audit. A
+matching loaded date alone does not certify its provenance. Additional audit
+metadata changes the manifest digest; old checkpoints must not be reused as
+activation manifests under changed code.
+
 An explicit standalone clerk sentence such as “The vote was taken on the Main
 Motion as amended and declared CARRIED.” is a coverage lead when no parsed
 outcome accounts for that exact result span. It remains
