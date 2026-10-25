@@ -111,3 +111,29 @@ def test_author_uses_the_letters_own_spelling():
     assert _source_spelling("Debbie Fitzgerald", text) == "Debbie FitzGerald"
     assert _source_spelling("Deborah Wormald", text) == "Deborah Wormald"
     assert _source_spelling("Someone Else", text) == ""
+
+
+def test_section_headings_are_not_offered():
+    from pipeline.ingestion.written_submissions import _is_heading
+    items = [{"id": 1, "item_order": "6", "title": "REPORTS"}, {"id": 2, "item_order": "6.1", "title": "Rezoning"},
+             {"id": 3, "item_order": "7", "title": "Correspondence"}]
+    assert [_is_heading(it, items) for it in items] == [True, False, False]
+    seen = []
+    place_letters([{"who": "A", "topic": "t", "point": "p"}], items, linked_item_id=None,
+                  decide=lambda c, choices: seen.append([x["id"] for x in choices]) or [])
+    assert seen == [[2, 3]]
+
+
+def test_author_titles_and_credentials_are_dropped():
+    from pipeline.ingestion.written_submissions import clean_author
+    assert clean_author("Dr Sara Nikoofard PhD PENG LEED Green Associate CMVP Dr Omid Aghaei PhD PGEO") == "Sara Nikoofard and Omid Aghaei"
+    assert clean_author("Braden Hutchins, MPA") == "Braden Hutchins"
+    assert clean_author("Mary Wagner") == "Mary Wagner"
+    assert clean_author("Jo & Sam Smith") == "Jo and Sam Smith"
+    assert clean_author("Mr Kim Boyd") == "Kim Boyd"
+    # Never truncate long names or touch organisations; keep short surnames.
+    assert clean_author("Colette Aaron Miller Annie Hardy Schultz") == "Colette Aaron Miller Annie Hardy Schultz"
+    assert clean_author("L Hedl Y Cu Lien") == "L Hedl Y Cu Lien"
+    org = "BC Restaurant and Foodservices Association; Alliance of Beverage Licensees; BC Craft Brewers Guild"
+    assert clean_author(org) == org
+    assert clean_author("Jane Ma") == "Jane Ma"

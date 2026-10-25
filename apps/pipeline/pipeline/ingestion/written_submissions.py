@@ -19,7 +19,7 @@ from .participation_evidence import quoted
 from .participation_names import _titled
 from .participation_validation import StreetCheck, folded, verb_led
 
-VERSION = "written-submissions-v3"
+VERSION = "written-submissions-v4"
 
 
 class Letter(BaseModel):
@@ -59,6 +59,39 @@ def _chunks(sections: list[dict], limit: int = CHUNK_CHARS) -> list[str]:
     return chunks
 
 
+TITLES = {"dr", "mr", "mrs", "ms", "miss", "mx", "rev", "hon", "prof"}
+# Only unambiguous post-nominals; short ones like "Ma" or "Ca" can be real names.
+CREDENTIALS = re.compile(r"^(?:ph\.?d|p\.?eng|p\.?geo|cmvp|mpa|mba|mcip|rpp|cpa|bsc|msc|llb|esq)\.?,?$", re.I)
+ORGANISATION = re.compile(r";|\b(?:association|society|institute|guild|council|inc|ltd|corp|company|club|coalition|"
+                          r"foundation|federation|alliance|union|board|committee|group)\b", re.I)
+
+
+def clean_author(name: str) -> str:
+    """Drop honorifics and post-nominals from personal names:
+    "Dr Sara Nikoofard PhD PENG LEED Green Associate CMVP Dr Omid Aghaei PhD PGEO" -> "Sara Nikoofard and Omid Aghaei".
+    Organisation names are left as written."""
+    name = re.sub(r"\s+", " ", name or "").strip()
+    if not name or ORGANISATION.search(name):
+        return name
+    name = re.sub(r"\bLEED(?:\s+(?:Green\s+Associate|AP(?:\s+\w+)?))?\b", " ", name, flags=re.I)
+    people, current = [], []
+    for word in re.split(r"[\s,]+", name):
+        bare = word.strip(".").lower()
+        if not bare:
+            continue
+        if bare in ("and", "&") or (bare in TITLES and current):
+            if current:
+                people.append(current)
+            current = []
+            continue
+        if bare in TITLES or CREDENTIALS.match(word):
+            continue
+        current.append(word)
+    if current:
+        people.append(current)
+    return " and ".join(" ".join(p) for p in people)
+
+
 def _source_spelling(author: str, text: str) -> str:
     """The author's name exactly as the letter spells it ("Debbie FitzGerald"), or "" if it isn't there."""
     words = folded(author)
@@ -85,7 +118,9 @@ def admit_letters(raw: list[dict], sections: list[dict], streets: dict) -> list[
         quote = letter["support_quote"].strip()
         if not quote or not quoted(quote, [{"text_content": s.get("section_text") or ""} for s in sections]):
             continue
-        author = _source_spelling(letter["author"].strip(), " ".join(s.get("section_text") or "" for s in sections))
+        source_text = " ".join(s.get("section_text") or "" for s in sections)
+        names = [_source_spelling(part, source_text) or part for part in clean_author(letter["author"]).split(" and ")]
+        author = " and ".join(n for n in names if n and _source_spelling(n, source_text))
         street = check.resolve(letter["street"]) if letter["street"].strip() else None
         author = _titled(author) if author else ""
         who = author or (letter["organization"].strip() or "A resident")
@@ -125,6 +160,56 @@ def _order_key(order) -> tuple:
     return (not numbers, numbers)
 
 
+def _is_heading(item: dict, items: list[dict]) -> bool:
+    """A section heading ("6 REPORTS") has numbered items under it ("6.1", "6.2")."""
+    order = str(item.get("item_order") or "").strip().rstrip(".")
+    return bool(order) and any(str(other.get("item_order") or "").strip().startswith(order + ".")
+                               for other in items if other is not item)
+
+
+def replace_held(supabase, meeting_id: int, *, decide=None) -> dict:
+    """Re-run placement for a meeting's held letters (no re-extraction); move confident ones onto items."""
+    meeting = supabase.table("meetings").select("id,meta").eq("id", meeting_id).single().execute().data
+    meta = dict(meeting.get("meta") or {})
+    unplaced = dict(meta.get("written_unplaced") or {})
+    if not unplaced:
+        return {"placed": 0, "held": 0}
+    items = (supabase.table("agenda_items").select("id,meeting_id,matter_id,item_order,title,plain_english_summary,meta")
+             .eq("meeting_id", meeting_id).order("item_order").execute().data or [])
+    by_id = {it["id"]: it for it in items}
+    moved = held = 0
+    for extracted_id, source in list(unplaced.items()):
+        letters = [{k: v for k, v in l.items() if k not in ("key", "candidates")} for l in source["letters"]]
+        placed, still = place_letters(letters, items, linked_item_id=None, decide=decide or _item_decider(),
+                                      document_title=source.get("title") or "")
+        for item_id, group_letters in placed.items():
+            item = by_id[item_id]
+            written = dict((item.get("meta") or {}).get("written_participation") or {})
+            documents = list(written.get("documents") or [])
+            match = next((d for d in documents if str(d["extracted_document_id"]) == str(extracted_id)), None)
+            if match:
+                match["letters"] = match["letters"] + group_letters
+            else:
+                documents.append({"extracted_document_id": int(extracted_id), "document_id": source["document_id"],
+                                  "title": source.get("title"), "fingerprint": source.get("fingerprint"), "letters": group_letters})
+            item_meta = {**(item.get("meta") or {}), "written_participation": {"version": VERSION, "documents": documents}}
+            supabase.table("agenda_items").update({"meta": item_meta}).eq("id", item_id).execute()
+            item["meta"] = item_meta
+            moved += len(group_letters)
+        held += len(still)
+        if still:
+            unplaced[extracted_id] = {**source, "letters": still}
+        else:
+            unplaced.pop(extracted_id)
+    fresh = dict((supabase.table("meetings").select("meta").eq("id", meeting_id).single().execute().data or {}).get("meta") or {})
+    if unplaced:
+        fresh["written_unplaced"] = unplaced
+    else:
+        fresh.pop("written_unplaced", None)
+    supabase.table("meetings").update({"meta": fresh}).eq("id", meeting_id).execute()
+    return {"placed": moved, "held": held}
+
+
 def letter_key(letter: dict) -> str:
     """Stable enough to remember an admin's placement while the document is unchanged."""
     return " ".join(folded(f"{letter['who']} {letter.get('sent') or ''} {letter['topic']}"))[:160]
@@ -142,7 +227,8 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
     if linked_item_id:
         return ({linked_item_id: letters} if letters else {}), []
     decisions = decisions or {}
-    choices = [it for it in items if not any(p in (it.get("title") or "").lower() for p in PROCEDURAL)]
+    choices = [it for it in items if not any(p in (it.get("title") or "").lower() for p in PROCEDURAL)
+               and not _is_heading(it, items)]
     by_id = {it["id"]: it for it in items}
     placed: dict[int, list[dict]] = {}
     held: list[dict] = []
