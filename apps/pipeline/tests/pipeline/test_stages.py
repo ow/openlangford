@@ -30,7 +30,7 @@ class TestRegistry:
     def test_post_ingest_order_matches_the_previous_hardcoded_sequence(self):
         assert _names(stages.post_ingest_stages(exclude=("embeddings", "profile-refresh"))) == [
             "escribe-attachments", "document-relink", "matter-history", "matter-summaries", "agenda-alignment",
-            "participation-summaries", "matter-images", "matter-links",
+            "participation-summaries", "motion-headlines", "matter-images", "matter-links",
         ]
         assert _names(stages.post_ingest_stages())[0] == "embeddings"
         assert _names(stages.post_ingest_stages())[-1] == "profile-refresh"
@@ -194,3 +194,17 @@ def test_newly_persisted_mentions_refresh_affected_context_after_linking(monkeyp
     ctx = StageContext(supabase=MagicMock(), meeting_ids=[394], cache={"matter_ids": [1685], "meetings": [{"meeting_date": "2026-07-20"}]})
     stages.run_matter_links(ctx)
     assert events == ["accepted-link", ("refresh-context", [1685], True)]
+
+
+class TestMotionHeadlinesStale:
+    def test_a_meeting_is_stale_when_any_decision_lacks_a_current_headline(self, monkeypatch):
+        rows = [
+            {"meeting_id": 1, "headline_version": "1"},
+            {"meeting_id": 1, "headline_version": None},
+            {"meeting_id": 2, "headline_version": "1"},
+            {"meeting_id": 3, "headline_version": "0"},
+            {"meeting_id": 3, "headline_version": "1"},
+        ]
+        monkeypatch.setattr(stages, "_paginate", lambda build: rows)
+        monkeypatch.setattr(stages, "HEADLINE_VERSION", "1")
+        assert stages.stale_motion_headlines(StageContext(supabase=MagicMock())) == [1, 3]

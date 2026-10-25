@@ -15,7 +15,8 @@ Each stage takes a ``StageContext`` and picks its own targets:
   (agenda-alignment computes its proposal, which is free, and prints it)
 
 Version stamps live next to what a stage writes (``matters.meta.summary_version``,
-``matters.meta.images_version``, ``agenda_items.meta.participation_version``);
+``matters.meta.images_version``, ``agenda_items.meta.participation_version``,
+``motions.meta.headline_version``);
 bump the module's ``*_VERSION`` constant when a prompt changes, then run
 ``--stage <name> --stale``.
 """
@@ -36,6 +37,7 @@ from typing import Any, Callable, Iterable, Literal
 from pipeline.ai.usage import usage_context
 from pipeline.ingestion.matter_images import IMAGES_VERSION
 from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
+from pipeline.ingestion.motion_headlines import HEADLINE_VERSION
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
 
 When = Literal["post_ingest", "backfill_only"]
@@ -421,6 +423,51 @@ def run_participation_summaries(ctx: StageContext):
     return {"items": len(ids), "summarized": done}
 
 
+def _motion_headline_stamps(ctx: StageContext) -> list[dict]:
+    """One row per meeting with decided, non-procedural motions: the oldest headline stamp among them."""
+    rows = _paginate(
+        lambda: ctx.supabase.table("motions")
+        .select("meeting_id, headline_version:meta->>headline_version")
+        .neq("disposition", "Procedural")
+        .not_.is_("result", "null")
+        .order("id")
+    )
+    stamps: dict[int, list] = {}
+    for r in rows:
+        stamps.setdefault(r["meeting_id"], []).append(r["headline_version"])
+    out = []
+    for meeting_id, versions in stamps.items():
+        missing = any(v is None for v in versions)
+        oldest = None if missing else min(versions, key=_version_key)
+        out.append({"id": meeting_id, "headline_version": oldest, "missing": missing})
+    return out
+
+
+def stale_motion_headlines(ctx: StageContext) -> list[int]:
+    return select_stale(_motion_headline_stamps(ctx), "headline_version", HEADLINE_VERSION)
+
+
+def run_motion_headlines(ctx: StageContext):
+    from pipeline.ingestion.motion_headlines import headline_meeting_motions
+
+    def missing() -> list[int]:
+        return sorted(r["id"] for r in _motion_headline_stamps(ctx) if ctx.force or r["missing"])
+
+    ids = _choose(ctx, "motion-headlines", from_meetings=lambda: list(ctx.meeting_ids or []), backfill=missing)
+    if ctx.dry_run:
+        _preview("meetings to write decision headlines for", ids)
+        return None
+    done = 0
+    for meeting_id in ids:
+        try:  # one meeting failing shouldn't skip the rest
+            done += len(headline_meeting_motions(ctx.supabase, meeting_id))
+        except Exception as e:
+            print(f"  [!] Decision headlines for meeting {meeting_id} failed: {e}")
+    if ids:
+        print(f"  [Headlines] {done} decision headline(s) across {len(ids)} meeting(s)")
+    return {"meetings": len(ids), "headlines": done}
+
+
 def run_matter_images(ctx: StageContext):
     from pipeline.ingestion.matter_images import pick_matter_images
 
@@ -604,6 +651,12 @@ STAGES: list[Stage] = [
         description="Per-speaker bullets for public participation / delegation items (--target is a meeting id).",
         run=run_participation_summaries, when="post_ingest", scope="meeting", version=PARTICIPATION_VERSION,
         depends_on=("agenda-alignment",), stale=stale_participation,
+    ),
+    Stage(
+        name="motion-headlines",
+        description="Short newspaper-style headline per decided, non-procedural motion (home page lead). --target is a meeting id.",
+        run=run_motion_headlines, when="post_ingest", scope="meeting", version=HEADLINE_VERSION,
+        stale=stale_motion_headlines,
     ),
     Stage(
         name="matter-images",
