@@ -5,23 +5,37 @@ import { CalendarProvenance } from "../../app/components/calendar-provenance";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { IncomingCouncilSection } from "../../app/components/home/incoming-council-section";
 import { MeetingCard } from "../../app/components/meeting-card";
-import { ComingUp } from "../../app/components/home/hero-section";
+import { HeroDecisions } from "../../app/components/home/hero-decisions";
 
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-20T16:00:00Z")); });
 afterEach(() => vi.useRealTimers());
 
-it("presents inauguration as the next event without implying a regular council meeting", () => {
+it("lists inauguration as the next event without implying a regular council meeting", () => {
   const html = renderToStaticMarkup(h(MemoryRouter, null,
-    h(ComingUp, { meeting: {
-      id: 1, title: "Inauguration", type: "Inauguration",
-      meeting_date: "2026-11-02", agendaPreview: [],
-    } }),
+    h(HeroDecisions, { shortName: "Langford", decisions: [], upcoming: [
+      { id: 1, title: "Inauguration", meeting_date: "2026-11-02" },
+      { id: 2, title: "Regular Council", meeting_date: "2026-11-23" },
+    ] }),
   ));
   expect(html).toContain("Coming up");
   expect(html).toContain("Inauguration");
-  expect(html).toContain("November 2, 2026");
-  expect(html).toContain("View event");
+  expect(html).toMatch(/Next · Monday/);
   expect(html).not.toContain("Next meeting");
+});
+
+it("leads with the decision headline and falls back to the summary", () => {
+  const decision = {
+    id: 1, summary: "Adopted development charges to help pay for future parks and parkland.",
+    result: "CARRIED", meetingId: 9, meetingDate: "2026-10-05", meetingTitle: "Regular Council",
+    yesCount: 5, noCount: 0, voteCoverage: "reconstructed_complete", isDivided: false,
+  };
+  const render = (d: typeof decision & { headline?: string | null }) =>
+    renderToStaticMarkup(h(MemoryRouter, null, h(HeroDecisions, { shortName: "Langford", decisions: [d], upcoming: [] })));
+  const withHeadline = render({ ...decision, headline: "Developers to pay toward future parks" });
+  expect(withHeadline).toContain("Developers to pay toward future parks");
+  expect(withHeadline).not.toContain("Adopted development charges");
+  expect(withHeadline).toContain("Passed 5–0");
+  expect(render({ ...decision, headline: null })).toContain("Adopted development charges");
 });
 
 
@@ -42,7 +56,7 @@ const calendarEvent = {
   } },
 };
 
-it.each([ComingUp, MeetingCard])("keeps concise schedule metadata inside the card with separate accessible source and event links", Component => {
+it.each([MeetingCard])("keeps concise schedule metadata inside the card with separate accessible source and event links", Component => {
   const html = renderToStaticMarkup(h(MemoryRouter, null,
     h(Component as any, { meeting: calendarEvent }),
   ));

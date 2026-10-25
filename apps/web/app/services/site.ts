@@ -133,7 +133,6 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
   // ── Batch 1: Independent queries in parallel ──
 
   let recentMeeting: any = null;
-  let earlierMeetings: any[] = [];
   let upcomingMeeting: any = null;
   let laterMeetings: any[] = [];
   let activeMattersRaw: any[] = [];
@@ -157,9 +156,10 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         .eq("has_transcript", true)
         .not("summary", "is", null)
         .order("meeting_date", { ascending: false })
-        .limit(3),
+        .limit(1)
+        .maybeSingle(),
 
-      // 2. Next few upcoming meetings; the first is featured
+      // 2. Next three upcoming meetings
       supabase
         .from("meetings")
         .select(
@@ -170,7 +170,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         .neq("status", "Cancelled")
         .order("meeting_date", { ascending: true })
         .order("id", { ascending: true })
-        .limit(4),
+        .limit(3),
 
       // 3. Active matters (6, ordered by last_seen)
       // NOTE: Do NOT select plain_english_summary from matters (always null)
@@ -205,8 +205,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
       if (response.error) complete = false;
     }
 
-    recentMeeting = recentMeetingRes.data?.[0] ?? null;
-    earlierMeetings = (recentMeetingRes.data ?? []).slice(1);
+    recentMeeting = recentMeetingRes.data;
     upcomingMeeting = upcomingMeetingRes.data?.[0] ?? null;
     laterMeetings = (upcomingMeetingRes.data ?? []).slice(1);
     activeMattersRaw = activeMattersRes.data || [];
@@ -417,7 +416,6 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
       : null,
     laterMeetings: laterMeetings.map(({ id, slug, title, meeting_date }) => ({ id, slug, title, meeting_date })),
     recentMeeting,
-    earlierMeetings: earlierMeetings.map(({ id, slug, title, meeting_date, summary }) => ({ id, slug, title, meeting_date, summary })),
     recentMeetingStats,
     recentMeetingDecisions,
     activeMatters,
