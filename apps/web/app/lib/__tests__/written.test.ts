@@ -16,7 +16,8 @@ describe("writtenLetters", () => {
     expect(writtenLetters(written).map((l) => l.who)).toEqual(["Writer a", "Writer b"]);
     expect(writtenLetters({ letters: [held("c")] })).toHaveLength(1);
     expect(writtenLetters(null)).toEqual([]);
-    expect(writtenSources(written).map((s) => s.documentId)).toEqual([9, 8]);
+    // Links go to the document viewer, which is keyed by the extracted document id.
+    expect(writtenSources(written).map((s) => s.documentId)).toEqual([1, 2]);
   });
 });
 

@@ -122,7 +122,8 @@ export async function loadLetterQueue(supabase: Supabase) {
               const letterTerms = specificTerms(`${doc.title || ""} ${letter.topic} ${letter.point} ${excerpt}`);
               return {
                 id: `${extractedId}::${key}`,
-                documentId: doc.document_id,
+                // The document viewer is keyed by the extracted document, not the parent PDF.
+                documentId: Number(extractedId),
                 documentTitle: doc.title || "Letters",
                 letter: letter as WrittenLetter,
                 candidates: candidates.map((c) => ({

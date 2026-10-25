@@ -24,8 +24,9 @@ export function writtenLetters(written: WrittenParticipation | null | undefined)
   return written.documents ? written.documents.flatMap((d) => d.letters || []) : written.letters || [];
 }
 
+/** Source documents for "Read the letters". The document viewer is keyed by the extracted document, not the PDF. */
 export function writtenSources(written: WrittenParticipation | null | undefined) {
-  return (written?.documents || []).map((d) => ({ documentId: d.document_id, title: d.title }));
+  return (written?.documents || []).map((d) => ({ documentId: d.extracted_document_id, title: d.title }));
 }
 
 /** Remove a held letter from the meeting's queue and remember the decision. */
