@@ -69,7 +69,7 @@ function Unlink({ field, id }: { field: "matter_id" | "agenda_item_id"; id: numb
   return (
     <fetcher.Form method="post" className="shrink-0">
       <input type="hidden" name={field} value={id} />
-      <button type="submit" className="text-xs font-medium text-zinc-400 hover:text-red-700 hover:underline">
+      <button type="submit" className="py-1 text-xs font-medium text-zinc-400 hover:text-red-700 hover:underline">
         Not at this address
       </button>
     </fetcher.Form>
@@ -146,12 +146,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                 {matters.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
                   return (
-                    <li key={m.id} className="relative">
-                      {isAdmin && (
-                        <div className="absolute right-4 top-3 z-10">
-                          <Unlink field="matter_id" id={m.id} />
-                        </div>
-                      )}
+                    <li key={m.id}>
                       <Link to={matterPath(m)} className="group block px-5 py-4 hover:bg-zinc-50">
                         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums text-zinc-500">
                           <span>
@@ -166,6 +161,11 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                           <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{m.meta?.status_line || m.plain_english_summary}</p>
                         )}
                       </Link>
+                      {isAdmin && (
+                        <div className="-mt-2 px-5 pb-3">
+                          <Unlink field="matter_id" id={m.id} />
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -178,12 +178,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
               <SectionHeading title="Other mentions" icon={FileText} description="Agenda items that named this address outside any matter." />
               <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
                 {items.map((item: any) => (
-                  <li key={item.id} className="relative">
-                    {isAdmin && (
-                      <div className="absolute right-4 top-3 z-10">
-                        <Unlink field="agenda_item_id" id={item.id} />
-                      </div>
-                    )}
+                  <li key={item.id}>
                     <Link to={`${meetingPath(item.meetings)}#item-${item.id}`} className="group block px-5 py-4 hover:bg-zinc-50">
                       <p className="text-xs tabular-nums text-zinc-500">
                         {shortDate(item.meetings?.meeting_date)} · {item.meetings?.title}
@@ -193,6 +188,11 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                         <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>
                       )}
                     </Link>
+                    {isAdmin && (
+                      <div className="-mt-2 px-5 pb-3">
+                        <Unlink field="agenda_item_id" id={item.id} />
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -227,8 +227,6 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                     ? "What Council has considered around this address, closest first."
                     : `What Council has considered at neighbouring addresses on ${property.street}.`
                 }
-                href={streetSlug ? propertyPath({ slug: streetSlug }) : undefined}
-                linkLabel={`All of ${property.street}`}
               />
               <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
                 {nearby.map((m: any) => {
@@ -250,6 +248,11 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                   );
                 })}
               </ul>
+              {streetSlug && (
+                <Link to={propertyPath({ slug: streetSlug })} className="mt-3 inline-block text-sm font-semibold text-brand-700 hover:underline">
+                  Everything on {property.street}
+                </Link>
+              )}
             </section>
           )}
         </div>
