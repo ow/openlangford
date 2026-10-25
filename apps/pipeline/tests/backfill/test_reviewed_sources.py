@@ -179,6 +179,64 @@ def native_case(case,text):
     with fitz.open(path) as doc:review['native_first_page_sha256']=reviews.sha(doc[0].get_text().encode())
 
 
+def image_outcome_case(case):
+    """A real image-only outcome is visible but absent from embedded PDF text."""
+    native_case(case,TEXT.replace('CARRIED.',''))
+    meeting,review,root=case;path=root/review['selected_file']
+    with fitz.open() as stamp:
+        page=stamp.new_page(width=150,height=35);page.insert_text((5,22),'CARRIED.',fontsize=12)
+        image=page.get_pixmap().tobytes('png')
+    with fitz.open(path) as document:
+        document[0].insert_image(fitz.Rect(350,210,500,245),stream=image)
+        document.save(root/'image-outcome.pdf')
+    path.write_bytes((root/'image-outcome.pdf').read_bytes())
+    raw=reviews.subprocess.run(['pdftotext','-layout',str(path),'-'],check=True,capture_output=True,text=True).stdout
+    assert 'CARRIED' not in raw and raw.count(BODY)==1
+    source_sha=reviews.sha(path.read_bytes());corrected=raw.replace(BODY,BODY+'\nCARRIED.')
+    source=minutes_text_source(meeting,root=root,people=[],cache_dir=root/'cache',path=path,
+        text=corrected,source_format='original_pdf_reviewed_image_corrections',source_sha256=source_sha)
+    with fitz.open(path) as document:
+        page=document[0];native_sha=reviews.sha(page.get_text().encode())
+        render_sha=reviews.sha(page.get_pixmap(matrix=fitz.Matrix(3,3)).tobytes('png'))
+    review.update(mode='reviewed_native_image_corrections',source_sha256=source_sha,
+        file_inventory=reviews.source_inventory(root,meeting),native_first_page_sha256=native_sha,
+        native_layout_sha256=reviews.sha(raw.encode()),corrected_text_sha256=reviews.sha(corrected.encode()),
+        parsed_blocks_sha256=digest(source['blocks']),pymupdf_version=fitz.VersionBind,
+        pages=[{'page':1,'native_text_sha256':native_sha,'render_sha256':render_sha}],
+        text_corrections=[{'page':1,'native_quote':BODY,'reviewed_quote':BODY+'\nCARRIED.',
+            'authority':'original_image_text_correction_only','image_quote':'CARRIED.'}])
+    return case
+
+
+@pytest.mark.parametrize('with_date_review',[False,True])
+def test_image_only_outcome_accounts_existing_claim_without_creating_or_certifying_rows(scan_review,with_date_review):
+    meeting,review,root=image_outcome_case(scan_review)
+    if with_date_review:review['header_date']={'date':meeting['meeting_date'],'authority':'reviewed_original_header'}
+    people=[{'id':1,'name':'Colby Harder'},{'id':2,'name':'Kimberley Guiry'}]
+    source=reviews.source_from_review(review,meeting=meeting,root=root,people=people,cache_dir=root/'cache',
+                                      project_ref='test-project',municipality_id=1)
+    assert len(source['blocks'])==1 and source['blocks'][0]['result']=='CARRIED'
+    assert source['source_format']=='original_pdf_reviewed_image_corrections'
+    assert source['present']==[] and source['header_attendance'] is None
+    assert plan_meeting(meeting,[],[],source)['new_motions']==[]
+    old={'id':1,'meeting_id':77,'agenda_item_id':9,'text_content':BODY,'result':None,'meta':{'manual':'preserve'}}
+    before=deepcopy(old);plan=plan_meeting(meeting,[old],[],source)
+    assert plan['new_motions']==[] and plan['source_report']['unmapped_legacy_ids']==[]
+    assert old==before and plan['stored_outcome_unknown_ids']==[1]
+
+
+@pytest.mark.parametrize('change',['page','image','quote','replacement','parsing','authority'])
+def test_changed_image_correction_cannot_reconstruct_source_outcome(scan_review,change):
+    image_outcome_case(scan_review);review=scan_review[1]
+    if change=='page':review['pages']=[]
+    elif change=='image':review['pages'][0]['render_sha256']='changed'
+    elif change=='quote':review['text_corrections'][0]['native_quote']='not in the original'
+    elif change=='replacement':review['text_corrections'][0]['reviewed_quote']+=' changed'
+    elif change=='parsing':review['parsed_blocks_sha256']='changed'
+    else:review['text_corrections'][0]['authority']='unreviewed_ocr'
+    with pytest.raises(ValueError):read(scan_review)
+
+
 def test_distinct_public_hearing_is_not_combined_with_selected_special_council(scan_review):
     meeting,review,root=scan_review
     native_case(scan_review,TEXT.replace('Council Minutes','Special Council Minutes'))

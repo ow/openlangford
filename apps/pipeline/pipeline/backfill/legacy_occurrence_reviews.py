@@ -12,7 +12,7 @@ import fitz
 from pipeline.ingestion.source_claims import digest, project_claim, valid_inventory
 
 STORE = Path(__file__).parent / 'data' / 'legacy-occurrence-reviews'
-ENROLLED = {215: '38f5f1c094e3e97c6f164a5c86da1e5e48ad0cdab584a11572311863815f5cbb'}
+ENROLLED = {144: 'd89cbb8546ec9133c6cf54fc032b9c361404c012a26479ac17531b8eb5eac25b', 125: 'ed381022fe20cb28bd165b12b38b791b08c388b09743cd6a57cbad86e47ff7c3', 215: '38f5f1c094e3e97c6f164a5c86da1e5e48ad0cdab584a11572311863815f5cbb'}
 
 
 def load_review(meeting_id):

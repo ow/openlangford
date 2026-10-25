@@ -20,12 +20,115 @@
   "selected_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
   "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
   "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
-  "mode": "reviewed_native_selection_or_header",
+  "mode": "reviewed_native_image_corrections",
   "native_first_page_sha256": "d9c2a9681596acefdbe9b6cb9d6b72f6dab322cb9db6bda13521bb707e7b24af",
   "header_date": {
     "date": "2016-11-21",
     "literal": "Monday, November21st,2016",
     "authority": "independently_reviewed_original_image_header"
   },
-  "review_status": "independently_reviewed_original_source"
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "ff6c97a7327b2af9609dc3f9f8aa973ca46d47ddca4cfd167e1ae5f7aa6b386b",
+  "independent_original_image_review_sha256": "0d304c19639ef11a19e7d9ea3eba8dae8fa0887d0887dbc5bb0564eb867e705f",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "d9c2a9681596acefdbe9b6cb9d6b72f6dab322cb9db6bda13521bb707e7b24af",
+      "render_sha256": "3c1b246fdea86c2fce6101ffd23e45a2acf1949e2dd60680bbf25b425e30d0e5"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "f6ef332b247141f4940cd7f46f6016e35e35bff73b0ec4248695ceb934fe5f74",
+      "render_sha256": "7bb8fbffc8e19e7b32b9785425a199af44ed56b9bcfd184de0964edaad0a4aa5"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "93da4a5d5728561258add7c951cc2bfc782b3037451727c52451dcf12d442066",
+      "render_sha256": "50b1c4a942fff2e432fc0f6f39d7c393e425834787cddc3e6174f424c0f42a97"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "9e5a2f89881908bc1026c8f60ac650ec8e197d6fdf638182176cc462e363e665",
+      "render_sha256": "8c49ce2ada14dbd49aa821302b48cacc1eeb54e4ae7fb2e75d66ab8a264f143d"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "d80966b26da111905fb623de94f0323c169753bd80003df98d03bc056f614b51",
+      "render_sha256": "270e9469b1d26549b13f0c53712cf0e5e9f085cc1208cef225e029810d128a2b"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "f2a86d9d07b62ebd90801b2b306ed16b564e2b08cd4198181d0b264235eb65d2",
+      "render_sha256": "55fa954a41ecc7dee0ed287d25dba3ec1ce09d83609cf368acfb3b5ea28f2f51"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "139779a9db9b874a1dd7356072fbcb5327f1be495d9caaf723ce059011e93c8e",
+      "render_sha256": "639e7a17b75c5ee171108ac1c30767ecab900ee19e562c71dab7e75ebb01ce41"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "3811d5f3d1cef6efdfbb87ee89d44e81da2eee8978b1f4d3d9d586ca2ea54bf2",
+      "render_sha256": "a2ce39b9edcc42f6866058045bb94fa333fef4b2e100ae781539fc54ca3cb8d1"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "3e0212a585b3b9fc7cabcc9d38f9bc99917bc2727e7d590fdac0dce53c954666",
+      "render_sha256": "99919355dfbae3407927e6ef383d127f87df8f107b1392dcd58f79fb2059c4c3"
+    }
+  ],
+  "text_corrections": [
+    {
+      "page": 3,
+      "native_quote": "Brock Avenue and Goldstream Avenue.",
+      "reviewed_quote": "Brock Avenue and Goldstream Avenue.\nCARRIED.",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "CARRIED.",
+      "legacy_motion_id": 1515
+    },
+    {
+      "page": 3,
+      "native_quote": "Vehicle Stopping Only.\n",
+      "reviewed_quote": "Vehicle Stopping Only.\nCARRIED.\n",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "CARRIED.",
+      "legacy_motion_id": 1516
+    },
+    {
+      "page": 5,
+      "native_quote": "X iC",
+      "reviewed_quote": "CARRIED.",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "CARRIED.",
+      "legacy_motion_id": 1521
+    },
+    {
+      "page": 8,
+      "native_quote": "That Council give Bylaw No. 1664 First Reading.",
+      "reviewed_quote": "That Council give Bylaw No. 1664 First Reading.\nCARRIED.",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "CARRIED.",
+      "legacy_motion_id": 1532
+    },
+    {
+      "page": 7,
+      "native_quote": "C613",
+      "reviewed_quote": "C6B",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "C6B",
+      "legacy_motion_id": 1526
+    },
+    {
+      "page": 7,
+      "native_quote": "Zone to,   FAR",
+      "reviewed_quote": "Zone to an FAR",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "Zone to an FAR",
+      "legacy_motion_id": 1526
+    }
+  ],
+  "corrected_text_sha256": "379ed910dcdeaafcadcf2450277ab21d5f521b0dece3ea0edfa35cc4b54666d7",
+  "parsed_blocks_sha256": "f2886e68a6af5bb3c4f19d6ae5bd390a473f6672e6fe6aa8e8d5060a17465788"
 }

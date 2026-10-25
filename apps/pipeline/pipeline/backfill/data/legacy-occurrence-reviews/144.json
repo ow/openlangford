@@ -1,0 +1,412 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "meeting_id": 144,
+  "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+  "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+  "source_date": "2016-11-21",
+  "source_text_sha256": "7a5e0e77c6f76da906fa8a727f103b6603cb2d9db2173df74c9a3188cfa8b809",
+  "formal_inventory_sha256": "a95b6b23f37a80ffc9b4fc9352f67c378556cfab93f7cbfbc306d5cb1b1dd5a0",
+  "claim_inventory_sha256": "df3407c4b50596dd91278bda0fe391b55e1012d8abfb3e6ca75edc50d09c7caf",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "d9c2a9681596acefdbe9b6cb9d6b72f6dab322cb9db6bda13521bb707e7b24af"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "f6ef332b247141f4940cd7f46f6016e35e35bff73b0ec4248695ceb934fe5f74"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "93da4a5d5728561258add7c951cc2bfc782b3037451727c52451dcf12d442066"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "9e5a2f89881908bc1026c8f60ac650ec8e197d6fdf638182176cc462e363e665"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "d80966b26da111905fb623de94f0323c169753bd80003df98d03bc056f614b51"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "f2a86d9d07b62ebd90801b2b306ed16b564e2b08cd4198181d0b264235eb65d2"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "139779a9db9b874a1dd7356072fbcb5327f1be495d9caaf723ce059011e93c8e"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "3811d5f3d1cef6efdfbb87ee89d44e81da2eee8978b1f4d3d9d586ca2ea54bf2"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "3e0212a585b3b9fc7cabcc9d38f9bc99917bc2727e7d590fdac0dce53c954666"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 1513,
+      "claim_sha256": "8aa4a52a45230d9e802992e4fe90e4711fe15b91c10f7a5c1f571c2caba3be85",
+      "legacy_text": "That Council issue Development Variance Permit No. DVP16-0015 for the City of Langford to Harry Skagberg on behalf of Pacific Coast Land Co. Inc. to vary the parking and setback requirements for a 6 unit stacked townhouse development located at 2691 Peatt Rd subject to the specified terms and conditions.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 2089,
+        "source_order": 2,
+        "key": "0fb7b2b8a1b4ab1458ce9db34a718ab013f901cd4fb7d05e94479c107c0d8a7a",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council issue Development Variance Permit No. DVP16-0015 for the City of Langford to\n        Harry Skagberg on behalf of Pacific Coast Land Co. Inc. to vary the parking and setback\n        requirements for a 6 unit stacked townhouse development located at 2691 Peatt Rd subject to\n        the following terms and conditions:\n\n        1. Appendix\n            The site shall be developed in accordance with the site plan attached (Appendix A).\n\n        2. Variances\n            The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n            Government Act:\n            a) That Section 4.01.01 of the City of Langford Zoning Bylaw 300 be varied to reduce the\n               number of required parking stalls from 2 stalls per dwelling unit to 1 stall per dwelling\n               unit for Attached Housing and Townhouses;\n            b) That Section 6.36A.06(2) be varied to reduce the interior side lot line setback from the\n               required 3 m to 1.5 m; and\n            c) That Section 6.36A.06(1) be varied to reduce the front lot line setback from the required\n               7.5mto0m.\n\n         3. Conditions\n             The following requirements are imposed under Section 498 of the Local Government Act:\n             a) The applicant providing $5,000 towards the General Amenity Reserve Fund, prior to the\n                issuance of a Development Permit;\n             b) That the applicant provide a planting plan, prior to issuance of a building permit, to the\n                satisfaction of the Director of Planning and the Parks Manager, to plant boulevard trees\n\n                                                                        Regular Council Minutes — November 21s`, 2016\n                                                                                                          Page 3 of 9\n\n\n                along the frontage of Peatt Road, and that irrigations are provided to the boulevard trees\n                from 2691 Peatt Road",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR WADE\n\n\n        That Council issue Development Variance Permit No. DVP16-0015 for the City of Langford to\n        Harry Skagberg on behalf of Pacific Coast Land Co. Inc. to vary the parking and setback\n        requirements for a 6 unit stacked townhouse development located at 2691 Peatt Rd subject to\n        the following terms and conditions:\n\n        1. Appendix\n            The site shall be developed in accordance with the site plan attached (Appendix A).\n\n        2. Variances\n            The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n            Government Act:\n            a) That Section 4.01.01 of the City of Langford Zoning Bylaw 300 be varied to reduce the\n               number of required parking stalls from 2 stalls per dwelling unit to 1 stall per dwelling\n               unit for Attached Housing and Townhouses;\n            b) That Section 6.36A.06(2) be varied to reduce the interior side lot line setback from the\n               required 3 m to 1.5 m; and\n            c) That Section 6.36A.06(1) be varied to reduce the front lot line setback from the required\n               7.5mto0m.\n\n         3. Conditions\n             The following requirements are imposed under Section 498 of the Local Government Act:\n             a) The applicant providing $5,000 towards the General Amenity Reserve Fund, prior to the\n                issuance of a Development Permit;\n             b) That the applicant provide a planting plan, prior to issuance of a building permit, to the\n                satisfaction of the Director of Planning and the Parks Manager, to plant boulevard trees\n\n                                                                        Regular Council Minutes — November 21s`, 2016\n                                                                                                          Page 3 of 9\n\n\n                along the frontage of Peatt Road, and that irrigations are provided to the boulevard trees\n                from 2691 Peatt Road\n                                                                                                CARRIED.\n\n7.      COMMITTEE RESOLUTIONS\n\n\n     a) Planning, Zoning and Affordable Housing Committee —November 14th, 2016\n        1. Application to amend the text of the C3 zone at 2780 Veterans Memorial Parkway to\n            allow for a 90 child group day care (Planning Z16-0020)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9e583d1bf389ab354b9655c55b01a82dda0b1fbb14a1c2db67d59bbdafb1d4d2",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        2,
+        3
+      ],
+      "image_reviewed_body": "That Council issue Development Variance Permit No. DVP16-0015 for the City of Langford to Harry Skagberg on behalf of Pacific Coast Land Co. Inc. to vary the parking and setback requirements for a 6 unit stacked townhouse development located at 2691 Peatt Rd subject to the following terms and conditions: 1. Appendix The site shall be developed in accordance with the site plan attached (Appendix A). 2. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: a) That Section 4.01.01 of the City of Langford Zoning Bylaw 300 be varied to reduce the number of required parking stalls from 2 stalls per dwelling unit to 1 stall per dwelling unit for Attached Housing and Townhouses; b) That Section 6.36A.06(2) be varied to reduce the interior side lot line setback from the required 3 m to 1.5 m; and c) That Section 6.36A.06(1) be varied to reduce the front lot line setback from the required 7.5mto0m. 3. Conditions The following requirements are imposed under Section 498 of the Local Government Act: a) The applicant providing $5,000 towards the General Amenity Reserve Fund, prior to the issuance of a Development Permit; b) That the applicant provide a planting plan, prior to issuance of a building permit, to the satisfaction of the Director of Planning and the Parks Manager, to plant boulevard trees along the frontage of Peatt Road, and that irrigations are provided to the boulevard trees from 2691 Peatt Road",
+      "image_reviewed_body_sha256": "dc980c3429c78620bbe31d3f123aca044772866c836ee9371b28000e4fb78b81",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1514,
+      "claim_sha256": "78cb92240de37d5d67522800f78deed9302de2d61b8a2096d7969544b35cd345",
+      "legacy_text": "Direct staff to prepare a bylaw to amend the C3 zone to allow for a 90 child day care on the property located at 2780 Veterans Memorial Parkway only, subject to specified terms and conditions.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 4557,
+        "source_order": 3,
+        "key": "49a0ec49d175775b3c2511322d111de214b499385195461b5d54c6aed427d00b",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council:\n        Direct staff to prepare a bylaw to amend the C3 zone to allow for a 90 child day care on the\n        property located at 2780 Veterans Memorial Parkway only, subject to the following terms and\n        conditions:\n            a) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                in priority of all other charges on title, that agrees to the following:\n                    i.   To complete full frontage improvements to Bylaw 1000 standards to the\n                         satisfaction of the Director of Engineering prior to the issuance of a building\n                          permit.",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR WADE\n\n        That Council:\n        Direct staff to prepare a bylaw to amend the C3 zone to allow for a 90 child day care on the\n        property located at 2780 Veterans Memorial Parkway only, subject to the following terms and\n        conditions:\n            a) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                in priority of all other charges on title, that agrees to the following:\n                    i.   To complete full frontage improvements to Bylaw 1000 standards to the\n                         satisfaction of the Director of Engineering prior to the issuance of a building\n                          permit.\n                                                                                                CARRIED.\n\n     b) Transportation and Public Works Committee — November 15th, 2016\n        1. Request to Lower Speed Limit on Peatt Road",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "74a4453818455dc2f5487f31719f65a9f30908da1dd5405c5d1eb05bfd283987",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        3
+      ],
+      "image_reviewed_body": "That Council: Direct staff to prepare a bylaw to amend the C3 zone to allow for a 90 child day care on the property located at 2780 Veterans Memorial Parkway only, subject to the following terms and conditions: a) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. To complete full frontage improvements to Bylaw 1000 standards to the satisfaction of the Director of Engineering prior to the issuance of a building permit.",
+      "image_reviewed_body_sha256": "16c03ae7aa4df986ec56b8cd2b09882b561e1a8ded79503af5d4c87601b7e6d3",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1515,
+      "claim_sha256": "d8dfa3fcb5bc7537c998630cdbc595cb96d4e79c338408cc686549daac202a0d",
+      "legacy_text": "That Council do nothing at this time with the posted speed limit of 50km/h on Peatt Road between Brock Avenue and Goldstream Avenue.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 5530,
+        "source_order": 4,
+        "key": "990583f6288ab4d9b8d9e2a5b65df8525a39441f34c59683dfd19545cbab9e67",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council do nothing at this time with the posted speed limit of 50km/h on Peatt Road between\n         Brock Avenue and Goldstream Avenue.",
+        "source_block": "MOVED BY:        COUNCILLOR SIFERT\nSECONDED:        COUNCILLOR WADE\n\n         That Council do nothing at this time with the posted speed limit of 50km/h on Peatt Road between\n         Brock Avenue and Goldstream Avenue.\nCARRIED.\n\n\n         2. 1325 Bear Mountain Parkway Sightline Concerns",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "78e6e2fba38ba2799a5e4b9ca956b4ad58404cf89ff36a603d2fd7513030a32f",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        3
+      ],
+      "image_reviewed_body": "That Council do nothing at this time with the posted speed limit of 50km/h on Peatt Road between Brock Avenue and Goldstream Avenue.",
+      "image_reviewed_body_sha256": "848e6547b22311c455595f1f5dbdc3b19630f8e00b502c707a8eceb8a83f1c33",
+      "mapping_evidence": "exact_body_native_outcome_omitted"
+    },
+    {
+      "motion_id": 1516,
+      "claim_sha256": "b01eb0ec87b1d37a123d7fd974df38553ac6ec4413d5890e0f6a47f3ffce574b",
+      "legacy_text": "That Council direct staff to designate the on-street parking stall located immediately uphill of the driveway to the condominium building located at 1325 Bear Mountain Parkway as Emergency Vehicle Stopping Only and paint the curb of the stall and sign this stall to designate it as Emergency Vehicle Stopping Only.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 5820,
+        "source_order": 5,
+        "key": "d985492e38136321b0a5c48020ce6866cc7b3bebd65373232f7c468593f8d11f",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council direct staff to designate the on-street parking stall located immediately uphill of the\n         driveway to the condominium building located at 1325 Bear Mountain Parkway as Emergency\n         Vehicle Stopping Only and paint the curb of the stall and sign this stall to designate it as Emergency\n         Vehicle Stopping Only.",
+        "source_block": "MOVED BY:       COUNCILLOR SIFERT\n SECONDED:       COUNCILLOR WADE\n\n         That Council direct staff to designate the on-street parking stall located immediately uphill of the\n         driveway to the condominium building located at 1325 Bear Mountain Parkway as Emergency\n         Vehicle Stopping Only and paint the curb of the stall and sign this stall to designate it as Emergency\n         Vehicle Stopping Only.\nCARRIED.\n\n                                                                    Regular Council Minutes — November 2151, 2016\n                                                                                                      Page 4 of 9\n\n\n\n\n      3. Leigh Place Paved Trail and Pedestrian Crosswalk Request",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9b751296a201d8c577f3f343e64b823b62b8cafcc3f03423ba8adf6e1c3c8d6e",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        3
+      ],
+      "image_reviewed_body": "That Council direct staff to designate the on-street parking stall located immediately uphill of the driveway to the condominium building located at 1325 Bear Mountain Parkway as Emergency Vehicle Stopping Only and paint the curb of the stall and sign this stall to designate it as Emergency Vehicle Stopping Only.",
+      "image_reviewed_body_sha256": "862b7ae6d28273b219e734b76f8c16e6540ca712f72be9febd09c7f85eddd046",
+      "mapping_evidence": "exact_body_native_outcome_omitted"
+    },
+    {
+      "motion_id": 1517,
+      "claim_sha256": "acd8ed135d75e1a74c4224e2b8c562d62a7895626a899027f3cd91c828023963",
+      "legacy_text": "1. Instruct staff not to install a pedestrian crosswalk on Leigh Place from the railway crossing to the beach access because one is not warranted due to the low vehicle volumes in the area; and 2. Direct staff to monitor the use of the existing informal gravel pathway on Leigh Place for the next 12 to 18 months and bring options forward at that time should conditions change.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 6549,
+        "source_order": 6,
+        "key": "7949c260fc33fccf526655b4c4794d3205370fe3791490b7bc0ce6b7331b7e29",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council:\n      1. Instruct staff not to install a pedestrian crosswalk on Leigh Place from the railway crossing to\n          the beach access because one is not warranted due to the low vehicle volumes in the area;\n          and\n\n      2. Direct staff to monitor the use of the existing informal gravel pathway on Leigh Place that is\n         located on private land for the next 12 to 18 months and bring options forward at that time\n         should the Leigh Road extension not have completed and/or the land at 3050 Leigh Road not\n         redeveloped by that time.",
+        "source_block": "MOVED BY:     COUNCILLOR SIFERT\nSECONDED:     COUNCILLOR SAHLSTROM\n\n      That Council:\n      1. Instruct staff not to install a pedestrian crosswalk on Leigh Place from the railway crossing to\n          the beach access because one is not warranted due to the low vehicle volumes in the area;\n          and\n\n      2. Direct staff to monitor the use of the existing informal gravel pathway on Leigh Place that is\n         located on private land for the next 12 to 18 months and bring options forward at that time\n         should the Leigh Road extension not have completed and/or the land at 3050 Leigh Road not\n         redeveloped by that time.\n\n                                                                                                     CARRIED.\n\n      4. Finlayson Arm Road Speeding Volume Concerns",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "40319e270051cb3d5e1e870fe7e13f8f5c1495481688d34c124746d6dd31c5ac",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        4
+      ],
+      "image_reviewed_body": "That Council: 1. Instruct staff not to install a pedestrian crosswalk on Leigh Place from the railway crossing to the beach access because one is not warranted due to the low vehicle volumes in the area; and 2. Direct staff to monitor the use of the existing informal gravel pathway on Leigh Place that is located on private land for the next 12 to 18 months and bring options forward at that time should the Leigh Road extension not have completed and/or the land at 3050 Leigh Road not redeveloped by that time.",
+      "image_reviewed_body_sha256": "3fb1eb144558c97ba3eadf295ffed6ff30d827acf1ed33355d34aca55e347b37",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1518,
+      "claim_sha256": "60118c93285a27809c08b7236a2358634246718b82509539af223e2691a7708e",
+      "legacy_text": "1. Direct staff to not enforce the Local Traffic Only signage on Finlayson Arm Road as it is not warranted at this time; and 2. Direct staff to continue to monitor the road speeds and work with ICBC and/or the RCMP to determine any appropriate measures and report back options.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 7363,
+        "source_order": 7,
+        "key": "4b229d756345f7f9393465a1100e06b44eb93ce5e4b2367e22abd5b47796ceee",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council:\n      1. Direct staff to not enforce the Local Traffic Only signage on Finlayson Arm Road as it is not.\n          warranted at this time based on the very low daily volume of traffic on Finlayson Arm Road\n          and the very low accident rate; and\n\n      2. Direct staff to continue to monitor the road speeds on Finlayson Arm Road and work with\n         ICBC and/orthe RCMP to determine any appropriate measures to reduce speeds on Finlayson\n         Arm Road and report back any options to Council.",
+        "source_block": "MOVED BY:     COUNCILLOR SIFERT\nSECONDED:     COUNCILLOR WADE\n\n      That Council:\n      1. Direct staff to not enforce the Local Traffic Only signage on Finlayson Arm Road as it is not.\n          warranted at this time based on the very low daily volume of traffic on Finlayson Arm Road\n          and the very low accident rate; and\n\n      2. Direct staff to continue to monitor the road speeds on Finlayson Arm Road and work with\n         ICBC and/orthe RCMP to determine any appropriate measures to reduce speeds on Finlayson\n         Arm Road and report back any options to Council.\n                                                                                        CARRIED.\n\n      5. McCallum Road at Savory Road Turnlanes",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b242550c60ae95e96a767ac11239bc8a0c38493b37920e8846cf0a113ebde97f",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        4
+      ],
+      "image_reviewed_body": "That Council: 1. Direct staff to not enforce the Local Traffic Only signage on Finlayson Arm Road as it is not. warranted at this time based on the very low daily volume of traffic on Finlayson Arm Road and the very low accident rate; and 2. Direct staff to continue to monitor the road speeds on Finlayson Arm Road and work with ICBC and/or the RCMP to determine any appropriate measures to reduce speeds on Finlayson Arm Road and report back any options to Council.",
+      "image_reviewed_body_sha256": "6f7a106d035a4f24d0f42aa9612589578fbe38b03eeeafca0169d9baa4f81d3b",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1519,
+      "claim_sha256": "9a02532a425992a9d9349cd766baf9d58ceecf301d102fedc1ebe6445fe0fd13",
+      "legacy_text": "That Council direct staff to eliminate the short downhill left turnlane on McCallum Road at Savory Road and extend the uphill left turnlane on McCallum Road approaching the Leigh Road Interchange to improve traffic flow, at an estimated cost of less than $1,000 funded from Small Road Improvements.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 8097,
+        "source_order": 8,
+        "key": "47a1bfec0a0c423771e66b8978b1018977d8a1ef8cad9e9cf5dbd4d9615b2bbe",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council direct staff to eliminate the short downhill left turnlane on McCallum Road at Savory\n      Road and coincidentally extend the uphill left turnlane on McCallum Road approaching the Leigh\n      Road Interchange to improve traffic flow on McCallum Road for residents accessing the area of\n      Langford south of the Trans Canada Highway and to improve the ability for motorists to exit\n      Savory Road during peak travel times at an estimated cost of less than $1,000 funded from Small\n      Road Improvements.",
+        "source_block": "MOVED BY:      COUNCILLOR SIFERT\nSECONDED:      COUNCILLOR WADE\n\n      That Council direct staff to eliminate the short downhill left turnlane on McCallum Road at Savory\n      Road and coincidentally extend the uphill left turnlane on McCallum Road approaching the Leigh\n      Road Interchange to improve traffic flow on McCallum Road for residents accessing the area of\n      Langford south of the Trans Canada Highway and to improve the ability for motorists to exit\n      Savory Road during peak travel times at an estimated cost of less than $1,000 funded from Small\n      Road Improvements.\n                                                                                               CARRIED.\n\n                                                                    Regular Council Minutes — November 21 1, 2016\n                                                                                                      Page s of 9\n\n\n\n\n      a) DVP16-0017 - 2981, 2985, 2989, 2993, 2994 & 2997 Bombardier Crt\n          - Staff Report (Planning Department)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "e7e3fd479ba95a4c42f9166d2ad69bd85f973bb15932b4905f06f8526fec2b7d",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        4
+      ],
+      "image_reviewed_body": "That Council direct staff to eliminate the short downhill left turnlane on McCallum Road at Savory Road and coincidentally extend the uphill left turnlane on McCallum Road approaching the Leigh Road Interchange to improve traffic flow on McCallum Road for residents accessing the area of Langford south of the Trans Canada Highway and to improve the ability for motorists to exit Savory Road during peak travel times at an estimated cost of less than $1,000 funded from Small Road Improvements.",
+      "image_reviewed_body_sha256": "2dd9b8965baff43dd6995a527379199e8b72042922aa7f32170f45f8274937d2",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1520,
+      "claim_sha256": "f041b23c2e076fb926f2a019036c76c85e1ed1e0279e24bc884f9f60e6ba2f5b",
+      "legacy_text": "Direct staff to proceed with consideration of the variances for Bombardier Court allowing termination without a vehicular turning area, subject to specified terms and conditions including signage and development per the attached plan.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 9152,
+        "source_order": 9,
+        "key": "6a71e3f9f29297e839d9cd3627a977cac86d9c0a2ba8893ca97ac483bab8c317",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council:\n      1. Direct staff to proceed with consideration of the following variances for 3220 West Shore\n          Parkway:\n               a)   That clause 4.0 Cul-de-sac definition of Subdivision and Development Servicing Bylaw\n                    No. 1000 be varied to allow Bombardier Court to terminate without a vehicular\n                    turning area;\n\n\n      Subject to the following terms and conditions:\n               b) That the site is developed in accordance with the plan attached to this report as\n                  Appendix A;\n               c)   That the applicant install \"local traffic\" and \"no turnaround\" signage at the\n                    Bombardier Court street entrance to the satisfaction of the Director of Engineering;",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR WADE\n\n\n      That Council:\n      1. Direct staff to proceed with consideration of the following variances for 3220 West Shore\n          Parkway:\n               a)   That clause 4.0 Cul-de-sac definition of Subdivision and Development Servicing Bylaw\n                    No. 1000 be varied to allow Bombardier Court to terminate without a vehicular\n                    turning area;\n\n\n      Subject to the following terms and conditions:\n               b) That the site is developed in accordance with the plan attached to this report as\n                  Appendix A;\n               c)   That the applicant install \"local traffic\" and \"no turnaround\" signage at the\n                    Bombardier Court street entrance to the satisfaction of the Director of Engineering;\n\n\n                                                                                                     CARRIED.\n\n   b) 2017 Hike for Hunger— Straits District Girl Guides\n      -     Staff Report (Engineering Department)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1d1e9154a391a0e705d36c587e5afc8b71fb812fb9a1d500c1ca41026d36d403",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        5
+      ],
+      "image_reviewed_body": "That Council: 1. Direct staff to proceed with consideration of the following variances for 3220 West Shore Parkway: a) That clause 4.0 Cul-de-sac definition of Subdivision and Development Servicing Bylaw No. 1000 be varied to allow Bombardier Court to terminate without a vehicular turning area; Subject to the following terms and conditions: b) That the site is developed in accordance with the plan attached to this report as Appendix A; c) That the applicant install \"local traffic\" and \"no turnaround\" signage at the Bombardier Court street entrance to the satisfaction of the Director of Engineering;",
+      "image_reviewed_body_sha256": "744253bb0e16397305024bf832ee89db569ab07e42fdf8632159ad5222c18d90",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1521,
+      "claim_sha256": "eaa68831bdbdc852bb294e5883815a7a91bdeb0e55c2f81b844989012a657eb4",
+      "legacy_text": "1. Grant permission for the Straits District Girl Guides to stage a walk on Sunday, February 26, 2017 as outlined and subject to proof of $5,000,000 liability insurance; AND 2. Waive the $35.00 permit fee and damage deposit.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 10206,
+        "source_order": 10,
+        "key": "825cada4798f429445622767dcb42d463b6853fc7ff7ee17f5cfa3727872f4e1",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council:\n      1.    Grant permission for the Straits District Girl Guides to stage a walk on Sunday, February 26,\n            2017 from the Westshore Town Center to the Legion via Langford Parkway to Veterans\n            Memorial Parkway to Station Avenue as outlined in their letter dated November 2016\n            (attached) and with the condition they have provided proof of $5,000,000 liability insurance\n            naming the City of Langford and Victoria Contracting and Municipal Maintenance Corporation\n            as additional named insured; AND\n\n\n       2.   Waive the $35.00 permit fee and damage deposit.",
+        "source_block": "MOVED BY:      COUNCILLOR SEATON\nSECONDED:      COUNCILLOR WADE\n\n\n      That Council:\n      1.    Grant permission for the Straits District Girl Guides to stage a walk on Sunday, February 26,\n            2017 from the Westshore Town Center to the Legion via Langford Parkway to Veterans\n            Memorial Parkway to Station Avenue as outlined in their letter dated November 2016\n            (attached) and with the condition they have provided proof of $5,000,000 liability insurance\n            naming the City of Langford and Victoria Contracting and Municipal Maintenance Corporation\n            as additional named insured; AND\n\n\n       2.   Waive the $35.00 permit fee and damage deposit.\n\n\n                                                                                                     CARRIED.\n\n                                                                    Regular Council Minutes — November 2151, 2016\n                                                                                                      Page 6 of 9\n\n\n\n\n   C)    Electrical Maintenance Contract\n         - Staff Report (Engineering Department)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "7fc974d66545f12a09728de2ba4f770aaec6bc58d97360a4be7c0c2d3b935028",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        5
+      ],
+      "image_reviewed_body": "That Council: 1. Grant permission for the Straits District Girl Guides to stage a walk on Sunday, February 26, 2017 from the Westshore Town Center to the Legion via Langford Parkway to Veterans Memorial Parkway to Station Avenue as outlined in their letter dated November 2016 (attached) and with the condition they have provided proof of $5,000,000 liability insurance naming the City of Langford and Victoria Contracting and Municipal Maintenance Corporation as additional named insured; AND 2. Waive the $35.00 permit fee and damage deposit.",
+      "image_reviewed_body_sha256": "7119bb7abcb5e831803328f020d5e3fffd85d9732545c421b6b32b98735ba4dc",
+      "mapping_evidence": "substantively_abbreviated_native_outcome_corrupted"
+    },
+    {
+      "motion_id": 1525,
+      "claim_sha256": "b4690e300f3730dd58cf797c9b4ee6cc3e24f67a4ec605d1f8f03ad00077319e",
+      "legacy_text": "1. Support a strategic planning process in 2017; and 2. Include for discussion in the 2017 budget.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 12736,
+        "source_order": 14,
+        "key": "1365961c10663637b50766e9f7b4f4c7e4a26c4ca81c9dc248460414be0c7613",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council:\n          1. Support a strategic planning process in 2017; and\n          2. Include for discussion in the 2017 budget.",
+        "source_block": "MOVED BY:        COUNCILLOR SZPAK\nSECONDED:        COUNCILLOR BLACKWELL\n\n         That Council:\n          1. Support a strategic planning process in 2017; and\n          2. Include for discussion in the 2017 budget.\n\n                                                                                                   DEFEATED.\n\n                                                                       Regular Council Minutes — November 2111, 2016\n                                                                                                         Page 7 of 9\n\n\n\n     g) Application for a text amendment to Bylaw 300 (Zoning Bylaw) to allow for a 7 storey\n        residential building and a separate commercial building at 2326 and 2350 Millstream Road.\n        (Bylaw No. 1580)\n        -   Staff Report (Planning)",
+        "outcome_quote": "DEFEATED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "df6039d368f95d72b48f6881ecfb7a87c927727e3b3d3094a77d400d9b87ebab",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        6
+      ],
+      "image_reviewed_body": "That Council: 1. Support a strategic planning process in 2017; and 2. Include for discussion in the 2017 budget.",
+      "image_reviewed_body_sha256": "df8b99614a58da2a215e8564cc471fc7e35868b42be2ff70ab9adade4e69bd13",
+      "mapping_evidence": "literal_clauses_unique_formal_occurrence_missing_prefix"
+    },
+    {
+      "motion_id": 1526,
+      "claim_sha256": "1495ec18555e45c92430c16e2bd7e34c36cf432d3a378b3f85ae61b7cb729843",
+      "legacy_text": "1. Give first reading to Bylaw No. 1580; and 2. Amend item 1(e) of Council's November 7th resolution to allow an FAR of 1.7 for mixed use or residential uses; and 3. Require the applicant provide a Section 219 covenant requiring a 5 m setback on every story above the sixth story prior to bylaw adoption.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 13553,
+        "source_order": 15,
+        "key": "cc1a49b39c0e26cecedbb69f25aa7f911047135e4c8a064ccc7d90a934ec7bce",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council:\n         1.   Give first reading to Bylaw No. 1580; and\n         2.   Amend item 1(e) of Council's November 7th resolution to restrict all buildings within the C6B\n              Zone to an FAR of 0.8, and instead allow an FAR of 1.7 for mixed use or residential uses; and\n         3.   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant that requires a\n              building incorporate a 5 m setback, in addition to the required setback in place for the Zone,\n              on every story above the sixth story.",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n\n         That Council:\n         1.   Give first reading to Bylaw No. 1580; and\n         2.   Amend item 1(e) of Council's November 7th resolution to restrict all buildings within the C6B\n              Zone to an FAR of 0.8, and instead allow an FAR of 1.7 for mixed use or residential uses; and\n         3.   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant that requires a\n              building incorporate a 5 m setback, in addition to the required setback in place for the Zone,\n              on every story above the sixth story.\n                                                                                                        CARRIED.\n\n9.       CORRESPONDENCE\n\n\n         a) Greater Victoria Public Library (GVPL)\n              Re: Juan de Fuca Branch Major Asset Maintenance (\"JF MAM\") Reserve",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "cb73069742580625cf20888d8da7c7c4eba3515caeae189122bfe1a7dac62078",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        7
+      ],
+      "image_reviewed_body": "That Council: 1. Give first reading to Bylaw No. 1580; and 2. Amend item 1(e) of Council's November 7th resolution to restrict all buildings within the C6B Zone to an FAR of 0.8, and instead allow an FAR of 1.7 for mixed use or residential uses; and 3. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant that requires a building incorporate a 5 m setback, in addition to the required setback in place for the Zone, on every story above the sixth story.",
+      "image_reviewed_body_sha256": "2e081bc97da423640809e8a53bd03d6ee7ddd981a2c63cf2c6c28dd6a2671b32",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1527,
+      "claim_sha256": "6c929fc72c7bceb1f08a761fc56e9210fdaadb271764ec6a97e236b3fcd609d7",
+      "legacy_text": "1. Approve the enclosed project plan for JF MAM Reserve as outlined in the letter dated November 3rd, 2016 from the GVPL; and 2. Direct municipal staff to work with GVPL staff in development of an agreement between the Library Board and the West Shore Municipalities regarding the JF MAM trust fund administration and building maintenance role.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 14463,
+        "source_order": 16,
+        "key": "811f9c1b53de5a8bfe27c88b8b938652728f917e7d33ea9309bcdb62f94b3939",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council\n         1.   Approve the enclosed project plan for JF MAM Reserve as outlined in the letter dated\n              November 3rd, 2016 from the GVPL; and\n\n\n         2.   That the Councils for the Cities of Langford and Colwood and the districts of Highlands and\n              Metchosin direct Municipal staff to work with GVPL staff in development of an agreement\n              between the Library Board and the West Shore Municipalities, which outlines the terms of\n              the JF MAM trust fund administration and building maintenance role provided by GVPL.",
+        "source_block": "MOVED BY:         COUNCILOR SEATON\nSECONDED:         COUNCILLOR WADE\n\n\n         That Council\n         1.   Approve the enclosed project plan for JF MAM Reserve as outlined in the letter dated\n              November 3rd, 2016 from the GVPL; and\n\n\n         2.   That the Councils for the Cities of Langford and Colwood and the districts of Highlands and\n              Metchosin direct Municipal staff to work with GVPL staff in development of an agreement\n              between the Library Board and the West Shore Municipalities, which outlines the terms of\n              the JF MAM trust fund administration and building maintenance role provided by GVPL.\n\n\n                                                                                                        CARRIED.\n\n10.       BYLAWS\n\n\n      a) BYLAW NO. 1580\n         \"Langford Zoning Bylaw, Amendment No. 433, (2326 and 2350 Millstream Rd), 2016\".\n         (FIRST READING)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "6f9e3b6bb37afefb5fd38414b0e971adcbcabec37273184e9efc778a7bd09300",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        7
+      ],
+      "image_reviewed_body": "That Council 1. Approve the enclosed project plan for JF MAM Reserve as outlined in the letter dated November 3rd, 2016 from the GVPL; and 2. That the Councils for the Cities of Langford and Colwood and the districts of Highlands and Metchosin direct Municipal staff to work with GVPL staff in development of an agreement between the Library Board and the West Shore Municipalities, which outlines the terms of the JF MAM trust fund administration and building maintenance role provided by GVPL.",
+      "image_reviewed_body_sha256": "1a3df099dcde1f542b9ccffc91b2860618600d3319e30e66c08e935b4bfa218c",
+      "mapping_evidence": "substantively_abbreviated_unique_formal_occurrence"
+    },
+    {
+      "motion_id": 1532,
+      "claim_sha256": "f9b5f1c2b5a7bcf51988d20aa2eaac3f8f22bff2a37cbf726c79a3bea7236e57",
+      "legacy_text": "That Council give Bylaw No. 1664 First Reading.",
+      "source_identity": {
+        "meeting_id": 144,
+        "source_sha256": "69b620a523c5e0929c3ad7de7a04cbfcea33aed209c9d3fd6bb2806018b1b450",
+        "source_offset": 17204,
+        "source_order": 21,
+        "key": "83d7cdbfbf4e389bd39a3a528b28fa39aadb8d262c574a652c40a214fca4cc45",
+        "source_file": "archive/langford/Council/2016/11/2016-11-21 Regular Council [legacy]/Minutes/20161121-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20161121-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_corrections",
+        "raw_motion_text": "That Council give Bylaw No. 1664 First Reading.",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n\n         That Council give Bylaw No. 1664 First Reading.\nCARRIED.\n\n                                                                      Regular Council Minutes — November 2151, 2015\n                                                                                                        Page 9 of 9\n\n\n\n\n      CRD Presentation— Establish a Regional Transportation Service\n         - Director Susan Brice and CAO Robert Lapham",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "019b07e2eb4cb750e96882f7118280f3f7f07e6f1c98de7478f92028364d1af3",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        8
+      ],
+      "image_reviewed_body": "That Council give Bylaw No. 1664 First Reading.",
+      "image_reviewed_body_sha256": "a8647a57b4fd2ddda6a72ef4fd361796fa56df32dfce9e8ca5d0027356ae38e6",
+      "mapping_evidence": "exact_body_native_outcome_omitted"
+    }
+  ],
+  "independent_original_image_review_sha256": "0d304c19639ef11a19e7d9ea3eba8dae8fa0887d0887dbc5bb0564eb867e705f",
+  "remaining_holds": [
+    {
+      "motion_id": 1534,
+      "reason": "documentary_adjournment_not_formal_resolution; preserve legacy result unchanged, source does not verify it"
+    }
+  ]
+}
