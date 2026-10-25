@@ -9,7 +9,7 @@ import { NativeSelect } from "../components/ui/native-select";
 import { displayTitle, matterTitle } from "../lib/display-text";
 import { documentPath, meetingPath } from "../lib/paths";
 import { cn, formatDate } from "../lib/utils";
-import { addToItem, shortItemLabel, takeHeld, type UnplacedDocument, type WrittenLetter } from "../lib/written";
+import { addToItem, shortItemLabel, specificTerms, takeHeld, type UnplacedDocument, type WrittenLetter } from "../lib/written";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Letter placement | Open Langford" },
@@ -84,12 +84,16 @@ export async function loadLetterQueue(supabase: Supabase) {
   ];
   const [{ data: itemDocs }, { data: itemMotions }] = candidateItemIds.length
     ? await Promise.all([
-        supabase.from("extracted_documents").select("agenda_item_id, title").in("agenda_item_id", candidateItemIds),
+        supabase.from("extracted_documents").select("agenda_item_id, title, summary").in("agenda_item_id", candidateItemIds),
         supabase.from("motions").select("agenda_item_id, text_content, plain_english_summary, result").in("agenda_item_id", candidateItemIds),
       ])
     : [{ data: [] as any[] }, { data: [] as any[] }];
   const docsByItem = new Map<number, string[]>();
-  for (const d of itemDocs || []) docsByItem.set(d.agenda_item_id, [...(docsByItem.get(d.agenda_item_id) || []), d.title]);
+  const summariesByItem = new Map<number, string[]>();
+  for (const d of itemDocs || []) {
+    docsByItem.set(d.agenda_item_id, [...(docsByItem.get(d.agenda_item_id) || []), d.title]);
+    if (d.summary) summariesByItem.set(d.agenda_item_id, [...(summariesByItem.get(d.agenda_item_id) || []), d.summary]);
+  }
   const motionsByItem = new Map<number, string[]>();
   for (const m of itemMotions || []) {
     const text = (m.plain_english_summary || m.text_content || "").replace(/\s+/g, " ").trim();
@@ -103,19 +107,31 @@ export async function loadLetterQueue(supabase: Supabase) {
     meetings: (meetings || [])
       .map((meeting) => {
         const meetingItems = (items || []).filter((it: any) => it.meeting_id === meeting.id);
+        const itemTerms = new Map<number, Set<string>>(
+          meetingItems.map((it: any) => [
+            it.id,
+            specificTerms([it.title, it.plain_english_summary, ...(docsByItem.get(it.id) || []), ...(summariesByItem.get(it.id) || []), ...(motionsByItem.get(it.id) || [])].filter(Boolean).join(" ")),
+          ]),
+        );
         const entries = Object.entries((meeting.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap(
           ([extractedId, doc]) =>
             doc.letters.map((held) => {
               const { key, candidates, ...letter } = held;
               const top = candidates[0]?.probability ?? 0;
+              const excerpt = excerptFor(textByDoc.get(Number(extractedId)) || "", letter.who);
+              const letterTerms = specificTerms(`${doc.title || ""} ${letter.topic} ${letter.point} ${excerpt}`);
               return {
                 id: `${extractedId}::${key}`,
                 documentId: doc.document_id,
                 documentTitle: doc.title || "Letters",
                 letter: letter as WrittenLetter,
-                candidates: candidates.map((c) => ({ itemId: c.item_id, probability: c.probability })),
+                candidates: candidates.map((c) => ({
+                  itemId: c.item_id,
+                  probability: c.probability,
+                  shared: [...letterTerms].filter((t) => itemTerms.get(c.item_id)?.has(t)).sort(),
+                })),
                 likelyNone: top < 0.15,
-                excerpt: excerptFor(textByDoc.get(Number(extractedId)) || "", letter.who),
+                excerpt,
               };
             }),
         );
@@ -351,7 +367,12 @@ function LetterRow({ meeting, entry, hidden, handlers }: { meeting: MeetingGroup
               onClick={() => decide("place", c.itemId)}
               className="flex w-full items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-left text-sm text-zinc-800 transition-colors hover:border-brand-300 hover:bg-brand-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
-              <span className="min-w-0 break-words">{label}</span>
+              <span className="min-w-0 break-words">
+                {label}
+                {c.shared.length > 0 && (
+                  <span className="mt-0.5 block text-xs font-medium text-brand-700">Matches the letter: {c.shared.join(", ")}</span>
+                )}
+              </span>
               <span className="shrink-0 tabular-nums text-xs text-zinc-400">{Math.round(c.probability * 100)}%</span>
             </button>
           );

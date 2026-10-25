@@ -103,3 +103,12 @@ describe("shortItemLabel", () => {
     expect(shortItemLabel(null, "REPORTS")).toBe("REPORTS");
   });
 });
+
+import { specificTerms } from "../written";
+
+describe("specificTerms", () => {
+  it("finds the identifiers the pipeline matches on", () => {
+    const terms = specificTerms("Speedway lands for Business Park (BP9) zoning, Bylaw No. 1951, Z21-0040, 2207 Millstream Road");
+    expect([...terms].sort()).toEqual(["2207 Millstream Rd", "BP9", "Bylaw 1951", "Z21-0040"]);
+  });
+});

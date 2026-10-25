@@ -92,6 +92,18 @@ def clean_author(name: str) -> str:
     return " and ".join(" ".join(p) for p in people)
 
 
+def letter_excerpt(text: str, who: str, length: int = 1200) -> str:
+    """The letter's own text, from its header line ("Submission: Name", "From: Name") when we can find it."""
+    name = re.sub(r"\s*\([^()]*\)\s*$", "", who or "").split(",")[0].strip()
+    surname = "" if re.match(r"(A resident|Petition)", name, re.I) else (name.split() or [""])[-1]
+    start = 0
+    if len(surname) > 2:
+        header = re.search(rf"^.*(?:submission|from|sender|name)\s*:?[^\n]*{re.escape(surname)}.*$", text, re.I | re.M)
+        line = re.search(rf"^.*{re.escape(surname)}.*$", text, re.I | re.M)
+        start = (header or line).start() if (header or line) else 0
+    return re.sub(r"\s+", " ", text[start:start + length]).strip()
+
+
 def _source_spelling(author: str, text: str) -> str:
     """The author's name exactly as the letter spells it ("Debbie FitzGerald"), or "" if it isn't there."""
     words = folded(author)
@@ -241,10 +253,16 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
     by_id = {it["id"]: it for it in items}
     plan = []  # (extracted_id, key, item_id, letter)
     held = 0
+    texts = {}
+    for extracted_id in unplaced:
+        rows = (supabase.table("document_sections").select("section_text").eq("extracted_document_id", int(extracted_id))
+                .order("section_order").execute().data or [])
+        texts[extracted_id] = "\n".join(r.get("section_text") or "" for r in rows)
     for extracted_id, source in unplaced.items():
         for entry in source["letters"]:
             letter = {k: v for k, v in entry.items() if k not in ("key", "candidates")}
-            placed, still = place_letters([letter], items, linked_item_id=None, decide=decide or _item_decider(),
+            letter_for_model = {**letter, "excerpt": letter_excerpt(texts[extracted_id], letter["who"])}
+            placed, still = place_letters([letter_for_model], items, linked_item_id=None, decide=decide or _item_decider(),
                                           document_title=source.get("title") or "")
             if placed:
                 plan.append((extracted_id, entry["key"], next(iter(placed)), letter))
@@ -324,9 +342,12 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
             if target in by_id:
                 placed.setdefault(target, []).append(letter)
             continue
+        excerpt = (letter.get("excerpt") or "")[:1200]
         context = (f"Letter to council from the package \"{document_title}\". "
-                   f"Topic: {letter['topic']}. Point: {letter['point']}")
-        ranked = [(i, p) for i, p in decide(context, choices) if 0 <= i < len(choices)]
+                   f"Topic: {letter['topic']}. Point: {letter['point']}" + (f"\nLetter text: {excerpt}" if excerpt else ""))
+        terms = specific_terms(f"{document_title} {letter['topic']} {letter['point']} {excerpt}")
+        offered = [{**it, "shared_terms": sorted(terms & specific_terms(_item_text(it)))} for it in choices]
+        ranked = [(i, p) for i, p in decide(context, offered) if 0 <= i < len(choices)]
         # The same matter often appears as several items (hearing, readings): judge the matter's
         # combined probability, and keep all its letters on its first item in the meeting.
         by_matter: dict = {}
@@ -362,6 +383,38 @@ def merge_written(meta: dict | None, group: dict) -> dict:
     return meta
 
 
+# Specific identifiers that tie a letter to an agenda item when both mention them.
+SPECIFIC_TERMS = [
+    re.compile(r"\b(?:bylaw|by-law)\s*(?:no\.?\s*)?(\d{3,5})\b", re.I),                       # Bylaw 1951
+    re.compile(r"\b((?:Z|OCP|DVP|DP|TUP|SUB|RZ)\d{2}-\d{3,4})\b", re.I),                        # Z21-0040, DVP21-0009
+    re.compile(r"\b((?:BP|RS|RT|CD|CC|CS|MU|RM|R|C|M|P)\d{1,2})\b"),                             # zones: BP9, RS1, CD3
+    re.compile(r"\b(\d{3,5}\s+(?:[A-Z][a-z]+\s){1,3}(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Way|Place|Pl|Crescent|Cres|Lane|Ln|Parkway|Pkwy))\b"),
+]
+
+
+def specific_terms(text: str) -> set[str]:
+    """Normalised identifiers in a text: bylaw numbers, file numbers, zone codes and civic addresses."""
+    found = set()
+    for index, pattern in enumerate(SPECIFIC_TERMS):
+        for match in pattern.finditer(text or ""):
+            value = match[1]
+            if index == 0:
+                found.add(f"Bylaw {value}")
+            elif index == 3:
+                words = value.split()
+                found.add(" ".join([words[0], *words[1:-1], {"road": "Rd", "street": "St", "avenue": "Ave", "drive": "Dr",
+                                                             "place": "Pl", "crescent": "Cres", "lane": "Ln", "parkway": "Pkwy"}
+                                    .get(words[-1].lower(), words[-1])]))
+            else:
+                found.add(value.upper())
+    return found
+
+
+def _item_text(item: dict) -> str:
+    return " ".join([item.get("title") or "", item.get("plain_english_summary") or "",
+                     *item.get("context_documents", []), *item.get("context_summaries", []), *item.get("context_decisions", [])])
+
+
 def _item_description(item: dict) -> str:
     """Title, summary, and what the item contains (its documents and decisions): section headings like
     "REPORTS" or "BYLAWS" say nothing on their own."""
@@ -370,6 +423,10 @@ def _item_description(item: dict) -> str:
         parts.append(item["plain_english_summary"][:200])
     if item.get("context_documents"):
         parts.append("Documents: " + "; ".join(item["context_documents"])[:400])
+    if item.get("context_summaries"):
+        parts.append("Document summaries: " + " ".join(item["context_summaries"])[:500])
+    if item.get("shared_terms"):
+        parts.append("Shares with this letter: " + ", ".join(item["shared_terms"]))
     if item.get("context_decisions"):
         parts.append("Decided: " + "; ".join(item["context_decisions"])[:300])
     return " — ".join(parts)
@@ -380,7 +437,7 @@ def with_item_context(supabase, items: list[dict]) -> list[dict]:
     ids = [it["id"] for it in items]
     if not ids:
         return items
-    docs = supabase.table("extracted_documents").select("agenda_item_id,title").in_("agenda_item_id", ids).execute().data or []
+    docs = supabase.table("extracted_documents").select("agenda_item_id,title,summary").in_("agenda_item_id", ids).execute().data or []
     motions = (supabase.table("motions").select("agenda_item_id,plain_english_summary,text_content")
                .in_("agenda_item_id", ids).execute().data or [])
     out = []
@@ -388,7 +445,9 @@ def with_item_context(supabase, items: list[dict]) -> list[dict]:
         titles = sorted({d["title"] for d in docs if d["agenda_item_id"] == item["id"] and d.get("title")})
         decided = [(m.get("plain_english_summary") or m.get("text_content") or "")[:160]
                    for m in motions if m["agenda_item_id"] == item["id"]]
-        out.append({**item, "context_documents": titles[:8], "context_decisions": [d for d in decided if d][:5]})
+        summaries = [d["summary"][:220] for d in docs if d["agenda_item_id"] == item["id"] and d.get("summary")]
+        out.append({**item, "context_documents": titles[:8], "context_summaries": summaries[:5],
+                    "context_decisions": [d for d in decided if d][:5]})
     return out
 
 
@@ -430,9 +489,16 @@ def summarize_document(supabase, extracted: dict, *, streets: dict, dry_run: boo
         return {"status": "unchanged", "letters": 0}
     decisions = (meeting_meta.get("written_placements") or {}).get(str(extracted["id"])) or {}
     letters = admit_letters(extract_letters(sections)["raw"], sections, streets)
+    source_text = "\n".join(s.get("section_text") or "" for s in sections)
+    for letter in letters:
+        letter["excerpt"] = letter_excerpt(source_text, letter["who"])
     placed, held = place_letters(letters, items, linked_item_id=extracted.get("agenda_item_id"),
                                  decide=decide or _item_decider(), decisions=decisions,
                                  document_title=extracted.get("title") or "")
+    # Excerpts help placement only; stored letters keep the summary, never raw letter text.
+    for group in [*placed.values(), held]:
+        for letter in group:
+            letter.pop("excerpt", None)
     if dry_run:
         return {"status": "dry_run", "letters": len(letters), "placed": sum(map(len, placed.values())), "held": len(held)}
     for item in items:

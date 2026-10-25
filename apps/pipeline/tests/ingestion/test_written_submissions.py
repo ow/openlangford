@@ -171,3 +171,33 @@ def test_item_description_includes_contents():
     text = _item_description({"item_order": "9", "title": "BYLAWS", "plain_english_summary": "Council adopted bylaws.",
                               "context_documents": ["Bylaw No. 2000 — Westhills CD3 zone"], "context_decisions": ["Gave readings to Bylaw 2000"]})
     assert "9 BYLAWS" in text and "Westhills CD3" in text and "Decided: Gave readings" in text
+
+
+def test_specific_terms():
+    from pipeline.ingestion.written_submissions import specific_terms
+    text = ("Speedway lands proposed for Business Park (BP9) zoning and an OCP amendment for RS1; see Bylaw No. 1951, "
+            "file Z21-0040 at 2207 Millstream Road.")
+    assert {"BP9", "RS1", "Bylaw 1951", "Z21-0040", "2207 Millstream Rd"} <= specific_terms(text)
+
+
+def test_shared_terms_reach_the_model():
+    items = [{"id": 1, "title": "Bylaw 1953 Business Park 3 Amy Rd"},
+             {"id": 2, "title": "Bylaw 1951 zoning 2207 Millstream", "context_summaries": ["create a new Business Park zone (BP9)"]}]
+    seen = []
+
+    def decide(context, choices):
+        seen.append((context, [c.get("shared_terms") for c in choices]))
+        return [(1, 0.9)]
+
+    letter = {"who": "A resident", "topic": "Speedway", "point": "Asks about plans.",
+              "excerpt": "the Speedway lands proposed for Business Park (BP9) zoning"}
+    placed, held = place_letters([letter], items, linked_item_id=None, decide=decide, document_title="Re: Western speedway rezoning")
+    assert placed == {2: [letter]}
+    context, shared = seen[0]
+    assert "Letter text: the Speedway lands" in context and shared == [[], ["BP9"]]
+
+
+def test_letter_excerpt_starts_at_the_writers_header():
+    from pipeline.ingestion.written_submissions import letter_excerpt
+    text = "From: Ben Moreau\nI oppose.\n\nSubmission: Chris Burdge\nFrom: Chris Burdge\nTraffic is bad."
+    assert letter_excerpt(text, "Chris Burdge").startswith("Submission: Chris Burdge")

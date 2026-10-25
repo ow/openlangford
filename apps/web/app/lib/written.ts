@@ -141,3 +141,18 @@ export function crossNotes(speakers: { who: string }[], letters: { who: string }
     letter: (who: string) => (speakers.some((s) => samePerson(who, s.who)) ? "also spoke" : null),
   };
 }
+
+/** Identifiers that tie a letter to an agenda item when both mention them (mirrors the pipeline's specific_terms). */
+export function specificTerms(text: string) {
+  const found = new Set<string>();
+  for (const m of text.matchAll(/\b(?:bylaw|by-law)\s*(?:no\.?\s*)?(\d{3,5})\b/gi)) found.add(`Bylaw ${m[1]}`);
+  for (const m of text.matchAll(/\b((?:Z|OCP|DVP|DP|TUP|SUB|RZ)\d{2}-\d{3,4})\b/gi)) found.add(m[1].toUpperCase());
+  for (const m of text.matchAll(/\b((?:BP|RS|RT|CD|CC|CS|MU|RM|R|C|M|P)\d{1,2})\b/g)) found.add(m[1]);
+  const types: Record<string, string> = { road: "Rd", street: "St", avenue: "Ave", drive: "Dr", place: "Pl", crescent: "Cres", lane: "Ln", parkway: "Pkwy" };
+  for (const m of text.matchAll(/\b(\d{3,5}\s+(?:[A-Z][a-z]+\s){1,3}(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Way|Place|Pl|Crescent|Cres|Lane|Ln|Parkway|Pkwy))\b/g)) {
+    const words = m[1].split(/\s+/);
+    const last = words.at(-1)!;
+    found.add([...words.slice(0, -1), types[last.toLowerCase()] ?? last].join(" "));
+  }
+  return found;
+}
