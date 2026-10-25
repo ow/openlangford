@@ -1,0 +1,18 @@
+[
+ {
+  "meeting_id": 229,
+  "person_id": 23,
+  "old": "present",
+  "old_mode": "In Person",
+  "roster": "absent",
+  "kind": "ai-vs-roster"
+ },
+ {
+  "meeting_id": 159,
+  "person_id": 20,
+  "old": "present",
+  "old_mode": "In Person",
+  "roster": "absent",
+  "kind": "ai-vs-roster"
+ }
+]

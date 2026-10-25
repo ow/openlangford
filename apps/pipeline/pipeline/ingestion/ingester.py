@@ -16,6 +16,7 @@ from pipeline.alignment import align_meeting_items
 from pipeline.names import CANONICAL_NAMES
 from pipeline.speaker_evidence import label_key
 from pipeline.ingestion.ai_refiner import refine_meeting_data
+from pipeline.ingestion.roster_attendance import find_original_minutes_pdf, minutes_source_url, roster_attendance
 from pipeline.ingestion.summary_format import normalize_meeting_summary
 from pipeline.ingestion.key_statement_evidence import format_refinement_transcript, load_statement_context, bind_key_statement, publish_key_statement
 from pipeline.ingestion.vote_evidence import match_motion_record, named_votes, outcome_family
@@ -172,6 +173,41 @@ class MeetingIngester:
         except Exception as e:
             print(f"  [!] Failed to fetch active council members: {e}")
             return []
+
+    def _write_roster_attendance(self, meeting_id, org_id, meeting_date, folder_path, dry_run=False):
+        """Upsert evidence-backed attendance for sitting council members from the original minutes.
+
+        Returns the person_ids written (empty when the roster cannot be read or resolved)."""
+        pdf = find_original_minutes_pdf(folder_path)
+        if not pdf or not meeting_id or not org_id:
+            return set()
+        try:
+            res = (
+                self.supabase.table("memberships")
+                .select("person_id,person:people(name)")
+                .eq("organization_id", org_id)
+                .lte("start_date", meeting_date)
+                .or_(f"end_date.is.null,end_date.gte.{meeting_date}")
+                .execute()
+            )
+            members = {m["person_id"]: {"person_id": m["person_id"], "name": (m.get("person") or {}).get("name")}
+                       for m in res.data if m.get("person_id")}
+            minutes_url = (self.supabase.table("meetings").select("minutes_url").eq("id", meeting_id).single().execute().data or {}).get("minutes_url")
+            result = roster_attendance(list(members.values()), meeting_id, str(meeting_date), pdf,
+                                       minutes_source_url(pdf, minutes_url))
+        except Exception as e:
+            print(f"  [!] Roster attendance skipped: {e}")
+            return set()
+        if result["status"] != "ok":
+            print(f"  [Attendance] Minutes roster not used ({result['status']}); keeping AI attendee list.")
+            return set()
+        for rec in result["records"]:
+            if not dry_run:
+                self.supabase.table("attendance").upsert(
+                    {"meeting_id": meeting_id, **rec}, on_conflict="meeting_id,person_id"
+                ).execute()
+        print(f"  [Attendance] {len(result['records'])} council members from minutes roster; {len(result['unresolved'])} unresolved.")
+        return {r["person_id"] for r in result["records"]}
 
     def get_or_create_organization(self, name, classification, dry_run=False):
         if dry_run:
@@ -1904,10 +1940,17 @@ class MeetingIngester:
                     print(f"  [!] Error saving refinement.json: {e}")
 
         # 3. Attendance (skip for planned meetings to prevent hallucinations)
+        # Council / Committee of the Whole members come from the original minutes roster (with
+        # evidence); only members it cannot resolve fall back to the AI attendee list below.
+        roster_resolved = set()
+        if classification == "Council" and not is_planned_meeting and not canonical_cached_refresh:
+            roster_resolved = self._write_roster_attendance(meeting_id, org_id, meta["meeting_date"], folder_path, dry_run)
         if refined.get("attendees") and not is_planned_meeting and not canonical_cached_refresh:
             print(f"  Found {len(refined['attendees'])} attendees.")
             for name in refined["attendees"]:
                 person_id = self.get_or_create_person(name, dry_run)
+                if person_id in roster_resolved:
+                    continue
                 if person_id and not dry_run:
                     mode = self.local_attendance_modes.get(name, "In Person")
                     att_data = {
