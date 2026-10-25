@@ -1,0 +1,547 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 111,
+    "title": "Regular Council",
+    "meeting_date": "2016-01-18",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+      "sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+  "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "a264a86ae000f1893433e7e7131e0beb643d346478f75bfe01f09004021cdb8c",
+  "corrected_text_sha256": "a264a86ae000f1893433e7e7131e0beb643d346478f75bfe01f09004021cdb8c",
+  "parsed_blocks_sha256": "b069997f0a2cd65b4595e6b89f6ce57f166e908a35995493536616cbb066f468",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "e717162dbea33b1722c16df0f7a701fffe41d9c3cd056089fe20a9f213a3cac7",
+      "render_sha256": "16329f5f5579e71f4ef17f80fd41d19816d370eff62f3c10901bae47297e220f"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "7e16344e63f64121f04c93680db4e0a2c4c51b489f19b9bfabae9b0f6a53784e",
+      "render_sha256": "995d6c6e34839bd361b5793618bda6b8b7f1a04d36ef50015cc41adc1e3b7692"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "9fca12b8d779c3076b75ca2ad4a8972df1664406cc72bcf61d4051a199825440",
+      "render_sha256": "1b588ea9c2a48cfe4495c00d20f8b06cb2ea81a4271f1db46aa7b32c6f5a56e9"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "9aa53ec93b6a59f8e07ddd06261022dbc005c27764329ca951334176eb7bd436",
+      "render_sha256": "c153e89ef5c7025d8097dade995da0d804c75431cbdff3236dad30113d1492aa"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "a6f8296b0710b25e1cc689ef237c7736dd9e7b306b0cad9823f8ef5bc089ae5c",
+      "render_sha256": "504b1751a4c73a7b5c2342348e28af2e77ec652ad07fc6bc497e09d7ceaf8197"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "4bfba637431198be2b97a9c88b4d24bdb5c3ad6ce450406e45c3c910d65c042b",
+      "render_sha256": "3ddb6a79db6b5f5a6d6da52ce7977faa2210b376e5983915fc69a6fbb09a4515"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "971ee2f6b3e7cbd6984ac582e4b86542d742309dfb4c836daad2e7b6b6f67f4f",
+      "render_sha256": "8ddfb948487fc9505bcd4150fe06597e8b3d00f3212eaa961791b51d987bf938"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "6221d0e7fd880733104decf09c1a7a0b57bba34e51cc7584d3bee2a5bdba9b39",
+      "render_sha256": "bee796997434ac650ff0dcd427d0c30dfaf08aead8260c89304cbcc16d0e9ea7"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "355bb5a3f4350a1673d488e87f029a426904d6dbdfd70dbe6b4760bbf2b60fce",
+      "render_sha256": "31bfcdcfa4abdac01995cb23f0f12c74ed67553e1be2d83772267187ab175df5"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "57b6a78857c74042aa612a684658b5427c1d01319fe439c2317bb566aad99478",
+      "render_sha256": "9decfedd6943870dad4ec4d48a43b652a0e7842a7a1f358f3dbdf217a43b9cea"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "1003ce3235d1c0f332b59645c5ac87f4a126923dad077046e26d100a5f89a9d8",
+      "render_sha256": "0a31c95ae38dff2a48c7b316c72d4836eefc88a797b854b587e549da8d19c404"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "39231d0cda1dada145150f5fe060f8bc25fa19a5ad9912e6dd44013ae0eff283",
+      "render_sha256": "c70f6bc6c35d5376abae0fc31e468d27550fa41f554d09df6749da99324833ae"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "e010751bb64367871f90defd7f14d863074be1709dd6b1eccee1a5b32a6e0f2e",
+      "render_sha256": "f9e2c3811bc60b1bf46f352a05c597d79d142544b4a06a46e689461b8045e1ac"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "7316831df7674801f39d3ab0e29fcdc0aa2c9875929d258271edb3a3cf4b4ef5",
+      "render_sha256": "72d5be82e47b2b852d35d18bed0de7d834e026c50817286d2f7f1e7a564379dd"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "79a5f3fcf8fe1136c37a2143841dbf9721f1f06d79a434e51433e73285bc42ba",
+      "render_sha256": "a2d279297ed370064421926820ce02decd380de35925f1af11e99ab86cc25d92"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "824446ffa1f646f72d0ee21254621b824016c9f6cc21bec577c44f55ed7efee7",
+      "raw_block_sha256": "74bdffa27bb4d2968595b39c6f98894702a8174b8f8f2026ea5c280b6787c536",
+      "operative_body": "That Council receive the Year End (4th Quarter) Report from October 1st to December 31st, 2015 for the Planning, Land Development and Building Departments.",
+      "operative_body_sha256": "25fca9334b3d5657e21f759e30a57a237ca73d98f7c19c680c2f075b9f6dffb6",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "57b6a78857c74042aa612a684658b5427c1d01319fe439c2317bb566aad99478",
+          "render_sha256": "9decfedd6943870dad4ec4d48a43b652a0e7842a7a1f358f3dbdf217a43b9cea"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "20a733db67db5b1eb599d6af729be668440cbf7b427c07b9526fa8c1f560a75f",
+      "raw_block_sha256": "45fe43f7aca1ed3921e6492aae5c974409b1ffb0fe002764761aa87bf976b847",
+      "operative_body": "That Council: 1. Approved the proposed strata titling of 1092 and 1096 Penwood Road, legal known as Lot B, Section 90, Esquimalt District, Plan 23636 (PID 003-136-825), and directs the Approving Officer to sign the strata plans on their behalf; 2. Direct staff to ensure any outstanding payments with Westshore Environmental Services (WSES) have been settled to the satisfaction of WSES prior to approving the strata title conversion; and 3. Direct staff to obtain an acceptable architecture's report that verifies the existing (original) dwelling substantially complies with the 2012 Building Code, as amended, prior to having the strata title conversion plans signed.",
+      "operative_body_sha256": "fa551ba5e23d8240c6cc9f2d071f1586a7d5c18d50e66fec958a540a886d5670",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "57b6a78857c74042aa612a684658b5427c1d01319fe439c2317bb566aad99478",
+          "render_sha256": "9decfedd6943870dad4ec4d48a43b652a0e7842a7a1f358f3dbdf217a43b9cea"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "051b1b46ae1a8d77e92548fba985a636edcaea06eafddda5eb010f58b237fe57",
+      "raw_block_sha256": "a90f100acb3f0b95c5231f0b04dd70d1511341394eaac7f617d8c61f32b17d39",
+      "operative_body": "That Council: 1. Approve the proposed strata titling of 1008 Marwood Avenue and 3294 Happy Valley Road, legal known as Lot 1, Block 2, Section 86, Metchosin District, Plan 1524 (PID 007-306-474); and directs the Approving Officer to sign the strata plans on their behalf; 2. Direct staff to ensure any outstanding payments with Westshore Environmental Services (WSES) have been settled to the satisfaction of WSES prior to approving the strata title conversion; and 3. Direct staff to obtain an acceptable architecture's report that verifies the existing (original) dwelling substantially complies with the 2012 BC Building Code, as amended, prior to having the strata title conversion plans signed.",
+      "operative_body_sha256": "c71cac30f85e06a65f2c9facc7bd0e42a382b416df5aa283515b1df0b6024057",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "57b6a78857c74042aa612a684658b5427c1d01319fe439c2317bb566aad99478",
+          "render_sha256": "9decfedd6943870dad4ec4d48a43b652a0e7842a7a1f358f3dbdf217a43b9cea"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "2383190e10b872049f6786edbed43c692e09e7b9c584aa1d82fc40dc2e064514",
+      "raw_block_sha256": "6d229c57c32ed9c7a1e96e5471b3fb49775a93beb4a3744b69d5f2bdd708d73f",
+      "operative_body": "That Council direct staff to inform the Liquor Control and Licensing Branch that they will not be implementing a notification procedure for liquor license applications, and that Council would recommend that the LCLB have individual applicants provide public notification.",
+      "operative_body_sha256": "8a2f2bd8c6dfff6bc5433ed01f6211516298920c457e98603043ec1e7f75b100",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "1003ce3235d1c0f332b59645c5ac87f4a126923dad077046e26d100a5f89a9d8",
+          "render_sha256": "0a31c95ae38dff2a48c7b316c72d4836eefc88a797b854b587e549da8d19c404"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f8bf30136905a7f809a68ff9955e68b0dbfa4cc948015b46fc09a5e763bca56b",
+      "raw_block_sha256": "5fed9b99a765caad2f6a4c02eaad28832487edf0f5f91a3d636c5861caea7b4e",
+      "operative_body": "That Council give pre-budget approval for the following city owned facilities LED conversion and contract the LED facilities conversion project to Mr. Electric: a) 877 Goldstream Ave (City hall) b) 2625 Peatt Rd (Firehall #1) c) 3205 Happy Valley (Firehall#2) d) 1089 Langford Parkway (Eagle Ridge/Play Zone) e) 1097 Langford (Westhills Arena/Bowling Alley) f) 3024 Glen Lake Rd (Rugby Canada) g) 1997 Country Club Way (North Langford Rec Centre) h) 3416 Luxton Rd (Trolley Hall)",
+      "operative_body_sha256": "8d4cc2e43a1096c624b6b514e534839558d3d44588ce678fa438d09ff99e92a1",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "1003ce3235d1c0f332b59645c5ac87f4a126923dad077046e26d100a5f89a9d8",
+          "render_sha256": "0a31c95ae38dff2a48c7b316c72d4836eefc88a797b854b587e549da8d19c404"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "83ad147a4cb9c76b2818c5f9a3aca043f9e1c502f229caca9632dc72c4150bec",
+      "raw_block_sha256": "383f21a680728f17596e4aeb6fe4f88795d9a211bb2261c1f24f7bd95d6e68d2",
+      "operative_body": "That Council approve the expenditure of funds from the Major Asset Maintenance Reserve as requested by the Greater Victoria Public Library in the schedule attached to the staff report dated January 18th, 2016.",
+      "operative_body_sha256": "081b6cd06b2cbd26ab8d5be3dcdef7d543430d99381f97ba1439008c98da13bd",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "1003ce3235d1c0f332b59645c5ac87f4a126923dad077046e26d100a5f89a9d8",
+          "render_sha256": "0a31c95ae38dff2a48c7b316c72d4836eefc88a797b854b587e549da8d19c404"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c5a5480b248025785090a025a657b104b1fa9d146d21b032522d08d936d52325",
+      "raw_block_sha256": "aea9d15093d5fc5eaa0c36648dfb1c5d980b7893c9189ed59cc55c36e32f72a1",
+      "operative_body": "That Council approve the West Shore Parks and Recreation Society 2016 budget as outlined in their letter dated November 25th, 2015; AND the City of Langford service notice to Westshore Parks and Recreation Society and the Owners Group that the City will not support \"any\" budget for 2017 unless there is meaningful change to the Governance of the Owners Committee which will result in a redistribution of costs amongst the owners and a reduction in Langford's contribution.",
+      "operative_body_sha256": "4733c4b475faf63091ab0eca3140dbfe3b6089fd99f314bd74adc206656fb3c5",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "39231d0cda1dada145150f5fe060f8bc25fa19a5ad9912e6dd44013ae0eff283",
+          "render_sha256": "c70f6bc6c35d5376abae0fc31e468d27550fa41f554d09df6749da99324833ae"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "65c0ef5a2270b1cd7deb14411f2b53b9bc8bbe79ffbc2280b8b86a2d5559172f",
+      "raw_block_sha256": "dad050e5ab11d2d621aaed6897b7e7a834d8d3a5325f22d20abbee8d21738e41",
+      "operative_body": "That Council approve $10,000 to retain Mr. Peter Willing to provide Music in the Park at Veterans Memorial Park every Sunday beginning July 3rd to August 28th, 2016 from 2:00pm to 4:00pm as outlined in the proposal dated January 5th, 2016.",
+      "operative_body_sha256": "080147e7c1164e4504e2e08809983b2d1beea49ee82fc88d100da536b2be8072",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "39231d0cda1dada145150f5fe060f8bc25fa19a5ad9912e6dd44013ae0eff283",
+          "render_sha256": "c70f6bc6c35d5376abae0fc31e468d27550fa41f554d09df6749da99324833ae"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "0c1fdf74f4efcd991f35c90b42af971e4f20b52001c53847f5b14d943737bcb2",
+      "raw_block_sha256": "0ee11319e480bb9a6af95f7ab4d42b889b2a22f3cda62e47d5451aa715de4140",
+      "operative_body": "That Council receive the Letter of Appreciation dated November 30th, 2015 from the Royal Canadian Legion Prince Edward Branch #91 with respect to the City's donation toward the Remembrance Day celebration.",
+      "operative_body_sha256": "d813926322cba8e887d1557ad0ebcd745ff67631353697a71df770ee8f5e2a13",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "39231d0cda1dada145150f5fe060f8bc25fa19a5ad9912e6dd44013ae0eff283",
+          "render_sha256": "c70f6bc6c35d5376abae0fc31e468d27550fa41f554d09df6749da99324833ae"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "77bd6eb82dbacb01856da169bbfe8fe1c907dad49bd818ea0b41d5041cbc1f27",
+      "raw_block_sha256": "2946228391033a8eb69b6a696ef8dec7898d6c66c7ada69626cd07e23e79c811",
+      "operative_body": "That Council receive the Letter of Appreciation dated January 4th, 2016 from the Goldstream Food Bank Society for the City's donation raised at the 9th annual Christmas Light-up.",
+      "operative_body_sha256": "15489f66cbbba866f860d8b1de25a8ac67185fc12796b017edb69f3071ee1125",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "e010751bb64367871f90defd7f14d863074be1709dd6b1eccee1a5b32a6e0f2e",
+          "render_sha256": "f9e2c3811bc60b1bf46f352a05c597d79d142544b4a06a46e689461b8045e1ac"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "Goldstreann",
+          "printed": "Goldstream",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ]
+    },
+    {
+      "source_key": "cdebfa188ba223a50e68ba0ffcaa333a957121c02271cba9619024b6573e07e6",
+      "raw_block_sha256": "d378d81be3a9be8f7e0c18536b4697fbfc6041d557b9ff29398dd23ba650d657",
+      "operative_body": "That Council adopt Bylaw No. 1544.",
+      "operative_body_sha256": "b862327cf4fefa7c857c8f30a279b15d229b61d33467cd04de3871eb1059b8ee",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "e010751bb64367871f90defd7f14d863074be1709dd6b1eccee1a5b32a6e0f2e",
+          "render_sha256": "f9e2c3811bc60b1bf46f352a05c597d79d142544b4a06a46e689461b8045e1ac"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7d44fbe1510715ce9dd7cb058afa9839258e73bf48b6a85d7a7ea0d4a0db707b",
+      "raw_block_sha256": "93b9bfdf97c12a93de21b6b900059a92abb22dca9fbd5748ca943e4138d5d2d4",
+      "operative_body": "That Council give Bylaw No. 1571 Second and Third Reading.",
+      "operative_body_sha256": "85d90d9ac19c73b22060c9b14d5f6361a4ca1c1e3551808e2a782b18846c2ea6",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "e010751bb64367871f90defd7f14d863074be1709dd6b1eccee1a5b32a6e0f2e",
+          "render_sha256": "f9e2c3811bc60b1bf46f352a05c597d79d142544b4a06a46e689461b8045e1ac"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "cb247fc572f8694f5a61744169bc7a71fe889fc8f8fc3c6fff9a48a76c9e5da8",
+      "raw_block_sha256": "cd35157e31f2f903c8092c7ca40ff1b979e69b21fd951fc0c967b15450216aef",
+      "operative_body": "That Council adopt Bylaw No. 1599.",
+      "operative_body_sha256": "dd0528a903f49a3f503c4cdbb68c6d537126f8d7a1189f5e1475d2b6f48d38e0",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "e010751bb64367871f90defd7f14d863074be1709dd6b1eccee1a5b32a6e0f2e",
+          "render_sha256": "f9e2c3811bc60b1bf46f352a05c597d79d142544b4a06a46e689461b8045e1ac"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6c6e0ecd417597e4b6bf9c05e100acacf1b3f1e680aa0639b30a77b4be6fa9b2",
+      "raw_block_sha256": "a5542827ea46011fc226ce8cd82565130c7425ed23344854cda8b426c3fa08a4",
+      "operative_body": "That Council adopt Bylaw No. 1601.",
+      "operative_body_sha256": "067ea825265d5bc167005086be39e97b4a25d38eb2e58c58f583b137674f6067",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "7316831df7674801f39d3ab0e29fcdc0aa2c9875929d258271edb3a3cf4b4ef5",
+          "render_sha256": "72d5be82e47b2b852d35d18bed0de7d834e026c50817286d2f7f1e7a564379dd"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "73261d518fafb33dd478c25f5f572062e500640741ef98e1651ace19f290182f",
+      "raw_block_sha256": "a17d9ef90a8aee68ee6b2c6e8fccf3f85bfd7c176532b6af6d4eca07df5afdf4",
+      "operative_body": "That Council adopt Bylaw No. 1604.",
+      "operative_body_sha256": "5e8bb9c75e43c3dcd21f6be0c189fc1b5752aed73513922f1156ece307dfe322",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "7316831df7674801f39d3ab0e29fcdc0aa2c9875929d258271edb3a3cf4b4ef5",
+          "render_sha256": "72d5be82e47b2b852d35d18bed0de7d834e026c50817286d2f7f1e7a564379dd"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "dc6e4b41cefe336fa8e188dd57523b8de496de321b8b7ee12ded7c754780cc5d",
+      "raw_block_sha256": "6c9db4679cb336f1fe39254d8a3ec7f9c5976862556602d151bb592e09ede12a",
+      "operative_body": "That Council give Bylaw No. 1609 First, Second and Third Reading.",
+      "operative_body_sha256": "c9be23176167dc6f7a307e9ee79ea62cbfff441bfa4466434b3b1af07c0b9e32",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "7316831df7674801f39d3ab0e29fcdc0aa2c9875929d258271edb3a3cf4b4ef5",
+          "render_sha256": "72d5be82e47b2b852d35d18bed0de7d834e026c50817286d2f7f1e7a564379dd"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "406e0052d09dda56410d569678d45dad41d00d37888a3f1491380e87fc7df845",
+      "raw_block_sha256": "420ebb1dc7f9b7ac9a4b18b0a06b261a9ae045cc0676307d5723dbc94e1f2607",
+      "operative_body": "That Council give Bylaw No. 1610 Second and Third Reading.",
+      "operative_body_sha256": "ea6d0d37260d6e63f36e76a6663f8cfa6e90f2bd8e43840e3f6254a1fd7bdf1c",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "7316831df7674801f39d3ab0e29fcdc0aa2c9875929d258271edb3a3cf4b4ef5",
+          "render_sha256": "72d5be82e47b2b852d35d18bed0de7d834e026c50817286d2f7f1e7a564379dd"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "eeee4bf1d87c2e5bd2198ef89f66f2f42304a7159df7b01b3c29d4b203d8bbcf",
+      "raw_block_sha256": "1bc9ec34d11688673bfa364600ad2d5bdcfeb8c3b6aff9b780cbffbbc7ca9f56",
+      "operative_body": "That Council give Bylaw No. 1611 First Reading.",
+      "operative_body_sha256": "511dfb60a5727d34f5ebd56088aceebbf17c4e2a85ae004cd10be66e0a0e01e2",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "79a5f3fcf8fe1136c37a2143841dbf9721f1f06d79a434e51433e73285bc42ba",
+          "render_sha256": "a2d279297ed370064421926820ce02decd380de35925f1af11e99ab86cc25d92"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3535d8fd2c2f55e00c29b05d4c082fdaa0038673c89732324cdf0e3619357de1",
+      "raw_block_sha256": "b41c472f7e75ad3c3ff87f28ac9e6da6f5039a8b4d15b180713f9a46461261bc",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council, Officers, Hugh MacDonald, Chair, Langford Economic Development Committee and Dale Gann, Director Business Development Ecoasis Developments LLP, be excluded from the meeting to consider confidential information regarding Personnel, Property Acquisition, Legal Matters and New Service under 90 (1) (e) & (k) of the Community Charter. b) That Council continues the meeting in closed session.",
+      "operative_body_sha256": "8f32018623c40fd3ab82eed030cdd1365923a6fe33bdce08a243a40fd21fa7a9",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "79a5f3fcf8fe1136c37a2143841dbf9721f1f06d79a434e51433e73285bc42ba",
+          "render_sha256": "a2d279297ed370064421926820ce02decd380de35925f1af11e99ab86cc25d92"
+        }
+      ],
+      "independent_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "e717162dbea33b1722c16df0f7a701fffe41d9c3cd056089fe20a9f213a3cac7",
+  "independent_original_image_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+  "second_independent_original_image_review_sha256": "7e16b90e1e7c2661e35071d36beb261b75dbbbf2002614f9a1c0896b70c5187a",
+  "blank_time_documentary_capabilities": [
+    {
+      "type": "reviewed_blank_time_adjournment_presence",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "time_policy": "preserve_unrecorded_no_value",
+      "motion_id": 1074,
+      "legacy_text": "That the meeting be adjourned.",
+      "claim_sha256": "1a3278fad6fd9dfb0e937c79eab941ac02d2ba7a69981de4aea629db87c0d723",
+      "claim_row_sha256": "fdb3e4cf963d3a8c7a4934d00e124b51e2b9d8a9a49b5474b39641fe00e886da",
+      "page": 15,
+      "native_text_sha256": "79a5f3fcf8fe1136c37a2143841dbf9721f1f06d79a434e51433e73285bc42ba",
+      "render_sha256": "a2d279297ed370064421926820ce02decd380de35925f1af11e99ab86cc25d92",
+      "native_passage": "The Chair adjourned the meeting at",
+      "native_passage_start": 915,
+      "source_passage": "The Chair adjourned the meeting at",
+      "source_passage_start": 40901,
+      "image_observation": {
+        "time_field": "blank",
+        "printed_suffix": "pm.",
+        "native_extraction_omits_suffix": true
+      },
+      "first_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+      "independent_review_sha256": "7e16b90e1e7c2661e35071d36beb261b75dbbbf2002614f9a1c0896b70c5187a"
+    }
+  ],
+  "remaining_holds": [
+    {
+      "reason": "original_source_heading_body_month_conflict_preserved",
+      "legacy_ids": [
+        1050
+      ],
+      "source_key": "59378db3e32055844bf6860150bcff13b85ff8d826a15dff844621519f179187",
+      "heading_month": "September to November2015",
+      "printed_and_stored_operative_month": "December2015",
+      "authority": "diagnostic_only_no_rewrite_no_intended_month_certification"
+    },
+    {
+      "reason": "legacy_stored_outcome_unknown_preserved",
+      "legacy_ids": [
+        1073
+      ],
+      "source_key": "242a5ef1c9d2b757f6544ff8ea297f4739df8f599e636232cc3d15b37909eb0c",
+      "stored_result": null,
+      "printed_result": "CARRIED",
+      "authority": "occurrence_only_no_outcome_upgrade"
+    }
+  ]
+}
