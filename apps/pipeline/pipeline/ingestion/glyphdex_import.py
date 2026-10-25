@@ -149,7 +149,13 @@ def main(argv=None):
     parser.add_argument("--to", dest="date_to")
     parser.add_argument("--dry-run", action="store_true", help="List what would be imported; download nothing")
     parser.add_argument("--ingest", action="store_true", help="Run the pipeline on each downloaded folder")
+    parser.add_argument("--workers", type=int, default=1,
+                        help="With --ingest: run N child processes (meetings split by year), then the post-ingest "
+                             "stages once for every new meeting. Holds the pipeline lock throughout.")
+    parser.add_argument("--shard-file", help=argparse.SUPPRESS)  # child mode
     args = parser.parse_args(argv)
+    if args.shard_file:
+        return run_shard(args.shard_file)
 
     supabase = create_client(config.SUPABASE_URL, config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY)
     archive_root = get_municipality_archive_root("langford")
@@ -162,6 +168,8 @@ def main(argv=None):
         print(f"  {m['date']} {m['body']} ({m['kind']}): {len(m['agenda'])} agenda, {len(m['minutes'])} minutes")
     if args.dry_run:
         return
+    if args.ingest and args.workers > 1:
+        return run_parallel(todo, archive_root, args.workers)
     import subprocess
     from datetime import datetime
 
@@ -191,6 +199,93 @@ def main(argv=None):
         with open(report_path, "a") as handle:
             handle.write(json.dumps(entry) + "\n")
     print(f"Done: {len(todo) - failed} ok, {failed} failed. Report: {report_path}")
+
+
+def split_by_year(meetings: list[dict], workers: int) -> list[list[dict]]:
+    """Whole years per worker (a bylaw's meetings mostly fall in one year, so two workers rarely
+    create the same new matter at once), balanced by meeting count."""
+    years: dict[str, list[dict]] = defaultdict(list)
+    for m in meetings:
+        years[m["date"][:4]].append(m)
+    shards: list[list[dict]] = [[] for _ in range(workers)]
+    for year in sorted(years, key=lambda y: -len(years[y])):
+        min(shards, key=len).extend(years[year])
+    return [sorted(shard, key=lambda m: (m["date"], m["time"])) for shard in shards if shard]
+
+
+def run_parallel(todo: list[dict], archive_root: str, workers: int):
+    import subprocess
+    import sys
+
+    from pipeline.lockfile import PipelineLock
+
+    reports = os.path.join(archive_root, "reports")
+    os.makedirs(reports, exist_ok=True)
+    shards = split_by_year(todo, workers)
+    with PipelineLock():  # scheduled runs wait (exit cleanly) until the backfill is done
+        children = []
+        for i, shard in enumerate(shards):
+            shard_file = os.path.join(reports, f"glyphdex-shard-{i}.json")
+            with open(shard_file, "w") as handle:
+                json.dump(shard, handle)
+            log = open(os.path.join(reports, f"glyphdex-shard-{i}.log"), "w")
+            years = sorted({m["date"][:4] for m in shard})
+            print(f"  shard {i}: {len(shard)} meetings ({', '.join(years)})", flush=True)
+            children.append((subprocess.Popen([sys.executable, "-m", "pipeline.ingestion.glyphdex_import", "--shard-file", shard_file],
+                                              stdout=log, stderr=subprocess.STDOUT), log))
+        for child, log in children:
+            child.wait()
+            log.close()
+        ids, failed = [], 0
+        for i in range(len(shards)):
+            path = os.path.join(reports, f"glyphdex-shard-{i}.jsonl")
+            for line in open(path) if os.path.exists(path) else []:
+                entry = json.loads(line)
+                if entry.get("meeting_id"):
+                    ids.append(entry["meeting_id"])
+                else:
+                    failed += 1
+        print(f"Ingested {len(ids)} meeting(s), {failed} failed. Running post-ingest stages once...", flush=True)
+        if ids:
+            from pipeline.orchestrator import Archiver, load_municipality
+            archiver = Archiver(load_municipality("langford"), initialize_diarizer=False)
+            archiver.run_post_ingest_stages(ids)
+        print("Done.", flush=True)
+
+
+def run_shard(shard_file: str):
+    """Child: download and ingest each meeting directly (no pipeline lock, no post-ingest stages),
+    and record it only once its meeting row and agenda items exist."""
+    from datetime import datetime
+
+    from pipeline import config
+    from pipeline.ingestion.ingester import MeetingIngester
+    from pipeline.orchestrator import load_municipality
+    from pipeline.paths import get_municipality_archive_root
+
+    municipality = load_municipality("langford")
+    archive_root = get_municipality_archive_root("langford")
+    key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
+    ingester = MeetingIngester(config.SUPABASE_URL, key, municipality_id=municipality.id)
+    report = shard_file.replace(".json", ".jsonl")
+    for m in json.load(open(shard_file)):
+        entry = {"at": datetime.now().isoformat(timespec="seconds"), "date": m["date"], "body": m["body"], "kind": m["kind"]}
+        try:
+            folder = download_meeting(m, archive_root)["folder"]
+            entry["folder"] = folder
+            print(f"[{entry['at']}] {m['date']} {m['body']}", flush=True)
+            ingester.process_meeting(folder, force_update=True, force_refine=True)
+            row = (ingester.supabase.table("meetings").select("id").eq("archive_path", ingester._normalize_archive_path(folder))
+                   .limit(1).execute().data)
+            items = row and ingester.supabase.table("agenda_items").select("id", count="exact").eq("meeting_id", row[0]["id"]).limit(1).execute().count
+            if not row or not items:
+                raise RuntimeError("meeting not in the database after ingest" if not row else "meeting has no agenda items")
+            entry["meeting_id"] = row[0]["id"]
+        except Exception as error:  # one bad meeting never stops the shard
+            entry["error"] = f"{type(error).__name__}: {error}"
+            print(f"  [!] {entry['error']}", flush=True)
+        with open(report, "a") as handle:
+            handle.write(json.dumps(entry) + "\n")
 
 
 if __name__ == "__main__":
