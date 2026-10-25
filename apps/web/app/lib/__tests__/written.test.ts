@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { placeHeldLetter, writtenLetters, writtenSources } from "../written";
+import { addToItem, placeHeldLetter, shortItemLabel, takeHeld, writtenLetters, writtenSources } from "../written";
 
 const held = (key: string) => ({
   who: `Writer ${key}`,
@@ -34,7 +34,7 @@ describe("placeHeldLetter", () => {
     const doc = out.itemMeta!.written_participation.documents[0];
     expect(doc).toMatchObject({ extracted_document_id: 409, document_id: 136, fingerprint: "f" });
     expect(doc.letters).toEqual([{ who: "Writer a", position: "opposes", topic: "t", point: "p" }]);
-    expect(out.itemMeta!.foo).toBe(true);
+    expect((out.itemMeta as any).foo).toBe(true);
   });
 
   it("can dismiss a letter and clears the queue when empty", () => {
@@ -73,5 +73,33 @@ describe("crossNotes", () => {
     expect(notes.speaker("M. Wagner")).toBe("also wrote in");
     expect(notes.speaker("A resident")).toBeNull();
     expect(notes.letter("Mary Wagner (Deville Road)")).toBe("also spoke");
+  });
+});
+
+describe("takeHeld and addToItem", () => {
+  const meta = { written_unplaced: { "9": { document_id: 3, title: "T", fingerprint: "f", letters: [held("x"), held("y")] } } };
+  it("takes one letter off the queue without touching the other", () => {
+    const taken = takeHeld(meta, "9", "x", 5)!;
+    expect(taken.meetingMeta.written_unplaced["9"].letters.map((l: any) => l.key)).toEqual(["y"]);
+    expect(taken.letter).toEqual({ who: "Writer x", position: "opposes", topic: "t", point: "p" });
+    expect(takeHeld(taken.meetingMeta, "9", "x", 5)).toBeNull(); // already taken
+  });
+  it("appends several letters to one document group", () => {
+    const item = addToItem({}, "9", { document_id: 3, title: "T", fingerprint: "f" }, [held("x"), held("y")] as any);
+    const again = addToItem(item, "9", { document_id: 3 }, [held("z")] as any);
+    expect(again.written_participation.documents).toHaveLength(1);
+    expect(again.written_participation.documents[0].letters).toHaveLength(3);
+  });
+});
+
+describe("shortItemLabel", () => {
+  it("keeps what tells similar bylaws apart", () => {
+    expect(shortItemLabel("5.2", 'Bylaw NO. 2008 "Langford Zoning Bylaw, Amendment No. 641, (808, 812, 820 Arncote Avenue), Bylaw No. 2008, 2021"'))
+      .toBe("5.2 Bylaw 2008 · 808, 812, 820 Arncote Avenue");
+    expect(shortItemLabel("12.4", 'Bylaw NO. 2200 "Langford Official Community Plan Bylaw, 2025" (Second AND Third Readings AND Adoption)'))
+      .toBe("12.4 Bylaw 2200 · second and third readings and adoption · Langf…");
+    expect(shortItemLabel("8.1", 'Bylaw NO. 2200 "Langford Official Community Plan Bylaw No. 2200, 2025"'))
+      .toBe("8.1 Bylaw 2200 · Langford Official Community Plan");
+    expect(shortItemLabel(null, "REPORTS")).toBe("REPORTS");
   });
 });

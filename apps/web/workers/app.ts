@@ -7,6 +7,7 @@ import { runWithAiRequestContext } from "../app/services/ai/usage-sink.server";
 import { withPublicDataCache } from "../app/services/public-data-cache.server";
 import publicContent from "../public-content-version.json";
 
+import { EMAIL_DISPATCH_CRON, dispatchEmailAlerts } from "./email-dispatch";
 import { publicMeetingCache } from "./public-meeting-cache";
 
 declare module "react-router" {
@@ -65,6 +66,10 @@ export default {
   },
 
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
+    if (controller.cron === EMAIL_DISPATCH_CRON) {
+      ctx.waitUntil(dispatchEmailAlerts(env).catch(() => { console.error("[Email alerts] Dispatch failed; durable queue retained"); }));
+      return;
+    }
     if (controller.cron === CALENDAR_CRON) {
       ctx.waitUntil(syncCalendar(getSupabaseAdminClient(), "cron").then(result => {
         console.log("[Calendar]", JSON.stringify("result" in result ? result.result : result));

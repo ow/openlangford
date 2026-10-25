@@ -111,3 +111,56 @@ def test_author_uses_the_letters_own_spelling():
     assert _source_spelling("Debbie Fitzgerald", text) == "Debbie FitzGerald"
     assert _source_spelling("Deborah Wormald", text) == "Deborah Wormald"
     assert _source_spelling("Someone Else", text) == ""
+
+
+def test_section_headings_are_not_offered():
+    from pipeline.ingestion.written_submissions import _is_heading
+    items = [{"id": 1, "item_order": "6", "title": "REPORTS"}, {"id": 2, "item_order": "6.1", "title": "Rezoning"},
+             {"id": 3, "item_order": "7", "title": "Correspondence"}]
+    assert [_is_heading(it, items) for it in items] == [True, False, False]
+    seen = []
+    place_letters([{"who": "A", "topic": "t", "point": "p"}], items, linked_item_id=None,
+                  decide=lambda c, choices: seen.append([x["id"] for x in choices]) or [])
+    assert seen == [[2, 3]]
+
+
+def test_author_titles_and_credentials_are_dropped():
+    from pipeline.ingestion.written_submissions import clean_author
+    assert clean_author("Dr Sara Nikoofard PhD PENG LEED Green Associate CMVP Dr Omid Aghaei PhD PGEO") == "Sara Nikoofard and Omid Aghaei"
+    assert clean_author("Braden Hutchins, MPA") == "Braden Hutchins"
+    assert clean_author("Mary Wagner") == "Mary Wagner"
+    assert clean_author("Jo & Sam Smith") == "Jo and Sam Smith"
+    assert clean_author("Mr Kim Boyd") == "Kim Boyd"
+    # Never truncate long names or touch organisations; keep short surnames.
+    assert clean_author("Colette Aaron Miller Annie Hardy Schultz") == "Colette Aaron Miller Annie Hardy Schultz"
+    assert clean_author("L Hedl Y Cu Lien") == "L Hedl Y Cu Lien"
+    org = "BC Restaurant and Foodservices Association; Alliance of Beverage Licensees; BC Craft Brewers Guild"
+    assert clean_author(org) == org
+    assert clean_author("Jane Ma") == "Jane Ma"
+
+
+def test_petition_signers_collapse_into_one_entry():
+    from pipeline.ingestion.written_submissions import collapse_petitions
+    signers = [{"who": n, "position": "opposes", "topic": "Southglen", "point": "Opposes allowing through traffic on Southglen Drive."}
+               for n in ("Darin Ferrill", "Karen Hatch", "Bryan Wilton")]
+    other = {"who": "Jo Smith", "position": "supports", "topic": "x", "point": "Supports something else."}
+    out = collapse_petitions([signers[0], other, *signers[1:]])
+    assert [o["who"] for o in out] == ["Petition (3 signatures)", "Jo Smith"]
+    assert out[0]["signatures"] == 3 and out[0]["point"].startswith("Opposes")
+    assert collapse_petitions(signers[:2]) == signers[:2]  # two matching letters aren't a petition
+
+
+def test_forwarded_copies_of_one_letter_are_kept_once():
+    from pipeline.ingestion.written_submissions import collapse_petitions
+    copy = {"who": "A resident", "position": "opposes", "topic": "Latoria", "point": "Urges Council to delay first reading."}
+    assert collapse_petitions([copy, dict(copy), dict(copy)]) == [copy]
+    two = [{**copy, "who": "Jo Smith"}, {**copy, "who": "Sam Lee"}]
+    assert collapse_petitions(two) == two
+
+
+def test_display_name_casing():
+    from pipeline.ingestion.written_submissions import display_name
+    assert display_name("ELIZABETH MARKUS") == "Elizabeth Markus"
+    assert display_name("Kirk And Stephanie Lewis, Langford Triathlon") == "Kirk and Stephanie Lewis, Langford Triathlon"
+    assert display_name("Constable Kyle Ross, West Shore RCMP") == "Constable Kyle Ross, West Shore RCMP"
+    assert display_name("BC Hydro") == "BC Hydro"

@@ -16,6 +16,13 @@ _OCR_MOVED_START = re.compile(
     r"(?im)^[ \t]*(?:Amendment[ \t]*:[ \t]*|\.[ \t]*)?\*{0,2}IV[IL]OVED[ \t]*BY[ \t]*:"
 )
 
+# Some signed originals literally print MOVE BY: rather than MOVED BY:.
+# Treat that anchored variant as a separate recovered header, preserving its
+# bytes and requiring one separately recorded seconder and its own outcome.
+_PRINTED_MOVE_START = re.compile(
+    r"(?im)^[ \t]*(?:Amendment[ \t]*:[ \t]*|\.[ \t]*)?\*{0,2}MOVE[ \t]+BY[ \t]*:"
+)
+
 
 def normalize_text(text):
     # Native PDF extraction sometimes joins these two formal words. Segment
@@ -61,14 +68,19 @@ def minutes_motion_blocks(minutes):
     seen = set()
     starts = list(_FORMAL_START.finditer(minutes))
     recovered = list(_OCR_MOVED_START.finditer(minutes))
-    boundaries = sorted(match.start() for match in [*starts, *recovered])
+    printed = list(_PRINTED_MOVE_START.finditer(minutes))
+    legacy_boundaries = sorted(match.start() for match in [*starts, *recovered])
+    boundaries = sorted([*legacy_boundaries, *(match.start() for match in printed)])
+    printed_offsets = {match.start() for match in printed}
     # Persisted source identities already include the legacy parser ordinal.
     # Keep every legacy block and ordinal unchanged. Newly recognized headers
     # use appended identity ordinals; source_offset supplies chronological order.
     candidates = [(match, starts[index + 1].start() if index + 1 < len(starts) else len(minutes), index, False)
                   for index, match in enumerate(starts)]
-    candidates.extend((match, next((offset for offset in boundaries if offset > match.start()), len(minutes)),
+    candidates.extend((match, next((offset for offset in legacy_boundaries if offset > match.start()), len(minutes)),
                        len(starts) + index, True) for index, match in enumerate(recovered))
+    candidates.extend((match, next((offset for offset in boundaries if offset > match.start()), len(minutes)),
+                       len(starts) + len(recovered) + index, True) for index, match in enumerate(printed))
     for match, end, source_order, recovered_header in sorted(candidates, key=lambda entry: entry[0].start()):
         block = minutes[match.start():end]
         outcome = re.search(r"(?im)^\s*\*{0,2}(?:Motion\s+)?(CARRIED(?:\s+UNANIMOUSLY)?|DEFEATED|WITHDRAWN|NOT CARRIED|TABLED)\b[^\n]*", block)
@@ -78,6 +90,11 @@ def minutes_motion_blocks(minutes):
         resumed = not recovered_header and not re.search(r'\bMOVED\b', match.group(), re.I)
         before = block[match.end()-match.start():outcome.start()] if resumed else block[:outcome.start()]
         seconder = re.search(r"(?im)^.*SECONDED[^\n]*\n", before)
+        if match.start() in printed_offsets:
+            seconders = list(re.finditer(r"(?im)^[ \t]*\*{0,2}SECONDED(?:[ \t]+BY)?[ \t]*[:;][^\n]*(?:\n|$)", before))
+            if len(seconders) != 1:
+                continue
+            seconder = seconders[0]
         if recovered_header and not seconder:
             continue
         body = before[seconder.end():] if seconder else before
@@ -152,7 +169,7 @@ def named_vote_declarations(block):
     after = block.get('after_outcome', '')
     boundary = re.search(
         r'(?im)^\s*(?:\*{0,2}(?:Motion\s+)?(?:CARRIED|DEFEATED|WITHDRAWN)\b|'
-        r'\d+(?:\.\d+)*\.?\s+[A-Z]|(?:MOVED|IV[IL]OVED)[ \t]*BY[ \t]*:|(?:On\s+(?:the\s+)?(?:Main\s+)?Motion|Voting\s+resumed\s+on)\b)', after)
+        r'\d+(?:\.\d+)*\.?\s+[A-Z]|(?:MOVED|MOVE|IV[IL]OVED)[ \t]*BY[ \t]*:|(?:On\s+(?:the\s+)?(?:Main\s+)?Motion|Voting\s+resumed\s+on)\b)', after)
     if boundary:
         after = after[:boundary.start()]
     declarations = []

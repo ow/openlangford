@@ -51,6 +51,7 @@ export default [
   route("admin/letters", "routes/admin-letters.tsx"),
   route("admin/pipeline/jobs/:id", "routes/admin-pipeline-job.tsx"),
 
+  route("email/unsubscribe/:token", "routes/email-unsubscribe.tsx"),
   route("onboarding", "routes/onboarding.tsx"),
 
   // API routes

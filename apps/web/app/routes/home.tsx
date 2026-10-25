@@ -1,7 +1,10 @@
+import { onboardingNotice } from "../lib/onboarding-notice.server";
+import { OnboardingCompleteNotice } from "../components/onboarding-complete-notice";
+import { useSiteFlags } from "../lib/use-site-flags";
 import { SITE_NAME } from "../lib/site-name";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import type { Route } from "./+types/home";
-import { Await } from "react-router";
+import { data as routeData, Await, useRouteLoaderData } from "react-router";
 import { Suspense } from "react";
 import { getPublicHomeData, getPublicNotices } from "../services/site";
 import { publicData } from "../services/public-data-cache.server";
@@ -38,7 +41,12 @@ export const meta: Route.MetaFunction = ({ data }) => {
 
 export async function loader({ request }: { request: Request }) {
   try {
-    const { supabase } = createSupabaseServerClient(request);
+    const { supabase, headers } = createSupabaseServerClient(request);
+    const onboardingComplete = await onboardingNotice.parse(request.headers.get("Cookie")) === "complete";
+    if (onboardingComplete) {
+      headers.append("Set-Cookie", await onboardingNotice.serialize("", { maxAge: 0 }));
+      headers.set("Cache-Control", "private, no-store");
+    }
     // getMunicipality call is intentionally duplicated from root loader.
     // The home loader needs rss_url at server time for getPublicNotices(),
     // and React Router 7 child loaders cannot access parent loader data on the server.
@@ -52,7 +60,8 @@ export async function loader({ request }: { request: Request }) {
       }),
     ]);
 
-    return {
+    return routeData({
+      onboardingComplete,
       upcomingMeeting: data.upcomingMeeting,
       laterMeetings: data.laterMeetings,
       recentMeeting: data.recentMeeting,
@@ -63,7 +72,7 @@ export async function loader({ request }: { request: Request }) {
       publicNotices,
       municipality,
       incomingCouncil,
-    };
+    }, { headers });
   } catch (error) {
     console.error("Error loading home data:", error);
     throw new Response("Error loading dashboard", { status: 500 });
@@ -84,11 +93,17 @@ export default function Home({ loaderData }: any) {
     incomingCouncil,
   } = loaderData;
 
+  const rootData = useRouteLoaderData("root") as
+    | { user: any }
+    | undefined;
+  const user = rootData?.user;
+  const { emailAlertsAvailable: alertsAvailable } = useSiteFlags();
   const shortName =
     (municipality as Municipality)?.short_name || DEFAULT_MUNICIPALITY.short_name;
 
   return (
     <div className="min-h-screen bg-zinc-50">
+      {user && loaderData.onboardingComplete && <OnboardingCompleteNotice alertsAvailable={alertsAvailable} />}
       <HeroDecisions
         shortName={shortName}
         decisions={recentDecisions}

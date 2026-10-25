@@ -45,3 +45,17 @@ No production writes, model calls, schema changes or credential changes are part
 of preparing these admissions.
 
 Meeting337 first/second independent review digests: `e51c61eec3e3fa0c13074efd4f3ad5cca36d04e2e339714f53201c15553ce594` / `69e802a2f8aab889ac37b29a2a8f18d19bee57c5d1555f4c85e41a74c675c53b`. Typed Mayor narration uses the same NULL-only, independently reviewed preservation path; it assigns no actor identity. Chair and Mayor occurrences are counted together so multiple closing events remain held. Meeting253 details and review digests are in [the August2023 source review](august-2023-source-review.md). Both held formal bodies—the meeting300 permit boundary and meeting253 amended main motion—remain excluded.
+
+## Integration after PRs 48–50
+
+Integrated main `3402b064` on October 25, 2026. The enrollment-map conflict
+preserves the union of all nine legacy reservations, including meeting 199,
+and all 22 source-review pins. No review artifact or hash was repinned.
+All 22 enrolled packets were reloaded from the original archived PDFs with the
+merged MOVE BY parser: source bytes, page evidence, accepted block identities,
+and parser-bound digests still validate. The 144-decision batch is unchanged.
+Focused backfill/source/claim/operative/canonical checks passed 199 tests;
+a further 26 additive-document and guarded-apply tests passed against disposable
+local PostgreSQL with transactional rollback. Independent integration review
+found no blocking issue. These checks do not authorize production application;
+the fresh audit and full-row/receipt requirements above still apply.

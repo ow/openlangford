@@ -1,4 +1,6 @@
 """Official minutes outcomes must remain attached to their own formal motion."""
+import pytest
+
 from pipeline.ingestion.vote_evidence import match_minutes_motion, named_votes
 
 MINUTES = '''
@@ -37,9 +39,10 @@ THAT Council approve the 2026 financial plan.
     assert match_minutes_motion("Mayor called the meeting to order.", MINUTES) is None
 
 
-def test_duplicated_export_is_deduplicated_but_conflicting_outcomes_are_held():
+@pytest.mark.parametrize('label',['MOVED BY','MOVE BY'])
+def test_duplicated_export_is_deduplicated_but_conflicting_outcomes_are_held(label):
     motion='THAT Council approve the agenda as presented.'
-    source=f'**MOVED BY: GUIRY**\n**SECONDED: HARDER**\n{motion}\n**Motion CARRIED.**\n'
+    source=f'**{label}: GUIRY**\n**SECONDED: HARDER**\n{motion}\n**Motion CARRIED.**\n'
     assert match_minutes_motion(motion, source+source)['result']=='CARRIED'
     assert match_minutes_motion(motion, source+source.replace('CARRIED','DEFEATED')) is None
 
@@ -137,12 +140,52 @@ def test_native_ocr_mover_labels_recover_own_decisions_without_rekeying_neighbor
             {'person_name':'Colby Harder','vote':'No','source_quote':'OPPOSED: Councillor Harder'}]
 
 
-def test_ocr_mover_label_needs_own_seconder_and_outcome():
+def test_recovered_mover_labels_need_own_seconder_body_and_outcome():
     from pipeline.ingestion.vote_evidence import minutes_motion_blocks
     following = 'MOVED BY: WAGNER\nSECONDED: GUIRY\nTHAT Council approve the financial plan.\nMotion CARRIED.\n'
     for incomplete in (
         'IVIOVED BY: HARDER\nTHAT Council plant more trees.\nMotion CARRIED.\n',
         'iVlOVEDBY: HARDER\nSECONDED: GUIRY\nTHAT Council plant more trees.\n',
+        'MOVE BY: HARDER\nTHAT Council plant more trees.\nMotion CARRIED.\n',
+        'MOVE BY: HARDER\nThe report was SECONDED by someone.\nTHAT Council plant more trees.\nMotion CARRIED.\n',
+        'MOVE BY: HARDER\nSECONDED: GUIRY\nTHAT Council plant more trees.\n',
+        'MOVE BY: HARDER\nSECONDED: GUIRY\nMotion CARRIED.\n',
     ):
         blocks = list(minutes_motion_blocks(incomplete+following))
         assert [b['motion_text'] for b in blocks] == ['THAT Council approve the financial plan.']
+
+
+def test_printed_move_by_recovers_own_body_without_rekeying_legacy_or_borrowing_votes():
+    from pipeline.ingestion.vote_evidence import minutes_motion_blocks
+    first='MOVED BY: GUIRY\nSECONDED: HARDER\nTHAT Council receive the report.\nMotion CARRIED.\n'
+    ocr='IVIOVED BY: SZPAK\nSECONDED: WAGNER\nTHAT Council adopt Bylaw No. 42.\nMotion CARRIED.\n'
+    body='That Council issue DVP16-0005 for 566 Treanor Avenue subject to the stated variance conditions.'
+    printed='MOVE BY: BLACKWELL\nSECONDED: SZPAK\n'+body+'\nOPPOSED: Councillor Harder\nCARRIED.\n'
+    last='MOVED BY: WAGNER\nSECONDED: GUIRY\nTHAT Council adopt Bylaw No. 43.\nMotion CARRIED.\n'
+    blocks=list(minutes_motion_blocks(first+ocr+printed+last))
+    assert [(b['motion_text'],b['result']) for b in blocks]==[
+        ('THAT Council receive the report.','CARRIED'),
+        ('THAT Council adopt Bylaw No. 42.','CARRIED'),
+        (body,'CARRIED'),
+        ('THAT Council adopt Bylaw No. 43.','CARRIED')]
+    assert [b['source_order'] for b in blocks]==[0,2,3,1]
+    assert [b['source_offset'] for b in blocks]==[0,len(first),len(first+ocr),len(first+ocr+printed)]
+    assert blocks[0]['source_block']==(first+ocr+printed).strip()
+    assert blocks[1]['source_block']==(ocr+printed).strip()
+    assert blocks[2]['source_block'].startswith('MOVE BY: BLACKWELL')
+    assert named_votes(blocks[0],['Colby Harder'])==[]
+    assert named_votes(blocks[1],['Colby Harder'])==[]
+    assert named_votes(blocks[2],['Colby Harder'])==[
+        {'person_name':'Colby Harder','vote':'No','source_quote':'OPPOSED: Councillor Harder'}]
+
+
+@pytest.mark.parametrize('prefix',[
+    'The chair discussed a MOVE BY: HARDER',
+    'REMOVE BY: HARDER',
+    'MOVE BYLAW: HARDER',
+    'MOVE BY: HARDER\nSECONDED: GUIRY',
+])
+def test_printed_move_by_does_not_recover_prose_or_ambiguous_seconder_heading(prefix):
+    from pipeline.ingestion.vote_evidence import minutes_motion_blocks
+    text=prefix+'\nSECONDED: WAGNER\nTHAT Council adopt Bylaw No. 44.\nCARRIED.\n'
+    assert list(minutes_motion_blocks(text))==[]
