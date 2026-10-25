@@ -130,8 +130,8 @@ Production confirmations, inbox delivery, DNS and webhook configuration are sepa
 proof. The admin pages from PR40 show only this ledger; they do not import old emails.
 
 
-Latest local validation: the complete web suite passed (605 tests, 4 skipped) after
-integrating main 35a62c6, including the SQL/queue and delivery tests. Eight focused
+Latest local validation: the complete web suite passed (609 tests, 4 skipped) after
+integrating main 6def272, including the SQL/queue and delivery tests. Eight focused
 pipeline tests passed, and both Edge entrypoints passed Deno checking. Independent
 review's two reliability findings (unrelated saves rotating consent and a timeout
 following known provider acceptance) were repaired with real SQL regressions and
