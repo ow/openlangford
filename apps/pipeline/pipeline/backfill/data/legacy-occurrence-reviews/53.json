@@ -1,0 +1,254 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 53,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+  "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+  "source_date": "2017-04-03",
+  "source_text_sha256": "04d7ded0b4f9f5d03a547e7a4957668ceebaf54226acf62e47dc7aeb80aef92d",
+  "formal_inventory_sha256": "722ab9c8e5f7eb30f99b66994ef99d75ed576f99d3c9f49439d8eabe4b7a3019",
+  "claim_inventory_sha256": "bf919e72cc9b169570f9bca54edc3e760cd189a06226f737e7ea764ade560815",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "0ccf4b80200d5441b76fb09fd06305f68f9969dd405c7a8ed6addcc6653b5a2d"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "19292077a2b2f3c52af0b6c270fa0f623b6c173212081bafabd7427cf473b8b2"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "334dae95683700015b00801116f3abac2aa488891b7b98a48f72fd9ab8ed8c01"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "bd48eb07da0cde21e4071e296ddbd853ccf8e15b4010bbab1bb316f7dce5bc25"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "7998432c861df2164cef972718648e3be2f46f3c31beef9e9eb2bfe77fcf05ac"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "d02e59f8fec0568c8213d54207a63238ae846278a8549f70a500122347930e18"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "b8367be9b5142653fb008e655d2849dad055e9d8ae8fbc02233f2b7f991387f0"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "4bdff0695457f08ad77a35f72ef6c1dcbb572bd794cc2aa3c17e6e73575300f3"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "6746d64244e98e618af33d530fbe72e35cdf8c060e84a5a24f2fe6728367bb4c"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "86c3091845f22fd2b1ef4f7d3f4134f78d2cf9b28978ef0d2fbb2c69f6ef5a70"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "dea21c4ae70bf96aa9eac2349bc165110c0df3fb138a0e3461682ea1370aaf46"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "18a5e119af86d4339ab84815e9470189620c8e16455d21703633a33b53ed1462"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "fc2f0695cb62aa5cec3d8cbbfeb0b08a7770d823e30a73730332152523535b50"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "68bf5b87c8e051b7d8552fa77b8968fe22ed1836b015f2ada821ea62a68a3979"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 434,
+      "claim_sha256": "55e9629b2cedab3567cd1794b2db60f2529183e689a22c48b1b021517a10aef7",
+      "legacy_text": "That Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 53,
+        "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+        "source_offset": 734,
+        "source_order": 0,
+        "key": "91257e963dab67af566954538dc0ea2f6cc382f2dcba06144e4c70271b2281b5",
+        "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR SAHLSTROM\nSECONDED:       COUNCILLOR BLACKWELL\n\n       That Council approve the agenda as presented.\n                                                                                               CARRIED.\n\n3.      PUBLIC HEARINGS\n\n        a) File No. 3220-20\n            \"865 Station Avenue\"\n\nThe Mayor opened the Public Hearing for File No. 3220-20.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed cell tower shall be given an opportunity to be heard on related\nmatters. Those who wish to speak should give their name, address and views. Mayor Young advised that\nafter everyone has expressed their views, he shall state three times \"Is there anyone else who wishes to\nbe heard\", and if no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Cypress Land Service Inc. has applied on behalf of Blaze Wood Stoves Ltd.\nto construct a telecommunications tower for Freedom Mobile at 865 Station Avenue. The tower will be\nlocated at the rear of the lot at 865 Station Avenue, and will consist of a 30.0 m monopole with four\ncluster-mounted panel antennas and two microwaves. The tower and equipment compound will be\nenclosed with chain link fencing.\n\n                                                                                                          Page 2 of 14\n\n\n\nAccording to Council's New Transmission Towers Policy No. 0340-50, a Public Hearing is required for any\ntransmission tower proposed within 150 metres of any residential zone or school site. There are\nresidential uses located within approximately 130 metres of the proposed Freedom Mobile tower.\n\nIn accordance with the New Transmission Towers policy, the applicant has provided the following:\n\n1.   Notification letters and an information package mailed to every owner and occupant within 150\n      metres of the proposed tower site at 865 Station Avenue; and\n\n2.   Notices posted in the Goldstream News Gazette on Friday, March 24th, Wednesday, March 29th and\n      Friday, March 31st.\n\nFollowing the Public Hearing, staff will compile the comments received in writing, and at the Hearing, and\nsend them to Industry Canada. Council can also provide an opinion on the proposed telecommunications\ntower by way of a resolution, which will be sent to Industry Canada along with the public comments.\n\nThe Mayor called a first time for presentations.\n\nTawny Verigin, a Freedom Mobile Representative, addressed Council and made a presentation.\n\nA citizen addressed Council with visibility concerns and concerns about the notification timelines.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentations, there being none, the Mayor officially declared\nthe Public Hearing for File No. 3220-20 closed.\n\n        b) BYLAW NO. 1673\n            \"Langford Zoning Bylaw, Amendment No. 470, (616 Goldstream Ave), 2017\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1673.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaw shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that TL Housing Solutions has applied on behalf of Pacifica Housing Advisory\nAssociation to amend the zoning of 616 Goldstream Ave from the RM2 (Attached Housing) Zone to the\nRM7A (Medium Density Apartment A) Zone.\n\nThis is being proposed in order to allow for the development of approximately 160 apartment units.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act. In support of this application, the applicant has agreed to provide the following:\n\n                                                                                                           Page 3 of 14\n\n\n\na) a stormwater maintenance covenant registered on title prior to the request for Occupancy Permit as\n   a condition of rezoning;\nb) a construction parking management plan to the satisfaction of the Director of Engineering prior to the\n   commencement of any works on-site; and\nc) a new queue length assessment from a traffic engineer to the satisfaction of the Director of\n   Engineering prior to the issuance of a Building Permit for Building 2.\n\nThis proposal is consistent with the Official Community Plan City Centre designation.\n\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nSheryl Harper, 617 Goldstream Avenue addressed Council with questions about expectations on increased\ntraffic and how far back will the building be.\n\nA citizen located at 2775 Grainger Rd addressed Council with concerns about the increase of cars and how\nmuch money has the developer contributed to increasing roads. The citizen advised Council that it is bad\nidea to take down 40 units to build 120 units.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentations, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1673 closed.\n\n        c) BYLAW NO. 1676\n            \"Langford Zoning Bylaw, Amendment No. 472, (2401 Millstream Rd), 2017\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1676.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaw shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Beth Breasail of GWL Realty Advisors has applied on behalf of KS Village\n(Millstream) Inc. to amend the text within the Business Park 1A (BP1A \u2014 Millstream Road East) Zone.\n\nThis is being proposed in order to allow for Personal Services businesses within the zone.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nIn the resolution from Council's regular meeting of February 20th, 2017 no conditions were required to be\ncarried out prior to Public Hearing.\n\n                                                                                                             Page 4 of 14\n\n\n\nThis proposal is consistent with the Official Community Plan Mixed Use Employment Centre &\nNeighbourhood Centre designation.\n\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentations, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1676 closed.\n\n         d) BYLAW NO. 1677\n             \"Langford Zoning Bylaw, Amendment No. 473, (817 Arncote Ave), 2017.\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1677.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaw shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Ron McNeil has applied on behalf of Baldeep Atwal (Western Concept\nDevelopment Ltd.) to rezone 817 Arncote Avenue from R2 (One- and Two Family Residential) to RM7A\n(Medium-Density Apartment 7A) in order to permit the future development of five new multi-family\nresidential units.\n\nThis is being proposed in order to allow for the development of five new multi-family residential units.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nIn support of these/this application, the applicant has agreed to provide the following:\n\n1. $2,562 towards the General Amenity Reserve Fund;\n2.   $610 towards the Affordable Housing Reserve Fund;\n3.   A stormwater management and maintenance plan to the satisfaction of the Director of Engineering,\n     and registered on title for the benefit of future owners;\n4.   Full frontage improvements as per the Subdivision and Development Servicing Bylaw No. 1000\n     standards, to the satisfaction of the Director of Engineering, prior to the issuance of a Building\n     Permit; and\n5.   Visitor parking painted as 'Visitor Parking' and designated as common property, not limited common\n     property, on the strata plan.\n\nThis proposal is consistent with the Official Community Plan Neighbourhood designation.\n\n                                                                                                            Page 5 of 14\n\n\n\n\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentations, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1677 closed.\n\n         e) BYLAW NO. 1678\n             \"Langford Zoning Bylaw, Amendment No. 474, (2681 Claude Rd), 2017\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1678.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaw shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that the application is to Rezone 2681 Claude Road from R2 (One- and Two-\nFamily Residential) to RM7A (Medium-Density Apartment 7A) to allow a future development of seven\nnew multi-family residential units.\n\nThis is being proposed in order to allow for the development of seven new multi-family residential units.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nIn support of these/this application, the applicant has agreed to provide the following:\n\n1. $2,562 towards the General Amenity Reserve Fund;\n2. $610 towards the Affordable Housing Reserve Fund\n3. A stormwater management and maintenance plan to the satisfaction of the Director of Engineering,\n   and registered on title for the benefit of future owners;\n4.   Full frontage improvements as per the Subdivision and Development Servicing Bylaw No. 1000\n     standards to the satisfaction of the Director of Engineering, prior to the issuance of a Building Permit;\n     and\n5.   Opaque balcony screening and any portions that are perpendicular to the rear building face are\n     constructed to a 5 ft height.\n\n\nThis proposal is consistent with the Official Community Plan City Centre designation.\n\nNotifications and advertisements have been placed as required by Council policy.\n\n                                                                                                         Page 6 of 14\n\n\n\nThe Mayor called a first time for presentations.\n\nA citizen located at 2679 Claude Rd addressed Council on the timeline for the project.\n\nThe applicant responded that there was no timeline.\n\nA citizen located at 2674 Claude Road addressed Council with concerns about density/traffic.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentations, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1678 closed.\n\n4.      ADOPTION OF MINUTES\n\n        a)   Minutes of the Regular Meeting of Council \u2014 March 20th, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "af3f1db771405d23416b64d728362bab470722cee143ef46c87e459bc9828946",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 435,
+      "claim_sha256": "2066a4b5e0b2e7d517a479610c6e0513e821e4c91f551aee3a2062de789eac70",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on March 20th, 2017.",
+      "source_identity": {
+        "meeting_id": 53,
+        "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+        "source_offset": 13611,
+        "source_order": 1,
+        "key": "53e361264a88aee1f7c8355f3167dfe13b09c839c68c13dbe806f196da773a02",
+        "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the Regular Meeting of Council held on March 205h, 2017.",
+        "source_block": "MOVED BY:       COUNCILLOR SAHLSTROM\nSECONDED:       COUNCILLOR BLACKWELL\n\n        That Council approve the minutes of the Regular Meeting of Council held on March 205h, 2017.\n\n                                                                                                         CARRIED.\n\n5.     OTHER BOARD AND COMMISSION MINUTES\n\n        a) West Shore Parks and Recreation \u2014 February 9, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "e37c35c6c0a73ef1a1d672b5cf10ffb01362a9900367eaf2697c7337acc70d21",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 436,
+      "claim_sha256": "45a7c924ce254efe125b7e2ff8fa3474d5fee7623b49730d4633121b75598e3c",
+      "legacy_text": "That Council approve the Minutes of the West Shore Parks and Recreation held on February 9th, 2017.",
+      "source_identity": {
+        "meeting_id": 53,
+        "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+        "source_offset": 14010,
+        "source_order": 2,
+        "key": "122120aec12e59a5d999ec606e3fd9d094ce52520e79da628079102e9d3d4613",
+        "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the Minutes of the West Shore Parks and Recreation held on February 9th,\n       2017.",
+        "source_block": "MOVED BY:       COUNCILLOR SAHLSTROM\nSECONDED:       COUNCILLOR SIFERT\n\n       That Council approve the Minutes of the West Shore Parks and Recreation held on February 9th,\n       2017.\n\n                                                                                                         CARRIED.\n\n6.     PUBLIC PARTICIPATION\n\n       Ed Sykora of 1191 Goldstream Ave addressed Council regarding agenda item 8. a) 4). Mr.\n       Sykora expressed concern about the negative impact to his property should the Development\n       Variance Permit be approved. In particular, Mr. Sykora expressed concern about a loss of\n       privacy. Additional information from Matthew Baldwin, Director of Planning, was provided.\n       The Development Variance Permit applicant's representative spoke on the ways the design of\n       the proposed additional will be changed to ensure that privacy will be enhanced, including:\n       removal of a third story window and the installation of opaque glass in the kitchen and along\n       the deck. These changes to the design of the addition were confirmed by the Development\n       Variance Permit applicant.\n\n                                                                                                            Page 7 of 14\n\n\n\n7.       DEVELOPMENT VARIANCE PERMIT\n\n         a)    DVP17-0003 \u2014 2267 Nicklaus Drive",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "03eb9022aa3477912c25593a5c51b52862f1a29d9bd6fdccbdbe7f45bc9b1940",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 437,
+      "claim_sha256": "3b197c4742edce35899109b5021bb4ea7067112656c87ffd406b42bdff185325",
+      "legacy_text": "That Development Variance Permit No. DVP17-0003 be issued by the Council for the City of Langford to Cliff Dueck to reduce the required rear yard building setback to permit a newly constructed single family dwelling and rear deck at 2267 Nicklaus Dr subject to the following terms: 1. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: a) That Section 6.95.09(b) of Zoning Bylaw No. 300 be varied from 6 m to 5.60 m",
+      "source_identity": {
+        "meeting_id": 53,
+        "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+        "source_offset": 15364,
+        "source_order": 3,
+        "key": "c6c08d54326ca3afe886540fd270972a280965f8bcf217bde309bb1c66a850d0",
+        "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP17-0003 be issued by the Council for the City of\n         Langford to Cliff Dueck to reduce the required rear yard building setback to permit a newly\n         constructed single family dwelling and rear deck at 2267 Nicklaus Dr subject to the following\n         terms:\n\n1. Variances\n\n         The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n         Government Act:\n\n     a) That Section 6.95.09(b) of Zoning Bylaw No. 300 be varied from 6 m to 5.60 m",
+        "source_block": "MOVED BY:          COUNCILLOR BLACKWELL\nSECONDED:          COUNCILLOR SAHLSTROM\n\n         That Development Variance Permit No. DVP17-0003 be issued by the Council for the City of\n         Langford to Cliff Dueck to reduce the required rear yard building setback to permit a newly\n         constructed single family dwelling and rear deck at 2267 Nicklaus Dr subject to the following\n         terms:\n\n1. Variances\n\n         The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n         Government Act:\n\n     a) That Section 6.95.09(b) of Zoning Bylaw No. 300 be varied from 6 m to 5.60 m\n\n                                                                                                            CARRIED.\n\n8.       COMMITTEE RESOLUTIONS\n\n         a) Planning, Zoning and Affordable Housing \u2014 March 27, 2017                           132\n               1. Application to Rezone 3296 Jacklin Road from Rural Residential 5 (RR5) to Medium\n                   Density Apartment A (RM7A) and Small Lot Residential 2 (RS2) to allow the\n                   development of 10 Townhouse Units and Two One-Family Dwellings",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3fdf7cd6b90f6196c144303dbb91b1daafc700e08900677aef982337e516f48a",
+      "pages": [
+        7
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 438,
+      "claim_sha256": "15d5a1ac0afe7eb54a4854391e4b850107d1c4298eb9089500e8d4bc9961e512",
+      "legacy_text": "That Council: 1. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 3296 Jacklin Road from Rural Residential 5 (RR5) to Medium Density Apartment A (RM7A) and Small Lot Residential (RS2), subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per new single family equivalent (SFE) dwelling unit created, prior to subdivision approval or Building Permit issuance, whichever occurs first: i. $6,000 towards the General Amenity Reserve Fund; and $1,000 towards the Affordable Housing Reserve Fund; b) That the Medium Density A (RM7A) Zone be amended to exclude Apartments as a permitted use on the subject site; c) That the applicant provide, prior to first reading, a site plan showing the proposed new road connection to Ernhill Drive; d) That the applicant provides, prior to Public Hearing: i. A stormwater management plan to the satisfaction of the Director of Engineering; and ii Revised elevation plans for the proposed one-family dwellings fronting on Walfred Road, to the satisfaction of the Director of Planning; e) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That all frontage improvements, to the satisfaction of the Director of Engineering, be constructed prior to subdivision approval or Building Permit issuance, whichever occurs first; ii. That any on- or off-site improvements required by the stormwater management plan be implemented prior to subdivision or the issuance of a Building Permit, whichever occurs first, to the satisfaction of the Director of Engineering; iii. That advisory notes be written to provide future owners with the understanding that the South Vancouver Island Rangers gun range is located approximately 1.8 kilometres (1.1 miles) from the subject site and may generate a noise nuisance; and iv. That a construction parking management plan, to the satisfaction of the Director of Engineering, be provided prior to the commencement of any works on the site; and v. That the proposed one-family dwellings be designed and constructed in accordance with the plans presented at Public Hearing; f) That the applicant registers, prior to Bylaw Adoption, a road dedication plan to the satisfaction of the Director of Engineering. 2. Authorize the Director of Planning to issue the requested variances for the proposed townhouses as part of the required Development Permit. 3. Direct staff the proceed with consideration of the following variances for the proposed one-family dwellings through a Development Variance Permit application, to be submitted by the applicant: a) To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58 m (31.4 ft) for the proposed one-family dwelling on Site 2A; b) To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53 m (31.3 feet) for the proposed one-family dwelling on Site 2B; c) To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10 ft) for the proposed one-family dwelling on Site 2B; d) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for the proposed one-family dwelling on Site 2B; and e) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the proposed one-family dwelling on Site 2A. 4. Maintain the requirement for a minimum lot area of 550.0 m2 (5,920.2 ft2) for a secondary suite in a one-family dwelling in the Small Lot Residential (R52) Zone.",
+      "source_identity": {
+        "meeting_id": 53,
+        "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+        "source_offset": 16515,
+        "source_order": 4,
+        "key": "8b748f170594a70a76839b59483f4b02cc4c36dd53ee111fe3edf5456050cd22",
+        "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 3296 Jacklin\n     Road from Rural Residential 5 (RR5) to Medium Density Apartment A (RM7A) and Small Lot Residential\n     (RS2), subject to the following terms and conditions:\n\n              a)   That the owner agrees to provide, as a bonus for increased density, the following\n                   contributions per new single family equivalent (SFE) dwelling unit created, prior to\n                   subdivision approval or Building Permit issuance, whichever occurs first:\n\n                     i.   $6,000 towards the General Amenity Reserve Fund; and\n\n                          $1,000 towards the Affordable Housing Reserve Fund;\n\n              b) That the Medium Density A (RM7A) Zone be amended to exclude Apartments as a\n                 permitted use on the subject site;\n\n                                                                                                          Page 8 of 14\n\n\n\n          c) That the applicant provide, prior to first reading, a site plan showing the proposed new\n              road connection to Ernhill Drive;\n\n          d) That the applicant provides, prior to Public Hearing:\n\n                  i.   A stormwater management plan to the satisfaction of the Director of Engineering;\n                       and\n\n                 ii    Revised elevation plans for the proposed one-family dwellings fronting on\n                       Walfred Road, to the satisfaction of the Director of Planning;\n\n          e) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n              in priority of all other charges on title, that agrees to the following:\n\n                  i.   That all frontage improvements, to the satisfaction of the Director of Engineering,\n                       be constructed prior to subdivision approval or Building Permit issuance,\n                       whichever occurs first;\n\n                 ii.   That any on- or off-site improvements required by the stormwater management\n                       plan be implemented prior to subdivision or the issuance of a Building Permit,\n                       whichever occurs first, to the satisfaction of the Director of Engineering;\n\n                iii.   That advisory notes be written to provide future owners with the understanding\n                       that the South Vancouver Island Rangers gun range is located approximately 1.8\n                       kilometers (1.1 miles) from the subject site and may generate a noise nuisance;\n                       and\n\n                iv.    That a construction parking management plan, to the satisfaction of the Director\n                       of Engineering, be provided prior to the commencement of any works on the site;\n                       and\n\n                v.     That the proposed one-family dwellings be designed and constructed in\n                       accordance with the plans presented at Public Hearing;\n\n          f) That the applicant registers, prior to Bylaw Adoption, a road dedication plan to the\n              satisfaction of the Director of Engineering.\n\n2. Authorize the Director of Planning to issue the requested variances for the proposed townhouses\n   as part of the required Development Permit.\n\n3.   Direct staff the proceed with consideration of the following variances for the proposed one-family\n     dwellings through a Development Variance Permit application, to be submitted by the applicant:\n\n     a)   To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58\n          m (31.4 ft) for the proposed one-family dwelling on Site 2A;\n\n     b) To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53\n        m (31.3 feet) for the proposed one-family dwelling on Site 2B;\n\n                                                                                                        Page 9 of 14\n\n\n\n\n       c)   To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10\n            ft) for the proposed one-family dwelling on Site 2B;\n\n       d) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for\n            the proposed one-family dwelling on Site 2B; and\n\n\n       e)   To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the\n            proposed one-family dwelling on Site 2A.\n\n\n   4. Maintain the requirement for a minimum lot area of 550.0 m 2 (5,920.2 ft2) for a secondary suite\n       in a one-family dwelling in the Small Lot Residential (R52) Zone.",
+        "source_block": "MOVED BY:          COUNCILLOR BLACKWELL\nSECONDED:          COUNCILLOR WADE\n\n         That Council:\n\n1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 3296 Jacklin\n     Road from Rural Residential 5 (RR5) to Medium Density Apartment A (RM7A) and Small Lot Residential\n     (RS2), subject to the following terms and conditions:\n\n              a)   That the owner agrees to provide, as a bonus for increased density, the following\n                   contributions per new single family equivalent (SFE) dwelling unit created, prior to\n                   subdivision approval or Building Permit issuance, whichever occurs first:\n\n                     i.   $6,000 towards the General Amenity Reserve Fund; and\n\n                          $1,000 towards the Affordable Housing Reserve Fund;\n\n              b) That the Medium Density A (RM7A) Zone be amended to exclude Apartments as a\n                 permitted use on the subject site;\n\n                                                                                                          Page 8 of 14\n\n\n\n          c) That the applicant provide, prior to first reading, a site plan showing the proposed new\n              road connection to Ernhill Drive;\n\n          d) That the applicant provides, prior to Public Hearing:\n\n                  i.   A stormwater management plan to the satisfaction of the Director of Engineering;\n                       and\n\n                 ii    Revised elevation plans for the proposed one-family dwellings fronting on\n                       Walfred Road, to the satisfaction of the Director of Planning;\n\n          e) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n              in priority of all other charges on title, that agrees to the following:\n\n                  i.   That all frontage improvements, to the satisfaction of the Director of Engineering,\n                       be constructed prior to subdivision approval or Building Permit issuance,\n                       whichever occurs first;\n\n                 ii.   That any on- or off-site improvements required by the stormwater management\n                       plan be implemented prior to subdivision or the issuance of a Building Permit,\n                       whichever occurs first, to the satisfaction of the Director of Engineering;\n\n                iii.   That advisory notes be written to provide future owners with the understanding\n                       that the South Vancouver Island Rangers gun range is located approximately 1.8\n                       kilometers (1.1 miles) from the subject site and may generate a noise nuisance;\n                       and\n\n                iv.    That a construction parking management plan, to the satisfaction of the Director\n                       of Engineering, be provided prior to the commencement of any works on the site;\n                       and\n\n                v.     That the proposed one-family dwellings be designed and constructed in\n                       accordance with the plans presented at Public Hearing;\n\n          f) That the applicant registers, prior to Bylaw Adoption, a road dedication plan to the\n              satisfaction of the Director of Engineering.\n\n2. Authorize the Director of Planning to issue the requested variances for the proposed townhouses\n   as part of the required Development Permit.\n\n3.   Direct staff the proceed with consideration of the following variances for the proposed one-family\n     dwellings through a Development Variance Permit application, to be submitted by the applicant:\n\n     a)   To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58\n          m (31.4 ft) for the proposed one-family dwelling on Site 2A;\n\n     b) To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53\n        m (31.3 feet) for the proposed one-family dwelling on Site 2B;\n\n                                                                                                        Page 9 of 14\n\n\n\n\n       c)   To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10\n            ft) for the proposed one-family dwelling on Site 2B;\n\n       d) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for\n            the proposed one-family dwelling on Site 2B; and\n\n\n       e)   To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the\n            proposed one-family dwelling on Site 2A.\n\n\n   4. Maintain the requirement for a minimum lot area of 550.0 m 2 (5,920.2 ft2) for a secondary suite\n       in a one-family dwelling in the Small Lot Residential (R52) Zone.\n\n                                                                                                        CARRIED.\n\n              2. Centre Mountain (Zoning Bylaw Amendment)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "7ba3901435f0eb4e0c248f4a973652d5e5dc61c074f4d2117d5546b5da411cdd",
+      "pages": [
+        7,
+        8,
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 439,
+      "claim_sha256": "fef6b1b6b943b2c70aba5a78ff9b1c54cd18de772a517f531fa6ddd47d052a2a",
+      "legacy_text": "That Council give first reading to Bylaw No. 1674 and 1675 as presented.",
+      "source_identity": {
+        "meeting_id": 53,
+        "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+        "source_offset": 21456,
+        "source_order": 5,
+        "key": "48083f287bee17b8539a62ff0f929bc4ea3466eb43bbd9d8c87a2461abadcb95",
+        "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council give first reading to Bylaw No. 1674 and 1675 as presented.",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR WADE\n\n    That Council give first reading to Bylaw No. 1674 and 1675 as presented.\n\n                                                                                                       CARRIED.\n\n              3. Omnibus Amendment to Zoning Bylaw No. 300 to Allow Community Care Facilities\n                  in the M1 (Light Industrial) Zone",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9b376616f298f6061b2eb8c7ec9387d813dbbaa61c1b52a25b74a46a4329bffa",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 440,
+      "claim_sha256": "1de567a1c44ec1025b12c940dbff621d61d0cd220accba8326828832de09c38c",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the Zoning Bylaw No. 300 to add \"community care facility\" to the list of uses in the M1 (Light Industrial) zone with the following conditions: i. That the care provided be restricted to adult individuals only; and ii. That those in care are not residing in a building within the M1 zone.",
+      "source_identity": {
+        "meeting_id": 53,
+        "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+        "source_offset": 21862,
+        "source_order": 6,
+        "key": "a05f9e46bb1ff15767f64c1977a51816138121e10329c40a7fb33f2072e6f5a1",
+        "source_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to prepare a bylaw to amend the Zoning Bylaw No. 300 to add\n      \"community care facility\" to the list of uses in the M1 (Light Industrial) zone with the following\n      conditions:\n\n                    i. That the care provided be restricted to adult individuals only; and\n                   ii. That those in care are not residing in a building within the M1 zone.",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR WADE\n\n      That Council direct staff to prepare a bylaw to amend the Zoning Bylaw No. 300 to add\n      \"community care facility\" to the list of uses in the M1 (Light Industrial) zone with the following\n      conditions:\n\n                    i. That the care provided be restricted to adult individuals only; and\n                   ii. That those in care are not residing in a building within the M1 zone.\n\n                                                                                                       CARRIED.\n\n              4. Application for Development Variance Permit to allow for the reduction of the\n                  interior side lot line setbacks, front lot line setback, rear setback, and allowable\n                  projections at 1189 Goldstream Avenue",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "8d7fcf8de7bf5e9004ff85c6070605b2d160138006dd7ed11f89698d9d2b5d8c",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+  "second_independent_original_image_review_sha256": "40fcdc19a0b834bef1ca720d48b9ae5e3af003eea4baa7a3a1acbb3a5497d2ca"
+}
