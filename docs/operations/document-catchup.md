@@ -44,8 +44,21 @@ inventories and current meeting/agenda state. Review the literal text and every
 held reason before using the printed digest. A separate public URL is not proof
 that two identical PDFs are distinct records; same-meeting byte collisions hold.
 
-Native text is copied in page order into `full_text` and source-page sections.
-Dense pages are split losslessly below 7,500 characters so later embedding does
+Native text is copied in page order into `full_text` and source-page sections,
+except for the established public privacy policy: `letter_privacy.scrub_emails`
+removes non-city email addresses before either public payload is built. City
+email addresses remain. This applies only the global email policy, not the
+broader correspondence-only phone/address scrub, to technical reports.
+Original PDFs and native page hashes remain unchanged. The manifest and receipt
+record the policy/version, implementation hash, public-text hash and removed
+email occurrence count without recording email values. Counts refer to source
+occurrences, not duplicate storage in both text fields. Registration-only holds
+publish no text and have no applied public-text policy.
+If redaction leaves only whitespace across all source pages, extraction stays
+held and apply writes nothing for that source; source-page labels do not count
+as remaining source text.
+Dense public pages are split below 7,500 characters, preserving their remaining
+characters after privacy redactions, so later embedding does
 not truncate them at its 8,000-character input cap. Whitespace padding does not
 count as usable native text. New section containers use type `other`; summary/key
 facts are left NULL. Existing containers, summaries and facts stay unchanged. This is searchable

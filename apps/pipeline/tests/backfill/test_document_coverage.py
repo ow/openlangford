@@ -83,6 +83,60 @@ def plan(connection,case):
     return audit(connection,case[0],case[1],'test-project',1)
 
 
+@pytest.mark.parametrize('contacts_only',[False,True])
+def test_public_email_policy_applies_to_persisted_text_without_changing_source_or_metadata(database,case,contacts_only):
+    spec=deepcopy(case[0][0]);path=Path(spec['source_file'])
+    with fitz.open() as document:
+        page=document.new_page()
+        lines=[
+            'Engineering report: retain the subject property at 123 Example Road.',
+            'Contact resident@example.org or planning@langford.ca for questions.',
+            'Technical dimensions and phone 250-555-0199 remain source evidence.',
+            'Conditions: preserve frontage improvements, stormwater and construction plans.']
+        if contacts_only:lines=[f'resident-{i}-long-contact@example.org' for i in range(4)]
+        page.insert_text((30,40),'\n'.join(lines),fontsize=10)
+        document.save(path)
+    original_bytes=path.read_bytes();original_sha=sha(original_bytes)
+    with fitz.open(path) as document:native_sha=sha(document[0].get_text('text',sort=True).strip().encode())
+    query(database,'UPDATE documents SET file_hash=%s WHERE id=11',(original_sha,))
+    query(database,"INSERT INTO extracted_documents VALUES(51,11,100,'Existing manual boundary','report',1,1,NULL,NULL,1)")
+    query(database,"UPDATE meetings SET meta=%s::jsonb WHERE id=77",('{"manual_note":"owner evidence"}',))
+    selected_case=([spec],case[1]);manifest=plan(database,selected_case)
+    result=apply(database,manifest,lambda:plan(database,selected_case),case[1])
+    if contacts_only:
+        assert result['status']=='no_safe_additions'
+        assert manifest['documents'][0]['status']=='held'
+        assert 'No usable public text remains' in manifest['documents'][0]['reason']
+        assert manifest['documents'][0]['source']['pages'][0]['characters']>100
+        assert path.read_bytes()==original_bytes
+        assert query(database,'SELECT full_text,page_count,manual_note FROM documents WHERE id=11')==[
+            {'full_text':None,'page_count':None,'manual_note':'manual evidence'}]
+        assert query(database,'SELECT id FROM extracted_documents')==[{'id':51}]
+        assert query(database,'SELECT * FROM document_sections')==[]
+        assert query(database,'SELECT meta FROM meetings WHERE id=77')==[{'meta':{'manual_note':'owner evidence'}}]
+        return
+    assert result['status']=='applied'
+    stored=query(database,'SELECT * FROM documents WHERE id=11')[0]
+    section=query(database,'SELECT * FROM document_sections WHERE document_id=11')[0]
+    for text in (stored['full_text'],section['section_text']):
+        assert 'resident@example.org' not in text
+        assert 'planning@langford.ca' in text
+        assert '123 Example Road' in text and '250-555-0199' in text
+    assert path.read_bytes()==original_bytes and stored['file_hash']==original_sha
+    assert manifest['documents'][0]['source']['pages'][0]['native_text_sha256']==native_sha
+    assert stored['embedding']=='existing vector' and stored['manual_note']=='manual evidence'
+    child=query(database,'SELECT * FROM extracted_documents WHERE id=51')[0]
+    assert child['summary'] is None and child['key_facts'] is None and child['title']=='Existing manual boundary'
+    meta=query(database,'SELECT meta FROM meetings WHERE id=77')[0]['meta']
+    assert meta['manual_note']=='owner evidence'
+    receipt=next(iter(meta['document_catchup_receipts'].values()))
+    policy=receipt['source_hashes'][0]['public_text_policy']
+    assert policy['policy']=='letter_privacy.scrub_emails_non_city_v1'
+    assert policy['removed_email_occurrences']==1 and len(policy['implementation_sha256'])==64
+    assert 'resident@example.org' not in str(receipt) and 'planning@langford.ca' not in str(receipt)
+    assert verify(database,manifest)['documents']==1
+
+
 def test_two_new_listed_urls_with_identical_pdf_bytes_cannot_register_duplicates(database,case):
     original=deepcopy(case[0][1])
     alias=deepcopy(original)

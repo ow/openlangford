@@ -20,9 +20,10 @@ import psycopg2
 from psycopg2.extras import Json, RealDictCursor, execute_values
 from dotenv import load_dotenv
 
+from pipeline.ingestion import letter_privacy
 from .history_coverage import digest, query, write_report
 
-VERSION = 'native-source-pages-v1'
+VERSION = 'native-source-pages-v2-public-email-policy'
 MAX_SECTION_CHARS = 7500  # Leaves title space under the embedding pipeline's 8000-character cap.
 DOC_FIELDS = ('id', 'meeting_id', 'title', 'category', 'source_url', 'file_path',
               'file_hash', 'full_text', 'page_count', 'municipality_id')
@@ -84,7 +85,7 @@ def native_pdf(path):
 
 
 def source_sections(text_pages):
-    """Bound embedding inputs without dropping or rewriting any native characters."""
+    """Bound embedding inputs without dropping characters from reviewed public text."""
     sections=[]
     for page in text_pages:
         body=page['text'];chunks=[];start=0
@@ -227,7 +228,18 @@ def audit(connection, specs, roots, project_ref, municipality_id):
                     document=payload,agenda_item_id=None,sections=[])
                 plans.append(plan)
                 continue
-            payload.update(full_text=original['full_text'], page_count=original['page_count'])
+            public_full_text=letter_privacy.scrub_emails(original['full_text'])
+            public_pages=[{**page,'text':letter_privacy.scrub_emails(page['text'])} for page in original['text_pages']]
+            plan['public_text_policy']={
+                'policy':'letter_privacy.scrub_emails_non_city_v1',
+                'implementation_sha256':sha(Path(letter_privacy.__file__).read_bytes()),
+                'removed_email_occurrences':len(letter_privacy.EMAIL.findall(original['full_text']))
+                    -len(letter_privacy.EMAIL.findall(public_full_text)),
+                'public_full_text_sha256':sha(public_full_text.encode()),
+                'source_native_hashes_retained':True}
+            if not any(page['text'].strip() for page in public_pages):
+                raise ValueError('No usable public text remains after public email privacy redaction')
+            payload.update(full_text=public_full_text, page_count=original['page_count'])
             item=exact_agenda_id(listing,[a for a in agenda if a['meeting_id']==spec['meeting_id']])
             if reused:
                 plan['reuse_extracted']=reused
@@ -242,7 +254,7 @@ def audit(connection, specs, roots, project_ref, municipality_id):
             plan.setdefault('source_link_state','exact_literal_title' if item is not None else 'no_unique_literal_title')
             plan.update(status='ready', document=payload,
                 agenda_item_id=item,
-                sections=source_sections(original['text_pages']))
+                sections=source_sections(public_pages))
         except (ValueError, OSError, RuntimeError) as error:
             plan['reason'] = str(error)
         plans.append(plan)
@@ -351,6 +363,7 @@ def apply(connection, manifest, regenerate, roots):
         receipts[mid]['documents']+=fingerprints([document])
         receipts[mid]['source_hashes'].append({'document_id':document['id'],
             'source_sha256':plan['source']['source_sha256'],'renderer':plan['source']['renderer'],
+            'public_text_policy':plan.get('public_text_policy'),
             'source_link_state':plan.get('source_link_state','source_registration_only_text_held'),
             'unassigned_source_pages':plan.get('unassigned_source_pages',[])})
         if plan['status']=='register_only':
