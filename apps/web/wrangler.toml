@@ -21,8 +21,11 @@ AI_GATEWAY_ID = "langford-open-a-i"
 AI_SEARCH_DAILY_LIMIT = "1000"
 # Signup kill switch; Supabase restrictions still apply.
 ENABLE_SIGNUPS = "true"
-# Show signup/alerts entry points alongside the public signup form.
+# Public signup discovery stays enabled.
 PUBLIC_SIGNUP_LINKS = "true"
+# UI readiness and scheduled dispatch remain off until approved rollout/testing.
+EMAIL_ALERTS_AVAILABLE = "false"
+EMAIL_ALERT_DISPATCH_ENABLED = "false"
 AI_PROVIDER = "openai"
 AI_MODEL = "gpt-6-luna"
 VIMEO_PROXY_URL = "https://vimeo-proxy.kpeatt.workers.dev"
@@ -52,4 +55,4 @@ enabled = true
 
 # Lightweight official-calendar sync, at 00:17 and 12:17 UTC.
 [triggers]
-crons = ["17 */12 * * *"]
+crons = ["17 */12 * * *", "*/5 * * * *"]

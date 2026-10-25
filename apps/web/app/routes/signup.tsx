@@ -2,6 +2,8 @@ import {
   data as routeData, Form, Link, redirect,
   useActionData, useLoaderData, useNavigation,
 } from "react-router";
+import { EmailAlertsNotice } from "../components/email-alerts-notice";
+import { useSiteFlags } from "../lib/use-site-flags";
 import type { Route } from "./+types/signup";
 import { createSupabaseServerClient } from "../lib/supabase.server";
 import { safeRedirect } from "../lib/safe-redirect";
@@ -107,6 +109,7 @@ const labelClass = "text-sm font-medium text-zinc-700";
 export default function Signup() {
   const { signupsEnabled } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const { emailAlertsAvailable: alertsAvailable } = useSiteFlags();
   const submitting = useNavigation().state === "submitting";
   const error =
     actionData && "error" in actionData ? actionData.error : null;
@@ -124,7 +127,7 @@ export default function Signup() {
             </h1>
             <p className="text-sm leading-relaxed text-zinc-600">
               We sent you a confirmation link. Open it to activate your account,
-              then sign in to choose which alerts you want.
+              then sign in to save your preferences.
             </p>
             <p className="text-sm text-zinc-500">
               Nothing arrived after a few minutes? Check your spam folder.
@@ -186,12 +189,12 @@ export default function Signup() {
               Create an account
             </h1>
             <p className="text-sm leading-relaxed text-zinc-600">
-              Alerts are short emails about council business you care about:
-              a matter you follow coming back to an agenda, a topic you picked
-              being discussed, or a decision near your home. You choose what to
-              follow, and you can change it any time.
+              Save the council topics, matters and places you care about.
+              You choose what to follow, and you can change it any time.
             </p>
           </div>
+
+          {!alertsAvailable && <div className="mb-6"><EmailAlertsNotice /></div>}
 
           <Form method="post" className="space-y-4">
             <div aria-hidden="true" className="absolute -left-[9999px]">
@@ -276,7 +279,7 @@ export default function Signup() {
           </p>
         </div>
         <p className="mt-4 text-center text-xs text-zinc-500">
-          We only use your email to send the alerts you ask for.
+          Your email is used for account confirmation. Alert delivery is separate.
         </p>
       </div>
     </div>
