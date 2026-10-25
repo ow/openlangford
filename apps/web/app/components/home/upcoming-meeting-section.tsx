@@ -4,7 +4,7 @@ import { meetingPath } from "../../lib/paths";
 import { Calendar, MapPin, Video, Clock } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { SectionHeading } from "../ui/section-heading";
-import { formatDate } from "../../lib/utils";
+import { cn, formatDate } from "../../lib/utils";
 import type { AttendanceInfo } from "../../lib/attendance";
 
 interface AgendaItem {
@@ -27,6 +27,7 @@ interface UpcomingMeetingSectionProps {
     organizations?: { name: string };
     attendanceInfo?: AttendanceInfo | null;
   } | null;
+  inverse?: boolean;
 }
 
 /**
@@ -45,17 +46,18 @@ function cleanAgendaTitle(title: string): string {
 
 export function UpcomingMeetingSection({
   meeting,
+  inverse = false,
 }: UpcomingMeetingSectionProps) {
   return (
     <section>
-      <SectionHeading title="Next event" icon={Calendar} href="/meetings" linkLabel="Calendar" />
+      <SectionHeading title="Next event" icon={Calendar} href="/meetings" linkLabel="Calendar" inverse={inverse} />
 
       {!meeting ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 px-4 py-5">
-          <p className="text-sm font-semibold text-zinc-700">
+        <div className={cn("rounded-2xl border border-dashed px-4 py-5", inverse ? "border-white/30 bg-white/10" : "border-zinc-300 bg-white/60")}>
+          <p className={cn("text-sm font-semibold", inverse ? "text-white" : "text-zinc-700")}>
             Nothing on the calendar yet
           </p>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className={cn("mt-1 text-sm", inverse ? "text-brand-100" : "text-zinc-500")}>
             Upcoming events appear here once scheduled.
           </p>
         </div>

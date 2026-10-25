@@ -25,18 +25,20 @@ interface RecentMeetingSectionProps {
     duration: number | null;
   };
   decisions: Array<{ id: number; summary: string; result: string }>;
+  inverse?: boolean;
 }
 
 export function RecentMeetingSection({
   meeting,
   stats,
   decisions,
+  inverse = false,
 }: RecentMeetingSectionProps) {
   if (!meeting) return null;
 
   return (
     <section>
-      <SectionHeading title="Latest meeting" icon={PlayCircle} href="/meetings" />
+      <SectionHeading title="Latest meeting" icon={PlayCircle} href="/meetings" inverse={inverse} />
 
       <Link
         to={meetingPath(meeting)}
