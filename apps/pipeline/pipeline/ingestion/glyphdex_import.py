@@ -122,19 +122,58 @@ def _sha256(path: str) -> str:
     return digest.hexdigest()
 
 
-def already_ingested(supabase, meeting: dict) -> bool:
-    """A meeting we have from the city's own archive: same date and the same body (or Council)."""
-    rows = (supabase.table("meetings").select("id,title,organization:organizations(name)")
-            .eq("meeting_date", meeting["date"]).execute().data or [])
+# Glyphdex body -> how our own (eSCRIBE) database files the same meetings. Verified by SHA-256 matches of the
+# 2023-2026 PDFs (research/glyphdex/2023-2026-overlap.md): Council and Committee of the Whole live under the
+# 'Council' organization (types 'Regular Council' / 'Special Council' / 'Committee of the Whole'); the Community
+# Advisory Committee is filed under the generic 'Advisory Committee' organization (archive folder 'Joint Advisory
+# Committee', title 'Advisory Committee'); eSCRIBE dates can differ from Glyphdex's by one day.
+DATE_TOLERANCE_DAYS = 1
+
+
+def _our_filing(meeting: dict) -> dict | None:
+    """Organizations/types our database uses for a Glyphdex body, or None for bodies we have no mapping for."""
+    body, kind = meeting["body"].lower(), meeting["kind"].lower()
+    if body == "council":
+        return {"orgs": {"council"}, "types": {f"{kind} council"}}
+    if body == "committee of the whole":
+        return {"orgs": {"council"}, "types": {"committee of the whole"}}
+    if body == "community advisory committee":
+        return {"orgs": {"advisory committee", "community advisory committee"}, "types": {"advisory committee"}}
+    return None
+
+
+def matches_existing(meeting: dict, rows: list[dict]) -> bool:
+    """Is one of our meetings (rows with ``meeting_date``, ``title``, ``type``, ``organization.name``) the same
+    meeting as this Glyphdex one?"""
+    from datetime import date
+
+    day = date.fromisoformat(meeting["date"])
+    filing = _our_filing(meeting)
     body = meeting["body"].lower()
     for row in rows:
+        gap = abs((date.fromisoformat(str(row["meeting_date"])) - day).days)
         org = ((row.get("organization") or {}).get("name") or "").lower()
         title = (row.get("title") or "").lower()
-        if body == "council" and org == "council" and "committee" not in title:
-            return True
-        if body != "council" and (body in title or org == body):
+        if filing:
+            if gap <= DATE_TOLERANCE_DAYS and org in filing["orgs"] and (row.get("type") or "").lower() in filing["types"]:
+                return True
+        elif gap == 0 and (body in title or org == body):
+            # Unmapped body (Board of Variance, Sustainable Development Advisory Committee, the 2016-2022
+            # standing committees): only its own organization/title on the same date counts, never a
+            # neighbouring Council meeting.
             return True
     return False
+
+
+def already_ingested(supabase, meeting: dict) -> bool:
+    """A meeting we have from the city's own archive (see ``matches_existing``)."""
+    from datetime import date, timedelta
+
+    day = date.fromisoformat(meeting["date"])
+    rows = (supabase.table("meetings").select("id,title,type,meeting_date,organization:organizations(name)")
+            .gte("meeting_date", str(day - timedelta(days=DATE_TOLERANCE_DAYS)))
+            .lte("meeting_date", str(day + timedelta(days=DATE_TOLERANCE_DAYS))).execute().data or [])
+    return matches_existing(meeting, rows)
 
 
 def main(argv=None):
@@ -144,7 +183,8 @@ def main(argv=None):
     from pipeline.paths import get_municipality_archive_root
 
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--body", help="Substring of the committee/council name, e.g. 'Planning, Zoning'")
+    parser.add_argument("--body", action="append",
+                        help="Substring of the committee/council name, e.g. 'Planning, Zoning' (repeatable: any match)")
     parser.add_argument("--from", dest="date_from")
     parser.add_argument("--to", dest="date_to")
     parser.add_argument("--dry-run", action="store_true", help="List what would be imported; download nothing")
@@ -160,7 +200,7 @@ def main(argv=None):
     supabase = create_client(config.SUPABASE_URL, config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY)
     archive_root = get_municipality_archive_root("langford")
     meetings = [m for m in group_meetings(list_documents())
-                if (not args.body or args.body.lower() in m["body"].lower())
+                if (not args.body or any(b.lower() in m["body"].lower() for b in args.body))
                 and (not args.date_from or m["date"] >= args.date_from) and (not args.date_to or m["date"] <= args.date_to)]
     todo = [m for m in meetings if not already_ingested(supabase, m)]
     print(f"{len(meetings)} Glyphdex meeting(s) match; {len(meetings) - len(todo)} already in our database; {len(todo)} to import")
