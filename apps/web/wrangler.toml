@@ -21,8 +21,8 @@ AI_GATEWAY_ID = "langford-open-a-i"
 AI_SEARCH_DAILY_LIMIT = "1000"
 # Signup kill switch; Supabase restrictions still apply.
 ENABLE_SIGNUPS = "true"
-# Keep signup/alerts links hidden while /signup accepts direct visitors.
-PUBLIC_SIGNUP_LINKS = "false"
+# Show signup/alerts entry points alongside the public signup form.
+PUBLIC_SIGNUP_LINKS = "true"
 AI_PROVIDER = "openai"
 AI_MODEL = "gpt-6-luna"
 VIMEO_PROXY_URL = "https://vimeo-proxy.kpeatt.workers.dev"
