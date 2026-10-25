@@ -1,0 +1,444 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 369,
+    "title": "Regular Council",
+    "meeting_date": "2018-03-19",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2018/03/2018-03-19 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2018/03/2018-03-19 Regular Council [legacy]/Minutes/20180319-Signed-Minutes-Council.pdf",
+      "sha256": "28c4c14826423d4f18b5a1f0eeb8b4806798d6c11951aa9c3721b14e6c664e22",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20180319-Signed-Minutes-Council.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2018/03/2018-03-19 Regular Council [legacy]/Minutes/20180319-Signed-Minutes-Council.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180319-Signed-Minutes-Council.pdf",
+  "source_sha256": "28c4c14826423d4f18b5a1f0eeb8b4806798d6c11951aa9c3721b14e6c664e22",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "d482e9d8f7a3108b2c2481219c272e8e65f75682e9221217530859355207129c",
+  "corrected_text_sha256": "d482e9d8f7a3108b2c2481219c272e8e65f75682e9221217530859355207129c",
+  "parsed_blocks_sha256": "ec3fddd687e93464c61179b53b73c2f9882e893442b06487d136571a4142f04e",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "a30a3055a67e07f77ad45253ddbe34b6faabcd8e0fbb23754b7bcdeacb32d5fe",
+      "render_sha256": "3ecabdbca7ba48612b0c3b6aa3a760398878c7ae3212b0287cfcf2ec2fa8aab9"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "05e13e74c7fbe07278a57ce550a5a563043517a0ef63a3358ca01100732ea6ac",
+      "render_sha256": "f4a40e0939b61342f4040b250f0f329b1b1a53711799f3d190ffa3e252b3730d"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "4e2d907c936257058c6f8e295b160c021ecc2d4daaf87582d81384a60db354fe",
+      "render_sha256": "3b5322ecd563399996ab8240243bd9326822526656ddc8313866be561fb77940"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "6ef9d83cf10847052d9eb787feb1fe1482a805e2ef318cf74443af33870e9dc7",
+      "render_sha256": "1ab4d5b08f52a698f18f523333ca02a6abf2426c25e146a17a7dac14f2d5d57e"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "ec33718a7ecb1694ea478141c92cdc6baea1e289bbeef95feab4a833c75ec9bd",
+      "render_sha256": "e732abc9aa2e8a5ad1459c2f3e855ac3f8843ff1ff0de8044270794699d9427b"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "d87539744826a356fbe45a4eb1478c5690efddc48de2dde5c3c31bace120fc5b",
+      "render_sha256": "1089687e4af855d2263246e3bdf1696cd201c63f7c954596c3340bc2e5a65e0d"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "1b04a0b3f9a180999598afd8e0128f7cfd22ec145944363f7e6b59a667a42ec5",
+      "render_sha256": "543d96840adf6c55a90dd46a6437027a0ba435e3d5a863c1a5e009e7b68bb93b"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "101c591e5de68bb95301a0495b6aa5acf0c2aeb708162fc8a88d43142759b6f6",
+      "render_sha256": "6a7a610c6e19d5344c9d9f38dad00daac41c0486b14c56e64b1180f9b8d2b60e"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "5d630e5f909c02a7ff8888d61fcadccfc730e77083c58eba4cb5168babd82c3f",
+      "render_sha256": "e17098c6bddfad32880ea39900ba00ee31a8c10b4078b6ea76937ca252089d40"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "38738bc892b37fc67fc9024e95eb25b7e73ce06440ff4c335538ec8b26b54fd2",
+      "render_sha256": "49de86b93eb0db0261db9d9445d921f830501e3b16d3424e5586491a5ae2ee99"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "9ced3eff84ad1a0f4ffb41244439ad5f040591aae1580a20a89f6547c84d3f1e",
+      "render_sha256": "49d5edd7204b11894540b04fb1918c729d533e708913ff0158060436dcd9d14e"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "20cfae338b8aff64626452215dd7b824b8f8fd78eed5e61bcbe98dc03d918502",
+      "render_sha256": "a884ba08bd0c7325d8d491b2d187826a1af72255d031d9aabcf3fc383ec909b0"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "baac2c832014804f7182813c5a31986b83aa42f726eafc84ca67a29c5b8aa2dc",
+      "render_sha256": "05e1f59d2117ec87765f897e5ee0762cb2e9acbcca541fa7d01ba1a624dc99ad"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "60e59173b935b7bc069eddc0e73379888c1938b395f2f9ceddb4370089e52615",
+      "render_sha256": "551d872b30f4785c01cf06a9dc5604512d65bb41443703f51b7882d9ad6a6d97"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "99dcf4e2d87a3c71cdda958930eabdd4e42f3af0d28d4ac76f6a76df84e0b178",
+      "raw_block_sha256": "d05806759b937bf51ffdb6a0857fa69f4e9154279d1be4095b6d5261db8bc189",
+      "operative_body": "That Council approve the award of the Lippincott Bridge Replacement to Mainroad South Island Contracting to install a Prefabricated Timber Deck for an estimated cost of $148,800 and fund the project from the Infrastructure Replacement Fund.",
+      "operative_body_sha256": "c27c397f6738c77cfc83bd5fd60dbf2333436e8e4aae4ac683ca2babc1487c7a",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "5d630e5f909c02a7ff8888d61fcadccfc730e77083c58eba4cb5168babd82c3f",
+          "render_sha256": "e17098c6bddfad32880ea39900ba00ee31a8c10b4078b6ea76937ca252089d40"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d471ebeb02353d0a9e373bd5d49f7283110bb23c7b516e8047d473d0f29a73a8",
+      "raw_block_sha256": "34816749e97a9d3f23ab54173f153952e39ac80142b8e27ca5bad1a549a70947",
+      "operative_body": "That Council modify the permit parking sign to 6:00 a.m. to 6:00 p.m. Monday to Friday. Trial run to be reviewed in September 2018.",
+      "operative_body_sha256": "84c28e2b58cd0fe09dd9c6a2be02f8a4937db0bb710f40794b620b08ef1ea20e",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "38738bc892b37fc67fc9024e95eb25b7e73ce06440ff4c335538ec8b26b54fd2",
+          "render_sha256": "49de86b93eb0db0261db9d9445d921f830501e3b16d3424e5586491a5ae2ee99"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5ecc13346c6073ff9eca18556ba3f138164b50ab68d97f72247747e54fa88d36",
+      "raw_block_sha256": "9f19f3c081c94005bfacc72d8443b9fee6fccfcdc0dd6669dc0ff42783c8b36d",
+      "operative_body": "That Council direct staff to proceed with replacing the existing post-top streetlights on McCallum Road, between Millstream Road and Costco's west driveway, with new streetlight poles and LED fixtures at an estimated cost of $80,000, and fund this installation through the City's Development Cost Charge (Roads North) program.",
+      "operative_body_sha256": "1e6065b6e561dd858ac5d6a9612fd77cf209b339e5385fce0556698cd84c831a",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "38738bc892b37fc67fc9024e95eb25b7e73ce06440ff4c335538ec8b26b54fd2",
+          "render_sha256": "49de86b93eb0db0261db9d9445d921f830501e3b16d3424e5586491a5ae2ee99"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f791a60b2cd4d3849d0022076e9fac112e9d20ad8cdbb4b9b705760147df2e8c",
+      "raw_block_sha256": "65f420a872ed4d744bbc2238ac3fabd88f6f824badb6af7a9ad2287cd9b83c5d",
+      "operative_body": "That Council support the Millstream Fishway Project underway by the Peninsula Streams Society by contributing $25,000 from the Neighbourhood Beautification budget to support improvements to the Atkins Avenue culvert.",
+      "operative_body_sha256": "ae557c79cfd519889bf62d04e2c7bdec92ebd9544c4e3bc070ce8748af209dfd",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "38738bc892b37fc67fc9024e95eb25b7e73ce06440ff4c335538ec8b26b54fd2",
+          "render_sha256": "49de86b93eb0db0261db9d9445d921f830501e3b16d3424e5586491a5ae2ee99"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6b82ba4b67a5283169f8099dfa686481969427de02953267e145caf701a9c826",
+      "raw_block_sha256": "2d7aa6263b50986c8e7517e396382c36826243682a91278a68deb4b9550062f7",
+      "operative_body": "That Council approve the City of Langford disbursements from February 2018, be approved as outlined in the Accounts Payable Report dated March 6, 2018.",
+      "operative_body_sha256": "f50476c2265095bc4a0820307cfbce6a69fb19a124bd711fd1e949ebb03074f7",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "38738bc892b37fc67fc9024e95eb25b7e73ce06440ff4c335538ec8b26b54fd2",
+          "render_sha256": "49de86b93eb0db0261db9d9445d921f830501e3b16d3424e5586491a5ae2ee99"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d9ea8ef896c360b5a3966e20a928bff53bad953fefdb2fc57ce77d1ce9a8715f",
+      "raw_block_sha256": "630138d61674716bf8030144c0a1a631f965d72e05cc8c4920fa0c804313cd57",
+      "operative_body": "That Council: Approve the following funding applications for the year 2018: 1. Historically Funded Requests: a) Vancouver Island South Film and Media Commission - $2,000 to promote the industry - b) Greater Victoria Bike to Work Society - $1,500 for Bike to Work Week c) Royal Canadian Legion - $2,500 for Remembrance Day luncheon; plus funding of $3,000 towards a Christmas Dinner 2018. d) Fort Rodd Hill and Fisgard Lighthouse - $1,500 for Canada Day celebration e) Your Literacy Connection - $500 to promote literacy in Langford f) Lighthouse Christian School - $1,000 for grad g) Goldstream Nature House \u2014 Chums sponsorship program $1,000 2. New Requests: h) Big Brothers Big Sisters of Victoria and Area -$1,000 for mentoring program i) M'Akola Housing Society - $1500 for Westshore Indigenous Festival Deny the following 2018 funding requests due to budgetary constraints: 1. New Requests: a) Royal Bay Secondary School Parent Grad Committee - $2,000 towards Dry Grad Carnival - Council direct staff to work with the school in 2019 to develop a similar agreement for fee for service as Belmont Secondary School. b) Lions Pride Gymnastics Society - $250 - $2,500 for sponsorship - Council requests that Lion's Pride do a presentation to the committee in 2019. c) Open Gate Church - Council may agree to $1500 in funding after further information on the Langford/Colwood Neighbourhood Free Fresh Food Market is provided by staff.",
+      "operative_body_sha256": "dfde8e76269c4c18860fa4a8f2792a1f9806a825b5b43c692cb64f932bc503a0",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "9ced3eff84ad1a0f4ffb41244439ad5f040591aae1580a20a89f6547c84d3f1e",
+          "render_sha256": "49d5edd7204b11894540b04fb1918c729d533e708913ff0158060436dcd9d14e"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5cbb41d311ca0df0ffca73d24072823f5f85542902624cc507d59b018dc0bce8",
+      "raw_block_sha256": "b79e8bbee66f441d13680b873c293125a2b84d5c23eb462c2f39b186bafafe53",
+      "operative_body": "That Council give Bylaw No. 1717 Second and Third Readings.",
+      "operative_body_sha256": "183b485b9eeff8be1d77b5c51dd85e0d61875b669bb4062f4ebdbc1e19b76a68",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "9ced3eff84ad1a0f4ffb41244439ad5f040591aae1580a20a89f6547c84d3f1e",
+          "render_sha256": "49d5edd7204b11894540b04fb1918c729d533e708913ff0158060436dcd9d14e"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "20cfae338b8aff64626452215dd7b824b8f8fd78eed5e61bcbe98dc03d918502",
+          "render_sha256": "a884ba08bd0c7325d8d491b2d187826a1af72255d031d9aabcf3fc383ec909b0"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "29314dd4e41906133681b1f9ca08c5c73974ace179060608788d713df46c240b",
+      "raw_block_sha256": "b6a3392f250a6c856e017aedfef206ce1b538eb85da1389f295c875f7f8f6971",
+      "operative_body": "That Council give Bylaw No. 1737 Second and Third Readings.",
+      "operative_body_sha256": "40938f2bab0b07124e4b659120def6039002e4fca0fa403e0238dcdc1653d01e",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "20cfae338b8aff64626452215dd7b824b8f8fd78eed5e61bcbe98dc03d918502",
+          "render_sha256": "a884ba08bd0c7325d8d491b2d187826a1af72255d031d9aabcf3fc383ec909b0"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d6f2f0f17e79fd699594b0cb94d30d28d0313cfa236c9104033ed7f89c07d63a",
+      "raw_block_sha256": "6d01b989bb9b0583142324db6729e144d827fa53a082863eaace2a3267c08784",
+      "operative_body": "That Council adopt Bylaw No. 1739.",
+      "operative_body_sha256": "ff215fd7241da6d03b4efff4b70b950bac0b5e24e4a326d233c6a54ed6a24751",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "20cfae338b8aff64626452215dd7b824b8f8fd78eed5e61bcbe98dc03d918502",
+          "render_sha256": "a884ba08bd0c7325d8d491b2d187826a1af72255d031d9aabcf3fc383ec909b0"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "4aa56afb91e76e8e1d4620912d237b2de037eabfca137a45adf99633381b0efb",
+      "raw_block_sha256": "3996a6c6e3eb04d765256e1a176e749f314037b2f7e4b43c84dcc35ced1e7636",
+      "operative_body": "That Council give Bylaw No. 1742 Second and Third Readings.",
+      "operative_body_sha256": "24428b7deb8809969a80c90010568d27ef0c7ef17121a5da3e0ff376a0020edf",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "20cfae338b8aff64626452215dd7b824b8f8fd78eed5e61bcbe98dc03d918502",
+          "render_sha256": "a884ba08bd0c7325d8d491b2d187826a1af72255d031d9aabcf3fc383ec909b0"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "0d7d6f82b5e478ba8bf6881d6979bbe828655bb4c735c0478b1ad13ae87113e6",
+      "raw_block_sha256": "3ea6191e2a34e7f3c9cdd9d92917664e9e6df11e837422922701d3e68f9ebcf8",
+      "operative_body": "That Council give Bylaw No. 1753 Second and Third Readings.",
+      "operative_body_sha256": "0c503571c934dc3cf37c248d46a7b23c7241b6ffcb8b0be924216a3dba05e0e1",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "20cfae338b8aff64626452215dd7b824b8f8fd78eed5e61bcbe98dc03d918502",
+          "render_sha256": "a884ba08bd0c7325d8d491b2d187826a1af72255d031d9aabcf3fc383ec909b0"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "baac2c832014804f7182813c5a31986b83aa42f726eafc84ca67a29c5b8aa2dc",
+          "render_sha256": "05e1f59d2117ec87765f897e5ee0762cb2e9acbcca541fa7d01ba1a624dc99ad"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "March 19th, 2018 Page 13 of 14",
+          "printed": "",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "5490773ec1a39af78720003b9c7b325f92273abadbe99e375c7d13f7f1ed1a5d",
+      "raw_block_sha256": "52c8d50c94a311123eb332f588d3c5410d2e7be72212aff159942bf08d272afa",
+      "operative_body": "That Council give Bylaw No. 1762 FirstReading.",
+      "operative_body_sha256": "a46e381ce54e6ae1cdaf4e0eed3b4fa2b6cafb8f548f3b900b65e732e0da27b7",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baac2c832014804f7182813c5a31986b83aa42f726eafc84ca67a29c5b8aa2dc",
+          "render_sha256": "05e1f59d2117ec87765f897e5ee0762cb2e9acbcca541fa7d01ba1a624dc99ad"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "854e8d34f41f7d2f06eb02cd5e0d2302f8775b8cd979ca6f5bf4bcf72f6dabc8",
+      "raw_block_sha256": "58ae1835c577863b278ec96276e8eaadb5163d46c4160849cbc554e64cf5082c",
+      "operative_body": "That Council give Bylaw No. 1764 First, Second and Third Readings.",
+      "operative_body_sha256": "4a742cbdbc71bd3d340d5de138898131754dfb78162ed7d2025226b7937b7bd6",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baac2c832014804f7182813c5a31986b83aa42f726eafc84ca67a29c5b8aa2dc",
+          "render_sha256": "05e1f59d2117ec87765f897e5ee0762cb2e9acbcca541fa7d01ba1a624dc99ad"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b5ddcfc2d2d7d0ee1bf22a322d65140340f66dfd9e4482db3e6b5c15a7dff14a",
+      "raw_block_sha256": "06c8d5195469732248e68e2f939ad402068307a020b834868dbce0bc25a9e43b",
+      "operative_body": "That Council give Bylaw No. 1767 First Reading.",
+      "operative_body_sha256": "e28bf9420b6435e23a878f4f100bb0d9a3bd69c82439a41c5785254b4a7c6e65",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baac2c832014804f7182813c5a31986b83aa42f726eafc84ca67a29c5b8aa2dc",
+          "render_sha256": "05e1f59d2117ec87765f897e5ee0762cb2e9acbcca541fa7d01ba1a624dc99ad"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a509f9b2a5991590ade0d5d50dee35e52410dcee9c7c7a5a3981b06ff409e103",
+      "raw_block_sha256": "c3ee087bd7eed41b25f03a8974c75bcfc94e59c1906bbf68e27bb0555ec3625a",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding land disposition and the potential provision of a municipal service under Section 90 (1) (e) and (k) of the Community Charter. b) That Council continues the meeting in closed session.",
+      "operative_body_sha256": "a73ec0c99dfde7c4e4d2eb0559dc93570da6095c57d7bdc5de4554abf521e49a",
+      "result": "CARRIED",
+      "pages": [
+        13,
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baac2c832014804f7182813c5a31986b83aa42f726eafc84ca67a29c5b8aa2dc",
+          "render_sha256": "05e1f59d2117ec87765f897e5ee0762cb2e9acbcca541fa7d01ba1a624dc99ad"
+        },
+        {
+          "page": 14,
+          "native_text_sha256": "60e59173b935b7bc069eddc0e73379888c1938b395f2f9ceddb4370089e52615",
+          "render_sha256": "551d872b30f4785c01cf06a9dc5604512d65bb41443703f51b7882d9ad6a6d97"
+        }
+      ],
+      "independent_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "March 19th, 2018 Page 14 of 14",
+          "printed": "",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    }
+  ],
+  "native_first_page_sha256": "a30a3055a67e07f77ad45253ddbe34b6faabcd8e0fbb23754b7bcdeacb32d5fe",
+  "independent_original_image_review_sha256": "633bae6e74910ccc77b949aa1af084ff77d46f141c4ca8a041437bf0ae8af7cc",
+  "second_independent_original_image_review_sha256": "e9efeedd22bba2cd43c5f849bc1832fffced6ca88b8d1884942c1eddc491ec80",
+  "remaining_holds": [
+    {
+      "reason": "Original WestShore report heading says February8 while operative body and existing stored wording say January18. Preserve original contradiction without intended-date correction.",
+      "authority": "coverage_diagnostic_only"
+    }
+  ]
+}

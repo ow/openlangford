@@ -1,0 +1,433 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 103,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+  "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+  "source_date": "2017-09-18",
+  "source_text_sha256": "dc13b58f61b8a8d663f433f87c565efd714567e1dbfa19b7340b8485590d8a1d",
+  "formal_inventory_sha256": "0b0bf68a4562f31c849f927f6501b2790296a6eb59f7b2fb82498d388e77e5e8",
+  "claim_inventory_sha256": "a9ffca751f4213fa8921cf48f4d3c559099349a659cb1878beed37db45304225",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "5a62201a9fb18d80e8b8db043bf5dabc2f1041c52bdefbe5f1232bfbaa4ab628"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "269664acc507f36ebe8e52df71e9084e811392070d470c34e41a30a9c72e168b"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "45823c919cc783fa5981f54ca82a36f0eb29213d56831b7b7b0124644f008e03"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "5579e7fa8df73801ba883b86c8059c41733d19bd8643670dc4e6dec1f1a0cf26"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "be66be9b142c674eaa522a676f023399cbf8f330b2ec2df8f2156289eefb58ce"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "948546589f21499360f2639c99ca02055b3accbe0e3f4cfe0e1b3667b4360641"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "e01ef03aa7aa6011d498104c9af9ddd07249e07314580df0fc610cad38c746be"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "acadbc7d89d6d48c69506dfd14d1b056d95762d4947d9a584997c9fbf428b20a"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "e06a7a6f6e9c96726ef6abab92dbda9da250cdd8dc8e960d32419f4d10b3e831"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "ea3e71ff33906227bfb554028e2d52ec58d13c6e2870c127d1d39a5769ca6992"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "e7cf6a06477f0f05fc827bd962860bd81af6e8e3ebc76cc2da1e0e61dc54382c"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "f2b520d8900571e5931cfb45f031274621a552ba6eb66dd564330fd1c856d237"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "0101ff0153ff30fb863b706ffd648c353d8de7558c07da3ce597f983881a68ea"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "0e713cdc6bf058a308a05cca259f8858fb5c682d6290ac65ca1f4b03d3eb4a91"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 950,
+      "claim_sha256": "f097fbc035e41aeaf5cccb825aa4c0cda2ea0d17365e3a8bdcba9cbe582c742f",
+      "legacy_text": "That Council approve the agenda as presented as presented with the addition of item 7d, Transportation Priorities.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 684,
+        "source_order": 0,
+        "key": "fda6686968f57823715366ffcfa05008227cbc3d7aa2ce5e62d870ff5df64a3a",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda as presented as presented with the addition of item 7d,\n        Transportation Priorities.",
+        "source_block": "MOVED BY:        COUNCILLOR SIFERT\nSECONDED:        COUNCILLOR WADE\n\n        That Council approve the agenda as presented as presented with the addition of item 7d,\n        Transportation Priorities.\n\n                                                                                              CARRIED.\n\n3.      ADOPTION OF MINUTES\n\n        a) Minutes of the Meeting of Council \u2014 September 5th, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "861c10f3b061bc35b8b8469192e80e32be332abe7dfdd3411a015add2fb3b5e3",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 951,
+      "claim_sha256": "86c0c38b6e8bae7e522ed07fc52a7961496618625ea539b4732e15be44452d2a",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on September 5th, 2017.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 1086,
+        "source_order": 1,
+        "key": "c16187bf086ab62592ddc39764afce764607732ab191de334722c28d52aa2198",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the Regular Meeting of Council held on September 5th, 2017.",
+        "source_block": "MOVED BY:        COUNCILLOR SEATON\nSECONDED:        COUNCILLOR SAHLSTROM\n\n        That Council approve the minutes of the Regular Meeting of Council held on September 5th, 2017.\n\n                                                                                              CARRIED.\n\n4.      PUBLIC PARTICIPATION\n\n        None\n\n                                                                                          September 18m, 2017\n                                                                                                   Page 2 of 14\n\n\n\n5.        DEVELOPMENT VARIANCE PERMIT\n\n\n          a)   DVP17-0006 - 2926 Leigh PI",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "fa988152ed19fcc2c57d2c832f578c59f78d2b0dfb4b5c4b5aef6329142a8700",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 952,
+      "claim_sha256": "7bdbe100ea57cb30b14a57461d84445c5197da632372cf3e133bbc482bbc5f68",
+      "legacy_text": "That Development Variance Permit No. DVP17-0006 be issued by the Council for the City of Langford to Jordan Milne to reduce the minimum front setback from 6.0 m to 4.0 m and increase the maximum permitted height from 9.0 m to 9.6 m for a new dwelling that is proposed to be constructed at 2926 Leigh Place subject to the following terms and conditions:\n1. Variances\nThe following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act:\na) Section 6.20.05 of Zoning Bylaw No. 300 is varied to increase the maximum permitted height of a building or structure from 9.0 m to 9.6 m; and\nb) Section 6.20.06(2)(a) of Zoning Bylaw No. 300 is varied to decrease the minimum required setback from a front property line from 6.0 m to 4.0 m.\n2. Conditions\nThe following requirements are imposed under Section 498 of the Local Government Act:\na) That the site shall be developed in accordance with the plans attached to this report as Appendix A; and\nb) That the site shall be developed in accordance with a Development Permit authorizing development within the Riparian Development Permit Area, and that no land alteration, demolition or construction shall occur on the site until such Development Permit has been issued.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 1722,
+        "source_order": 2,
+        "key": "b7f0b194b24aed94ba3eb6458e917a10212e725e743b3874a7849e8496a8fbca",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP17-0006 be issued by the Council for the City of Langford\nto Jordan Milne to reduce the minimum front setback from 6.0 m to 4.0 m and increase the maximum\npermitted height from 9.0 m to 9.6 m for a new dwelling that is proposed to be constructed at 2926\nLeigh Place subject to the following terms and conditions:\n\n1.   Variances\n\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) Section 6.20.05 of Zoning Bylaw No. 300 is varied to increase the maximum permitted height of a\n        building or structure from 9.0 m to 9.6 m; and\n     b) Section 6.20.06(2)(a) of Zoning Bylaw No. 300 is varied to decrease the minimum required setback\n        from a front property line from 6.0 m to 4.0 m.\n\n2.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n     a) That the site shall be developed in accordance with the plans attached to this report as Appendix\n        A; and\n     b) That the site shall be developed in accordance with a Development Permit authorizing\n        development within the Riparian Development Permit Area, and that no land alteration,\n        demolition or construction shall occur on the site until such Development Permit has been issued.",
+        "source_block": "MOVED BY:         COUNCILLOR WADE\nSECONDED:         COUNCILLOR SZPAK\n\nThat Development Variance Permit No. DVP17-0006 be issued by the Council for the City of Langford\nto Jordan Milne to reduce the minimum front setback from 6.0 m to 4.0 m and increase the maximum\npermitted height from 9.0 m to 9.6 m for a new dwelling that is proposed to be constructed at 2926\nLeigh Place subject to the following terms and conditions:\n\n1.   Variances\n\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) Section 6.20.05 of Zoning Bylaw No. 300 is varied to increase the maximum permitted height of a\n        building or structure from 9.0 m to 9.6 m; and\n     b) Section 6.20.06(2)(a) of Zoning Bylaw No. 300 is varied to decrease the minimum required setback\n        from a front property line from 6.0 m to 4.0 m.\n\n2.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n     a) That the site shall be developed in accordance with the plans attached to this report as Appendix\n        A; and\n     b) That the site shall be developed in accordance with a Development Permit authorizing\n        development within the Riparian Development Permit Area, and that no land alteration,\n        demolition or construction shall occur on the site until such Development Permit has been issued.\n\n                                                                                                   CARRIED.\n\n\n          b)   DVP17-0018 - 3059 & 3061 Jacklin Rd",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "eaa8bac1e560f41836bdb94eb525281ae247102943da0fe3d2f9701ee1c170c2",
+      "pages": [
+        2
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 953,
+      "claim_sha256": "08e0ba458876c2b834da2032c38fec4e51b90b1079f9288d4ed2c37e12898ce1",
+      "legacy_text": "That Development Variance Permit No. DVP17-0018 be issued by the Council for the City of Langford to Barry Weih of Wensley Architecture has applied on behalf of Jacklin Properties Ltd for a development variance permit to allow an increase in the permitted signage and to increase the permitted fa\u00e7ade sign area from 17% (or 25m2) to 20% (or 30m2) per building face within the Belmont Market development located at 3059 and 3061 Jacklin Road subject to the following terms and conditions:\n1. Appendix\nThe site shall be developed in accordance with the site plan attached (Appendix A).\n2. Variances\nThe following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act:\na) That Section 10(a)(i) of Sign Bylaw No. 1250 be varied to increase the maximum sign area of a fa\u00e7ade sign from 25m2 or 17%, whichever is less, to 30m2 or 20%, whichever is less;\nb) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from the one freestanding sign per highway frontage to two freestanding signs per highway frontage along Jacklin Road.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 3291,
+        "source_order": 3,
+        "key": "382dd93cba7a45c75e7c75c9b63851867b06b6515dbccc6716ffc9d1e3123b78",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP17-0018 be issued by the Council for the City of Langford\nto Barry Weih of Wensley Architecture has applied on behalf of Jacklin Properties Ltd for a development\nvariance permit to allow an increase in the permitted signage and to increase the permitted fa\u00e7ade sign\narea from 17% (or 25m2) to 20% (or 30m2) per building face within the Belmont Market development\nlocated at 3059 and 3061 Jacklin Road subject to the following terms and conditions:\n\n1.   Appendix\n\n                                                                                           September 18m, 2017\n                                                                                                    Page 3 of 14\n\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2. Variances\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) That Section 10(a)(i) of Sign Bylaw No. 1250 be varied to increase the maximum sign area of a\n        fa\u00e7ade sign from 25m2 or 17%, whichever is less, to 30m2 or 20%, whichever is less;\n     b) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from the one freestanding sign per highway\n        frontage to two freestanding signs per highway frontage along Jacklin Road.",
+        "source_block": "MOVED BY:         COUNCILLOR WADE\nSECONDED:         COUNCILLOR SZPAK\n\nThat Development Variance Permit No. DVP17-0018 be issued by the Council for the City of Langford\nto Barry Weih of Wensley Architecture has applied on behalf of Jacklin Properties Ltd for a development\nvariance permit to allow an increase in the permitted signage and to increase the permitted fa\u00e7ade sign\narea from 17% (or 25m2) to 20% (or 30m2) per building face within the Belmont Market development\nlocated at 3059 and 3061 Jacklin Road subject to the following terms and conditions:\n\n1.   Appendix\n\n                                                                                           September 18m, 2017\n                                                                                                    Page 3 of 14\n\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2. Variances\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) That Section 10(a)(i) of Sign Bylaw No. 1250 be varied to increase the maximum sign area of a\n        fa\u00e7ade sign from 25m2 or 17%, whichever is less, to 30m2 or 20%, whichever is less;\n     b) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from the one freestanding sign per highway\n        frontage to two freestanding signs per highway frontage along Jacklin Road.\n\n                                                                                                   CARRIED.\n\n\n6.        COMMITTEE RESOLUTIONS\n\n          a) Planning. Zoning and Affordable Housing Committee \u2014September 11th, 2017             30\n                 1. Application to rezone 1177 Goldstream Avenue from R1 (One-Family Residential) to\n                    RM2A (Attached Housing) to allow for a 3 unit townhouse.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1cb8e10b811cbba1748f0750278de64e4dbc555f39c371e28600b9ca93dd604b",
+      "pages": [
+        2,
+        3
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 954,
+      "claim_sha256": "ae738d9e29740506453c34e8a8f8157c85373e6127eda2d67aabd31fce0c6e28",
+      "legacy_text": "That Council:\n1. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 1177 Goldstream Avenue from R1 to RM2A, subject to the following terms and conditions:\na) That the owner agrees to provide, as a bonus for increased density, the following contributions per dwelling unit, prior to the issuance of a building permit:\ni. $2,562 towards the General Amenity Reserve Fund;\nii. $610 towards the Affordable Housing Reserve Fund;\nb) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following:\ni. That prior to building permit issuance, the applicant provides full frontage improvements, to the standards of the Subdivision and Development Servicing Bylaw No. 1000, and to the satisfaction of the Director of Engineering;\nii. That prior to building permit issuance, the applicant provides a Stormwater Management Plan to the standards of the Subdivision and Development Servicing Bylaw No. 1000, and to the satisfaction of the Director of Engineering;\niii. That prior to building permit issuance, the applicant agrees to provide a Construction Parking Management Plan, subject to approval from the Director of Engineering;\n2. Authorize the Director of Planning to issue a variance to allow a front lot line setback of less than 4.5m/5.5m, and a variance to reduce the off-street visitor parking requirement to nil within the Development Permit, subject to the provision of double car garages in each unit and visitor parking within the frontage of the subject property.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 5122,
+        "source_order": 4,
+        "key": "7524994d20d89d804f7c74847e1997c76ab7218ab1b1d31fa6cb97f8621faa0e",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 1177\n     Goldstream Avenue from R1 to RM2A, subject to the following terms and conditions:\n\n              a) That the owner agrees to provide, as a bonus for increased density, the following\n                 contributions per dwelling unit, prior to the issuance of a building permit:\n                    i.   $2,562 towards the General Amenity Reserve Fund;\n                   ii.   $610 towards the Affordable Housing Reserve Fund;\n\n              b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                 in priority of all other charges on title, that agrees to the following:\n\n                    i.    That prior to building permit issuance, the applicant provides full frontage\n                          improvements, to the standards of the Subdivision and Development Servicing\n                          Bylaw No. 1000, and to the satisfaction of the Director of Engineering;\n                    ii.   That prior to building permit issuance, the applicant provides a Stormwater\n                          Management Plan to the standards of the Subdivision and Development Servicing\n                          Bylaw No. 1000, and to the satisfaction of the Director of Engineering;\n                   iii.   That prior to building permit issuance, the applicant agrees to provide a\n                          Construction Parking Management Plan, subject to approval from the Director of\n                          Engineering;\n\n                                                                                              September 18m, 2017\n                                                                                                       Page 4 of 14\n\n\n        2.   Authorize the Director of Planning to issue a variance to allow a front lot line setback of less\n             than 4.5m/5.5m, and a variance to reduce the off-street visitor parking requirement to nil\n             within the Development Permit, subject to the provision of double car garages in each unit\n             and visitor parking within the frontage of the subject property.",
+        "source_block": "MOVED BY:         COUNCILLOR WADE\nSECONDED:         COUNCILLOR SZPAK\n\n          That Council:\n\n1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 1177\n     Goldstream Avenue from R1 to RM2A, subject to the following terms and conditions:\n\n              a) That the owner agrees to provide, as a bonus for increased density, the following\n                 contributions per dwelling unit, prior to the issuance of a building permit:\n                    i.   $2,562 towards the General Amenity Reserve Fund;\n                   ii.   $610 towards the Affordable Housing Reserve Fund;\n\n              b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                 in priority of all other charges on title, that agrees to the following:\n\n                    i.    That prior to building permit issuance, the applicant provides full frontage\n                          improvements, to the standards of the Subdivision and Development Servicing\n                          Bylaw No. 1000, and to the satisfaction of the Director of Engineering;\n                    ii.   That prior to building permit issuance, the applicant provides a Stormwater\n                          Management Plan to the standards of the Subdivision and Development Servicing\n                          Bylaw No. 1000, and to the satisfaction of the Director of Engineering;\n                   iii.   That prior to building permit issuance, the applicant agrees to provide a\n                          Construction Parking Management Plan, subject to approval from the Director of\n                          Engineering;\n\n                                                                                              September 18m, 2017\n                                                                                                       Page 4 of 14\n\n\n        2.   Authorize the Director of Planning to issue a variance to allow a front lot line setback of less\n             than 4.5m/5.5m, and a variance to reduce the off-street visitor parking requirement to nil\n             within the Development Permit, subject to the provision of double car garages in each unit\n             and visitor parking within the frontage of the subject property.\n\n                                                                                                      CARRIED.\n\n\n                  2. Application to rezone 1067 and 1077 Goldstream Avenue from RM3 (Apartment)\n                     and CT1 (Tourist Commercial \u2014 Motel) to MU1A (Mixed Use Residential\n                     Commercial A) to allow for the future development of a 165-unit multi-family\n                     residential building.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "512bce8306870998f333f338f73084589b3f70abe04821c9f5b877c80d91700b",
+      "pages": [
+        3,
+        4
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 955,
+      "claim_sha256": "3b7fe10249ee1924fbb5722e17d73bd7a4eadbabb2d8d43be369a41cb8c66e3e",
+      "legacy_text": "That Council:\n1. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 1067 and 1077 Goldstream Road RM3 (Apartment) and CT1 (Tourist Commercial \u2014 Motel) to MU1A (Mixed Use Residential Commercial A) subject to the following terms and conditions:\na) That the owner agrees to provide, as a bonus for increased density, the following contributions per unit, prior to issuance of a building permit:\ni. $2,562 towards the General Amenity Reserve Fund;\nii. $610 towards the Affordable Housing Reserve Fund;\nb) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following:\ni. That all frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the Director of Engineering, which include an operating 3-lane cross-section and a bus pull off with an accompanying concrete pad;\nii. That all boulevard improvements to Bylaw 1000 standards are provided to the satisfaction of the Manager of Parks;\niii. That all road dedication necessary for frontage improvements are provided to the satisfaction of the Director of Engineering and Approving Officer prior to bylaw adoption;\niv. That a storm water management plan be provided to the satisfaction of the Director of Engineering, and its maintenance plan be registered on title;\nv. That a construction parking management plan be provided to the satisfaction of the Director of Engineering prior to the issuance of a Building Permit.\nc) That the design of the building be amended, prior to Public Hearing, so that the outdoor seating area is located in a more central location, closer to the building.\n2. Direct staff to prepare a bylaw to reduce the minimum required lot coverage to 29% for the building permit;\n3. Direct staff to commence a road closure process for the lands noted in this report and to authorize its sale equal to the market value on a square metre bases of the abutting lands, minus any land dedicated to the City.\n4. Direct staff to apply the 75% reduction to Amenity Contributions in the bylaw to rezone the property, subject to the registration of a covenant securing the rental tenure of the units for a minimum of 10-years.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 7867,
+        "source_order": 5,
+        "key": "b7be039fedfdb8e55c25933a1311e163385330a952d292a20c595b7a3205bac2",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 1067\n        and 1077 Goldstream Road RM3 (Apartment) and CT1 (Tourist Commercial \u2014 Motel) to MU1A\n        (Mixed Use Residential Commercial A) subject to the following terms and conditions:\n\n             a)   That the owner agrees to provide, as a bonus for increased density, the following\n                  contributions per unit, prior to issuance of a building permit:\n                     i.   $2,562 towards the General Amenity Reserve Fund;\n                    ii.   $610 towards the Affordable Housing Reserve Fund;\n\n             b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                in priority of all other charges on title, that agrees to the following:\n                    i.   That all frontage improvements to Bylaw 1000 standards are provided to the\n                         satisfaction of the Director of Engineering, which include an operating 3-lane\n                         cross-section and a bus pull off with an accompanying concrete pad;\n                   ii.   That all boulevard improvements to Bylaw 1000 standards are provided to the\n                         satisfaction of the Manager of Parks;\n                  iii.   That all road dedication necessary for frontage improvements are provided to the\n                         satisfaction of the Director of Engineering and Approving Officer prior to bylaw\n                          adoption;\n                   iv.    That a storm water management plan be provided to the satisfaction of the\n                          Director of Engineering, and its maintenance plan be registered on title;\n                    v.    That a construction parking management plan be provided to the satisfaction of\n                          the Director of Engineering prior to the issuance of a Building Permit.\n\n             c)   That the design of the building be amended, prior to Public Hearing, so that the outdoor\n                  seating area is located in a more central location, closer to the building.\n\n   2.   Direct staff to prepare a bylaw to reduce the minimum required lot coverage to 29% for the\n        building permit;\n\n                                                                                                 September 18TH, 2017\n                                                                                                          Page 5 of 14\n\n\n\n   3.   Direct staff to commence a road closure process for the lands noted in this report and to authorize\n        its sale equal to the market value on a square metre bases of the abutting lands, minus any land\n        dedicated to the City.\n\n   4.   Direct staff to apply the 75% reduction to Amenity Contributions in the bylaw to rezone the\n        property, subject to the registration of a covenant securing the rental tenure of the units for a\n        minimum of 10-years.",
+        "source_block": "MOVED BY:         COUNCILLOR WADE\nSECONDED:         COUNCILLOR SZPAK\n\n        That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 1067\n        and 1077 Goldstream Road RM3 (Apartment) and CT1 (Tourist Commercial \u2014 Motel) to MU1A\n        (Mixed Use Residential Commercial A) subject to the following terms and conditions:\n\n             a)   That the owner agrees to provide, as a bonus for increased density, the following\n                  contributions per unit, prior to issuance of a building permit:\n                     i.   $2,562 towards the General Amenity Reserve Fund;\n                    ii.   $610 towards the Affordable Housing Reserve Fund;\n\n             b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                in priority of all other charges on title, that agrees to the following:\n                    i.   That all frontage improvements to Bylaw 1000 standards are provided to the\n                         satisfaction of the Director of Engineering, which include an operating 3-lane\n                         cross-section and a bus pull off with an accompanying concrete pad;\n                   ii.   That all boulevard improvements to Bylaw 1000 standards are provided to the\n                         satisfaction of the Manager of Parks;\n                  iii.   That all road dedication necessary for frontage improvements are provided to the\n                         satisfaction of the Director of Engineering and Approving Officer prior to bylaw\n                          adoption;\n                   iv.    That a storm water management plan be provided to the satisfaction of the\n                          Director of Engineering, and its maintenance plan be registered on title;\n                    v.    That a construction parking management plan be provided to the satisfaction of\n                          the Director of Engineering prior to the issuance of a Building Permit.\n\n             c)   That the design of the building be amended, prior to Public Hearing, so that the outdoor\n                  seating area is located in a more central location, closer to the building.\n\n   2.   Direct staff to prepare a bylaw to reduce the minimum required lot coverage to 29% for the\n        building permit;\n\n                                                                                                 September 18TH, 2017\n                                                                                                          Page 5 of 14\n\n\n\n   3.   Direct staff to commence a road closure process for the lands noted in this report and to authorize\n        its sale equal to the market value on a square metre bases of the abutting lands, minus any land\n        dedicated to the City.\n\n   4.   Direct staff to apply the 75% reduction to Amenity Contributions in the bylaw to rezone the\n        property, subject to the registration of a covenant securing the rental tenure of the units for a\n        minimum of 10-years.\n                                                                                               CARRIED.\n\n\n                 3.     Application to rezone 2955 Irwin Road from RR4 (Rural Residential 4) zone to RS4\n                        (Residential Small Lot) zone to allow an 18 small lot subdivision of single family\n                        dwellings.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "94b89cd762f67b574c79c2552cd8fd802152d8e5f6fd96c6c2848c6cc3506dde",
+      "pages": [
+        4,
+        5
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 956,
+      "claim_sha256": "ea0e8725b94f452ebfe488a198d2f8ba13f73325eeb8f89030f0311fb1d4170c",
+      "legacy_text": "That Council:\n1. Give First Reading to Bylaw 1731 in order to amend the text within the RS4 Zone of Zoning Bylaw No.300 to permit lot sizes of 260 m2, on the subject property, and limit the number of parcels that can be developed on the subject property to 18 parcels. As well as amend the zoning designation of the property located at 2955 Irwin Road from RR4 (Rural Residential 4) zone to R54 (Residential Small Lot 4 zone) subject to the following terms and conditions:\na) That the owner agrees to provide, as a bonus for increased density, the following contributions per new lot created, prior to subdivision approval:\ni. $6,000 towards the General Amenity Reserve Fund per single family lot; and\nii. $3,960 towards the General Amenity Reserve Fund per single family small lot;\niii. $1,000 towards the Affordable Housing Reserve Fund per single family lot; and\niv. $660 towards the Affordable Housing Reserve Fund per single family small lot;\nb) That the applicant provides, prior to Public Hearing, the following:\ni. Confirmation that some sort of public engagement has occurred in regards to the subject application to rezone 2955 Irwin Road;\nii. A frontage improvement plan to the satisfaction of the Director of Engineering and Bylaw No.1000.\nc) That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following:\ni. That, prior to subdivision approval or building permit issuance, whichever is first, the applicant provide a Construction Parking Management Plan, to the standards of the Subdivision and Servicing Bylaw, No.1000 and to the satisfaction of the Director of Engineering;\nii. That the applicant agrees to develop the parcels in substantial compliance to the plans attached as Appendix A in regards to landscaping and driveway design, to the satisfaction of the Director of Planning;\niii. That, prior to subdivision approval or building permit issuance, whichever is first, the applicant provide a Stormwater Management Plan, to the standards of the Subdivision and Servicing Bylaw, No.1000 and to the satisfaction of the Director of Engineering;\niv. That the applicant acknowledge and agree that no recreational vehicles or commercial vehicles will be allowed to be stored or parked on a driveway for more than 48 hours on driveways.\nv. That, prior to building permit issuance, the applicant register an access agreement for the shared driveways between single family dwellings, to the satisfaction of the Approving Officer.\nvi. That, prior to subdivision approval or building permit issuance, whichever is first, the applicant will implement the recommendations within the stormwater management plan as well as assumes responsibility for all costs, on site and off site, required to manage the subject property's drainage concerns;\nvii. That, prior to subdivision approval or building permit issuance, whichever is first, the applicant provides full frontage improvements and road dedication, if required, to the standards of the Subdivision and Development Servicing Bylaw No. 1000, and to the satisfaction of the Director of Engineering; and\nviii. That, prior to subdivision approval or building permit issuance, whichever is first, the applicant will be required to connect to municipal sanitary sewer infrastructure which may necessitate the requirement for service upgrades and extensions, all to the standards of the Subdivision and Servicing Bylaw No.1000 and the Director of Engineering; and\nix. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering, and that costs incurred will be the responsibility of the applicant.\nd) That, prior to Bylaw Adoption, the applicant submits and registers a road dedication plan, if required, to the satisfaction of the Director of Engineering and to the standards of the Subdivision and Servicing Bylaw No.1000.\ne) Direct staff to proceed with the following variance for 2955 Irwin Road, subject to the applicant applying for the necessary DVP:\ni. That section 4.11.4 of Bylaw No.1000 be varied from one on street parking space per 2 lots to 0.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 11294,
+        "source_order": 6,
+        "key": "f1fe9fac31f0698c6f8e9c31abeb2e1ff9da98d654962fe7926b3c241dcb6a53",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Give First Reading to Bylaw 1731 in order to amend the text within the RS4 Zone of Zoning Bylaw\n        No.300 to permit lot sizes of 260 m2, on the subject property, and limit the number of parcels that\n        can be developed on the subject property to 18 parcels. As well as amend the zoning designation\n        of the property located at 2955 Irwin Road from RR4 (Rural Residential 4) zone to R54 (Residential\n        Small Lot 4 zone) subject to the following terms and conditions:\n\n            a) That the owner agrees to provide, as a bonus for increased density, the following\n               contributions per new lot created, prior to subdivision approval:\n\n                        i.   $6,000 towards the General Amenity Reserve Fund per single family lot; and\n                       ii.   $3,960 towards the General Amenity Reserve Fund per single family small lot;\n                      iii.   $1,000 towards the Affordable Housing Reserve Fund per single family lot; and\n                      iv.    $660 towards the Affordable Housing Reserve Fund per single family small lot;\n\n            b) That the applicant provides, prior to Public Hearing, the following:\n\n                       i.    Confirmation that some sort of public engagement has occurred in regards to the\n                             subject application to rezone 2955 Irwin Road;\n                      ii.    A frontage improvement plan to the satisfaction of the Director of Engineering\n                             and Bylaw No.1000.\n\n            c)   That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered\n                 in priority of all other charges on title, that agrees to the following:\n\n                       i.    That, prior to subdivision approval or building permit issuance, whichever is first,\n                             the applicant provide a Construction Parking Management Plan, to the standards\n                             of the Subdivision and Servicing Bylaw, No.1000 and to the satisfaction of the\n                             Director of Engineering;\n\n                                                                                 September 18m, 2017\n                                                                                          Page 6 of 14\n\n\n\n      ii.    That the applicant agrees to develop the parcels in substantial compliance to the\n             plans attached as Appendix A in regards to landscaping and driveway design, to\n             the satisfaction of the Director of Planning;\n      iii.   That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant provide a Stormwater Management Plan, to the standards of the\n             Subdivision and Servicing Bylaw, No.1000 and to the satisfaction of the Director\n             of Engineering;\n      iv.    That the applicant acknowledge and agree that no recreational vehicles or\n             commercial vehicles will be allowed to be stored or parked on a driveway for\n             more than 48 hours on driveways.\n      v.     That, prior to building permit issuance, the applicant register an access\n             agreement for the shared driveways between single family dwellings, to the\n             satisfaction of the Approving Officer.\n      vi.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant will implement the recommendations within the stormwater\n             management plan as well as assumes responsibility for all costs, on site and off\n             site, required to manage the subject property's drainage concerns;\n     vii.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant provides full frontage improvements and road dedication, if\n             required, to the standards of the Subdivision and Development Servicing Bylaw\n             No. 1000, and to the satisfaction of the Director of Engineering;\n     viii.   That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant will register a Statutory Right of Way Plan along the western portion\n             of the property for trail and park improvements;\n      ix.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant constructs park improvements and trail infrastructure to the\n             standards of Bylaw No.1000 and the Manager of Parks;\n       x.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant will be required to connect to municipal sanitary sewer\n             infrastructure which may necessitate the requirement for service upgrades and\n             extensions, all to the standards of the Subdivision and Servicing Bylaw No.1000\n             and the Director of Engineering; and\n      xi.    That any necessary above or underground infrastructure or servicing upgrades,\n             extensions or other required servicing requirements are to be fulfilled to the\n             standards of Bylaw No. 1000 and the Director of Engineering, and that costs\n             incurred will be the responsibility of the applicant.\n\nd) That, prior to Bylaw Adoption, the applicant submits and registers a road dedication plan,\n   if required, to the satisfaction of the Director of Engineering and to the standards of the\n   Subdivision and Servicing Bylaw No.1000.\n\ne)   Direct staff to proceed with the following variance for 2955 Irwin Road, subject to the\n     applicant applying for the necessary DVP:\n\n\n        i.   That section 4.11.4 of Bylaw No.1000 be varied from one on street parking space\n             per 2 lots to 0.\n\n                                                                                             September 18TH, 2017\n                                                                                                      Page 7 of 14",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SZPAK\n\n        That Council:\n\n   1.   Give First Reading to Bylaw 1731 in order to amend the text within the RS4 Zone of Zoning Bylaw\n        No.300 to permit lot sizes of 260 m2, on the subject property, and limit the number of parcels that\n        can be developed on the subject property to 18 parcels. As well as amend the zoning designation\n        of the property located at 2955 Irwin Road from RR4 (Rural Residential 4) zone to R54 (Residential\n        Small Lot 4 zone) subject to the following terms and conditions:\n\n            a) That the owner agrees to provide, as a bonus for increased density, the following\n               contributions per new lot created, prior to subdivision approval:\n\n                        i.   $6,000 towards the General Amenity Reserve Fund per single family lot; and\n                       ii.   $3,960 towards the General Amenity Reserve Fund per single family small lot;\n                      iii.   $1,000 towards the Affordable Housing Reserve Fund per single family lot; and\n                      iv.    $660 towards the Affordable Housing Reserve Fund per single family small lot;\n\n            b) That the applicant provides, prior to Public Hearing, the following:\n\n                       i.    Confirmation that some sort of public engagement has occurred in regards to the\n                             subject application to rezone 2955 Irwin Road;\n                      ii.    A frontage improvement plan to the satisfaction of the Director of Engineering\n                             and Bylaw No.1000.\n\n            c)   That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered\n                 in priority of all other charges on title, that agrees to the following:\n\n                       i.    That, prior to subdivision approval or building permit issuance, whichever is first,\n                             the applicant provide a Construction Parking Management Plan, to the standards\n                             of the Subdivision and Servicing Bylaw, No.1000 and to the satisfaction of the\n                             Director of Engineering;\n\n                                                                                 September 18m, 2017\n                                                                                          Page 6 of 14\n\n\n\n      ii.    That the applicant agrees to develop the parcels in substantial compliance to the\n             plans attached as Appendix A in regards to landscaping and driveway design, to\n             the satisfaction of the Director of Planning;\n      iii.   That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant provide a Stormwater Management Plan, to the standards of the\n             Subdivision and Servicing Bylaw, No.1000 and to the satisfaction of the Director\n             of Engineering;\n      iv.    That the applicant acknowledge and agree that no recreational vehicles or\n             commercial vehicles will be allowed to be stored or parked on a driveway for\n             more than 48 hours on driveways.\n      v.     That, prior to building permit issuance, the applicant register an access\n             agreement for the shared driveways between single family dwellings, to the\n             satisfaction of the Approving Officer.\n      vi.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant will implement the recommendations within the stormwater\n             management plan as well as assumes responsibility for all costs, on site and off\n             site, required to manage the subject property's drainage concerns;\n     vii.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant provides full frontage improvements and road dedication, if\n             required, to the standards of the Subdivision and Development Servicing Bylaw\n             No. 1000, and to the satisfaction of the Director of Engineering;\n     viii.   That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant will register a Statutory Right of Way Plan along the western portion\n             of the property for trail and park improvements;\n      ix.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant constructs park improvements and trail infrastructure to the\n             standards of Bylaw No.1000 and the Manager of Parks;\n       x.    That, prior to subdivision approval or building permit issuance, whichever is first,\n             the applicant will be required to connect to municipal sanitary sewer\n             infrastructure which may necessitate the requirement for service upgrades and\n             extensions, all to the standards of the Subdivision and Servicing Bylaw No.1000\n             and the Director of Engineering; and\n      xi.    That any necessary above or underground infrastructure or servicing upgrades,\n             extensions or other required servicing requirements are to be fulfilled to the\n             standards of Bylaw No. 1000 and the Director of Engineering, and that costs\n             incurred will be the responsibility of the applicant.\n\nd) That, prior to Bylaw Adoption, the applicant submits and registers a road dedication plan,\n   if required, to the satisfaction of the Director of Engineering and to the standards of the\n   Subdivision and Servicing Bylaw No.1000.\n\ne)   Direct staff to proceed with the following variance for 2955 Irwin Road, subject to the\n     applicant applying for the necessary DVP:\n\n\n        i.   That section 4.11.4 of Bylaw No.1000 be varied from one on street parking space\n             per 2 lots to 0.\n\n                                                                                             September 18TH, 2017\n                                                                                                      Page 7 of 14\n\n\n                                                                                                     CARRIED.\n\n\n                 4.   Application for Development Variance Permit to vary the building setbacks to the\n                      interior side and front property lines and the off street parking space length in\n                      order to permit the construction of an 8 unit townhouse development at 2282 and\n                      2824 Knotty Pine Road.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "355c753b6e72686a29750557ae08cf614fc7b14ef98b8130553cc3a27d8089eb",
+      "pages": [
+        5,
+        6,
+        7
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 957,
+      "claim_sha256": "de4978b81c3eb9829db9944b927b73ade5c4787627960d5699ff510ff69fc453",
+      "legacy_text": "That Council:\n1. Direct staff to proceed with consideration of the following variances for 2822 and 2824 Knotty Pine Road:\ni. That Section 6.36A.06(1) of Zoning Bylaw No. 300 be varied to reduce the front lot line setback from 5.57 m, in accordance with Z16-0018, to 3.4 m;\nii. That Section 6.36A.06(2) of Zoning Bylaw No. 300 be varied to reduce the interior side lot line setback from 2 m, in accordance with Z16-0018, to 1.2 m; and\niii. That Table 4.01.02 of the Zoning Bylaw No.300 be varied to reduce the required length of an off street parking space from 5.5 m to 4.6 m;\nSubject to the following terms and conditions:\ni. That the site is developed in accordance with the plan attached to this report as Appendix A; and;\nii. That the applicant submits a revised Frontage Improvement Plan, to the standards of the Subdivision and Servicing Bylaw No.1000 and the Director of Engineering, prior to the issuance of this Development Variance Permit.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 17882,
+        "source_order": 7,
+        "key": "d3b438af457af0134aca889f983fd3526aa3bb06f6c05a774ef19f417d3ad153",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.    Direct staff to proceed with consideration of the following variances for 2822 and 2824 Knotty\n         Pine Road:\n\n           i. That Section 6.36A.06(1) of Zoning Bylaw No. 300 be varied to reduce the front lot line setback\n              from 5.57 m, in accordance with Z16-0018, to 3.4 m;\n          ii. That Section 6.36A.06(2) of Zoning Bylaw No. 300 be varied to reduce the interior side lot line\n              setback from 2 m, in accordance with Z16-0018, to 1.2 m; and\n         iii. That Table 4.01.02 of the Zoning Bylaw No.300 be varied to reduce the required length of an\n             off street parking space from 5.5 m to 4.6 m;\n\nSubject to the following terms and conditions:\n\n          i. That the site is developed in accordance with the plan attached to this report as Appendix A;\n             and;\n         ii. That the applicant submits a revised Frontage Improvement Plan, to the standards of the\n             Subdivision and Servicing Bylaw No.1000 and the Director of Engineering, prior to the issuance\n             of this Development Variance Permit.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SZPAK\n\n         That Council:\n\n   1.    Direct staff to proceed with consideration of the following variances for 2822 and 2824 Knotty\n         Pine Road:\n\n           i. That Section 6.36A.06(1) of Zoning Bylaw No. 300 be varied to reduce the front lot line setback\n              from 5.57 m, in accordance with Z16-0018, to 3.4 m;\n          ii. That Section 6.36A.06(2) of Zoning Bylaw No. 300 be varied to reduce the interior side lot line\n              setback from 2 m, in accordance with Z16-0018, to 1.2 m; and\n         iii. That Table 4.01.02 of the Zoning Bylaw No.300 be varied to reduce the required length of an\n             off street parking space from 5.5 m to 4.6 m;\n\nSubject to the following terms and conditions:\n\n          i. That the site is developed in accordance with the plan attached to this report as Appendix A;\n             and;\n         ii. That the applicant submits a revised Frontage Improvement Plan, to the standards of the\n             Subdivision and Servicing Bylaw No.1000 and the Director of Engineering, prior to the issuance\n             of this Development Variance Permit.\n\n                                                                                                      CARRIED.\n\n\n                 5.   Application for Development Variance Permit to allow for one additional\n                      freestanding sign at 2207 Millstream Road.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "be5b23ed364cc58aa226f75230bf947f9b7803f4a3b3f17326fe06ac6abfcab0",
+      "pages": [
+        7
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 958,
+      "claim_sha256": "3618f722d67858861cae58946350b047c00d10c9173003c1552553ee05a0c4da",
+      "legacy_text": "That Council:\n1. Direct staff to proceed with consideration of the following variances for 2207 Millstream Road:\na) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from one permitted freestanding sign per highway frontage to two freestanding signs per highway frontage.\n2. Direct Staff to waive the DVP fee of $1,364 as well as the Sign Permit fee of $150.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 19333,
+        "source_order": 8,
+        "key": "00f762e59937895772b90b13946a0375a751d2c5de89b1f2b122b260fe5f2cfa",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n    1.   Direct staff to proceed with consideration of the following variances for 2207 Millstream Road:\n\n         a) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from one permitted freestanding sign\n            per highway frontage to two freestanding signs per highway frontage.\n\n    2.   Direct Staff to waive the DVP fee of $1,364 as well as the Sign Permit fee of $150.\n\n                                                                                          September 18m, 2017\n                                                                                                   Page 8 of 14",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SZPAK\n\n         That Council:\n\n    1.   Direct staff to proceed with consideration of the following variances for 2207 Millstream Road:\n\n         a) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from one permitted freestanding sign\n            per highway frontage to two freestanding signs per highway frontage.\n\n    2.   Direct Staff to waive the DVP fee of $1,364 as well as the Sign Permit fee of $150.\n\n                                                                                          September 18m, 2017\n                                                                                                   Page 8 of 14\n\n\n                                                                                                  CARRIED.\n\n\n      b)    Administration and Finance Committee \u2014 September 12th, 2017\n               1. 2018 Permissive Tax Exemptions \u2014 Bylaw No. 1718, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "81020838c3f87d7b4f16be74b125c6c72343d37536624d4d57a746e20f4c2b14",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 959,
+      "claim_sha256": "36bbad54e3c53df32aeddf486b8bc636f8caaeb0269768679c7078607a43ecfd",
+      "legacy_text": "That Council recommend the following 2018 Permissive Tax Exemptions: All properties included within the September 12th, 2017 report to Committee, with the exception of the application from the Nature Conservancy of Canada's application for exemption of Lot 1, 1152 Lippincott Road, until staff confirm that there is general public access to the property; AND That the Administration and Finance Committee recommend that Council proceed to give Tax Exemption Bylaw No. 1718, 2017 the first three readings at the regular Council Meeting of October 2, 2017; AND That the Administration and Finance Committee recommend that Council require reapplication every two (2) years rather than annual, with the understanding that staff monitor their activity.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 20290,
+        "source_order": 9,
+        "key": "f937afd6d6e89e8c54b295ade05c86e65c484ab8c9bb48e88c6593e7e0001848",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council recommend the following 2018 Permissive Tax Exemptions:\n\n      All properties included within the September 12th, 2017 report to Committee, with the\n      exception of the application from the Nature Conservancy of Canada's application for\n      exemption of Lot 1, 1152 Lippincott Road, until staff confirm that there is general public access\n      to the property;\n\n      AND\n\n      That the Administration and Finance Committee recommend that Council proceed to give Tax\n      Exemption Bylaw No. 1718, 2017 the first three readings at the regular Council Meeting of\n      October 2, 2017;\n\n      AND\n\n\n      That the Administration and Finance Committee recommend that Council require reapplication\n      every two (2) years rather than annual, with the understanding that staff monitor their activity.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n      That Council recommend the following 2018 Permissive Tax Exemptions:\n\n      All properties included within the September 12th, 2017 report to Committee, with the\n      exception of the application from the Nature Conservancy of Canada's application for\n      exemption of Lot 1, 1152 Lippincott Road, until staff confirm that there is general public access\n      to the property;\n\n      AND\n\n      That the Administration and Finance Committee recommend that Council proceed to give Tax\n      Exemption Bylaw No. 1718, 2017 the first three readings at the regular Council Meeting of\n      October 2, 2017;\n\n      AND\n\n\n      That the Administration and Finance Committee recommend that Council require reapplication\n      every two (2) years rather than annual, with the understanding that staff monitor their activity.\n\n\n                                                                                                   CARRIED.\n\n\n               2.   Financial Statements January to July 31, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "dafd21f951919c4ccfa1783676a2f5c2db22c2a49ebc3e88ae80f9d1c9f6523a",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 960,
+      "claim_sha256": "d7a5eaddf4e057cf3e492f7d85269f1d6df0b09a75fb112dfaccec30a05d7629",
+      "legacy_text": "That Council receive the January to July 31, 2017 Financial Review for information as outlined in the report dated September 12th, 2017.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 21365,
+        "source_order": 10,
+        "key": "bf60c985c6b34a004843f41b8063824e9bb0aea81c0e24f59e6de08163f6b059",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the January to July 31, 2017 Financial Review for information as outlined in\n     the report dated September 12th, 2017.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n     That Council receive the January to July 31, 2017 Financial Review for information as outlined in\n     the report dated September 12th, 2017.\n\n                                                                                                   CARRIED.\n\n\n               3.   Monthly Approval of Accounts Payable - May to August 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "45cf6de227f2f75bce2fb41e14f41fe6528822d5f49aa01100ae8f317f351c17",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 961,
+      "claim_sha256": "94301b9a4e96745904b451bdb7593e69536878817a335dfda5651b85ddb7ce5e",
+      "legacy_text": "That Council approve the City of Langford disbursements from May, 2017 as outlined in the Accounts Payable Report dated August, 2017.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 21772,
+        "source_order": 11,
+        "key": "85306225dcdc050c57a5e6ba2413c4656233cbcb6d30874d1b9bcc554e7c0d9f",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the City of Langford disbursements from May, 2017 as outlined in the\n      Accounts Payable Report dated August, 2017.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n      That Council approve the City of Langford disbursements from May, 2017 as outlined in the\n      Accounts Payable Report dated August, 2017.\n\n                                                                                                   CARRIED.\n\n                                                                                                  September 18TH, 2017\n                                                                                                           Page 9 of 14\n\n\n\n\n7.         REPORTS\n\n\n           a)    ADDENDUM - Application for Development Variance Permit to allow the development of\n                 10 townhouse units and two one-family dwellings at 3296 Jacklin Road\n                    - Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "82ce5deec6157cd71a0b5cf7adeca32c8df9a1fd2cd488bbfe120c8c309445e8",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 962,
+      "claim_sha256": "35147d6ac6946c16e55238984257eb81aaa2d83cdb531514607bfad8e4c12343",
+      "legacy_text": "That Council:\n1. Direct staff to proceed with consideration of the following variances for the proposed development of 3296 Jacklin Road:\na) To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58 m (31.4 ft) for the proposed one-family dwelling on Site 2A;\nb) To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53 m (31.3 feet) for the proposed one-family dwelling on Site 2B;\nc) To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10 ft) for the proposed one-family dwelling on Site 2B;\nd) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for the proposed one-family dwelling on Site 28;\ne) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the proposed one-family dwelling on Site 2A;\nf) To reduce the minimum required rear yard setback from 7.5 m (25 ft) to 4.5 m (15 ft) for proposed Townhouse Building 1 on Site 1; and\ng) To reduce the minimum required front yard setback from 4.5 m (15 ft) to 3.0 m (10 ft) for the proposed one-family dwelling on Site 2A.\nSubject to the following terms and conditions:\nii. That the site shall be developed in accordance with the site plan, floor plans, elevation plans and revised landscaping plans attached to this report; and\niii. That the applicant delineate the drip line of all trees located on abutting properties near the rear property line and ensures that development does not disturb the root systems of these trees.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 22594,
+        "source_order": 12,
+        "key": "fe778d02a11f45d0d892627fea90d8bdaa251ff1a6e32bcd3dbb8090f207fdaa",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n     1.     Direct staff to proceed with consideration of the following variances for the proposed\n            development of 3296 Jacklin Road:\n\n     a) To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58 m\n        (31.4 ft) for the proposed one-family dwelling on Site 2A;\n\n     b) To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53 m\n        (31.3 feet) for the proposed one-family dwelling on Site 2B;\n\n     c) To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10 ft)\n        for the proposed one-family dwelling on Site 2B;\n\n     d) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for the\n        proposed one-family dwelling on Site 28;\n\n     e)     To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the\n            proposed one-family dwelling on Site 2A;\n\n\n     f)     To reduce the minimum required rear yard setback from 7.5 m (25 ft) to 4.5 m (15 ft) for\n            proposed Townhouse Building 1 on Site 1; and\n\n\n     g) To reduce the minimum required front yard setback from 4.5 m (15 ft) to 3.0 m (10 ft) for the\n        proposed one-family dwelling on Site 2A.\n\n\nSubject to the following terms and conditions:\n\n          ii.That the site shall be developed in accordance with the site plan, floor plans, elevation plans and\n                 revised landscaping plans attached to this report; and\n\n          iii.That the applicant delineate the drip line of all trees located on abutting properties near the rear\n                  property line and ensures that development does not disturb the root systems of these trees.",
+        "source_block": "MOVED BY:           COUNCILLOR WADE\nSECONDED:           COUNCILLOR SZPAK\n\nThat Council:\n\n     1.     Direct staff to proceed with consideration of the following variances for the proposed\n            development of 3296 Jacklin Road:\n\n     a) To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58 m\n        (31.4 ft) for the proposed one-family dwelling on Site 2A;\n\n     b) To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53 m\n        (31.3 feet) for the proposed one-family dwelling on Site 2B;\n\n     c) To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10 ft)\n        for the proposed one-family dwelling on Site 2B;\n\n     d) To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for the\n        proposed one-family dwelling on Site 28;\n\n     e)     To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the\n            proposed one-family dwelling on Site 2A;\n\n\n     f)     To reduce the minimum required rear yard setback from 7.5 m (25 ft) to 4.5 m (15 ft) for\n            proposed Townhouse Building 1 on Site 1; and\n\n\n     g) To reduce the minimum required front yard setback from 4.5 m (15 ft) to 3.0 m (10 ft) for the\n        proposed one-family dwelling on Site 2A.\n\n\nSubject to the following terms and conditions:\n\n          ii.That the site shall be developed in accordance with the site plan, floor plans, elevation plans and\n                 revised landscaping plans attached to this report; and\n\n          iii.That the applicant delineate the drip line of all trees located on abutting properties near the rear\n                  property line and ensures that development does not disturb the root systems of these trees.\n\n                                                                                                           CARRIED.\n\n                                                                                              September 18TH, 2017\n                                                                                                      Page 10 of 14\n\n\n\n         b)   ALR17-0002 \u2014 Application to Partially Exclude 940 and 960 Latoria Rd from the\n              Agricultural Land Reserve.\n                  -   Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9bb691c4044f7042877b2dab3754b1392bf64ac76cfb834c3c03f44f10b1d5bd",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 963,
+      "claim_sha256": "16329a2355f567a90babdc9783d6be957bc56864238d8c42e5c26056586c7b70",
+      "legacy_text": "That Council:\n1. Recommend to the Agricultural Land Commission that 4.5 ha (11 acres) of property at 940 and 960 Latoria Rd be removed from the Agricultural Land Reserve, subject to the development of the properties as a school site and the retention of 1.6 ha (4 acres) of the property as ALR; and\n2. Direct staff to prepare bylaws to amend the official community plan and zoning designations of the subject properties to permit the development of a school site, if approved for ALR Exclusion by the Agricultural Land Commission, and to concurrently hold a public hearing with regards to the release of the Option to Purchase a portion of 960 Latoria Rd and the Right of First Refusal to purchase 940 Latoria Rd.",
+      "source_identity": {
+        "meeting_id": 103,
+        "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+        "source_offset": 24953,
+        "source_order": 13,
+        "key": "5d6c9693f831fb915bbd5f1540d3484a9482e2fc512ba219ec2a054242b6a1eb",
+        "source_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n    1.   Recommend to the Agricultural Land Commission that 4.5 ha (11 acres) of property at 940 and\n         960 Latoria Rd be removed from the Agricultural Land Reserve, subject to the development of the\n         properties as a school site and the retention of 1.6 ha (4 acres) of the property as ALR; and\n\n    2.   Direct staff to prepare bylaws to amend the official community plan and zoning designations of\n         the subject properties to permit the development of a school site, if approved for ALR Exclusion\n         by the Agricultural Land Commission, and to concurrently hold a public hearing with regards to\n         the release of the Option to Purchase a portion of 960 Latoria Rd and the Right of First Refusal to\n         purchase 940 Latoria Rd.",
+        "source_block": "MOVED BY:         COUNCILLOR SZPAK\nSECONDED:         COUNCILLOR SAHLSTROM\n\nThat Council:\n\n    1.   Recommend to the Agricultural Land Commission that 4.5 ha (11 acres) of property at 940 and\n         960 Latoria Rd be removed from the Agricultural Land Reserve, subject to the development of the\n         properties as a school site and the retention of 1.6 ha (4 acres) of the property as ALR; and\n\n    2.   Direct staff to prepare bylaws to amend the official community plan and zoning designations of\n         the subject properties to permit the development of a school site, if approved for ALR Exclusion\n         by the Agricultural Land Commission, and to concurrently hold a public hearing with regards to\n         the release of the Option to Purchase a portion of 960 Latoria Rd and the Right of First Refusal to\n         purchase 940 Latoria Rd.\n\n                                                                                                       CARRIED.\n\n\n         c)     Bylaw No. 1717 \u2014 Application to Amend the Text of the CD 6 (Comprehensive\n                Development 6\u2014 Bear Mountain) Zone to allow for a townhouse development at 2500\n                Echo Valley Drive.\n                  -   Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "04f3946741fa5f4b2878b56fed3474fc4f05a22acc1628b9a37ecf41c6187c42",
+      "pages": [
+        10
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+  "second_independent_original_image_review_sha256": "8f4554099fe684a6e0d152c75105f00c5a0eddc5d6848b876a0a22731db3f8de"
+}
