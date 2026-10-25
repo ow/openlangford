@@ -1,0 +1,438 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 297,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+  "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2021-06-21",
+  "source_text_sha256": "ec59dd62c3108d2376ea86b74786596b311460fa67668cae1a5c7648846e939c",
+  "formal_inventory_sha256": "42d28af01d1232e30f7af93fe173c22d43b9c212da983ee7538d095c67ace216",
+  "claim_inventory_sha256": "a3195ee8bef227e6305bc2f8aaa6189208b15274ec696aff5d6b56ee5fcb998f",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "b1a82883b6e8dd8bd6d50446b5c2973b926ba525d97d9eb95f8711e70ae2faf1"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "c45ac8d7c648fb2dab617599fe71484d10bc1db0570d39fb44a91fb8e0ccbfa9"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "6fd16060c775b5ab959ca9ae31d5049ffa529a45809d0c259afb3a6bba6accb2"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "3791f335ef6fb8541c72fb23c65ae0a646d6cbc23142c9534a39ccb9e8135cfc"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "3e725c7390274782393b25aca253a7607034a50bc64373b8f704bfd0a2d3c023"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "e47f7c0e65639c6b86eee9cc433d7f0fed24664d33755cd7d2306a6099cdc4e5"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "6a5e90b31376444109da9a5d1dce60d07429631d736f48f9d374a4c6b25358f4"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "823e5370a26cc30c1272f56662b41f1d3cdfac0208fac777ee8fcd285c6a7807"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "fbf222cf7c6d84edac2e2c0b69881d83f60e388d031b45eb8b194edaab6f7581"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "f11ab4ccd2ba5c0586a091f57249ea904f0761c3ea6709734d4aedbe601c79ef"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "d4be7008cf7a22672c1bf2ed62a7e6bcb1e663f4a6442e3cd9e364cb3bd66af7"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "5047c04f694e8a6839c7e5b46ba3b9dd78d2abf9856da0990f288b8e4291645d"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "192baab798546b22028b223e5598b5d4ddc30622efcc41ae232ae164f59d0e3b"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "63cf0398743d62c4cf6a8bc2d540363d5ae70e5d60c0fb99cc0acdb035d2fa31"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "67bc4005d8f235a1ae3acaf2a7fa79f07e6ec4cb7746d7a7387499646e9f74f2"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "3b83b4aca2b54c7a6904b6ce2bb1bca1b113636575055418a9b1923cb9b06427"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "760edcfb1e14660770455634f2043acf0f5ed2765ec2cae48bdd8c4c3c79e64f"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "38e950667ee056b1dd4c9187a32649486c291940672f059fec697fe61b166cf0"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "73af16ed9f1386ed170dfbf7b977ce109f81b3e6e55c9e9326ffe272a4dff2b4"
+    },
+    {
+      "page": 20,
+      "native_text_sha256": "84f347dd8a7b7478d40e02988423ee108e8fa823ad5d92eab6dd3dc03bbc5e59"
+    },
+    {
+      "page": 21,
+      "native_text_sha256": "2811d30405313dbb7f29bdc2ccd1edf77b316c73ea9a16debb73dfbf046b7c67"
+    },
+    {
+      "page": 22,
+      "native_text_sha256": "da916147f2bdeb78a96c988b6b763708f66568515a0b365f744c0df42ed1e85c"
+    },
+    {
+      "page": 23,
+      "native_text_sha256": "88ccdda33dd93ca358dd38b76f1daabffd4e42ac395aef45c950c0b42e6119bb"
+    },
+    {
+      "page": 24,
+      "native_text_sha256": "652c08251def8c740cbbccf32497e88b19afec31e4e40c55bb31effec9aee956"
+    },
+    {
+      "page": 25,
+      "native_text_sha256": "617889481cde2c76ab4b650630a5da9e109101c6af15ee7ebf23bd2a31208bab"
+    },
+    {
+      "page": 26,
+      "native_text_sha256": "73d5c1cbee80885622147763d42a05525c108c7b8aca8e956d058cfbe3dad710"
+    },
+    {
+      "page": 27,
+      "native_text_sha256": "225688b220cbf7a31777e766be6eab149786528e677d6d6b2fd388171387fdcd"
+    },
+    {
+      "page": 28,
+      "native_text_sha256": "f771a76db184c915c3504bbcd711c251dd6e04a7bc3fa20bd0a9085a262967f7"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 2991,
+      "claim_sha256": "549ac9182a4422b0c232d4e15a29c017cd3287be7bebb024d5b7e9976aae4179",
+      "legacy_text": "That Council approve the agenda with the addition of item 10(1) Appointment to Administration and Finance Committee.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 999,
+        "source_order": 0,
+        "key": "37fcc1c948dc944016c530b196d29d00598bfcaeb088b9fc4d458628a8171bb7",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda with the addition of item 10(1) Appointment to Administration\n        and Finance Committee.",
+        "source_block": "MOVED BY:        COUNCILLOR SEATON\nSECONDED:        COUNCILLORWADE\n\n        That Council approve the agenda with the addition of item 10(1) Appointment to Administration\n        and Finance Committee.\n\n                                                                                                    CARRIED.\n\n3.      PRESENTATIONS\n\n        a)   Mayor Young\n             RE: Provincial Long-Service Medal Presented to Captain Brad Cambrey for 35-Years\n             Of Fire Service\n\nMayor Young along with Fire Chief Aubrey and Lieutenant Darche and presented Captain Brad Cambrey\nwith the provincial Long-Service medal and thanked him for his 35 years of fire service.\n\n                                                                                                          June 21, 2021\n                                                                                                            Page 2 of 28\n\n\n        b) Darren Kiedyk, Chief Administrative Officer\n             RE: Westhills Land Licensing Agreement /Jordie Lunn Bike Park Update\n\nDarren Kiedyk, Chief Administrative Officer provided an update on park space in Langford, which included\nthe Jordie Lunn Bike Park and an announcement that it will officially be open to the public tomorrow, June\n22, 2021, at 10:00 a.m. As well as announcing that the city has entered into a license of occupation with\nWesthills Land Development Corporation to secure approximately 110 acres of forested land for phase 2\nof the bike park. The land will be used for gravity and downhill mountain biking, rock climbing, and hiking,\nwith a significant portion land eventually being turned over to the city as parkland. We hope to have the\ntrails and facilities open in the fall of 2021.\n\n4.      PUBLIC HEARINGS\n\n\n        a)   BYLAW NO. 1944\n             \"Langford Zoning Bylaw, Amendment No. 608, (Zoning Bylaw 300 Definitions),\n             Bylaw No. 1944, 2021\"\n\nDirector of Corporate Services, B. Hutchins advised the public of the procedure for participating in the public\nhearing by phone or the Zoom app.\n\nThe Mayor opened the Public Hearing for Bylaw No. 1944 at 5:53 pm.\n\nDeputy Director of Planning Leah Stohmann advised that Bylaw No. 1944 proposes to amend Zoning Bylaw\nNo. 300 by updating the definitions for Apartment, Dwelling Unit, Medical Clinic, and Unlicensed Vehicle.\n\nThis is being proposed in order to allow for increased usability, education, and enforcement.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nThis proposal is consistent with the Official Community Plan.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nNo presentations.\n\nMayor Young called a second time for presentations.\n\nNo presentations.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1944 closed at 5:54 p.m.\n\n                                                                                                       June 21, 2021\n                                                                                                         Page 3 of 28\n\n\n        b) BYLAW NO. 1957\n           \"Langford Zoning Bylaw, Amendment No. 617, (2104 Longspur Dr), Bylaw No.\n           1957, 2021\"\n\nThe Mayor opened the Public Hearing for Bylaw No. 1957 at 5:54 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDeputy Director of Planning Leah Stohmann advised that The City of Langford has applied to amend the CD9\n(Baker View Heights) Zone in order to allow the construction of a one-family dwelling with a secondary suite\non the property located at 2104 Longspur Dr.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nThis proposal is consistent with the Official Community Plan Neighbourhood designation.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nNo presentation\n\nMayor Young called a second time for presentations.\n\nV. Vaillancourt, 2100 Longspur Dr. - Clarification that documents have been received. When would response\nbe expected? Concern with regard to the proposal to rezone CD9 again. Concern about Council not having\ninformation available to make a decision.\n\nCouncillor Szpak responded to the written questions sent in by the caller.\n\nLeah Stohmann addressed caller about geotechnical report and blasting.\n\nMayor Young addressed the caller about their concerns.\n\nJ. Gintaut, 1331 Ravens View Dr. asking for Council to have concerns addressed. Asking for a response from\nthe Council.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1957 closed at 6:12 p.m.\n\n        c)     BYLAW NO. 1983\n               \"Langford Zoning Bylaw, Amendment No. 627, (1028 Lomalinda Dr), Bylaw No.\n               1983, 2021\"\n\nThe Mayor opened the Public Hearing for Bylaw No. 1983 at 6:12 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\n                                                                                                         June 21, 2021\n                                                                                                           Page 4 of 28\n\n\nDeputy Director of Planning Leah Stohmann advised that Dave Smith of McElhanney Consulting Ltd. has\napplied on behalf of Becky McLeod to amend the zoning of a portion of 1028 Lomalinda Drive from the\nCluster Housing (CH2) Zone to the Neighbourhood Institutional (P1A) zone.\n\nThis is being proposed in order to allow for the subdivision of the property into two lots, and to allow a\nstandalone daycare with up to 76 children on the lot to be rezoned to P1A.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nIn support of this application, the applicant has agreed to provide the following:\n\n    1.That the applicant agrees to provide, prior to Bylaw Adoption, a Section 219 covenant that agrees to\n       the following:\n\n                That full frontage improvements, and a storm water management plan be provided to the\n                satisfaction of the Director of Engineer prior to subdivision approval.\n\n    2.That the applicant also agrees to provide, or bonds for, a 1.8 m decorative solid wood fence along all\n        lot lines containing a one-family or two-family dwelling, prior to subdivision approval.\n\nThis proposal is consistent with the Official Community Plan \"Neighbourhood\" designation\n\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\n\nThe Mayor called a first time for presentations.\n\nD. Smith, Applicant - Available for questions.\n\nMayor Young called a second time for presentations.\n\nNo presentations.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1983 closed at 6:15 p.m.\n\n        d)   BYLAW NO. 1987\n             \"Langford Official Community Plan Bylaw, Amendment No. 44, (City Centre\n             Designation Amendment), Bylaw No. 1987, 2021\"\n\nThe Mayor opened the Public Hearing for Bylaw No. 1987 at 6:15 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDirector of Planning Matthew Baldwin advised that Bylaw No. 1987 proposes to amend Official Community\nPlan Bylaw No. 1200 by amending the OCP designation of two Neighbourhoods from the City Centre\ndesignation to the Neighbourhood designation and the Mixed-use Employment Centre designation,\n\n                                                                                                        June 21, 2021\n                                                                                                          Pages of 28\n\n\nrespectively, as specified in the bylaw.\n\nThis is proposed in order to better reflect the characteristics of these neighborhoods.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nNo presentations.\n\nMayor Young called a second time for presentations.\n\nL. Locken, Marlisa Pl. - Council should designate the area to neighborhood. Concerned about commercial\nbuildings in area. With a concern about traffic.\n\nLeah Stohmann Deputy Director of Planning and Subdivision: responded that there is no commercial zoning\nallowed.\n\nC Harder, Goldstream Ave - Great area for density. Housing shortage is being addressed. Any proposal\nshould have some improvement of intersections. Solutions for congestion of traffic to implement a fee to\ndevelopers to encourage bikes and pedestrian use.\n\nMayor Young: addressed the caller that developers must improve sidewalks.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1987 closed at 6:22 p.m.\n\n5.      ADOPTION OF COUNCIL MINUTES\n\n        a)   Minutes of the Special Meeting of Council — May 10, 2021",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5f8e2bd475c03fb7fd20d60531d79c5774907b70d544ce443b0da89dbe725e0b",
+      "pages": [
+        1
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2992,
+      "claim_sha256": "523daca8436c182eb9dc90004ecc0bcf64b046996fe9562c0dfc54a6adee9d04",
+      "legacy_text": "That Council approve the minutes of the special meeting of Council held on May 10, 2021.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 10305,
+        "source_order": 1,
+        "key": "eb4607643ca8676de865033a14785c0667a44af7241956ff31c44923169f7f85",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the special meeting of Council held on May 10, 2021.",
+        "source_block": "MOVED BY:        COUNCILLOR SEATON\nSECONDED:        COUNCILLOR WADE\n\n        That Council approve the minutes of the special meeting of Council held on May 10, 2021.\n\n                                                                                                        CARRIED.\n\n6.      OTHER BOARD AND COMMISSION MINUTES\n\n        a)   Minutes of the West Shore Parks and Recreation Board of Directors Meeting—\n             April 8, 2021",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5fa4990b59a3673f93c3b43d7c91597e347bc7ca11885a97cd2ab46d8e81d03a",
+      "pages": [
+        5
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2993,
+      "claim_sha256": "a2f324b7db7f910dd18da182fafe262cf53cfde89fbd8e2a947d735c7a600db2",
+      "legacy_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors Meetings held on April 8, 2021.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 10747,
+        "source_order": 2,
+        "key": "db9662ad255bf4db618815bd0117ab636cb5f7e86ea90509c67eff9aea064476",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "June 21, 2021\n                                                                                                           Page 6 of 28\n\n\n\n\n        That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n        Meetings held on April 8, 2021.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SEATON\n\n                                                                                                         June 21, 2021\n                                                                                                           Page 6 of 28\n\n\n\n\n        That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n        Meetings held on April 8, 2021.\n\n                                                                                                          CARRIED.\n\n7.      PUBLIC PARTICIPATION\n\nRachel Sansom, White Pine Terrace — On Behalf of the WSDA we would like to congratulate Mayor, Council, and\nstaff on a challenging year for citizens. Congratulations on all the awards presented to the City of Langford in\nthe past year.\n\nDavid Marsh, Iron Clad Developments, Manitoba - re item 9a. Here to answer any questions.\n\nCouncillor Stewart asked the developer about the reduction of landscaping.\n\nDavid Marsh responded there was a challenge in meeting zoning bylaws of the CC1 zone. As well as meeting\nparking regulations. They would be triggering a variance issue. After discussing with City Hall staff, a landscape\nsetback instead of changing parking requirements was a better solution.\n\nMayor Young asked the developer whether they had varied the distance between the building to the edge of\nthe property line?\n\nDavid Marsh responded that no changes in the distance were made.\n\nL. Locken Marlisa Pl. - Development proposal of Millstream should be postponed until the rezoning of city\ncentre is completed.\n\nL. Alder, Parkdale Creek Gardens — Question due to Item 8. Volume of traffic is a concern. Excited about the\nnew parks. But that will be an increase in traffic. Is there another route available?\n\nMichelle Mahovlich advised that a connector road is being developed.\n\nMayor Young addressed future options of roadways.\n\nJ. Gintaut, Ravensview Dr - Process question concerning Items 8 (b)(2) will there be a public hearing. Item\n8(a)(6) Wanting a sign for local traffic.\n\nMichelle Mahovlich responded to concerns about signage, truck traffic sign posted. Difficult to monitor local\ntraffic.\n\nLeah Stohmann responded that truck traffic bylaws are in place. They are being monitored on Sooke Rd.\n\nP. Levesque, Alouette Dr - Appreciate that council recognise traffic issues on Alouette. Install stop signs\npossibly? What prevents the city from installing speed bumps? Problem will grow.\n\n                                                                                                          June 21, 2021\n                                                                                                            Page 7 of 28\n\n\nMayor Young advised that staff are looking at options for signage. Speed bumps have been a last option due to\nEmergency vehicles. A report on speed bumps is being addressed. Staff will look into having residents volunteer\nto have speed bumps in place.\n\nJ. De Corde, Carlow Rd - DVP20-0015 surprise is at max 6 floors, there is still an issue with parking. Concern\nabout the lack of greenspace. If there is not enough parking for height of building, why don't they lower the\nbuilding?\n\nMayor Young advised that staff will address the parking on the street and look into extra parking in the area.\n\nC. Harder, Goldstream Ave — Alouette Street support for call for stop signs. In favor of delineators. Look into\nspeed humps.\n\nS. Boiven, Rita Rd — Question about Bylaw 1956. Concern about the height of the building previously agreed\nupon.\n\nLeah Stohmann advised that the height of buildings will be as proposed.\n\nL. Plomp, Whimfield Terr — For proposal on Bray and Jacklin Rd. * Concern about the heights on building\nchanged from minutes at Planning Committee meeting. Concern about other buildings not being built after\nland is cleared.\n\n*Councillor Wade left the meeting at 7:02 p.m. due to a conflict — personal relationship\n\nCouncillor Wade returned to the meeting at 7:04 p.m.\n\nB. Armstrong, Rodney Rd - Congratulations to Chief Aubrey. Jordie Lunn bike park, will there be an emergency\nphone available? DVP20-0015, Concern about height of building. Concern about the setbacks on to her\nproperty. Parking in front of her house.\n\nT. Peirce, Dornier Rd - Agrees with previous caller about stop signs and traffic delineators.\n\nD. Charbonneau, Klahanie Dr — Asked a question regarding Z21-0010 and was asked to call into office.\n\n8.      COMMITTEE RESOLUTIONS\n\n        a) Transportation and Public Works Committee —June 8, 2021\n           1. Minutes of the Transportation and Public Works Committee\n              Meeting —June 8,2021",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "21fa4003a008b41660a9be907a5abdd2912aee1c64a1289112fab1b6728ed2bd",
+      "pages": [
+        5,
+        6
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2994,
+      "claim_sha256": "7cf8df42b52f2579692b4d0cddbf4ec36b9f49517feb94f2e66a7cc9fd6fb4ab",
+      "legacy_text": "That Council receive the minutes of the Transportation and Public Works Committee held on June 8, 2021.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 15418,
+        "source_order": 3,
+        "key": "416415bfb3f7e1bf14d0fb88e749917e0e1cbeae5603228c3da08d0b2893e88a",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the Transportation and Public Works Committee held on June\n        8, 2021.",
+        "source_block": "MOVED BY:       COUNCILLOR WADE\nSECONDED:       COUNCILLOR SZPAK\n\n        That Council receive the minutes of the Transportation and Public Works Committee held on June\n        8, 2021.\n\n                                                                                                          CARRIED.\n\n                                                                                                        June 21, 2021\n                                                                                                          Page 8 of 28\n\n\n            2. Crosswalk Request for Dunford Avenue",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ff53e900d859d40add05776b9b176df559ca1d299c8e96464305a95b5002fa72",
+      "pages": [
+        7
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2995,
+      "claim_sha256": "bcd94e5211a7ed80a85669f809a862df2f78ec262c9fcf21ecd1dbae1c6d8338",
+      "legacy_text": "That Council: 1. Direct staff to install a crosswalk at the intersection of Dunford Avenue and Henry Eng Place, complete with: pedestrian crossing signs; 'zebra'-style pavement markings, and; curb letdowns on each side, at an approx. cost of $28,000 and to be funded through the Traffic Signs operating budget for signs and pavement markings and Small Road Improvements operating budget for the curb and sidewalk adjustments.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 16013,
+        "source_order": 4,
+        "key": "6db0d0c89a2b3d84510ca29e05b1d688cdc3ca561bd1daf2fa689ede5ad10539",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to install a crosswalk at the intersection of Dunford Avenue and Henry Eng Place,\n        complete with: pedestrian crossing signs; 'zebra'-style pavement markings, and; curb letdowns on\n        each side, at an approx. cost of $28,000 and to be funded through the Traffic Signs operating\n        budget for signs and pavement markings and Small Road Improvements operating budget for the\n        curb and sidewalk adjustments.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SZPAK\n\n        That Council:\n\n   1.   Direct staff to install a crosswalk at the intersection of Dunford Avenue and Henry Eng Place,\n        complete with: pedestrian crossing signs; 'zebra'-style pavement markings, and; curb letdowns on\n        each side, at an approx. cost of $28,000 and to be funded through the Traffic Signs operating\n        budget for signs and pavement markings and Small Road Improvements operating budget for the\n        curb and sidewalk adjustments.\n\n                                                                                                        CARRIED.\n\n            3. Streetlight Review of Glen Lake Road from Sooke Road to City Centre Park\n\nMayor Young left the meeting at 7:13",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "da577e57c6786044a1d871cb8395bab36884046bbbe0a44fc1998d535e99ca45",
+      "pages": [
+        8
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2996,
+      "claim_sha256": "8b49f8ce8840217e326b25c11f0044c3c16bfc1e025746b3afc4d00701e8c3d8",
+      "legacy_text": "That Council: 1. Direct staff to order new BC Hydro streetlights at the following locations: 3183 Glen Lake Road; 3127 Glen Lake Road; across from 3108 Glen Lake Road, and; 3044 Glen Lake Road, and at an approximate cost of $10,000 plus an additional $76 per month, to be funded through the Engineering Departments' annual BC Hydro streetlight budget.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 16795,
+        "source_order": 5,
+        "key": "e04ecd594df95846fca3dc7f4b2ab09bb24cbd8635d464459104b3cfcfb1f2bd",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to order new BC Hydro streetlights at the following locations: 3183 Glen Lake Road;\n        3127 Glen Lake Road; across from 3108 Glen Lake Road, and; 3044 Glen Lake Road, and at an\n        approximate cost of $10,000 plus an additional $76 per month, to be funded through the\n        Engineering Departments' annual BC Hydro streetlight budget.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SEATON\n\n        That Council:\n\n   1.   Direct staff to order new BC Hydro streetlights at the following locations: 3183 Glen Lake Road;\n        3127 Glen Lake Road; across from 3108 Glen Lake Road, and; 3044 Glen Lake Road, and at an\n        approximate cost of $10,000 plus an additional $76 per month, to be funded through the\n        Engineering Departments' annual BC Hydro streetlight budget.\n\n                                                                                                        CARRIED.\n\n            4.   3D Crosswalks for Peatt Road",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b4ae6efe33a6f236da7d92695f7fc3b9ddce0b9df9de4a48f36a9e46a0aa2498",
+      "pages": [
+        8
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2997,
+      "claim_sha256": "fca99e4b560406f650e8c4a4c56931d83b998778a3acfc79a65763ccc8d5711b",
+      "legacy_text": "That Council: 1. To install the 3D crosswalk at the 2700 block of Peatt Road as a trial and funded through our Neighbourhood Improvement budget and bring the results back to Council within a year of the installation.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 17416,
+        "source_order": 6,
+        "key": "87cede9aeb16b48405d3df40b348151f359305f48811b34e91bc664fca2980d4",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   To install the 3D crosswalk at the 2700 block of Peatt Road as a trial and funded through our\n        Neighbourhood Improvement budget and bring the results back to Council within a year of the\n        installation.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR STEWART\n\n        That Council:\n\n   1.   To install the 3D crosswalk at the 2700 block of Peatt Road as a trial and funded through our\n        Neighbourhood Improvement budget and bring the results back to Council within a year of the\n        installation.\n\n                                                                                                        CARRIED.\n\n                                                                                                           June 21, 2021\n                                                                                                             Page 9 of 28\n\n\n              5.   Nicklaus Drive Traffic Concerns",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "af4e26266c224759a9b414a8975255223ba313b82331b03212a0aa3e516d27ad",
+      "pages": [
+        8
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2998,
+      "claim_sha256": "3600a0dca69573d07f24dadfddf607049b347d6d99c22e9e7c7fbc6d092bf2cb",
+      "legacy_text": "That Council: 1. Direct staff to install vertical delineators along the Nicklaus Drive gore area at an approximate cost of $7,500 and to be funded through the Engineering Department's annual Small Road Improvements budget; AND 2. Direct staff to research the use of speed reduction devices and bring forward to Council a policy that would warrant their implementation in Langford.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 18145,
+        "source_order": 7,
+        "key": "bbf0ea340912d80fa7fa043784c66975ee061d603fdb77894825cea667d03f8f",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to install vertical delineators along the Nicklaus Drive gore area at an approximate cost\n        of $7,500 and to be funded through the Engineering Department's annual Small Road\n        Improvements budget; AND\n\n   2.   Direct staff to research the use of speed reduction devices and bring forward to Council a policy that\n        would warrant their implementation in Langford.",
+        "source_block": "MOVED BY:          COUNCILLOR WADE\nSECONDED:          COUNCILLOR STEWART\n\n        That Council:\n\n   1.   Direct staff to install vertical delineators along the Nicklaus Drive gore area at an approximate cost\n        of $7,500 and to be funded through the Engineering Department's annual Small Road\n        Improvements budget; AND\n\n   2.   Direct staff to research the use of speed reduction devices and bring forward to Council a policy that\n        would warrant their implementation in Langford.\n\n                                                                                                           CARRIED.\n\n              6.   Alouette Drive Traffic Calming\n\nMayor Young returned to the meeting at 7:15.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "bd1d2234baa2dce2d6f25c74cb99c33f7efd86ced6bc8ba593197a5bf1d26fea",
+      "pages": [
+        9
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2999,
+      "claim_sha256": "7385586c2b00a74d65ca16ef6aa91d96d7d088265e4f0917167e697eda757469",
+      "legacy_text": "That Council: 1. Direct staff to install vertical delineators along the centerline of Alouette Drive at the following three locations: a. Between Parkdale Creek Gardens and the pedestrian crosswalk at Dornier Road; b. Approaching Sikorsky Road from Dornier Road along the Alouette Drive frontage of 1197 Sikorsky Road; c. Approaching Langford Lake Road, north of the last driveway that is located at 2950 Alouette Drive; AND 2. Direct staff to install a 3-way Stop-controlled intersection on Alouette Drive at Sikorsky Road.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 18859,
+        "source_order": 8,
+        "key": "c820e12d042b8310ec67c2b029e17715e17fc2a729cd59d41d1eb790b6124396",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n  1.    Direct staff to install vertical delineators along the centerline of Alouette Drive at the following\n        three locations:\n\n             a.    Between Parkdale Creek Gardens and the pedestrian crosswalk at Dornier Road;\n             b.    Approaching Sikorsky Road from Dornier Road along the Alouette Drive frontage of 1197\n                   Sikorsky Road;\n             c.    Approaching Langford Lake Road, north of the last driveway that is located at 2950\n                   Alouette Drive; AND\n\n   2.   Direct staff to install a 3-way Stop-controlled intersection on Alouette Drive at Sikorsky Road.",
+        "source_block": "MOVED BY:          COUNCILLOR WADE\nSECONDED:          COUNCILLOR STEWART\n\n        That Council:\n\n  1.    Direct staff to install vertical delineators along the centerline of Alouette Drive at the following\n        three locations:\n\n             a.    Between Parkdale Creek Gardens and the pedestrian crosswalk at Dornier Road;\n             b.    Approaching Sikorsky Road from Dornier Road along the Alouette Drive frontage of 1197\n                   Sikorsky Road;\n             c.    Approaching Langford Lake Road, north of the last driveway that is located at 2950\n                   Alouette Drive; AND\n\n   2.   Direct staff to install a 3-way Stop-controlled intersection on Alouette Drive at Sikorsky Road.\n\n                                                                                                           CARRIED.\n\n        b)    Planning, Zoning and Affordable Housing Committee —June 14, 2021\n              1. Minutes of the Planning, Zoning and Affordable Housing Committee\n                  Meeting —June 14, 2021.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "54fb9fe12825474225e99c8e17f90b6e346b994ff9d18841a753cc02e3937d2e",
+      "pages": [
+        9
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3000,
+      "claim_sha256": "8bf9b13d3a3f3e1ec3a061ad4a98a562d441dea91aa9762806a7f163ed57d154",
+      "legacy_text": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held on June 14, 2021.",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 19895,
+        "source_order": 9,
+        "key": "5f8963f7d63c7ca7fc3254d76a2492f87b1b7ecd5d24939428fe509a83cc052e",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held\n        on June 14, 2021.\n\n                                                                                                             June 21, 2021\n                                                                                                             Page 10 of 28",
+        "source_block": "MOVED BY:          COUNCILLOR BLACKWELL\nSECONDED:          COUNCILLOR WADE\n\n        That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held\n        on June 14, 2021.\n\n                                                                                                             June 21, 2021\n                                                                                                             Page 10 of 28\n\n\n\n\n                                                                                                            CARRIED.\n\n             2.    Application to amend the zoning of the properties located at 2627 and 2631\n                   Millstream Road from the R2 (One- and Two-Family Residential) Zone to the RM9\n                   (Medium Density Apartment), Zone to allow for approximately 113 apartment\n                   Units",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f605086875c8745e7af01c9ab4207679184c3736acc58dbeafd651d7d250e99c",
+      "pages": [
+        9,
+        10
+      ],
+      "reason": "Unique exact substantive printed occurrence; preserve stored fields/actor IDs/outcome.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3001,
+      "claim_sha256": "899fdffc46f546639e3203bd6aeb77db3883d70c56458bc88848216cf14918de",
+      "legacy_text": "That Council: 1. Direct Staff to draft a Bylaw to amend the zoning of the properties located at 2627 and 2631 Millstream Road from the R2 (One- and Two-Family Residential) Zone to the RM9 (Medium Density Apartment) Zone, subject to the following: a) That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to issuance of a building permit: i. $610 towards the Affordable Housing Fund; ii. $3,660 towards the General Amenity Reserve Fund; (i) and (ii) are subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy; iv. That the total amount of contribution, after reductions, to the General Amenity Reserve Fund may be reduced by the estimated cost of installing additional sidewalk in front of the properties located at 2635 Millstream Road and 2623 Millstream Road; b) That the developer provides, prior to Public Hearing, to the satisfaction of the Director of Engineering: i. A technical stormwater management memo... (full conditions recorded in minutes).",
+      "source_identity": {
+        "meeting_id": 297,
+        "source_sha256": "349ec5119cc758b8a4f45ea9b3d467bc5cd9845a13673441dadb8cc98f1205c8",
+        "source_offset": 20778,
+        "source_order": 10,
+        "key": "9aa512adf4de846e7c85cc89d79e3685b18cda53c914d7b6ce2f86dae5e1efe8",
+        "source_file": "archive/langford/Council/2021/06/2021-06-21 530pm Regular Council [a75b51d9]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13734",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n 1.   Direct Staff to draft a Bylaw to amend the zoning of the properties located at 2627 and 2631\n      Millstream Road from the R2 (One- and Two-Family Residential) Zone to the RM9 (Medium Density\n      Apartment) Zone, subject to the following:\n\n        a)   That the applicant provides, as a bonus for increased density, the following contributions per\n             residential unit, prior to issuance of a building permit:\n\n              i. $610 towards the Affordable Housing Fund;\n              ii. $3,660 towards the General Amenity Reserve Fund;\n                  (i) and (ii) are subject to reductions depending on the use and height in accordance with\n                  the Affordable Housing and Amenity Contribution Policy;\n              iv. That the total amount of contribution, after reductions, to the General Amenity Reserve\n                  Fund may be reduced by the estimated cost of installing additional sidewalk in front of the\n                  properties located at 2635 Millstream Road and 2623 Millstream Road;\n\n        b) That the developer provides, prior to Public Hearing, to the satisfaction of the Director of\n           Engineering:\n\n                i. A technical stormwater management memo that verifies storm water can be adequately\n                   managed on-site for the proposed development;\n               ii. A frontage drawing to confirm if road dedication is required to complete all required\n                   frontage improvements; and\n              iii. The estimated cost for installing sidewalk within the frontages of 2635 and 2623\n                   Millstream Road, approximately 37 m of additional sidewalk;\n\n        c)   That, prior to Bylaw Adoption, the developer:\n\n                  i. Registers, if necessary, a road dedication plan required in accordance with frontage\n                     drawings to the satisfaction of the Director of Engineering;\n\n\n                  ii. Provides a Section 219 covenant registered in priority of all other charges on title that\n                      agrees to the following:\n\n                                                                                                         June 21, 2021\n                                                                                                         Page 11 of 28\n\n\n                    1.   That the following will be provided and implemented to Bylaw No. 1000 standards\n                         to the satisfaction of the Director of Engineering prior the issuance of a building\n                         permit:\n\n                         a.   Full frontage improvements, including the installation of sidewalks along the\n                              frontage of the properties and along the frontage of 2635 and 2623 Millstream\n                              Rd; and\n                         b.    A storm water management plan;\n\n                    2.   That the developer will connect and be responsible for any upgrades required to the\n                         services and utilities required for the development;\n\n                    3.   That a construction parking management plan be provided prior to the issuance of\n                         a building permit, to the satisfaction of the Director of Engineering.\n\n                    4.   That the developer registers a strata plan, prior to the issuance of an occupancy\n                         permit, that creates individual strata titles for each resident unit;\n\n                    5.   That the developer consolidates the properties prior to the issuance of a\n                         development permit;\n\n                    6.   That the required parking stalls for this development are allocated for the use by\n                         individuals in each unit and visitors, as required by Bylaw No. 300, and that parking\n                         is not separated from individual units nor provided in exchange for compensation\n                         separate than that of the residential unit; and\n\n                         a. That 100% of residential parking spaces, excluding visitor parking spaces, shall\n                            feature an energized outlet capable of providing Level 2 charging or higher to\n                            the parking space; and\n                         b. Energized outlets shall be labelled for the use of electric vehicle charging;\n                         c. Where an electric vehicle energy management system is implemented (load\n                            sharing), a qualified professional may specify a minimum performance\n                            standard to ensure a sufficient rate of electric vehicle charging; and\n                         d. The owner is required to keep the Electric Vehicle Servicing Equipment (EVSE)\n                            in operation and the Strata Council may not prevent an owner, occupant, or\n                            tenant from installing the EV charging equipment.",
+        "source_block": "MOVED BY:          COUNCILLOR WADE\nSECONDED:          COUNCILLOR BLACKWELL\n\n        That Council:\n\n 1.   Direct Staff to draft a Bylaw to amend the zoning of the properties located at 2627 and 2631\n      Millstream Road from the R2 (One- and Two-Family Residential) Zone to the RM9 (Medium Density\n      Apartment) Zone, subject to the following:\n\n        a)   That the applicant provides, as a bonus for increased density, the following contributions per\n             residential unit, prior to issuance of a building permit:\n\n              i. $610 towards the Affordable Housing Fund;\n              ii. $3,660 towards the General Amenity Reserve Fund;\n                  (i) and (ii) are subject to reductions depending on the use and height in accordance with\n                  the Affordable Housing and Amenity Contribution Policy;\n              iv. That the total amount of contribution, after reductions, to the General Amenity Reserve\n                  Fund may be reduced by the estimated cost of installing additional sidewalk in front of the\n                  properties located at 2635 Millstream Road and 2623 Millstream Road;\n\n        b) That the developer provides, prior to Public Hearing, to the satisfaction of the Director of\n           Engineering:\n\n                i. A technical stormwater management memo that verifies storm water can be adequately\n                   managed on-site for the proposed development;\n               ii. A frontage drawing to confirm if road dedication is required to complete all required\n                   frontage improvements; and\n              iii. The estimated cost for installing sidewalk within the frontages of 2635 and 2623\n                   Millstream Road, approximately 37 m of additional sidewalk;\n\n        c)   That, prior to Bylaw Adoption, the developer:\n\n                  i. Registers, if necessary, a road dedication plan required in accordance with frontage\n                     drawings to the satisfaction of the Director of Engineering;\n\n\n                  ii. Provides a Section 219 covenant registered in priority of all other charges on title that\n                      agrees to the following:\n\n                                                                                                         June 21, 2021\n                                                                                                         Page 11 of 28\n\n\n                    1.   That the following will be provided and implemented to Bylaw No. 1000 standards\n                         to the satisfaction of the Director of Engineering prior the issuance of a building\n                         permit:\n\n                         a.   Full frontage improvements, including the installation of sidewalks along the\n                              frontage of the properties and along the frontage of 2635 and 2623 Millstream\n                              Rd; and\n                         b.    A storm water management plan;\n\n                    2.   That the developer will connect and be responsible for any upgrades required to the\n                         services and utilities required for the development;\n\n                    3.   That a construction parking management plan be provided prior to the issuance of\n                         a building permit, to the satisfaction of the Director of Engineering.\n\n                    4.   That the developer registers a strata plan, prior to the issuance of an occupancy\n                         permit, that creates individual strata titles for each resident unit;\n\n                    5.   That the developer consolidates the properties prior to the issuance of a\n                         development permit;\n\n                    6.   That the required parking stalls for this development are allocated for the use by\n                         individuals in each unit and visitors, as required by Bylaw No. 300, and that parking\n                         is not separated from individual units nor provided in exchange for compensation\n                         separate than that of the residential unit; and\n\n                         a. That 100% of residential parking spaces, excluding visitor parking spaces, shall\n                            feature an energized outlet capable of providing Level 2 charging or higher to\n                            the parking space; and\n                         b. Energized outlets shall be labelled for the use of electric vehicle charging;\n                         c. Where an electric vehicle energy management system is implemented (load\n                            sharing), a qualified professional may specify a minimum performance\n                            standard to ensure a sufficient rate of electric vehicle charging; and\n                         d. The owner is required to keep the Electric Vehicle Servicing Equipment (EVSE)\n                            in operation and the Strata Council may not prevent an owner, occupant, or\n                            tenant from installing the EV charging equipment.\n\n\n                                                                                                        CARRIED.\n\n            3.   Bylaw No. 1985 and 1986 — Application to rezone 3553 and 3559 Happy Valley\n                 Road from Agricultural (AG1) to Neighbourhood Commercial (Cl), including\n                 adding additional uses to the Cl Zone, and to amend of the Official Community\n                 Plan designation of the subject properties from Agricultural to Neighbourhood\n                 Centre",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3a683c19eec55af194142a2bd5a81652326086230f96eea8577a69c266e045b5",
+      "pages": [
+        10,
+        11
+      ],
+      "reason": "Unique 2627/2631 Millstream draft-zoning proposal. Stored text explicitly abbreviates conditions after technical stormwater memo; full body spans p10–11 and source outcome is CARRIED. Reserve occurrence only; preserve existing NULL outcome, abbreviated wording, actors and all manual fields. No second proposal or reading with these properties.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "6a6064613de5fe6d97c86763875424c1bcad4d1ff379c1d5004152659cb39264",
+  "documentary_preservations": [
+    {
+      "page": 28,
+      "native_text_sha256": "f771a76db184c915c3504bbcd711c251dd6e04a7bc3fa20bd0a9085a262967f7",
+      "render_sha256": "d043628f7c5ba3c64a4e826c7fa5832393ae6af0c5c9feb0587968e4035d5e02",
+      "motion_id": 3002,
+      "type": "reviewed_adjournment_narration_preservation",
+      "claim_sha256": "80bb42e67cc395650cec6d6050fbc0b65826047d71917491e415dbfd620875a2",
+      "claim_row_sha256": "f4204a8faeb77c1b0097dec09945fe2ae44944d5de119dfae515b56d6347add0",
+      "legacy_text": "That the meeting be adjourned.",
+      "printed_body": "Mayor Young adjourned the meeting at 9:40 pm.",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "native_passage": "Mayor You j  adjourned the meeting at 9:40 pm.",
+      "native_passage_start": 11,
+      "source_passage": "Mayor Young adjourned the meeting at 9:40 pm.",
+      "source_passage_start": 65416,
+      "native_correction": {
+        "page": 28,
+        "native_quote": "Mayor You j  adjourned the meeting at 9:40 pm.",
+        "printed_quote": "Mayor Young adjourned the meeting at 9:40 pm.",
+        "authority": "reviewed_documentary_native_witness_correction_only",
+        "native_text_sha256": "f771a76db184c915c3504bbcd711c251dd6e04a7bc3fa20bd0a9085a262967f7",
+        "render_sha256": "d043628f7c5ba3c64a4e826c7fa5832393ae6af0c5c9feb0587968e4035d5e02",
+        "independent_review_sha256": "6a6064613de5fe6d97c86763875424c1bcad4d1ff379c1d5004152659cb39264"
+      }
+    }
+  ]
+}

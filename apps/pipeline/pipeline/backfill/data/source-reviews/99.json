@@ -1,0 +1,973 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 99,
+    "title": "Regular Council",
+    "meeting_date": "2020-12-07",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2020/12/2020-12-07 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2020/12/2020-12-07 Regular Council [legacy]/Minutes/20201207-Award-of.pdf",
+      "sha256": "40a3b6534502c38f74b1cda082175f7e831dcbb4b19c8bd7c099b15f0315a889",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20201207-Award-of.pdf"
+    },
+    {
+      "file": "archive/langford/Council/2020/12/2020-12-07 Regular Council [legacy]/Minutes/20201207-Massey-Thomasset.pdf",
+      "sha256": "37f384c0548a868c4eb83897186d463a0d5d7630dd1dddb6222c07ed8abbf288",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20201207-Massey-Thomasset.pdf"
+    },
+    {
+      "file": "archive/langford/Council/2020/12/2020-12-07 Regular Council [legacy]/Minutes/20201207-SIGNED.pdf",
+      "sha256": "96948028c2fe43a4665a95fe4ea3bd1d9d3b3652bb097a619f1ade6e795e1340",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20201207-SIGNED.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2020/12/2020-12-07 Regular Council [legacy]/Minutes/20201207-SIGNED.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201207-SIGNED.pdf",
+  "source_sha256": "96948028c2fe43a4665a95fe4ea3bd1d9d3b3652bb097a619f1ade6e795e1340",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "86f7d8ec7248fb406d4b1b6e3919ca32da266620cc618ba34b247203ab5755e3",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "18373edb2e982e19ef3f8c503b851f2106c6321ddbb64ec2802138e871f0ece7",
+      "render_sha256": "f05509237ca9a9c6bdcb26578f084fcf8e584e37b29e265ba663a20f10c5a9d0"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "cd4c09d6bca330fa227a77d3d8129aa42e43eeb0e9fa1a7058d4685bfea9bc81",
+      "render_sha256": "c1e5d490510558d446e6c3359e1eae28b50b018ced0993b2995e834a4074c1f6"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "2b737cf7137226f3a9d9b0c6b2bb3a0db306ac67126370f7440be4659ee03596",
+      "render_sha256": "0bdcfa5f20409c981c58fb34dadf000d5be5fdf6203e78a225401d2646239405"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "6bdc0a00f47f1e57fdf60625b60d2ae2c142b7d0346d895f9c05e65768f5486a",
+      "render_sha256": "2e84a0979914ad379466ce2c2eebf28c77bef6b73d7bb2a4d1c0f0b3a2acc9f6"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "2256b05706ee15dc31d5447c6e9afa2d3ab31451d2d65a1e41e9d70a67eba618",
+      "render_sha256": "576f54a5ff00d13c2ff31fbed593f55d64a70645fb2e3d64096909553126b356"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "4de53c520023043a95482dc93dc68a1562f0237b67083a463e5a4089dbc26743",
+      "render_sha256": "9e45ac327f3582d54b110b2ab038fe33752fb2e1126a0d6d98d628e1bb27820d"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "35f6a6b1d3340bcfe14954fdf3c6882959ad5d1d5979d920512555dc813ad217",
+      "render_sha256": "7600d86f1ccbcb1045353623109978d48d012b4c2489f5ddad87f8a1334b94ed"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "d44e34ee2ca647178f37b0282b2a54c248c9d1e2bef17ee32118d53642d31b44",
+      "render_sha256": "62a9a6ddcbf7e204d9a2b1f9ce91b98d5aa17ff95064b6e3a492ca110ff6afeb"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "fc55fc19ef715bb16da7b683803c55a0428f49746b4f52bc59abd0ac7e449b3f",
+      "render_sha256": "4d38186c99888b420cdc8c21cecf914858546919eda45338c3882f6b892d00d6"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "14cfcc391800b14174f828f9ae6b504b0cc0e3cfb7302c022d3fd0254c2701f8",
+      "render_sha256": "087286113c727538a1f7cdec6d888ae6cff4da9805190cd1f6ce3bbd7f2cb8cf"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "017d2347ac3d5e928b59b06bee61f095983f526a455dad24425fe51d566827e5",
+      "render_sha256": "0ee9f2a00dcc4569dfdee298510682551440677ec01e20f55fc363acc662b6ba"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "3971eb27aab28f1872037a9ac65de5037ea0d560b49ab855cb0849d436f7ecdd",
+      "render_sha256": "64c5633ad7c721d01e1e38e57dd538ceb66ff9314c0aa86aece5e155a485b8be"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "745568bfdcce462804a0650ce29a51efd942d8390bfdfb4e2c16b81ea6ff422e",
+      "render_sha256": "c6de76bf2e8a3851fa0dc63ea18fbc5d992cf51a005624edf00145b1171e8b77"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "6598c97a23618f1381ed74eb1bdd53a161b58bf6d64aa3ef1896f75320cac423",
+      "render_sha256": "8b9fb748829a1a531135cc2640a4900c7af8cae9a50dd42da0662b722b748621"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "3a36d6950221bd0b93b9ac3b2cf5fd57189e91b2312c0502936202dcab9c4bae",
+      "render_sha256": "213c16361f78c460cc9f68c378db7e73ecb90f114f82bd84e303a2ad7c4d8d3b"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "6dd72f29d1f116100e7c498ffeef0a65e48308535023db54703f6e5ae75b20cb",
+      "render_sha256": "087f0dd0d0928729b67cc07c1b1dbbbeb58991a0af8b94a78fcc70b42e6e6195"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "2ab0991b241dbfa8f20ca0945aae3d2a88c9503077c0310fc1176a2ac8341795",
+      "render_sha256": "98454a680276dbe30f55cdab683a780356b043bf2dc9a0a5518af1871ccefbbd"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "924dc1792962cbd7059afe31fd74baf3c6a4e762f753c72517e9ad819f6ab8ce",
+      "render_sha256": "d00c9cfa8cda3aa9e468ee32dd86a2c856eeb1ac5acef9ed293dd0ee84fc23c8"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "504e27e24de2563abc4992b19ff0b8b89af219a9f6442a507a6d6a226e088953",
+      "render_sha256": "d33fe698a73e4086e867cda8c4f9697e63b5ea80258ab8d8da42928cfdd506c6"
+    },
+    {
+      "page": 20,
+      "native_text_sha256": "69050ecf9cc3666efedd390bd9c5a12f541fd72a29374ef1c1a278389ace0f3a",
+      "render_sha256": "1525aa2154e66b37378d97b1235ee5343065cac96707f016f29a3365ec9b8674"
+    },
+    {
+      "page": 21,
+      "native_text_sha256": "e1492e8459b35da5f9c0ba8861ea633811d8f09c41570de0d1d3c727f8add245",
+      "render_sha256": "4724b0eaedbee79bf2f934cf5822b2758fbb96f2e5dfb1e553deeb62aa6293de"
+    },
+    {
+      "page": 22,
+      "native_text_sha256": "03dfc391b446bd85341a02fcf9400870c9c24e3926de9ef600779872a30716f6",
+      "render_sha256": "ca38f330250ebf247eb78ab61efe432c69ca23bd4998feae835ee20f54ee522c"
+    },
+    {
+      "page": 23,
+      "native_text_sha256": "9ffc58222cb85e9d3f8f277c38d645be235eec44f979afa0b5e79fc7ab782cd5",
+      "render_sha256": "acac1edd96fd0dfeaff7f5c44fa3cb4f0e3ac7c2f278570885a1beca37785d6e"
+    },
+    {
+      "page": 24,
+      "native_text_sha256": "b1aa04b98febf2cd8c95178f6570eea184a344f398454d07200104f9a8390c95",
+      "render_sha256": "01a9e74461fcbdc5f48c69fa7621c001432f0e2d7ec74aa41daa9aabf122601c"
+    },
+    {
+      "page": 25,
+      "native_text_sha256": "76f00989e16742c87b9dcbdedd53a20a3d07dfc9d4e0291fb1efaa06805f2d95",
+      "render_sha256": "c218b5052321e32fd16566ee540115e330f49ebdb8b0ea9d75f3123f416adde1"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "ebf7aec87fd131e1f3611ba807a91e06bc47bcb281e74aa6d3b22c415d332418",
+      "raw_block_sha256": "eabec5cf834dffa5aba91ff169efed3eadaa13485538709b8ce06a29e9217779",
+      "operative_body": "That Council approve the minutes of the regular meetings of Council held on November 2, 2020.",
+      "operative_body_sha256": "afdd0976505093499cae31dbe1bd01d26f385baba2a73e1795e4e0786e3ebae2",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "fc55fc19ef715bb16da7b683803c55a0428f49746b4f52bc59abd0ac7e449b3f",
+          "render_sha256": "4d38186c99888b420cdc8c21cecf914858546919eda45338c3882f6b892d00d6"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "2dd8a20c74cfb5d96bcf277b85e928ebb788843fc8ec97d62ff36d89c4f4c456",
+      "raw_block_sha256": "49563cd5a405048f9e87923be7d6182bf9ff592d15134344e87237bf8474198a",
+      "operative_body": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors Meeting held on both October 8, 2020 and November 12, 2020.",
+      "operative_body_sha256": "f17f93fcd14676ab02baa8f19e59989246ed0c8ac45345c65a59090d324e0333",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "14cfcc391800b14174f828f9ae6b504b0cc0e3cfb7302c022d3fd0254c2701f8",
+          "render_sha256": "087286113c727538a1f7cdec6d888ae6cff4da9805190cd1f6ce3bbd7f2cb8cf"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "83fc0adffc61c9a337c9f06a6382c35b5bbc247de27bb1272cb8c76e7912db3e",
+      "raw_block_sha256": "67f27dc2e7aa5b55324c54050850fea559a47dd6b88ba36fdc310685130b52db",
+      "operative_body": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held on November 23, 2020.",
+      "operative_body_sha256": "baefd1577759ebe2a416081ba6607b4cc36591105555dba2e5febb4461ace75d",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "14cfcc391800b14174f828f9ae6b504b0cc0e3cfb7302c022d3fd0254c2701f8",
+          "render_sha256": "087286113c727538a1f7cdec6d888ae6cff4da9805190cd1f6ce3bbd7f2cb8cf"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "191eb68734aac47b5ade81639854491a33d4a962bc82491819234b8173f98ec9",
+      "raw_block_sha256": "6b3b009378c0a85c7423f35b4039e399467b05b6d78644d0c5b89048cfb890df",
+      "operative_body": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit to allow an addition at 1121 Bearspaw Plateau, with the following variance:\na) That Section 6.95.09(3)(b) of Zoning Bylaw No. 300 be varied from 6.0 m (19.7 ft) to 2.09 m (6.86 ft);\nSubject to the following terms and conditions:\ni) That the site is developed in accordance with the plan attached to this report as Appendix A; ii) That the applicant design the addition to include fire-retardant roof materials and non-combustible siding materials, that all eaves, attics, decks and openings under floors must be screened and that the building design and construction shall generally be consistent with the standards of the National Fire Protection Association Standard 299 (Standard for Protection of Life and Property from Wildfire).",
+      "operative_body_sha256": "581ad43f8c7dcf8c51173f4772cccf87e00c71b750e2485c40cd6c089356d277",
+      "result": "CARRIED",
+      "pages": [
+        10,
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "14cfcc391800b14174f828f9ae6b504b0cc0e3cfb7302c022d3fd0254c2701f8",
+          "render_sha256": "087286113c727538a1f7cdec6d888ae6cff4da9805190cd1f6ce3bbd7f2cb8cf"
+        },
+        {
+          "page": 11,
+          "native_text_sha256": "017d2347ac3d5e928b59b06bee61f095983f526a455dad24425fe51d566827e5",
+          "render_sha256": "0ee9f2a00dcc4569dfdee298510682551440677ec01e20f55fc363acc662b6ba"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "75884f93929f7c88f47d6f92a262bd6a8c060da46e5ba3023f9b0f40d6d04808",
+      "raw_block_sha256": "492f6369d429d04a59ecd96ffa67a5ea77734216f7a5028504ed208ce515c20b",
+      "operative_body": "That Council:\n1. Proceed with consideration of First Reading of Bylaw No. 1903 to amend the zoning designation of the properties located at 2010 Costin Avenue, and 2836, 2842, 2848 and 2854 Carlow Road from the R2 (One- and Two-Family Residential) to the CC1 (City Centre) Zone subject to the following terms and conditions:\na. That as a bonus for increased density the owner provides, prior to the issuance of a building permit, the following contributions per unit:\ni. $2,850 per unit towards the General Amenity Reserve Fund; ii. $750 per unit towards the Affordable Housing Fund; 1. that the total amount of amenity contributions may be reduced by 50% for units on the 5th and 6th storey and by 75% for units above the 7th storey. iii. $10.75 per m2 commercial GFA towards the General Amenity Reserve Fund.\nb. That the applicant provides, prior to Public Hearing, a technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering;\nc. That the applicant registers, prior to Bylaw Adoption, a road dedication plan, in accordance with the frontage drawings provided and to the satisfaction of the Director of Engineering;\nd. That the owner provides a construction parking management plan to the satisfaction of the Director of Engineering prior to issuance of a building permit;\ne. That the owner registers, prior to Bylaw Adoption the consolidation plan of all five subject properties into one property.\nf. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That the developer agrees to install all frontage improvements along Costin Avenue and Carlow Road fronting this development to Bylaw No. 1000 standards prior to issuance of a building permit, to the satisfaction of the Director of Engineering; ii. That the developer agrees to install and implement recommendations from the prepared Traffic Impact Assessment report to the satisfaction of the Director of Engineering, prior to the issuance of a building permit;\niii. That the developer acknowledges their obligation to cover any costs associated with upgrades, installation and/or connections to new and existing infrastructure needed to service the site for the proposed development; iv. That the developer agrees to provide a detailed stormwater management plan and install all recommended infrastructure prior to issuance of a building permit, in accordance with Bylaw No. 1000, and to the satisfaction of the Director of Engineering; v. That the required parking stalls for this development are allocated for the use by individuals in each unit and visitors, as required by Bylaw No. 300; and that parking is not separated from individual units nor provided in exchange for compensation separate than that of a residential unit; vi. That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space, and that i. Energized outlets shall be labelled for the use of electric vehicle charging; ii. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum performance standard to ensure a sufficient rate of electric vehicle charging; and iii. The owner/tenant is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council/landlord may not prevent an owner, occupant, or tenant from installing the EV charging equipment vii. That the design plans submitted with a form and character development permit to develop the site will be substantially similar to the conceptual design of the buildings, appearing within the staff report; viii. That the developer registers a strata plan, prior to the issuance of an occupancy permit, that creates individual strata titles for each resident unit. AND\n2. Direct staff to provide notice that Council will consider issuing a Development Variance Permit for the development located at 1020 Costin Avenue and 2836, 2842, 2848 and 2854 Carlow Road as per the following:\na. That section 6.57.08(3) be varied to reduce the interior side lot line setback from the required 3 m to between 1.73m and 0.7 m, as shown on Appendix A.",
+      "operative_body_sha256": "38e40537ed4544aaab2ba66c409abae2ac631aebca3e95215017a36856a8b18c",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "017d2347ac3d5e928b59b06bee61f095983f526a455dad24425fe51d566827e5",
+          "render_sha256": "0ee9f2a00dcc4569dfdee298510682551440677ec01e20f55fc363acc662b6ba"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "3971eb27aab28f1872037a9ac65de5037ea0d560b49ab855cb0849d436f7ecdd",
+          "render_sha256": "64c5633ad7c721d01e1e38e57dd538ceb66ff9314c0aa86aece5e155a485b8be"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "a36707545c35e6345afe44b081f8319cee350870004ce0b3c5161e1ff8bd04bb",
+      "raw_block_sha256": "158f419a21b6ab6a054385cf6107c715bc78bb7c4a350a93bd27a277f20fcd2e",
+      "operative_body": "That Council:\n1. Proceed with consideration of First Reading of Bylaw No. 1886 to amend the zoning designation of 918 and 924 Jenkins Avenue from R2 (One- and Two-Family Residential) to RM7A (Medium Density Apartment) subject to the following terms and conditions:\na) That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to the issuance of a building permit:\ni. $610 towards the Affordable Housing Reserve Fund; and ii. $3,660 towards the General Amenity Reserve Fund.\nSubject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy.\nb) That the applicant provides, prior to Public Hearing, the following:\ni. A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering; and ii. A frontage drawing to the satisfaction of the Director of Engineering to confirm if road dedication is required to complete all required frontage improvements.\nc) That the applicant registers, prior to Bylaw Adoption, a road dedication plan, if required, to the satisfaction of the Director of Engineering;\nd) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following:\ni. That all frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the Director of Engineering prior to the issuance of a building permit; ii. That a storm water management plan be provided prior to the issuance of a building permit and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; iii. That a construction parking and traffic management plan be provided prior to the issuance of a building permit, to the satisfaction of the Director of Engineering; iv. That the developer registers a strata plan, prior to the issuance of an occupancy permit, that creates individual strata titles for each residential unit; v. That the required parking stalls for this development are allocated for the use by individuals in each unit, as required by Bylaw 300 and designated accordingly, and that the parking stalls are not sold or rented out individually; vi. That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space; and\n1. Energized outlets shall be labelled for the use of electric vehicle charging; 2. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum\nperformance standard to ensure a sufficient rate of electric vehicle charging; and 3. The owner is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council may not prevent an owner, occupant, or tenant from installing the EV charging equipment.\ne) That the applicant provides more substantial landscaping to better screen the parking located in front of the building to the satisfaction of the Director of Planning at the time of Development Permit.\n2. Direct staff to make the following amendments to the RM7A zone within the Zoning Bylaw No. 300: a) To re-organize and simplify the density section; and b) To allow 918 and 924 Jenkins Avenue to have a FAR of 2.02;\n3. Direct staff to amend Schedule AE of the Zoning Bylaw No. 300 to include 918 and 924 Jenkins Avenue;\n4. Direct staff to provide notice that Council will consider issuance a Development Variance Permit for the properties at 918 and 924 Jenkins Avenue for the following variances:\na) That Section 3.21.02(3) of Zoning Bylaw No. 300 be waived for the interior side lot line between 918 and 924 Jenkins Avenue to allow them to opt out of installing a fence and landscape screening between the two properties, and; b) That Section 3.21(02)(3) of Zoning Bylaw No. 300 be varied to reduce the required landscape planting area from 1 m to 0.35 m for the properties at 918 and 924 Jenkins, subject to the following condition:\ni. That a 1.8 m decorative fence be constructed.\n5. Authorize the Director of Planning to grant the following variances through the development permit: a) A parking variance to allow the Mixed Use Employment apartment parking ratio of 1.25 spaces per one and two bedroom units, and 2.25 spaces per 3+ bedroom units, to be applied; b) An interior side lot line setback variance of 1.4 m instead of the required 3 m; and c) A rear setback variance of 6.46 m instead of the required 7.5 m;\n6. The Applicant make a contribution, prior to issuance of a Development Variance Permit, of $75,000 to the City for use towards on street parking improvements on Jenkins and Avril.",
+      "operative_body_sha256": "6d3c37e3a1a28a56bb7fa9f29ac1d88c2ca3e7de4ef063d353701a02d2b9bb8d",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13,
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "3971eb27aab28f1872037a9ac65de5037ea0d560b49ab855cb0849d436f7ecdd",
+          "render_sha256": "64c5633ad7c721d01e1e38e57dd538ceb66ff9314c0aa86aece5e155a485b8be"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "745568bfdcce462804a0650ce29a51efd942d8390bfdfb4e2c16b81ea6ff422e",
+          "render_sha256": "c6de76bf2e8a3851fa0dc63ea18fbc5d992cf51a005624edf00145b1171e8b77"
+        },
+        {
+          "page": 14,
+          "native_text_sha256": "6598c97a23618f1381ed74eb1bdd53a161b58bf6d64aa3ef1896f75320cac423",
+          "render_sha256": "8b9fb748829a1a531135cc2640a4900c7af8cae9a50dd42da0662b722b748621"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "957643a27c7383050c51abac13d60c604ce72ea1ba247e36d028dc305c209d52",
+      "raw_block_sha256": "72cf57d183aefb84601f5371abb8ca6708c87b6c10fb8c9f0f216eff2368dfb6",
+      "operative_body": "That Council:\n1. Proceed with consideration of First Reading to Bylaw No. 1939 to amend the zoning designation of the property located at 671 Rockingham Road from R2 (One- and Two-Family Residential) to RS1 (Residential Small Lot 1) subject to the following terms and conditions:\na) That the owner agrees to provide, as a bonus for increased density, the following contributions per lot created, prior to subdivision approval: i. $3,960 towards the General Amenity Reserve Fund; ii. $660 towards the Affordable Housing Reserve Fund;\nb) That the applicant provides, prior to Public Hearing, a technical memo from an engineer that verifies stormwater can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering;\nc) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following:\ni. That all frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the Director of Engineering, including the construction of a sidewalk and undergrounding the culvert/ditch, prior to subdivision approval; ii. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering, and that costs incurred will be the responsibility of the developer; iii. That a Stormwater Management Plan be provided and all required measures recommended be implemented by the owner as a condition of Subdivision approval, to the satisfaction of the Director of Engineering; iv. That a Construction Parking Management Plan be provided to the satisfaction of the Director of Engineering prior to any alteration of the land.",
+      "operative_body_sha256": "fceff211b4da41a67f9c0a1d8301c886641bfbd5d5813dbd51e6ea299e51c4c7",
+      "result": "CARRIED",
+      "pages": [
+        14,
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "6598c97a23618f1381ed74eb1bdd53a161b58bf6d64aa3ef1896f75320cac423",
+          "render_sha256": "8b9fb748829a1a531135cc2640a4900c7af8cae9a50dd42da0662b722b748621"
+        },
+        {
+          "page": 15,
+          "native_text_sha256": "3a36d6950221bd0b93b9ac3b2cf5fd57189e91b2312c0502936202dcab9c4bae",
+          "render_sha256": "213c16361f78c460cc9f68c378db7e73ecb90f114f82bd84e303a2ad7c4d8d3b"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "7e02b3ad99c1f0a042d06c5a4bd069cc9a9abb958d1d98bf4a65e7c9b0e5dd9f",
+      "raw_block_sha256": "ec0678a56b5e7b8ee566d3f15f790fd1cd652712cbf253d3f946577291e8bfe3",
+      "operative_body": "That Council receive the minutes of the Parks, Recreation, Culture and Beautification Committee held on November 26, 2020.",
+      "operative_body_sha256": "a6fad8ee5c5e7205a20307ec901b6b6a077fc8e7ab5764d2ef86f694fda4bcbd",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "3a36d6950221bd0b93b9ac3b2cf5fd57189e91b2312c0502936202dcab9c4bae",
+          "render_sha256": "213c16361f78c460cc9f68c378db7e73ecb90f114f82bd84e303a2ad7c4d8d3b"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "6714a16962c543cd9685e9767dad5835660af345d0963782667e1e6b67a77ad1",
+      "raw_block_sha256": "ee52a02e96229319020ad49a710519291d56a877937f208f3366fcfc9bfa153b",
+      "operative_body": "That Temporary Use Permit No. TUP20-0006 be issued by the Council for the City of Langford to Graham Harrison on behalf of Victoria Contracting and Municipal Maintenance Corp to provide for additional employee parking at 988 McCallum Rd subject to the following terms and conditions:\n1. Appendix\nThe site shall be developed in accordance with the site plan attached (Appendix A) to the Council staff report dated 20201005.\n2. Conditions\nThe following requirements are imposed under Section 498 of the Local Government Act:\na) That the applicant must, prior to TUP issuance, complete the following:\ni. Provide to the City, a landscape plan for the replanting and site remediation completed by Qualified Environmental Professional (QEP).\nii. Provide to the City, landscape bonding in the amount of the estimated works to be completed as per the landscape plan completed by the QEP.\nb) That only the portion of the property indicated in Figure 2 may be utilized for the employee parking; and\nc) That all recommendations of the Environmental Professional Opinion Memorandum prepared by Craig Barlow, RPBio, are implemented and adhered to throughout the term of use for employee parking.",
+      "operative_body_sha256": "79db3d49fcb008f45546402afeec2a9b2bb60cc0d635e55728600f6241dee892",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "6dd72f29d1f116100e7c498ffeef0a65e48308535023db54703f6e5ae75b20cb",
+          "render_sha256": "087f0dd0d0928729b67cc07c1b1dbbbeb58991a0af8b94a78fcc70b42e6e6195"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "c8f53d627bc607634cf3982bd9f4c732cc37275e47e7d0f1ad1af494990c5016",
+      "raw_block_sha256": "fe39fdf46efaf7e90b05dc590fadd6869048582b5f7873071080b7e8a83c91f3",
+      "operative_body": "That Council:\n1. Direct staff to provide notice that Council will consider issuing a Development Variance Permit for the properties at 738 and 742 Walfred Rd, with the following variances:\na) That Section 6.14.02(2) of Zoning Bylaw No. 300 be varied such that lots less than 40 ha may be created by subdivision when not connected to the municipal sanitary sewer system; b) That section 4.17.1 of Zoning Bylaw No. 1000 be varied such that only one emergency access route is provided within 305 m of the development site;\nSubject to the following terms and conditions:\ni) That the proposed pedestrian trail north of the subject property is constructed on the adjacent parcel, connecting the site to lower Walfred Road, prior to occupancy permit of the subject properties; ii) That the applicant retains a registered professional forester to develop a wildfire protection plan based on Firesmart principles for the subdivision, including fuel mitigation in the three priority zones (0-10m, 10-30m and 30m+) on the subject properties; iii) That funding for the pedestrian pathway, including a detailed cost estimate, has been confirmed by the City of Langford, prior to DVP issuance; and iv) That the pathway be constructed and gated so as to provide emergency access only.\nAND\n2. Direct staff to proceed with drafting Bylaw No. 1945 with reduced amenity cash contributions in proportion to the cost of constructing 50% of the pedestrian pathway.",
+      "operative_body_sha256": "8031fe728d6d3ba0509a808afc41b953b9d9e51d21ed05b5b53405ea854fb11d",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "2ab0991b241dbfa8f20ca0945aae3d2a88c9503077c0310fc1176a2ac8341795",
+          "render_sha256": "98454a680276dbe30f55cdab683a780356b043bf2dc9a0a5518af1871ccefbbd"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "5d4dad18b0a2003f3c612592648e131c617db597a023fdcc2c7b3760385b65d5",
+      "raw_block_sha256": "ad42d5c213ee7adcfc88316c5b3b0e101405536a84bcf114bfba6a592b42e50a",
+      "operative_body": "That Council:\n1. Receive the 2020 Housing Needs Report, attached to this report as Appendix A, in accordance with Section 585 of the Local Government Act; AND\n2. Commends the Planning Department on the excellence of the Report",
+      "operative_body_sha256": "042b7f96e4a799e16a8e80b998f2a34bca64f004743be7a02d1e01416762563b",
+      "result": "CARRIED",
+      "pages": [
+        17,
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "2ab0991b241dbfa8f20ca0945aae3d2a88c9503077c0310fc1176a2ac8341795",
+          "render_sha256": "98454a680276dbe30f55cdab683a780356b043bf2dc9a0a5518af1871ccefbbd"
+        },
+        {
+          "page": 18,
+          "native_text_sha256": "924dc1792962cbd7059afe31fd74baf3c6a4e762f753c72517e9ad819f6ab8ce",
+          "render_sha256": "d00c9cfa8cda3aa9e468ee32dd86a2c856eeb1ac5acef9ed293dd0ee84fc23c8"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "66bc4fceefcfc95aacc6101daba9580bba8028ee59728a375863d86596d54b20",
+      "raw_block_sha256": "ab7b080dabe493cc5cd99530cbada1847abac9ad91bfac34785718d762116396",
+      "operative_body": "That Council:\n1. Approve a Statutory Right of Way Agreement on the terms and conditions attached and in accordance with this report for a telecommunications facility at the property at 3024 Glen Lake Road; AND\n2. Direct staff to begin negotiating an agreement with Musco Lighting for the provision of additional sports lighting fixtures and replacement of existing incandescent lighting with LED, in an amount not to exceed that approved in the 2021 Financial Plan.",
+      "operative_body_sha256": "d73b8f9d233b50c4d4aa56bf5386b854554a2e6b854d6e26ef0042fb66249005",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "924dc1792962cbd7059afe31fd74baf3c6a4e762f753c72517e9ad819f6ab8ce",
+          "render_sha256": "d00c9cfa8cda3aa9e468ee32dd86a2c856eeb1ac5acef9ed293dd0ee84fc23c8"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "ea1c2c264caeb3faa5f031aa7f2036a141e82464d49aabcd0f89b7a224422fe4",
+      "raw_block_sha256": "7cabb3598cb5425f53c4199cc9869e69d8e0d7fd0f921867b44a464f5565222e",
+      "operative_body": "That Council:\n1. Extend the Parks and Boulevard Maintenance Contract and the Trails Maintenance Contract with VCMMC until June 30, 2021, or until a new agreement is approved by Council, and that Council authorize the Mayor and Corporate Officer to execute the agreement.",
+      "operative_body_sha256": "3757f0f37bbd34c7b667abb73934632905cc0f03eb0083174877be06990029a3",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "924dc1792962cbd7059afe31fd74baf3c6a4e762f753c72517e9ad819f6ab8ce",
+          "render_sha256": "d00c9cfa8cda3aa9e468ee32dd86a2c856eeb1ac5acef9ed293dd0ee84fc23c8"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "8debf0d95719893c2ccb46408b9344024ccbf5229fc0570398ef0f9e74df50ec",
+      "raw_block_sha256": "a9d8664200d3e0a7364c76716ae0b79176859a8f4530fef33416415d75e6667a",
+      "operative_body": "That Council receive this report for information.",
+      "operative_body_sha256": "539afa84ed46fb2a194808236afa8f2147a05165969dd97dde9c77f85d138358",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "924dc1792962cbd7059afe31fd74baf3c6a4e762f753c72517e9ad819f6ab8ce",
+          "render_sha256": "d00c9cfa8cda3aa9e468ee32dd86a2c856eeb1ac5acef9ed293dd0ee84fc23c8"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "938b3854897dc54aa16596f2bd0aa77f1e950fba60946cee06a4916e254c55bf",
+      "raw_block_sha256": "c591bd68191ec75093ccbec98d363b3a9cb6a68190c6ae9c71480b8ddf36d954",
+      "operative_body": "That Council:\n1. That Council resolve to cancel the regular Council meetings of January 4, 2021, January 18, 2021, February 1, 2021, March 1, 2021 and December 20, 2021, and that Council hold a Special Meeting on January 11, 2021; AND\nThat Council adopt the 2021 Council and Committee meeting schedule and advertise as required by the Community Charter.",
+      "operative_body_sha256": "e3b6179da6bbd56f4931305cd8cd09888a14ec14b00b34490e52fa7ce5b3a3b4",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "504e27e24de2563abc4992b19ff0b8b89af219a9f6442a507a6d6a226e088953",
+          "render_sha256": "d33fe698a73e4086e867cda8c4f9697e63b5ea80258ab8d8da42928cfdd506c6"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "98c40f30b375fd816c9b6893816bb996f2c4f209ec16709132e7599c1cf9feff",
+      "raw_block_sha256": "8cf933215d273b70132d910b5e8f41a9a96b46435cc9a872aa123dbcf537f246",
+      "operative_body": "That Council receive this as information only.",
+      "operative_body_sha256": "c1b1aef2cce2702e308f6e5a96f9c6eae5bb6137be8d66312dc9d1a8e798c6d9",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "504e27e24de2563abc4992b19ff0b8b89af219a9f6442a507a6d6a226e088953",
+          "render_sha256": "d33fe698a73e4086e867cda8c4f9697e63b5ea80258ab8d8da42928cfdd506c6"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "bcd6a3dcfd3d8ee4fe8625b846d0cc85975798386c88f45c07f1d167c06f6174",
+      "raw_block_sha256": "2ad59d4d96bdffd9d24a040de0563b06adb08424401b041b746adf9d46288383",
+      "operative_body": "That Council give Bylaw No. 1874 first reading.",
+      "operative_body_sha256": "2bafd9bb2b92896ce091fb5f232f23e2c4799d59ec4d7718ebe46ba73aafe05e",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "504e27e24de2563abc4992b19ff0b8b89af219a9f6442a507a6d6a226e088953",
+          "render_sha256": "d33fe698a73e4086e867cda8c4f9697e63b5ea80258ab8d8da42928cfdd506c6"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "4f6f0e6316754f84dfc4aa741659ffd00de6c67bd55986a05dee9146cd211c61",
+      "raw_block_sha256": "34eff6a64c9ab2bbf55497ad584180c18ff462a376a61a3052f98122fa1116de",
+      "operative_body": "That Council give Bylaw No. 1886 first reading.",
+      "operative_body_sha256": "1865d742ab6cdbbff4b10d0d406d0f54b0c10a04ef4e7df397d138d415c17390",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "69050ecf9cc3666efedd390bd9c5a12f541fd72a29374ef1c1a278389ace0f3a",
+          "render_sha256": "1525aa2154e66b37378d97b1235ee5343065cac96707f016f29a3365ec9b8674"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "020169552be3d3c64083cefb9d9937e353d67eb14dfa31fde612cee4ab3ff5ef",
+      "raw_block_sha256": "32e9cf203049326bb5cb4e73e477e826f5319cde72c14f16fef4a99bf82e0578",
+      "operative_body": "That Council give Bylaw No. 1903 first reading.",
+      "operative_body_sha256": "61edf055547f3a541c0b7eb268eb2c8050f700cb8c9d4ad62d6cc54692646509",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "69050ecf9cc3666efedd390bd9c5a12f541fd72a29374ef1c1a278389ace0f3a",
+          "render_sha256": "1525aa2154e66b37378d97b1235ee5343065cac96707f016f29a3365ec9b8674"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "f24cd7def4050f2efb52138e37bc62e7378c915d7d86a5349f49cfbada063512",
+      "raw_block_sha256": "1a6b0dea0125a0f75fcdf4467c32dd0a2e2cf73b2e92a872d668390c1f01eb82",
+      "operative_body": "That Council adopt Bylaw No. 1905.",
+      "operative_body_sha256": "9f194e668a7e65f6067244574f558eceebbe59f242b78a71c85fc64546e47430",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "69050ecf9cc3666efedd390bd9c5a12f541fd72a29374ef1c1a278389ace0f3a",
+          "render_sha256": "1525aa2154e66b37378d97b1235ee5343065cac96707f016f29a3365ec9b8674"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "ede7fe9cc9ed951f6ef18f6d096d7fe4582de68945ff69b3dfbf107cc99776d7",
+      "raw_block_sha256": "bd2683566f0be4b20ce19f47246c4eb8af406d537531e05f29978f14ba4c21d9",
+      "operative_body": "That Council give Bylaw No. 1918 second and third readings.",
+      "operative_body_sha256": "8b0bb24cd158835f795bbb0e73d15da62acb6c7876ee8d8d097fb31439616ca1",
+      "result": "CARRIED",
+      "pages": [
+        20,
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "69050ecf9cc3666efedd390bd9c5a12f541fd72a29374ef1c1a278389ace0f3a",
+          "render_sha256": "1525aa2154e66b37378d97b1235ee5343065cac96707f016f29a3365ec9b8674"
+        },
+        {
+          "page": 21,
+          "native_text_sha256": "e1492e8459b35da5f9c0ba8861ea633811d8f09c41570de0d1d3c727f8add245",
+          "render_sha256": "4724b0eaedbee79bf2f934cf5822b2758fbb96f2e5dfb1e553deeb62aa6293de"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "d324f3d5179745f7e4fbfc55f81231b112e61048052e4022758c709c4241c2d4",
+      "raw_block_sha256": "38f13d4e0b6caa42f2acfc658f666bebc5f77a66af82acd64fa9d3ac60cf61cb",
+      "operative_body": "That Council give Bylaw No. 1933 second and third readings.",
+      "operative_body_sha256": "e9c1254e81e1281aecac7e87a6ce1385c739b82ae8fa5f31a2aeb4d4b78b1bee",
+      "result": "CARRIED",
+      "pages": [
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 21,
+          "native_text_sha256": "e1492e8459b35da5f9c0ba8861ea633811d8f09c41570de0d1d3c727f8add245",
+          "render_sha256": "4724b0eaedbee79bf2f934cf5822b2758fbb96f2e5dfb1e553deeb62aa6293de"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "e0636fae34139fbdb73623bc304f26c4d382b2d5fd7708402dfda31f464e76ef",
+      "raw_block_sha256": "8902d9708508a5c9ebc8875d4382516aca0bb62a89e60bb750e82890436d41ed",
+      "operative_body": "That Council give Bylaw No. 1937 second and third readings.",
+      "operative_body_sha256": "2be82d29588a67bb97c0f114013151f141830e811687fff7456d9e63fc04246a",
+      "result": "CARRIED",
+      "pages": [
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 21,
+          "native_text_sha256": "e1492e8459b35da5f9c0ba8861ea633811d8f09c41570de0d1d3c727f8add245",
+          "render_sha256": "4724b0eaedbee79bf2f934cf5822b2758fbb96f2e5dfb1e553deeb62aa6293de"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "a9e1771b6cb06d50eb9fed2c5a355ef9550eb5e9a094c498baa3249c0ff65655",
+      "raw_block_sha256": "cb269374f75ee015d954774fdad41a4a5bc9c553f2569aa8447da7fa152cbe97",
+      "operative_body": "That Council give Bylaw No. 1938 second and third readings.",
+      "operative_body_sha256": "4d54dae717237b10f097b87a04e0751a53e0b5e98536a908b1b86fc3cefdd224",
+      "result": "CARRIED",
+      "pages": [
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 21,
+          "native_text_sha256": "e1492e8459b35da5f9c0ba8861ea633811d8f09c41570de0d1d3c727f8add245",
+          "render_sha256": "4724b0eaedbee79bf2f934cf5822b2758fbb96f2e5dfb1e553deeb62aa6293de"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "3fdacb3074e94d61c70534df5793c990040b1d7b828a22b20027f7c9d2d1f7f6",
+      "raw_block_sha256": "ea54a476725a637f47b5d8b62c451a9e7d4cf21d464ee2ff9ba86a5afe4da634",
+      "operative_body": "That Council give Bylaw No. 1939 first reading.",
+      "operative_body_sha256": "94b090a02af5f564158bb79085e28e91e0b0c6aae49255bd9eef0b915b6c9b91",
+      "result": "CARRIED",
+      "pages": [
+        21,
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 21,
+          "native_text_sha256": "e1492e8459b35da5f9c0ba8861ea633811d8f09c41570de0d1d3c727f8add245",
+          "render_sha256": "4724b0eaedbee79bf2f934cf5822b2758fbb96f2e5dfb1e553deeb62aa6293de"
+        },
+        {
+          "page": 22,
+          "native_text_sha256": "03dfc391b446bd85341a02fcf9400870c9c24e3926de9ef600779872a30716f6",
+          "render_sha256": "ca38f330250ebf247eb78ab61efe432c69ca23bd4998feae835ee20f54ee522c"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "7c4ac475508f1f64635c240c8c013e42687d823cf310c351c285b93d9441085a",
+      "raw_block_sha256": "acb65a4f4f398323ac7696d37956b05648a7a93e3346fa3cc094337bba12c6dc",
+      "operative_body": "That Council adopt Bylaw No. 1942.",
+      "operative_body_sha256": "f396d169c3db2cf6ac86e5f3df8a28aac8e0bf94a8ba1c6390f81cc0b04f8256",
+      "result": "CARRIED",
+      "pages": [
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "03dfc391b446bd85341a02fcf9400870c9c24e3926de9ef600779872a30716f6",
+          "render_sha256": "ca38f330250ebf247eb78ab61efe432c69ca23bd4998feae835ee20f54ee522c"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "ebcbdecc5fe6e33db6a7f1db29f03219bea83e063867a5cd069b14b4ef8c68d6",
+      "raw_block_sha256": "62fc9ef8bd908ceb357c395869b2bc83ceba16a88857624da0a9f3ca9247e0c7",
+      "operative_body": "That Council give Bylaw No. 1943 second and third readings.",
+      "operative_body_sha256": "59cadab7c2ccf24c964872f41502a430d3d8831ffa53120e40734f85c8124391",
+      "result": "CARRIED",
+      "pages": [
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "03dfc391b446bd85341a02fcf9400870c9c24e3926de9ef600779872a30716f6",
+          "render_sha256": "ca38f330250ebf247eb78ab61efe432c69ca23bd4998feae835ee20f54ee522c"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "f8c50e4539eb7cd4bb19ad36ca6845060b56f7c07061c0837fe718eb728a0001",
+      "raw_block_sha256": "c18d33c426a3707e5a8fb19b72ab94eaf0e613472224fb8baf2b71b88741da12",
+      "operative_body": "That Council give Bylaw No. 1945 first reading.",
+      "operative_body_sha256": "a225f161875bd0de11ea4c5356a8eec974837608220fbdfe6fe8c3b43fc7434c",
+      "result": "CARRIED",
+      "pages": [
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "03dfc391b446bd85341a02fcf9400870c9c24e3926de9ef600779872a30716f6",
+          "render_sha256": "ca38f330250ebf247eb78ab61efe432c69ca23bd4998feae835ee20f54ee522c"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "006e6e3be260fdff7a55a0c87e10c6c659f50d4e969acab1aea283646a6f18fc",
+      "raw_block_sha256": "72d84c080656b3f0545d5cc298ae5216a06f8577434282720c56669c601239e5",
+      "operative_body": "That Council give Bylaw No. 1948 first reading.",
+      "operative_body_sha256": "693d6ebd5d62ac699ed02790f47a9e6c3fa6403712aee561d5f1e4d526e4016e",
+      "result": "CARRIED",
+      "pages": [
+        23
+      ],
+      "page_evidence": [
+        {
+          "page": 23,
+          "native_text_sha256": "9ffc58222cb85e9d3f8f277c38d645be235eec44f979afa0b5e79fc7ab782cd5",
+          "render_sha256": "acac1edd96fd0dfeaff7f5c44fa3cb4f0e3ac7c2f278570885a1beca37785d6e"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "ecea1a7d148e21a84e75e55632d966e9e06779c5a723b6da911a84acfa915ef0",
+      "raw_block_sha256": "76f1156bc5657915974a0738b9086d6ec3ab82e4eca104fd6578746c99b42952",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding personal information about an identifiable individual who holds or is being considered for a position as an officer, employee or agent of the municipality or another position appointed by the municipality; the acquisition, disposition or expropriation of land or improvements, if the council considers that disclosure could reasonably be expected to harm the interests of the municipality; the receipt of advice that is subject to solicitor-client privilege, including communications necessary for that purpose; and negotiations and related discussions respecting the proposed provision of a municipal service that are at their preliminary stages and that, in the view of the council, could reasonably be expected to harm the interests of the municipality if they were held in public; under Section 90 (1) (a) (e) (i)and (k) of the Community Charter.\nb) That Council continue the meeting in closed session.",
+      "operative_body_sha256": "2de6c335acc8b7ca05c0e8a01cc7205ce1272947c822c3710584aea40cfe3bd3",
+      "result": "CARRIED",
+      "pages": [
+        23
+      ],
+      "page_evidence": [
+        {
+          "page": 23,
+          "native_text_sha256": "9ffc58222cb85e9d3f8f277c38d645be235eec44f979afa0b5e79fc7ab782cd5",
+          "render_sha256": "acac1edd96fd0dfeaff7f5c44fa3cb4f0e3ac7c2f278570885a1beca37785d6e"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "1a3f9880042ea72d00a57a6a4e79d5abf97a2c275305976220348e6c372a4cc3",
+      "raw_block_sha256": "020244ce3365f13f02fe3a9ea2ffdd7ac0d301ed8c6bb0f17b08e16870c2c9c9",
+      "operative_body": "That Council provide additional funding to West Shore Parks and Recreation in the amount of $370,605.00, such funds to be taken from the grant monies provided to the City by the Province under the Restart Program.",
+      "operative_body_sha256": "c99b3bd722c2149a7e0a3d498126d98ec10540d0873a84f44197e0e54136a554",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "b1aa04b98febf2cd8c95178f6570eea184a344f398454d07200104f9a8390c95",
+          "render_sha256": "01a9e74461fcbdc5f48c69fa7621c001432f0e2d7ec74aa41daa9aabf122601c"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "a87d86d8f350e4661fbe4459e6e0dd96cbfdf2a30eb1a1329730c148cd28ac4a",
+      "raw_block_sha256": "b418528465a7bd516add398a0f1a34ee7717abc96ed410cf27180f29433f2c1c",
+      "operative_body": "That Council approve the construction of the new Kristina Place sewer pump station on the west side of the Kristina Place road right of way at the cost of the Developer.",
+      "operative_body_sha256": "6b9702174617f52f529cefc5c8a99b10a6cfa15fe30d578db484417596b6c440",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "b1aa04b98febf2cd8c95178f6570eea184a344f398454d07200104f9a8390c95",
+          "render_sha256": "01a9e74461fcbdc5f48c69fa7621c001432f0e2d7ec74aa41daa9aabf122601c"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "2bf9c65b65f0e3effe4d6925e409160cf671666c54ce4c755b46f1c4d76762a6",
+      "raw_block_sha256": "34e9121294552755a0dcbd31e8577b6ea443b0e59f90d99e4fbae3123cab0c6b",
+      "operative_body": "That Council approve the extension of sewer on Wenger Terrace at an estimated construction cost of $195,000, receiving the typical sewer connection fees from residents and not charging the residents the difference in the cost to construct versus SCRF revenue.",
+      "operative_body_sha256": "c88120a1d2700507da862d807d1a55d13fa6c9d8d5d65d32e4956af551e0eedb",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "b1aa04b98febf2cd8c95178f6570eea184a344f398454d07200104f9a8390c95",
+          "render_sha256": "01a9e74461fcbdc5f48c69fa7621c001432f0e2d7ec74aa41daa9aabf122601c"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "c3acc6499e6c1fee08664689cecd3e614a4ae8fcca97ca0af4781c0abdfc9083",
+      "raw_block_sha256": "5e0012e0c3208816d1042112c38632b4d1c0bf6374f06ce55da2ed2509d60b76",
+      "operative_body": "That Council re-appoint Councillor Matt Sahlstrom to the Greater Victoria Library Board as the City of Langford's Council representative, for a 1-year term, ending December 31, 2021; and appoint\nCouncillor Norma Stewart to the Greater Victoria Library Board as alternate Council representative, each for a 1-year term, ending December 31, 2021.",
+      "operative_body_sha256": "85da724254ced42b74b893d46ea7238b52c33e160d87f87b12ac1fc4ade9dfa5",
+      "result": "CARRIED",
+      "pages": [
+        24,
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "b1aa04b98febf2cd8c95178f6570eea184a344f398454d07200104f9a8390c95",
+          "render_sha256": "01a9e74461fcbdc5f48c69fa7621c001432f0e2d7ec74aa41daa9aabf122601c"
+        },
+        {
+          "page": 25,
+          "native_text_sha256": "76f00989e16742c87b9dcbdedd53a20a3d07dfc9d4e0291fb1efaa06805f2d95",
+          "render_sha256": "c218b5052321e32fd16566ee540115e330f49ebdb8b0ea9d75f3123f416adde1"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "6661365b18936c30910b359aae2a88cab4f2e50aee0fa02b3747444d68f06f5a",
+      "raw_block_sha256": "e394200ddc45db815e95329811dd3e2d7eda4406b30429958371fdb0afa018ce",
+      "operative_body": "That Council considered the issue of livestreaming and determined not to proceed at this time.",
+      "operative_body_sha256": "991ad9786d8e788add5cbb9c3ad5c7f02da880a9ab26d9e4dcbb7cad9e87e42c",
+      "result": "CARRIED",
+      "pages": [
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "76f00989e16742c87b9dcbdedd53a20a3d07dfc9d4e0291fb1efaa06805f2d95",
+          "render_sha256": "c218b5052321e32fd16566ee540115e330f49ebdb8b0ea9d75f3123f416adde1"
+        }
+      ],
+      "independent_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "authority": "operative_body_and_result_only"
+    }
+  ],
+  "native_first_page_sha256": "18373edb2e982e19ef3f8c503b851f2106c6321ddbb64ec2802138e871f0ece7",
+  "corrected_text_sha256": "86f7d8ec7248fb406d4b1b6e3919ca32da266620cc618ba34b247203ab5755e3",
+  "parsed_blocks_sha256": "f8e202fdadd7da0a901bbf98911cfc4c960e2ec9e9f6ef136bbdb68bbc0f753b",
+  "independent_original_image_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+  "remaining_holds": [
+    {
+      "kind": "formal_introduction_body_without_explicit_outcome",
+      "page": 24,
+      "page_evidence": {
+        "page": 24,
+        "native_text_sha256": "b1aa04b98febf2cd8c95178f6570eea184a344f398454d07200104f9a8390c95",
+        "render_sha256": "01a9e74461fcbdc5f48c69fa7621c001432f0e2d7ec74aa41daa9aabf122601c"
+      },
+      "body": "That Council re-appoint Councillor Roger Wade as the Langford representative to the West Shore Parks and Recreation Board for a 1-year term, ending December 31, 2021; and appoint Councillor Norma Stewart as alternate Council representative, for a 1-year term, ending December 31, 2021.",
+      "raw_body": "That Council re-appoint Councillor Roger Wade as the Langford representative to the West Shore\n      Parks and Recreation Board for a 1-year term, ending December 31, 2021; and appoint Councillor\n      Norma Stewart as alternate Council representative, for a 1-year term, ending December 31, 2021.",
+      "body_start_offset": 66345,
+      "next_formal_header_offset": 66644,
+      "source_text_sha256": "bee81fe5b5233b9ec5227bea843af2ed8562edcf4f59ffa6c45179753ef183be",
+      "printed_outcome": null,
+      "status": "held_no_printed_outcome_before_separate_next_motion",
+      "reason": "P24prints a distinct MOVED/SECONDED and completeWestShorebody, then a second MOVED/SECONDED forLibraryappointment. OnlyLibrarymotionhasCARRIED onp25. Do not infer shared outcome or manufacture a new row."
+    }
+  ],
+  "activation_notes": [
+    "Bothsupplementaloldclaimsremainunmappedunderexistingguard; no activation until independently reviewed preservation mechanism and fresh currentclaims/CAS.",
+    "Nativeadapter currentlydoesnotpropagateremaining_holds; keepunknownappointmentexplicitinreviewreceiptandfuturecompletenesschecks."
+  ],
+  "published_supplemental_occurrence_reviews": [
+    {
+      "type": "reviewed_published_supplemental_formal_occurrence",
+      "authority": "supplemental_occurrence_accounting_only",
+      "source_file": "archive/langford/Council/2020/12/2020-12-07 Regular Council [legacy]/Minutes/20201207-Award-of.pdf",
+      "source_sha256": "40a3b6534502c38f74b1cda082175f7e831dcbb4b19c8bd7c099b15f0315a889",
+      "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201207-Award-of.pdf",
+      "source_date": "2020-12-07",
+      "layout_meeting_header_quote": "Council Meeting | Meeting Date: December 7, 2020",
+      "layout_header_offset": 38,
+      "native_meeting_header_quote": "Council Meeting | Meeting Date: December 7, 2020",
+      "native_header_offset": 44,
+      "layout_text_sha256": "d8e92809141feb768367c2e9eb87fc99d9e56fe96a3902a8dcfca85f3b86dbbd",
+      "page": 1,
+      "native_text_sha256": "10ee7c29f9ce32fb3ca210baabe76594417e393dff5a46e471b6ace1461aaf50",
+      "render_sha256": "7c0d4368f442d40f3736107aef88415367a668c633991c24da49c1c83cef1756",
+      "render_scale": 2,
+      "pymupdf_version": "1.27.2.3",
+      "source_offset": 390,
+      "source_order": 0,
+      "raw_block_sha256": "4332f91199e783025ef4861d2f594d0da22c1bb65b4fd81e8882559ca3e3a018",
+      "formal_inventory_sha256": "4d7b7ab693ddc6b261c0be4d274dcd5dc5549eeb7b7fc2cde6b448686ffe3869",
+      "operative_body": "That Council: 1. Award the detailed design, tendering and construction contract administration of the Larkhall Extension to McElhanney who are already working on the Peatt at Brock roundabout project and fund this from the Road DCC program; AND 2. Rise and Report following the January 2021 Council meeting.",
+      "operative_body_sha256": "aa8e1d5d5eac346b125439ff6359cc2c1dbe0adc0b7b1d8914e6e045b108f604",
+      "result": "CARRIED",
+      "outcome_quote": "CARRIED.",
+      "first_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "independent_review_sha256": "fabec0cc806920719f3922b288336f6247acbdac51de9e5683034f74ad1557a9"
+    },
+    {
+      "type": "reviewed_published_supplemental_formal_occurrence",
+      "authority": "supplemental_occurrence_accounting_only",
+      "source_file": "archive/langford/Council/2020/12/2020-12-07 Regular Council [legacy]/Minutes/20201207-Massey-Thomasset.pdf",
+      "source_sha256": "37f384c0548a868c4eb83897186d463a0d5d7630dd1dddb6222c07ed8abbf288",
+      "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201207-Massey-Thomasset.pdf",
+      "source_date": "2020-12-07",
+      "layout_meeting_header_quote": "Council Meeting | Meeting Date: December 7, 2020",
+      "layout_header_offset": 38,
+      "native_meeting_header_quote": "Council Meeting | Meeting Date: December 7, 2020",
+      "native_header_offset": 38,
+      "layout_text_sha256": "c3243ecc37633fcfc2dfa617aee4cc064e34a467a3f8d47176b10d455b3801a7",
+      "page": 1,
+      "native_text_sha256": "8fce9119c910c5052f8e2548014226f0eafde48740a73d1c5251d37b8fb2da9f",
+      "render_sha256": "75db1be42052623b49f27cb4d1c3581e457baa0ac94e3ea180745eaf7f76d9c6",
+      "render_scale": 2,
+      "pymupdf_version": "1.27.2.3",
+      "source_offset": 389,
+      "source_order": 0,
+      "raw_block_sha256": "b1f9d6b67bf719ed13aa5ea53a7d0ab33c9e7bba4c2205c166b30aa708cb57b5",
+      "formal_inventory_sha256": "09a366415ebeaa8c0d1fecb09934e1d396c8d2c538fd706d8936f7bf7191846e",
+      "operative_body": "That Council: 1. Authorize the award of the detailed design and preparation of the tender package for the Massie/Thomasset connector road to Associated Engineering for a sum of $30,200.00 plus GST paid for from the General Amenity Fund; AND 2. Tender the project in 2021 returning to Council for final approval of construction; AND 3. Direct staff to include the construction of the Massie/Thomasset connector road in the upcoming Road DCC bylaw amendment; AND 4. Rise and Report after the affected residents have been notified.",
+      "operative_body_sha256": "01154259a6a4445de603e2e397912290a61855ba71beff5cd6f72de5c6478e0e",
+      "result": "CARRIED",
+      "outcome_quote": "CARRIED.",
+      "first_review_sha256": "385700c449233923be33f85885ca59d21f5f2831be31e353450c59e05f1a9dd4",
+      "independent_review_sha256": "fabec0cc806920719f3922b288336f6247acbdac51de9e5683034f74ad1557a9"
+    }
+  ],
+  "supplemental_independent_review_sha256": "fabec0cc806920719f3922b288336f6247acbdac51de9e5683034f74ad1557a9"
+}

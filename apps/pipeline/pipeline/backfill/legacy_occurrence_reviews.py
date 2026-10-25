@@ -22,6 +22,9 @@ ENROLLED = {
     117: '5d9fd893e2f11293b6850acfff6aef3f04485f07e7ebd0226ceb9bc163541dcd',
     253: 'c733a6c568c7be9519fe23babbb8191ab4edceba2cf7e86e0e6de36c673ac64b',
     337: 'a61e8b0f655698108c3a72e4f14b6bc918f2480705ef42bb2fb80c7033642228',
+    32: 'bc0d9c37970b6bd0858d7c486224d15ab050b9fb79ef332cb17245244e0c3288',
+    297: '0082d73b6e1e935994f5cb522d6d95d840d12700010b0c442c8522bd3e12dafe',
+    99: '9a794307d9b4ddbe9b69a3122a265ba70624b777ff2674872335b051eed1919b',
 }
 
 
@@ -110,7 +113,11 @@ def _literal_spans(text, body):
     return [(match.start(), match.end()) for match in re.finditer(pattern, text)]
 
 
-_ADJOURNMENT_LEGACY = re.compile(r'That (?:the )?meeting be adjourned\.', re.I)
+_ADJOURNMENT_LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting)\.', re.I)
+_ADJOURNMENT_LEGACY_COMPACT = frozenset(
+    re.sub(r'[^a-z0-9]', '', body.casefold()) for body in (
+        'That the meeting be adjourned.', 'That meeting be adjourned.',
+        'Motion to adjourn the meeting.'))
 _ADJOURNMENT_NARRATION = re.compile(r'(?:The Chair|Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
 _ADJOURNMENT_COMPACT = re.compile(r'(?:TheChair|Mayor[A-Z][a-z]+)adjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
 
@@ -201,6 +208,12 @@ def validate_documentary_preservations(review, *, source, inventory, current_row
                     raise ValueError('Reviewed adjournment narration is not a unique bounded documentary correspondence')
             else:
                 raise ValueError('Unsupported documentary preservation type')
+            if kind == 'reviewed_adjournment_narration_preservation':
+                formal_bodies = [e.get('body_view', e.get('body', '')) for e in formal]
+                formal_bodies.extend(block.get('motion_text', '') for block in source.get('blocks', []))
+                if any(re.sub(r'[^a-z0-9]', '', body.casefold()) in _ADJOURNMENT_LEGACY_COMPACT
+                       for body in formal_bodies):
+                    raise ValueError('Documentary adjournment has an equivalent formal owner')
             if (bound_source_motion(row, source, meeting['id'], inventory) is not None
                     or source_motion_candidates(source, row['text_content'])
                     or any(normalize_text(e.get('body_view', e.get('body', ''))) == normalize_text(row['text_content']) for e in formal)):

@@ -184,8 +184,11 @@ MAYOR_CASE = {**NARRATION_CASE,'legacy':'THAT the meeting be adjourned.',
     'printed':'Mayor Young adjourned the meeting at 8:50 pm.',
     'native':'Mayor Young adjourned the meeting at 8:50 pm.'}
 
+MOTION_CASE = {**NARRATION_CASE, 'legacy':'Motion to adjourn the meeting.'}
+MOTION_MAYOR_CASE = {**MAYOR_CASE, 'legacy':'MOTION TO ADJOURN THE MEETING.'}
 
-@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE],indirect=True)
+
+@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE,MOTION_CASE,MOTION_MAYOR_CASE],indirect=True)
 def test_explicit_reviewed_adjournment_narration_preserves_generic_claim_without_certifying_transcription(case):
     context,rows,review=case;before=deepcopy(rows)
     motions,report=plan(context,rows)
@@ -202,12 +205,16 @@ def test_explicit_reviewed_adjournment_narration_preserves_generic_claim_without
     assert motions==[] and report['status']=='reviewed_legacy_occurrence_review_stale'
 
 
-@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE],indirect=True)
-@pytest.mark.parametrize('change',['other_proposal','conditional','negated','other_actor','proposed_event','multiple_surname','no_time','two_events','native_second_event','competing_generic','unknown_type'])
+@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE,MOTION_CASE,MOTION_MAYOR_CASE],indirect=True)
+@pytest.mark.parametrize('change',['other_proposal','claimed_outcome','claimed_actor','conditional','negated','other_actor','proposed_event','multiple_surname','no_time','two_events','native_second_event','competing_generic','unknown_type'])
 def test_typed_adjournment_review_does_not_admit_arbitrary_paraphrase_or_ambiguous_event(case,change):
     context,rows,review=case;entry=review['documentary_preservations'][0]
     if change=='other_proposal':
         rows[0]['text_content']='That Council approve the budget.';refresh_claim_proof(context,rows,review)
+    elif change=='claimed_outcome':
+        rows[0]['result']='CARRIED';refresh_claim_proof(context,rows,review)
+    elif change=='claimed_actor':
+        rows[0]['mover_id']=21;refresh_claim_proof(context,rows,review)
     elif change=='conditional':entry['printed_body']='If '+entry['printed_body']
     elif change=='negated':entry['printed_body']=entry['printed_body'].replace(' adjourned ',' did not adjourn ')
     elif change=='other_actor':entry['printed_body']='The applicant adjourned the meeting at 8:50 pm.'
@@ -237,12 +244,21 @@ def test_typed_adjournment_review_does_not_admit_arbitrary_paraphrase_or_ambiguo
 
 
 @pytest.mark.parametrize('case',[{**NARRATION_CASE,'formal':'That the meeting be adjourned.'},
-    {**MAYOR_CASE,'formal':'THAT the meeting be adjourned.'}],indirect=True)
-def test_formal_adjournment_owner_cannot_be_reclassified_as_documentary_narration(case):
+    {**MAYOR_CASE,'formal':'THAT the meeting be adjourned.'},
+    {**MOTION_CASE,'formal':'That the meeting be adjourned.'},
+    {**MOTION_MAYOR_CASE,'formal':'Motion to adjourn the meeting.'},
+    {**MOTION_CASE,'formal':'Thatthemeetingbeadjourned.'},
+    {**MOTION_CASE,'formal':'Thatthemeetingbeadjourned'}],indirect=True)
+@pytest.mark.parametrize('missing_envelopes',[False,True])
+def test_formal_adjournment_owner_cannot_be_reclassified_as_documentary_narration(case,missing_envelopes):
     context,rows,review=case;before=deepcopy(rows)
+    if missing_envelopes:
+        context['source']['formal_occurrence_inventory']['envelopes']=[]
+        review['formal_inventory_sha256']=digest(context['source']['formal_occurrence_inventory'])
     motions,report=plan(context,rows)
     assert motions==[] and report['status']=='reviewed_legacy_occurrence_review_stale'
     assert rows==before
+    assert 'equivalent formal owner' in report['held'][0]['detail']
 
 
 GLYPH_CASE={**NARRATION_CASE,'correct_source':True,'native':'The Chair adjourn V\ned the meeting at 8:37pm.'}
