@@ -1,3 +1,4 @@
+import { summarizeJobUsage, type JobUsageRow } from "../lib/job-usage";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getMunicipality } from "./municipality";
 
@@ -171,6 +172,15 @@ export async function getPipelineDashboard(
 
   if (events.error) throw events.error;
 
+  // Tokens and estimated cost per job (usage recorded since jobs started carrying their id).
+  const usageResult = jobIds.length
+    ? await supabase.from("ai_usage_by_job").select("*").in("pipeline_job_id", jobIds)
+    : { data: [] as JobUsageRow[], error: null };
+  if (usageResult.error) console.error("Error fetching job usage:", usageResult.error);
+  for (const job of jobs) {
+    job.usage = summarizeJobUsage(((usageResult.data || []) as JobUsageRow[]).filter((row) => row.pipeline_job_id === job.id));
+  }
+
   const ingestedMeetingIds = (sourcesResult.data || [])
     .map((meeting: any) => meeting.ingested_meeting_id)
     .filter(Boolean);
@@ -296,11 +306,18 @@ export async function getPipelineJobDetail(
     sourceMeeting = data;
   }
 
+  const { data: usageRows, error: usageError } = await supabase
+    .from("ai_usage_by_job")
+    .select("*")
+    .eq("pipeline_job_id", job.id);
+  if (usageError) console.error("Error fetching job usage:", usageError);
+
   return {
     municipality,
     job,
     events: events || [],
     sourceMeeting,
+    usage: summarizeJobUsage((usageRows || []) as JobUsageRow[]),
   };
 }
 

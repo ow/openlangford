@@ -1,3 +1,4 @@
+import { formatCost, formatTokens } from "../lib/job-usage";
 import { useEffect, useRef } from "react";
 import {
   Form,
@@ -206,7 +207,7 @@ function ArgumentValue({ name, value }: { name: string; value: unknown }) {
 }
 
 export default function AdminPipelineJob({ loaderData }: Route.ComponentProps) {
-  const { job, events, sourceMeeting } = loaderData;
+  const { job, events, sourceMeeting, usage } = loaderData;
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const revalidator = useRevalidator();
@@ -436,6 +437,33 @@ export default function AdminPipelineJob({ loaderData }: Route.ComponentProps) {
                     </span>
                   </MetaRow>
                 )}
+                <MetaRow label="AI cost">
+                  {usage ? (
+                    <>
+                      <span className="tabular-nums font-medium">
+                        {formatCost(usage.costUsd)}
+                        {usage.partialCost ? "+" : ""}
+                      </span>
+                      <div className="text-xs tabular-nums text-zinc-500">
+                        {formatTokens(usage.inputTokens + usage.outputTokens)} · {usage.calls.toLocaleString()} calls
+                        {usage.failed ? ` · ${usage.failed} failed` : ""}
+                      </div>
+                      {usage.byStage.length > 1 && (
+                        <ul className="mt-1.5 space-y-0.5 text-xs tabular-nums text-zinc-600">
+                          {usage.byStage.slice(0, 6).map((stage) => (
+                            <li key={stage.stage} className="flex justify-between gap-3">
+                              <span className="truncate">{stage.stage}</span>
+                              <span>{formatCost(stage.costUsd)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="mt-1 text-xs text-zinc-400">Estimate from token counts and list prices.</div>
+                    </>
+                  ) : (
+                    <span className="text-zinc-400">{isActive ? "None recorded yet" : "Not recorded"}</span>
+                  )}
+                </MetaRow>
                 <MetaRow label="Attempts">
                   <span className="tabular-nums">
                     {job.attempt_count} of {job.max_attempts}

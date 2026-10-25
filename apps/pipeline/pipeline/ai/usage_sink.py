@@ -46,6 +46,7 @@ def to_row(record: UsageRecord) -> dict[str, Any]:
         "error": (record.error or None) and record.error[:2000],
         "meeting_id": record.meeting_id,
         "job": record.job,
+        "pipeline_job_id": record.pipeline_job_id,
         "request_id": None,
     }
 

@@ -3,8 +3,8 @@
 The default hook only debug-logs. ``pipeline.ai.usage_sink.install_usage_logging``
 adds a hook that batches records into the ``ai_usage`` table.
 
-``usage_context(job=..., meeting_id=...)`` labels every record made inside it
-(the stage runner sets ``job`` to the registry stage name).
+``usage_context(job=..., meeting_id=..., pipeline_job_id=...)`` labels every record made inside it
+(the stage runner sets ``job`` to the registry stage name; the worker sets ``pipeline_job_id``).
 """
 
 from __future__ import annotations
@@ -32,6 +32,7 @@ class UsageRecord:
     attempts: int = 1
     job: str | None = None
     meeting_id: int | None = None
+    pipeline_job_id: int | None = None
     created_at: float = field(default_factory=time.time)
 
     def as_dict(self) -> dict:
@@ -68,13 +69,15 @@ def current_context() -> dict:
 
 
 @contextlib.contextmanager
-def usage_context(*, job: str | None = None, meeting_id: int | None = None) -> Iterator[None]:
+def usage_context(*, job: str | None = None, meeting_id: int | None = None,
+                  pipeline_job_id: int | None = None) -> Iterator[None]:
     """Label usage records made inside this block (nested blocks inherit unset fields)."""
     global _process_context
     parent = current_context()
     merged = {
         "job": job if job is not None else parent.get("job"),
         "meeting_id": meeting_id if meeting_id is not None else parent.get("meeting_id"),
+        "pipeline_job_id": pipeline_job_id if pipeline_job_id is not None else parent.get("pipeline_job_id"),
     }
     token = _context.set(merged)
     previous_process = _process_context
@@ -92,6 +95,8 @@ def record_usage(record: UsageRecord) -> None:
         record.job = ctx.get("job")
     if record.meeting_id is None:
         record.meeting_id = ctx.get("meeting_id")
+    if record.pipeline_job_id is None:
+        record.pipeline_job_id = ctx.get("pipeline_job_id")
     try:
         _hook(record)
     except Exception:  # a broken hook must never break a pipeline run

@@ -101,7 +101,7 @@ class TestRunPostIngest:
         fake = [Stage("labelled", "", lambda c: seen.append(usage.current_context()), "post_ingest", "meeting", "1")]
         monkeypatch.setattr(stages, "STAGES", fake)
         stages.run_post_ingest(StageContext(supabase=MagicMock(), meeting_ids=[42]))
-        assert seen == [{"job": "labelled", "meeting_id": 42}]
+        assert seen == [{"job": "labelled", "meeting_id": 42, "pipeline_job_id": None}]
 
 
 class TestStale:

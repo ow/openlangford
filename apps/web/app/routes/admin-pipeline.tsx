@@ -31,6 +31,7 @@ import {
   getPipelineDashboard,
   type PipelineJobType,
 } from "../services/pipeline-admin.server";
+import { formatCost, formatTokens } from "../lib/job-usage";
 import { getAiUsageDashboard } from "../services/ai-usage-admin.server";
 import { AiUsageSection } from "../components/admin/ai-usage-section";
 
@@ -356,6 +357,12 @@ function JobRow({ job, isSubmitting }: { job: any; isSubmitting: boolean }) {
         </Link>
         <div className="text-xs tabular-nums text-zinc-500">
           #{job.id} · {jobLifecycleSummary(job)}
+          {job.usage ? (
+            <span title={`${formatTokens(job.usage.inputTokens + job.usage.outputTokens)} across ${job.usage.calls} AI calls (estimate)`}>
+              {" · "}
+              {formatCost(job.usage.costUsd)}
+            </span>
+          ) : null}
           {job.status === "running" && job.locked_at
             ? ` · heartbeat ${formatRelativeTime(job.locked_at)}`
             : ""}

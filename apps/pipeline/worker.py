@@ -679,7 +679,7 @@ def work_once(
     try:
         from pipeline.ai.usage import usage_context
 
-        with capture_job_output(supabase, job_id), usage_context(job=f"worker:{job.get('job_type')}"):
+        with capture_job_output(supabase, job_id), usage_context(job=f"worker:{job.get('job_type')}", pipeline_job_id=job_id):
             result = run_job(supabase, job)
         record_job_event(supabase, job_id, "Job succeeded", data=result)
         finish_job(supabase, job_id, "succeeded", result=result)

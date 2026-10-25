@@ -70,7 +70,10 @@ def folder_for(meeting: dict, archive_root: str) -> str:
     hour, minute = int(meeting["time"][:2]), meeting["time"][2:]
     clock = f"{hour % 12 or 12}{minute}{'am' if hour < 12 else 'pm'}"
     first = (meeting["minutes"] or meeting["agenda"])[0]["id"]
-    title = meeting["body"] + (" – Special" if meeting["kind"] == "Special" else "")
+    if meeting["body"] == "Council":
+        title = f"{meeting['kind']} Council"  # "Regular Council" / "Special Council", like the city's own folders
+    else:
+        title = meeting["body"] + (" – Special" if meeting["kind"] == "Special" else "")
     top = "Council" if meeting["body"] == "Council" else meeting["body"]
     name = f"{meeting['date']} {clock} {title} [gx-{first[:8]}]"
     return os.path.join(archive_root, top, meeting["date"][:4], meeting["date"][5:7], name)
@@ -159,12 +162,35 @@ def main(argv=None):
         print(f"  {m['date']} {m['body']} ({m['kind']}): {len(m['agenda'])} agenda, {len(m['minutes'])} minutes")
     if args.dry_run:
         return
-    for m in todo:
-        result = download_meeting(m, archive_root)
-        print(f"  [+] {result['files']} file(s) -> {result['folder']}")
-        if args.ingest:
-            import subprocess
-            subprocess.run(["uv", "run", "python", "main.py", "--target", result["folder"]], check=False)
+    import subprocess
+    from datetime import datetime
+
+    report_path = os.path.join(archive_root, "reports", "glyphdex-import.jsonl")
+    os.makedirs(os.path.dirname(report_path), exist_ok=True)
+    failed = 0
+    for i, m in enumerate(todo, 1):
+        entry = {"at": datetime.now().isoformat(timespec="seconds"), "date": m["date"], "body": m["body"], "kind": m["kind"]}
+        try:
+            result = download_meeting(m, archive_root)
+            entry["folder"] = result["folder"]
+            print(f"  [{i}/{len(todo)}] {result['files']} file(s) -> {result['folder']}", flush=True)
+            if args.ingest:
+                log = os.path.join(archive_root, "reports", "glyphdex-logs", os.path.basename(result["folder"]) + ".log")
+                os.makedirs(os.path.dirname(log), exist_ok=True)
+                with open(log, "w") as handle:
+                    code = subprocess.run(["uv", "run", "python", "main.py", "--target", result["folder"]],
+                                          stdout=handle, stderr=subprocess.STDOUT).returncode
+                entry.update({"ingest_exit": code, "log": log})
+                if code:
+                    failed += 1
+                    print(f"      [!] ingest failed (exit {code}); see {log}", flush=True)
+        except Exception as error:  # one bad meeting never stops the backfill
+            failed += 1
+            entry["error"] = f"{type(error).__name__}: {error}"
+            print(f"      [!] {entry['error']}", flush=True)
+        with open(report_path, "a") as handle:
+            handle.write(json.dumps(entry) + "\n")
+    print(f"Done: {len(todo) - failed} ok, {failed} failed. Report: {report_path}")
 
 
 if __name__ == "__main__":
