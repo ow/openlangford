@@ -137,3 +137,22 @@ def test_author_titles_and_credentials_are_dropped():
     org = "BC Restaurant and Foodservices Association; Alliance of Beverage Licensees; BC Craft Brewers Guild"
     assert clean_author(org) == org
     assert clean_author("Jane Ma") == "Jane Ma"
+
+
+def test_petition_signers_collapse_into_one_entry():
+    from pipeline.ingestion.written_submissions import collapse_petitions
+    signers = [{"who": n, "position": "opposes", "topic": "Southglen", "point": "Opposes allowing through traffic on Southglen Drive."}
+               for n in ("Darin Ferrill", "Karen Hatch", "Bryan Wilton")]
+    other = {"who": "Jo Smith", "position": "supports", "topic": "x", "point": "Supports something else."}
+    out = collapse_petitions([signers[0], other, *signers[1:]])
+    assert [o["who"] for o in out] == ["Petition (3 signatures)", "Jo Smith"]
+    assert out[0]["signatures"] == 3 and out[0]["point"].startswith("Opposes")
+    assert collapse_petitions(signers[:2]) == signers[:2]  # two matching letters aren't a petition
+
+
+def test_forwarded_copies_of_one_letter_are_kept_once():
+    from pipeline.ingestion.written_submissions import collapse_petitions
+    copy = {"who": "A resident", "position": "opposes", "topic": "Latoria", "point": "Urges Council to delay first reading."}
+    assert collapse_petitions([copy, dict(copy), dict(copy)]) == [copy]
+    two = [{**copy, "who": "Jo Smith"}, {**copy, "who": "Sam Lee"}]
+    assert collapse_petitions(two) == two

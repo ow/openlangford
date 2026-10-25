@@ -49,7 +49,9 @@ export async function loadLetterQueue(supabase: ReturnType<typeof getSupabaseAdm
       })),
     ),
   );
-  return { letters };
+  // Every suggestion under 15%: the model is effectively saying "none of these".
+  const likelyNone = (entry: (typeof letters)[number]) => (entry.letter.candidates[0]?.probability ?? 0) < 0.15;
+  return { letters: letters.filter((e) => !likelyNone(e)), unrelated: letters.filter(likelyNone) };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -60,6 +62,19 @@ export async function action({ request }: Route.ActionArgs) {
   const extractedId = String(form.get("extracted_id") || "");
   const key = String(form.get("key") || "");
   const intent = String(form.get("intent") || "");
+  if (intent === "dismiss_group") {
+    const keys = form.getAll("keys").map(String);
+    const { data: meeting, error } = await supabase.from("meetings").select("id, meta").eq("id", meetingId).single();
+    if (error) return { error: error.message };
+    let meta = meeting.meta;
+    for (const groupKey of keys) {
+      const placed = placeHeldLetter(meta, null, extractedId, groupKey, null);
+      if (placed) meta = placed.meetingMeta;
+    }
+    const { error: saveError } = await supabase.from("meetings").update({ meta }).eq("id", meetingId);
+    if (saveError) return { error: saveError.message };
+    return { ok: `${keys.length} ${keys.length === 1 ? "letter" : "letters"} left off the meeting page.` };
+  }
   const choice = String(form.get("item") || "");
   const other = String(form.get("other_item") || "");
   const itemId = intent === "dismiss" ? null : Number(choice === "__other" ? other : choice);
@@ -171,8 +186,51 @@ function LetterCard({ entry, busy }: { entry: any; busy: boolean }) {
   );
 }
 
+function UnrelatedGroup({ group, busy }: { group: any; busy: boolean }) {
+  const { meeting } = group.entries[0];
+  return (
+    <li className="rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
+      <p className="text-sm text-zinc-500">
+        <Link to={meetingPath(meeting)} className="hover:text-brand-700 hover:underline">
+          {meeting.title} · {formatDate(meeting.meeting_date, { month: "short", day: "numeric", year: "numeric" })}
+        </Link>
+        {" · "}
+        <Link to={documentPath(meeting, group.entries[0].documentId)} target="_blank" className="hover:text-brand-700 hover:underline">
+          {group.entries[0].documentTitle || "Letters"}
+        </Link>
+      </p>
+      <ul className="mt-2 space-y-1 text-sm text-zinc-700">
+        {group.entries.map((entry: any) => (
+          <li key={entry.letter.key}>
+            <span className="font-medium text-zinc-900">{entry.letter.who}</span>
+            <span className="text-zinc-500"> · {entry.letter.point}</span>
+          </li>
+        ))}
+      </ul>
+      <Form method="post" className="mt-3 flex justify-end">
+        <input type="hidden" name="meeting_id" value={meeting.id} />
+        <input type="hidden" name="extracted_id" value={group.entries[0].extractedId} />
+        <input type="hidden" name="key" value="group" />
+        {group.entries.map((entry: any) => (
+          <input key={entry.letter.key} type="hidden" name="keys" value={entry.letter.key} />
+        ))}
+        <Button type="submit" name="intent" value="dismiss_group" variant="outline" size="sm" disabled={busy}>
+          Leave {group.entries.length === 1 ? "it" : `all ${group.entries.length}`} off
+        </Button>
+      </Form>
+    </li>
+  );
+}
+
 export default function AdminLetters({ loaderData, actionData }: Route.ComponentProps) {
-  const { letters } = loaderData;
+  const { letters, unrelated } = loaderData;
+  const groups = Object.values(
+    unrelated.reduce((acc: Record<string, any>, entry: any) => {
+      const key = `${entry.meeting.id}-${entry.extractedId}`;
+      (acc[key] ||= { key, entries: [] }).entries.push(entry);
+      return acc;
+    }, {}),
+  );
   const busy = useNavigation().state !== "idle";
 
   return (
@@ -180,7 +238,11 @@ export default function AdminLetters({ loaderData, actionData }: Route.Component
       <div className="container mx-auto max-w-4xl px-4 py-12">
         <DetailHeader
           back={{ to: "/admin", label: "Admin" }}
-          meta={[<span key="count" className="tabular-nums">{letters.length} to place</span>]}
+          meta={[
+            <span key="count" className="tabular-nums">
+              {letters.length} to place{unrelated.length > 0 ? ` · ${unrelated.length} probably not about an item` : ""}
+            </span>,
+          ]}
           title="Letter placement"
           description="Residents' letters from agenda packages that the pipeline couldn't confidently match to an agenda item. Placed letters show under Written submissions on that item and its matter."
         />
@@ -204,6 +266,20 @@ export default function AdminLetters({ loaderData, actionData }: Route.Component
               <LetterCard key={`${entry.meeting.id}-${entry.extractedId}-${entry.letter.key}`} entry={entry} busy={busy} />
             ))}
           </ul>
+        )}
+
+        {groups.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-lg font-semibold text-zinc-900">Probably not about any agenda item</h2>
+            <p className="mb-4 mt-1 text-sm text-zinc-500">
+              The model found no likely agenda item for these letters, often petitions or general requests to Council.
+            </p>
+            <ul className="space-y-4">
+              {(groups as any[]).map((group) => (
+                <UnrelatedGroup key={group.key} group={group} busy={busy} />
+              ))}
+            </ul>
+          </section>
         )}
       </div>
     </div>

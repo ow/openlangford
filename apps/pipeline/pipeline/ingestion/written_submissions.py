@@ -110,6 +110,37 @@ def extract_letters(sections: list[dict]) -> dict:
     return {"raw": raw, "source": sections}
 
 
+PETITION_MIN = 3
+
+
+def collapse_petitions(letters: list[dict]) -> list[dict]:
+    """Letters sharing a point are either one petition (three or more different named signers:
+    shown once with its signature count) or copies of one letter forwarded several times
+    (same or no name: kept once)."""
+    groups: dict[str, list[dict]] = {}
+    for letter in letters:
+        groups.setdefault(" ".join(folded(letter["point"])), []).append(letter)
+    out, done = [], set()
+    for letter in letters:
+        key = " ".join(folded(letter["point"]))
+        group = groups[key]
+        if len(group) == 1:
+            out.append(letter)
+            continue
+        if key in done:
+            continue
+        done.add(key)
+        signers = {" ".join(folded(l["who"].split(" (")[0])) for l in group if not l["who"].startswith("A resident")}
+        if len(signers) >= PETITION_MIN:
+            out.append({**{k: v for k, v in letter.items() if k not in ("who", "key", "sent")},
+                        "who": f"Petition ({len(signers)} signatures)", "signatures": len(signers)})
+        elif len(signers) <= 1:
+            out.append(letter)  # copies of the same letter
+        else:
+            out.extend(group)  # a few different people making the same point: keep each
+    return out
+
+
 def admit_letters(raw: list[dict], sections: list[dict], streets: dict) -> list[dict]:
     """Keep only letters backed by their own source; strip private details."""
     check = StreetCheck(streets)
@@ -133,7 +164,7 @@ def admit_letters(raw: list[dict], sections: list[dict], streets: dict) -> list[
             "point": verb_led(check.clean_text(letter["point"])),
             "sent": letter["sent"].strip(),
         })
-    return admitted
+    return collapse_petitions(admitted)
 
 
 # --- Stage: find, extract, place and store ------------------------------------
