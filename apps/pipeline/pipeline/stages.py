@@ -489,6 +489,34 @@ def run_motion_headlines(ctx: StageContext):
     return {"meetings": len(ids), "headlines": done}
 
 
+def run_other_documents(ctx: StageContext):
+    import os
+    from pipeline.paths import BASE_DIR
+    from pipeline.ingestion.other_documents import ingest_meeting_letters
+
+    if ctx.post_ingest:
+        ids = list(ctx.meeting_ids or [])
+    elif ctx.target_id() is not None:
+        ids = [ctx.target_id()]
+    else:
+        ids = None
+    query = ctx.supabase.table("meetings").select("id,archive_path,meeting_date").not_.is_("archive_path", "null")
+    meetings = [m for m in (query.limit(5000).execute().data or [])
+                if (ids is None or m["id"] in ids) and (not ctx.since or (m.get("meeting_date") or "") >= ctx.since)]
+    totals = {"meetings": len(meetings), "files": 0, "new": 0, "extracted": 0}
+    for meeting in meetings:
+        try:
+            stats = ingest_meeting_letters(ctx.supabase, meeting, BASE_DIR, dry_run=ctx.dry_run)
+        except Exception as e:
+            print(f"  [!] Other documents for meeting {meeting['id']} failed: {e}")
+            continue
+        for key in ("files", "new", "extracted"):
+            totals[key] += stats[key]
+    print(f"  [Other documents] {totals['files']} letter file(s) across {totals['meetings']} meeting(s): "
+          f"{totals['new']} new, {totals['extracted']} extracted")
+    return totals
+
+
 def run_written_submissions(ctx: StageContext):
     from pipeline.ingestion.participation_validation import load_streets
     from pipeline.ingestion.written_submissions import correspondence_documents, summarize_document
@@ -677,6 +705,12 @@ STAGES: list[Stage] = [
         name="document-relink",
         description="Link extracted documents with no agenda item to one via the Decisions API (post-ingest: those meetings only).",
         run=run_document_relink, when="post_ingest", scope="meeting", version="1",
+        depends_on=("escribe-attachments",),
+    ),
+    Stage(
+        name="other-documents",
+        description="Ingest late submissions and addendum correspondence from a meeting's Other Documents folder. --target is a meeting id; --since DATE.",
+        run=run_other_documents, when="post_ingest", scope="meeting", version="1",
         depends_on=("escribe-attachments",),
     ),
     Stage(
