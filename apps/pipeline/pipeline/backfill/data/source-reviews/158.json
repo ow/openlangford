@@ -1,0 +1,612 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 158,
+    "title": "Regular Council",
+    "meeting_date": "2022-05-02",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+  "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "eac1c569ef3ec521f923e917c48b53c94899a877f027ff7206bc3063a9d80ed0",
+  "corrected_text_sha256": "eac1c569ef3ec521f923e917c48b53c94899a877f027ff7206bc3063a9d80ed0",
+  "parsed_blocks_sha256": "8c3a9b3b3fd26fc5b8835e9166312910bf37bf599edd3469f9e91f8cade01d43",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "8d28a2546f0c65f653f43816d73c300c2b08f8dfdf4c0243dbdd79623f341fef",
+      "render_sha256": "32821f63614f652ac6d0b7142a8abea2d92a17e7e70c1e669daf8f77568abe44"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "ae0538b78876d799e246f17de70f3a36fddaeee510bfc7c2806f8b3531359270",
+      "render_sha256": "d39609604ad9a3030d9bace38795a74f30d4f5522878f6732d7091ab529661eb"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "680d8619b5eb39c06f344bf1ac09bda2871c2ff241737b9d0cee8c335b1348cd",
+      "render_sha256": "d812cb494f09527efbf38b0450a55b0a825deb7adc742048a3fd46aab83fa592"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "69315e565de7aac4fb99ac4336947e5a690981f2c572c48c152ec043f103561d",
+      "render_sha256": "fb3fb73c08a4e96563f2bf05cc8df2b5756cebc8830bebabab387b41567f2deb"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "53f389a612ac51ae21d52830bbc59769831dbb5dd62234f0fdd2c93344754372",
+      "render_sha256": "983928922b26eb2714576817a564ef94d58b9394597149a4145731af925a5ff6"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "7d81068ca0696390724c28333121800cc03fb01aa801cb3978beabf094da1445",
+      "render_sha256": "a1b1abe2ade1b297b52feef643b166a0d3c98e9c16962b20451fa1c706823c8f"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "f5d1873694575a4aefe3af22c20eeb01ad71009e254a62da25e8525158c1b1a5",
+      "render_sha256": "69cfd7eeaa13a46963bcf239b7e901e14430eed9088ae9a69cb5732b2e369a73"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "13b6d0edd57549279c445814c1470c0dbe664a9ad6f2087a6d70331956584fc0",
+      "render_sha256": "35d0a2898b32e72ff7ace290558cd19934122b6f2087657ecaf0601afe1a9c95"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "7553d93dd6ab4513023228e0e06a2e13affd7b7c00171f9b6d63bef40cdee7e6",
+      "render_sha256": "a304f41f5ce526aa1171906c6f194deb09d4d2f639e874ebf39444135773567b"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "07f235ce187d9f65ee4f96217a303de35b6ab9a4000cec7acb0ba86f62ad1875",
+      "render_sha256": "b675329031492f136ddfcd460621e777f90e10ab55a262bb6dc1ff86e05cc920"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "88dfdbc4d6f774455345ab33d69595d7e9c2d17fec50bedec16efcfb0ecffc25",
+      "render_sha256": "329d4e00c6b47c0a0e274659d7cd535323b1b0fcae1cef7676c58eab5d33ed65"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "87840c223bddf217f4405f0cdf94f629fdbd06a5a095052a89c54e2b542be721",
+      "render_sha256": "39670d2af872f997014361702e50c1c54756a1048ba126029b8d866a0834d3bc"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "daf2789821a59f67e13f2ed282b54a775bb0a980c7930ed57618516452b661b7",
+      "render_sha256": "214b90bac1130b5952a50d3ff029b7a70cd4681657051569196fc72fbe451fc1"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "4173be03b6873f5f71ae45f6e0f7d7ed61bb5908b83e6323e24bdc1e2224e971",
+      "render_sha256": "27a8b7fd5b27cac6fc34dee7b939be6330af7526758202edbea806902b40d6f1"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c",
+      "render_sha256": "170cfb764f3563962661591c32240407e8e053c1e429e5922349e2868b26ab9c"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "f35eaec5371f673e448d22637928354c441a764097b6f5172f38b6626764b9a1",
+      "render_sha256": "66d59ee08940f2f3792f786717378931a34c9bafccad63e7971a5520ad012f21"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "d36e578cab1c1b31e94d8839ec7bc72842326a5611ee1d904155157cd9572221",
+      "render_sha256": "ea745794e0ae6a9f4fec335ec7ba7f229f84dc6b34b89b1c942f8f8f96d078b1"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "f21411ff01d3e5af2a38271683680f9645f935f007c4f96b5689f7f81e21bc33",
+      "raw_block_sha256": "c1e35ae0ea5360b117e0a4c69b97e80980d984522ca4ad675aaa3c78ff128383",
+      "operative_body": "THAT Council: 1. Authorize the Mayor and CAO to enter into a Purchase and Sale Agreement substantially on the terms attached hereto with the Applicant for the disposition of a portion of Jacklin Road, subject to minor amendments as may be necessary; and 2. Consider giving Road Closure Bylaw 2075 (Jacklin Road), 2022 1st, 2nd, and 3rd readings;",
+      "operative_body_sha256": "45161fe53f8abe0e76a8a4e09d7a1ae008fbc2a15cda3f67b2ff8b2fc2d1d0fa",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "87840c223bddf217f4405f0cdf94f629fdbd06a5a095052a89c54e2b542be721",
+          "render_sha256": "39670d2af872f997014361702e50c1c54756a1048ba126029b8d866a0834d3bc"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "5816c9aa8d65db2678db886b02aa0114113c2d65c1eac031c7eb33952f5a7218",
+      "raw_block_sha256": "14f63a9d8d5121d71c62014c269046280c7906fd34859e64ba853ea0c6773c3a",
+      "operative_body": "THAT Council approve the 2021 Audited Consolidated Financial Statements.",
+      "operative_body_sha256": "c4e8cd5a5c4860a14e21011255073cdc66031cf3e21485015268c419d0e5e874",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "87840c223bddf217f4405f0cdf94f629fdbd06a5a095052a89c54e2b542be721",
+          "render_sha256": "39670d2af872f997014361702e50c1c54756a1048ba126029b8d866a0834d3bc"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "facd7078d20dffee5e65f77ccc204a7dce3da7e918cf1ad2bb47b008904fe7a7",
+      "raw_block_sha256": "aa89d502134d6b23df4fa236a46eec5f9551f6d3f385e05f1d6fb291368cebae",
+      "operative_body": "THAT Council consider giving first, second and third readings of Noise Regulation Bylaw 2056.",
+      "operative_body_sha256": "72c4ab2826e98f770c02bf193ff06b6d577f41f692da7b1eb8dce8ab5b6b1154",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "daf2789821a59f67e13f2ed282b54a775bb0a980c7930ed57618516452b661b7",
+          "render_sha256": "214b90bac1130b5952a50d3ff029b7a70cd4681657051569196fc72fbe451fc1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "a0f7da67ada19d5e3427e687f8244768a380a477fc3280ebf0427288fda0d651",
+      "raw_block_sha256": "8b543dc65dbd959d9e5b58e6da9d4f5524c8429936999fcfe2caf5f497a7a046",
+      "operative_body": "THAT Council approve the Lease Agreements and direct that they may be signed by the Mayor and Corporate Officer on the terms substantially as presented, although minor amendments may be made prior to signing.",
+      "operative_body_sha256": "969f4f1cd201e4329fe38f60c38998d3a7325b0c93b961018fc3b1bc8e4c8ac9",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "daf2789821a59f67e13f2ed282b54a775bb0a980c7930ed57618516452b661b7",
+          "render_sha256": "214b90bac1130b5952a50d3ff029b7a70cd4681657051569196fc72fbe451fc1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "5475c8075a6ef9e18cb91955f4e1d713b170a203a552f09c60cfadde2b6a319b",
+      "raw_block_sha256": "e65498f5fa264e1d22d637bda1e66844a0eaac3e18545a23d25eae91ecd74939",
+      "operative_body": "THAT Council 1. Consider giving the first three readings to the City of Langford Stormwater Development Cost Charge Bylaw No. 2022, 2022. AND 2. Consider repealing City of Langford Development Cost Charge Bylaw No. 1700, 2017. AND 3. Direct staff to refresh the Stormwater DCC program at least every 5 years.",
+      "operative_body_sha256": "d5b1405dcbdee8ae48c4b5989f6652109636905f53575f65b91ab6fb41008787",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "daf2789821a59f67e13f2ed282b54a775bb0a980c7930ed57618516452b661b7",
+          "render_sha256": "214b90bac1130b5952a50d3ff029b7a70cd4681657051569196fc72fbe451fc1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "746ee4f1b6d31a71559eeb738c9494ad9a94729100a30940fdb67c06fea05ed9",
+      "raw_block_sha256": "634d6a68020b11b2ec095a85a49095eff6ba8343af4c4448bc86435c93eca17f",
+      "operative_body": "THAT Council adopt Bylaw No. 1989.",
+      "operative_body_sha256": "5fcc44b37388ebb5e7be35d4e355e78c5741ba27069d0aca9fbbe6793f676a05",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "4173be03b6873f5f71ae45f6e0f7d7ed61bb5908b83e6323e24bdc1e2224e971",
+          "render_sha256": "27a8b7fd5b27cac6fc34dee7b939be6330af7526758202edbea806902b40d6f1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "THATCouncil",
+          "printed": "THAT Council",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "9eb4abd91d25ab72b5568774fbc3186acbe67427c804abffe871341b07a5a85b",
+      "raw_block_sha256": "e1c5e9dae1b6a48c9b34ccb8fc1b9e650ee9641c0ae02e28641ea4f7d1677c81",
+      "operative_body": "THAT Council adopt Bylaw No. 1990.",
+      "operative_body_sha256": "3740edbbb2db2dc622eaac8cc0014773dd98d6287e0f64209210b09c9f614a93",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "4173be03b6873f5f71ae45f6e0f7d7ed61bb5908b83e6323e24bdc1e2224e971",
+          "render_sha256": "27a8b7fd5b27cac6fc34dee7b939be6330af7526758202edbea806902b40d6f1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "THATCouncil",
+          "printed": "THAT Council",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "f75e3a6a607338e82aa91a2a3186499915d6ea867bfc0bf7b80f1d2f3d4b863d",
+      "raw_block_sha256": "9f6f443a1c21172552a6d8e3cfd58337d14e94017e5f9ee4fcfcd8abc493a483",
+      "operative_body": "THAT Council give Bylaw No. 2022 first, second and third readings.",
+      "operative_body_sha256": "6fded3a86e60551755c88e535250680c23b7bec73a34beab41b289192e951c4f",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "4173be03b6873f5f71ae45f6e0f7d7ed61bb5908b83e6323e24bdc1e2224e971",
+          "render_sha256": "27a8b7fd5b27cac6fc34dee7b939be6330af7526758202edbea806902b40d6f1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "f0ffeac4bd04d878a531c6591ea9c8876d99946a2970a57f975a4cb246f73b32",
+      "raw_block_sha256": "f89ee88ca0097f7f43957909c2dd1d0d2325f2d4ccf672546445b11e4cf38898",
+      "operative_body": "THAT Council give Bylaw No. 2044 second and third readings.",
+      "operative_body_sha256": "c33192584ccebf1d04f4b071f8147c82418612c07f3b9e781d98b19b17550a15",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "4173be03b6873f5f71ae45f6e0f7d7ed61bb5908b83e6323e24bdc1e2224e971",
+          "render_sha256": "27a8b7fd5b27cac6fc34dee7b939be6330af7526758202edbea806902b40d6f1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "72a9e455391e8f55e4dc55233df7972eef593e266282a857e30cfbd94195259b",
+      "raw_block_sha256": "e5be70a195b67e4210e1fa5fb6212da844731f0b54480167ad6d8367f9db0306",
+      "operative_body": "THAT Council give Bylaw No. 2052 second and third readings.",
+      "operative_body_sha256": "5c187572422cf7d0dbf5429f9fc083e568e43e0d96ca6ccc65ffd2bc762180a1",
+      "result": "CARRIED",
+      "pages": [
+        14,
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "4173be03b6873f5f71ae45f6e0f7d7ed61bb5908b83e6323e24bdc1e2224e971",
+          "render_sha256": "27a8b7fd5b27cac6fc34dee7b939be6330af7526758202edbea806902b40d6f1"
+        },
+        {
+          "page": 15,
+          "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c",
+          "render_sha256": "170cfb764f3563962661591c32240407e8e053c1e429e5922349e2868b26ab9c"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "THATCouncil",
+          "printed": "THAT Council",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "19cf451323375ad9c18133125f72fbd1dc9310fbdbdae706106c6201b18ebde1",
+      "raw_block_sha256": "11ffde19eadddcebb76c8360fc49210ef96fc7d3e301b4db4ad3a141cfcad6cc",
+      "operative_body": "THAT Council rescind first reading of Bylaw No. 2054, and give a new first reading to revised Bylaw No. 2054",
+      "operative_body_sha256": "66f8ae9dfea0e6e81132700be7263b90fb7ddb3228d06ae887fa59225a0bd061",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c",
+          "render_sha256": "170cfb764f3563962661591c32240407e8e053c1e429e5922349e2868b26ab9c"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "05dd876e30edd3824d03c4e0a54ecc110053173a8417ff341b80af02a5f958a0",
+      "raw_block_sha256": "eced6fdb4b057ca3184a937b4b548ea73a3d6c8a2403389e63d66721fbbae74b",
+      "operative_body": "THAT Council give Bylaw No. 2056 first, second and third readings.",
+      "operative_body_sha256": "7d694a7533f2a42c8252321cd072719b05ddb1d1a83a6e2dee51c4cf08809562",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c",
+          "render_sha256": "170cfb764f3563962661591c32240407e8e053c1e429e5922349e2868b26ab9c"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "b2bacf3d809181d2396ee6b157d5d6ac50c47c21903db149e6056efaf689d9c9",
+      "raw_block_sha256": "9240c3b1e8b113bf338073d1acc3f2d81f8eb1e454a36a7ada35df691562bf7b",
+      "operative_body": "THAT Council give Bylaw No. 2057 first, second and third readings.",
+      "operative_body_sha256": "1cb34e58aad06f2a263c96cd11d9574659b237f55e51b8727e140801b6701f44",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c",
+          "render_sha256": "170cfb764f3563962661591c32240407e8e053c1e429e5922349e2868b26ab9c"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "d9bf9bfe109da6261163b1c7359712d2a7f9b77c14ae70c437487da453ed8001",
+      "raw_block_sha256": "8130200ed5b4d7d68e5a46f1671bf85a00d13c7c8f95a34ef206293a9cb5c70e",
+      "operative_body": "THAT Council give Bylaw No. 2066 first reading.",
+      "operative_body_sha256": "64038847e27b1459a56c6ae0ae6dbae1f1309a7dd750bb5ae81f157709538d15",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c",
+          "render_sha256": "170cfb764f3563962661591c32240407e8e053c1e429e5922349e2868b26ab9c"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "THATCouncil",
+          "printed": "THAT Council",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "aac4d833d194192fbfd725622929001fad25bf81ba3c3af704ecb4ef902e5820",
+      "raw_block_sha256": "3e369105bf99612fb1db2236e98e6e0d30279d3a4c15b7c2d7b393853b104d01",
+      "operative_body": "THAT Council give Bylaw No. 2067 first reading.",
+      "operative_body_sha256": "8309610eb3173c8c0749804deb25f08aafd066dda83d83c5e7654697dbe852a4",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c",
+          "render_sha256": "170cfb764f3563962661591c32240407e8e053c1e429e5922349e2868b26ab9c"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "THATCouncil",
+          "printed": "THAT Council",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "3db6d961cedaa7c3334ee10a8306d47bd0bc87466c8a815015f9843c0620083b",
+      "raw_block_sha256": "75968686c32117333b19bbd39f6157ece5d74be86355882cad1cad6637106721",
+      "operative_body": "THAT Council adopt Bylaw No. 2069.",
+      "operative_body_sha256": "488c1908bbf4bcb1207a10ee587346371e6b0051162701804c0b825f46a88c78",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "f35eaec5371f673e448d22637928354c441a764097b6f5172f38b6626764b9a1",
+          "render_sha256": "66d59ee08940f2f3792f786717378931a34c9bafccad63e7971a5520ad012f21"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "b42b65bf11247ec3ac611505afbf70117336322be85b0593ee45d463a527427a",
+      "raw_block_sha256": "20ced6cd776f0de25ddf50f8acb35820971069b10a97a648041a5f8f8319276a",
+      "operative_body": "THAT Council adopt Bylaw No. 2070.",
+      "operative_body_sha256": "4b79541a6ce92a6157bb7949b73e9c6790e6edd02335a43e84db13a3c93a0471",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "f35eaec5371f673e448d22637928354c441a764097b6f5172f38b6626764b9a1",
+          "render_sha256": "66d59ee08940f2f3792f786717378931a34c9bafccad63e7971a5520ad012f21"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "28b2926e7d7c69757085e542c9ed22f6997941e53470cfdbc31d9a5a73ba7e5d",
+      "raw_block_sha256": "48ac8318fbd1bbd35cffe6c0c7bac24a8a06948aea4c93d74d1bc366e6624acc",
+      "operative_body": "THAT Council give Bylaw No. 2075 first, second and third readings.",
+      "operative_body_sha256": "eb1748abdae7fd080b987d5c16044710176240792ee55ffcb99d4cd37c37f989",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "f35eaec5371f673e448d22637928354c441a764097b6f5172f38b6626764b9a1",
+          "render_sha256": "66d59ee08940f2f3792f786717378931a34c9bafccad63e7971a5520ad012f21"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "5be886f63ef3f481b290d8d9577c824caffe4b478b7449a847006c51d3dddd00",
+      "raw_block_sha256": "b62253ac9388e594811d081436175ce3e5b0cad2748ae4044815345dd3f8b993",
+      "operative_body": "THAT Council give Bylaw No. 2077 first reading.",
+      "operative_body_sha256": "e16f21da6136052e4d548bea05167ec047e2a61b326e00028f62e2a41a4abe7e",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "f35eaec5371f673e448d22637928354c441a764097b6f5172f38b6626764b9a1",
+          "render_sha256": "66d59ee08940f2f3792f786717378931a34c9bafccad63e7971a5520ad012f21"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "BylawiNo.",
+          "printed": "Bylaw No.",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    },
+    {
+      "source_key": "92999030f4e4d33787dc1c92ea1e83f357fd96d95e3452112e25a3d55166745f",
+      "raw_block_sha256": "2af730366a4112f3c8f1949746f3ae36a265d2a395b6224e9a8b58b0b1b616ba",
+      "operative_body": "THAT Council close the meeting to the public pursuant to section 90 (1) (e) of the Community Charter to consider: • the acquisition, disposition or expropriation of land or improvements, if the council considers that disclosure could reasonably be expected to harm the interests of the municipality.",
+      "operative_body_sha256": "1728b562173d5962a77761c0cd3a95f3fcb62a11f66d1a8ec21101a60206622a",
+      "result": "CARRIED",
+      "pages": [
+        16,
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "f35eaec5371f673e448d22637928354c441a764097b6f5172f38b6626764b9a1",
+          "render_sha256": "66d59ee08940f2f3792f786717378931a34c9bafccad63e7971a5520ad012f21"
+        },
+        {
+          "page": 17,
+          "native_text_sha256": "d36e578cab1c1b31e94d8839ec7bc72842326a5611ee1d904155157cd9572221",
+          "render_sha256": "ea745794e0ae6a9f4fec335ec7ba7f229f84dc6b34b89b1c942f8f8f96d078b1"
+        }
+      ],
+      "independent_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "to consider.",
+          "printed": "to consider:",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        },
+        {
+          "native": "ifthe",
+          "printed": "if the",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        },
+        {
+          "native": "couild",
+          "printed": "could",
+          "reason": "Original page image verifies printed glyph/spacing; raw block/source identity unchanged."
+        }
+      ],
+      "second_independent_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+    }
+  ],
+  "native_first_page_sha256": "8d28a2546f0c65f653f43816d73c300c2b08f8dfdf4c0243dbdd79623f341fef",
+  "independent_original_image_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+  "original_image_review_sha256s": {
+    "first_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+    "second_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+    "full_snapshot_file_sha256": "db95778e09daa4fb5541031ecd4e8019717269993b03de28b46884c816b6e0ed"
+  },
+  "second_original_image_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1"
+}
