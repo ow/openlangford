@@ -1,0 +1,596 @@
+{
+  "schema": "attendance-correction/v1",
+  "issue": 56,
+  "sources": [
+    {
+      "meeting_id": 207,
+      "local_date": "2023-03-27",
+      "file": "archive/langford/Council/2023/03/2023-03-27 700pm Special Council [337fe240]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645",
+      "source_sha256": "4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81"
+    },
+    {
+      "meeting_id": 216,
+      "local_date": "2023-04-17",
+      "file": "archive/langford/Council/2023/04/2023-04-17 700pm Regular Council [774dd3a7]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827",
+      "source_sha256": "2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef"
+    },
+    {
+      "meeting_id": 285,
+      "local_date": "2023-04-17",
+      "file": "archive/langford/Committee of the Whole/2023/04/2023-04-17 1200pm Committee of the Whole [8148acb0]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037",
+      "source_sha256": "de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd"
+    },
+    {
+      "meeting_id": 280,
+      "local_date": "2023-11-20",
+      "file": "archive/langford/Council/2023/11/2023-11-20 100pm Special Council [10b87155]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151",
+      "source_sha256": "8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a"
+    },
+    {
+      "meeting_id": 205,
+      "local_date": "2024-11-04",
+      "file": "archive/langford/Council/2024/11/2024-11-05 700pm Regular Council [01bd9d9e]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298",
+      "source_sha256": "805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56"
+    },
+    {
+      "meeting_id": 183,
+      "local_date": "2024-11-18",
+      "file": "archive/langford/Council/2024/11/2024-11-18 100pm Special Council [7461d26c]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306",
+      "source_sha256": "b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9"
+    },
+    {
+      "meeting_id": 307,
+      "local_date": "2024-12-02",
+      "file": "archive/langford/Council/2024/12/2024-12-03 700pm Regular Council [4cb8a099]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301",
+      "source_sha256": "2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee"
+    },
+    {
+      "meeting_id": 272,
+      "local_date": "2024-12-02",
+      "file": "archive/langford/Council/2024/12/2024-12-02 1000am Special Council [a1105e92]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300",
+      "source_sha256": "3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1"
+    },
+    {
+      "meeting_id": 329,
+      "local_date": "2024-12-16",
+      "file": "archive/langford/Council/2024/12/2024-12-16 1230pm Special Council [a3ce3f52]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393",
+      "source_sha256": "c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d"
+    },
+    {
+      "meeting_id": 294,
+      "local_date": "2025-09-15",
+      "file": "archive/langford/Council/2025/09/2025-09-15 700pm Regular Council [624afe7f]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371",
+      "source_sha256": "7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060"
+    },
+    {
+      "meeting_id": 160,
+      "local_date": "2025-12-15",
+      "file": "archive/langford/Council/2025/12/2025-12-15 130pm Special Council [079ff966]/Minutes/Minutes - SIGNED.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093",
+      "source_sha256": "aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727"
+    },
+    {
+      "meeting_id": 386,
+      "local_date": "2026-05-12",
+      "file": "archive/langford/Council/2026/05/2026-05-12 600pm Special Council [94adb73c]/Minutes/Minutes.pdf",
+      "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=18033",
+      "source_sha256": "40b5308fe4bdc774ec43af303cf57688b2eeca3edb4cae295885d8b655f263ea"
+    }
+  ],
+  "records": [
+    {
+      "meeting_id": 207,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-03-27\",\"meeting_id\":207,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section, listed as remote. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nActing Mayor L. Szpak   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 207,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-03-27\",\"meeting_id\":207,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nActing Mayor L. Szpak   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 207,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-03-27\",\"meeting_id\":207,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nActing Mayor L. Szpak   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 207,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-03-27\",\"meeting_id\":207,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nActing Mayor L. Szpak   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 207,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-03-27\",\"meeting_id\":207,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nActing Mayor L. Szpak   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 207,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-03-27\",\"meeting_id\":207,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nActing Mayor L. Szpak   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 207,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-03-27\",\"meeting_id\":207,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nActing Mayor L. Szpak   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"4de0eb2c5bd750dac45006cbcd696f8e09cdef51b16dbe6c9c0bad5e9898ee81\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5645\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 216,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":216,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section, listed as remote. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Mayor   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 216,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":216,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Mayor   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 216,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":216,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Mayor   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 216,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":216,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Mayor   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 216,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":216,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Mayor   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 216,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":216,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Mayor   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 216,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":216,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Mayor   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 285,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":285,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section, listed as remote. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Chair   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 285,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":285,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Chair   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 285,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":285,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Chair   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 285,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":285,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Chair   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 285,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":285,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Chair   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 285,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":285,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Chair   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 285,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-04-17\",\"meeting_id\":285,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor L. Szpak - Acting Chair   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor M. Wagner\\nCouncillor K. Guiry   Councillor K. Yacucha\\nCouncillor C. Harder\",\"source_sha256\":\"de422d41e42219d400cfd8eb72260a926df831e0f6552eeeb75ff78e19d6ccbd\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6037\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 280,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-11-20\",\"meeting_id\":280,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section, listed as remote. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor M. Wagner (Acting Mayor)   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor L. Szpak\\nCouncillor K. Guiry   Councillor K. Yacucha - Remote\\nCouncillor C. Harder\",\"source_sha256\":\"8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 280,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-11-20\",\"meeting_id\":280,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor M. Wagner (Acting Mayor)   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor L. Szpak\\nCouncillor K. Guiry   Councillor K. Yacucha - Remote\\nCouncillor C. Harder\",\"source_sha256\":\"8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 280,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-11-20\",\"meeting_id\":280,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor M. Wagner (Acting Mayor)   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor L. Szpak\\nCouncillor K. Guiry   Councillor K. Yacucha - Remote\\nCouncillor C. Harder\",\"source_sha256\":\"8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 280,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-11-20\",\"meeting_id\":280,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor M. Wagner (Acting Mayor)   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor L. Szpak\\nCouncillor K. Guiry   Councillor K. Yacucha - Remote\\nCouncillor C. Harder\",\"source_sha256\":\"8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 280,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-11-20\",\"meeting_id\":280,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor M. Wagner (Acting Mayor)   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor L. Szpak\\nCouncillor K. Guiry   Councillor K. Yacucha - Remote\\nCouncillor C. Harder\",\"source_sha256\":\"8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 280,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-11-20\",\"meeting_id\":280,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section, listed as remote. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor M. Wagner (Acting Mayor)   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor L. Szpak\\nCouncillor K. Guiry   Councillor K. Yacucha - Remote\\nCouncillor C. Harder\",\"source_sha256\":\"8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 280,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2023-11-20\",\"meeting_id\":280,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nCouncillor M. Wagner (Acting Mayor)   Councillor M. Morley\\nMayor S. Goodmanson - Remote   Councillor L. Szpak\\nCouncillor K. Guiry   Councillor K. Yacucha - Remote\\nCouncillor C. Harder\",\"source_sha256\":\"8d02b34a53d6052d8885ba8852bcf189f8b0459e1ddef1f8cdfffa8b70af091a\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=8151\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 205,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-04\",\"meeting_id\":205,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 205,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-04\",\"meeting_id\":205,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 205,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-04\",\"meeting_id\":205,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 205,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-04\",\"meeting_id\":205,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 205,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-04\",\"meeting_id\":205,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 205,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-04\",\"meeting_id\":205,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 205,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-04\",\"meeting_id\":205,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"805479a0ca1fe85fc25f4a30b1a920482d6486bb8e3b9abba62835fd7a362f56\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12298\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 183,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-18\",\"meeting_id\":183,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha - Remote\",\"source_sha256\":\"b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 183,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-18\",\"meeting_id\":183,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha - Remote\",\"source_sha256\":\"b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 183,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-18\",\"meeting_id\":183,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha - Remote\",\"source_sha256\":\"b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 183,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-18\",\"meeting_id\":183,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha - Remote\",\"source_sha256\":\"b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 183,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-18\",\"meeting_id\":183,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha - Remote\",\"source_sha256\":\"b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 183,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-18\",\"meeting_id\":183,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section, listed as remote. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha - Remote\",\"source_sha256\":\"b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 183,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-11-18\",\"meeting_id\":183,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha - Remote\",\"source_sha256\":\"b4ca077ade69a2071f2d52a52989581375ae8182d188de657b401bb9cff4ffd9\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12306\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 307,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":307,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 307,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":307,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 307,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":307,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 307,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":307,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 307,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":307,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 307,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":307,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 307,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":307,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"2cb92c80ecddd33ddf3d16a2bdc85366ca60a466b41a4cf13e84ae8f6c4e15ee\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12301\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 272,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":272,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 272,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":272,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 272,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":272,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 272,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":272,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 272,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":272,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 272,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":272,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 272,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-02\",\"meeting_id\":272,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"3d5e8b287e5a8b28049ac6b817ce3917ff6586720f98ee860a981086aee9e6b1\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12300\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 329,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-16\",\"meeting_id\":329,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 329,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-16\",\"meeting_id\":329,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 329,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-16\",\"meeting_id\":329,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 329,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-16\",\"meeting_id\":329,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 329,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-16\",\"meeting_id\":329,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 329,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-16\",\"meeting_id\":329,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 329,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2024-12-16\",\"meeting_id\":329,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"c71b184b094e37c1cc7fdeec4eb4d4ec39f54fab818c039bc21b949b3451333d\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=12393\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 294,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-09-15\",\"meeting_id\":294,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 294,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-09-15\",\"meeting_id\":294,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 294,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-09-15\",\"meeting_id\":294,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 294,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-09-15\",\"meeting_id\":294,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 294,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-09-15\",\"meeting_id\":294,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 294,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-09-15\",\"meeting_id\":294,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 294,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-09-15\",\"meeting_id\":294,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"7ea04070fcb938ba64c3251c948baa8928147ae8f8ba8a2f8876e53f87178060\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=15371\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 160,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-12-15\",\"meeting_id\":160,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 160,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-12-15\",\"meeting_id\":160,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 160,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-12-15\",\"meeting_id\":160,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 160,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-12-15\",\"meeting_id\":160,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 160,
+      "person_id": 22,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-12-15\",\"meeting_id\":160,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 160,
+      "person_id": 34,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-12-15\",\"meeting_id\":160,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 160,
+      "person_id": 35,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2025-12-15\",\"meeting_id\":160,\"method\":\"original_roster\",\"person_id\":35,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\\nCouncillor L. Szpak\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"aae126751b70278204ee5032cc67dba4d9aba752ac7e24d99d5f3daa9b7cb727\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=16093\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 386,
+      "person_id": 1,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2026-05-12\",\"meeting_id\":386,\"method\":\"original_roster\",\"person_id\":1,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\",\"source_sha256\":\"40b5308fe4bdc774ec43af303cf57688b2eeca3edb4cae295885d8b655f263ea\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=18033\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 386,
+      "person_id": 23,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2026-05-12\",\"meeting_id\":386,\"method\":\"original_roster\",\"person_id\":23,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\",\"source_sha256\":\"40b5308fe4bdc774ec43af303cf57688b2eeca3edb4cae295885d8b655f263ea\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=18033\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 386,
+      "person_id": 21,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2026-05-12\",\"meeting_id\":386,\"method\":\"original_roster\",\"person_id\":21,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\",\"source_sha256\":\"40b5308fe4bdc774ec43af303cf57688b2eeca3edb4cae295885d8b655f263ea\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=18033\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 386,
+      "person_id": 20,
+      "attendance_mode": "Unknown",
+      "notes": "{\"local_date\":\"2026-05-12\",\"meeting_id\":386,\"method\":\"original_roster\",\"person_id\":20,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"present\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"PRESENT:\\nMayor S. Goodmanson\\nCouncillor K. Guiry\\nCouncillor C. Harder\\nCouncillor M. Morley\",\"source_sha256\":\"40b5308fe4bdc774ec43af303cf57688b2eeca3edb4cae295885d8b655f263ea\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=18033\",\"state\":\"present\"}"
+    },
+    {
+      "meeting_id": 386,
+      "person_id": 22,
+      "attendance_mode": "Absent",
+      "notes": "{\"local_date\":\"2026-05-12\",\"meeting_id\":386,\"method\":\"original_roster\",\"person_id\":22,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"absent\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"ABSENT:\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"40b5308fe4bdc774ec43af303cf57688b2eeca3edb4cae295885d8b655f263ea\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=18033\",\"state\":\"absent\"}"
+    },
+    {
+      "meeting_id": 386,
+      "person_id": 34,
+      "attendance_mode": "Absent",
+      "notes": "{\"local_date\":\"2026-05-12\",\"meeting_id\":386,\"method\":\"original_roster\",\"person_id\":34,\"review\":\"Original signed minutes, page 1 read with column layout preserved (pdftotext -layout); explicit named roster section. Presence does not assert full-meeting duration or physical modality.\",\"reviewed_meeting_state\":\"absent\",\"schema\":\"council-attendance/v1\",\"source_page\":1,\"source_quote\":\"ABSENT:\\nCouncillor M. Wagner\\nCouncillor K. Yacucha\",\"source_sha256\":\"40b5308fe4bdc774ec43af303cf57688b2eeca3edb4cae295885d8b655f263ea\",\"source_url\":\"https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=18033\",\"state\":\"absent\"}"
+    }
+  ],
+  "holds": [
+    {
+      "meeting_id": 162,
+      "reason": "page-1 date does not match meeting date"
+    }
+  ]
+}
