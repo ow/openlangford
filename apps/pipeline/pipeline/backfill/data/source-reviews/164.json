@@ -1,0 +1,339 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 164,
+    "title": "Regular Council",
+    "meeting_date": "2025-03-03",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603"
+    },
+    {
+      "file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes.pdf",
+      "sha256": "10d622dd4a6781eb786b17510300b87809c17963eb95fc47e8da63202f7e5ca5",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13537"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+  "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "808772b21de0cd4bdcf00cf6b2534874437e772a341942d3fc87746ec37757de",
+  "corrected_text_sha256": "808772b21de0cd4bdcf00cf6b2534874437e772a341942d3fc87746ec37757de",
+  "parsed_blocks_sha256": "2b15682db90085e45ccec9146b065cf01480659e4cddc99fff005223a612263a",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "3516d85edf4a32fe07310718078c340e400dea0effc01ef179aec264c56de807",
+      "render_sha256": "591f047f9b216473b034658a1cea6dc62e71608ebba54a8ec378abe1275ba5d6"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "d7f98061b0364926eabf90caf13bf3108e3ae92e946157d4e23659246855c8b1",
+      "render_sha256": "866b17d1e1481dd5f11af8b5c0a437b9606e7f57dd2f68c2034dcfbd7659f379"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "d50d4fb7a88ea39ba80c14497f86e9c102261933a945d0024ac394e434fe1c90",
+      "render_sha256": "cd14cb66a113306b31cf9d6314ba8ed923611fded3c1f46d8753de25174cb44a"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "94e019437afdd9ec7882ff752a3cda4df747f588d05b98c7d957781b2e965cc6",
+      "render_sha256": "55fa115bb9844a36e680302a25bbf84ce721ca69f393d9891a5c861a79295868"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "16eb7101a868da1e49b818a7da6c0c66163b634ec79d979d7623de7c3b221453",
+      "render_sha256": "5dddd295589d5251b84bf44296385273d430802da46c9f7311d699b34ac98ab5"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "bba8894e2f5ef0e6df23316a7c494ef6e9316bcfcf306a549e85f8dfa4fcb666",
+      "render_sha256": "52e2ad1f4496f74aae00d3f6c649232e7bef407fdd8da6fcf2af5f99ebf48a10"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "23d6b0be54e84913ec2003a5b784905738f2c6757b01203ebd154d9ef65f28f4",
+      "render_sha256": "0469c99f5ee7ff637d9b8f1cb47dd37daa716dfc2d2390fb23d614776824a42e"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "66c59c23e1b3d036c038e3815b5b73e72b0c9e761e3758396e7d8eb1bce48351",
+      "render_sha256": "5c0fe3160aeec0eba8532754b641f6d8e749d651ec813f7f4230fb6ae3eefeba"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "34344f07867b334f095760e48f93812b6d50e58b3e256b9f9a9b403daae738ca",
+      "render_sha256": "4e0f04b5035cd3a9a3cc1b1c123e327a8eab2b3ef3d1a720f8ff35c55cf3d360"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "fae64e3967daa96db9f62b97e78020c7aaa648390d266f74673852698525ee25",
+      "render_sha256": "cbbe077c963f45a84679cd0cb4109abada19ab67345da472a7a5377c283b5bdd"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "ed24a834835e9995f8c7df41ea1cfa2e8e93fb5252666c095ba32e42b60b23df",
+      "render_sha256": "249dc9800880913b7b475bc2e335b99527c8fde3cbdf8497a38058736079f275"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "b490d14ed8782bed28805b2c1db4dc334b0ecb3c97caa9df3302dedcfcc5bdc1",
+      "render_sha256": "ceee327093a609571cbb2c4303f8ad0f167f193729ca446670798dfd7c5e310a"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "dca7e0be955b89a3a5a589b9dbe27607427e0785013dd6cb5e8e0017076924e0",
+      "render_sha256": "81d0e5172f3e3df6ebfaabfdb6a4d5daa2c490bda19e06757697757e4fddde59"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "16927f8a8f91c78bd88de658af300848776bde5ea75127e9e64db05d230f1622",
+      "raw_block_sha256": "7753e94ad3cbce9f215726030e099cdfd4192c7a41c9d8ed4191ae053556efb3",
+      "operative_body": "THAT the main motion be amended to replace \"an evening the week\" with \"one or more evenings\".",
+      "operative_body_sha256": "44791c4e8e170395138476c1349f355888f916494990a21de4b0eb23fb6d38ab",
+      "result": "CARRIED",
+      "pages": [
+        7,
+        8
+      ],
+      "page_evidence": [
+        {
+          "page": 7,
+          "native_text_sha256": "23d6b0be54e84913ec2003a5b784905738f2c6757b01203ebd154d9ef65f28f4",
+          "render_sha256": "0469c99f5ee7ff637d9b8f1cb47dd37daa716dfc2d2390fb23d614776824a42e"
+        },
+        {
+          "page": 8,
+          "native_text_sha256": "66c59c23e1b3d036c038e3815b5b73e72b0c9e761e3758396e7d8eb1bce48351",
+          "render_sha256": "5c0fe3160aeec0eba8532754b641f6d8e749d651ec813f7f4230fb6ae3eefeba"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "73b646226abd6b4489f3ad5949fa9dbe6c2295e68829b9a7b70763ce0e7bd607",
+      "raw_block_sha256": "7a8102f0770453ea82c8dbaba9e5a59ef6fd98efa9e288061a8f8a3ff7439865",
+      "operative_body": "THAT Council table the current motion on the floor pertaining to West Shore RCMP policing priorities for 2025.",
+      "operative_body_sha256": "8fb27c45a7dc33d402e56fdb1b3448b2b7687f6dd427f269c3d5f34aea9d3cb0",
+      "result": "CARRIED",
+      "pages": [
+        8
+      ],
+      "page_evidence": [
+        {
+          "page": 8,
+          "native_text_sha256": "66c59c23e1b3d036c038e3815b5b73e72b0c9e761e3758396e7d8eb1bce48351",
+          "render_sha256": "5c0fe3160aeec0eba8532754b641f6d8e749d651ec813f7f4230fb6ae3eefeba"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "a4e837a9aa70a1470675dadef209f8247ef6c9866105f3a17d21ba33d0700795",
+      "raw_block_sha256": "9877f8920a67f758596133a50dfac4d027f287c254d30d0c30abcb2dc345bbd0",
+      "operative_body": "THAT Council extend the Regular Meeting to 11:00 pm.",
+      "operative_body_sha256": "c6354ea7137dda68e4a15e2cd1505252f14faef7796154e7583481fa9fd3616c",
+      "result": "CARRIED",
+      "pages": [
+        8
+      ],
+      "page_evidence": [
+        {
+          "page": 8,
+          "native_text_sha256": "66c59c23e1b3d036c038e3815b5b73e72b0c9e761e3758396e7d8eb1bce48351",
+          "render_sha256": "5c0fe3160aeec0eba8532754b641f6d8e749d651ec813f7f4230fb6ae3eefeba"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "46839f83fe7af8a02ab81a4e47dd697c6488c00b9ea0bd4d39c5fd94baa335a2",
+      "raw_block_sha256": "50ff02fc2515132079d5ed7f772c04ba38184c884a6db880ec827d1723ee347b",
+      "operative_body": "THAT Council pick up the resolution pertaining to the West Shore RCMP policing priorities for 2025 from the table.",
+      "operative_body_sha256": "37d5c9e0d8db7477bcfa3c4068449014bb4b83a931b4e13d0ca340b1e713d1ef",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "34344f07867b334f095760e48f93812b6d50e58b3e256b9f9a9b403daae738ca",
+          "render_sha256": "4e0f04b5035cd3a9a3cc1b1c123e327a8eab2b3ef3d1a720f8ff35c55cf3d360"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "dbada582a6af8e7b10477da948fceeb72b3770a8cc967d4f05501a3c5db31d21",
+      "raw_block_sha256": "154bd99e74c8fd9cf5c63efbdc68dca8faf03f61bc8df7eaece7a613c5beb76b",
+      "operative_body": "THAT the main motion be amended by separating \"youth\" and \"mental health\" into two separate West Shore RCMP policing priorities for 2025.",
+      "operative_body_sha256": "4218a760127deab5c750ac718569308f18d5a2425b34833db8d7e9a6bcd2742c",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "34344f07867b334f095760e48f93812b6d50e58b3e256b9f9a9b403daae738ca",
+          "render_sha256": "4e0f04b5035cd3a9a3cc1b1c123e327a8eab2b3ef3d1a720f8ff35c55cf3d360"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "b0657b3a8da0989da8c054a400723c7c203a6a2116fce5f1a1705e219e29159f",
+      "raw_block_sha256": "1ccbf8612d27159ba8fc6cc323f44cfa8c0f5ba09e02fcd99e69414682106b3f",
+      "operative_body": "THAT the main motion be amended to add the following emerging threats as policing priorities for the West Shore RCMP in 2025: • Cybercrime • Online fraud • Social media driven issues particularly those affecting youth.",
+      "operative_body_sha256": "53d8e0bf4b97b29bcfc2e77b415797b8170a0c3436578ed048b046dec7e5e1de",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "34344f07867b334f095760e48f93812b6d50e58b3e256b9f9a9b403daae738ca",
+          "render_sha256": "4e0f04b5035cd3a9a3cc1b1c123e327a8eab2b3ef3d1a720f8ff35c55cf3d360"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "94e6b664a4353bff9afce061fb55bda04783600e26e940aabbbaedec65f50856",
+      "raw_block_sha256": "7fbc189b421a876f70e4be0b94459abb280be4dbadd95394cc4fb008d70da311",
+      "operative_body": "THAT Council give City of Langford Sign Bylaw, Amendment No. 3, Bylaw No. 2125, 2025, first, second and third readings.",
+      "operative_body_sha256": "861aeb8cdd921ebea4a20aa070fb20841b57acdf7e81414be779d771986a9e89",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "b490d14ed8782bed28805b2c1db4dc334b0ecb3c97caa9df3302dedcfcc5bdc1",
+          "render_sha256": "ceee327093a609571cbb2c4303f8ad0f167f193729ca446670798dfd7c5e310a"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "e17ed7bff7f6515b08a25cc6f92219bd87159bd0c06ee911f4d2627c38d2d1eb",
+      "raw_block_sha256": "bdea85834908d843acbf7a815c7ce507a3e4bdab81162682950405c9e4224cea",
+      "operative_body": "THAT Council adopt \"Sewer Utility Bylaw No. 1600, 2016, Amendment No. 8, Bylaw No. 2222, 2025\".",
+      "operative_body_sha256": "b2e70bcdbb51cb10c0fe67916f6f61812287bd31ee32c8e0cee7f54139a5522d",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "b490d14ed8782bed28805b2c1db4dc334b0ecb3c97caa9df3302dedcfcc5bdc1",
+          "render_sha256": "ceee327093a609571cbb2c4303f8ad0f167f193729ca446670798dfd7c5e310a"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "0d30de0818eb2c445205345289a3d3dc3ee6145adb28590d7432b83cc8364582",
+      "raw_block_sha256": "06eeeb23d9bca4fe3c4c962ea8512b3c64dd6b0f8cd63e53d53a52ef47bdd19d",
+      "operative_body": "THAT Council close the meeting to the public pursuant to section 90 (2) (b) of the Community Charter to consider: • the consideration of information received and held in confidence relating to negotiations between the municipality and a provincial government or the federal government or both, or between a provincial government or the federal government or both and a third party.",
+      "operative_body_sha256": "2b6bd4b531fddf840660aefe15eaf5afc82f0b215233e0465d44a4d91aecce06",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "b490d14ed8782bed28805b2c1db4dc334b0ecb3c97caa9df3302dedcfcc5bdc1",
+          "render_sha256": "ceee327093a609571cbb2c4303f8ad0f167f193729ca446670798dfd7c5e310a"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    },
+    {
+      "source_key": "e39e8f5a49a1cddf1b37b1e12cc0237079db560f32b40b64304d3e172f51995f",
+      "raw_block_sha256": "1f6373f560ec781d9a11ff60b28796c19909be55d87d8e000aa9ccc94d555c65",
+      "operative_body": "THAT the Council meeting adjourn at 11:34 pm.",
+      "operative_body_sha256": "d42cd7f52b46096c9acabff0ac1537be4d288d5a2fd15ba98560fedac2741043",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "dca7e0be955b89a3a5a589b9dbe27607427e0785013dd6cb5e8e0017076924e0",
+          "render_sha256": "81d0e5172f3e3df6ebfaabfdb6a4d5daa2c490bda19e06757697757e4fddde59"
+        }
+      ],
+      "independent_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+    }
+  ],
+  "native_first_page_sha256": "3516d85edf4a32fe07310718078c340e400dea0effc01ef179aec264c56de807",
+  "independent_original_image_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+  "second_independent_original_image_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708",
+  "remaining_holds": [
+    {
+      "pages": [
+        9
+      ],
+      "source_order": 16,
+      "reason": "RCMP separation/additional Langford enforcement amendment explicitly died for lack of a seconder; no carried/defeated result invented."
+    },
+    {
+      "pages": [
+        13
+      ],
+      "reason": "FIFA rise-and-report two-part funding request and contingent continuation text has no introduction or explicit own outcome, not a standard formal admission or proved missing vote."
+    }
+  ]
+}

@@ -3,10 +3,11 @@
 Compact text can only detect collisions and remove text-only candidates. It
 never creates an alias, motion, occurrence key, or corrected source text.
 """
+from bisect import bisect_right
 import hashlib
 import re
 
-from .vote_evidence import named_vote_declarations
+from .vote_evidence import named_vote_declarations, _FORMAL_START, _OCR_MOVED_START
 
 _SECOND = re.compile(r'(?im)^[ \t]*\*{0,2}SECONDED(?:[ \t]+BY)?[ \t]*[:;][^\n]*(?:\n|$)')
 _RESUMED = re.compile(r'(?im)^[ \t]*\*{0,2}(?:On[ \t]+(?:the[ \t]+)?(?:Main[ \t]+)?Motion(?:[ \t]+as[ \t]+amended)?|Voting[ \t]+resumed[ \t]+on[ \t]+(?:the[ \t]+)?Main[ \t]+Motion)[ \t]*:?[ \t]*\*{0,2}[ \t]*$')
@@ -138,11 +139,45 @@ def _unaccounted_clerk_main_results(source):
     return leads
 
 
+def _unresulted_formal_introductions(source):
+    """Missing separately recorded results are review leads, never decisions.
+
+    Bound at the next actual formal anchor, not the next available CARRIED.
+    Superseded wording or a main motion awaiting amendment can legitimately
+    have no separate outcome; no body/result association is inferred here.
+    """
+    text = source.get('text', '')
+    anchors = sorted([(m,'seconded_motion') for m in _SECOND.finditer(text)] +
+        [(m,'resumed_main_motion') for m in _RESUMED.finditer(text)], key=lambda x:x[0].start())
+    boundaries = sorted({m.start() for pattern in (_SECOND,_RESUMED,_FORMAL_START,_OCR_MOVED_START)
+        for m in pattern.finditer(text)})
+    # Preserve the existing lead/ownership path for every result-bearing
+    # envelope. Do not duplicate or rewrite that original proof.
+    result_bearing = {e['anchor_offset'] for e in formal_inventory(source)['envelopes']}
+    leads = []
+    for anchor,kind in anchors:
+        if anchor.start() in result_bearing:
+            continue
+        index = bisect_right(boundaries,anchor.start())
+        stop = boundaries[index] if index < len(boundaries) else len(text)
+        if not text[anchor.end():stop].strip() or _OUTCOME.search(text,anchor.end(),stop):
+            continue
+        quote = text[anchor.start():stop]
+        leads.append({'kind':'unresulted_formal_introduction_lead','authority':'coverage_diagnostic_only',
+            'reason':'no_separately_recorded_outcome','anchor_kind':kind,'anchor_offset':anchor.start(),
+            'source_start':anchor.start(),'source_end':stop,'source_quote':quote,
+            'next_formal_anchor_offset':stop if stop < len(text) else None,
+            'source_sha256':source.get('source_sha256'),'source_text_sha256':hashlib.sha256(text.encode()).hexdigest(),
+            'source_quote_sha256':hashlib.sha256(quote.encode()).hexdigest(),
+            'source_file':source.get('source_file'),'source_url':source.get('source_url')})
+    return leads
+
+
 def unparsed_formal_envelopes(source):
     owned = {(envelope['anchor_offset'], envelope['outcome_offset'])
              for block in source.get('blocks', []) for envelope in own_formal_envelopes(source, block)}
     return [envelope_proof(source, envelope) for envelope in formal_inventory(source)['envelopes']
-            if (envelope['anchor_offset'], envelope['outcome_offset']) not in owned] + _unaccounted_clerk_main_results(source)
+            if (envelope['anchor_offset'], envelope['outcome_offset']) not in owned] + _unaccounted_clerk_main_results(source) + _unresulted_formal_introductions(source)
 
 
 def matching_envelopes_all_parsed(source, block):

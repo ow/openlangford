@@ -1,0 +1,338 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 252,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+  "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2022-01-24",
+  "source_text_sha256": "53352dc2d92d9abef7f3e1cfb9c199d3f5642bde64fc6e8e6624210fefb8c222",
+  "formal_inventory_sha256": "764aa2f33f2935368279e320c1acb3defe987542ba3bda2547db2bbf43e30fbb",
+  "claim_inventory_sha256": "20ad6e9af26a30452565be5157d5391a21b7da8835dbda4b7906123f0277c07a",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "a1aa95db8ba35003d650b09fa48328634cc02da5e6ede4c07bbb1086ffdc1344"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "73d361d2744ab6fd8e7af3b80101bbb8a69b8837af42888b7a888ce99f02f47a"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "bee08fe42543758a5d62d22df52154dd919219998cd7fadbae18dc55d49ee8dd"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "710261d630dd292edc5fdc4003051375913d7ce42fbee2b36db97be65d85c556"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "b4e9fd36cb1a8c5bcf419b23ee67853a07f7655d3d8ff32714010f0ee9fe1699"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "99e585da83dff3d74711ea479c1d6ff4d3350df240339b7da1947e245280a24f"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "bc863cc06dda0e23fd3db309af69054f8ce43cf6b9c80826bbce122bdf394711"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "47a9e9701cba01d69850d41218b61209fac635eccb852458ff2f08ff4de2bc42"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "cadf25f222ba574614c1c37b96d2a6d56733b965abdd6d1da5f76149bf22cfa8"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "c5799f412baa6599c2525cb9b33a0e7c49a3500b8a14071a4150a3764e5a24ef"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "fa9bde19b1e64bf93150b23750777d915583d9dbc6efdf4ab3fe3462ee28cd31"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "1fa92739ed6b82fca2229758811857e80d5c8177892fb702f7363b0490ac2d1a"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "48e2453dcbdd7444b72781c5c1294ebfe11d75f73d3eef26f5014e37323229b4"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "77ed0e0234b5b072411cb2adc09c227b255be6e9fbf74a3de082852c914fbd9e"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 2602,
+      "claim_sha256": "79193697281abb5a832ce0e287dc11485d8cfaf219e76f121374e7a9ca2889bb",
+      "legacy_text": "THAT Council approve the agenda as presented with the addition of a Notice of Motion by Councillor Szpak, regarding the implementation of a code of conduct for Council.",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 1591,
+        "source_order": 0,
+        "key": "0a2f23d831f222e16890aed462ce91a4a7e77a7790727ed91ae3da451126f940",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council approve the agenda as presented with the addition of a Notice of Motion by\n       Councillor Szpak, regarding the implementation of a code of conduct for Council.",
+        "source_block": "MOVED BY: SAHLSTROM\n       SECONDED: WADE\n\n\n       THAT Council approve the agenda as presented with the addition of a Notice of Motion by\n       Councillor Szpak, regarding the implementation of a code of conduct for Council.\n\n                                                                                        Motion CARRIED.\n\n\n\n       PUBLIC HEARINGS\n\n4.1   BYLAW NO. 2001\n\n\n      The Mayor opened the Public Hearing for Bylaw No. 2001 at 5:35 pm.\n\n      Director of Planning Matthew Baldwin advised that Woodsmere Holdings Corporation\n      has applied on behalf of the five property owners of 962 to 978 Bray Avenue to amend\n      the zoning of these properties from the 'One- and Two-Family Residential (R2)' Zone to\n      the 'City Centre 1 (CCl)' Zone.\n\n      This is being proposed in order to allow for the development of two 6-storey buildings\n      with approximately 158 residential units.\n\n      As part of this application, a public hearing is optional in accordance with the\n      regulations of the Local Government Act.\n\n      In support of this application, the applicant has agreed to provide the following as a\n      bonus for increased density.\n\n      The applicant will provide the following contributions per unit prior to issuance of a\n      building permit:\n       $750 towards the Affordable Housing Reserve Fund; and\n       $2,850 toward the General Amenity Reserve Fund.\n      subject to reductions depending on use and height in accordance with the Affordable\n      Housing and Amenity Contribution Policy; AND\n      $10.75 per square metre of commercial space towards the General Amenity Reserve\n      Fund.\n\n      Prior to bylaw adoption, the applicant will register a section 219 covenant that agrees to\n      the following:\n\n      1. That all five properties be consolidated prior to issuance of a Development Permit.\n      2. That a separate covenant be registered prior to issuance of a Building Permit that\n      ensures parking is allocated to each unit and to informs individuals about the potential\n      noise from the neighbouring park.\n      3. That a strata plan is registered for the buildings prior to issuance of an occupancy\n      permit.\n      4.   That 100% of the residential parking stalls are capable of providing Level 2 charging\n      for electric vehicles.\n      5. That full frontage improvements, a storm water management plan, and a\n      construction parking plan be provided and implemented to Bylaw 1000 standards to the\n      satisfaction of the Director of Engineering prior to issuance of building permit.\n\n      This proposal is consistent with the Official Community Plan 'City Centre' designation.\n\n      Notifications and advertisements have been placed as required by the Local\n      Government Act.\n\n      Mayor Young called a first time for presentations.\n\n      None presented.\n\n      Mayor Young called a second time for presentations.\n\n            M. Wagner, #104-2669 Deville Rd. - Development will be next door to a park. With an\n            increase to density, the caller would like Council to implement another park close by to\n            the Deville Rd. neighborhood.\n\n            Mayor Young responded - That Council has purchased land to add to the current size of\n            the park that exists now.\n\n            Mayor Young called a third time for presentations.\n\n            R. Coutre, #205-847 Goldstream Ave. - Supports the development. The area is well\n            served by B.C. transit, and local infrastructure. Lookingforward to the amenities to be\n            used in the area.\n\n            Mayor Young called for a final time for presentations.\n\n            L. Juhike, 969 Bray Ave. - Development will be going in across from her home.\n            Concerned about parking on the road? if there are sidewalks being made? and traffic\n            control concerns.\n\n            Michelle Mahovlich, Director of Engineering and Public Works responded - That the\n            frontage improvements, are a part of the requirements of the developer. The long-term\n            plan of road improvements will be a part of the budget presented in February at the\n            Transportation and Public Works committee meeting.\n\n            Mayor Young declared the Public Hearing for Bylaw No. 2001 closed at 5:44 p.m.\n\n5.   PUBLIC PARTICIPATION\n\n     M. Wagner, 2669 Deville Rd. - re: Items 10.1,10.5,10.6,10.7,10.8,10.9. As new develops are\n     being considered. That larger developments have green space available. That Council consider\n     increasing setbacks and greenspace availability.\n\n     A. Thompson, 658 Hoylake Rd. - re: Item 10.7, Has concerns about the size of the development.\n     Would like the height lowered of the new development. Has concerns about parking in the area.\n\n6.   ADOPTION OF COUNCIL MINUTES\n\n     6.1     Regular Council Meeting Minutes - Januarv 10. 2022",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4cdf1ca4f765604cc2274ca0bf50453b509bfe9448db902e2679d9dd1e9bb5c6",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2603,
+      "claim_sha256": "24500e18729f7ef97e7cda39ef648a762945857579fafad0a22cfff9850fd49a",
+      "legacy_text": "THAT Council approve the minutes of the regular meeting of Council held on January 10, 2022, with the amendment of the removal of additional comments in Item 9.3.",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 6481,
+        "source_order": 1,
+        "key": "9d225deb9940031e4a1578397e6ef2cc7f159a37993c72823e456fb554009937",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the regular meeting of Council held on January 10,\n             2022. With the amendment of the removal of additional comments in Item 9.3.",
+        "source_block": "MOVED BY: SAHLSTROM\n            SECONDED: SEATON\n\n            That Council approve the minutes of the regular meeting of Council held on January 10,\n             2022. With the amendment of the removal of additional comments in Item 9.3.\n\n                                                                                    Motion CARRIED.\n\n\n\n7.   COMMITTEE RESOLUTIONS\n\n     7.1     Minutes of the Planning Zoning and Affordable Housing Committee Meeting - Januarv\n             17. 2022.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "bed0bbcf95d5812ba65933be01fc0632429b61ea19339b9407453c49a4b2e8cc",
+      "pages": [
+        3
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2604,
+      "claim_sha256": "5b6797a0d1bbf73c7678e2cbddfc62a607c20490d2e7b839241138753285bfff",
+      "legacy_text": "THAT Council receive the minutes of the Planning, Zoning and Affordable Housing Committee held on January 17, 2022.",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 6983,
+        "source_order": 2,
+        "key": "5ccc91616b412a2dac048a68adccc65435e28e3069cf41ab2775be3f434b3c15",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the Planning, Zoning and Affordable Housing\n      Committee held on January 17, 2022.",
+        "source_block": "MOVED BY: BLACKWELL\n             SECONDED: SEATON\n\n      THAT Council receive the minutes of the Planning, Zoning and Affordable Housing\n      Committee held on January 17, 2022.\n\n                                                                                   Motion CARRIED.\n\n\n\n7.2   Addendum Report - Bylaw No. 1999 - Application to Rezone 2762. 2768. and 2774\n      Winster Road from R2 (One-and Two-Family Residential) to CCl (City Centre) to Allow\n      for a Six-Storey. 68-Unit Apartment Building.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "65d11717ff89a636ca7abed2210c6a9949c919adacac2f0c6f154e00bb7f53ce",
+      "pages": [
+        3,
+        4
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2605,
+      "claim_sha256": "c4786a2732811b40a0f0bc7f4dce5c8bda9fc59eb9e2b4347fd8cb5b999d6139",
+      "legacy_text": "THAT Council: 1. Proceed with consideration of Bylaw No. 1999 to amend the zoning designation of 2762, 2768, and 2774 Winster Road from R2 to CC1 subject to the specified terms and conditions (amenity/affordable contributions, engineering memos, Section 219 covenants, EV charging requirements, and frontage/stormwater/construction parking improvements); and 2. Authorize the Director of Planning to issue a variance to reduce the northern interior side lot line setback for a stairwell within the Form and Character Development Permit.",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 7505,
+        "source_order": 3,
+        "key": "e022e2c768a37970dd48bd48ddae78c1665aa4efe864824a839468c4bee15203",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n      1.   Proceed with consideration of Bylaw No. 1999 to amend the zoning designation of\n           2762, 2768, and 2774 Winster Road from the R2 (One-and Two-Family Residential)\n           to CCl (City Centre) subject to the following terms and conditions:\n\n\n\n           1.   That the applicant provides, as a bonus for increased density, the following\n                contributions per residential unit, prior to the issuance of a building permit:\n\n\n\n                1. $750 towards the Affordable Housing Reserve Fund; and\n\n                2. $2,850 towards the General Amenity Reserve Fund.\n\n\n\n      Subject to reductions depending on the use and height in accordance with the\n      Affordable Housing and Amenity Contribution Policy.\n\n\n\n           2.   That the applicant provides, prior to Public Hearing, a technical memo from an\n                engineer that verifies storm water can be adequately managed on-site for the\n                proposed developments, to the satisfaction of the Director of Engineering;\n\n\n\n           3.   That the applicant provides, prior to bylaw adoption, a Section 219 covenant,\n                registered in priority of all other charges on title, that agrees to the following:\n\n\n\n                1.   That the developer registers a strata plan, prior to the issuance of an\n                     occupancy permit, that creates individual strata titles for each residential\n                     unit;\n\n\n\n                2.   That a separate covenant be registered prior to issuance of a building\n                     permit for the proposed residential building(s) that ensures parking is\n\n                  allocated to each unit and visitors as required by the zoning bylaw and is\n                  not provided in exchange for compensation separate from that of a\n                  residential unit;\n\n\n\n              3. That the following are provided to Bylaw No. 1000 standards to the\n                 satisfaction of the Director of Engineering prior to the issuance of a Building\n                   Permit:\n\n                   1.   Frontage improvements;\n\n                   2.   A storm water management plan; and\n\n                   3.   A construction parking and traffic management plan;\n\n\n\n\n              4. That 100% of residential parking spaces, excluding visitor parking spaces,\n                 shall feature an energized outlet capable of providing Level 2 charging or\n                 higher to the parking space; and\n\n\n\n                   1. Energized outlets shall be labelled for the use of electric vehicle\n                        charging;\n\n\n\n                   2.   Where an electric vehicle energy management system is implemented\n                        (load sharing), a qualified professional may specify a minimum\n                        performance standard to ensure a sufficient rate of electric vehicle\n                        charging; and\n\n\n\n                   3. The owner is required to keep the Electric Vehicle Servicing Equipment\n                      (EVSE) in operation and the Strata Council may not prevent an owner,\n                      occupant, or tenant from installing the EV charging equipment.\n\n\n\n      2.   Authorize the Director of Planning to issue a variance to reduce the northern\n           interior side lot line setback from the required 3m to 1.5m for a stairwell within the\n           Form and Character Development Permit for 2762, 2768, and 2774 Winster Road:",
+        "source_block": "MOVED BY: BLACKWELL\n      SECONDED: SEATON\n\n      THAT Council:\n\n      1.   Proceed with consideration of Bylaw No. 1999 to amend the zoning designation of\n           2762, 2768, and 2774 Winster Road from the R2 (One-and Two-Family Residential)\n           to CCl (City Centre) subject to the following terms and conditions:\n\n\n\n           1.   That the applicant provides, as a bonus for increased density, the following\n                contributions per residential unit, prior to the issuance of a building permit:\n\n\n\n                1. $750 towards the Affordable Housing Reserve Fund; and\n\n                2. $2,850 towards the General Amenity Reserve Fund.\n\n\n\n      Subject to reductions depending on the use and height in accordance with the\n      Affordable Housing and Amenity Contribution Policy.\n\n\n\n           2.   That the applicant provides, prior to Public Hearing, a technical memo from an\n                engineer that verifies storm water can be adequately managed on-site for the\n                proposed developments, to the satisfaction of the Director of Engineering;\n\n\n\n           3.   That the applicant provides, prior to bylaw adoption, a Section 219 covenant,\n                registered in priority of all other charges on title, that agrees to the following:\n\n\n\n                1.   That the developer registers a strata plan, prior to the issuance of an\n                     occupancy permit, that creates individual strata titles for each residential\n                     unit;\n\n\n\n                2.   That a separate covenant be registered prior to issuance of a building\n                     permit for the proposed residential building(s) that ensures parking is\n\n                  allocated to each unit and visitors as required by the zoning bylaw and is\n                  not provided in exchange for compensation separate from that of a\n                  residential unit;\n\n\n\n              3. That the following are provided to Bylaw No. 1000 standards to the\n                 satisfaction of the Director of Engineering prior to the issuance of a Building\n                   Permit:\n\n                   1.   Frontage improvements;\n\n                   2.   A storm water management plan; and\n\n                   3.   A construction parking and traffic management plan;\n\n\n\n\n              4. That 100% of residential parking spaces, excluding visitor parking spaces,\n                 shall feature an energized outlet capable of providing Level 2 charging or\n                 higher to the parking space; and\n\n\n\n                   1. Energized outlets shall be labelled for the use of electric vehicle\n                        charging;\n\n\n\n                   2.   Where an electric vehicle energy management system is implemented\n                        (load sharing), a qualified professional may specify a minimum\n                        performance standard to ensure a sufficient rate of electric vehicle\n                        charging; and\n\n\n\n                   3. The owner is required to keep the Electric Vehicle Servicing Equipment\n                      (EVSE) in operation and the Strata Council may not prevent an owner,\n                      occupant, or tenant from installing the EV charging equipment.\n\n\n\n      2.   Authorize the Director of Planning to issue a variance to reduce the northern\n           interior side lot line setback from the required 3m to 1.5m for a stairwell within the\n           Form and Character Development Permit for 2762, 2768, and 2774 Winster Road:\n\n\n\n                                                                                Motion CARRIED.\n\n\n\n7.3   Application to Rezone 661 Hovlake Avenue from R2 (One- and Two-Familv Residential)\n      to RTl (Residential Townhouse 1) to allow for 6 townhouse units",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "0ff652a6b0715d9b7defc5a9383311bb055d7a25dd2236d9e47fd0ded9cbd2cb",
+      "pages": [
+        4,
+        5
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2606,
+      "claim_sha256": "377c7acb66d44a73980f83c373cfaa0f60d27a61e441bc71ead5da37e977ccdc",
+      "legacy_text": "THAT Council consider proceeding with First Reading of Bylaw No. 2026 as drafted to amend the zoning designation of 661 Hoylake Avenue from R2 to RT1, subject to conditions (amenity contributions, engineering memos, Section 219 covenants, frontage improvements, stormwater and construction parking plans).",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 11303,
+        "source_order": 4,
+        "key": "63cfd1a7d94fd8ad4ed70dfe4d867445dfd53f7dabb4264c05ba8a217b637478",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n1.   Consider proceeding with First Reading of Bylaw No. 2026 as drafted to amend the\n     zoning designation of 661 Hoylake Avenue from R2 (One- and Two-Family\n     Residential) to RTl (Residential Townhouse 1), subject to the following conditions:\n\n\n\n     1. That the owner agrees to provide, as a bonus for increased density, the\n        following contributions per lot created, prior to Building Permit issuance:\n\n          1. $3,660 towards the General Amenity Reserve Fund;\n\n          2. $610 towards the Affordable Housing Reserve Fund;\n\n\n\n     2.   That the applicant provides, prior to Public Hearing, a technical memo from an\n          engineer that verifies stormwater can be adequately managed on-site for the\n          proposed developments, to the satisfaction of the Director of Engineering;\n\n\n\n     3.   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n          registered in priority of all other charges on title, that agrees to the following:\n\n\n\n          1.   That all frontage improvements to Bylaw 1000 standards, inclusive of the\n               construction of a sidewalk, streetlights, scallop parking, and boulevard\n               planting on Hoylake Avenue, and formalization of the road edge parking on\n               Belair Road, are provided to the satisfaction of the Director of Engineering,\n               prior to the issuance of a building permit;\n\n          2.   That a Stormwater Management Plan be provided and all required\n               measures recommended be implemented by the owner to the satisfaction\n               of the Director of Engineering, prior to the issuance of a building permit;\n\n          3.   That a Construction Parking Management Plan be provided to the\n               satisfaction of the Director of Engineering prior to any alteration of the\n               land.\n\n2.   Authorize the Director of Planning to issue the following setback variances within\n     the form and character development permit:\n\n     1.   That Section 6.28.07(l)(c) of Zoning Bylaw No. 300 be varied to reduce the\n          exterior side lot line setback from the required 3.5 m to 0.88 m; and\n\n     2.   That Section 6.28.07(d) of Zoning Bylaw No. 300 be varied to reduce the rear lot\n          line setback from the required 5.5 m to 1.2 m, subject to the following\n          condition:\n\n              1.   That the interior side lot line have a minimum setback requirement of 5.5\n                   m.",
+        "source_block": "MOVED BY: BLACKWELL\nSECONDED: SZPAK\n\nTHAT Council:\n\n1.   Consider proceeding with First Reading of Bylaw No. 2026 as drafted to amend the\n     zoning designation of 661 Hoylake Avenue from R2 (One- and Two-Family\n     Residential) to RTl (Residential Townhouse 1), subject to the following conditions:\n\n\n\n     1. That the owner agrees to provide, as a bonus for increased density, the\n        following contributions per lot created, prior to Building Permit issuance:\n\n          1. $3,660 towards the General Amenity Reserve Fund;\n\n          2. $610 towards the Affordable Housing Reserve Fund;\n\n\n\n     2.   That the applicant provides, prior to Public Hearing, a technical memo from an\n          engineer that verifies stormwater can be adequately managed on-site for the\n          proposed developments, to the satisfaction of the Director of Engineering;\n\n\n\n     3.   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n          registered in priority of all other charges on title, that agrees to the following:\n\n\n\n          1.   That all frontage improvements to Bylaw 1000 standards, inclusive of the\n               construction of a sidewalk, streetlights, scallop parking, and boulevard\n               planting on Hoylake Avenue, and formalization of the road edge parking on\n               Belair Road, are provided to the satisfaction of the Director of Engineering,\n               prior to the issuance of a building permit;\n\n          2.   That a Stormwater Management Plan be provided and all required\n               measures recommended be implemented by the owner to the satisfaction\n               of the Director of Engineering, prior to the issuance of a building permit;\n\n          3.   That a Construction Parking Management Plan be provided to the\n               satisfaction of the Director of Engineering prior to any alteration of the\n               land.\n\n2.   Authorize the Director of Planning to issue the following setback variances within\n     the form and character development permit:\n\n     1.   That Section 6.28.07(l)(c) of Zoning Bylaw No. 300 be varied to reduce the\n          exterior side lot line setback from the required 3.5 m to 0.88 m; and\n\n     2.   That Section 6.28.07(d) of Zoning Bylaw No. 300 be varied to reduce the rear lot\n          line setback from the required 5.5 m to 1.2 m, subject to the following\n          condition:\n\n              1.   That the interior side lot line have a minimum setback requirement of 5.5\n                   m.\n\n\n                                                                               Motion CARRIED.\n\n\n\n7.4   Application to allow Opal Cannabis Corp. to operate a Cannabis Retail Store at #107 797\n      Goldstream Ave. bv means of a Temporarv Use Permit.\n\n      THAT Council:\n\n      Whereas:\n\n      1.   The non-medicinal use of cannabis and cannabis related products has historically\n           been prohibited by federal law in Canada and, as a result, has historically been\n           prohibited by the City under its Zoning Bylaw No. 300;\n\n      2.   On October 17, 2018, the Federal Government legalized the non-medicinal use of\n           cannabis and cannabis products;\n\n      3.   The Federal Government and the Provincial Government have developed a\n           regulatory framework for the retail sale of cannabis and cannabis products for non-\n           medicinal use;\n\n      4. The City wishes to authorize the retail sale of cannabis and cannabis products within\n         its boundaries, but recognizes that there are challenges associated with it doing so;\n\n      5. The City issued the Request for Proposals for the Retail Sales of Cannabis and\n         Cannabis Related Products to seek proposals from individuals and organizations\n         interested in undertaking the retail sale of cannabis and cannabis products for non-\n         medicinal use within the City's boundaries, and required that proposals include\n         details as to how the challenges with the retail sale of cannabis and cannabis\n         products would be addressed;\n\n      6. The City received and reviewed over 30 proposals in response to the Request For\n         Proposals, and identified Opal Cannabis Corp. proposal as one that best addressed\n         the challenges with the retail sale of cannabis and cannabis products; and\n\n      7.   Opal Cannabis Corp. is committed to assisting the City and taking positive steps to\n           address the challenges with the retail sale of cannabis and cannabis products.\n           Subject to an occupancy permit for the tenant improvement to #107-797\n           Goldstream Avenue being issued by the City;",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "75ab9c68407cb9177e2de45e6bf767cebf37d9adb3661a2e746502a36d3bec5a",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2607,
+      "claim_sha256": "e191e169d4ae6bac0cac2d5f1b1b92dad25dc3641704415d287416c89c141853",
+      "legacy_text": "THAT Council direct staff to prepare notices of Council's intention to consider issuance of a Temporary Use Permit (TUP21-0005) for Opal Cannabis Corp. to operate a Cannabis Retail Store at #107-797 Goldstream Avenue, subject to the terms and conditions in the Temporary Use Permit.",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 15967,
+        "source_order": 5,
+        "key": "a8684b785afe61e745344885a66fdcfb6de925f6e637b9f852607f9f5eb86c3b",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n      1.   Direct staff to prepare notices of Council's intention to consider issuance of a\n           Temporary Use Permit TUP21-0005 Opal Cannabis Corp. to operate a Cannabis\n           Retail Store at #107-797 Goldstream Avenue, subject to the terms and conditions in\n           the Temporary Use Permit.",
+        "source_block": "MOVED BY: BLACKWELL\n      SECONDED: SZPAK\n\n      THAT Council:\n\n      1.   Direct staff to prepare notices of Council's intention to consider issuance of a\n           Temporary Use Permit TUP21-0005 Opal Cannabis Corp. to operate a Cannabis\n           Retail Store at #107-797 Goldstream Avenue, subject to the terms and conditions in\n           the Temporary Use Permit.\n\n                                                                                Motion CARRIED.\n\n\n\n7.5   Application to Rezone 902 Walfred Road from Rural Residential 5 (RR5) to Residential\n      Small Lot 1 (RSI) to accommodate an 13-lot bare land strata subdivision.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ca357c9879d69cc87eb264139f0bcdc27eef83b2c8586ebb4f4227ea4893a258",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2608,
+      "claim_sha256": "90a32713715d2c5deac605286f11fe99ad105c78436dfcf4fee1731d373af09c",
+      "legacy_text": "THAT Council proceed with consideration of Bylaw No. 2030 to amend the zoning designation of 902 Walfred Road from RR5 to RSI subject to terms and conditions (amenity/affordable contributions, engineering memos, Section 219 covenants, frontage/stormwater works, construction parking and traffic management, vegetation retention and non\u2011disturbance covenant).",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 16616,
+        "source_order": 6,
+        "key": "3ea3ac00f5a4dcf4e54fbda6a38605b6a0d7e0e29be75f514c00f5aa648d055e",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n                   Proceed with consideration of Bylaw No. 2030 to amend the zoning\n                      designation of 902 Walfred Road from the RR5 (Rural Residential 5) Zone\n                      to the RSI (Residential Small Lot 1) Zone subject to the following terms\n                         and conditions:\n\n\n\n\n          1. That the applicant provides, as a bonus for increased density, the following\n             contributions per lot prior to subdivision approval:\n\n\n\n              1.    $600 (Small Lot) towards the Affordable Housing Fund;\n\n              2. $1,000 (Single Family - 550 m^ or more) towards the Affordable Housing\n                    Fund;\n\n              3.    $3,960 (Small Lot) towards the General Amenity Fund; and\n\n              4. $6,000 (Single Family - 550 m^ or more) towards the General Amenity Fund.\n\n\n          2. That, prior to Public Hearing, the applicant provides a technical memo from an\n             engineer that verifies stormwater can be adequately managed on-site for the\n             proposed developments, to the satisfaction of the Director of Engineer;\n\n\n\n          3. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n             registered in priority of all other charges on title, that agrees:\n\n\n\n              1. That the following will be provided and implemented to Bylaw No. 1000\n                    standards to the satisfaction of the Director of Engineering prior to\n                    subdivision approval or the issuance of a building permit, whichever is first:\n\n\n\n                    1.    Full frontage improvements; and\n\n                    2.    A storm water management plan;\n\n\n               2. That a Construction Parking and Traffic Management Plan be provided to\n                  the satisfaction of the Director of Engineering prior to any alteration of the\n                    land;\n\n\n\n               3. That vegetation within the road allowance on Walfred Road should be\n                  retained. If any vegetation is removed, the applicant is required to replant\n                  the area and provide a temporary irrigation system from a private irrigation\n                  system to the satisfaction of the Manager of Parks\n\n\n\n               4.   That a non-disturbance covenant be registered over 31% of the land to be\n                    protected as open space on strata property prior to subdivision approval, to\n                    the satisfaction of the Approving Officer.",
+        "source_block": "MOVED BY: BLACKWELL\n      SECONDED: SZPAK\n\n\n      THAT Council:\n\n                   Proceed with consideration of Bylaw No. 2030 to amend the zoning\n                      designation of 902 Walfred Road from the RR5 (Rural Residential 5) Zone\n                      to the RSI (Residential Small Lot 1) Zone subject to the following terms\n                         and conditions:\n\n\n\n\n          1. That the applicant provides, as a bonus for increased density, the following\n             contributions per lot prior to subdivision approval:\n\n\n\n              1.    $600 (Small Lot) towards the Affordable Housing Fund;\n\n              2. $1,000 (Single Family - 550 m^ or more) towards the Affordable Housing\n                    Fund;\n\n              3.    $3,960 (Small Lot) towards the General Amenity Fund; and\n\n              4. $6,000 (Single Family - 550 m^ or more) towards the General Amenity Fund.\n\n\n          2. That, prior to Public Hearing, the applicant provides a technical memo from an\n             engineer that verifies stormwater can be adequately managed on-site for the\n             proposed developments, to the satisfaction of the Director of Engineer;\n\n\n\n          3. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n             registered in priority of all other charges on title, that agrees:\n\n\n\n              1. That the following will be provided and implemented to Bylaw No. 1000\n                    standards to the satisfaction of the Director of Engineering prior to\n                    subdivision approval or the issuance of a building permit, whichever is first:\n\n\n\n                    1.    Full frontage improvements; and\n\n                    2.    A storm water management plan;\n\n\n               2. That a Construction Parking and Traffic Management Plan be provided to\n                  the satisfaction of the Director of Engineering prior to any alteration of the\n                    land;\n\n\n\n               3. That vegetation within the road allowance on Walfred Road should be\n                  retained. If any vegetation is removed, the applicant is required to replant\n                  the area and provide a temporary irrigation system from a private irrigation\n                  system to the satisfaction of the Manager of Parks\n\n\n\n               4.   That a non-disturbance covenant be registered over 31% of the land to be\n                    protected as open space on strata property prior to subdivision approval, to\n                    the satisfaction of the Approving Officer.\n\n                                                                               Motion CARRIED.\n\n\n\n7.6   Application to Rezone 2822. 2824. and 2828 Jacklin Road from the One- and Two-Famiiv\n      Residential (R2) Zone to the Citv Centre Pedestrian (CCP) Zone to Allow for the\n      Development of a 12-Storev Mixed Use Building",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ef49e2eb3b42a989e1f8e92338a3abe710c90e4bc0092b16e75899c49a9d3f72",
+      "pages": [
+        8,
+        9
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2609,
+      "claim_sha256": "98bd5d37aa65c8eb32ded31f5a494c5ecc3b4f9cc4e9273c5d75d26a5234f86b",
+      "legacy_text": "THAT Council proceed with consideration of Bylaw No. 2032 to amend the zoning designation of the properties located at 2822, 2824, and 2828 Jacklin Road from R2 to Area 2 of the City Centre Pedestrian (CCP) Zone, subject to specified terms and conditions (amenity contributions, engineering memos, Section 219 covenants, EV charging, and frontage/stormwater/construction parking improvements).",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 19510,
+        "source_order": 7,
+        "key": "1e4d0a295a2ae237d608871c49d37f46ee2cdb77a0dbe8e0686e2679902598af",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n      1. Proceed with consideration of Bylaw No. 2032 to amend the zoning designation of\n         the properties located at 2822, 2824, and 2828 Jacklin Road from the One- and\n         Two-Family Residential (R2) Zone to Area 2 of the CityCentre Pedestrian (CCP)\n         Zone, subject to the following terms and conditions:\n\n\n\n          1. That the applicant provides, as a bonus for increased density, the following\n             contributions per residential unit, prior to issuance of a building permit:\n\n               1.   $750 towards the Affordable Housing Fund; and\n\n      subject to reductions in accordance with the Affordable Housing and Amenity\n      Contribution Policy depending on use and height.\n\n      2. That the applicant provide, as a bonus for increased density, the following\n         contributions per square meter, prior to issuance of a building permit:\n\n          1.   $10.75 towards the General Amenity Reserve Fund.\n\n      3. That the applicant provides, prior to Public Hearing, the following to the\n          satisfaction of the Director of Engineering:\n\n          1. A technical memo from a qualified engineer that verifies stormwater can be\n             adequately managed on-site for the proposed development.\n\n            4.   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n                 registered in priority of all other charges on title, that agrees to the following:\n\n                 1.   That the three subject properties be consolidated prior to issuance of a\n                      Development Permit for Form and Character;\n\n                 2.   That a separate covenant be registered prior to issuance of a building permit for\n                      the proposed residential building that ensures parking is allocated to each unit\n                      and for visitors as required by the zoning bylaw, and is not provided in exchange\n                      for compensation separate from that of a residential unit;\n\n                 3.   That no occupancy permit be issued for the proposed building until a strata plan\n                      for the building has been registered, to the satisfaction of the Approving Officer;\n\n                 4.   That 100% of residential parking spaces, excluding visitor parking spaces, shall\n                      feature an energized outlet capable of providing Level 2 charging or higher to\n                      the parking space, and that:\n\n                 5.   Where an electric vehicle energy management system is implemented (load\n                      sharing), a qualified professional may specify a minimum performance standard\n                      to ensure a sufficient rate of electric vehicle charging; and\n\n                 6. The owner/tenant is required to keep the Electric Vehicle Servicing Equipment\n                    (EVSE) in operation and the Strata Council/landlord may not prevent an owner,\n                    occupant, or tenant from installing the EV charging equipment\n\n                      1. That the following are implemented to Bylaw 1000 standards to the\n                         satisfaction of the Director of Engineering prior to issuance of a building\n                          permit:\n\n                 7.   Frontage improvements;\n\n                 8.   A storm water management plan; and\n\n                 9.   A construction parking management plan.",
+        "source_block": "MOVED BY: BLACKWELL\n      SECONDED: SZPAK\n\n      THAT Council:\n\n      1. Proceed with consideration of Bylaw No. 2032 to amend the zoning designation of\n         the properties located at 2822, 2824, and 2828 Jacklin Road from the One- and\n         Two-Family Residential (R2) Zone to Area 2 of the CityCentre Pedestrian (CCP)\n         Zone, subject to the following terms and conditions:\n\n\n\n          1. That the applicant provides, as a bonus for increased density, the following\n             contributions per residential unit, prior to issuance of a building permit:\n\n               1.   $750 towards the Affordable Housing Fund; and\n\n      subject to reductions in accordance with the Affordable Housing and Amenity\n      Contribution Policy depending on use and height.\n\n      2. That the applicant provide, as a bonus for increased density, the following\n         contributions per square meter, prior to issuance of a building permit:\n\n          1.   $10.75 towards the General Amenity Reserve Fund.\n\n      3. That the applicant provides, prior to Public Hearing, the following to the\n          satisfaction of the Director of Engineering:\n\n          1. A technical memo from a qualified engineer that verifies stormwater can be\n             adequately managed on-site for the proposed development.\n\n            4.   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n                 registered in priority of all other charges on title, that agrees to the following:\n\n                 1.   That the three subject properties be consolidated prior to issuance of a\n                      Development Permit for Form and Character;\n\n                 2.   That a separate covenant be registered prior to issuance of a building permit for\n                      the proposed residential building that ensures parking is allocated to each unit\n                      and for visitors as required by the zoning bylaw, and is not provided in exchange\n                      for compensation separate from that of a residential unit;\n\n                 3.   That no occupancy permit be issued for the proposed building until a strata plan\n                      for the building has been registered, to the satisfaction of the Approving Officer;\n\n                 4.   That 100% of residential parking spaces, excluding visitor parking spaces, shall\n                      feature an energized outlet capable of providing Level 2 charging or higher to\n                      the parking space, and that:\n\n                 5.   Where an electric vehicle energy management system is implemented (load\n                      sharing), a qualified professional may specify a minimum performance standard\n                      to ensure a sufficient rate of electric vehicle charging; and\n\n                 6. The owner/tenant is required to keep the Electric Vehicle Servicing Equipment\n                    (EVSE) in operation and the Strata Council/landlord may not prevent an owner,\n                    occupant, or tenant from installing the EV charging equipment\n\n                      1. That the following are implemented to Bylaw 1000 standards to the\n                         satisfaction of the Director of Engineering prior to issuance of a building\n                          permit:\n\n                 7.   Frontage improvements;\n\n                 8.   A storm water management plan; and\n\n                 9.   A construction parking management plan.\n\n                                                                                       Motion CARRIED.\n\n\n\n8.   NOTICES OF INTENT\n\n     8.1   DVP20-0008 - 3235 Happv Valley Rd",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f46b7726464caa21f972de6bd59e5e72897affdce732ff5a8274985d5d8c7ee2",
+      "pages": [
+        9,
+        10
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2610,
+      "claim_sha256": "d1c3090241ec2817f8c732746010eb1067b4408f6533b24a46e1d257f0246238",
+      "legacy_text": "THAT Development Variance Permit No. DVP20-0008 be issued by the Council for the City of Langford to allow the variances described for the three\u2011lot subdivision at 3235 Happy Valley Road, subject to the site plan and conditions.",
+      "source_identity": {
+        "meeting_id": 252,
+        "source_sha256": "b11f149105e2d2a7dedcac71d2328ee087a6e7f1a3363478d4c6d0e02a53e25b",
+        "source_offset": 23169,
+        "source_order": 8,
+        "key": "6a41055884432013648b55928d1508ab1edd86a964547ac1bdb63f90d9498107",
+        "source_file": "archive/langford/Council/2022/01/2022-01-24 530pm Regular Council [1a05ef92]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13816",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP20-0008 be issued by the Council for the\n           City of Langford to Rov Dosanjh has applied on behalf of BC 1123983 to vary the front,\n           side, and rear yard setbacks to allow a three-lot subdivision at 3235 Happy Valley Road,\n           subject to the following terms and conditions:\n\n\n\n           1. Appendix\n           The site shall be developed in accordance with the site plan attached (Appendix A).\n\n\n           2. Variances\n           The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the\n           Local\n           Government Act:\n           a) That Section 6.22.07(l)(a) of Zoning Bylaw No. 300 be varied to reduce the front lot\n           line setback\n           requirement from 3m to 1.55 m for the existing structure only on Proposed Lot A;\n           b) That Section 6.22.07(l)(b) of Zoning Bylaw No. 300 be varied to reduce the rear lot\n           line setback\n           requirement from 5.5 m to 3.95 m for the existing structure only on Proposed Lot A; and\n           c) That Section 6.20.06(l)(c) of Zoning Bylaw No. 300 be varied to reduce the exterior\n           side lot line setback requirement from 3.5 m to 1.5 m for Proposed Lot C.\n\n\n\n           3. Conditions\n           The following requirements are imposed under Section 498 of the Local Government\n           Act:\n           a. That the developer agrees to modify the design of the front fagade of the existing\n           home on\n           Proposed Lot A to align better with the Design Guidelines for Intensive Residential\n           development on corner properties, to the satisfaction of the Director of Planning; and\n           b. That the developer agrees to construct fencing along all property lines in accordance\n           with Section 3.21 of Zoning Bylaw No. 300.",
+        "source_block": "MOVED BY: BLACKWELL\n           SECONDED: WADE\n\n           That Development Variance Permit No. DVP20-0008 be issued by the Council for the\n           City of Langford to Rov Dosanjh has applied on behalf of BC 1123983 to vary the front,\n           side, and rear yard setbacks to allow a three-lot subdivision at 3235 Happy Valley Road,\n           subject to the following terms and conditions:\n\n\n\n           1. Appendix\n           The site shall be developed in accordance with the site plan attached (Appendix A).\n\n\n           2. Variances\n           The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the\n           Local\n           Government Act:\n           a) That Section 6.22.07(l)(a) of Zoning Bylaw No. 300 be varied to reduce the front lot\n           line setback\n           requirement from 3m to 1.55 m for the existing structure only on Proposed Lot A;\n           b) That Section 6.22.07(l)(b) of Zoning Bylaw No. 300 be varied to reduce the rear lot\n           line setback\n           requirement from 5.5 m to 3.95 m for the existing structure only on Proposed Lot A; and\n           c) That Section 6.20.06(l)(c) of Zoning Bylaw No. 300 be varied to reduce the exterior\n           side lot line setback requirement from 3.5 m to 1.5 m for Proposed Lot C.\n\n\n\n           3. Conditions\n           The following requirements are imposed under Section 498 of the Local Government\n           Act:\n           a. That the developer agrees to modify the design of the front fagade of the existing\n           home on\n           Proposed Lot A to align better with the Design Guidelines for Intensive Residential\n           development on corner properties, to the satisfaction of the Director of Planning; and\n           b. That the developer agrees to construct fencing along all property lines in accordance\n           with Section 3.21 of Zoning Bylaw No. 300.\n\n                                                                                   Motion CARRIED.\n\n\n\n9.   REPORTS\n\n     9.1   West Shore Parks and Recreation Society 2022 Budget",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "663d453718107ec07979f94f52931c47f47ab1325896ae2e7d0fcf19f398ba2c",
+      "pages": [
+        10,
+        11
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "652e22921a71a03bf4054327e61550263205913b34aeb070b457c39937013c69",
+  "second_original_image_review_sha256": "3996c224996e9bb7577a38a1393c5a1372f29d7ec20442077ab38a857908504b",
+  "original_image_review_sha256s": {
+    "first_review_sha256": "652e22921a71a03bf4054327e61550263205913b34aeb070b457c39937013c69",
+    "second_review_sha256": "3996c224996e9bb7577a38a1393c5a1372f29d7ec20442077ab38a857908504b",
+    "full_snapshot_file_sha256": "efd40cbbac80b42e786a114809240b6580c58641f9b2066139e696f3037d3daf"
+  },
+  "documentary_preservations": [
+    {
+      "motion_id": 2611,
+      "type": "reviewed_adjournment_narration_preservation",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "claim_sha256": "d189f5a1bab17f912eafc0a8bb00e41b8a9824aa4a39c89ab55871503090218f",
+      "claim_row_sha256": "30682ff374ecd8fd10e3e7e0c09833775584dcd776772f873a052483083ffcad",
+      "legacy_text": "THAT the meeting be adjourned.",
+      "printed_body": "Mayor Young adjourned the meeting at 6:45 pm.",
+      "page": 14,
+      "native_text_sha256": "77ed0e0234b5b072411cb2adc09c227b255be6e9fbf74a3de082852c914fbd9e",
+      "render_sha256": "0a1f5369c12ec7db93566f64b439bc0fbd8bf197675c99c02aa54b502fa48964",
+      "source_passage": "Mayor Young adjourned the meeting at 6:45 pm.",
+      "source_passage_start": 30424,
+      "native_passage": "Mayor Young adjourned the meeting at 6:45 pm.",
+      "native_passage_start": 1146,
+      "original_image_review_sha256s": {
+        "first_review_sha256": "652e22921a71a03bf4054327e61550263205913b34aeb070b457c39937013c69",
+        "second_review_sha256": "3996c224996e9bb7577a38a1393c5a1372f29d7ec20442077ab38a857908504b",
+        "full_snapshot_file_sha256": "efd40cbbac80b42e786a114809240b6580c58641f9b2066139e696f3037d3daf"
+      }
+    }
+  ]
+}

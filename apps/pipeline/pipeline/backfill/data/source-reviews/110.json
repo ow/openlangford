@@ -1,0 +1,462 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 110,
+    "title": "Regular Council",
+    "meeting_date": "2017-06-08",
+    "type": "Special Council",
+    "archive_path": "archive/langford/Council/2017/06/2017-06-08 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2017/06/2017-06-08 Regular Council [legacy]/Minutes/20170608-Minutes-Special-Council.pdf",
+      "sha256": "c5a3d378b40d1c3efed7ba8351835ff6134739c3311f215f65f458db75ceafa3",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20170608-Minutes-Special-Council.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2017/06/2017-06-08 Regular Council [legacy]/Minutes/20170608-Minutes-Special-Council.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170608-Minutes-Special-Council.pdf",
+  "source_sha256": "c5a3d378b40d1c3efed7ba8351835ff6134739c3311f215f65f458db75ceafa3",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "a1bdb8e993c6b3ea4fa77db75cfd94a42be2d42f2dcb8a237eae2a4d7a0bec1c",
+  "corrected_text_sha256": "a1bdb8e993c6b3ea4fa77db75cfd94a42be2d42f2dcb8a237eae2a4d7a0bec1c",
+  "parsed_blocks_sha256": "ce003c60f7ca67234349150bfce6bac03efed0bf3969cf890de8482bd4d91a3f",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "46eae126bdc9d9e69c6aa590eef5d4e319529e6c945f570b9550f2db4c992f07",
+      "render_sha256": "6491821e6dcf443b5652a3ce6582210a950fdd8e75bef7f98273931ff4c9ef9b"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "8c7b91f03e76122a2359f272c6eb8919f82034140cd18fb1867383f8770001f6",
+      "render_sha256": "ee15616c98304fbf24514e104defa68795b98510c7bc17517b2ad2bd4d931b61"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "a42fec967cc897eca6ed4b32d4fba1c7ff0b88ba43bb36b3b9ec4d14fd763896",
+      "render_sha256": "3563bc83bcba42641035b9883aa2481ae67853650c8fe82c88634c77247d5929"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "2ba342ea4b6254ad62df06e84147eab17d7d7510931cab677b15bc56d0090195",
+      "render_sha256": "9cf8a892acf38fcb4ed288483b6ecfe1cab430869813072342efe00dc63aba22"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "939c2a5b788aa946037232c9537355e0d0180171390d303a457505b157baff80",
+      "render_sha256": "b5fe3fc47c10686ba091d488d2fe5f570239b205a2656a1f56326684dce714e2"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "4f460e007bd1b8c9bee5c3f548dde2d300710e0a987a6656719d493ac763b8db",
+      "render_sha256": "63dc5bc9b25cf92307b81c5ad210b93efa8e03f7952e5393dc799ee828a6b90b"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "252af9dc34503b6bfe9a0047f84358d6aea887bca6e5b1356a095de9e039c642",
+      "render_sha256": "9544b0c9a190c98ac228fd61b734b824a2c1374eee8ff9d8fa3158c6bbfd3f53"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "d08d5de611b220b34310d342b6b32e000b0a3687512af63cacfed85e54b2b9b6",
+      "render_sha256": "1319701229070d0c16762d586fac6a6ee4cabaeda65ca966e55ddf69bd79f9a2"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "41083431898defd65287e5ad335e0c3b3c721215073466bddc65f00917ffd38b",
+      "render_sha256": "10686ec9a5ad41db6a4f36900d74a6a486698761ae181c4b8bdfbec306cb3633"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "ef5cab646128c33c517a960040f813d1dcd2ffb0ac21c9ebfa32ea8b47aa3271",
+      "render_sha256": "d60d1ad47a6f3ac03e36b540a7445ae3982418eddee6c2f5d763232e8888bbeb"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "e944af0e4013a207ed6a3804112dac0eb9bde563cf18b7565b09276ab771db0f",
+      "render_sha256": "681b3c75c4ccc4d5adaffa1d22dd12e03c995f8cd908dfca3b9019567652e9d9"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "f8bbc8d3b76052575ec225c2747d8c4726adb29ae17b14e7b5d1a91b7e1d3446",
+      "render_sha256": "0acbef28b719358c0bf5e25dc6760c12c851abc1f720b8d7a25238d14a577b7f"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "9f7f7b6e751a19871ab747a4ae31dc027137975bf7e241ebab8cc4d2ebf79b49",
+      "render_sha256": "5c229a5ca47a1308ee6b043ecb977c05acedadb4d200d41d90c01928baf8f4e7"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "31ce1dcefe111b8140c1c74b5a3054d4c200a524584819d64518bdcc11f319e7",
+      "raw_block_sha256": "73f459bfcb4d228d1dad04dc0d55065b31bf577a68ca8ca1890da8dfa96d8df6",
+      "operative_body": "That Council adopt Bylaw No. 1691.",
+      "operative_body_sha256": "94b33efd6bd8930d6af4d451d81c106fd3e3689196706d6b193f09a5f1f48c28",
+      "result": "CARRIED",
+      "pages": [
+        9,
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "41083431898defd65287e5ad335e0c3b3c721215073466bddc65f00917ffd38b",
+          "render_sha256": "10686ec9a5ad41db6a4f36900d74a6a486698761ae181c4b8bdfbec306cb3633"
+        },
+        {
+          "page": 10,
+          "native_text_sha256": "ef5cab646128c33c517a960040f813d1dcd2ffb0ac21c9ebfa32ea8b47aa3271",
+          "render_sha256": "d60d1ad47a6f3ac03e36b540a7445ae3982418eddee6c2f5d763232e8888bbeb"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "14893e9ea60ce76e0b9e8428ae0bc11c672c82f8cfbce843752bf35e9fed6e75",
+      "raw_block_sha256": "e501a8bdee1654b0201eb3613044aacb8cd62e84dd217edb04a49e8aa0003576",
+      "operative_body": "That Council adopt Bylaw No. 1693.",
+      "operative_body_sha256": "3420c9c18090bae7da294610785ccef7ee14e72d8a585f4a448b1066127c4989",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "ef5cab646128c33c517a960040f813d1dcd2ffb0ac21c9ebfa32ea8b47aa3271",
+          "render_sha256": "d60d1ad47a6f3ac03e36b540a7445ae3982418eddee6c2f5d763232e8888bbeb"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "02f1b5186042732f5103ab4136f1fc6e8570131889ac1ead0934f7b6d307bb94",
+      "raw_block_sha256": "f0d370ba13cf8bb1d1c78e54687322da451b99b4ad595cae83ead966e50d3315",
+      "operative_body": "That Council give Bylaw No. 1694 Second and Third Reading.",
+      "operative_body_sha256": "8045c3709e764506511b38d2f442e2cb0c2601755700a213f0327a2c178cfe22",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "ef5cab646128c33c517a960040f813d1dcd2ffb0ac21c9ebfa32ea8b47aa3271",
+          "render_sha256": "d60d1ad47a6f3ac03e36b540a7445ae3982418eddee6c2f5d763232e8888bbeb"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "08360d14f0764accc3f1b75272897a8cbb1589e81f98790ec91c73687253e448",
+      "raw_block_sha256": "6d72cb06c87427f71d5912f16851da07169d4d203af4f6ff2b60345d63deabd6",
+      "operative_body": "That Council give Bylaw No. 1695 Second and Third Reading.",
+      "operative_body_sha256": "a4da030772d0e04674c574a1f7f07a65517ba65e738680b98f9f3c0a1cceaf11",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "ef5cab646128c33c517a960040f813d1dcd2ffb0ac21c9ebfa32ea8b47aa3271",
+          "render_sha256": "d60d1ad47a6f3ac03e36b540a7445ae3982418eddee6c2f5d763232e8888bbeb"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "8635ebb2d0dc776bdfa4c196202b5c65af6404e0f29758af7ca3924e26327bd1",
+      "raw_block_sha256": "294c90cece957a33aad460c3906812a4a1e9ea5eccd91c6c78659708f6f619c4",
+      "operative_body": "That Council give Bylaw No. 1699 Second and Third Reading.",
+      "operative_body_sha256": "0db09cdc48a6b1108b95a9950224100f41302c22e4b6958b2c7138b78bb6399c",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "ef5cab646128c33c517a960040f813d1dcd2ffb0ac21c9ebfa32ea8b47aa3271",
+          "render_sha256": "d60d1ad47a6f3ac03e36b540a7445ae3982418eddee6c2f5d763232e8888bbeb"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "0f3e3e7b4fafd54b9b59d391291f47c4f410e1cdb4af43610c04fd53977728b2",
+      "raw_block_sha256": "587fd1b0d6f56a93cdfb73f024665aaa3c77a6fcadb0e4cd4d6afac1eb9e0168",
+      "operative_body": "That Council give Bylaw No. 1703 Second and Third Reading.",
+      "operative_body_sha256": "03d0b7c817a059bcc11ea96a6089f098fef324c5c5ec54e475ffdce24a339441",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e944af0e4013a207ed6a3804112dac0eb9bde563cf18b7565b09276ab771db0f",
+          "render_sha256": "681b3c75c4ccc4d5adaffa1d22dd12e03c995f8cd908dfca3b9019567652e9d9"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "faa66349db2f5fdb3ad79c05297235b3ae31f351b41068cb719f97df9aa3fc88",
+      "raw_block_sha256": "a2864e013ae608afce6dc4de856b40846b074c04d73e5c1dd342c9757d8fcab9",
+      "operative_body": "That Council adopt Bylaw No. 1704.",
+      "operative_body_sha256": "84b47672269489280eeaffda9705a530db2edb9b7c1c36625d55348bb9c10d29",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e944af0e4013a207ed6a3804112dac0eb9bde563cf18b7565b09276ab771db0f",
+          "render_sha256": "681b3c75c4ccc4d5adaffa1d22dd12e03c995f8cd908dfca3b9019567652e9d9"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "dd914a7f6d25e623252638e6123a452a461d3cfb62ed060dc1bf9ed0e1dc3219",
+      "raw_block_sha256": "97788573114309654a6258761647497970b5b2848b65d7ef188869dd2e03cb1f",
+      "operative_body": "That Council give Bylaw No. 1705 First Reading.",
+      "operative_body_sha256": "770912737f70732ed7d32c2893d4e92fd25d26f05687447638b250ae150819cb",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e944af0e4013a207ed6a3804112dac0eb9bde563cf18b7565b09276ab771db0f",
+          "render_sha256": "681b3c75c4ccc4d5adaffa1d22dd12e03c995f8cd908dfca3b9019567652e9d9"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "5a9423cafef65029ae6a708b1a1fdff5dc4947be3d0194704d8f85f789b6c539",
+      "raw_block_sha256": "edff72d9c2e39fafa785ac8c23d88295ade847d08f20e8aa3835761d8a7f65ae",
+      "operative_body": "That Council adopt Bylaw No. 1706.",
+      "operative_body_sha256": "530ac45e3865d8a94c0db7a4e13f0af293beb692bdd2a3ae236e633cc1f98c56",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e944af0e4013a207ed6a3804112dac0eb9bde563cf18b7565b09276ab771db0f",
+          "render_sha256": "681b3c75c4ccc4d5adaffa1d22dd12e03c995f8cd908dfca3b9019567652e9d9"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "f477025e53aa8c9190e057c7572497b596b6c9e0b350182a57c253f6f05101a2",
+      "raw_block_sha256": "cd787fb2791ec09431d04abc9ae28dd5683d978394c3f7ce0f0a304c88291e5f",
+      "operative_body": "That Council adopt Bylaw No. 1707.",
+      "operative_body_sha256": "fb61403195a873d54d6a3d3a560339a85915eaa2c32af0c2591bf92868a15efb",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e944af0e4013a207ed6a3804112dac0eb9bde563cf18b7565b09276ab771db0f",
+          "render_sha256": "681b3c75c4ccc4d5adaffa1d22dd12e03c995f8cd908dfca3b9019567652e9d9"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "f8bbc8d3b76052575ec225c2747d8c4726adb29ae17b14e7b5d1a91b7e1d3446",
+          "render_sha256": "0acbef28b719358c0bf5e25dc6760c12c851abc1f720b8d7a25238d14a577b7f"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "ae1f1e577438c77f8ff4c22bd5b59813952efa5e92450c6dad8093b2a83d181c",
+      "raw_block_sha256": "b53a65ec9571c3c630d6b395e2c0ccf3303a0904d38174ac981bdf50a4937b07",
+      "operative_body": "That Council adopt Bylaw No. 1708.",
+      "operative_body_sha256": "04e21e443e899c82930ecb9d22f6fc533d22f5d18f2f5e5252869e5938533dd7",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f8bbc8d3b76052575ec225c2747d8c4726adb29ae17b14e7b5d1a91b7e1d3446",
+          "render_sha256": "0acbef28b719358c0bf5e25dc6760c12c851abc1f720b8d7a25238d14a577b7f"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "0083ded52b091e683d3e0e81eb62a85b4093bed917cc7838808622b2aa4cda4e",
+      "raw_block_sha256": "e4be120ab3a489ef715fa4a554b10c389484a5cc530441358890d28e3309b763",
+      "operative_body": "That Council give Bylaw No. 1709 First, Second and Third Reading.",
+      "operative_body_sha256": "41cb34a2e9d355f17d563b815bfb97aab4606e1591229eebd39478d2cee50459",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f8bbc8d3b76052575ec225c2747d8c4726adb29ae17b14e7b5d1a91b7e1d3446",
+          "render_sha256": "0acbef28b719358c0bf5e25dc6760c12c851abc1f720b8d7a25238d14a577b7f"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "d2c5817d7e9f4949e0ac972a57676636eaccd3b53cc0cb8bfd82a3d652fc70e4",
+      "raw_block_sha256": "723e4d8e9b2c9e9a0be4459f0ef011c65d5dbef8abf8913b8e047e449a895b3c",
+      "operative_body": "That Council give Bylaw No. 1800 First, Second and Third Reading.",
+      "operative_body_sha256": "3da88789aa7bb705f174e3642cae6e146bb68cb9af49f9d4cca5a6e368e39dd4",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f8bbc8d3b76052575ec225c2747d8c4726adb29ae17b14e7b5d1a91b7e1d3446",
+          "render_sha256": "0acbef28b719358c0bf5e25dc6760c12c851abc1f720b8d7a25238d14a577b7f"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "c4a8a658221eb51673cf4861d2547246fc86311715ef64dfe24d9fdf908e521d",
+      "raw_block_sha256": "f99c426fb0dc9c6296534c381f552dfe5f629a2482c1bd15765ceb601cbb723c",
+      "operative_body": "That Council give Bylaw No. 1716 First, Second and Third Reading.",
+      "operative_body_sha256": "1875d0994f3661d4709407048de17d7054ed67a24a0455cac4ee9a9ffdb1e09d",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f8bbc8d3b76052575ec225c2747d8c4726adb29ae17b14e7b5d1a91b7e1d3446",
+          "render_sha256": "0acbef28b719358c0bf5e25dc6760c12c851abc1f720b8d7a25238d14a577b7f"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "bb4f2f5175f0eb4dcee6b1f78163f7cdaa5e871b312f371bf5a60013db0cfd40",
+      "raw_block_sha256": "44b554826f442cc05a506c6f7a693e5248cd0615187e25d14e0e7e2df1d5690c",
+      "operative_body": "That Council rescind second and third reading for Bylaw No. 1716.",
+      "operative_body_sha256": "02eb2a1b0bb94504b5a0a019091d933faa713006ac9c2ab9023554756541e56a",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f8bbc8d3b76052575ec225c2747d8c4726adb29ae17b14e7b5d1a91b7e1d3446",
+          "render_sha256": "0acbef28b719358c0bf5e25dc6760c12c851abc1f720b8d7a25238d14a577b7f"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "9f7f7b6e751a19871ab747a4ae31dc027137975bf7e241ebab8cc4d2ebf79b49",
+          "render_sha256": "5c229a5ca47a1308ee6b043ecb977c05acedadb4d200d41d90c01928baf8f4e7"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    },
+    {
+      "source_key": "0271938749fdf6786152225bbaa688e1d023cccdfbd917a26710f4849b5691cb",
+      "raw_block_sha256": "b4ca2542f8b6a835423088e391d32bd661cf97bc3fa1b1efc9336e91a574ef24",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding land disposition under Section 90(1) (e) of the Community Charter. b) That Council continues the meeting in closed session.",
+      "operative_body_sha256": "0efe9b81e54f0bad28b9b98a03f130bc82dd059cdbbfffe70d103f101e8c5883",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "9f7f7b6e751a19871ab747a4ae31dc027137975bf7e241ebab8cc4d2ebf79b49",
+          "render_sha256": "5c229a5ca47a1308ee6b043ecb977c05acedadb4d200d41d90c01928baf8f4e7"
+        }
+      ],
+      "independent_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+      "authority": "operative_body_and_result_only",
+      "corrections": [],
+      "second_independent_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06"
+    }
+  ],
+  "native_first_page_sha256": "46eae126bdc9d9e69c6aa590eef5d4e319529e6c945f570b9550f2db4c992f07",
+  "independent_original_image_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+  "second_original_image_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06",
+  "original_image_review_sha256s": {
+    "first_review_sha256": "f0e0074bf6c27f7260d476eeb06e2421abc209832b56d27bd81dcf82d403a4b4",
+    "second_review_sha256": "3baab12a265a4f68edfd7f0b2e9f5388c58a6ee4517b1ddea3f2b607d18aef06",
+    "full_snapshot_file_sha256": "b807a3c0eb84508e498522fb44a4c498e7e81cb6052b897588a05117710fc1e3"
+  }
+}

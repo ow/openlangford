@@ -1,0 +1,426 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 360,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+  "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+  "source_date": "2016-07-18",
+  "source_text_sha256": "a1a0a0183739a8ab2042e7a39c19e3479ed5731ee28c0118ce48f28e46cf2e11",
+  "formal_inventory_sha256": "533aa3bb665d42643df51402dda6a813d4ffe4733cb0f1cdf5c7ce3fd6a4600c",
+  "claim_inventory_sha256": "c79ff378e723f4c7fd1ea02ce69dba10da385d17af64fe5ab2ac91a9cf2038bc",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "1460665abcc2f42b689d6cae43dd6d1a4ee02f571d258e906d0dd28198ccde11"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "1fa77eb23c85e81c536db844f0ac83a48bcaeae696cce825f59f879ff12439f1"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "c52435bae81d8f9cafe30b5ab11508e535a8360731fac8aa39326f8c48283aa8"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "61f6ea816badb5c06b746f6e6eb39bf63bc888c2cb443100ed0fb3323dcff39b"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "633aed99a79244c00902885a09637b9ed855814c0f20ff74fd041c617d403838"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "f6552f8d04ac6a00b378655fc0967b3fd3211e22513b602aed80b541fb29efe4"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "c8bd6807f324ba260b95db082d9b3dcf5a21a66e7dc222a3724bf73b7427ea03"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "c705bb64c2b672567ad9e1fe3bb39b2316c0ab6d7ce767cd02bb12623fa23ddf"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "abfc72a6d851598d94f26f3aa053642ff15c9959e397f4a575e82c71f02cea6f"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "83e73dc911d02a45c703beed65e1ab54d1eada3afb5b41d53bfc22a465f41256"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "6cace9095115ce862ef929280fd05218c8b0dbbb8dce5bf2a0a9b8c5ac5803ca"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "6ec0230b007edababd0bf434681605277a8ef39e687689a0d23ecf2b9544680a"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "42f2e73fb939dcabf5d45c4b8194e9f9cf37b5d2cb56bf6ce48935c39a1f2fe2"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 3583,
+      "claim_sha256": "8d2c01ebedeff906af4db63298f719862fc148df540b2ef65ffb32a7611665d4",
+      "legacy_text": "That Council approve the Agenda as presented.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 622,
+        "source_order": 0,
+        "key": "f7a8efd833e16d4d502b03a969894cc14853930f2b2fede65d7150c9c036004f",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the Agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR R. WADE\nSECONDED:       COUNCILLOR M. SAHLSTROM\n\n       That Council approve the Agenda as presented.\n\n                                                                                                 CARRIED.\n\n\n3.      PUBLIC HEARINGS\n\n        a) BYLAW NO. 1638\n            \"Langford Zoning Bylaw, Amendment No. 456, (720, 724 & 732 Meaford Ave; 2848 and 2852\n            Millstream Rd), 2016\".\n\nThe Acting Mayor opened the Public Hearing for Bylaw No. 1638 at 5:00 p.m.\n\nActing Mayor Seaton advised members of the audience that any person present who believes that his or\nher interest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Acting Mayor Seaton advised that after\neveryone has expressed their views, he shall state three times \"Is there anyone else who wishes to be\nheard\", and if no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Rachael Sansom of Turner Lane Development Corporation has applied on\nbehalf of Meaford Holdings Ltd., Sandeep and Jaswinder Bharmota, Ha Nguyen and Vu Le to amend the\nzoning of 720, 724, 732 Meaford Ave and 2852 and 2848 Millstream Rd from the C3 (District Commercial)\n\n                                                                                        Regular Council Minutes\n                                                                                                 July 18th, 2016\n                                                                                                   Page 2 of 13\n\n\n and R1 (One-Family Residential) zones. The purpose of the Public Hearing was to hear from the public\n regarding Bylaw No. 1638 which, if adopted, would amend the CS1 (Service Commercial) and MU1A\n (Mixed-Use Residential Commercial A) Zones.\n\n This is being proposed in order to allow for the development of an apartment building at 720 and 724\n Meaford Avenue and the development of a commercial/warehouse building at 732 Meaford Avenue. The\n Millstream Road properties have no plans to develop at this time.\n\n As part of this application, a public hearing is required in accordance with the regulations of the Local\n Government Act.\n\n In support of this application, the applicant has agreed to provide the following:\n\n   1. That the owner agrees to provide as a bonus for increased density, the following contributions per\n        dwelling unit:\n        i) $2,562 towards the General Amenity Reserve Fund; and\n        ii) $610 towards the Affordable Housing Reserve Fund.\n\n     2. A Section 219 covenant, registered in priority over all other charges on title, that agrees to the\n        following;\n\n        i) That the developer provide a Construction Parking Management Plan;\n        ii) The owner will register on title a Section 219 covenant for stormwater maintenance;\n        iii) That a reciprocal parking access agreement be provided for 720, 724 and 732 Meaford;\n        iv) That the developer construct full frontage improvements as a condition of rezoning;\n\nThe applicant is also requesting to amend the MU1A zone to permit the apartment building to be 6 storeys\nin height and to have only 35% site coverage.\n\nThe applicant is also requesting to amend the CS1 zone to permit offices as a permitted use and to allow\nthe properties at 2852 and 2848 Millstream Road to have one-family dwellings as a permitted use.\n\nCouncil has already directed the Director of Planning to:\n            • Issue a variance to the commercial parking requirement in the development Permit if the\n                 applicant provides a parking study that supports it; and\n            • To issue a Om setback to the eastern interior side lot line and rear yard lot line for the\n                 new commercial building proposed to be built at 732 Meaford Avenue.\n\nThis proposal is consistent with the Official Community Plan City Centre designation. Notifications and\nadvertisements have been placed as required by Council policy.\n\nThe Acting Mayor called a first time for presentations.\n\nActing Mayor Seaton called a second time for presentations.\n\nThe Acting Mayor called a third and final time for presentation, there being none, the Acting Mayor\nofficially declared the Public Hearing for Bylaw No. 1638 closed at 5:04 p.m.\n\n                                                                                        Regular Council Minutes\n                                                                                                 July 18th, 2016\n                                                                                                   Page 3 of 13\n\n\n At 5:05pm Mayor Young and Councillor Blackwell arrived at the meeting.\n\n         b) BYLAW NO. 1620\n             \"Langford Zoning Bylaw, Amendment No. 452, (1431 Grand Forest CI), 2016\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1620 at 5:06 p.m.\n\n Mayor Young advised members of the audience that any person present who believes that his or her\n interest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\n has expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Jared Steingard of Westbrook Consulting has applied on behalf of Arngask\nDevelopments Inc to amend the text of the CD6 (Bear Mountain) Zone. The purpose of the Public Hearing\nwas to hear from the public regarding Bylaw No. 1620 which, if adopted, would allow more than 15 one-\nfamily dwelling lots to be developed in Area 6 of the CD6 Zone if the owner provides an additional amenity\ncontribution of $7,500 per lot in excess of 15. The applicant has also requested that the required open\nspace be reduced from approximately 55% of the lands within Area 6 to no less than 40%.\n\n\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act. This proposal is consistent with the Official Community Plan Hillside or Shoreline\ndesignation. Notifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1620 closed at 5:26 p.m.\n\n4.      ADOPTION OF MINUTES\n\n        a) Minutes of the Regular Meeting of Council —June 20th, 2016",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f538b7b09f025ad5114739235f21f4d4eb8024095765076f36d45180a5e54f4a",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3584,
+      "claim_sha256": "6f7ab25184fc4ded095471ae4dbf59c55d9698b8b869db7fc582d3d48e055146",
+      "legacy_text": "That Council approve the Minutes of the Regular Meeting of Council held on June 20th, 2016.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 7543,
+        "source_order": 1,
+        "key": "99eb1f4f1ef921c1a48ca0211008b1ec44da79138d7d5963856250c5a3755377",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the Minutes of the Regular Meeting of Council held on June 20th, 2016.",
+        "source_block": "MOVED BY: COUNCILLOR SEATON\nSECONDED: COUNCILLOR SAHLSTROM\n\n        That Council approve the Minutes of the Regular Meeting of Council held on June 20th, 2016.\n\n                                                                                                 CARRIED.\n5.      PUBLIC PARTICIPATION\n\nThere was no public participation.\n\n                                                                                           Regular Council Minutes\n                                                                                                    July 18th, 2016\n                                                                                                      Page 4 of 13\n\n\n6.    DEVELOPMENT VARIANCE PERMIT\n\n      a) DVP16-0008 — 2030 Country Club Way and 1445 Bear Mountain Parkway",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5b457cb77a71b70a35fd817f7c1f29151615f0dca88521eb2e49226080137caf",
+      "pages": [
+        3
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3585,
+      "claim_sha256": "265c3a3e2ecbb1190c4bbb90d9107030805334155dad00eb99e419188e2ea7db",
+      "legacy_text": "That Council issue Development Variance Permit No. DVP16-0008 for the City of Langford to David Clarke, Ecoasis Development LLP on behalf of BM Mountain Golf Course Ltd. and BM 81/82 Lands Ltd. to facilitate a 29 lot subdivision consisting of 27 one-family residential lots and 2 lots that will be developed with townhouses at 1445 Bear Mountain Pkwy and 2030 Country Club Way subject to the following terms and conditions: [site plan Appendix A; detailed variances listed in minutes; conditions including setbacks, acknowledgements and registration on title].",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 8335,
+        "source_order": 2,
+        "key": "9f2f7f6ef37e3acc8320aca81a9b1bde50f4852bb1a44953aadd57846b5ed7e8",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council issue Development Variance Permit No. DVP16-0008 for the City of Langford to David\n      Clarke, Ecoasis Development LLP on behalf of BM Mountain Golf Course Ltd. and BM 81/82 Lands\n      Ltd. to facilitate a 29 lot subdivision consisting of 27 one-family residential lots and 2 lots that will\n      be developed with townhouses at 1445 Bear Mountain Pkwy and 2030 Country Club Way subject\n      to the following terms and conditions:\n\n      1. Appendix\n\n      The site shall be developed in accordance with the site plan attached (Appendix A).\n\n      2. Variances\n\n      The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n      Government Act:\n      a) That Section 6.95.09(1)(a) of Zoning Bylaw No. 300 be varied to reduce the front lot line\n         setback from the required 7.5 m to 5.5 m for lots 7-13 and 7-27;\n      b) That Section 6.95.09(1)(b) of Zoning Bylaw No. 300 be varied to reduce the rear lot line\n         setback from the required 7.5 m to 6 m for lots 14-17;\n      c) That Section 6.95.09(1)(c) of Zoning Bylaw No. 300 be varied to reduce the exterior side lot\n         line setback from the required 6 m to 2.4 m for lot 13;\n     d) That Section 6.95.09(1)(c) of Zoning Bylaw No. 300 be varied to reduce the exterior side lot\n         line setback from the required 6 m to 4.5 m for lot 24;\n     e) That Section 6.95.09(1)(d) of Zoning Bylaw No. 300 be varied to reduce the interior side yard\n         setback from the required 3 m to 2.4 m for lots 7-13 and 17- 27;\n     f) That Section 6.95.09(1)(e) of Zoning Bylaw No. 300 be varied to reduce the setback for any lot\n         line adjoining a golf course from the required 10 m to 2.4 m for the interior side lot line\n         adjoining the golf course on lots 7, 8, 17, 18, 25 and 27;\n     g) That Section 6.95.09(1)(e) of Zoning Bylaw No. 300 be varied to reduce the setback for any lot\n         line adjoining a golf course from the required 10 m to 6 m for the rear lot line adjoining the\n         golf course on lots 7 — 13 and 18— 27;\n     h) That Section 6.95.09(6)(b) be varied to reduce the rear lot line setback from the required 10\n         m to 4.5 m for lots 28 and 29;\n     i)  That   Section 6.95.09(6)(c) be varied to reduce the interior side lot line setback from the\n         required 6 m to 4.5 m for lots 28 and 29, with the exception of the southernmost interior side\n         lot line of Lot 28;\n     j) That Section 6.95.09(6)(d) be varied to reduce the exterior side lot line setback from the\n         required 7.5 m to 6 m for lots 28;\n\n     3. Conditions\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n                                                                                       Regular Council Minutes\n                                                                                                July 18th, 2016\n                                                                                                  Page 5 of 13\n\n\n      i.    That a minimum 4.5m setback be provided on Lots 20 and 21 from the shared interior side\n             lot line;\n      ii.   That a minimum 10m setback be provided from the interior side lot line of Lot 29 that adjoins\n             the golf course;\n     iii.   That the site is developed in accordance with the plan attached to this report as Appendix A;\n     iv.    That the applicant acknowledge their proximity to the golf course and understand all\n            consequences that may derive from such close proximity. This agreement must be registered\n            on title.",
+        "source_block": "MOVED BY:     COUNCILLOR BLACKWELL\nSECONDED:     COUNCILLOR WADE\n\n      That Council issue Development Variance Permit No. DVP16-0008 for the City of Langford to David\n      Clarke, Ecoasis Development LLP on behalf of BM Mountain Golf Course Ltd. and BM 81/82 Lands\n      Ltd. to facilitate a 29 lot subdivision consisting of 27 one-family residential lots and 2 lots that will\n      be developed with townhouses at 1445 Bear Mountain Pkwy and 2030 Country Club Way subject\n      to the following terms and conditions:\n\n      1. Appendix\n\n      The site shall be developed in accordance with the site plan attached (Appendix A).\n\n      2. Variances\n\n      The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n      Government Act:\n      a) That Section 6.95.09(1)(a) of Zoning Bylaw No. 300 be varied to reduce the front lot line\n         setback from the required 7.5 m to 5.5 m for lots 7-13 and 7-27;\n      b) That Section 6.95.09(1)(b) of Zoning Bylaw No. 300 be varied to reduce the rear lot line\n         setback from the required 7.5 m to 6 m for lots 14-17;\n      c) That Section 6.95.09(1)(c) of Zoning Bylaw No. 300 be varied to reduce the exterior side lot\n         line setback from the required 6 m to 2.4 m for lot 13;\n     d) That Section 6.95.09(1)(c) of Zoning Bylaw No. 300 be varied to reduce the exterior side lot\n         line setback from the required 6 m to 4.5 m for lot 24;\n     e) That Section 6.95.09(1)(d) of Zoning Bylaw No. 300 be varied to reduce the interior side yard\n         setback from the required 3 m to 2.4 m for lots 7-13 and 17- 27;\n     f) That Section 6.95.09(1)(e) of Zoning Bylaw No. 300 be varied to reduce the setback for any lot\n         line adjoining a golf course from the required 10 m to 2.4 m for the interior side lot line\n         adjoining the golf course on lots 7, 8, 17, 18, 25 and 27;\n     g) That Section 6.95.09(1)(e) of Zoning Bylaw No. 300 be varied to reduce the setback for any lot\n         line adjoining a golf course from the required 10 m to 6 m for the rear lot line adjoining the\n         golf course on lots 7 — 13 and 18— 27;\n     h) That Section 6.95.09(6)(b) be varied to reduce the rear lot line setback from the required 10\n         m to 4.5 m for lots 28 and 29;\n     i)  That   Section 6.95.09(6)(c) be varied to reduce the interior side lot line setback from the\n         required 6 m to 4.5 m for lots 28 and 29, with the exception of the southernmost interior side\n         lot line of Lot 28;\n     j) That Section 6.95.09(6)(d) be varied to reduce the exterior side lot line setback from the\n         required 7.5 m to 6 m for lots 28;\n\n     3. Conditions\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n                                                                                       Regular Council Minutes\n                                                                                                July 18th, 2016\n                                                                                                  Page 5 of 13\n\n\n      i.    That a minimum 4.5m setback be provided on Lots 20 and 21 from the shared interior side\n             lot line;\n      ii.   That a minimum 10m setback be provided from the interior side lot line of Lot 29 that adjoins\n             the golf course;\n     iii.   That the site is developed in accordance with the plan attached to this report as Appendix A;\n     iv.    That the applicant acknowledge their proximity to the golf course and understand all\n            consequences that may derive from such close proximity. This agreement must be registered\n            on title.\n                                                                                                 CARRIED\n\n7.    COMMITTEE RESOLUTIONS\n\n     a) Planning Zoning & Affordable Housing Committee —July 11th, 2016\n         1. McCormick Meadows - Application to amend the text and Schedule Z map of the CD15\n             Zone (File No. Z16-0008 - 1067, 1099, 1124 & 1164 Braeburn Ave; 3439 Ambrosia)",
+        "outcome_quote": "CARRIED",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "19a2329ee238fe0d30af1b40ce49b14a38b85d25875d08935fa384c890bb0e93",
+      "pages": [
+        4,
+        5
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3586,
+      "claim_sha256": "ad52e0269d820a367bb57f41bf9db65d55aca16bb0ae84c2a460cb4591749ec4",
+      "legacy_text": "Direct staff to prepare a bylaw to amend the CD15 Zone by: changing lot width requirements, increasing minimum interior side lot line setback to 1.5m, deleting the Buffer Lot Line setback section, amending Schedule Z open space plan, deleting the requirement to provide $300,000 to the General Amenity Reserve Fund, and accept applicant's open space plan; and require certain covenants and agreements prior to bylaw adoption.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 12424,
+        "source_order": 3,
+        "key": "6f2839f0d20dde1edbdbc3dc57213bee815161f7e74970243cc20ed72dd1840f",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n     1. Direct staff to prepare a bylaw to amend the CD15 Zone by:\n                a) Increasing the number of lots that must have a lot width of no less than 14m from\n                     27 to 80;\n                 b) Decreasing the number of lots that may have a lot width of less than 13m but no\n                     less than 12m from 27 to 18;\n                c) By increasing the minimum required interior side lot line setback to 1.5m;\n                d) By deleting the Buffer Lot Line setback section;\n                e) By amending the Schedule \"Z\" open space plan to include those lands within the\n                     CD15 Zone shown on the plan attached to this report as Appendix A;\n                f) By deleting the requirement to provide $300,000 to the General Amenity Reserve\n                     Fund,\n                g) Accept the applicant's proposed open space plan;\n\n     2.     That the applicant provides, prior to Bylaw Adoption,:\n                   a. A Section 219 covenant modification to implement the revised open space plan\n                       (as accepted by Council) and the agricultural buffer plan; and\n                   b. A fully executed purchase and sale agreement with regards to the 1.1 ha of land\n                       at 960 Latoria Rd (if accepted by Council).",
+        "source_block": "MOVED BY: COUNCILLOR BLACKWELL\nSECONDED: COUNCILLOR WADE\n\n     That Council:\n     1. Direct staff to prepare a bylaw to amend the CD15 Zone by:\n                a) Increasing the number of lots that must have a lot width of no less than 14m from\n                     27 to 80;\n                 b) Decreasing the number of lots that may have a lot width of less than 13m but no\n                     less than 12m from 27 to 18;\n                c) By increasing the minimum required interior side lot line setback to 1.5m;\n                d) By deleting the Buffer Lot Line setback section;\n                e) By amending the Schedule \"Z\" open space plan to include those lands within the\n                     CD15 Zone shown on the plan attached to this report as Appendix A;\n                f) By deleting the requirement to provide $300,000 to the General Amenity Reserve\n                     Fund,\n                g) Accept the applicant's proposed open space plan;\n\n     2.     That the applicant provides, prior to Bylaw Adoption,:\n                   a. A Section 219 covenant modification to implement the revised open space plan\n                       (as accepted by Council) and the agricultural buffer plan; and\n                   b. A fully executed purchase and sale agreement with regards to the 1.1 ha of land\n                       at 960 Latoria Rd (if accepted by Council).\n\n                                                                                                 CARRIED.\n\n                                                                                     Regular Council Minutes\n                                                                                              July 18th, 2016\n                                                                                                Page 6 of 13\n\n\n         2. Application to amend the text of the Cl zone at 2285 Bellamy Road to allow for 41\n             children in a group day care and to allow for a dance studio (File No. Z16-0012 - 2285\n             Bellamy Ave)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4491dafa4ab2411efdd91139e2a8c3ea2ebf35e1c3e25d225bdba86bd4a24a43",
+      "pages": [
+        5
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3587,
+      "claim_sha256": "ffac5529836a06cd5e6831a412b1821453a2bef17a6a8d05f4d04000617f72f5",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the C1 zoning for 2285 Bellamy Road to allow for 41 children in a group day care and to permit a dance studio as an allowable use, subject to a Section 219 covenant requiring frontage improvements and parking reconfiguration, creation of a site‑specific parking requirement, and signage authorization by the Director of Engineering.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 14472,
+        "source_order": 4,
+        "key": "519c5054a21b0bdfbf60e4413accce15db8c127e9b6ed3a2cf681b477ce15c11",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to prepare a bylaw to amend the Cl zoning designation for the property\n      located at 2285 Bellamy Road to allow for 41 children in a group day care and to permit a dance\n      studio as an allowable use, subject to the following terms and conditions:\n          a) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n              in priority of all other charges on title, that agrees to the following:\n                    i. To complete full frontage improvements to Bylaw 1000 standards to the\n                       satisfaction of the Director of Engineering\n                   ii. To reconfigure the driveway access and off-street parking as per Appendix A\n          b) Amend Part 4 of the Zoning Bylaw No. 300 to create a site-specific off-street parking\n              requirement based on the proposed uses and current floor area;\n          c) Authorize the Director of Engineering to approve the signage which would reserve the\n              four on-street parking spaces during weekday business hours for the subject property.",
+        "source_block": "MOVED BY: COUNCILLOR BLACKWELL\nSECONDED: COUNCILLOR WADE\n\n      That Council direct staff to prepare a bylaw to amend the Cl zoning designation for the property\n      located at 2285 Bellamy Road to allow for 41 children in a group day care and to permit a dance\n      studio as an allowable use, subject to the following terms and conditions:\n          a) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n              in priority of all other charges on title, that agrees to the following:\n                    i. To complete full frontage improvements to Bylaw 1000 standards to the\n                       satisfaction of the Director of Engineering\n                   ii. To reconfigure the driveway access and off-street parking as per Appendix A\n          b) Amend Part 4 of the Zoning Bylaw No. 300 to create a site-specific off-street parking\n              requirement based on the proposed uses and current floor area;\n          c) Authorize the Director of Engineering to approve the signage which would reserve the\n              four on-street parking spaces during weekday business hours for the subject property.\n\n                                                                                               CARRIED.\n\n        3. Application to Rezone 2559 Millstream Rd and a portion of 2555 Millstream Rd from R2\n            (One- and Two-Family Residential) to the RS3 (File No. Z16-0014 - 2555 & 2559\n            Millstream Rd)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "35a35a2ec066dc8e1290ab09f0cae33f4238344e8db22b7834f716564b7e9b94",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3588,
+      "claim_sha256": "f832add60cac6e4c6ebeafb499e10ac56272f407c0c69e74a0299926dcdfc389",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the property at 2559 Millstream Rd and a portion of 2555 Millstream Rd from R2 to RS3 subject to amenity contributions per new lot, design requirements, and Section 219 covenants prior to bylaw adoption; and to proceed with consideration of specified variances via DVP.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 15958,
+        "source_order": 5,
+        "key": "0856105a0a49508379aa2bcb0a4366cb2615b668e1ce35f1a76dc629e54915f0",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n     1. Direct staff to prepare a bylaw to amend the zoning designation of the property at 2559\n         Millstream Rd and a portion of the property located at 2555 Millstream Rd from R2 (One- and\n         Two-Family Residential) to RS3 (Residential Small Lot 3) subject to the following terms and\n         conditions:\n         a) That the owner agrees to provide, as a bonus for increased density, the following\n             contributions per new lot created, prior to subdivision approval:\n         a. $2,772 towards the General Amenity Reserve Fund;\n         b. $660 towards the Affordable Housing Reserve Fund;\n         b) That, with regards to the proposed architectural design, the applicant either:\n                  i.  Construct the dwellings in substantial accordance with the plans attached to this\n                      report as Appendix B;\n         c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n             in priority of all other charges on title, that agrees to the following:\n               i.    That each dwelling will contain a 2-car garage unless a 5.5m setback to the garage\n                     face is provided;\n\n                                                                                           Regular Council Minutes\n                                                                                                    July 18th, 2016\n                                                                                                      Page 7 of 13\n\n\n                    ii.    That full frontage improvements, including a vehicle turnaround area adjacent to\n                           the driveways, be provided to the satisfaction of the Director of Engineering prior\n                           to Subdivision Approval;\n                    iii.   That the dwellings will be constructed with a shared driveway access, which must\n                           include an alternate pavement surface with a minimum width of lm extending\n                           from the shared property line;\n                    iv.    That the garages must be used for vehicle parking, and that vehicle parking is\n                           prohibited within the driveway;\n                     v.    That the dwellings be constructed in accordance with the plans approved by\n                           Council as per the option in item b) above;\n                    vi.    That a construction parking management plan be provided to the satisfaction of\n                           the Director of Engineering prior to the issuance of a Building Permit; and\n           2. Direct staff to proceed with consideration of the following variances for 2555 and 2559\n               Millstream Rd, subject to the applicant applying for the necessary DVP:\n               b) That Section 6.27.06(1)(a) of Zoning Bylaw No. 300 be varied by reducing the front lot line\n                  setback from the required 3m to nil for the principal building, and from 5.5m to 1.6m for\n                  the garage portion;\n               c) That   Section 6.27.06(1)(b) of Zoning Bylaw No. 300 be varied by reducing the rear lot line\n                  setback from the required 5.5m to 3m;\n               d) That Section 6.27.06(1)(e) of Zoning Bylaw No. 300 be varied by reducing the interior side\n                   lot line setback from the required 1.2m to nil.",
+        "source_block": "MOVED BY: COUNCILLOR BLACKWELL\nSECONDED: COUNCILLOR WADE\n\n     That Council:\n     1. Direct staff to prepare a bylaw to amend the zoning designation of the property at 2559\n         Millstream Rd and a portion of the property located at 2555 Millstream Rd from R2 (One- and\n         Two-Family Residential) to RS3 (Residential Small Lot 3) subject to the following terms and\n         conditions:\n         a) That the owner agrees to provide, as a bonus for increased density, the following\n             contributions per new lot created, prior to subdivision approval:\n         a. $2,772 towards the General Amenity Reserve Fund;\n         b. $660 towards the Affordable Housing Reserve Fund;\n         b) That, with regards to the proposed architectural design, the applicant either:\n                  i.  Construct the dwellings in substantial accordance with the plans attached to this\n                      report as Appendix B;\n         c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n             in priority of all other charges on title, that agrees to the following:\n               i.    That each dwelling will contain a 2-car garage unless a 5.5m setback to the garage\n                     face is provided;\n\n                                                                                           Regular Council Minutes\n                                                                                                    July 18th, 2016\n                                                                                                      Page 7 of 13\n\n\n                    ii.    That full frontage improvements, including a vehicle turnaround area adjacent to\n                           the driveways, be provided to the satisfaction of the Director of Engineering prior\n                           to Subdivision Approval;\n                    iii.   That the dwellings will be constructed with a shared driveway access, which must\n                           include an alternate pavement surface with a minimum width of lm extending\n                           from the shared property line;\n                    iv.    That the garages must be used for vehicle parking, and that vehicle parking is\n                           prohibited within the driveway;\n                     v.    That the dwellings be constructed in accordance with the plans approved by\n                           Council as per the option in item b) above;\n                    vi.    That a construction parking management plan be provided to the satisfaction of\n                           the Director of Engineering prior to the issuance of a Building Permit; and\n           2. Direct staff to proceed with consideration of the following variances for 2555 and 2559\n               Millstream Rd, subject to the applicant applying for the necessary DVP:\n               b) That Section 6.27.06(1)(a) of Zoning Bylaw No. 300 be varied by reducing the front lot line\n                  setback from the required 3m to nil for the principal building, and from 5.5m to 1.6m for\n                  the garage portion;\n               c) That   Section 6.27.06(1)(b) of Zoning Bylaw No. 300 be varied by reducing the rear lot line\n                  setback from the required 5.5m to 3m;\n               d) That Section 6.27.06(1)(e) of Zoning Bylaw No. 300 be varied by reducing the interior side\n                   lot line setback from the required 1.2m to nil.\n                                                                                                     CARRIED.\n\n              4. Application to Amend the Definition of \"Hotel\" to include a hotel with cooking\n                  conveniences to permit a hotel use at 2789 Grainger Road (File No. Z16-0016 - 2789\n                  Grainger Rd)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "7dd5db1dbd450bf622414d278392273e4866abdaa2f9a8ffa68cd82347d03ed7",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3589,
+      "claim_sha256": "41a1570817096366225a65c0a7a97e04e97e81c4619883d4cc47e768425cf545",
+      "legacy_text": "That Council direct staff to prepare a bylaw to generally allow hotels with cooking facilities, and where cooking facilities are provided, on‑site restaurants are optional.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 19782,
+        "source_order": 6,
+        "key": "ecfc1133f6f5ceed9e54e36c6f0ff4a37176d4a2ad18658ac587105385846e18",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to prepare a bylaw to generally allow hotels with cooking facilities, and\n          where cooking facilities are provided, on-site restaurants are optional.",
+        "source_block": "MOVED BY: COUNCILLOR BLACKWELL\nSECONDED: COUNCILLOR WADE\n\n          That Council direct staff to prepare a bylaw to generally allow hotels with cooking facilities, and\n          where cooking facilities are provided, on-site restaurants are optional.\n\n                                                                                                     CARRIED.\n8.        REPORTS\n\n          a) Extension of Liquor License Hours for Darcy's Pub — 737 Goldstream Avenue\n              - Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "8b3f93b3ba9bac03781891c8977934f85f2a1729e8d46731359882bee1a3f2e3",
+      "pages": [
+        7
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3590,
+      "claim_sha256": "983e3ceaef17c29f8dc8483ec766c98a9e2c3bc71a3f3962267d37c386cbb35b",
+      "legacy_text": "a) Inform the Liquor Control and Licensing Branch that Council recommends that a liquor license be issued with hours of operation ceasing at 1:00am Sunday to Thursday; b) Direct Staff to amend the Business Licence and Business Regulation Bylaw No. 216 to give approving authority of special event liquor license hour extensions to the License Inspector; c) Direct Staff to amend the Business Licence and Business Regulation Bylaw No. 216 to limit each licensed premise of this kind a maximum of six (6) special event licenses per year; and d) Direct Staff to amend the Business License and Business Regulation Bylaw No. 216 to only allow licensed premises of this kind to operate till 12:00am from Sunday to Thursday with the opportunity to apply for a 1:00am closing time for special event purposes.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 20291,
+        "source_order": 7,
+        "key": "a0c7bf8dba2214bdc0edad197560ae1ecd0031aab42dbeb0e8f6d729e00c012e",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "a) Inform the Liquor Control and Licensing Branch that Council recommends that a liquor license be\n        issued with hours of operation ceasing at 1:00am Sunday to Thursday;\n     b) Direct Staff to amend the Business Licence and Business Regulation Bylaw No. 216 to give\n        approving authority of special event liquor license hour extensions to the License Inspector;\n\n                                                                                       Regular Council Minutes\n                                                                                                July 18th, 2016\n                                                                                                  Page 8 of 13\n\n\n   c) Direct Staff to amend the Business Licence and Business Regulation Bylaw No. 216 to limit each\n      licensed premise of this kind a maximum of six (6) special event licenses per year; and\n   d) Direct Staff to amend the Business License and Business Regulation Bylaw No. 216 to only allow\n      licensed premises of this kind to operate till 12:00am from Sunday to Thursday with the\n      opportunity to apply for a 1:00am closing time for special event purposes",
+        "source_block": "MOVED BY: COUNCILLOR SZPAK\nSECONDED: COUNCILLOR SAHLSTROM\n\n     a) Inform the Liquor Control and Licensing Branch that Council recommends that a liquor license be\n        issued with hours of operation ceasing at 1:00am Sunday to Thursday;\n     b) Direct Staff to amend the Business Licence and Business Regulation Bylaw No. 216 to give\n        approving authority of special event liquor license hour extensions to the License Inspector;\n\n                                                                                       Regular Council Minutes\n                                                                                                July 18th, 2016\n                                                                                                  Page 8 of 13\n\n\n   c) Direct Staff to amend the Business Licence and Business Regulation Bylaw No. 216 to limit each\n      licensed premise of this kind a maximum of six (6) special event licenses per year; and\n   d) Direct Staff to amend the Business License and Business Regulation Bylaw No. 216 to only allow\n      licensed premises of this kind to operate till 12:00am from Sunday to Thursday with the\n      opportunity to apply for a 1:00am closing time for special event purposes\n                                                                                              CARRIED.\n        b)    Request to Table the Rezoning Application for 592 Phelps Avenue\n             -   Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ab505f311e4df46250eb93aec883af96268cc4e32bc7fa4bd4f8f8d813e00fc2",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3591,
+      "claim_sha256": "9600dd9f0d12212199187b73d963c857caea00400aaa47439029074ae47bb6af",
+      "legacy_text": "That Council:\n   1. Rescind their previous resolution that rejected the rezoning application for 592 Phelps Avenue;\n      and;\n   2. Table the application for up to 18 months.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 21760,
+        "source_order": 8,
+        "key": "addec6af9909cd1a568ecc8b043d1419f31850a30b6d7166b74e6031b0d37777",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n   1. Rescind their previous resolution that rejected the rezoning application for 592 Phelps Avenue;\n      and;\n   2. Table the application for up to 18 months.",
+        "source_block": "MOVED BY: COUNCILLOR BLACKWELL\nSECONDED: COUNCILLOR SZPAK\n\n   That Council:\n   1. Rescind their previous resolution that rejected the rezoning application for 592 Phelps Avenue;\n      and;\n   2. Table the application for up to 18 months.\n                                                                                             CARRIED.\n\n        c) Pre-Approval of Electrical and Mechanical Contractors — Rugby Canada Training Facility\n            - Staff Report (Parks)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "92339930456894b60e71ce70c3111188e9b2c0764f01423c3c09c8176d4b73aa",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3592,
+      "claim_sha256": "de0a6304405f39bc7e0fe31aed1c9832f11ed8d99b86e5ece2489ef6fa7f915b",
+      "legacy_text": "That Council direct staff to pre-approve the Electrical and Mechanical Contracts the week of July 25 based on the evaluation as laid out in the RFP as long as they are within the proposed budget for these contracts.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 22235,
+        "source_order": 9,
+        "key": "59afa57cb404d5c53b22eabe4441ba2971c9b8ef30e02e090e2e53c75da5c941",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to pre-approve the Electrical and Mechanical Contracts the week of July\n        25 based on the evaluation as laid out in the RFP as long as they are within the proposed budget\n        for these contracts.",
+        "source_block": "MOVED BY: COUNCILLOR SEATON\nSECONDED: COUNCILLOR WADE\n\n        That Council direct staff to pre-approve the Electrical and Mechanical Contracts the week of July\n        25 based on the evaluation as laid out in the RFP as long as they are within the proposed budget\n        for these contracts.\n\n                                                                                                 CARRIED.\n\n        d) Planning, Land Development, and Building Departments Quarterly (2nd Quarter) Report —\n            April 1st, 2016 to June 306, 2016\n            -   Staff Report (Land Development)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "7f00206b1462e43f9310c9a156da9e6fb081ccd505457976438abf44760bdaa2",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3593,
+      "claim_sha256": "3a5cff314ccfed04ce29f6271e318276777222ab59e26a4f4544481c124186cd",
+      "legacy_text": "That Council receive the Planning, Land Development, and Building Departments Quarterly (2nd Quarter) Report — April 1st, 2016 to June 30th, 2016.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 22830,
+        "source_order": 10,
+        "key": "96fd8ee159242db8a5dd0ccb369925c561b74b01f8e17de60f2d71bc7af3237a",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the Planning, Land Development, and Building Departments Quarterly\n             (2nd Quarter) Report — April 15t, 2016 to June 30th, 2016.",
+        "source_block": "MOVED BY: COUNCILLOR BLACKWELL\nSECONDED: COUNCILLOR WADE\n\n             That Council receive the Planning, Land Development, and Building Departments Quarterly\n             (2nd Quarter) Report — April 15t, 2016 to June 30th, 2016.\n\n\n                                                                                                 CARRIED.\n\n                                                                                     Regular Council Minutes\n                                                                                              July 18th, 2016\n                                                                                                Page 9 of 13\n\n\n\n\n      a)     Pre-Award Approval to Award Bear Mountain Parkway Road Extension Project\n            -    Staff Report (Engineering)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "d163ce86982945ad6afdb4215ac790db18be3555d42ebc35b6d18a21d0214679",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3594,
+      "claim_sha256": "710e83ded46c99841bf5d57a2d18f0a0d2499e80896801e5dc19d5e98c74deda",
+      "legacy_text": "That Council direct staff to award the construction contract for the Bear Mountain Parkway extension project to the lowest bidder who is in compliance with the tender documents and fund the project through the local service area.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 23633,
+        "source_order": 11,
+        "key": "a4aaef6d1fd3b771b119b95967e84d199356bd61cb455c9b79b81451ebfd52ea",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to award the construction contract for the Bear Mountain Parkway\n      extension project to the lowest bidder who is in compliance with the tender documents and fund\n      the project through the local service area.",
+        "source_block": "MOVED BY: COUNCILLOR SIFERT\nSECONDED: COUNCILLORWADE\n\n      That Council direct staff to award the construction contract for the Bear Mountain Parkway\n      extension project to the lowest bidder who is in compliance with the tender documents and fund\n      the project through the local service area.\n\n                                                                                               CARRIED.\n\n      b) Application to Vary Front, Interior Side and Rear Lot Line Setbacks to Allow for the\n          Development of a Rugby Canada Training Facility at 3017 & 3021 Glen Lake Road\n         -    Staff Report (Planning DVP16-0012)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "98df0f7e366c8f1bab0bd5a559a343e7f0c57404724747f2b35c3ed470d1faf6",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3595,
+      "claim_sha256": "8e65305ff5f4c073b33654e45d581cc667fdffdcf293982df801c6e4f6b6ae73",
+      "legacy_text": "That Council direct staff to proceed with consideration of the following variances for 3017 and 3021 Glen Lake Road: front setback to 1.8 m; side setback to 0.6 m; rear setback to 2.1 m.",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 24274,
+        "source_order": 12,
+        "key": "1c1b9a2ce27c4353b7c8152dfddd64ea737b542ab7215f9dee886a889a2ebf0b",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to proceed with consideration of the following variances for 3017 and\n      3021 Glen Lake Road:\n      a) That section 6.806.05(1) of Zoning Bylaw No. 300 be varied by reducing the setback to a front\n         lot line from the required 6 m (20 ft) to 1.8 m (5.9 ft);\n      b) That section 6.806.05(2) of Zoning Bylaw No. 300 be varied by reducing the setback to a side\n         lot line from the required 1.5 m (5 ft) to 0.6 m (1.9 ft);\n      c) That section 6.80B.05(3) of Zoning Bylaw No. 300 be varied by reducing the setback to a rear\n         lot line from the required 4.5 m (15 ft) to 2.1 m (6.9 ft).",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR WADE\n\n      That Council direct staff to proceed with consideration of the following variances for 3017 and\n      3021 Glen Lake Road:\n      a) That section 6.806.05(1) of Zoning Bylaw No. 300 be varied by reducing the setback to a front\n         lot line from the required 6 m (20 ft) to 1.8 m (5.9 ft);\n      b) That section 6.806.05(2) of Zoning Bylaw No. 300 be varied by reducing the setback to a side\n         lot line from the required 1.5 m (5 ft) to 0.6 m (1.9 ft);\n      c) That section 6.80B.05(3) of Zoning Bylaw No. 300 be varied by reducing the setback to a rear\n         lot line from the required 4.5 m (15 ft) to 2.1 m (6.9 ft).\n                                                                                               CARRIED.\n\n      c)   PGA Seniors Event — Bear Mountain\n           - Staff Report (Administration)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "36555743737ef78861b7c146922b6a25b4508b9781aa5a415bd31231860301b3",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3596,
+      "claim_sha256": "fad7d569840567e589d20730f7eecde0552a1398f69913475a41ae30b6ffad97",
+      "legacy_text": "That Council approve sponsorship for the Pacific Links Championship as follow: i. $40,000 in 2016; ii. $80,000 in 2017 and 2018; and iii. Any in‑kind contributions Council deems appropriate to provide (Funding source: Hotel Tax).",
+      "source_identity": {
+        "meeting_id": 360,
+        "source_sha256": "d269196ceaf574e418bfb562e8db6b9c33efcc4253fda3e1b9702f34702fcb6f",
+        "source_offset": 25176,
+        "source_order": 13,
+        "key": "b242c44e2642e30b8910603a7863f753520f4d081212dfd634bb4d22630d64ef",
+        "source_file": "archive/langford/Council/2016/07/2016-07-18 Regular Council [legacy]/Minutes/20160718-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160718-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve sponsorship for the Pacific Links Championship as follow:\n                              i. $40,000 in 2016;\n                              ii. $80,000 in 2017 and 2018; and\n                              iii. Any in-kind contributions Council deems appropriate to provide\n                                   (Funding source: Hotel Tax).",
+        "source_block": "MOVED BY: COUNCILLOR SZPAK\nSECONDED: COUNCILLOR WADE\n\n           That Council approve sponsorship for the Pacific Links Championship as follow:\n                              i. $40,000 in 2016;\n                              ii. $80,000 in 2017 and 2018; and\n                              iii. Any in-kind contributions Council deems appropriate to provide\n                                   (Funding source: Hotel Tax).\n\n\n                                                                                              CARRIED.\n\n                                                                                     Regular Council Minutes\n                                                                                              July 18th, 2016\n                                                                                               Page 10 of 13\n\n\n9.    CORRESPONDENCE\n\n      a) Vancouver Island South Film & Media Commission\n         Re: Letter of Appreciation",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "65d51ef68f33f2705e62a0a6bdee667e355090340a46aac4de102f17a71b08a4",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "c20eb13edcd20fed4eafd9e934c363ac65ca57fdcd713a581796af1ec4bd5895",
+  "second_independent_original_image_review_sha256": "bdde59c9e05595195b232b0fef032d85dd4137beae2d228377b749faa0ad4903"
+}

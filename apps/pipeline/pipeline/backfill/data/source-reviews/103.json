@@ -1,0 +1,381 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 103,
+    "title": "Regular Council",
+    "meeting_date": "2017-09-18",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+      "sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2017/09/2017-09-18 Regular Council [legacy]/Minutes/2017018-signed-minutes-council-.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/2017018-signed-minutes-council-.pdf",
+  "source_sha256": "9c8fa3f083b50581ae21fa0cb870380f3c3e9ac28f63b3873eb6981ce1549b29",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "510bf0cf6f2b7bb7292ac1166bfadb98a3798aef742487956a0dec85a2e903d7",
+  "corrected_text_sha256": "510bf0cf6f2b7bb7292ac1166bfadb98a3798aef742487956a0dec85a2e903d7",
+  "parsed_blocks_sha256": "64f1821e9e93d343d12d9f97c54cee0f20e2e1dc84edb6cd135a9a6f3d47e4d2",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "5a62201a9fb18d80e8b8db043bf5dabc2f1041c52bdefbe5f1232bfbaa4ab628",
+      "render_sha256": "0e8e68a0333a112b3c953509b895549165f9d2d9da622baaf704ed60a9dd94f2"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "269664acc507f36ebe8e52df71e9084e811392070d470c34e41a30a9c72e168b",
+      "render_sha256": "cdb1d62ae65f7551b4801c8ddf415c3f082fe01217eea2b210a8c2d374166786"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "45823c919cc783fa5981f54ca82a36f0eb29213d56831b7b7b0124644f008e03",
+      "render_sha256": "0ac690ca9d6571d173aca52bfa5bdcfada5591daa5dc757494fc4a5945b704a5"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "5579e7fa8df73801ba883b86c8059c41733d19bd8643670dc4e6dec1f1a0cf26",
+      "render_sha256": "b7c11899def44ba19bb8e19a267be700227a71ff5f07ad30cbdb74d9f4e0a5c0"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "be66be9b142c674eaa522a676f023399cbf8f330b2ec2df8f2156289eefb58ce",
+      "render_sha256": "6ce11997283076ebac129ea8af69e52535dd6419bcf01e991c12e6fa25c8fb02"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "948546589f21499360f2639c99ca02055b3accbe0e3f4cfe0e1b3667b4360641",
+      "render_sha256": "fd258a3226ee239f754700346e753032f327c6bcf16a185dd32e841c4965119e"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "e01ef03aa7aa6011d498104c9af9ddd07249e07314580df0fc610cad38c746be",
+      "render_sha256": "a6886c333c443101b6f7dcb59e9b299aa37320e82b4b7afda3b139915021c466"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "acadbc7d89d6d48c69506dfd14d1b056d95762d4947d9a584997c9fbf428b20a",
+      "render_sha256": "27c9c0108b4a42fff3e7bcfa791f2be53c90ae1e18fb84279f96bee5aa018f22"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "e06a7a6f6e9c96726ef6abab92dbda9da250cdd8dc8e960d32419f4d10b3e831",
+      "render_sha256": "247cfa70e3cf4a1db39c8f2609e78b0d854d333d3768d2682c2ca6f04000d47f"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "ea3e71ff33906227bfb554028e2d52ec58d13c6e2870c127d1d39a5769ca6992",
+      "render_sha256": "05a2d04e674a795500b7ac467a957ffbcd518ee6b0d542e596efe8c8f64f51ce"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "e7cf6a06477f0f05fc827bd962860bd81af6e8e3ebc76cc2da1e0e61dc54382c",
+      "render_sha256": "aeb82a0f79a8760921ee9045b20ec0320195b986decafed3153dfd8c5e17edf9"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "f2b520d8900571e5931cfb45f031274621a552ba6eb66dd564330fd1c856d237",
+      "render_sha256": "daba1388d514089448b2bb9c8887276318ec65f7f9697d7c78648834600f19eb"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "0101ff0153ff30fb863b706ffd648c353d8de7558c07da3ce597f983881a68ea",
+      "render_sha256": "a43a78292c1e7f7655a2efd43cc5fd820696cde8172b370437578f9a5704c595"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "0e713cdc6bf058a308a05cca259f8858fb5c682d6290ac65ca1f4b03d3eb4a91",
+      "render_sha256": "96b06fc587b915f2d55f1ed8d39046c3762a1359398f12e869f9a5cfaa884097"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "ffea7f52bc97fefe5b1468ae2e9e318362849f2fa3f1aa4fa63ecc257c6d6143",
+      "raw_block_sha256": "e417602ecc20624c07e736799db5fce94eb2af51695d1eaa424d0b2adad0bcc3",
+      "operative_body": "That Council: 1. Give First Reading to Bylaw No. 1717; and 2. Add to the Council Resolution of September 5, 2017 by adding the following requirement to the Section 219 Covenant to be registered prior to Bylaw Adoption: vi. That public road access and servicing to Bylaw No. 1000 standards, or some other legal mechanism accomplishing the same purposes for access and servicing, be extended through the subject property to the boundary of the property legally described as Lot A, Section 1, Range 4 West, Highland District, Plan EPP40953 (See Plan as to Limited Access), to the satisfaction of the Director of Engineering and the Approving Officer, prior to the issuance of a Building Permit or Subdivision Approval, whoever occurs first.",
+      "operative_body_sha256": "52ba28955d88f1bc1c6a1518c97d586df144c1df9324d94ebc08c35838fde7b0",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "ea3e71ff33906227bfb554028e2d52ec58d13c6e2870c127d1d39a5769ca6992",
+          "render_sha256": "05a2d04e674a795500b7ac467a957ffbcd518ee6b0d542e596efe8c8f64f51ce"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b39c7c907dbfb285745b9940e5849cea0b7d3856dec92a9becca865d73449e1a",
+      "raw_block_sha256": "2c6ce3ebefb9e926ed298f999c64d4a5a3c4be6db074ed1f0d1fad0129c88298",
+      "operative_body": "That Council: 1. Endorse the following three priorities for transportation in importance order as follows: a. Installation of High Occupancy Vehicle Lanes (HOV)/bus lanes on the Trans Canada Highway between the West Shore Parkway and downtown Victoria; b. Development of the E&N Corridor by BC Transit for a major bus or train corridor; and c. Upgrades to Sooke Road Highway No. 14 leading to and from the municipality of Sooke And 2. That, to further advance these priorities and to reduce duplication of services, the City write a letter to the Capital Regional District suggesting that an advisory committee be established to provide recommendations and priorities to BC Transit and the Ministry of Transportation and Infrastructure; AND 3. That the three priority areas and request for a CRD advisory committee be forwarded to the Minister of Transportation and Infrastructure and to BC Transit for information.",
+      "operative_body_sha256": "4e468433ec53ed0edcc6c1383a281ca7276d128ee64b02149ff1bf3b6e4927eb",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e7cf6a06477f0f05fc827bd962860bd81af6e8e3ebc76cc2da1e0e61dc54382c",
+          "render_sha256": "aeb82a0f79a8760921ee9045b20ec0320195b986decafed3153dfd8c5e17edf9"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7d821997144dc8949e0dc8b161016eeea27267a004c5337bbb9e2647814f38dc",
+      "raw_block_sha256": "d42b21690cdcbc808adc6c0d057cfb19d6b0020b938c78020c25affc81636c8b",
+      "operative_body": "That Council adopt Bylaw No. 1692.",
+      "operative_body_sha256": "3b48de9848d84e0639e00caa0336424599936e4c8f82222a4b9121c719d918ce",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e7cf6a06477f0f05fc827bd962860bd81af6e8e3ebc76cc2da1e0e61dc54382c",
+          "render_sha256": "aeb82a0f79a8760921ee9045b20ec0320195b986decafed3153dfd8c5e17edf9"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "4efe2bad581c491f146b199521b7d4da5487570854422a13b606b752b985b271",
+      "raw_block_sha256": "4a6acb26820cd0bc5295b94a0bdb9036f96afda768517e72561a43dedff93562",
+      "operative_body": "That Council adopt Bylaw No. 1712.",
+      "operative_body_sha256": "e0425db73d23e07a903815dedaab9a23abe1ac88f2a49e76889d8d8baa0c8019",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "e7cf6a06477f0f05fc827bd962860bd81af6e8e3ebc76cc2da1e0e61dc54382c",
+          "render_sha256": "aeb82a0f79a8760921ee9045b20ec0320195b986decafed3153dfd8c5e17edf9"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "f2b520d8900571e5931cfb45f031274621a552ba6eb66dd564330fd1c856d237",
+          "render_sha256": "daba1388d514089448b2bb9c8887276318ec65f7f9697d7c78648834600f19eb"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "September 18TH, 2017 Page 12 of 14",
+          "printed": "",
+          "reason": "Originalp12runningdate/folio excluded from operative body; raw source/PDF/native/identity unchanged."
+        }
+      ]
+    },
+    {
+      "source_key": "d954ef1d2b1bfac10b96fcc323d166b2ece2eb11b4d86899414e3853a9c32704",
+      "raw_block_sha256": "47cf0bfa2f002236b7aac857595e298724bfac9816eb8461841001d4414c1946",
+      "operative_body": "That Council give Bylaw No. 1717 First Reading.",
+      "operative_body_sha256": "c9086d0140305fa75392522cb08bbb0ee136b2781d712bafc37c1d804bd14f7b",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f2b520d8900571e5931cfb45f031274621a552ba6eb66dd564330fd1c856d237",
+          "render_sha256": "daba1388d514089448b2bb9c8887276318ec65f7f9697d7c78648834600f19eb"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b4db7a5692cf042b65084572835f3c8e4576b184db481e1c751076fe95d32d4f",
+      "raw_block_sha256": "5c6ecc7991748a90a77340f2ef530d9f6f3f42e1698c9ce34abf8bcb6464a97a",
+      "operative_body": "That Council give Bylaw No. 1730 First Reading.",
+      "operative_body_sha256": "c94cf2484dcc780c7b1deaa39067b623ce0068e0a98251225a5a89beaf10d6b1",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f2b520d8900571e5931cfb45f031274621a552ba6eb66dd564330fd1c856d237",
+          "render_sha256": "daba1388d514089448b2bb9c8887276318ec65f7f9697d7c78648834600f19eb"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6c3fa0a32508d038d9e86250f86328fb9a4d369a3f19c92053cee11a121967e7",
+      "raw_block_sha256": "6923598db82214afbed7331197fa7f6766b2c730e592016d51fbef113630e46d",
+      "operative_body": "That Council give Bylaw No. 1724 First Reading.",
+      "operative_body_sha256": "152946ac5c02dadf349f9bd54a5d5967764f10d2b75ea244d4b0d3b0ae8013c0",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f2b520d8900571e5931cfb45f031274621a552ba6eb66dd564330fd1c856d237",
+          "render_sha256": "daba1388d514089448b2bb9c8887276318ec65f7f9697d7c78648834600f19eb"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "56be960e38e990d946e3093accc21d249315726f5ca3f0ea9d71a4d3fee392e9",
+      "raw_block_sha256": "de896d1d8f5878df85475f41ef1469caefd58fc43d32d45b60cb5cb3b316c5b8",
+      "operative_body": "That Council adopt Bylaw No. 1728.",
+      "operative_body_sha256": "67c2623a849d8c7e393c864a00f0aff810267450441d39711b7a7860403c8b6b",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "f2b520d8900571e5931cfb45f031274621a552ba6eb66dd564330fd1c856d237",
+          "render_sha256": "daba1388d514089448b2bb9c8887276318ec65f7f9697d7c78648834600f19eb"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3e9a1c4409c69a941991c2a32096006669e77e9b87d73fbe71885361dca8332f",
+      "raw_block_sha256": "cd03332fc39882ad8e4541ebcaa7e65a805794a36bbadd268a9d3280892dfbea",
+      "operative_body": "That Council give Bylaw No. 1731 First Reading.",
+      "operative_body_sha256": "80c262b3dd242864777d4e229bc46b13a93fc00b4c1dde69b827e340dc751d02",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "0101ff0153ff30fb863b706ffd648c353d8de7558c07da3ce597f983881a68ea",
+          "render_sha256": "a43a78292c1e7f7655a2efd43cc5fd820696cde8172b370437578f9a5704c595"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "942c0940492ed2f55afe2c5bc3ed48a4e79bca41f5473b04f24c0257685942de",
+      "raw_block_sha256": "b4b9fea47411d93532f8d26024f4134aee460d758ecb7b02ad9d6a9b4d8e6b3a",
+      "operative_body": "That Council adopt Bylaw No. 1734.",
+      "operative_body_sha256": "45229b4e18374e36833d0ce89f21914b50b5e624188ff52758644f2b0ec6cf65",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "0101ff0153ff30fb863b706ffd648c353d8de7558c07da3ce597f983881a68ea",
+          "render_sha256": "a43a78292c1e7f7655a2efd43cc5fd820696cde8172b370437578f9a5704c595"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3c7696fe1bc5628c26a37f043bfad04dcc983ef828f82876a503c65f505105f4",
+      "raw_block_sha256": "dd708dd2ebb1f55b9fefc3cfc7256c5be8fb15b63b69f4a42f0c376dade34cb9",
+      "operative_body": "That Council adopt Bylaw No. 1735.",
+      "operative_body_sha256": "010015b30805cf07561b6870b6da0899cada059ee59ac0efc4daeacd2dcd23b1",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "0101ff0153ff30fb863b706ffd648c353d8de7558c07da3ce597f983881a68ea",
+          "render_sha256": "a43a78292c1e7f7655a2efd43cc5fd820696cde8172b370437578f9a5704c595"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5befe1519148cb7e96c1ec9fd5eda4c56e12462f5ec58d8fef4062127903e8e2",
+      "raw_block_sha256": "8cfdd215dff1c86e77cc09f4317412eafc8274799d84f5c3cd983ce3cbc13943",
+      "operative_body": "That Council give Bylaw No. 1740 First Reading.",
+      "operative_body_sha256": "3308c3a0794a069f652da167473368f4379f3618de870b95e596439643ae1c48",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "0101ff0153ff30fb863b706ffd648c353d8de7558c07da3ce597f983881a68ea",
+          "render_sha256": "a43a78292c1e7f7655a2efd43cc5fd820696cde8172b370437578f9a5704c595"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "2af9cae6d12b8463f5ceb64988e287483855fd3a511e8e3fdf41fdd401168207",
+      "raw_block_sha256": "5b53be916e045e8b4a5d56818365a404cce3826effe16fcf2140fb29c31b65a0",
+      "operative_body": "That Council give Bylaw No. 1741 First Reading.",
+      "operative_body_sha256": "ba84cf455de9ad609ac53cc33794d92979923dda2ad903f91d656450e552825e",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "0e713cdc6bf058a308a05cca259f8858fb5c682d6290ac65ca1f4b03d3eb4a91",
+          "render_sha256": "96b06fc587b915f2d55f1ed8d39046c3762a1359398f12e869f9a5cfaa884097"
+        }
+      ],
+      "independent_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "5a62201a9fb18d80e8b8db043bf5dabc2f1041c52bdefbe5f1232bfbaa4ab628",
+  "independent_original_image_review_sha256": "07a7a0d9522bbe1f95edfe0c56e3cde3d6ea7b8d08b6f6f06b4d9e6b00362a27",
+  "second_independent_original_image_review_sha256": "8f4554099fe684a6e0d152c75105f00c5a0eddc5d6848b876a0a22731db3f8de",
+  "remaining_holds": []
+}

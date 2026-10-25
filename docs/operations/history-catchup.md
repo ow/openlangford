@@ -8,6 +8,17 @@ The source URL/date and exact original file must be bound before additions.
 Run from `apps/pipeline` using the normal configured interpreter. Credentials stay
 in the existing environment file; never copy them into manifests or receipts.
 
+Audits retain the loaded `source_date`, its evidence and
+`source_date_comparison`. Any different source/catalog day holds additive
+catch-up as `source_validation_held`, including a one-day difference tolerated
+by the legacy body matcher. Both dates, existing rows and all source diagnostics
+remain unchanged. This is not a timezone conversion or permission to correct a
+date. Review the mapped original/calendar identity separately, perform only an
+approved guarded correction, then regenerate the source review and audit. A
+matching loaded date alone does not certify its provenance. Additional audit
+metadata changes the manifest digest; old checkpoints must not be reused as
+activation manifests under changed code.
+
 An explicit standalone clerk sentence such as “The vote was taken on the Main
 Motion as amended and declared CARRIED.” is a coverage lead when no parsed
 outcome accounts for that exact result span. It remains
@@ -17,6 +28,27 @@ requires review. A preceding amendment's post-result context cannot account for
 it. This diagnostic adds no resumed header, amended body, motion, outcome row or
 votes and changes no existing source identities. Only separate source review can
 resolve the missing main-motion body/outcome association.
+
+A structurally anchored SECONDED or explicit resumed-main introduction with
+further text but no own printed outcome before the next formal anchor is retained
+as `unresulted_formal_introduction_lead` with `coverage_diagnostic_only` authority
+and reason `no_separately_recorded_outcome`. Its exact interval/source hashes are
+review evidence, not a newly reconstructed operative body or decision. The next
+separately moved or resumed motion keeps its own outcome; it cannot lend that
+outcome to earlier wording. Existing result-bearing envelope proofs remain on
+their original path without duplicate leads, and original formal inventories,
+parsed blocks, text, ordinals and source keys stay unchanged.
+
+A lead count is **not a missing-decision count**. Superseded or unvoted wording
+(such as a base proposal later amended) can legitimately have no separate result.
+Multiple lead fragments can describe the same proceeding: an earlier unresulted
+main introduction and a later explicit clerk-result sentence do not establish
+two missing decisions or authorize joining the body/result. Review may resolve a
+lead as expected source wording. These diagnostics create no motion/result row,
+actor/vote inference or source key, and never fill an existing unknown outcome.
+For meeting99, the page24WestShoreappointment remains uncertain even though the
+next Library appointment has CARRIED onpage25; the 35 reviewed insertions stay
+unchanged.
 
 ```sh
 python -m pipeline.backfill.history_coverage audit \
@@ -139,8 +171,16 @@ The separate `type=reviewed_adjournment_narration_preservation` accepts only a
 generic legacy “That [the] meeting be adjourned.” claim and a complete reviewed
 “The Chair adjourned the meeting at H:MMam/pm.” or “Mayor Young adjourned the
 meeting at H:MMam/pm.” narrative (also explicit “a.m.”/“p.m.” spelling). Mayor
-narration permits only “Mayor” followed by one proper surname, with no actor ID
-assignment. Chair and Mayor narrations are counted together: multiple closing
+narration permits only “Mayor” or “Acting Mayor” followed by one proper surname,
+with no actor ID assignment. “That Council adjourn the meeting.” is supported
+only when both catalog and source classifications are Council. The qualified legacy phrase “That the Special
+Council meeting be adjourned.” is supported only in this timed correspondence
+when the catalog type is Special Council, both classifications are Council,
+and the original header explicitly says Special Council Minutes. It is not a
+new generic alias in the blank-clock or disputed-outcome modes. All forms still
+participate in conservative competing-owner screening.
+
+Chair and Mayor narrations are counted together: multiple closing
 events or different times remain held, even when each wording is unique. This is explicit
 reviewed documentary correspondence, never literal transcription equivalence or
 a formal motion/result. It retains the original/page/render/full-row guards,
@@ -222,3 +262,91 @@ one formal source occurrence and no competing claim, including a raw body that
 still contains excluded page headers. Different explicit roles, missing clauses,
 identifiers or quantities remain held. Derived evidence is labelled separately
 from manual reviews; old text, unknown outcomes and ballots remain unchanged.
+
+### Draft: unresolved closing conflicts
+
+`closing_conflict_quarantines` is a separate deterministic catch-up capability,
+not an extension of the NULL-only documentary validator. Only explicitly
+enrolled source/legacy artifact pairs may use it. A disputed generic CARRIED closing can remain unchanged and
+explicitly unresolved while an exact allowlist of independently reviewed,
+strictly unique and disjoint formal decisions proceeds. The closing receives no
+formal source key, verified outcome, ballot authority or actor attribution.
+This disputed-closing mode also recognizes the exact grammatical variant
+“That the Council adjourn the meeting.” The optional article changes no source,
+outcome, full-row, competing-owner or zero-vote requirement; negation is ineligible.
+
+Both byte-pinned source and legacy artifacts must contain the same reviewed
+capability and two distinct review hashes. Every current row field, the complete
+claim inventory, source/date/tenant, page/native/render proof and complete new
+body/key/result allowlist are bound. Unknown or manual metadata authority,
+named actors, a possible formal adjournment envelope, competing ownership, source
+or claim drift, and nonliteral/full-body stage changes all fail closed. This
+first draft requires whitespace-only equality between the full native motion
+body and reviewed new body; any OCR correction must already be independently
+reviewed and pinned in the source admission.
+
+A damaged native closing verb may use the existing separately enrolled image
+witness correction. Its raw complete-line passage remains preserved. The actor
+prefix, event wording and clock suffix must match exactly; only the reviewed
+verb-glyph span may differ. Formal/outcome labels, event or clock changes,
+missing/duplicate correction proofs and nonunique events reject it. This does
+not relax the full-body rule for new decisions, certify the old CARRIED result,
+assign a formal key or remove the scoped zero-vote and locked recheck gates.
+
+Disputed IDs stay in `unmapped_legacy_ids` and the separate
+`unresolved_closing_conflict_ids`; they never enter `bound_ids` or make the
+all-bound uniqueness fallback available. Partial coverage and explicit held
+legacy IDs remain in the plan's receipt fields after insertion. Ordinary
+ingestion cannot opt into this capability. Broader substantive proceeding,
+bylaw-number and unresulted-proposal conflicts remain outside its scope.
+
+The operator audit obtains linked-vote counts only for the explicitly enrolled
+closing ID; no vote/person payload is exported. The validator requires exactly
+zero, and the manifest records that scoped proof. Source parsing and manifest
+regeneration finish before write locks. For quarantine applies only, the
+operator briefly takes a `votes` table `SHARE ROW EXCLUSIVE NOWAIT` lock alongside
+its existing motions/agenda locks. This directly excludes vote inserts, updates
+and deletes without assuming an active or immediate FK; ordinary SELECT browsing
+remains compatible. It then locks the closing motion row and repeats the scoped
+zero count in a fresh READ COMMITTED statement before any insertion. An already
+active vote writer makes NOWAIT fail; later writers wait for commit/rollback.
+
+The receipt retains the count proof, explicit unresolved IDs and partial
+coverage. Ordinary manifests without this capability perform no new vote read
+or votes-table lock. Real full-row/source/inventory checks and reviewed
+enrollment remain necessary; no manual out-of-band attestation substitutes for
+the operator's authoritative locked recheck. The parent verified all ten real
+disposable-PostgreSQL tests (including no-FK concurrent writers, partial persisted
+receipts and ordinary-manifest isolation); the selected non-DB suite passed 325
+tests. Independent review is still required before publication. No real meeting
+is enrolled in this closing-conflict capability; separately reviewed NULL-only
+documentary phrase eligibility does not opt into it.
+
+### Draft: explicitly reviewed blank adjournment clock fields
+
+`reviewed_blank_time_adjournment_presence` is a separate catch-up-only
+capability. The existing literal and clock-required narration validators stay
+unchanged. An original image must explicitly show an unfilled clock field and
+`pm.` suffix, while both native and layout witnesses contain only the exact
+whole-line `The Chair adjourned the meeting at` prefix. The image observation is
+separate from those raw passages; the operator neither inserts a suffix into
+source text nor invents a time. Two distinct independent review hashes must be
+bound in both byte-pinned source and legacy artifacts.
+
+The existing row must remain NULL-result, unnamed and free of manual, unknown
+metadata or formal authority. Full-row and complete-inventory fingerprints,
+source/date/tenant/page/render pins, one final adjournment passage across timed
+and untimed events, and parsed/unparsed formal ownership checks all fail closed
+on drift or competition. No source key, actor identity, ballot or closing
+outcome is certified. A successful presence proof remains an explicit
+`reviewed_blank_time_adjournment_preserved_time_unknown_no_rewrite` diagnostic,
+with its ID in `blank_time_documentary_preserved_legacy_ids`; receipts remain
+partial even after disjoint reviewed decisions are inserted.
+
+This capability uses the same bounded authoritative zero-linked-vote audit,
+conditional votes-table write lock, closing-row lock and READ COMMITTED recheck
+as the separate non-NULL closing-conflict capability above. Ordinary manifests
+still acquire neither a new vote count nor votes-table lock. A cached NULL row
+or an out-of-band assertion of no votes is insufficient. This draft does not
+enroll meeting111 or make its cached source claims applicable; fresh full-row,
+agenda, source and vote-count audit plus independent review remain required.

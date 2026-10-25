@@ -143,3 +143,101 @@ def test_clerk_result_dedup_uses_actual_parsed_outcome_span_not_post_outcome_con
     assert not any(x.get('kind')=='explicit_clerk_main_motion_result_lead' for x in unparsed_formal_envelopes(source))
     source['blocks'][-1]['source_offset']=0
     assert any(x.get('kind')=='explicit_clerk_main_motion_result_lead' for x in unparsed_formal_envelopes(source))
+
+
+PARKS_APPOINTMENT = ('That Council re-appoint Councillor Roger Wade to the West Shore Parks and Recreation Board '
+    'and Councillor Norma Stewart as alternate for a one-year term.')
+LIBRARY_APPOINTMENT = ('That Council re-appoint Councillor Matt Sahlstrom to the Greater Victoria Library Board '
+    'and Councillor Norma Stewart as alternate for a one-year term.')
+
+
+def diagnostic_pdf_context(tmp_path, passage, *, continuation=None):
+    """Actual PDF -> official loader; no mocked formal inventory or parser."""
+    import fitz
+    import textwrap
+    from ingestion.ballot_fixture import official_context,PEOPLE
+    context=official_context(tmp_path)
+    path=tmp_path/'archive/meeting/Minutes/Minutes - SIGNED.pdf'
+    with fitz.open() as pdf:
+        page=pdf.new_page()
+        header='City of Langford\nCouncil Minutes\nJanuary 8, 2026\nPRESENT:\nMayor S. Goodmanson\nCouncillor C. Harder\nCouncillor K. Guiry\nATTENDING:\nStaff\n'
+        page.insert_text((30,40),'\n'.join(textwrap.fill(line,width=90) if line else '' for line in (header+passage).splitlines()),fontsize=9)
+        if continuation:
+            page=pdf.new_page();page.insert_text((30,100),continuation,fontsize=9)
+        pdf.save(path)
+    context['source']=load_official_minutes(context['meeting'],root=tmp_path,people=PEOPLE,cache_dir=tmp_path/'cache')
+    assert not context['source'].get('error')
+    return context
+
+
+def test_seconded_body_without_separate_outcome_is_a_review_lead_not_a_new_decision(tmp_path):
+    from pipeline.ingestion.source_claims import build_claim_inventory
+    from pipeline.backfill.history_coverage import plan_meeting
+    passage=('MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+PARKS_APPOINTMENT+'\n\n'
+        'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+LIBRARY_APPOINTMENT)
+    context=diagnostic_pdf_context(tmp_path,passage,continuation='CARRIED.')
+    source=context['source'];before=deepcopy(source)
+    assert len(source['blocks'])==1 and source['blocks'][0]['source_order']==1
+    block=source['blocks'][0];identity=source_identity(77,source,block)
+    existing={'id':309,'meeting_id':77,'agenda_item_id':99,'text_content':block['motion_text'],
+        'result':'CARRIED','meta':{'canonical_source_motion':deepcopy(identity),'manual_evidence':'keep'}}
+    context['meeting_claim_inventory']=build_claim_inventory([existing],meeting_id=77,expected_count=1)
+    existing_before=deepcopy(existing)
+    items,report=canonical_motion_plan([],context,[existing])
+    assert report['formal_source_coverage']=='partial_unparsed_formal_occurrences'
+    leads=report['unparsed_formal_occurrence_leads']
+    assert len(leads)==1 and leads[0]['kind']=='unresulted_formal_introduction_lead'
+    lead=leads[0]
+    assert lead['reason']=='no_separately_recorded_outcome' and lead['authority']=='coverage_diagnostic_only'
+    assert source['text'][lead['source_start']:lead['source_end']]==lead['source_quote']
+    assert source['text'][lead['next_formal_anchor_offset']:].lstrip().startswith('MOVED BY:')
+    assert 'Roger Wade' in lead['source_quote'] and 'Library' not in lead['source_quote'] and 'CARRIED' not in lead['source_quote']
+    assert lead['source_sha256']==source['source_sha256']
+    assert not any(key in lead for key in ('body','body_view','motion_text','result','outcome_quote','source_key','votes'))
+    motions=[m for item in items for m in item['motions']]
+    assert len(motions)==1 and motions[0]['_canonical_source_motion']['key']==identity['key']
+    assert motions[0]['result']=='CARRIED' and motions[0]['_existing_motion']['id']==309
+    final=plan_meeting(context['meeting'],[existing],[],source)
+    assert final['coverage']=='review_required' and final['new_motions']==[]
+    assert source==before and existing==existing_before
+    assert source_identity(77,source,source['blocks'][0])==identity
+
+
+@pytest.mark.parametrize('passage',[
+    PARKS_APPOINTMENT,
+    'The report said someone moved the proposal and another person seconded it.',
+    '"SECONDED: Kimberley Guiry"\n'+PARKS_APPOINTMENT,
+    'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n',
+    'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+PARKS_APPOINTMENT+'\nCARRIED.',
+    'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+PARKS_APPOINTMENT+'\nDEFEATED.',
+])
+def test_unresulted_diagnostic_does_not_match_body_prose_or_already_recorded_results(tmp_path,passage):
+    from pipeline.ingestion.source_occurrences import unparsed_formal_envelopes
+    context=diagnostic_pdf_context(tmp_path,passage);before=deepcopy(context['source'])
+    assert unparsed_formal_envelopes(context['source'])==[]
+    assert context['source']==before
+
+
+def test_unparsed_result_bearing_envelope_keeps_its_existing_lead_without_duplicate(tmp_path):
+    from pipeline.ingestion.source_occurrences import unparsed_formal_envelopes,envelope_proof,formal_inventory
+    context=diagnostic_pdf_context(tmp_path,'M0VED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+PARKS_APPOINTMENT+'\nCARRIED.')
+    source=context['source'];before=deepcopy(source)
+    assert source['blocks']==[]
+    original=envelope_proof(source,formal_inventory(source)['envelopes'][0])
+    assert unparsed_formal_envelopes(source)==[original]
+    assert source==before
+
+
+@pytest.mark.parametrize('next_header',['On the Main Motion as amended:',
+    'Amendment:\nMOVED BY: Colby Harder\nSECONDED: Kimberley Guiry'])
+def test_new_formal_or_resumed_anchor_never_lends_its_result_to_earlier_wording(tmp_path,next_header):
+    from pipeline.ingestion.source_occurrences import unparsed_formal_envelopes
+    passage=('MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+PARKS_APPOINTMENT+'\n\n'
+        +next_header+'\n'+LIBRARY_APPOINTMENT+'\nCARRIED.')
+    context=diagnostic_pdf_context(tmp_path,passage);source=context['source'];before=deepcopy(source)
+    identities=[source_identity(77,source,b) for b in source['blocks']]
+    leads=unparsed_formal_envelopes(source)
+    assert len(leads)==1 and leads[0]['kind']=='unresulted_formal_introduction_lead'
+    assert 'Roger Wade' in leads[0]['source_quote'] and 'Library' not in leads[0]['source_quote'] and 'CARRIED' not in leads[0]['source_quote']
+    assert len(source['blocks'])==1 and source['blocks'][0]['source_order']==1 and source['blocks'][0]['result']=='CARRIED'
+    assert source==before and [source_identity(77,source,b) for b in source['blocks']]==identities

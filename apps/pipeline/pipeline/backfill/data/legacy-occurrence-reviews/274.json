@@ -1,0 +1,116 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 274,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "66fc79fb9dd6ecaa79c727d4043c0ec70f4a2cdeec19fc9e040c0fa709e2e81c",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13139",
+  "source_file": "archive/langford/Council/2025/02/2025-02-04 700pm Regular Council [27547c9b]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2025-02-03",
+  "source_text_sha256": "866fbf7dd59e088c3b8e04b6d30fc90e89aa0408065dc52e94c6e86c82a33878",
+  "formal_inventory_sha256": "6644eae91a5e49abf3df8330e5d01527fb778d35dca1980618afad060b54b5fb",
+  "claim_inventory_sha256": "a39e0c2282528487e28492ee6e1f884f87768e36fb2bce7c128cd8e0280d299a",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "e1c4410898a966385263a75c029224b8de52ca58524ffe64f8fc1bcb54f1f9a9"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "c55a08f9fd37316e38804b343817ae9bd5bc3449d88c1cac004e16923bdc7b17"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "31386de931e0bcf407f594a4a00fa99d7ae270277eab2c76680379c20364fcb5"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "d8a48fb265e5368c388681c6bb72ffa38dc5829faf4d0c80d2497b27e408ae8f"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "2e0744cb3b675cc26c0f4f73d391bce97b17fb39dc0448f1af7feade6aaf1c3a"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "c4b9a82a3094acd3ed7189387af50dd3ff8d68537d1ed5992db78f6784824baf"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "4aa9688e52679fe5a0dbaf45b67fc55859f4f6a23a41b7b11d319df635ae4bc2"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "6d8124a9925d4a37be8bfa0face9be46d03c6d1af840051b81e598ed84fd17c7"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "e99630503583b852d5be559db24488a82549e200b06934e00790210d55e894a5"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "c049a11f65dfbb7a7ded54abb8bf967d3bcd503f8bb367f6811b6215c01b12e2"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "050e8cd0d41377ea52e2f578cc91d52bad297a4bd6e1f5e73d7fa00754b7636f"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 2802,
+      "claim_sha256": "21b4fc70e736b7e46ea4628a7f200be975718b897a63c6898d441c872e32e190",
+      "legacy_text": "THAT Council approve the February 3, 2025, Regular Meeting Agenda with the following\n       amendments and renumber the agenda accordingly:\n\n           \u2022   Defer 8.2.1, 2025 Funding Requests to February 18, 2025\n\n           \u2022   Add as Item 5 \u2014 Presentation from the Mayor Re \u2014 Proposed Tariffs from the United\n               States\n\n           \u2022   Add a new Section 14 titled \"New Business\" Resolution from Council with regard to\n               Proposed Tariffs.",
+      "source_identity": {
+        "meeting_id": 274,
+        "source_sha256": "66fc79fb9dd6ecaa79c727d4043c0ec70f4a2cdeec19fc9e040c0fa709e2e81c",
+        "source_offset": 1751,
+        "source_order": 0,
+        "key": "30fba0441ca6a4fd695a504f1b8609c53b6389b8d8334c30f3b3bc43d5b89115",
+        "source_file": "archive/langford/Council/2025/02/2025-02-04 700pm Regular Council [27547c9b]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13139",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council approve the February 3, 2025, Regular Meeting Agenda with the following\n       amendments and renumber the agenda accordingly:\n\n           \u2022   Defer 8.2.1, 2025 Funding Requests to February 18, 2025\n\n           \u2022   Add as Item 5 \u2014 Presentation from the Mayor Re \u2014 Proposed Tariffs from the United\n               States\n\n           \u2022   Add a new Section 14 titled \"New Business\" Resolution from Council with regard to\n               Proposed Tariffs.",
+        "source_block": "MOVED BY: HARDER\n       SECONDED: YACUCHA\n\n       THAT Council approve the February 3, 2025, Regular Meeting Agenda with the following\n       amendments and renumber the agenda accordingly:\n\n           \u2022   Defer 8.2.1, 2025 Funding Requests to February 18, 2025\n\n           \u2022   Add as Item 5 \u2014 Presentation from the Mayor Re \u2014 Proposed Tariffs from the United\n               States\n\n           \u2022   Add a new Section 14 titled \"New Business\" Resolution from Council with regard to\n               Proposed Tariffs.\n\n                                                                                             Motion CARRIED.\n\n5.   PRESENTATIONS\n\n     5.1       Presentation from Mayor Goodmanson - Proposed Tariffs from the United States\n\n               Mayor Goodmanson presented a speech regarding the proposed tariffs from the United\n               States of America.\n\n6.   PUBLIC PARTICIPATION\n\n     Mayor Goodmanson opened public participation at 7:09 pm.\n\n     C. More, Langford Resident - Item 10.1 - Speaker expressed support for climate action related\n     Strategic Plan initiatives and fiscal responsibility. Speaker expressed an interest in Council joining\n     a class action lawsuit regarding the oil and gas industry. Item 11.2 - Speaker expressed support\n     for the resolution as written.\n\n     R. Elliott - Item 11.2 - Speaker expressed support for the resolution as written noting a need for\n     additional measures to protect our coastal and marine areas. Speaker expressed support for the\n     provincial Coastal Marine Strategy framework.\n\n     A. Elgert, Vancouver Resident - Item 11.2 - Speaker expressed support for the resolution as\n     written. Speaker expressed a need for additional coastal protections and measures to combat\n     habitat loss and additional support and research for climate change impacts on shorelines.\n     Speaker expressed support for the provincial Coastal Marine Strategy framework.\n\n     Mayor Goodmanson noted the online attendance of Councillor Szpak, and that he regretted to\n     inform those in attendance at the onset of the meeting.\n\n     M. Pike, Oak Bay Resident - Item 8.1.1 - Speaker identified themselves as the proponent for\n     Development Variance Permit (DVP24-0006 3003 Irwin Road) and could answer questions from\n     Council if required.\n\n     W. Bowers, Langford Resident - Item 11.2 - Speaker expressed support for the resolution as\n     written. Item 11.1 - Speaker encouraged Council to attract more doctors to the region. 10.1 -\n     Speaker noted a need to delay spending due to economic uncertainty. Item 6 - Speaker\n     expressed concern with the content of the minutes of the January 13, 2025 meeting.\n\n     N. Johal, Langford Resident - Item 6 - Speaker expressed concern with the content of the minutes\n     of the meeting held January 13, 2025.\n\n     S. Sifert, Langford Resident - Item 11.2 - Speaker expressed an interest in bringing forward a park\n     naming bylaw.\n\n     M. Wignall, Langford Resident - Item 11.1 - Speaker expressed support for the intent of the\n     resolution as written but expressed concern regarding the municipality's scope. Item 11.2 -\n\n     Speaker expressed support for the resolution as presenting noting a need for cleaner marine\n     areas.\n\n     Mayor Goodmanson closed public participation at 7:31 pm.\n\n7.   CONSENT AGENDA",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "209cebc3bfd6add52d7c06e83a6b57d17f7268041e0219db74b8c69af234a951",
+      "pages": [
+        1,
+        2
+      ],
+      "reason": "Exact agenda approval or consent umbrella vote; preserve all old body/actors/result/meta/manual evidence. Consent child recommendations are context under one vote, not separate new decisions.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 2803,
+      "claim_sha256": "6897005d97abb946490e13fba0d0c9d78bcbde9cfcde6f6ff8338b94f8094fdf",
+      "legacy_text": "THAT Council adopt the recommendations for each item of the Consent Agenda as presented.",
+      "source_identity": {
+        "meeting_id": 274,
+        "source_sha256": "66fc79fb9dd6ecaa79c727d4043c0ec70f4a2cdeec19fc9e040c0fa709e2e81c",
+        "source_offset": 5106,
+        "source_order": 1,
+        "key": "36f8e441ef3d59445dae65e4c5a2db4dca7a8dca5357cc78f2fa5ffe485fede8",
+        "source_file": "archive/langford/Council/2025/02/2025-02-04 700pm Regular Council [27547c9b]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13139",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council adopt the recommendations for each item of the Consent Agenda as presented.\n\n           \u2022   Minutes of the West Shore Parks & Recreation Board of Directors Meeting - November\n               14, 2024 (RECEIVE)\n           \u2022   Minutes of the West Shore Parks & Recreation Board of Directors Meeting - December\n               12, 2024 (RECEIVE)\n           \u2022   Minutes of the Council Meeting - January 13, 2025 (ADOPT)\n           \u2022   Minutes of the Special Council Meeting -January 20, 2025 (ADOPT)\n           \u2022   Minutes of the Special Sustainable Development Advisory Committee Meeting - January\n               21, 2025 (RECEIVE)\n           \u2022   Minutes of the Special Council Meeting -January 27, 2025 (ADOPT)\n           \u2022   Minutes of the Community Advisory Committee Meeting - January 28, 2025 (RECEIVE)",
+        "source_block": "MOVED BY: HARDER\n     SECONDED: YACUCHA\n\n     THAT Council adopt the recommendations for each item of the Consent Agenda as presented.\n\n           \u2022   Minutes of the West Shore Parks & Recreation Board of Directors Meeting - November\n               14, 2024 (RECEIVE)\n           \u2022   Minutes of the West Shore Parks & Recreation Board of Directors Meeting - December\n               12, 2024 (RECEIVE)\n           \u2022   Minutes of the Council Meeting - January 13, 2025 (ADOPT)\n           \u2022   Minutes of the Special Council Meeting -January 20, 2025 (ADOPT)\n           \u2022   Minutes of the Special Sustainable Development Advisory Committee Meeting - January\n               21, 2025 (RECEIVE)\n           \u2022   Minutes of the Special Council Meeting -January 27, 2025 (ADOPT)\n           \u2022   Minutes of the Community Advisory Committee Meeting - January 28, 2025 (RECEIVE)\n                                                                                   Motion CARRIED.\n\n\n8.   CONSIDERATION OF MATTERS REMOVED FROM THE CONSENT AGENDA\n\n     None were removed.\n\n9.   COMMITTEE RESOLUTIONS\n\n     9.1       Special Sustainable Development Advisory Committee Meeting Resolutions -January 21,\n\n               9.1.1   Development Variance Permit - 3003 Irwin Rd - DVP24-0006",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "06ca71b404f4f4c87894a402cbec560e996a1370ec6e3d2ca6292abe6791c51d",
+      "pages": [
+        3
+      ],
+      "reason": "Exact agenda approval or consent umbrella vote; preserve all old body/actors/result/meta/manual evidence. Consent child recommendations are context under one vote, not separate new decisions.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+  "second_independent_original_image_review_sha256": "102233bfb77eba33f167b563a4c208eead29749c92a1c95ee5fbc39e5f633737"
+}

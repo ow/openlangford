@@ -1,5 +1,6 @@
 """Catch-up preserves existing claims and admits only source-bound new facts."""
 from copy import deepcopy
+import pytest
 
 from ingestion.ballot_fixture import official_context, TEXT
 from pipeline.backfill.history_coverage import plan_meeting, digest
@@ -40,12 +41,16 @@ def test_truncated_legacy_claim_blocks_duplicate_insertion(tmp_path):
     assert plan['source_report']['unmapped_legacy_ids'] == [309]
 
 
-def test_source_date_mismatch_cannot_be_reported_complete(tmp_path):
+@pytest.mark.parametrize('meeting_date',['2025-01-01','2026-01-07','2026-01-09'])
+def test_source_date_mismatch_cannot_be_reported_complete(tmp_path,meeting_date):
     context = official_context(tmp_path)
-    meeting = {**context['meeting'], 'meeting_date': '2025-01-01'}
+    meeting = {**context['meeting'], 'meeting_date': meeting_date}
+    source_date = context['source']['local_date']
     plan = plan_meeting(meeting, [], [], context['source'])
     assert plan['coverage'] == 'source_validation_held'
     assert plan['new_motions'] == []
+    assert meeting['meeting_date'] == meeting_date
+    assert context['source']['local_date'] == source_date
 
 
 def test_receipt_digest_stable_across_serialized_key_order():

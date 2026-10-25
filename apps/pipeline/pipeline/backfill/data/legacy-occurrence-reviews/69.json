@@ -1,0 +1,254 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 69,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+  "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+  "source_date": "2018-04-16",
+  "source_text_sha256": "a401637979e7cbfb7227c8bf64209b93a5bcde4f99dbf074cf428c82eb921cd2",
+  "formal_inventory_sha256": "ae4f2044612e1c811c2a95640ed149a1edc6256a217059aa27eaca83d4d301d1",
+  "claim_inventory_sha256": "2219a1e07faa66acc4c09b3d700bfd845ea5775024aa8312a1aef2afa4e48e9d",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "873ba78deece5ddd3e6f2ab03dd762e9e09706adb1124fc70bcbb1c91497152f"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "1165fe73967e153cbe167f219ead9aff3a269f4a3df5dbf474d6f7dba030a516"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "e20c7b6d709146075d3a502ac065aeeb938c143c406cfb2f26a0745c80758483"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "dd167cd6db4a1ed9948590509e0637d78bebd138190549e9a9a086b2e2e392f5"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "7d1d0801a2925970610aeb74a4c6476220981a76ef4cdab75f0f0ec3ea437ccf"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "82a4b9f53817ca6c795fc99dab62a8cd8c041061e1487c86c29c0976bbc42d76"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "e1ad15547d895053fdc7907c43692f3fb55969f21edafdd6450afe8526a38db0"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "8dd5dd0461f574d39241771bba1dbf8ce81777014e9218f509c406e8e2b7bd48"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 650,
+      "claim_sha256": "71ef0a6ae7d897faf635c901b5d796f96f813894cb3a19c74a48e59dc86a9795",
+      "legacy_text": "That Council approve the agenda with the removal of item 6b 2) Audited Financial Statements.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 677,
+        "source_order": 0,
+        "key": "541a7891cfed74f26f4023e3611945399ef173e63ec5f56bce2f003e6a72ecbf",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda with the removal of item 6b 2) Audited Financial Statements.",
+        "source_block": "MOVED BY:        COUNCILLOR SIFERT\nSECONDED:        COUNCILLOR WADE\n\n\n        That Council approve the agenda with the removal of item 6b 2) Audited Financial Statements.\n\n                                                                                              CARRIED.\n\n\n3.      PUBLIC HEARINGS\n\n\n        a)   BYLAW NO. 1767\n             \"Langford Zoning Bylaw, Amendment No. 527, (2668, 2674, 2682, 2684, 2686, 2696 2702\n             & 2706 Sooke Rd), 2018\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1767 at 5:31 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\n                                                                                                   April 16th, 2018\n                                                                                                       Page 2 of 8\n\n\n\nThe City Planner advised that Niall Paltiel of Keycorp Planning Ltd. has applied on behalf of Oakcrest Park\nEstates to amend the zoning of 2668, 2674, 2682, 2684, 2686, 2696, 2702 & 2706 Sooke Rd from the C3\n(District Commercial) and CS1 (Service Commercial) Zone to a new C9 (Community Town Centre\nPedestrian 9) Zone.\n\n\nThis is being proposed in order to allow a mixed-used development that may include high density\nresidential as well as commercial uses.\n\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nIn support of this application, the applicant has agreed to provide the following contributions per\nresidential unit, prior to issuance of a building permit, as a bonus for increased density:\n\n      i. $610 towards the Affordable Housing Fund, and\n      ii. $2,074 towards the General Amenity Reserve Fund, for which Council may use this towards the\n          construction of the realignment of Glen Lake Road and DCC works on Sooke Road.\n\n\nThe applicant has also agreed to provide a technical memo from an engineer that verifies storm water can\nbe adequately managed for the proposed developments, to the satisfaction of the Director of Engineering,\nprior to public hearing — which they have.\n\nAdditionally, prior to Bylaw Adoption, the applicant will provide a Section 219 covenant that agrees to the\nfollowing:\n\n       i. That the owner will not apply for, nor is the City obligated to issue a Development Permit or\n          Building Permit until road dedication is provided to the satisfaction of the Director of\n          Engineering and Approving Officer.\n\n       ii. That at any time after the 5 th anniversary date of adoption of the bylaw to rezone the subject\n           lands, the City may request, and the owner shall provide, the area of land necessary for the\n           construction of the road extension from Happy Valley Road to Glen Lake Road as well as Sooke\n           Road for $1.00.\n\n      iii. That the owner will limit direct vehicular access to Sooke Road, and will not apply for, nor will\n           the City be obligated to grant driveway access on to Sooke Road, except in accordance with a\n           comprehensive plan of development for the properties as a whole.\n\n      iv. That a Traffic Impact Assessment be completed to the satisfaction of the Director of Engineering\n          for the full build-out of any block that commercial and/or residential uses are proposed on, prior\n          to the issuance of building permit, and that the recommendations of the Traffic Impact\n             Assessment be implemented prior to occupancy of any building;\n\n       v. That all frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the\n          Director of Engineering and Manager of Parks prior to issuance of a building permit; and\n\n      vi. That a detailed storm water management plan be provided prior to issuance of a building permit\n          and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering.\n\n                                                                                                   April 16th, 2018\n                                                                                                       Page 3 of 8\n\n\n\nThis proposal is consistent with the Official Community Plan Neighbourhood and Neighbourhood Centre\ndesignation.\n\nNotifications and advertisements have been placed as required by Council policy.\n\n\nThe Mayor called a first time for presentations.\n\nResident on Anders Road addressed Council wondering of there was an easement, as red ribbons showed\nup 10 days ago.\n\nMichelle Mahovlich, Director of Engineering provided a response.\n\n\nResident on Page Road expressed concern over height of the building and minimal size of setbacks. Also\nwondered if change was because of inclusion of hotel lands.\n\nMathew Baldwin, Director of Planning provided a response and clarification.\n\nResident on Anders Road asked about density.\n\n\nMayor Young provided clarification (depends on stormwater and parking).\n\nResident asked about the realignment of Glen Lake road and about sound-deadening fencing.\n\n\nMayor Young provided clarification.\n\nResident on Anders Road is curious about setbacks and sound deadening fence.\n\n\nMathew Baldwin, Director of Planning provided clarification.\n\nResident on Anders Road asked about setbacks from the galloping goose trail.\n\n\nResident on Wilshire Drive asked about left hand turn from Sooke onto Wilshire.\n\n\nMayor Young and Michelle Mahovlich, Director of Engineering provided clarification and that traffic would\nbe directed through a signalized intersection.\n\nJim Hartshorne answered all questions.\n    -   Ribbons — in realtion to a storm drain issue\n    -   Fencing — 6 feet\n    -   Density/Site coverage — less than the allowable 70%\n    -  Sound deadening fence — definitely putting something idown Anders road\n    -  Traffic — will improve Sooke Road in conjunction with Ministry of Transportation and\n         Infrastructure and understood through traffic study\n\n\nMayor Young called a second time for presentations.\n\nNone presented.\n\n                                                                                                     April 16th, 2018\n                                                                                                          Page 4 of 8\n\n\n\n\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1767 closed at 5:52 p.m.\n\n4.        ADOPTION OF MINUTES\n\n\n          a)   Minutes of the Meeting of Council — April 3 rd, 2018",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "c54a5bd1936c705f9c35d8955aa695d4b74535d8585060567d9ce83001d5ed7f",
+      "pages": [
+        1
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 651,
+      "claim_sha256": "ce523d581f2a6775e3c4f7c6c7093a2ad7daeab5ed75d8874e0d9dab3b589466",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on April 3rd, 2018.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 7715,
+        "source_order": 1,
+        "key": "9592e213602b639924bd8d132ec6d9228279cdb07a283bd4426699b98f381da5",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the Regular Meeting of Council held on April 3 rd, 2018.",
+        "source_block": "MOVED BY:           COUNCILLOR SEATON\nSECONDED:           COUNCILLOR SIFERT\n\n\n          That Council approve the minutes of the Regular Meeting of Council held on April 3 rd, 2018.\n\n                                                                                                    CARRIED.\n\n\n5.        PUBLIC PARTICIPATION\n\n\nNone.\n\n\n6.        COMMITTEE RESOLUTIONS\n\n\n          a)   Planning, Zoning and Affordable Housing Committee — April 9th, 2018\n               1. Application to Rezone portions of Area 2 and Area 3 in Schedule 02 of the CD6A Zone\n                   to Area 5 in order to reduce the interior side yard setback to 1.5 m, and to allow\n                   secondary suites within single-family dwellings",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5feecb1f0edaa60fa334c3621d68d1b0cc637cb861f66359799985027ab03bb4",
+      "pages": [
+        4
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 652,
+      "claim_sha256": "4c25b7d77df243b9d6f96ce5a3b23b35969315bbb273aae80b6f137a0c64079d",
+      "legacy_text": "That Council give First Reading to Bylaw No. 1768 as drafted.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 8439,
+        "source_order": 2,
+        "key": "6fffb9b691420ab22285f499a87c452bcb4fad62220ee2534de1df8ba38dd110",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council give First Reading to Bylaw No. 1768 as drafted.",
+        "source_block": "MOVED BY:           COUNCILLOR BLACKWELL\nSECONDED:           COUNCILLOR WADE\n\n\nThat Council give First Reading to Bylaw No. 1768 as drafted.\n\n                                                                                                        CARRIED.\n\n\n               2.   Application for Development Variance Permit to reduce the front lot line setback from\n                    7.5m to 5.2m at 2895 West Shore Parkway",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "74e815528c6d64f2a72d35429a385482b5adf805115bc4d89cf4a72fb10538bc",
+      "pages": [
+        4
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 653,
+      "claim_sha256": "880269679c67db551e32f5d68a01d61e3f54aa747e1eb9d7dac4395cc20270d2",
+      "legacy_text": "That Council direct staff to proceed with consideration of the variances for 2895 West Shore Parkway (front lot line setback from 7.5m to 5.2m) subject to development in accordance with the plan attached as Appendix A.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 8864,
+        "source_order": 3,
+        "key": "db3c6a620ad5b700205ed01f574bbdfe81f85eaf0bfe50d2962582161dfd0273",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n     1.    Direct staff to proceed with consideration of the following variances for 2895 West Shore\n           Parkway:\n\n\n          a)   That Section 6.90.05(1)(a) of Zoning Bylaw No. 300 be varied from a 7.5m front lot line setback\n               to a 5.2m front lot line setback;\n\n                                                                                                      April 16th, 2018\n                                                                                                           Page 5 of 8\n\n\n\nSubject to the following terms and conditions:\n\n          i)    That the site is developed in accordance with the plan attached to this report as Appendix A.",
+        "source_block": "MOVED BY:           COUNCILLOR BLACKWELL\nSECONDED:           COUNCILLOR WADE\n\n\nThat Council:\n\n     1.    Direct staff to proceed with consideration of the following variances for 2895 West Shore\n           Parkway:\n\n\n          a)   That Section 6.90.05(1)(a) of Zoning Bylaw No. 300 be varied from a 7.5m front lot line setback\n               to a 5.2m front lot line setback;\n\n                                                                                                      April 16th, 2018\n                                                                                                           Page 5 of 8\n\n\n\nSubject to the following terms and conditions:\n\n          i)    That the site is developed in accordance with the plan attached to this report as Appendix A.\n\n                                                                                                        CARRIED.\n\n\n                3.   Application for Development Variance Permit to allow reduction of lot width from 16\n                     metres to 9.5 metres at 683 Goldie Avenue",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "2539f42fe918f9359dcc16435aba5d22efd6bd82746f1b9b29ff95a3e2c0f689",
+      "pages": [
+        4,
+        5
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 654,
+      "claim_sha256": "cec8d3c688a7dc25086793cf65d2efaeb12718af4970a58a3f1ee43efb414caf",
+      "legacy_text": "That Council direct staff to proceed with consideration of the variance to reduce lot width from 16 metres to 9.5 metres at 683 Goldie Avenue subject to development in accordance with the plan attached as Appendix A.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 9927,
+        "source_order": 4,
+        "key": "39e5fe60f70e6c31a688efa2d3f4094a22e502caca197d00297392a0d99069ec",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n     1.   Direct staff to proceed with consideration of the following variances for 683 Goldie Avenue:\n\n          a)    That Section 6.21.02(3) of Zoning Bylaw No. 300 be varied from 16 metres to 9.5 metres to\n                facilitate subdivision for proposed lots 1 and 2.\n\n\nSubject to the following terms and conditions:\n\n          i)    That the site is developed in accordance with the plan attached to this report as Appendix A.",
+        "source_block": "MOVED BY:            COUNCILLOR BLACKWELL\nSECONDED:            COUNCILLOR WADE\n\n\nThat Council:\n\n     1.   Direct staff to proceed with consideration of the following variances for 683 Goldie Avenue:\n\n          a)    That Section 6.21.02(3) of Zoning Bylaw No. 300 be varied from 16 metres to 9.5 metres to\n                facilitate subdivision for proposed lots 1 and 2.\n\n\nSubject to the following terms and conditions:\n\n          i)    That the site is developed in accordance with the plan attached to this report as Appendix A.\n\n                                                                                                         CARRIED.\n\n                                                           th\n          b) Administration and Finance Committee —April 10 , 2018\n             1. Monthly Approval of Accounts Payable — March 2018",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "44827c9846e22409e379356e4636ec98e9e38b153169c2993ab0d8b27e2cc28d",
+      "pages": [
+        5
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 655,
+      "claim_sha256": "173a2825029f5bee9fe2f02a256228ff2866c52274db8ca02b990b3a77f6fff4",
+      "legacy_text": "That Council approve the City of Langford disbursements from March 2018, as outlined in the Accounts Payable Report dated April 5, 2018.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 10772,
+        "source_order": 5,
+        "key": "d875b12a5d65f49a5549aa2e2bccd93f107bb49703d17d42499043273fd57cae",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the City of Langford disbursements from March 2018, as outlined in the Accounts\nPayable Report dated April 5, 2018.",
+        "source_block": "MOVED BY:            COUNCILLOR SEATON\nSECONDED:            COUNCILLOR WADE\n\n\nThat Council approve the City of Langford disbursements from March 2018, as outlined in the Accounts\nPayable Report dated April 5, 2018.\n\n                                                                                                         CARRIED.\n\n\n7.         REPORTS\n\n\n           a)   Bylaw No. 1752: Langford Zoning Bylaw, Amendment No. 517, (Omnibus No. 50 —\n                Downtown Parking);\n                Bylaw No. 1776: A Bylaw to amend Building Bylaw No. 1160 with respect to building\n                application fees;\n                Bylaw No. 1763: A Bylaw to Amend the City of Langford's Development Procedures Bylaw\n                No. 209 with respect to development application fees;\n                Policy POL0011-PLAN — Affordable Housing and Amenity Contribution Policy.\n                -    Staff Report (Planning)\n\n                                                                                                   April 16t h, 2018\n                                                                                                        Page 6 of 8",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4da0f50f947834659051037112e7a29960589df4437bf71fb126f621d00a8553",
+      "pages": [
+        5
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 656,
+      "claim_sha256": "eebf05bae45188a83a752eb437090422d90883dbdaa1fa007504df3a6bced1f5",
+      "legacy_text": "That Council: 1) Give first, second and third reading to Bylaw No. 1763 as presented; 2) Give first, second and third reading to Bylaw No. 1776 as presented; 3) Amend Bylaw No. 1752 at first reading, and give a new first reading to this bylaw as presented; 4) Establish as policy the Affordable Housing and Amenity Contribution Policy as presented; 5) Consider adoption of Bylaws 1752, 1763, 1769 and 1776 on or after July 16th, 2018.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 11927,
+        "source_order": 6,
+        "key": "66d091dc4441a558e1be897a785d7c2763a686b6e6296f714b926533c34f2d5e",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n     1.   Give first, second and third reading to Bylaw No. 1763 as presented;\n\n\n     2.   Give first, second and third reading to Bylaw No. 1776 as presented;\n\n     3.   Amend Bylaw No. 1752 at first reading, and give a new first reading to this bylaw as presented;\n\n\n     4.   Establish as policy the Affordable Housing and Amenity Contribution Policy as presented;\n\n                                                                                   th\n     5.   Consider adoption of Bylaws 1752, 1763, 1769 and 1776 on or after July 16 , 2018.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\n\nThat Council:\n\n     1.   Give first, second and third reading to Bylaw No. 1763 as presented;\n\n\n     2.   Give first, second and third reading to Bylaw No. 1776 as presented;\n\n     3.   Amend Bylaw No. 1752 at first reading, and give a new first reading to this bylaw as presented;\n\n\n     4.   Establish as policy the Affordable Housing and Amenity Contribution Policy as presented;\n\n                                                                                   th\n     5.   Consider adoption of Bylaws 1752, 1763, 1769 and 1776 on or after July 16 , 2018.\n\n\n\n                                                                                                      CARRIED.\n\n\n          b)   Bicycle Sharing Network Proposal for Langford\n               -   Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "e7743e22227a7378dfaae9ac09e6506b1d224471894150f4ac500e03b4d754be",
+      "pages": [
+        6
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 657,
+      "claim_sha256": "a9f287aa1b93d18c006230b9a14ebac76e2e539faf63a0ddcdf59740ee4e29d1",
+      "legacy_text": "That Council:\n\n     1.   Endorse in principle the establishment of the bicycle sharing network proposed by U-Bicycle and\n          Belmont Residences in Langford; and\n\n\n     2.   Direct staff to work with U-Bicycle and Belmont Residences to sponsor the installation of up to 4\n          beacons at hub locations to be agreed upon by the City, as well as consider for locations on the\n          north side of Langford, for a cost of $2,500 per beacon, to be paid out of the General Amenity\n          Reserve Fund.",
+      "source_identity": {
+        "meeting_id": 69,
+        "source_sha256": "63923bb7bc5d53a717934f290694c5df3f7785fe67be17a2eef9ab54d884cee8",
+        "source_offset": 12786,
+        "source_order": 7,
+        "key": "418f78168c5ff813cc92708debc01d850a9d5b67021d6879a070063937fccd8c",
+        "source_file": "archive/langford/Council/2018/04/2018-04-16 Regular Council [legacy]/Minutes/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20180416-Signed-Minutes-Regular-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n     1.   Endorse in principle the establishment of the bicycle sharing network proposed by U-Bicycle and\n          Belmont Residences in Langford; and\n\n\n     2.   Direct staff to work with U-Bicycle and Belmont Residences to sponsor the installation of up to 4\n          beacons at hub locations to be agreed upon by the City, as well as consider for locations on the\n          north side of Langford, for a cost of $2,500 per beacon, to be paid out of the General Amenity\n          Reserve Fund.",
+        "source_block": "MOVED BY:         COUNCILLOR SZPAK\nSECONDED:         COUNCILLOR BLACKWELL\n\n\nThat Council:\n\n     1.   Endorse in principle the establishment of the bicycle sharing network proposed by U-Bicycle and\n          Belmont Residences in Langford; and\n\n\n     2.   Direct staff to work with U-Bicycle and Belmont Residences to sponsor the installation of up to 4\n          beacons at hub locations to be agreed upon by the City, as well as consider for locations on the\n          north side of Langford, for a cost of $2,500 per beacon, to be paid out of the General Amenity\n          Reserve Fund.\n\n                                                                                                      CARRIED.\n\n\n8.        BYLAWS\n\n          a)    BYLAW NO. 1752\n                \"Langford Zoning Bylaw, Amendment No. 517, (Omnibus No. 50 — Downtown Parking),\n                2017.\n                (RESCIND FIRST READING)\n                (GIVE NEW FIRST READING)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1ec0ce81b574470501a2cfc84d475bd4a50e7b5c6c20170d1998f1a85a9baa9d",
+      "pages": [
+        6
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "bc5f5bddbcb93f6164148eed3263829b29515bf12bc49562fb24e37fb73209ec",
+  "second_independent_original_image_review_sha256": "2927f0b72d4c367fe93016885c8c0bb9bec3443fae07098a0e2ab574d053f556"
+}

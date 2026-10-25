@@ -1,0 +1,578 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 111,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+  "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+  "source_date": "2016-01-18",
+  "source_text_sha256": "bd64f6a014a7c07de2f8b68b7775691dde2e8024bf43fd9e4fa97facb5929f1e",
+  "formal_inventory_sha256": "82b88220e614f2331cb9891870efae5717dd3cdcffa72efa5d42181a5170ef5d",
+  "claim_inventory_sha256": "bede1bd34ccd8277edd44ed9cf029975af02069ef65e386bf8f66a74c443035e",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "e717162dbea33b1722c16df0f7a701fffe41d9c3cd056089fe20a9f213a3cac7"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "7e16344e63f64121f04c93680db4e0a2c4c51b489f19b9bfabae9b0f6a53784e"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "9fca12b8d779c3076b75ca2ad4a8972df1664406cc72bcf61d4051a199825440"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "9aa53ec93b6a59f8e07ddd06261022dbc005c27764329ca951334176eb7bd436"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "a6f8296b0710b25e1cc689ef237c7736dd9e7b306b0cad9823f8ef5bc089ae5c"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "4bfba637431198be2b97a9c88b4d24bdb5c3ad6ce450406e45c3c910d65c042b"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "971ee2f6b3e7cbd6984ac582e4b86542d742309dfb4c836daad2e7b6b6f67f4f"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "6221d0e7fd880733104decf09c1a7a0b57bba34e51cc7584d3bee2a5bdba9b39"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "355bb5a3f4350a1673d488e87f029a426904d6dbdfd70dbe6b4760bbf2b60fce"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "57b6a78857c74042aa612a684658b5427c1d01319fe439c2317bb566aad99478"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "1003ce3235d1c0f332b59645c5ac87f4a126923dad077046e26d100a5f89a9d8"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "39231d0cda1dada145150f5fe060f8bc25fa19a5ad9912e6dd44013ae0eff283"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "e010751bb64367871f90defd7f14d863074be1709dd6b1eccee1a5b32a6e0f2e"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "7316831df7674801f39d3ab0e29fcdc0aa2c9875929d258271edb3a3cf4b4ef5"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "79a5f3fcf8fe1136c37a2143841dbf9721f1f06d79a434e51433e73285bc42ba"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 1042,
+      "claim_sha256": "c0bfceb547af11c26fd1152b2fd762ea55cec3011401f5f9ac31e77b8a889b3c",
+      "legacy_text": "That Council approve the Agenda as presented.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 595,
+        "source_order": 0,
+        "key": "98b4c33f258f9255537c8e29674cc937ea3eab841679bec7c7b14ade41e36e04",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the Agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR WADE\nSECONDED:       COUNCILLOR SAHLSTROM\n\n       That Council approve the Agenda as presented.\n                                                                                                CARRIED.\n\n3.      PUBLIC HEARING\n\n       a) BYLAW NO. 1571\n          \"Langford Zoning Bylaw, Amendment No. 428, (3061 Jacklin Rd), 2015\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1571 at 7:01 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after\neveryone has expressed their views, he shall state three times \"Is there anyone else who wishes to be\nheard\", and if no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Barry Weih, Wensley Architecture has applied on behalf of 3279321 Nova\nScotia Ltd. to amend the zoning of 3061 Jacklin Rd and that the purpose of the Public Hearing was to\nhear from the public regarding Bylaw No. 1571 which, if adopted, would amend the zoning of 3061\nJacklin Rd from C3 (District Commercial) to C10 (Langford City Centre) Zone, to amend the density\n\n                                                                                      Regular Meeting of Council\n                                                                                                         th\n                                                                                              January 18 , 2016\n                                                                                                    Page 2 of 15\n\n\nprovisions of the C10 Zone, to allow gas stations the C10 Zone, and to allow apartments in the C10 Zone\nto provide off-street parking in accordance with the City Centre ratio of the Zoning Bylaw.\n\nThis is being proposed in order to allow the subject property to be developed in a coordinated manner\nwith the adjacent property at 3067 Jacklin Rd, which is currently zoned C10. As part of this application, a\npublic hearing is required in accordance with the regulations of the Local Government Act.\n\nIn support of this application, the applicant has agreed to provide the following:\n\n    \u2022   $2,500,000 towards the general amenity reserve fund, as a bonus for increased density for all\n        development within the C10 Zone as a whole.\n    \u2022   An updated traffic study to the satisfaction of the Director of Engineering.\n\nThe required traffic study has been provided and includes recommendations with regards to access\nto/from Jacklin Rd and Jenkins Ave as well as off-site transportation network improvements to ensure\noptimal vehicle movements to/from the proposed development. These access points and off-site\nimprovements will be implemented as part of the works and services installed for the development.\n\nThis proposal is consistent with the Official Community Plan Mixed-Use Employment Centre designation.\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nMayor Young called a second time for presentations.\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1571 closed at 7:03 p.m.\n\n        b) BYLAW NO. 1610\n           \"Langford Zoning Bylaw, Amendment No. 445, (2792 Leigh Rd), 2015\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1610 at 7:03 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after\neveryone has expressed their views, he shall state three times \"Is there anyone else who wishes to be\nheard\", and if no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that the City of Langford has made application to amend the zoning of 2792\nLeigh Rd and that the purpose of the Public Hearing was to hear from the public regarding Bylaw No.\n1610 which, if adopted, would amend the zoning of 2792 Leigh Rd from the R2 (One- and Two-Family\nResidential) Zone to the BT1 (Business and Technology Park) Zone.\n\nThis is being proposed in order to allow for the development of a secondary suite in an accessory\nbuilding (aka: carriage house) in conjunction with the existing dwelling, or to allow for the development\nof the site as business and technology park.\n\n                                                                                     Regular Meeting of Council\n                                                                                                        th\n                                                                                             January 18 , 2016\n                                                                                                   Page 3 of 15\n\n\n\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act. This proposal is consistent with the Official Community Plan Mixed Use Employment\nCentre designation. Notifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations. Mayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1610 closed at 7:05 p.m.\n\n4.     ADOPTION OF MINUTES\n\n                                                                    7th,\n        a) Minutes of the Regular Meeting of Council \u2014 December            2015",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "357cfea9c25879c61353c3aefc5e333f6efeefc331764c3f4e3f933f3c3cb20e",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1046,
+      "claim_sha256": "50a7f1454ff2a7197e4d88642b5ed13723a5673c24c06daa67143ab35fc41f9c",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on December 7th, 2015.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 6694,
+        "source_order": 1,
+        "key": "5ff4c6bc16a4560e7f1ee28d667ec731edae69ead9a10e99efb07c423491ad39",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "th\n        That Council approve the minutes of the Regular Meeting of Council held on December 7 ,\n        2015.",
+        "source_block": "MOVED BY:       COUNCILLOR SAHLSTROM\nSECONDED:       COUNCILLOR SIFERT\n\n                                                                                             th\n        That Council approve the minutes of the Regular Meeting of Council held on December 7 ,\n        2015.\n                                                                                       CARRIED.\n5.      PRESENTATION\n\n        a) CRD/Langford Waste Water Treatment Update\n           - Mr. Les Bjola, Chair, Sewer Oversight Committee\n\nMr. Bjola, Chair of the Langford Sewer Oversight Committee provided an update to Council regarding\nthe CRD Waste Water Treatment Committee and the implications for Langford and options moving\nforward.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "35a3a3daae521b662b39ccd72f01b3b7773225f18f0eefb4bd7dea580f46d250",
+      "pages": [
+        3
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1048,
+      "claim_sha256": "470f20336ad6a63d902805601ed6a53f7bafeb1e3ff40a00da7ef055e74c3063",
+      "legacy_text": "a) That City of Langford Council consider a partnership with the West Side municipalities to continue with an independent analysis of a Sewage Treatment facility for educated decision making; b) The budget for this work could be considered in the 2016 budget approval process; c) That the City of Langford investigate the legalities of proceeding within the CRD framework; and, d) That the Sewage Oversight Committee be permitted to make presentations and discuss partnerships and processes with the other West Side Councils and Staff, to the benefit of the City of Langford.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 7407,
+        "source_order": 2,
+        "key": "caf754c53c0bc0f9fce624d1c250f9a4cc3ee989bc1c7909562978060680bdda",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "a)   That City of Langford Council consider a partnership with the West Side municipalities to\n             continue with an independent analysis of a Sewage Treatment facility for educated decision\n             making;\n        b) The budget for this work could be considered in the 2016 budget approval process;\n        c)   That the City of Langford investigate the legalities of proceeding within the CRD framework;\n             and,\n        d)   That the Sewage Oversight Committee be permitted to make presentations and discuss\n             partnerships and processes with the other West Side Councils and Staff, to the benefit of the\n             City of Langford.",
+        "source_block": "MOVED BY: MAYOR YOUNG\nSECONDED:  COUNCILLOR WADE\n\n        a)   That City of Langford Council consider a partnership with the West Side municipalities to\n             continue with an independent analysis of a Sewage Treatment facility for educated decision\n             making;\n        b) The budget for this work could be considered in the 2016 budget approval process;\n        c)   That the City of Langford investigate the legalities of proceeding within the CRD framework;\n             and,\n        d)   That the Sewage Oversight Committee be permitted to make presentations and discuss\n             partnerships and processes with the other West Side Councils and Staff, to the benefit of the\n             City of Langford.\n                                                                                                   CARRIED.\n\n                                                                                 Regular Meeting of Council\n                                                                                                    th\n                                                                                         January 18 , 2016\n                                                                                               Page 4 of 15\n\n\n6.     PUBLIC PARTICIPATION\n\nMr. Waher of 2822 Lakehurst Drive addressed Council on Agenda item 8(a) Road Closure and Disposition\nVista Dawn Place.\n\n7.     COMMITTEE RESOLUTIONS\n\n       a) Administration and Finance Committee \u2014 December 15th, 2015\n          1. Monthly Approval of Accounts Payable \u2014 September to November 2015 (Finance)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "000703f425ff2b33deaced8def4d0c1c196dc71fc0fbc73f98573177fc832e23",
+      "pages": [
+        3
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1052,
+      "claim_sha256": "14f4323b1b1b2a4c8d6d8d9b2875251d1b1263d0373397198b4b070829c2313d",
+      "legacy_text": "That Council approve in principle the Land Development Budget and Five Year Financial Plan for 2016 -2020 as presented in the staff report dated December 15th, 2015 and refer it to the Treasurer for inclusion in the consolidated Financial Plan.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 9432,
+        "source_order": 4,
+        "key": "b2c01b377b2aeec5279eef28d7cde84cbfaa71495c3dfb9fdef1d4cf972bd3fd",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve in principle the Land Development Budget and Five Year Financial Plan for\n      2016 -2020 as presented in the staff report dated December 15th, 2015 and refer it to the\n      Treasurer for inclusion in the consolidated Financial Plan.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n      That Council approve in principle the Land Development Budget and Five Year Financial Plan for\n      2016 -2020 as presented in the staff report dated December 15th, 2015 and refer it to the\n      Treasurer for inclusion in the consolidated Financial Plan.\n                                                                                          CARRIED.\n       b) Transportation and Public Works Committee \u2014 December 15th, 2015\n           1. 2016 Community Trolley Operations Budget (Engineering)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "bbe5f9e8531624390880b243b601e7e16c746ebdc47dfb2e11124a4e396b7a01",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1055,
+      "claim_sha256": "15f39fa25971f431c12b584f3b548d2933285d292f189dd3d400ea2fc7caf7f4",
+      "legacy_text": "That Council approve in principle the Community Trolley Operations budget and the five year financial plan for 2016-2020 at the figures shown for 2016 in the Attachment to the Report dated December 15th, 2015, and refer them to the Treasurer for inclusion in the budget.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 10007,
+        "source_order": 5,
+        "key": "7e4fa6d7336682225c631caf79bd6fd1a8c709263c272e1aa96729a306dfbf00",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve in principle the Community Trolley Operations budget and the five year\n       financial plan for 2016-2020 at the figures shown for 2016 in the Attachment to the Report\n       dated December 15th, 2015, and refer them to the Treasurer for inclusion in the budget.",
+        "source_block": "MOVED BY:      COUNCILLOR SIFERT\nSECONDED:      COUNCILLOR WADE\n\n       That Council approve in principle the Community Trolley Operations budget and the five year\n       financial plan for 2016-2020 at the figures shown for 2016 in the Attachment to the Report\n       dated December 15th, 2015, and refer them to the Treasurer for inclusion in the budget.\n                                                                                              CARRIED.\n          2. Langford Transit Exchange Shelter Upgrade\n             (Engineering)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b979e0a4292c5d853c54370d22daa55821f62c87a206787c944f459b7406d3f8",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1057,
+      "claim_sha256": "9f5c212600c6d0635fdea65e9a6e15e69f6a4d44e49181b3c0cc7d732466650b",
+      "legacy_text": "That Council approve in principle $40,000 in the 2016 Engineering Capital Works budget to construct four new concrete foundations for the Langford Transit exchange on Station funded through gas tax, and refer to the Treasurer for inclusion in the budget.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 10550,
+        "source_order": 6,
+        "key": "e40cccd19dac63cae6dc53fb79aca6bb30e76c5d03c08e19925cd15c1a5d66da",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve in principle $40,000 in the 2016 Engineering Capital Works budget to\n        construct four new concrete foundations for the Langford Transit exchange on Station funded\n        through gas tax, and refer to the Treasurer for inclusion in the budget.",
+        "source_block": "MOVED BY:      COUNCILLOR SIFERT\nSECONDED:      COUNCILLOR WADE\n\n        That Council approve in principle $40,000 in the 2016 Engineering Capital Works budget to\n        construct four new concrete foundations for the Langford Transit exchange on Station funded\n        through gas tax, and refer to the Treasurer for inclusion in the budget.\n                                                                                           CARRIED.\n\n                                                                                 Regular Meeting of Council\n                                                                                                    th\n                                                                                         January 18 , 2016\n                                                                                               Page 5 of 15\n\n\n         3. 2016 Engineering Department Capital and Operations Budgets (Engineering)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "80945914c4f3c0ed68df871fd5f01b38e208a6b36bef0e08fb8b34483af1a552",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1060,
+      "claim_sha256": "cbac461244371401f866e23ab948163a1942e6e38296a1fa4eaaadefb6201299",
+      "legacy_text": "That Council:\n      1. Approve in principle the Capital and Maintenance & Operations budgets and the five year\n          financial plans for 2016-2020 at the figures shown for 2016 in Appendix A of the report\n          dated December 15th, 2015 and refer them to the Treasurer for inclusion in the budget; and\n      2. Direct staff to prepare a budget for 2017 to start an Infrastructure Replacement Fund.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 11509,
+        "source_order": 7,
+        "key": "1bd7f4354bbac9eba0634196b77c01439acad91453fd60fd38011db4d482110d",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n      1. Approve in principle the Capital and Maintenance & Operations budgets and the five year\n          financial plans for 2016-2020 at the figures shown for 2016 in Appendix A of the report\n          dated December 15th, 2015 and refer them to the Treasurer for inclusion in the budget; and\n      2. Direct staff to prepare a budget for 2017 to start an Infrastructure Replacement Fund.",
+        "source_block": "MOVED BY:     COUNCILLOR SIFERT\nSECONDED:     COUNCILLOR WADE\n\n      That Council:\n      1. Approve in principle the Capital and Maintenance & Operations budgets and the five year\n          financial plans for 2016-2020 at the figures shown for 2016 in Appendix A of the report\n          dated December 15th, 2015 and refer them to the Treasurer for inclusion in the budget; and\n      2. Direct staff to prepare a budget for 2017 to start an Infrastructure Replacement Fund.\n                                                                                             CARRIED.\n\n      c) Planning Zoning and Affordable Housing Committee \u2014January 11th, 2016\n         1. Application to Amend the Official Community Plan Designation of 3483 Happy Valley\n             Road from Agriculture to Neighbourhood, and to Rezone the same property from RR@\n             (Rural Residential 2) to RM7A (Medium Density Apartment 7A) to allow a townhouse\n             development of approximately 28 units (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "22ff76116d9368ab37cc935e76b7aa3f74cac00f848946bc9319db039a5b4633",
+      "pages": [
+        5
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1062,
+      "claim_sha256": "753a9e21ad9c82e13129f98f683996871c9e597893fd8720194e569ae590d8e7",
+      "legacy_text": "1. Direct staff to prepare a bylaw to amend the Official Community Plan designation of the property located at 3483 Happy Valley Road from Agriculture to Neighbourhood; 2. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 3483 Happy Valley Road from RR2 (Rural Residential 2) to RT1 (Residential Townhouse 1) subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per new lot created, prior to subdivision approval: i. $6,000 per new SFE created towards the General Amenity Reserve Fund; ii. $1,000 per new SFE created towards the Affordable Housing Reserve Fund; b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That future owners of the development shall be notified of the presence of the SVI Rangers station and the potential noise nuisance created by that use; and ii. That full frontage improvements shall be provided by the owner as per Bylaw 1000 to the satisfaction of the Director of Engineering; c) That the applicant registers, prior to Bylaw Adoption, a road dedication plan to the satisfaction of the Director of Engineering; and d) Authorize the Director of Planning to issue the following variances within the required Development Permit: i. Reduce the visitor parking required for a strata townhouse development by two spaces; ii. Allow the required visitor parking for a townhouse development to be located within the proposed Lobo Vale right of way. iii. Reduce exterior side setbacks as outlined in Table 3 of this report.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 12510,
+        "source_order": 8,
+        "key": "d0acb6d8127abc1ac370b1cb613a9484b3a2051bea51e3627102c3d166e6b329",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n   1. Direct staff to prepare a bylaw to amend the Official Community Plan designation of the\n       property located at 3483 Happy Valley Road from Agriculture to Neighbourhood;\n   2. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 3483\n       Happy Valley Road from RR2 (Rural Residential 2) to RT1 (Residential Townhouse 1) subject to\n       the following terms and conditions:\n                a) That the owner agrees to provide, as a bonus for increased density, the following\n                    contributions per new lot created, prior to subdivision approval:\n                       i. $6,000 per new SFE created towards the General Amenity Reserve Fund;\n                      ii. $1,000 per new SFE created towards the Affordable Housing Reserve Fund;\n\n               b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n                   registered in priority of all other charges on title, that agrees to the following:\n                      i. That future owners of the development shall be notified of the presence of\n                           the SVI Rangers station and the potential noise nuisance created by that\n                            use; and\n                     ii. That full frontage improvements shall be provided by the owner as per\n                            Bylaw 1000 to the satisfaction of the Director of Engineering;\n\n               c) That the applicant registers, prior to Bylaw Adoption, a road dedication plan to the\n                   satisfaction of the Director of Engineering; and\n\n               d) Authorize the Director of Planning to issue a the following variances within the\n                   required Development Permit:\n                      I.   Reduce the visitor parking required for a strata townhouse\n                          development by two spaces;\n\n                                                                                      Regular Meeting of Council\n                                                                                                         th\n                                                                                              January 18 , 2016\n                                                                                                    Page 6 of 15\n\n\n                     ii.   Allow the required visitor parking for a townhouse development to be\n                           located within the proposed Lobo Vale right of way.\n                    iii.   Reduce exterior side setbacks as outlined in Table 3 of this report.",
+        "source_block": "MOVED BY:     COUNCILLOR BLACKWELL\nSECONDED:     COUNCILLOR WADE\n\n   That Council:\n   1. Direct staff to prepare a bylaw to amend the Official Community Plan designation of the\n       property located at 3483 Happy Valley Road from Agriculture to Neighbourhood;\n   2. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 3483\n       Happy Valley Road from RR2 (Rural Residential 2) to RT1 (Residential Townhouse 1) subject to\n       the following terms and conditions:\n                a) That the owner agrees to provide, as a bonus for increased density, the following\n                    contributions per new lot created, prior to subdivision approval:\n                       i. $6,000 per new SFE created towards the General Amenity Reserve Fund;\n                      ii. $1,000 per new SFE created towards the Affordable Housing Reserve Fund;\n\n               b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant,\n                   registered in priority of all other charges on title, that agrees to the following:\n                      i. That future owners of the development shall be notified of the presence of\n                           the SVI Rangers station and the potential noise nuisance created by that\n                            use; and\n                     ii. That full frontage improvements shall be provided by the owner as per\n                            Bylaw 1000 to the satisfaction of the Director of Engineering;\n\n               c) That the applicant registers, prior to Bylaw Adoption, a road dedication plan to the\n                   satisfaction of the Director of Engineering; and\n\n               d) Authorize the Director of Planning to issue a the following variances within the\n                   required Development Permit:\n                      I.   Reduce the visitor parking required for a strata townhouse\n                          development by two spaces;\n\n                                                                                      Regular Meeting of Council\n                                                                                                         th\n                                                                                              January 18 , 2016\n                                                                                                    Page 6 of 15\n\n\n                     ii.   Allow the required visitor parking for a townhouse development to be\n                           located within the proposed Lobo Vale right of way.\n                    iii.   Reduce exterior side setbacks as outlined in Table 3 of this report.\n\n                                                                                                   CARRIED.\n\n          2. Application for Development Variance Permit to reduce the minimum lot width from\n             16m to 9.7m as part of a 7 lot subdivision at 2376 Setchfield Avenue (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "dfe75c988015cdaa452303bcd655c3fe8e033822351058911893198c634efab9",
+      "pages": [
+        5,
+        6
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1064,
+      "claim_sha256": "88078b17a1b15cef412a6e159eb3c448d59f2b03aac5b6b1b514c4e6a9638bc1",
+      "legacy_text": "That Council direct staff to proceed with consideration of the following variances for 2376 Setchfield Avenue: a) That Section 6.21.02 (3) of Zoning Bylaw No. 300 be varied to reduce the minimum lot width from the required 16m to 9.7m for proposed Strata Lot 1.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 15497,
+        "source_order": 9,
+        "key": "ac277233f3c9846d660bf4327f94666dbac7ebc5a4701412e6ba3f63be034586",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to proceed with consideration of the following variances for 2376 Setchfield\n   Avenue:\n      a) That Section 6.21.02 (3) of Zoning Bylaw No. 300 be varied to reduce the minimum lot width\n          from the required 16m to 9.7m for proposed Strata Lot 1.",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR WADE\n\n   That Council direct staff to proceed with consideration of the following variances for 2376 Setchfield\n   Avenue:\n      a) That Section 6.21.02 (3) of Zoning Bylaw No. 300 be varied to reduce the minimum lot width\n          from the required 16m to 9.7m for proposed Strata Lot 1.\n                                                                                                CARRIED.\n\n          3. Application to Rezone 892 Klahanie Drive from RR2 (Rural Residential 2) to RR7 (Rural\n             Residential 7) to allow a residential subdivision (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1e0186bf3bf360e9ebc7ce59dfbfa1faa51f70cdba6ed8d695127d796c36a9ef",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1066,
+      "claim_sha256": "d0e9acdf541f753b722f9c40942b78d465aa82263f790a269212ef495deb7049",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the property located at 892 Klahanie Road from RR2 (Rural Residential 2) to RR7 (Rural Residential 7), subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per new lot created, prior to subdivision approval: i. $6,000 towards the General Amenity Reserve Fund; ii. $1,000 towards the Affordable Housing Reserve Fund; b) That prior to Public Hearing, the applicant agrees to: i. Work with the adjacent land owners to coordinate road access to the north or the south rather than directly from Klahanie Drive, and to present a plan to that affect prior to Public Hearing, to the satisfaction of the Directors of Planning and Engineering; c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That a covenant shall placed on title for all new lots created provide future owners with the understanding that the South Vancouver Island Rangers gun range is located just over a kilometer away and may generate a noise nuisance; ii. The greenspace area outlined in the plans submitted is dedicated as a non-disturbance area, to the Satisfaction of the Director of Planning; iii. That full frontage improvements, Engineering including pavement improvement to road centreline, shall be provided by the applicant as per Subdivision and Development Servicing Bylaw No. 1000 as a condition of Subdivision approval, to the satisfaction of the Director of; iv. That all required measures recommended by the Stormwater Management Plan shall be implemented by the owner as a condition of Subdivision, to the satisfaction of the Director of Engineering; d) That the applicant provides, prior to Bylaw Adoption, a stormwater management plan, to the satisfaction of the Director of Engineering; and e) That the applicant registers, prior to Bylaw Adoption, a road dedication plan for the SRW providing access to 815/835 Latoria Road to the satisfaction of the Director of Engineering and Approving Officer.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 16129,
+        "source_order": 10,
+        "key": "b6dd8b3bc5d2753d64a0ca3021787492c79dc294124411e21c1b4f1b1f3c6cf8",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the property\n       located at 892 Klahanie Road from RR2 (Rural Residential 2) to RR7 (Rural Residential 7), subject\n       to the following terms and conditions:\n       a) That the owner agrees to provide, as a bonus for increased density, the following\n            contributions per new lot created, prior to subdivision approval:\n                    i.  $6,000 towards the General Amenity Reserve Fund;\n                   ii.  $1,000 towards the Affordable Housing Reserve Fund;\n\n       b) That prior to Public Hearing, the applicant agrees to:\n                  i.    Work with the adjacent land owners to coordinate road access to the north or\n                        the south rather than directly from Klahanie Drive, and to present a plan to that\n                        affect prior to Public Hearing, to the satisfaction of the Directors of Planning and\n                        Engineering;\n\n       c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in\n           priority of all other charges on title, that agrees to the following:\n                   i.   That a covenant shall placed on title for all new lots created provide future\n                        owners with the understanding that the South Vancouver Island Rangers gun\n                        range is located just over a kilometer away and may generate a noise nuisance;\n                  ii.   The greenspace area outlined in the plans submitted is dedicated as a non-\n                        disturbance area, to the Satisfaction of the Director of Planning;\n                 iii.   That full frontage improvements, Engineering including pavement improvement\n                        to road centreline, shall be provided by the applicant as per Subdivision and\n\n                                                                                     Regular Meeting of Council\n                                                                                                     18th, 2016\n                                                                                             January\n                                                                                                   Page 7 of 15\n\n\n                        Development Servicing Bylaw No. 1000 as a condition of Subdivision approval,\n                       to the satisfaction of the Director of; and\n                iv.    That all required measures recommended by the Stormwater Management Plan\n                       shall be implemented by the owner as a condition of Subdivision, to the\n                       satisfaction of the Director of Engineering;\n       d) That the applicant provides, prior to Bylaw Adoption, a stormwater management plan, to\n          the satisfaction of the Director of Engineering; and\n       e) That the applicant registers, prior to Bylaw Adoption, a road dedication plan for the SRW\n          providing access to 815/835 Latoria Road to the satisfaction of the Director of Engineering\n          and Approving Officer.",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR WADE\n\n       That Council direct staff to prepare a bylaw to amend the zoning designation of the property\n       located at 892 Klahanie Road from RR2 (Rural Residential 2) to RR7 (Rural Residential 7), subject\n       to the following terms and conditions:\n       a) That the owner agrees to provide, as a bonus for increased density, the following\n            contributions per new lot created, prior to subdivision approval:\n                    i.  $6,000 towards the General Amenity Reserve Fund;\n                   ii.  $1,000 towards the Affordable Housing Reserve Fund;\n\n       b) That prior to Public Hearing, the applicant agrees to:\n                  i.    Work with the adjacent land owners to coordinate road access to the north or\n                        the south rather than directly from Klahanie Drive, and to present a plan to that\n                        affect prior to Public Hearing, to the satisfaction of the Directors of Planning and\n                        Engineering;\n\n       c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in\n           priority of all other charges on title, that agrees to the following:\n                   i.   That a covenant shall placed on title for all new lots created provide future\n                        owners with the understanding that the South Vancouver Island Rangers gun\n                        range is located just over a kilometer away and may generate a noise nuisance;\n                  ii.   The greenspace area outlined in the plans submitted is dedicated as a non-\n                        disturbance area, to the Satisfaction of the Director of Planning;\n                 iii.   That full frontage improvements, Engineering including pavement improvement\n                        to road centreline, shall be provided by the applicant as per Subdivision and\n\n                                                                                     Regular Meeting of Council\n                                                                                                     18th, 2016\n                                                                                             January\n                                                                                                   Page 7 of 15\n\n\n                        Development Servicing Bylaw No. 1000 as a condition of Subdivision approval,\n                       to the satisfaction of the Director of; and\n                iv.    That all required measures recommended by the Stormwater Management Plan\n                       shall be implemented by the owner as a condition of Subdivision, to the\n                       satisfaction of the Director of Engineering;\n       d) That the applicant provides, prior to Bylaw Adoption, a stormwater management plan, to\n          the satisfaction of the Director of Engineering; and\n       e) That the applicant registers, prior to Bylaw Adoption, a road dedication plan for the SRW\n          providing access to 815/835 Latoria Road to the satisfaction of the Director of Engineering\n          and Approving Officer.\n                                                                                            CARRIED.\n\n          4. Application to amend the zoning designation of the property at 777 Hockley Avenue\n             from R1 (one-family residential) to C9A (Community Town Centre Pedestrian 9A) to\n             allow for the construction of a six (6) storey residential building consisting of\n             approximately 25 residential dwelling units (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b66fc18e1cb60d603e2435d3f2a3afd4ea0095f948efd53974d9afd940b0ec34",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1069,
+      "claim_sha256": "c64062a87d6c64c7b7a8ecd39c6e7b3c738bceefa6376e009e37daea6b29c136",
+      "legacy_text": "1. Direct staff to prepare a bylaw to amend the zoning designation of the properties located at 772, 778 and 784 Hockley Avenue from R1 (One-Family Dwelling) and C9A (Community Town Centre Pedestrian 9A) to a new MU2 (Mixed Use Residential Commercial 2) zone; 2. Direct staff to amend bylaw 1552 to rescind 1st Reading and give new 1st Reading as amended for the following properties located at 2856, 2854 Peatt Road and 815, 819, and 823 Hockley from the R1 (One-Family Dwelling) zone to a new MU2 (Mixed Use Residential Commercial) zone; 3. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 777 Hockley Avenue from R1 (One-Family Residential) to MU2 (Mixed Use Residential Commercial 2) zone subject to terms and conditions including amenity contributions ($1,525 and $610 per unit), pre-reading requirements, dedication, Section 219 covenants and authorization for Director of Planning to issue setback variances.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 19782,
+        "source_order": 11,
+        "key": "cb2c2808c3979dd7cb938f2fe5c480608a20db0ab153903894b70fa38b870c92",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n   1. Direct staff to prepare a bylaw to amend the zoning designation of the properties located at\n       772, 778 and 784 Hockley Avenue from R1 (One-Family Dwelling) and C9A (Community Town\n       Centre Pedestrian 9A) to a new MU2 (Mixed Use Residential Commercial 2) zone;\n                                                                                   ft\n   2. Direct staff to amend bylaw 1552 to rescind 1st Reading and give new            Reading as amended\n       for the following properties located at 2856, 2854 Peatt Road and 815, 819, and 823 Hockley\n       from the R1 (One-Family Dwelling) zone to a new MU2 (Mixed Use Residential Commercial)\n       zone;\n   3. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 777\n       Hockley Avenue from R1 (One-Family Residential) to MU2 (Mixed Use Residential Commercial 2)\n       zone subject to the following terms and conditions:\n                a. That the following contributions are included in the bylaw as an amenity for\n                    increased density, to be payable at the time of building permit:\n                        i.  $1,525 per unit towards the General Amenity Reserve Fund; and\n                       ii.  $610 per unit towards the Affordable Housing Reserve Fund.\n                            (The applicant is eligible for a further 35 - 75% reduction in Amenity Fees for\n                            Section 1. a. i-i) in accordance with Council Policy);\n                b. That the applicant provide the following items prior to First Reading:\n                        i.  A frontage design plan for the Hockley Avenue one-way concept, to the\n                            satisfaction of the Director of Engineering;\n                       ii.  An estimate of the cost of constructing Hockley Avenue frontage to the\n                            aforementioned one-way concept, as well as an estimate of the value of this\n                            work over and above the normal frontage improvements required by\n                             municipal bylaw;\n                      iii.  A summary of all land dedication and (if necessary) road closure required to\n                            construct the one-way concept for Hockley Avenue;\n\n                                                                                       Regular Meeting of Council\n                                                                                                          th\n                                                                                               January 18 , 2016\n                                                                                                     Page 8 of 15\n\n\n                      iv.   A statement indicating whether the off-site works and services are expected\n                            to be off-set by cash amenity contributions per Council policy;\n                c. That the applicant dedicate any required road from the subject property to the\n                   satisfaction of the Director of Engineering prior to bylaw adoption;\n                d. That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                   includes the following:\n                       i.    The owner will provide a traffic and public safety plan and construction\n                             parking plan, prior to any onsite works and/or clearing, to the satisfaction of\n                             the Director of Engineering;\n                      ii.    Frontage improvements, works and services shall be completed to the\n                             standards of Subdivision and Development Servicing Bylaw No. 1000 or\n                             secured in a Development Servicing Agreement with appropriate bonding,\n                             prior to the issuance of a Building Permit, to the satisfaction of the Director\n                             of Engineering;\n                     iii.    The frontage design plan for the Hockley Avenue one-way shall be\n                             completed, at the applicant's expense, or secured in a Development\n                             Servicing Agreement with appropriate bonding, prior to the issuance of a\n                             Building Permit, to the satisfaction of the Director of Engineering;\n                     iv.     The owner will register on title a Section 219 covenant for stormwater\n                             maintenance prior to the request for Building Permit; and\n            a. Authorize the Director of Planning to issue the setback variances in the Development\n                Permit.",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR WADE\n\n   That Council:\n   1. Direct staff to prepare a bylaw to amend the zoning designation of the properties located at\n       772, 778 and 784 Hockley Avenue from R1 (One-Family Dwelling) and C9A (Community Town\n       Centre Pedestrian 9A) to a new MU2 (Mixed Use Residential Commercial 2) zone;\n                                                                                   ft\n   2. Direct staff to amend bylaw 1552 to rescind 1st Reading and give new            Reading as amended\n       for the following properties located at 2856, 2854 Peatt Road and 815, 819, and 823 Hockley\n       from the R1 (One-Family Dwelling) zone to a new MU2 (Mixed Use Residential Commercial)\n       zone;\n   3. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 777\n       Hockley Avenue from R1 (One-Family Residential) to MU2 (Mixed Use Residential Commercial 2)\n       zone subject to the following terms and conditions:\n                a. That the following contributions are included in the bylaw as an amenity for\n                    increased density, to be payable at the time of building permit:\n                        i.  $1,525 per unit towards the General Amenity Reserve Fund; and\n                       ii.  $610 per unit towards the Affordable Housing Reserve Fund.\n                            (The applicant is eligible for a further 35 - 75% reduction in Amenity Fees for\n                            Section 1. a. i-i) in accordance with Council Policy);\n                b. That the applicant provide the following items prior to First Reading:\n                        i.  A frontage design plan for the Hockley Avenue one-way concept, to the\n                            satisfaction of the Director of Engineering;\n                       ii.  An estimate of the cost of constructing Hockley Avenue frontage to the\n                            aforementioned one-way concept, as well as an estimate of the value of this\n                            work over and above the normal frontage improvements required by\n                             municipal bylaw;\n                      iii.  A summary of all land dedication and (if necessary) road closure required to\n                            construct the one-way concept for Hockley Avenue;\n\n                                                                                       Regular Meeting of Council\n                                                                                                          th\n                                                                                               January 18 , 2016\n                                                                                                     Page 8 of 15\n\n\n                      iv.   A statement indicating whether the off-site works and services are expected\n                            to be off-set by cash amenity contributions per Council policy;\n                c. That the applicant dedicate any required road from the subject property to the\n                   satisfaction of the Director of Engineering prior to bylaw adoption;\n                d. That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                   includes the following:\n                       i.    The owner will provide a traffic and public safety plan and construction\n                             parking plan, prior to any onsite works and/or clearing, to the satisfaction of\n                             the Director of Engineering;\n                      ii.    Frontage improvements, works and services shall be completed to the\n                             standards of Subdivision and Development Servicing Bylaw No. 1000 or\n                             secured in a Development Servicing Agreement with appropriate bonding,\n                             prior to the issuance of a Building Permit, to the satisfaction of the Director\n                             of Engineering;\n                     iii.    The frontage design plan for the Hockley Avenue one-way shall be\n                             completed, at the applicant's expense, or secured in a Development\n                             Servicing Agreement with appropriate bonding, prior to the issuance of a\n                             Building Permit, to the satisfaction of the Director of Engineering;\n                     iv.     The owner will register on title a Section 219 covenant for stormwater\n                             maintenance prior to the request for Building Permit; and\n            a. Authorize the Director of Planning to issue the setback variances in the Development\n                Permit.\n\n                                                                                                    CARRIED.\n\n           5. Planning Department 2016 to 2020 Five Year Financial Plan (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "2453078739a1288b49af69554c31624ae9c8ca1611f224f2496aec7f85a5ebd3",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1070,
+      "claim_sha256": "da7b0f727527c67533405f04aeaa414c4f46627acfe34f52b09e04403cbab010",
+      "legacy_text": "1. Approve in principle the Planning and Development Services Five Year Financial Plan as presented with the following priorities on projects; and 2. Transfer funding for the Beautification Grant Program from the Planning and Development Services portion of the budget to the Parks budget.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 24728,
+        "source_order": 12,
+        "key": "6ac46982ed5f9cce1f36eaf6b7011ea87b8291052eb8c8aa33e85c009a34b97b",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n      1. Approve in principle the Planning and Development Services Five Year Financial Plan as\n          presented with the following priorities on projects; and\n\n                                                        Estimated\n    Item                                                                  Priority\n                                                           Cost\n\n    Community Energy and Emissions Reduction               $20,000           1\n\n    Zoning Bylaw Re-Write                                  $15,000            3\n\n    Official Community Plan (OCP) review                   $15,000            4\n\n    Film Commission Funding                                 $2,500            2\n\n    Beautification Grant Program                           $20,000\n\n                                                                                       Regular Meeting of Council\n                                                                                               January 18th, 2016\n                                                                                                     Page 9 of 15\n\n\n     2. Transfer funding for the Beautification Grant Program from the Planning and Development\n         Services portion of the budget to the Parks budget.",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR WADE\n\n   That Council:\n      1. Approve in principle the Planning and Development Services Five Year Financial Plan as\n          presented with the following priorities on projects; and\n\n                                                        Estimated\n    Item                                                                  Priority\n                                                           Cost\n\n    Community Energy and Emissions Reduction               $20,000           1\n\n    Zoning Bylaw Re-Write                                  $15,000            3\n\n    Official Community Plan (OCP) review                   $15,000            4\n\n    Film Commission Funding                                 $2,500            2\n\n    Beautification Grant Program                           $20,000\n\n                                                                                       Regular Meeting of Council\n                                                                                               January 18th, 2016\n                                                                                                     Page 9 of 15\n\n\n     2. Transfer funding for the Beautification Grant Program from the Planning and Development\n         Services portion of the budget to the Parks budget.\n                                                                                        CARRIED.\n\n         d) Administration and Finance Committee \u2014January 12th, 2016\n            1. Monthly Approval of Accounts Payable \u2014 December 2015 (Finance)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "559a6ad2e190608c69c86a2e0acc58962a56286d5b71d2dd4c457315bc7dad5d",
+      "pages": [
+        8,
+        9
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1072,
+      "claim_sha256": "0c9d8f40c23b733c7b944bbcd291899e90f8024c1e84d206c51a1a7e4fbfc8d1",
+      "legacy_text": "That Council approve in principle the General Government Five Year Financial Plan for 2016 - 2020 as presented in the staff report dated January 12, 2016 and refer it to the Treasurer for inclusion in the consolidated Financial Plan.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 26735,
+        "source_order": 14,
+        "key": "7fd3b0b6d3662bb4cd060866be27d4e0a7a2d277e30b7fc94fe42be47459b329",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve in principle the General Government Five Year Financial Plan for 2016 -\n        2020 as presented in the staff report dated January 12, 2016 and refer it to the Treasurer for\n        inclusion in the consolidated Financial Plan.",
+        "source_block": "MOVED BY:        COUNCILLOR SAHLSTROM\nSECONDED:        COUNCILLOR SZPAK\n\n         That Council approve in principle the General Government Five Year Financial Plan for 2016 -\n        2020 as presented in the staff report dated January 12, 2016 and refer it to the Treasurer for\n        inclusion in the consolidated Financial Plan.\n                                                                                                 CARRIED.\n8.      REPORTS\n\n        a) Road Closure and Disposition Vista Dawn Place\n           - Staff Report (Land Development)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "07559181100b5fd45ea256290dbbd1d111747c78967260227040cd9f35859135",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1073,
+      "claim_sha256": "fc1db2623c5074a8733dbc86aed554385b9c99ca0115356035b5d9e7ffe6641e",
+      "legacy_text": "1. Consider giving Vista Dawn Road Closure Bylaw 1609 1st, 2nd, and 3rd reading; 2. Obtain a $5,000 bond for pending legal expenses; 3. Direct Staff to work with BC Hydro, and Westshore Environmental services to confirm and re",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 27293,
+        "source_order": 15,
+        "key": "242a5ef1c9d2b757f6544ff8ea297f4739df8f599e636232cc3d15b37909eb0c",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council;\n     1. Consider giving Vista Dawn Road Closure Bylaw 1609 1st, 2\", and 3rd reading;\n     2. Obtain a $5,000 bond for pending legal expenses;\n     3. Direct Staff to work with BC Hydro, and Westshore Environmental services to confirm and\n         register Statutory rights-of-way in favor of the utility company, to the satisfaction of the Utility\n         companies and City of Langford prior to adoption of the Vista Dawn Road Closure Bylaw 1609;\n         and\n     4. Direct Staff to bring forward the Purchase and Sale Agreement for City signatures.",
+        "source_block": "MOVED BY:        COUNCILLOR SIFERT\nSECONDED:        COUNCILLOR WADE\n\n     That Council;\n     1. Consider giving Vista Dawn Road Closure Bylaw 1609 1st, 2\", and 3rd reading;\n     2. Obtain a $5,000 bond for pending legal expenses;\n     3. Direct Staff to work with BC Hydro, and Westshore Environmental services to confirm and\n         register Statutory rights-of-way in favor of the utility company, to the satisfaction of the Utility\n         companies and City of Langford prior to adoption of the Vista Dawn Road Closure Bylaw 1609;\n         and\n     4. Direct Staff to bring forward the Purchase and Sale Agreement for City signatures.\n\n\n                                                                                                    CARRIED.\n\n                                                                                    Regular Meeting of Council\n                                                                                                       th\n                                                                                            January 18 , 2016\n                                                                                                 Page 10 of 15\n\n                    th\n     b) Year End (4 Quarter) Report \u2014 October 1st to December 315t, 2015\n        - Staff Report (Planning, Land Development and Building Departments)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f9a23da57438488154803d51038a84d4afcd12a0d02dc8b2be5c4a876120d285",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1050,
+      "claim_sha256": "eb2a98c5b9ff75c23791736eef2be7b34d5b8c1ebf28660ebba35b4ada69d38d",
+      "legacy_text": "That Council approve the disbursements from December 2015, as outlined in the Accounts Payable Report dated January 4, 2016.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 9011,
+        "source_order": 3,
+        "key": "59378db3e32055844bf6860150bcff13b85ff8d826a15dff844621519f179187",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n       That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.\n                                                                                     CARRIED.\n\n          2. 2016 Land Development Budget and Five-Year Financial Plan (2016 to 2020) (Land\n            Development)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "219bd3ec6c33cff3ca0144e2b31eab2b08d79ea8a201260acf345b8e228a983e",
+      "pages": [
+        4
+      ],
+      "authority": "occurrence_reservation_only",
+      "reason": "Explicit twice-reviewed parent-FK/title/item-order and original heading support separate occurrence only. Printed December operative wording unchanged, including order3original heading/body conflict; no intended-month or ballot certification."
+    },
+    {
+      "motion_id": 1071,
+      "claim_sha256": "0bfb2b35eabfe5ba9efef7a45705d490aa367dc64f77a005111e22a244488c0c",
+      "legacy_text": "That Council approve the disbursements from December 2015, as outlined in the Accounts Payable Report dated January 4, 2016.",
+      "source_identity": {
+        "meeting_id": 111,
+        "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+        "source_offset": 26331,
+        "source_order": 13,
+        "key": "32609546d1924db4074b5acdd75260445bd6080a05f83f1f81de490604a9dce6",
+        "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.",
+        "source_block": "MOVED BY:        COUNCILLOR SAHLSTROM\nSECONDED:        COUNCILLOR SZPAK\n\n       That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.\n                                                                                     CARRIED.\n\n            2. 2016 \u2014 2020 General Government Five-Year Financial Plan (2016 to 2020) (Finance)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "0e4bf9731b5e08f17ede10b88edec9a19affe49c49e2315f962b0307b40d7139",
+      "pages": [
+        9
+      ],
+      "authority": "occurrence_reservation_only",
+      "reason": "Explicit twice-reviewed parent-FK/title/item-order and original heading support separate occurrence only. Printed December operative wording unchanged, including order3original heading/body conflict; no intended-month or ballot certification."
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+  "second_independent_original_image_review_sha256": "7e16b90e1e7c2661e35071d36beb261b75dbbbf2002614f9a1c0896b70c5187a",
+  "blank_time_documentary_preservations": [
+    {
+      "source_review_sha256": "db9603042c96c902becae873275b0a1a15def730af5fa5a5768e5bbb13d8b8cf",
+      "capability": {
+        "type": "reviewed_blank_time_adjournment_presence",
+        "authority": "documentary_preservation_only",
+        "result_policy": "preserve_unknown",
+        "time_policy": "preserve_unrecorded_no_value",
+        "motion_id": 1074,
+        "legacy_text": "That the meeting be adjourned.",
+        "claim_sha256": "1a3278fad6fd9dfb0e937c79eab941ac02d2ba7a69981de4aea629db87c0d723",
+        "claim_row_sha256": "fdb3e4cf963d3a8c7a4934d00e124b51e2b9d8a9a49b5474b39641fe00e886da",
+        "page": 15,
+        "native_text_sha256": "79a5f3fcf8fe1136c37a2143841dbf9721f1f06d79a434e51433e73285bc42ba",
+        "render_sha256": "a2d279297ed370064421926820ce02decd380de35925f1af11e99ab86cc25d92",
+        "native_passage": "The Chair adjourned the meeting at",
+        "native_passage_start": 915,
+        "source_passage": "The Chair adjourned the meeting at",
+        "source_passage_start": 40901,
+        "image_observation": {
+          "time_field": "blank",
+          "printed_suffix": "pm.",
+          "native_extraction_omits_suffix": true
+        },
+        "first_review_sha256": "99c339e0f6c9f5c506934673800f6f4fe66af8413881b3d38cd23d0272e43d11",
+        "independent_review_sha256": "7e16b90e1e7c2661e35071d36beb261b75dbbbf2002614f9a1c0896b70c5187a"
+      }
+    }
+  ],
+  "parent_ownership_diagnostic_evidence": {
+    "scope": "reviewed_occurrence_only_no_parent_body_result_or_ballot_rewrite",
+    "snapshot_sha256": "9850e5fb7e91a90cc670e2e9e33e61a949d7a11f202e440902bbc9fb8474a7d4",
+    "correspondences": [
+      {
+        "motion_id": 1050,
+        "motion_fullrow_sha256": "11426685bf0338b5b4535e7f797d597b75128ec9f38cc69e2593ecc2a57b6cdb",
+        "parent_identity": {
+          "id": 1656,
+          "meeting_id": 111,
+          "item_order": "7.a.1",
+          "title": "COMMITTEE RESOLUTIONS \u2014 Administration and Finance Committee \u2014 Monthly Approval of Accounts Payable \u2014 September to November 2015 (Finance)"
+        },
+        "parent_fullrow_sha256": "ebdd8e684f062059f933ed55048d460d5537f8bb992ad4d2df15b72f1775a752",
+        "source_identity": {
+          "meeting_id": 111,
+          "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+          "source_offset": 9011,
+          "source_order": 3,
+          "key": "59378db3e32055844bf6860150bcff13b85ff8d826a15dff844621519f179187",
+          "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+          "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+          "source_format": "original_pdf_reviewed_image_decisions",
+          "raw_motion_text": "That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.",
+          "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n       That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.\n                                                                                     CARRIED.\n\n          2. 2016 Land Development Budget and Five-Year Financial Plan (2016 to 2020) (Land\n            Development)",
+          "outcome_quote": "CARRIED.",
+          "formal_source_kind": "moved_motion"
+        },
+        "raw_block_sha256": "219bd3ec6c33cff3ca0144e2b31eab2b08d79ea8a201260acf345b8e228a983e",
+        "source_pages": [
+          4
+        ]
+      },
+      {
+        "motion_id": 1071,
+        "motion_fullrow_sha256": "85fafaaa6b4c82675edad6f2959fb354220db2e19631e88b444e975088fb1cb7",
+        "parent_identity": {
+          "id": 1670,
+          "meeting_id": 111,
+          "item_order": "7.d.1",
+          "title": "COMMITTEE RESOLUTIONS \u2014 Administration and Finance Committee \u2014 Monthly Approval of Accounts Payable \u2014 December 2015 (Finance)"
+        },
+        "parent_fullrow_sha256": "59eaec8657b119b8af73a9c28fc8651dd7d6e8ec31dfc50eb83e26d077da53ad",
+        "source_identity": {
+          "meeting_id": 111,
+          "source_sha256": "e89cb04cf7dbd749c3284a871460124d0b0c991a3e2e6df2854ec8ad1a184403",
+          "source_offset": 26331,
+          "source_order": 13,
+          "key": "32609546d1924db4074b5acdd75260445bd6080a05f83f1f81de490604a9dce6",
+          "source_file": "archive/langford/Council/2016/01/2016-01-18 Regular Council [legacy]/Minutes/20160118-SIGNED.pdf",
+          "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160118-SIGNED.pdf",
+          "source_format": "original_pdf_reviewed_image_decisions",
+          "raw_motion_text": "That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.",
+          "source_block": "MOVED BY:        COUNCILLOR SAHLSTROM\nSECONDED:        COUNCILLOR SZPAK\n\n       That Council approve the disbursements from December 2015, as outlined in the Accounts\n       Payable Report dated January 4, 2016.\n                                                                                     CARRIED.\n\n            2. 2016 \u2014 2020 General Government Five-Year Financial Plan (2016 to 2020) (Finance)",
+          "outcome_quote": "CARRIED.",
+          "formal_source_kind": "moved_motion"
+        },
+        "raw_block_sha256": "0e4bf9731b5e08f17ede10b88edec9a19affe49c49e2315f962b0307b40d7139",
+        "source_pages": [
+          9
+        ]
+      }
+    ]
+  }
+}

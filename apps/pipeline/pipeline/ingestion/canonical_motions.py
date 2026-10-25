@@ -159,6 +159,8 @@ def canonical_motion_plan(items, context, existing_motions):
         bindings.append((block, identity, choices))
     reservations = {}
     documentary_preservations = {}
+    supplemental_preservations = {}
+    closing_conflicts = {}
     # This source-bound, repo-enrolled manual review reserves an abbreviated
     # legacy occurrence only in explicit deterministic catch-up. It cannot
     # authorize an ordinary rewrite, outcome update or ballot inference.
@@ -173,22 +175,53 @@ def canonical_motion_plan(items, context, existing_motions):
                 documentary_preservations = validate_documentary_preservations(review, source=source, inventory=claim_inventory,
                     current_rows=existing_motions, meeting=meeting, project_ref=context.get('project_ref'),
                     municipality_id=context.get('municipality_id'), archive_root=context['archive_root'])
+                from pipeline.backfill.blank_time_preservation import validate_blank_time_preservations
+                blank_time = validate_blank_time_preservations(review,source=source,inventory=claim_inventory,
+                    current_rows=existing_motions,meeting=meeting,project_ref=context.get('project_ref'),
+                    municipality_id=context.get('municipality_id'),archive_root=context['archive_root'],
+                    linked_vote_counts=context.get('closing_linked_vote_counts'))
+                if set(blank_time) & set(documentary_preservations):
+                    raise ValueError('Legacy row has competing documentary preservation types')
+                documentary_preservations.update(blank_time)
                 if set(reservations) & set(documentary_preservations):
                     raise ValueError('Legacy row cannot own both formal and documentary reservations')
+                from pipeline.backfill.supplemental_preservation import validate_supplemental_preservations
+                supplemental_preservations = validate_supplemental_preservations(review,source=source,inventory=claim_inventory,
+                    current_rows=existing_motions,meeting=meeting,project_ref=context.get('project_ref'),
+                    municipality_id=context.get('municipality_id'),archive_root=context['archive_root'])
+                if set(supplemental_preservations) & (set(reservations)|set(documentary_preservations)):
+                    raise ValueError('Legacy row cannot own primary and supplemental reservations')
+                from pipeline.backfill.closing_conflicts import validate_closing_conflicts
+                closing_conflicts = validate_closing_conflicts(review, source=source, inventory=claim_inventory,
+                    current_rows=existing_motions, meeting=meeting, project_ref=context.get('project_ref'),
+                    municipality_id=context.get('municipality_id'), archive_root=context['archive_root'],
+                    linked_vote_counts=context.get('closing_linked_vote_counts'))
+                if set(closing_conflicts) & (set(reservations)|set(documentary_preservations)|set(supplemental_preservations)):
+                    raise ValueError('Disputed closing cannot be a bound reservation')
         except (ValueError, OSError, KeyError) as error:
             return items, {'status': 'reviewed_legacy_occurrence_review_stale',
                            'held': [{'reason': 'reviewed_legacy_occurrence_review_stale', 'detail': str(error)}],
                            'source_motions': len(blocks)}
         from pipeline.backfill.scaffold_coverage import exact_scaffold_reservations
         reservations.update(exact_scaffold_reservations(source,claim_inventory,meeting,reservations))
-    bound_ids = {choices[0]['id'] for block, identity, choices in bindings if len(choices) == 1} | set(reservations) | set(documentary_preservations)
+        if set(supplemental_preservations) & set(reservations):
+            return items, {'status':'reviewed_legacy_occurrence_review_stale',
+                'held':[{'reason':'supplemental_primary_ownership_conflict'}], 'source_motions':len(blocks)}
+    bound_ids = {choices[0]['id'] for block, identity, choices in bindings if len(choices) == 1} | set(reservations) | set(documentary_preservations) | set(supplemental_preservations)
     unresolved = [row['id'] for row in existing_motions if row['id'] not in bound_ids]
-    all_current_bound = all(row['id'] in reservations or row['id'] in documentary_preservations or bound_source_motion(row, source, meeting['id'], claim_inventory) is not None for row in existing_motions)
-    held = [{'reason': ('reviewed_adjournment_narration_preserved_no_rewrite'
+    all_current_bound = all(row['id'] in reservations or row['id'] in documentary_preservations or row['id'] in supplemental_preservations or bound_source_motion(row, source, meeting['id'], claim_inventory) is not None for row in existing_motions)
+    held = [{'reason': ('reviewed_blank_time_adjournment_preserved_time_unknown_no_rewrite'
+                       if entry['type']=='reviewed_blank_time_adjournment_presence'
+                       else 'reviewed_adjournment_narration_preserved_no_rewrite'
                        if entry['type']=='reviewed_adjournment_narration_preservation'
                        else 'reviewed_documentary_claim_preserved_no_rewrite'), 'legacy_ids': [claim_id],
              'authority': 'documentary_preservation_only', 'review_sha256': entry['review_sha256']}
             for claim_id, entry in documentary_preservations.items()]
+    held.extend({'reason':'reviewed_supplemental_formal_claim_preserved_no_rewrite','legacy_ids':[claim_id],
+        'authority':'supplemental_occurrence_accounting_only',**entry} for claim_id,entry in supplemental_preservations.items())
+    held.extend({'reason':'existing_closing_outcome_unresolved_no_rewrite', 'legacy_ids':[claim_id],
+        'authority':'duplicate_screening_only_no_fact_certification', 'review_sha256':entry['review_sha256']}
+        for claim_id,entry in closing_conflicts.items())
     for block, identity, choices in bindings:
         reservation = next((entry for entry in reservations.values() if entry['block'] is block), None)
         if reservation:
@@ -212,7 +245,12 @@ def canonical_motion_plan(items, context, existing_motions):
         if len(choices) > 1 or (body_counts[key] != 1 and not new_current_occurrence and (len(choices) != 1 or bound_source_motion(choices[0], source, meeting['id'], claim_inventory) is not block)):
             held.append({'source_key': identity['key'], 'reason': 'ambiguous_legacy_or_source_body'})
             continue
-        if not choices and unresolved:
+        # Disputed closings remain unresolved: never enable the all-bound
+        # uniqueness fallback. Only each explicitly reviewed disjoint key may pass.
+        reviewed_disjoint = (bool(unresolved) and set(unresolved) <= set(closing_conflicts)
+            and all(identity['key'] in closing_conflicts[claim_id]['allowed_new_keys'] for claim_id in unresolved)
+            and text_occurrence_unique(source, block) and body_counts[key] == 1)
+        if not choices and unresolved and not reviewed_disjoint:
             held.append({'source_key': identity['key'], 'reason': 'unmapped_legacy_records', 'legacy_ids': unresolved})
             continue
         old = choices[0] if choices else None
@@ -293,7 +331,11 @@ def canonical_motion_plan(items, context, existing_motions):
                    'formal_source_coverage': 'partial_unparsed_formal_occurrences' if unparsed_formal else 'all_formal_envelopes_accounted_for',
                    'unparsed_formal_occurrence_leads': unparsed_formal, 'source_motions': len(blocks), 'held': held, 'unmapped_legacy_ids': unresolved,
                    'unbound_outcome_leads': unbound_outcomes,
+                   'unresolved_closing_conflict_ids': sorted(closing_conflicts),
                    'documentary_preserved_legacy_ids': sorted(documentary_preservations),
+                   'blank_time_documentary_preserved_legacy_ids': sorted(claim_id for claim_id,entry in documentary_preservations.items()
+                       if entry['type']=='reviewed_blank_time_adjournment_presence'),
+                   'supplemental_preserved_legacy_ids': sorted(supplemental_preservations),
                    'adjournment_narration_preserved_legacy_ids': sorted(claim_id for claim_id, entry in documentary_preservations.items()
                        if entry['type']=='reviewed_adjournment_narration_preservation'),
                    'mapped_motions': sum(len(item['motions']) for item in items)}

@@ -1,0 +1,521 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 274,
+    "title": "Regular Council",
+    "meeting_date": "2025-02-03",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2025/02/2025-02-04 700pm Regular Council [27547c9b]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2025/02/2025-02-04 700pm Regular Council [27547c9b]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "66fc79fb9dd6ecaa79c727d4043c0ec70f4a2cdeec19fc9e040c0fa709e2e81c",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13139"
+    },
+    {
+      "file": "archive/langford/Council/2025/02/2025-02-04 700pm Regular Council [27547c9b]/Minutes/Minutes.pdf",
+      "sha256": "216860cd19d333ce6c3d2fe4c14831d77919f351e523f404a62b82fa94f335fa",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13034"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2025/02/2025-02-04 700pm Regular Council [27547c9b]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13139",
+  "source_sha256": "66fc79fb9dd6ecaa79c727d4043c0ec70f4a2cdeec19fc9e040c0fa709e2e81c",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "8ed272bbef860f0d3743a568d2270b28edb8be4e4537469bbb30a68e73e35a3b",
+  "corrected_text_sha256": "8ed272bbef860f0d3743a568d2270b28edb8be4e4537469bbb30a68e73e35a3b",
+  "parsed_blocks_sha256": "7a0cfcc5e7255db1199b561344d88b82b36e4ba9b23b08c050eb6605521a8c73",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "e1c4410898a966385263a75c029224b8de52ca58524ffe64f8fc1bcb54f1f9a9",
+      "render_sha256": "26baeff7846d9d953bbba36b7d8ee6d49d73ac9ffd30b0c95671dc7449a11e04"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "c55a08f9fd37316e38804b343817ae9bd5bc3449d88c1cac004e16923bdc7b17",
+      "render_sha256": "502f8a4aad07ccfd495f5956bcd916edb4a916efe1f2c3551fcdbc9e78b6ad70"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "31386de931e0bcf407f594a4a00fa99d7ae270277eab2c76680379c20364fcb5",
+      "render_sha256": "c61e1835b24e358060c90f544286e32218e987a893ce6c8ec8ce231ea6f5e07d"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "d8a48fb265e5368c388681c6bb72ffa38dc5829faf4d0c80d2497b27e408ae8f",
+      "render_sha256": "cc79eaf706996e17660ad11beb85d5f50e9dc6d2e7a69a20ee489d9d8a7a5717"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "2e0744cb3b675cc26c0f4f73d391bce97b17fb39dc0448f1af7feade6aaf1c3a",
+      "render_sha256": "489a8794465f754af7a9b45b06865302bef450b3742323588f61005ebbbf2b15"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "c4b9a82a3094acd3ed7189387af50dd3ff8d68537d1ed5992db78f6784824baf",
+      "render_sha256": "5437e3bb03ee1690f2bf2d3b68a27d6ae8a2c4fef48651d60c163d6ac6822250"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "4aa9688e52679fe5a0dbaf45b67fc55859f4f6a23a41b7b11d319df635ae4bc2",
+      "render_sha256": "df6ac25be4885392a14f7dca9f547bd9ed0d1d52b5d62d0234b0aef51f1c57a4"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "6d8124a9925d4a37be8bfa0face9be46d03c6d1af840051b81e598ed84fd17c7",
+      "render_sha256": "159920dffa9df1ffab7760465cf995b2cd419aa70daa5ddbf910af23c1051cea"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "e99630503583b852d5be559db24488a82549e200b06934e00790210d55e894a5",
+      "render_sha256": "b2455cb8d30a5ab8b0100fc14cde3a81f1b512fbf28ad396f59633eff78c57ff"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "c049a11f65dfbb7a7ded54abb8bf967d3bcd503f8bb367f6811b6215c01b12e2",
+      "render_sha256": "3dad686594847e46e4dbedfdd8ecea9d0dd0f8475d3cbc48b94964ca826c8a06"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "050e8cd0d41377ea52e2f578cc91d52bad297a4bd6e1f5e73d7fa00754b7636f",
+      "render_sha256": "e60cea14dab5354d3c468de3099730f8ad11e8a843896cf5109f038e3718386e"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "851b254a998f5a7efdc21ecde674638f14739bfbc11793b2cfd14508c7e6c2b6",
+      "raw_block_sha256": "cfbf55b4f92264dcdd5a38b4a2ff8624f272c415815f61ddbda97696b43dc47c",
+      "operative_body": "THAT Council direct staff to provide notice that Council will consider issuing a Development Variance Permit for 3003 Irwin Road: a. That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off-street parking from the required 1.75 parking stalls per unit to 1.15 parking stalls per unit, subject to the following conditions: i. That a minimum of 0.1 parking stalls per unit is assigned to visitors; ii. That a minimum of 1.5 bike stalls per unit are provided; iii. That of the bike stalls provided, a minimum of 10 non-standard bicycle stalls per building are provided that are sized to accommodate the parking of larger options like cargo-bikes, e-bikes and mobility scooters; iv. That at least 50% of all secure bicycle parking spaces have access to a 110v charging outlet; v. That common bike tools, a bike wash station, and repair stand are provided; and vi. That a separate covenant be registered prior to issuance of a building permit for the proposed development that ensures residential parking is allocated to each unit and visitors as required by the zoning bylaw and is not provided in exchange for compensation separate from that of a residential unit.",
+      "operative_body_sha256": "013bba6a009ff7e11c9fc23c3f91014e385586c85ba018e7734591a57888805c",
+      "result": "CARRIED",
+      "pages": [
+        3,
+        4
+      ],
+      "page_evidence": [
+        {
+          "page": 3,
+          "native_text_sha256": "31386de931e0bcf407f594a4a00fa99d7ae270277eab2c76680379c20364fcb5",
+          "render_sha256": "c61e1835b24e358060c90f544286e32218e987a893ce6c8ec8ce231ea6f5e07d"
+        },
+        {
+          "page": 4,
+          "native_text_sha256": "d8a48fb265e5368c388681c6bb72ffa38dc5829faf4d0c80d2497b27e408ae8f",
+          "render_sha256": "cc79eaf706996e17660ad11beb85d5f50e9dc6d2e7a69a20ee489d9d8a7a5717"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9e067929fb192a7fc4e0a8ca4b84c1953a16ff744aea2546336e976d6ef69503",
+      "raw_block_sha256": "b89bd8cae9cf0e97cd0e5831998db8599697f98c7fd8713c95031042518a2ec3",
+      "operative_body": "THAT Temporary Use Permit No. TUP24-0005 be issued by the Council for the City of Langford to Almosthome Childcare on behalf of June and Darrell Kolodziejak to allow a daycare for up to twenty four (24) children on the property legally described as Lot 2, Section 5, Esquimalt District, Plan 26285, PID no. 002-742-349 (997 and 999 Goldstream Avenue), pursuant to section 493 of the Local Government Act, and subject to the following: 1. Expiry That the Temporary Use Permit is issued for a period of three (3) years and will expire on 3 February 2028.",
+      "operative_body_sha256": "30d26afe653c82fc45fa134ab419e1d760131c16fcadfe3dd3f0a133be8fab71",
+      "result": "CARRIED",
+      "pages": [
+        4
+      ],
+      "page_evidence": [
+        {
+          "page": 4,
+          "native_text_sha256": "d8a48fb265e5368c388681c6bb72ffa38dc5829faf4d0c80d2497b27e408ae8f",
+          "render_sha256": "cc79eaf706996e17660ad11beb85d5f50e9dc6d2e7a69a20ee489d9d8a7a5717"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7b533ffd4177ccedd721c4424a284b2cd330ea4abffc2cdf3ff2b9ae89aaeb6b",
+      "raw_block_sha256": "39636136251d8b7ff7b15cb56b46a9206d820378537b8ccbfe7070dc194996a6",
+      "operative_body": "THAT Development Variance Permit No. DVP24-0005 be issued by the Council for the City of Langford to Steven Smith of SC Smith Building by varying Subdivision and Development Servicing Bylaw No. 1000 to eliminate the requirement for works and services on the frontage of Lake End Road of the property legally described as Lot C, Section 116, Esquimalt District, Plan VIP89359, PID No. 028- 807-871 (2787 Lakeshore Place), pursuant to section 493 of the Local Government Act, and subject to the following: 1. Conditions That the applicant provide two (2) additional street trees in accordance with Bylaw No. 1000 to the satisfaction of the Director of Parks, Recreation, and Facilities.",
+      "operative_body_sha256": "87f9964500bd06e5380c5f23ec69a4760b56cdc3a66bc20c5edd7ee6e114584b",
+      "result": "CARRIED",
+      "pages": [
+        4,
+        5
+      ],
+      "page_evidence": [
+        {
+          "page": 4,
+          "native_text_sha256": "d8a48fb265e5368c388681c6bb72ffa38dc5829faf4d0c80d2497b27e408ae8f",
+          "render_sha256": "cc79eaf706996e17660ad11beb85d5f50e9dc6d2e7a69a20ee489d9d8a7a5717"
+        },
+        {
+          "page": 5,
+          "native_text_sha256": "2e0744cb3b675cc26c0f4f73d391bce97b17fb39dc0448f1af7feade6aaf1c3a",
+          "render_sha256": "489a8794465f754af7a9b45b06865302bef450b3742323588f61005ebbbf2b15"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "750c0fd900c23fd3a2d40418f372751d705714b91314debca5aec317302b618d",
+      "raw_block_sha256": "340f31675c3502ad106e7dbb395a761cdd875b8f375ed832c1c4e4668fa68eb0",
+      "operative_body": "THAT Development Variance Permit No. DVP24-0007 be issued by the Council for the City of Langford to Jason Maximick of Verity Construction Ltd on behalf of 1326656 BC Ltd by reducing the number of off-site parking stalls from 150 parking stalls to 120 parking stalls and to reduce the front lot line from 2m to 1.06m on the property legally described as Lot A, Section 5, Esquimalt District, Plan EPP121108, PID No. 031-802-281 (837 Hockley Avenue), pursuant to section 493 of the Local Government Act, and subject to the following: 1. Variances a)That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off- street parking from the required 150 spaces to 120 spaces, subject to the following conditions: i. Require 1.5 bike parking spots per unit of which five (5) will accommodate cargo bike and mobility scooter spaces, the addition of a bike wash and repair facility, and that bike parking be plumbed for electric bike charging to the satisfaction of the Director of Development Services. b) That Section 6.57.07(1)(a) of Zoning Bylaw No. 300 be varied to reduce the front lot line setback from the required 2.0 m to 1.06 m for the first two floors of the building, as shown to the Sustainable Development Advisory Committee on November 12, 2024, subject to the following conditions: i. That the owner, prior to the issuance of a Building Permit, registers a Section 219 covenant in priority of all other charges on title, that agrees to the following: 1. That the landscaping from the rear of the sidewalk, inclusive of the trees on the boulevard, be maintained by the property owner, to the satisfaction of the Director of Parks, Recreation, and Facilities.",
+      "operative_body_sha256": "4cec7d022998df2cceed28af88819b8ea3125eaa080629ebad82907a24b194f5",
+      "result": "CARRIED",
+      "pages": [
+        5
+      ],
+      "page_evidence": [
+        {
+          "page": 5,
+          "native_text_sha256": "2e0744cb3b675cc26c0f4f73d391bce97b17fb39dc0448f1af7feade6aaf1c3a",
+          "render_sha256": "489a8794465f754af7a9b45b06865302bef450b3742323588f61005ebbbf2b15"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9a29562ed196c58c489f01c4f1df9aca8b44740d6265d6ef52f5b8d768975bc3",
+      "raw_block_sha256": "c6247424fc30b154f6a81a68f3af46ab564a45a3bffae2d93fc615a9dfd6f00b",
+      "operative_body": "THAT the main motion be amended by replacing the words \"plumbed for\" with \"provided with\" in section 1ai.",
+      "operative_body_sha256": "bbe4183f27aba005ac8078d354d103de764d4a42649a9d94933bb5b02811eb93",
+      "result": "CARRIED",
+      "pages": [
+        6
+      ],
+      "page_evidence": [
+        {
+          "page": 6,
+          "native_text_sha256": "c4b9a82a3094acd3ed7189387af50dd3ff8d68537d1ed5992db78f6784824baf",
+          "render_sha256": "5437e3bb03ee1690f2bf2d3b68a27d6ae8a2c4fef48651d60c163d6ac6822250"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "1cc18acfdc665948d6376b33118b9a3d33cc477d942d15c1083b61a5eadb8700",
+      "raw_block_sha256": "e7d309de0570e4ace71b2910765f970387c9bb23cdb4d9c673e4cbbcbb50bf87",
+      "operative_body": "That Development Variance Permit No. DVP24-0008 be issued by the Council for the City of Langford to Alan Lowe of Alan Lowe Architect Inc. by reducing the number of off- street parking stalls from the required 1.25 per unit to 1.1 per unit on the property legally described as Lot 1, Section 73, Esquimalt District, Plan EPP127677, PID No. 031- 935-737 (797 Revilo Place), pursuant to section 493 of the Local Government Act, and subject to the following: 1. Variance a. That Table 1 of Section 4.01.01 be varied by reducing the minimum number of parking spaces required for an apartment in the City Centre from the required 1.25 spaces per dwelling unit to 1.10 vehicle spaces per dwelling unit, of which 0.10 shall be designated for visitor parking. Subject to the following condition: i. require 1.5 bike parking spots per unit, of which five (5) will accommodate cargo bike and mobility scooter spaces, the addition of a bike wash and repair facility, and that bike parking be provided with electric bike charging to the satisfaction of the Director of Development Services.",
+      "operative_body_sha256": "38a714d4e47eaffb35af8c8be9f11652b4275b5eeeddc4ae331fb68481d90398",
+      "result": "CARRIED",
+      "pages": [
+        6,
+        7
+      ],
+      "page_evidence": [
+        {
+          "page": 6,
+          "native_text_sha256": "c4b9a82a3094acd3ed7189387af50dd3ff8d68537d1ed5992db78f6784824baf",
+          "render_sha256": "5437e3bb03ee1690f2bf2d3b68a27d6ae8a2c4fef48651d60c163d6ac6822250"
+        },
+        {
+          "page": 7,
+          "native_text_sha256": "4aa9688e52679fe5a0dbaf45b67fc55859f4f6a23a41b7b11d319df635ae4bc2",
+          "render_sha256": "df6ac25be4885392a14f7dca9f547bd9ed0d1d52b5d62d0234b0aef51f1c57a4"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "435eb7a5ffcfdbd7b8dd9957de54d9af02e2a25896d2ecee4f7f3052e5b826a3",
+      "raw_block_sha256": "3fc483b2bbf2a60e7b1eb3c6de3f0a3398a40b592cd6ad1c9bc7a9e1b286b925",
+      "operative_body": "THAT Council approve the following recommended updates to the targeted completion dates and funding as noted throughout the 2023-2027 Council Strategic Plan Review Staff Report dated February 3, 2025: 1b: Amend completion to \"Q3 2025\" 1c: Mark as \"Completed\" 1d: Amend completion to \"Q4 2025\" and mark as \"Partially Funded\" 1e: Amend completion to \"Q1 2026\" and mark as \"Funded\" 1g: Mark as \"Completed\" 1h: Mark as \"Completed\" 1i: Mark as \"Funded\" 1j: Amend completion to \"Q3 2025\" 1k: Mark as \"Completed\" 1o: Mark as \"Completed\" 2a: Amend completion to \"Q1 2026\" and mark as \"Funded\" 2b: Mark as \"Completed\" and \"Funded\" 2d: Amend completion to \"Q3 2025\" 2e: Amend completion to \"Q1 2026\" 3a: Amend completion to \"Q1 2026\" 3c: Amend completion to \"Q1 2026\" 3f: Amend completion to \"Q1 2026\" 6a: Mark as \"Completed\" 6g: Mark as \"Completed\" AND THAT Council split objective 1f in the 2023-2027 Council Strategic Plan as follows: 1fa: Develop a Construction Impact Management Strategy and Early Guidance Document for Implementation (Funded, Q1 2025) 1fb: Draft the 'Good Neighbour' Policy and Priority Bylaws/Amendments for Adoption (Partially Funded, Q2 2026) AND THAT Council add the following new objective to the 2023-2027 Council Strategic Plan: 1q: Update the Environmental Development Permit Area Guidelines and Associated Maps (Funded, Q4 2025) Langford's Environmental Development Permit Area guidelines apply to areas of sensitive ecosystems, riparian areas, and areas of potential habitat and biodiversity. The guidelines inform how new development, land alteration activities, and construction within these designated areas should be done in order to protect, enhance, and mitigate impacts to sensitive and significant natural features. Updated guidelines will incorporate the objectives of the Urban Forest Management Plan as well as address gaps and opportunities in the current guidelines to improve outcomes and incorporate best practices. The associated OCP maps designating where the guidelines apply will be updated to ensure, as much as possible, that they accurately represent the current extent of these features. AND THAT Council direct staff to prepare a summary document of these amendments as an Appendix to the 2023-2027 Council Strategic Plan that can be made available to the public.",
+      "operative_body_sha256": "b98c1066254cdeee97c1ba4459b856d72d02ec1ce207b4c00de2b15ebd655049",
+      "result": "CARRIED",
+      "pages": [
+        7,
+        8
+      ],
+      "page_evidence": [
+        {
+          "page": 7,
+          "native_text_sha256": "4aa9688e52679fe5a0dbaf45b67fc55859f4f6a23a41b7b11d319df635ae4bc2",
+          "render_sha256": "df6ac25be4885392a14f7dca9f547bd9ed0d1d52b5d62d0234b0aef51f1c57a4"
+        },
+        {
+          "page": 8,
+          "native_text_sha256": "6d8124a9925d4a37be8bfa0face9be46d03c6d1af840051b81e598ed84fd17c7",
+          "render_sha256": "159920dffa9df1ffab7760465cf995b2cd419aa70daa5ddbf910af23c1051cea"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "lb:",
+          "printed": "1b:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "lc:",
+          "printed": "1c:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "ld:",
+          "printed": "1d:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "le:",
+          "printed": "1e:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "lg:",
+          "printed": "1g:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "lh:",
+          "printed": "1h:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "li:",
+          "printed": "1i:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "lj:",
+          "printed": "1j:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "10:",
+          "printed": "1o:",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        },
+        {
+          "native": "\"01 2026\"",
+          "printed": "\"Q1 2026\"",
+          "reason": "Page7 original image verifies objective labels and Q1 quarter glyphs; native retained unchanged."
+        }
+      ]
+    },
+    {
+      "source_key": "69ce960aef7d8a83985f23a7b74842858d567680b9782a7ca08c1381a84cc64d",
+      "raw_block_sha256": "493c70294f0b19e5a5898029aa3ce4e73643375b75c8df58d3342d0b1e2992d8",
+      "operative_body": "THAT Council endorse the following resolution: WHEREAS people who are postpartum may experience pelvic floor dysfunction, including incontinence, pain, and prolapse, as a direct result of pregnancy and childbirth, which significantly impacts quality of life, mental health, long-term physical well-being and creates inequitable financial burdens; AND WHEREAS the Canadian Physiotherapy Association recognizes pelvic floor physiotherapy as an evidence-based, non-invasive treatment option that improves postpartum recovery; however, the lack of both equitable access to pelvic floor physiotherapy and education about the benefits contributes to healthcare costs associated with untreated pelvic floor dysfunction, including corrective surgeries, chronic conditions and the expense of personal hygiene products; THEREFORE BE IT RESOLVED THAT the provincial government work with healthcare professionals, including physiotherapists, obstetricians, midwives and nurse practitioners to ensure postpartum care involves informing patients about and provides patients equitable access to pelvic floor assessments and physiotherapy services, regardless of income or insurance status; BE IT FURTHER RESOLVED THAT the Province of British Columbia implement a program to provide free pelvic floor physiotherapy treatments as part of the standard postpartum care under the BC Medical Services Plan (MSP).",
+      "operative_body_sha256": "f9fbd711fd6efc967ab701d6d4c8c562a350b55c32d7a73d4e53f810786ff9bf",
+      "result": "CARRIED",
+      "pages": [
+        8,
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 8,
+          "native_text_sha256": "6d8124a9925d4a37be8bfa0face9be46d03c6d1af840051b81e598ed84fd17c7",
+          "render_sha256": "159920dffa9df1ffab7760465cf995b2cd419aa70daa5ddbf910af23c1051cea"
+        },
+        {
+          "page": 9,
+          "native_text_sha256": "e99630503583b852d5be559db24488a82549e200b06934e00790210d55e894a5",
+          "render_sha256": "b2455cb8d30a5ab8b0100fc14cde3a81f1b512fbf28ad396f59633eff78c57ff"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d7de366a851ccf799b9092eb5f782e6b3bf40909d6221d2e7c58c66ff5a7982e",
+      "raw_block_sha256": "876e3258513e1df60a16dbdaf6d1dcf6c63fcefea928537ed2b131b4f0a3390e",
+      "operative_body": "THAT Council endorse the following resolution: WHEREAS in July 2024, following extensive consultation with First Nations and stakeholders, the Government of BC released its first-ever Coastal Marine Strategy, providing a 20-year vision of \"a diverse, productive and resilient coastal marine environment that is valued in its own right and that supports the prosperity, health and well-being of coastal communities now and into the future\" (p.3); AND WHEREAS the Coastal Marine Strategy details nine important goals (diverse marine life; abundant wild Pacific Salmon; a clean coast; climate-ready communities; a sustainable coastal economy; vibrant coastal communities; trusting, respectful relationships; a robust tool kit; and integrated and balanced management), but does not have the force of law, and codifying the Strategy into law will support its success and longevity rather than leaving it dependant on the priorities of the government of the day; THEREFORE BE IT RESOLVED THAT UBCM call on the Province of British Columbia to enshrine the B.C. Coastal Marine Strategy into law.",
+      "operative_body_sha256": "c77e8bc2a78a2f625aa4c3e48906b8c7ba49fc22379797b8739276ba8d79a0b9",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "e99630503583b852d5be559db24488a82549e200b06934e00790210d55e894a5",
+          "render_sha256": "b2455cb8d30a5ab8b0100fc14cde3a81f1b512fbf28ad396f59633eff78c57ff"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d3eb4aadb54b395a81990227ec5baba83a6409d4710565e2919f18889bb44c2d",
+      "raw_block_sha256": "64a70f950793c3e74d77de2a8a536e3868a50cd7bb2dc8277f8e768c9dde9506",
+      "operative_body": "THAT Council receive the 2024 Q4 - WSPR Facility Master Plan Progress Report for information.",
+      "operative_body_sha256": "b3d6805a5c16ad016cbd900549612e11ae2c912b01de5790e282f325790d0737",
+      "result": "CARRIED",
+      "pages": [
+        9,
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "e99630503583b852d5be559db24488a82549e200b06934e00790210d55e894a5",
+          "render_sha256": "b2455cb8d30a5ab8b0100fc14cde3a81f1b512fbf28ad396f59633eff78c57ff"
+        },
+        {
+          "page": 10,
+          "native_text_sha256": "c049a11f65dfbb7a7ded54abb8bf967d3bcd503f8bb367f6811b6215c01b12e2",
+          "render_sha256": "3dad686594847e46e4dbedfdd8ecea9d0dd0f8475d3cbc48b94964ca826c8a06"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "925c284fc0f5756f165407c12dd794132c0ce1d976c76a66509dee3d1cc16985",
+      "raw_block_sha256": "f35bfeabb82f8ac905458fbb50634384b019874d42bf702004205dc04e238a2a",
+      "operative_body": "THAT Council give \"Langford Zoning Bylaw, Amendment No. 719 (766, 770, 774, 778, 782 Meaford Avenue and 2911, 2912, 2914, 2916 Aprell Place), Bylaw No. 2169, 2024\", first, second and third readings.",
+      "operative_body_sha256": "842acbb5e0dc6a9be21ef36590f23a1e1305bed6a3c7ce76fdb83cbcca9d1d30",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "c049a11f65dfbb7a7ded54abb8bf967d3bcd503f8bb367f6811b6215c01b12e2",
+          "render_sha256": "3dad686594847e46e4dbedfdd8ecea9d0dd0f8475d3cbc48b94964ca826c8a06"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d87af5383b110fc3adbedb06f53b4833009ddb294de8f22a21e78a407ade19dc",
+      "raw_block_sha256": "a19f66f4ce564549e54f8900aaf89e953835686cc7b7a4894daa0da8a6d66cd6",
+      "operative_body": "THAT Council give Langford Zoning Bylaw, Amendment No. 739 (2830 Jacklin Road, 2825, 2827, 2829, and 2831 Knotty Pine Road), Bylaw No. 2204, 2024, first second and third readings.",
+      "operative_body_sha256": "758790894feb70e24617b66eb12a1442d403fcaecb57005ad98caaf1b827eaf8",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "c049a11f65dfbb7a7ded54abb8bf967d3bcd503f8bb367f6811b6215c01b12e2",
+          "render_sha256": "3dad686594847e46e4dbedfdd8ecea9d0dd0f8475d3cbc48b94964ca826c8a06"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d742ea0862ef7093185ae4417538d514e942e8a698cf13e4dac29310157450dc",
+      "raw_block_sha256": "0a8a14c4d76b3c1735609fbc25c6282554b053245deedd947612bd11eaa3e04a",
+      "operative_body": "THAT Council give Langford Zoning Bylaw, Amendment No. 746 (691 Kodiak Way), Bylaw No. 2217, 2025, first, second and third readings.",
+      "operative_body_sha256": "4d9ad6d3b0f55efad96ebb5f81d4bb7d6fe541fb4f0dc543816f62d072a7cb71",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "c049a11f65dfbb7a7ded54abb8bf967d3bcd503f8bb367f6811b6215c01b12e2",
+          "render_sha256": "3dad686594847e46e4dbedfdd8ecea9d0dd0f8475d3cbc48b94964ca826c8a06"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7544726586ff3487766d7a0194121710613c31557b8a9316ca2b8e927b1f6bc7",
+      "raw_block_sha256": "389204158ed3c10a59b2688dbb29f7888e970c8a48a5946861ab15c28c046d7f",
+      "operative_body": "Council Resolves that in the event the United States imposes unjustified tariffs on Canadian goods exported to the United States, Council directs staff as follows: To support and collaborate with all levels of government, including the provincial economic task force. And to align our efforts with the countermeasures deemed necessary by the provincial and federal governments. AND To follow the procurement practices of the Province where possible to ensure the City's purchases are directed to products made in Canada or other tariff affected countries. AND Once the budget is approved, to expedite shovel-ready projects to help maintain economic activity in Langford. AND Confer with local Langford businesses who will be affected by future exports to the US to understand the impact on their operations and promote local businesses through targeted awareness campaigns.",
+      "operative_body_sha256": "d9ec27ed317195a4f0d6759559582cfd1bb2fb53d8aace8ad0e13afec39f26b9",
+      "result": "CARRIED",
+      "pages": [
+        10,
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "c049a11f65dfbb7a7ded54abb8bf967d3bcd503f8bb367f6811b6215c01b12e2",
+          "render_sha256": "3dad686594847e46e4dbedfdd8ecea9d0dd0f8475d3cbc48b94964ca826c8a06"
+        },
+        {
+          "page": 11,
+          "native_text_sha256": "050e8cd0d41377ea52e2f578cc91d52bad297a4bd6e1f5e73d7fa00754b7636f",
+          "render_sha256": "e60cea14dab5354d3c468de3099730f8ad11e8a843896cf5109f038e3718386e"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9f0d65bd84059dc49435198514a46a9ee403b9eb68f10265c4d7b74dfd12dec7",
+      "raw_block_sha256": "074c5d1119266abe147f42a1e44f1a5cd5314e7450ba18d1d2a701ec15cc4384",
+      "operative_body": "THAT Council close the meeting at 9:37pm to the public pursuant to section 90 (1) (e) of the Community Charter to consider: \u2022 the acquisition, disposition or expropriation of land or improvements, if the council considers that disclosure could reasonably be expected to harm the interests of the municipality.",
+      "operative_body_sha256": "6578831e4063f5414ef6db8f08fae32fdb7ca7f6f09cf1b77107a55a9a7f6ae4",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "050e8cd0d41377ea52e2f578cc91d52bad297a4bd6e1f5e73d7fa00754b7636f",
+          "render_sha256": "e60cea14dab5354d3c468de3099730f8ad11e8a843896cf5109f038e3718386e"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6e315f0b1ab2cefa4899b8818629709e9360e085891a84a9a542782583576595",
+      "raw_block_sha256": "1d3938b0607cd3cb8f4e7905d489947ce45e2aa779295b7b116e279a6cb63cc0",
+      "operative_body": "THAT Council adjourn the meeting at 10:02 pm.",
+      "operative_body_sha256": "00306c344c83064ad6ae7cef33ceb088d5534115f7988003444924fbafd3ed51",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "050e8cd0d41377ea52e2f578cc91d52bad297a4bd6e1f5e73d7fa00754b7636f",
+          "render_sha256": "e60cea14dab5354d3c468de3099730f8ad11e8a843896cf5109f038e3718386e"
+        }
+      ],
+      "independent_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "e1c4410898a966385263a75c029224b8de52ca58524ffe64f8fc1bcb54f1f9a9",
+  "independent_original_image_review_sha256": "b1fa1742c0f424c8ca4d22acc7a3d162bb2c1a447338fb1c8201a01b8951d84f",
+  "second_independent_original_image_review_sha256": "102233bfb77eba33f167b563a4c208eead29749c92a1c95ee5fbc39e5f633737",
+  "remaining_holds": [
+    {
+      "reason": "Initial Revilo DVP24-0008 draft precedes an amendment and a full reprinted amended main, each with its own CARRIED. Preserve the unresulted draft diagnostic; no third vote or synthetic main.",
+      "pages": [
+        6,
+        7
+      ],
+      "authority": "coverage_diagnostic_only"
+    }
+  ]
+}

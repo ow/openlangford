@@ -1,0 +1,476 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 308,
+    "title": "Regular Council",
+    "meeting_date": "2023-07-17",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449"
+    },
+    {
+      "file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes.pdf",
+      "sha256": "c5a813a5c26eef6707f8b3b3c98e7287e0bbff1eefd48edcedf059d539ac489b",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=6829"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+  "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "b14ad489c903597a74efdc8ceef212647463e6e3ff76ecaf4ae35c76df162bcb",
+  "corrected_text_sha256": "b14ad489c903597a74efdc8ceef212647463e6e3ff76ecaf4ae35c76df162bcb",
+  "parsed_blocks_sha256": "8c02d51034d53bfaa2c5fd7bb72067258ad5ec4d8ed13d358e24a41b503de7ed",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "6504964a6356785cdc6903462ecd5d379a0a8f04da0bdcc78688d52826742c02",
+      "render_sha256": "bc420337e247069438340a346761d534dfb2328e06e7eb0b98f89e7bca0d9984"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "6375aab84b835fdef97f10c8f7534eedfdffa221639416195541198d23bebcb2",
+      "render_sha256": "f58af2c5823ed85fc71b8e072af474bac5000f297c1ebcf5e454998c08444d01"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "89e88e91175ad678524a19cd8e7178994bc547531e2e6411397ed17bbc5f6714",
+      "render_sha256": "02fb03fedc393b03cc0829eda6825e11d79b480e14c3f346788390d344661074"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "210d66b7114c9037c46c4b37fcfaf362f926b9a764c7ffc91608448c9edf1163",
+      "render_sha256": "f87fc19e8f91ff14b079dc3147188a551c450c3ee841aa910f06d5245acddfaa"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "fdd892b6cd73a51ee032e6e8d84928676a7be6dbf42cd39eaa9dffd33e9a8451",
+      "render_sha256": "9f0f9b70496237671f29bf090cf90a826b3dc3a328bc94642ee0eb14d4230a75"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "2b001343b08b7cfe1dcd079e4149bfdf5ef03287f739c8698bd3effcb8308bb5",
+      "render_sha256": "412fd60acdf349a1f8046421222a79c7e87e75ff6ec13c3ca5a07a6d2577cb03"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "a54a988e83c4a8576e39f5deed5d40c3291246cbe994a79be972b4e988acfe01",
+      "render_sha256": "e62ac6307447c582a55da05ceebf0572c6d2545fce08f8f0ce1d4cd9e0038608"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "51e272aaf01469e0741a2262898cc62d13ca6a62423cc599a7bad08b6b2ad70a",
+      "render_sha256": "d53a8c52de945400788ce57d46a44bd8f554a55f93914bfe2d58869e5fbaac05"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "a4e0990453ff1e616afd22a70702a33ca4864df2eac80297cca9a3d610053a8e",
+      "render_sha256": "43cdfbf1cc2ac5cf5c87dda1ca87aac9b244668c00062fad23de365eac2a70ca"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "4500b7e66b2265a82aa02e0744a709601399cc7d41325ab343f1c30a7b038c97",
+      "render_sha256": "391e381860ebb0b7c27b5f76cd735d6adc2209515108d26169ae6e4b82178d82"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "7078d41f209e5d0fdf482ddaa29cde69c5aad38d17c44ebebff40cb12dc611e6",
+      "render_sha256": "ccefb0254ea712d93760074395bc18542d75c5e95d311e8ea4d3b5d8bfc539e6"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "d0316ce4d2d936aa70c6477d68075a66408ccdfbede1563ff45a230c049e36b4",
+      "render_sha256": "f125c49bd1f216aea338b80a5e4328122c1bcdb360b219f23c2ba05212eca2e0"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "47b7e1b69f193a319ec82bd760439cd9a52e485f0a615d71dcff44e9a7cdc690",
+      "render_sha256": "78fbbfd87d712385fc172cfba8f65c44cbfc6e261307d7fbb3559f14d3199fb1"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "b125a8a3427a3a06a5997d9d4dd77e3a902c1e400abe619110ce42c8b48076bc",
+      "render_sha256": "72f7ddb62a74aae58b7353febcca4ca8b8563d6e6162c1ff470c4e7474ae5661"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "536802585926bb797566f10a50f058d2a636eae49a2c44329b23c80b7638fce1",
+      "render_sha256": "84da71759259f7a046d04d5555c03bc1fd01f150565a0cdc4030396344243cdf"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "6df7ea77ba782134e5e0b96fdff36db6fdda78ebd248b59822170d7a1facc802",
+      "render_sha256": "c0c923ca24d4e34696fdbf19564b268e023167c74cd91b72c18d70ed611eb4ac"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "7f06d729fea1ec0d8785f8b25380b4ef41f00e5b6db07d91731e307c995ca6ed",
+      "render_sha256": "144c0ab93dbcf239e21c34cea7f0001f0e9fa257473b4b3cccb604bd59b0398b"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "a9057b8293f9cad3904b4b8c3c2b3cb738bcf8f279ab513cd2cbdd38a6e97890",
+      "raw_block_sha256": "78337f8e92945c2e3e9074e4d58b41b64282b4e69738fd6f9e9a31d79ebbe3ea",
+      "operative_body": "That Development Variance Permit No. DVP22-0013 be issued by the Council for the City of Langford to Beedie (Langford Ridge) Holdings Ltd., Inc. No. BC1096234 to allow a two- point turnaround in lieu of a cul-de-sac at 2750 Leigh Road, subject to the following terms and conditions: 1. Variances The following regulation of Subdivision and Development Servicing Bylaw No. 1000 is varied pursuant to section 498 of the Local Government Act: a) That Schedule 4 be varied to allow a permanent two-point turnaround in a statutory right-of way, to be registered at the time of road dedication, in lieu of a cul-de-sac.",
+      "operative_body_sha256": "a1a11f97a8718a9a52e093678e1880e084c13f7a75aae73c078fc20415a5d957",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "7078d41f209e5d0fdf482ddaa29cde69c5aad38d17c44ebebff40cb12dc611e6",
+          "render_sha256": "ccefb0254ea712d93760074395bc18542d75c5e95d311e8ea4d3b5d8bfc539e6"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "56d0f4404b57a7815bb284301c17ab67f22d015fa3341469e2912771919eb93a",
+      "raw_block_sha256": "7a048db7860ac630ff61462888381e29cfa7af5612735b13ed6dc39e73c6aa95",
+      "operative_body": "That Temporary Use Permit No. TUP20-0002 be issued by the Council for the City of Langford to Flight Cannabis Co. on behalf of 1163038 BC Ltd. to continue their cannabis retail operation by extending the current Temporary Use Permit for a three-year period at 101-977 Langford Parkway subject to the following terms and conditions: 1. Whereas: a) The non-medicinal use of cannabis and cannabis related products has historically been prohibited by federal law in Canada and, as a result, has historically been prohibited by the City under its Zoning Bylaw No. 300; b) On October 17, 2018, the Federal Government legalized the non-medicinal use of cannabis and cannabis products; c) The Federal Government and the Provincial Government have developed a regulatory framework for the retail sale of cannabis and cannabis products for non-medicinal use; d) The City wishes to authorize the retail sale of cannabis and cannabis products within its boundaries, but recognizes that there are challenges associated with it doing so; e) The City issued the Request for Proposals for the Retail Sales of Cannabis and Cannabis Related Products to seek proposals from individuals and organizations interested in undertaking the retail sale of cannabis and cannabis products for non- medicinal use within the City's boundaries, and required that proposals include details as to how the challenges with the retail sale of cannabis and cannabis products would be addressed; f) The City received and reviewed over 30 proposals in response to the Request For Proposals, and identified Flight Cannabis Co. proposal as one that best addressed the challenges with the retail sale of cannabis and cannabis products; g) Flight Cannabis Co. is committed to assisting the City and taking positive steps to address the challenges with the retail sale of cannabis and cannabis products; Now therefore be it resolved that Council issue Temporary Use Permit TUP20-0002 to Flight Cannabis Co. for it to operate a Cannabis Retail Store at 101-977 Langford Parkway for an additional three-year term subject to the terms and conditions in the Temporary Use Permit originally issued by Council on June 1, 2020 and amended by Council on September 20, 2021.",
+      "operative_body_sha256": "0740e40bc1b21caf940766ad6d9bb00f9e113fa01aa18442b21b5b4e51d624ed",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "7078d41f209e5d0fdf482ddaa29cde69c5aad38d17c44ebebff40cb12dc611e6",
+          "render_sha256": "ccefb0254ea712d93760074395bc18542d75c5e95d311e8ea4d3b5d8bfc539e6"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "d0316ce4d2d936aa70c6477d68075a66408ccdfbede1563ff45a230c049e36b4",
+          "render_sha256": "f125c49bd1f216aea338b80a5e4328122c1bcdb360b219f23c2ba05212eca2e0"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "4a0232e636dd574f48d3147440188c2e8c998d8fd78d645f572a7c603a3f2b72",
+      "raw_block_sha256": "572b0d370dcd05f47084d79eafeec8c45e7b1476202fbfc2c028de918deaf5a6",
+      "operative_body": "That Temporary Use Permit No. TUP23-0001 be issued by the Council for the City of Langford to Jinglei Wang and Bin Hu to permit a catering home occupation in a two- family dwelling at 2578 Wentwich Road, subject to the following terms and conditions: 1. Conditions The following conditions are imposed pursuant to section 493 of the Local Government Act: a) That the Temporary Use Permit is issued for a period of three years from time of issuance; b) That the operator of a home occupation obtains a Business Licence from the City of Langford; c) That the operator of a home occupation complies with all licensing, health and other application regulations of British Columbia and the Capital Regional District; d) That the home occupation does not produce noise, vibration, smoke, dust, odour, litter, or heat, other than that normally associated with a dwelling; e) That the minimum on-site parking requirements of the Zoning Bylaw 300 are met; f) That home occupation does not cause an increase in demand for, or usage of, on-site parking or parking on the adjacent street beyond what would normally be associated with two visitors per hour to residential premises between the hours of 9:00am and 6:00pm, Monday to Friday, and one visitor per hour at other times; g) Except for one unilluminated sign not exceeding 0.2m\u00b2 (2.2 ft\u00b2) in area, no sign or other advertising matter may be exhibited or displayed on the premises or lot where a home occupation is conducted.",
+      "operative_body_sha256": "51ef8c6b1944f9bb87c6e27789ae7a992c9132a7d48987e803a87d3a2b77134d",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "d0316ce4d2d936aa70c6477d68075a66408ccdfbede1563ff45a230c049e36b4",
+          "render_sha256": "f125c49bd1f216aea338b80a5e4328122c1bcdb360b219f23c2ba05212eca2e0"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "47b7e1b69f193a319ec82bd760439cd9a52e485f0a615d71dcff44e9a7cdc690",
+          "render_sha256": "78fbbfd87d712385fc172cfba8f65c44cbfc6e261307d7fbb3559f14d3199fb1"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "0.2m2 (2.2 ft2)",
+          "printed": "0.2m\u00b2 (2.2 ft\u00b2)",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "48b5de9a162e343c71be35c07361324008363810ea0f92be49bd059061194f71",
+      "raw_block_sha256": "094c5ae754d28a40ffbe49672a5f57a09bd1dd563d796cfa4b86b1f9ef8dfc6a",
+      "operative_body": "That Temporary Use Permit No. TUP23-0003 be issued by the Council for the City of Langford to Burkhart Construction Management Inc. on behalf of Daniel Graham Winter to operate a standalone daycare at 2773 Strathmore Road, subject to the following terms and conditions: 1. Conditions The following conditions are imposed pursuant to section 493 of the Local Government Act: a) That the group daycare is limited to a capacity of 28 children, and may also be operated as a standalone use without the proprietor of the daycare living on-site; b) That the requirement for a form and character development permit is waived, subject to the applicant altering the land as per the attached site plan; and c) That the applicant makes an application for rezoning within 36 months of issuance of this Temporary Use Permit if they wish to continue this use beyond the three-year term.",
+      "operative_body_sha256": "0d7acdb170f703f16150f39e7e522e17e1c98ad633081f2c4ae9fff228a4176a",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "47b7e1b69f193a319ec82bd760439cd9a52e485f0a615d71dcff44e9a7cdc690",
+          "render_sha256": "78fbbfd87d712385fc172cfba8f65c44cbfc6e261307d7fbb3559f14d3199fb1"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "42ad6d3e01247fabfbff3d8748954f93acd87b0c2e9c3e1dd36d6194ef0a2ea0",
+      "raw_block_sha256": "a5b1c40042e3673600e50f4ab626341c1477600afee2396d6360ac61ff562cb5",
+      "operative_body": "THAT Council approve the Lease Agreement and direct that it be signed by the Mayor and Corporate Officer or Chief Administrative Officer on the terms substantially as presented, although minor amendments may be made prior to signing.",
+      "operative_body_sha256": "f38d972331137bb57e1e0f792166240442bc6b6102a7381582b4fd13b636292f",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "b125a8a3427a3a06a5997d9d4dd77e3a902c1e400abe619110ce42c8b48076bc",
+          "render_sha256": "72f7ddb62a74aae58b7353febcca4ca8b8563d6e6162c1ff470c4e7474ae5661"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "ff49752a8717273fcf38707c51ad0ed80c8207db6e01564ea3f30ae2dd9b10b5",
+      "raw_block_sha256": "d09b00e006920b76b01061c9b90e4a44bac69f521862386233aee7d939ebf8bf",
+      "operative_body": "THAT Council direct staff to send a letter to Superintendent Preston (Westshore RCMP), with a copy to the Chair of School District No. 62 (Sooke) as well as the following organizations: \u2022 Songhees First Nations \u2022 Esquimalt Nation \u2022 City of Colwood \u2022 City of Victoria \u2022 District of Highlands \u2022 District of Metchosin \u2022 District of Oak Bay \u2022 Township of Esquimalt \u2022 Inspector Rose Westshore RCMP Stating that Langford Council wish to support and encourage the ongoing School Liaison Program in School District No. 62 (Sooke) schools with their current approaches.",
+      "operative_body_sha256": "593d422ce69208daa9eddef8c51b699ad47cf40d2e67fcc82f19528796b355c3",
+      "result": "CARRIED",
+      "pages": [
+        14,
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "b125a8a3427a3a06a5997d9d4dd77e3a902c1e400abe619110ce42c8b48076bc",
+          "render_sha256": "72f7ddb62a74aae58b7353febcca4ca8b8563d6e6162c1ff470c4e7474ae5661"
+        },
+        {
+          "page": 15,
+          "native_text_sha256": "536802585926bb797566f10a50f058d2a636eae49a2c44329b23c80b7638fce1",
+          "render_sha256": "84da71759259f7a046d04d5555c03bc1fd01f150565a0cdc4030396344243cdf"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "ab5d86688e9a7018e4e81bde3961124584886dceceee19bc97901e463ea15453",
+      "raw_block_sha256": "02d04f969c5014f2265619d3101a8d121c4c0644b7fa127c48cd1217dbeee710",
+      "operative_body": "THAT Council adopt Bylaw No. 2012.",
+      "operative_body_sha256": "ce61b69902e61c8087c5ef1dcd753091ce11df349fa43012e718aa4d32485ab5",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "536802585926bb797566f10a50f058d2a636eae49a2c44329b23c80b7638fce1",
+          "render_sha256": "84da71759259f7a046d04d5555c03bc1fd01f150565a0cdc4030396344243cdf"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "97b30f22652ce29d87470629559ddd794698872f5e20ddcdc311ba07750226a9",
+      "raw_block_sha256": "9226057ea96bcceae658f2b2db01c14bd336b4639a69ee76a48756a9e7cd7399",
+      "operative_body": "THAT Council give second and third reading to Bylaw No. 2082",
+      "operative_body_sha256": "d9f11fd49985b41f6edee31f9a4dbb0b20fe655fa0e0637bf6441fc881e96ae2",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "536802585926bb797566f10a50f058d2a636eae49a2c44329b23c80b7638fce1",
+          "render_sha256": "84da71759259f7a046d04d5555c03bc1fd01f150565a0cdc4030396344243cdf"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7fedeff5f68e45eac8c969ab2f39d20ac3f907bd4886d47b5bf466c9b2a5c4fc",
+      "raw_block_sha256": "485193bc5ae83abb5ed5302e2ac02aa5c0d0308da7bb8a9bf6c87d59bb40a835",
+      "operative_body": "THAT Council give second and third reading to Bylaw No. 2099.",
+      "operative_body_sha256": "7654656750fea5fee480827e2c66a5a5bfd0246976903ebfe6c702d0193ec3e2",
+      "result": "CARRIED",
+      "pages": [
+        15,
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "536802585926bb797566f10a50f058d2a636eae49a2c44329b23c80b7638fce1",
+          "render_sha256": "84da71759259f7a046d04d5555c03bc1fd01f150565a0cdc4030396344243cdf"
+        },
+        {
+          "page": 16,
+          "native_text_sha256": "6df7ea77ba782134e5e0b96fdff36db6fdda78ebd248b59822170d7a1facc802",
+          "render_sha256": "c0c923ca24d4e34696fdbf19564b268e023167c74cd91b72c18d70ed611eb4ac"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "ca66f24601e0bc9b5c4be0fce8191adb241588ec242f7af9390b23e831e99227",
+      "raw_block_sha256": "70c7d231dc924d00f0b409f002bad9df532ea2f099efaca72a9da5453c07b313",
+      "operative_body": "THAT Council adopt Bylaw No. 2103.",
+      "operative_body_sha256": "95dc3a041feae10467f3190ec05c3eff21202f0457e7be54762a17f0a61a6e97",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "6df7ea77ba782134e5e0b96fdff36db6fdda78ebd248b59822170d7a1facc802",
+          "render_sha256": "c0c923ca24d4e34696fdbf19564b268e023167c74cd91b72c18d70ed611eb4ac"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "2fa31f1d3ca6fe5ebb1390744c55605a27f5d2a1245ef79e6d5dc4f5598f5852",
+      "raw_block_sha256": "9b0782c113f9779343eee7b366afd465ecee47a791edec56605cce8b0b8c6599",
+      "operative_body": "THAT Council adopt Bylaw No. 2136.",
+      "operative_body_sha256": "c69f3c8aa65a08f2d16c58a9d8d22702fa2697c5bffd4f0a6398ca2a58e9ab2a",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "6df7ea77ba782134e5e0b96fdff36db6fdda78ebd248b59822170d7a1facc802",
+          "render_sha256": "c0c923ca24d4e34696fdbf19564b268e023167c74cd91b72c18d70ed611eb4ac"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d0e39c0b12f26a75a7352317458406855e9a7a3d3fd4a71e6737b7a469c37c87",
+      "raw_block_sha256": "e61774bd932f75421a9b78b714810efc628f4acca508d6d5075d378a75050736",
+      "operative_body": "THAT Council give Bylaw No. 2137 first reading.",
+      "operative_body_sha256": "9a06e4238e0a244430bc5a9f72c08129a1f197da9e14c886e575308bc648daf5",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "6df7ea77ba782134e5e0b96fdff36db6fdda78ebd248b59822170d7a1facc802",
+          "render_sha256": "c0c923ca24d4e34696fdbf19564b268e023167c74cd91b72c18d70ed611eb4ac"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5ee999bc3914efa279b763a5455157fea7bbad05b9e38fc95bd7a876cec43cc7",
+      "raw_block_sha256": "d0032d8f1ba98a0452d101d98529321abd7f5068e146d1a8d1465ed0b317d642",
+      "operative_body": "THAT Council provide First, Second and Third Readings of Bylaw 2140 - Bylaw Notice Enforcement, 2021 Amendment No. 2, 2023 to amend Bylaw No. 1980, Bylaw Notice Enforcement Bylaw, 2021.",
+      "operative_body_sha256": "7725a3612cbca9c9c498f86dd02c24f8a651d89dab1ab3c9674062886a915aeb",
+      "result": "CARRIED",
+      "pages": [
+        16,
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "6df7ea77ba782134e5e0b96fdff36db6fdda78ebd248b59822170d7a1facc802",
+          "render_sha256": "c0c923ca24d4e34696fdbf19564b268e023167c74cd91b72c18d70ed611eb4ac"
+        },
+        {
+          "page": 17,
+          "native_text_sha256": "7f06d729fea1ec0d8785f8b25380b4ef41f00e5b6db07d91731e307c995ca6ed",
+          "render_sha256": "144c0ab93dbcf239e21c34cea7f0001f0e9fa257473b4b3cccb604bd59b0398b"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "10c4af8b1dafbf62504babd72d96acb589d6e0877a730b33ffc08a62ef41a702",
+      "raw_block_sha256": "c3a2e2a8146415724cfd11acdf028d4831cb7a5dbcdb036e345516467c1d6ed9",
+      "operative_body": "THAT Council adjourn the meeting at 9:47 p.m.",
+      "operative_body_sha256": "f32c14014068ff11b6756638a0edd668b78ca84e820b3a15c1adc7453253e6b7",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "7f06d729fea1ec0d8785f8b25380b4ef41f00e5b6db07d91731e307c995ca6ed",
+          "render_sha256": "144c0ab93dbcf239e21c34cea7f0001f0e9fa257473b4b3cccb604bd59b0398b"
+        }
+      ],
+      "independent_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "6504964a6356785cdc6903462ecd5d379a0a8f04da0bdcc78688d52826742c02",
+  "independent_original_image_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+  "second_independent_original_image_review_sha256": "8bcc28dcf75012570d6513642f9f752d7cfffff91158df31107ae171baf97346",
+  "remaining_holds": [
+    {
+      "source_order": 16,
+      "source_key": "b99fd345ab8b641cc99551bd792ed1aa51f863a0bce1cdba5e9e31b99f8ec13d",
+      "heading": "11.1 Lower Island Soccer Association - Lease Rental at City Centre Park",
+      "reason": "Distinct printed lease vote has identical full body to another occurrence. Leave outside explicit first-batch allowlist; do not collapse occurrences or relax uniqueness.",
+      "pages": [
+        13,
+        14
+      ]
+    },
+    {
+      "source_order": 18,
+      "source_key": "c522ea0a4d30b990b108a58caae1e6616fe8662c03457cb27e8aa0fc0140aa25",
+      "heading": "11.3 Pacific Coast Hockey Academy Lease Rental at City Centre Park",
+      "reason": "Distinct printed lease vote has identical full body to another occurrence. Leave outside explicit first-batch allowlist; do not collapse occurrences or relax uniqueness.",
+      "pages": [
+        13,
+        14
+      ]
+    },
+    {
+      "source_order": 19,
+      "source_key": "85c0fd8ce9868698cef6bf490f76c0b7843e9970ab1598735eafcd73d772a7c6",
+      "heading": "11.4 School District No.62 - Lease Rental at City Centre Park",
+      "reason": "Distinct printed lease vote has identical full body to another occurrence. Leave outside explicit first-batch allowlist; do not collapse occurrences or relax uniqueness.",
+      "pages": [
+        13,
+        14
+      ]
+    }
+  ]
+}

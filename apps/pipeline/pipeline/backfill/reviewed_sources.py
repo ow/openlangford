@@ -16,7 +16,36 @@ from pipeline.ingestion.canonical_motions import source_identity
 
 STORE = Path(__file__).parent / 'data' / 'source-reviews'
 ENROLLED = {
-    199: '66c11f752c94ab780a318cb18efa797e250109ed9c3dada5e869ee3581b9e224',
+    30: '2c2e1e0d74e001c90f9f0c05d275331c7ac9846e38561114d6387cea8fc0e31e',
+    69: '92214c24d6d5e1c2e29214adab1731d8da4d2bf611e09a04861b67597a58d48a',
+    164: '4450f972275bb602e000d2a82b315eda09d1aff93ca2d6f5fcea725564f47a9c',
+    150: '207f4db4702b3748d5adb83708f07cee7974b3b0f6e379b8b066da56593e7159',
+    227: '3ba8f91ad460e36946033b6f18cb85cb8c7fd1f67a0aff9d70bcb2d0e78db414',
+    98: 'e38fb6cdd348ccdd207c3dac1d24912384355fb688cf60245b6a8405e61ab63b',
+    62: '23268493722ec1766b05f9e1c7f851189a9984de0db4dfa2527bb59aa8ba08f4',
+    55: 'a01138d8eaabc1f8d81146a68f9b5939c40cc6329d5cbbce2a93b57e36cd4579',
+    216: '47defe201c1e0d0dacd40351d44fd9e42c2ec7934ee10095ccad2e9416c17cf9',
+    239: '2c27f79d17c3a9c1e18b2aba723565b7dabb544de1fa45e61855e42c7cba80dd',
+    271: '082086ed1d201ecffac8335e89c5bf4d2f408a65a780ca452d194fc8678aa417',
+    252: '892da0232acf048bb02a6b8b049440b0057cc1af3ab725b98989ccf7d1548fce',
+    103: '2030f48d899a83887952e1ce1f238875eb3d762a2349edc6870f4a8f916dd0b6',
+    369: '76c733ee05fed15847166235e4afbf9222dbe7662b053d261217c84f8913894d',
+    79: '29e14b2dc8c0cfee471ba6939a95e23f81d68dbfd004e65ac9979dd2f2ae216c',
+    364: '48796e22423bb3b48b8338b4228fc84d89353dbb09000bb5b2eb2cca755f876e',
+    274: 'd040990bdf6dcba5f554a5ddaa787511a1209661f5116d607bb602ad3324344d',
+    193: 'd1785004974013e35a96b6ab9fac964f8e076428b6fe60e3359d3c68e7bcf0a8',
+    76: 'cc70f193ea7df28c79f9c11d6cb63944dd3e4baa82692a7fbb22f54a6e9b5653',
+    110: '52f2541a5d6fab073c5913ef1a5996bdda27060cc15e59719dcd8a1d7597d923',
+    360: '6e85c0e451507c7c4051fec15215dd7d8b64572919d812834886a1e6c7f42a0e',
+    308: '086a56d6b9becaf8e53914be57d92a5eb55e10251a03106f015d8f35146eb193',
+    56: 'b6556204a3a1cfe65acb4536275079327cba1ac7b63f656301558d04695137b0',
+    53: '2f8b9a892ba43e04639dacbb6121796a0711b806b52ad5bd38be2bf78e2320d2',
+    111: '03b58d2d17351afdc5999f86f896bb52b8e3d255a8b195a11bcec233d12fb4cd',
+    158: 'a6c08d83434b79b50dc37d53f5a6fbffad0dc17902bd5e882fe390a187ba2c74',
+    323: '68b1d68c96a54b31d9c52130462c31c4bca848d232f4c70c65723622e5ac52dd',
+    237: 'bbf7bfeac57e0677d6e762710c80bb3452262e1521bba54e6e0d848f299f19db',
+    89: '25f4e65268ae7ac562eaee52098cb144c746b2f2d901e5d7f4b522dec894365d',
+    75: 'a1a37885c38fde7784d864e523dc7f7be0914b0507ad2f3d3584d1d480d9347d',
     215: '4807df122679fa0dcdd0552485cfea243f0fba210dfa1bf448222a8e08ed9f7c',
     42: 'd7670a977e457a0a7af2e3908bb3983d60ffa1d9556eff7ccf461b1d0eba910d',
     223: 'fdbfb0bbe762ca77e9ec466765df0b4ab8fa3a9e806e6768b644a502cd63df1b',
@@ -38,6 +67,11 @@ ENROLLED = {
     117: '0afaf9ebdf98204a6d6457de4f6ffb9e27c3bfaf6767d48ead0a433502be3c0a',
     253: '8a5a7e1380d8c38438c58bda3ed856ecc70ff7c29d31c67bb0524375cb222975',
     337: '09023361e738d4f99307d9bf2d1c698295a947a1a6452fca094f8f4d6f07b597',
+    32: '05e52804245c99c92dde0e5738c6e510b4ba565f0021b2c1bda66ce38899faaf',
+    297: 'e37775f07b76f8184e8d6a05db1bdf953fab7ea003e9ac832d5f8cf3b3e21ff6',
+    99: '4b43d62527fff397d36e5739cb0c3d6a529e451ec1f7add3e918e4cea527bad5',
+    361: 'e09af104f7bc327b3aaab2663ed7efd701f05208820b513ac2a59f3d197a0ace',
+    199: '66c11f752c94ab780a318cb18efa797e250109ed9c3dada5e869ee3581b9e224',
 }
 
 
@@ -236,8 +270,10 @@ def source_from_review(review, *, meeting, root, people, cache_dir, project_ref,
         source.update(operative_views=views,present=[],header_attendance=None,
                       source_date_evidence={'method':'reviewed_original_scan_header','review_sha256':digest(review),
                                             'raw_ocr_header':source['source_header']},
-                      roster_unknown=['scan_not_attendance_or_ballot_authority'],
-                      source_review_holds=review.get('remaining_holds',[]))
+                      roster_unknown=['scan_not_attendance_or_ballot_authority'])
+    # Reviewed notes stay diagnostic across native and scanned admissions;
+    # their presence cannot grant operative, source-key or ballot authority.
+    source['source_review_holds']=review.get('remaining_holds',[])
     return source
 
 

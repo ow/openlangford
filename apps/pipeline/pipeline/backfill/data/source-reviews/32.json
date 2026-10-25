@@ -1,0 +1,1383 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 32,
+    "title": "Regular Council",
+    "meeting_date": "2021-02-16",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2021/02/2021-02-16 530pm Regular Council [76a00d42]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2021/02/2021-02-16 530pm Regular Council [76a00d42]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "16a9574902dc5411387895cfee39a268e220404548bab3f61f702988fa8ece69",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13700"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2021/02/2021-02-16 530pm Regular Council [76a00d42]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13700",
+  "source_sha256": "16a9574902dc5411387895cfee39a268e220404548bab3f61f702988fa8ece69",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "64f20a2ae761b1244589085878f1ef7664e4716e9071688e16925b87c8d5a6a0",
+  "corrected_text_sha256": "64f20a2ae761b1244589085878f1ef7664e4716e9071688e16925b87c8d5a6a0",
+  "parsed_blocks_sha256": "6e794335a04720cce421420382b56eaec9841411024e2cdfe820e051951d83fc",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "feb37d8fcf60b6e3c7d075af8eefeed7cb084601bd76a4b57309bdf9fe4a5da9",
+      "render_sha256": "53cb26a1b7c6b03b2c4bf9e2abf8d65407de3e9417d087f49a04140058ddd9a6"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "501dcfedbbccb44ffa8aa5bd14c33b66b4e82f95e64d76381020286e2f783618",
+      "render_sha256": "b36fed3d4c647738aa4c3edd6c18b861e59bf00db81ca7388b69f2efd0446be8"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "fd382bc48a5472bcd0ada72012f5f46b7806d2c44195846a79ae55282f4fa6ee",
+      "render_sha256": "7da3a60ea8d0555f932691cf206c0176f972e69716b37c3f4bd67699fa4478e8"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "f6fceeb4ba39de080c2d4faab2db6524e5ea080070e86dc85ba3bf0a4a7d9eac",
+      "render_sha256": "aeebfff753f16e3c03c142bd4eac0c99c001f0d294fac9991fddf9cdd529433c"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "f7416e7bfa9a7124d23ede3c205573c2753d2cdde2a7903582d563f2d33c2f42",
+      "render_sha256": "1d78958d9996c1a6b532e18a0dd4871d1f249aff1440df75300c507a362ab352"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "167bbe5687bb697b91f13e296e0d372092cae18420539fa69b5dbd3b91bdeb08",
+      "render_sha256": "1b358bd91b26de6f5260b6d921e6bd81f6c104713e6ace8b8156ac0c305c96e3"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "36543b828bbc54eb0ff65520feac0ef0ba1f633d4ce9284a7139f4173d17fa8b",
+      "render_sha256": "38e084340fdeb5ecea5305e3a9afbfe53c1932ffd2baf738d8016b2d338e79c9"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "221fb9bddb4feb94bb1e526361bec4ab70a8d8f4fee5ce4fe1ba1d9a4fc166c6",
+      "render_sha256": "9c4d4362b0d0d5e4a62ac89b20829d2efa53edcbc26e1f7b2324379c217ebe95"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "0370a882c4912f14e1e3f3252b22e5b9cc5e577b31089b602eaf9bbcc6daef4b",
+      "render_sha256": "defdc4eeb794cc14ba96b6440795a32e3fe25326519396ef4b23d13a86cd66bc"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "2d6055aadce54b7d81d4c92d8ca8e90d07a63649897fd3c665e315422a1f501b",
+      "render_sha256": "193507be1b7742f8104e74d90f7327aa4144c58eb693afed45180775098cff3c"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "90ec53728323c8695eef5582d64b2f8a73e63cef0215f60932ad25ec44e82393",
+      "render_sha256": "31fcadc37aec63cc910f1712c1552cb807a706f344a83e951df314fc03ca26f5"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "2c8af5094108ea276828d1eadeb9a11289d8e58a47ccb44fb3f2a1341d228191",
+      "render_sha256": "c1ab529c0b643ddb57543572d4148159524480b6bf8164adc526f9eae30c9a9e"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "fd7dc4a7643edadc3cf07e6d0372305f821d9bfc27c7c9cc9efd7f0e83a04939",
+      "render_sha256": "fae0df157a75153ce95367a72e9327cac3efe7e83cbc2e3381783232a6c3e178"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "a1b5814720b106131a9ff3aa8764514db1cd1a718ea1f0b54ebd3e65d96033e1",
+      "render_sha256": "81fd37e3f8047cf0a13937ed725de2f1d562ba2a44d175d617cf6353b506549f"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "b9ea296a19696115c9ece5300615d0386f3a8c99e03754d073de940542fd30f3",
+      "render_sha256": "8c7c0b57d6898124e46ac2cee92925eec7d07c310abdf5b335be73ed2d533828"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "c651072b36afe0aaba3a6aefeae3b0694c4a55bfa407494d5a42e2b7be2e811f",
+      "render_sha256": "fefe3fa7c95eee87a740f3ac34525a055d89db3a09746efc74e09acd1e7744b6"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "a6332fb8e8e33970e4f099cc06c0c39f2f18f423a7966e3c06df9bb182aba16f",
+      "render_sha256": "5516623bc21e2d95941bc3ef52f5fb226bb836bc32c974459bbf6f8d4a66e215"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "9283a489d741316cc0994e2f503a9bded83a4ff06b75bc847ed4ccfd056a371e",
+      "render_sha256": "889cf4bae26337cfeb6c4033ff194204f735ac1ba47079ffaad2a91f0718551c"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "bc1838ab9af48a16c20c058ea1146ded7c07ba5b3d39a9d33f3a79d9f9ed9fad",
+      "render_sha256": "5118cc078adf14d549ef33adb0d69a8c3836a4f7e840516d826a61c715c00a68"
+    },
+    {
+      "page": 20,
+      "native_text_sha256": "f8a428d2cf4c72271fcc888c21b1e135ac8680e8bd4b421208672a3f27580ff4",
+      "render_sha256": "dcb5992c04fe1fde9650263358113f636d75b8fda47ccc24ed29652e65342f81"
+    },
+    {
+      "page": 21,
+      "native_text_sha256": "8b4f01882b94c6f3d563387842975e3a8fcfd79ae2848c2cef1989f312bc8480",
+      "render_sha256": "ba239091094ae7879822cbae533899bac7c9fa3f8085b4c49b101d05519018fa"
+    },
+    {
+      "page": 22,
+      "native_text_sha256": "708a3797a704af24e906f6b7c84226369117b5d535fb2055c9fb20a49556073c",
+      "render_sha256": "0d1c1aa76035237e2e6a0c0e3574ab350be96880d855591575d9ebc9b12a4d15"
+    },
+    {
+      "page": 23,
+      "native_text_sha256": "883b0b349ded019d6b066552f59e7881632688e00a3e2137d3ddc3fee1b006fd",
+      "render_sha256": "ad8f8e7d1f5fe407e3900478f213e6b115ca58d3b33a855aaf2d5abea96252f8"
+    },
+    {
+      "page": 24,
+      "native_text_sha256": "abcdc6cac87a9867c195197672245d2c6349bd6a9f3ae2d44e650158fb618221",
+      "render_sha256": "8756b5c8def4aa72360f80970af3c364b26eaa8bf1fa046b26c013dffeb5716d"
+    },
+    {
+      "page": 25,
+      "native_text_sha256": "fe81e349a26ffbf9907f5df1aa97bbf1955f3b74742b85e45a4cce1eaf45f85f",
+      "render_sha256": "8af5f2b021a11cae78dc1920dc14f0a2bbb73fedaf292f8f4f88b16883cb1d10"
+    },
+    {
+      "page": 26,
+      "native_text_sha256": "8504aebaad732f6d4841e5ef2db4117994d19a3a654c0acaf6ef8b29c61415d7",
+      "render_sha256": "0b31b22433b5085add78f23a9a7ad6a28fa59110bf6bd93afa7ff7ef80f476ac"
+    },
+    {
+      "page": 27,
+      "native_text_sha256": "681c0724b9f94cd88f11af601d12322e18416bd8a5c806c11e02a56776f267b4",
+      "render_sha256": "d23cf1178c646cb37a72f988474d7b3bfbc0cc1670e84bf77c39f0b555bfb6f8"
+    },
+    {
+      "page": 28,
+      "native_text_sha256": "85e21a5163f9f10546db248e2923931fb2db9b6cd19a7e52e2e52c1965a073c5",
+      "render_sha256": "9261449e3550e30ca1dcbda19068b6e07dd3248f4f8d647e2bbad3e763f8e643"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "014bd70e530d08691bd570d6711758980c94bc88b6b5bb729eb431c958e51fa9",
+      "raw_block_sha256": "f4dde59a79fe1f3bcfacf1c356091b3160ee2e53f0b7f4df9f7f467688c16566",
+      "operative_body": "That Council 1. Approve in principle the Planning and Land Development Services Five Year Financial Plan as presented and forward to the Director of Finance for consideration and inclusion in the City's 2021 - 2025 Five Year Financial Plan; AND 3. Direct Staff to prepare a bylaw to amend the City's Development Procedures Bylaw (Bylaw No. 209) to include an increase to planning related fees commensurate with the percentage rate of increase of property taxes increase in Public Hearing fees to reflect the new costs associated with advertising (newspaper ads and signage); AND 4. Direct Staff to review the Land Development fee schedule to ensure that it is in line with Other municipalities and is as streamlined as possible.",
+      "operative_body_sha256": "64b8cc5e8e2f28065562b8e3d0001550974cd16b8b7398c060cb98cc2fcd3c39",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "2d6055aadce54b7d81d4c92d8ca8e90d07a63649897fd3c665e315422a1f501b",
+          "render_sha256": "193507be1b7742f8104e74d90f7327aa4144c58eb693afed45180775098cff3c"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "cc2800e00434d4ade77f052137e221c59a7e8a00c9806bb6541710bc9feb59ba",
+      "raw_block_sha256": "4baddcbfdeed375d0d61bd8db76f4f8d9f12f159f975ccf9b21a1b55375778f0",
+      "operative_body": "That Council receive the Minutes of the Administration and Finance Committee held on February 9, 2021.",
+      "operative_body_sha256": "e9efbfc6727ff3768b8b095109ad86563bf8b2f9d663a1c72adb93ba73cc84f7",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "2d6055aadce54b7d81d4c92d8ca8e90d07a63649897fd3c665e315422a1f501b",
+          "render_sha256": "193507be1b7742f8104e74d90f7327aa4144c58eb693afed45180775098cff3c"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "54bad27afb3a70c8e216693fbdfd6c4542cca84cfdbd3a3b76373348ac3e6b78",
+      "raw_block_sha256": "29f9409b45584e1be8f81d3482837d44b1de51ee8377ab6009948a3e550aa8ba",
+      "operative_body": "That Council Approve in principle the General Government Five Year Financial Plan for 2021-2025 as presented in the staff report dated February 9, 2021 and refer it to the Director of Finance for consideration and inclusion in the consolidated 2021-2025 Five Year Financial Plan.",
+      "operative_body_sha256": "50b75053d69108ee0674edb2b12a34a3347822b2f2e6c59f5898b3293ae1a598",
+      "result": "CARRIED",
+      "pages": [
+        10,
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "2d6055aadce54b7d81d4c92d8ca8e90d07a63649897fd3c665e315422a1f501b",
+          "render_sha256": "193507be1b7742f8104e74d90f7327aa4144c58eb693afed45180775098cff3c"
+        },
+        {
+          "page": 11,
+          "native_text_sha256": "90ec53728323c8695eef5582d64b2f8a73e63cef0215f60932ad25ec44e82393",
+          "render_sha256": "31fcadc37aec63cc910f1712c1552cb807a706f344a83e951df314fc03ca26f5"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "February 16, 2021\n                                                                                                          Page 11 of 28\n\n\n\n\nThat Council\n\n\n       Approve in principle the General Government Five Year Financial Plan for 2021-2025 as\n       presented in the staff report dated February 9, 2021 and refer it to the Director of Finance for\n        consideration and inclusion in the consolidated 2021-2025 Five Year Financial Plan.",
+          "printed": "\nThat Council\n\n\n       Approve in principle the General Government Five Year Financial Plan for 2021-2025 as\n       presented in the staff report dated February 9, 2021 and refer it to the Director of Finance for\n        consideration and inclusion in the consolidated 2021-2025 Five Year Financial Plan.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        }
+      ]
+    },
+    {
+      "source_key": "72984b737afbb7f0aa9ecfc2e4f8ebf60571abd30a209c24bc95832b5a5aa24b",
+      "raw_block_sha256": "55682893941d3d4f76ea36493eb231ffeb44165bb3b83dba96e9871df2a75fe2",
+      "operative_body": "That Council Approve the City of Langford disbursements from January 2021, as outlined in the Accounts Payable Report dated February 04, 2021.",
+      "operative_body_sha256": "bcc4d05a9a12cf61dea885ec596fb8bd58e0713ff4f858d7c33ab0e47a20fa71",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "90ec53728323c8695eef5582d64b2f8a73e63cef0215f60932ad25ec44e82393",
+          "render_sha256": "31fcadc37aec63cc910f1712c1552cb807a706f344a83e951df314fc03ca26f5"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7cfc9c4d1d25c4e3bbd8a161c612ea2eb026f7aecb298a9da4def6c3283153ec",
+      "raw_block_sha256": "32e985e9538994827ad5ef7adb7ef9ef8fe86742938cab708dfbb5eacda9b301",
+      "operative_body": "That Council Approve the following funding applications, or deny due to budgetary constraints, for the year 2021: 1. Historically Funded Requests: a) Vancouver Island South Film and Media Commission - $5,000 to promote the industry; b) Greater Victoria Bike to Work Society - $1,500 to offer two bike skills programs to Langford youth; c) Royal Canadian Legion - $3,000 for Remembrance Day luncheon; plus, funding of $3,000 towards a Christmas Dinner 2021; d) Goldstream Nature House - Chums sponsorship program $1,000; e) Big Brothers Big Sisters of Victoria and Area - $2,000 for mentoring program f) Open Gate Church $4,000 to provide fresh produce to needy individuals and families in the Westshore; g) Victoria Sexual Assault Centre $5,000 contribution towards maintaining the Sexual Assault clinic which supports Langford residents; and h) Victoria Women's Transition House Society -funding of $3,000 for support of the Victoria Women's Transition House Violence is Preventable Program. 2. New Requests: j) Fed Urban Agriculture Society - $1,000 for garden kits for those disproportionately affected by pandemic. Provide education on food awareness and food security; and k) Juan de Fuca Senior Citizens Association - $3,000 towards the installation of two hands-free door openers for two of the six washrooms in the Juan de Fuca 55+ Activity Centre. That Council deny the following requests: i) Wild Wise no amount indicated, donation for education on coexisting with wild animals.",
+      "operative_body_sha256": "0fbbb89e2c0b561d1fb562d2c746e97ea9408b6509d59cde772f170f1c237ca6",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "90ec53728323c8695eef5582d64b2f8a73e63cef0215f60932ad25ec44e82393",
+          "render_sha256": "31fcadc37aec63cc910f1712c1552cb807a706f344a83e951df314fc03ca26f5"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "2c8af5094108ea276828d1eadeb9a11289d8e58a47ccb44fb3f2a1341d228191",
+          "render_sha256": "c1ab529c0b643ddb57543572d4148159524480b6bf8164adc526f9eae30c9a9e"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council\n\n\n        Approve the following funding applications, or deny due to budgetary constraints, for the year 2021:\n                    1. Historically Funded Requests:\n                            a) Vancouver Island South Film and Media Commission - $5,000 to promote the\n                              industry;\n                            b) Greater Victoria Bike to Work Society - $1,500 to offer two bike skills programs\n                              to Langford youth;\n                            c) Royal Canadian Legion - $3,000 for Remembrance Day luncheon; plus, funding of\n                               $3,000 towards a Christmas Dinner 2021;\n                            d) Goldstream Nature House - Chums sponsorship program $1,000;\n                            e) Big Brothers Big Sisters of Victoria and Area - $2,000 for mentoring program\n                            f) Open Gate Church $4,000 to provide fresh produce to needy individuals and\n                              families in the Westshore;\n                            g) Victoria Sexual Assault Centre $5,000 contribution towards maintaining the\n                              Sexual Assault clinic which supports Langford residents; and\n                            h) Victoria Women's Transition House Society -funding of $3,000 for support of the\n                               Victoria Women's Transition House Violence is Preventable Program.\n\n                    2. New Requests:\n\n                                                                                                    February 16, 2021\n                                                                                                        Page 12 of 28\n\n\n                          j) Fed Urban Agriculture Society - $1,000 for garden kits for those\n                          disproportionately affected by pandemic. Provide education on food awareness\n                          and food security; and\n                          k) Juan de Fuca Senior CitizensAssociation - $3,000 towards the installation of two\n                          hands-free door openers for two of the six washrooms in the Juan de Fuca 55+\n                          Activity Centre.\n\n       That Council deny the following requests:\n\n                          i) Wild Wise no amount indicated, donation for education on coexisting with wild\n                          animals.",
+          "printed": "That Council\n\n\n        Approve the following funding applications, or deny due to budgetary constraints, for the year 2021:\n                    1. Historically Funded Requests:\n                            a) Vancouver Island South Film and Media Commission - $5,000 to promote the\n                              industry;\n                            b) Greater Victoria Bike to Work Society - $1,500 to offer two bike skills programs\n                              to Langford youth;\n                            c) Royal Canadian Legion - $3,000 for Remembrance Day luncheon; plus, funding of\n                               $3,000 towards a Christmas Dinner 2021;\n                            d) Goldstream Nature House - Chums sponsorship program $1,000;\n                            e) Big Brothers Big Sisters of Victoria and Area - $2,000 for mentoring program\n                            f) Open Gate Church $4,000 to provide fresh produce to needy individuals and\n                              families in the Westshore;\n                            g) Victoria Sexual Assault Centre $5,000 contribution towards maintaining the\n                              Sexual Assault clinic which supports Langford residents; and\n                            h) Victoria Women's Transition House Society -funding of $3,000 for support of the\n                               Victoria Women's Transition House Violence is Preventable Program.\n\n                    2. New Requests:\n\nj) Fed Urban Agriculture Society - $1,000 for garden kits for those\n                          disproportionately affected by pandemic. Provide education on food awareness\n                          and food security; and\n                          k) Juan de Fuca Senior CitizensAssociation - $3,000 towards the installation of two\n                          hands-free door openers for two of the six washrooms in the Juan de Fuca 55+\n                          Activity Centre.\n\n       That Council deny the following requests:\n\n                          i) Wild Wise no amount indicated, donation for education on coexisting with wild\n                          animals.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        },
+        {
+          "native": "CitizensAssociation",
+          "printed": "Citizens Association",
+          "reason": "Printed word spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "a52be6812134dfec75faaaebecb18116e05eff1313c2ac5b6a187099c38f3c35",
+      "raw_block_sha256": "393ea207fc9e01b0fc44587e340b43c152a41d96aba6499be13a54b288577892",
+      "operative_body": "That Council 1. Approve the live streaming and recording/archiving of council meetings and direct staff to include the necessary costs within the 2021 budget; AND 2. Direct staff to look into agenda management software.",
+      "operative_body_sha256": "0e9af436b1f548ac8b7a2b615dcd87ad938e3bd140fc4af04ba0fd0c4e0df8b1",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "2c8af5094108ea276828d1eadeb9a11289d8e58a47ccb44fb3f2a1341d228191",
+          "render_sha256": "c1ab529c0b643ddb57543572d4148159524480b6bf8164adc526f9eae30c9a9e"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "dba9cef11d7105e0d7a2e2392d3c0c32a18c01141851d845c2f3b40a896b172f",
+      "raw_block_sha256": "99e43e1396355ed0d602ca715ff42f7208550b548eca4ca9ea9183478ada5930",
+      "operative_body": "That Council receive the minutes of the Transportation and Public Works Committee held on February 9, 2021.",
+      "operative_body_sha256": "e9b5792c99e0742b9120928dab3a3075ce2330d25ac0f7e2982666a1138424bd",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "2c8af5094108ea276828d1eadeb9a11289d8e58a47ccb44fb3f2a1341d228191",
+          "render_sha256": "c1ab529c0b643ddb57543572d4148159524480b6bf8164adc526f9eae30c9a9e"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "bb8c783f9aa9e065c72459348dd60d8c0319fc6e33bc379ad40f6136c314c7c5",
+      "raw_block_sha256": "304687fbaac125b976be4883f21b21c489b3a75f7706f9465eb0ee499a764713",
+      "operative_body": "That Council 1. Approve in principle the Engineering Department Five Year Financial Plan for 2021-2025 as presented in the staff report dated February 9, 2021 and refer it to the Director of Finance for consideration and inclusion in the consolidated 2021 - 2025 Five Year Financial Plan.",
+      "operative_body_sha256": "3bc991fa2b369ed031cea628b604bcd367425e94b72b2a4bcaa45b1b6fb891c2",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "2c8af5094108ea276828d1eadeb9a11289d8e58a47ccb44fb3f2a1341d228191",
+          "render_sha256": "c1ab529c0b643ddb57543572d4148159524480b6bf8164adc526f9eae30c9a9e"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "fd7dc4a7643edadc3cf07e6d0372305f821d9bfc27c7c9cc9efd7f0e83a04939",
+          "render_sha256": "fae0df157a75153ce95367a72e9327cac3efe7e83cbc2e3381783232a6c3e178"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council\n\n\n        1.   Approve in principle the Engineering Department Five Year Financial Plan for 2021-2025 as\n             presented in the staff report dated February 9, 2021 and refer it to the Director of Finance for\n\n                                                                                                   February 16, 2021\n                                                                                                       Page 13 of 28\n\n\n            consideration and inclusion in the consolidated 2021 - 2025 Five Year Financial Plan.",
+          "printed": "That Council\n\n\n        1.   Approve in principle the Engineering Department Five Year Financial Plan for 2021-2025 as\n             presented in the staff report dated February 9, 2021 and refer it to the Director of Finance for\n\nconsideration and inclusion in the consolidated 2021 - 2025 Five Year Financial Plan.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        }
+      ]
+    },
+    {
+      "source_key": "97228abd840cf9d724b2178d89da40fc85ec96d836547b0983795ee7da698b28",
+      "raw_block_sha256": "02732ef7c1e7b1dc9d7d90e4e3c6b01eeac83c6937c7a0fed4d5f64a8cf0cd32",
+      "operative_body": "That Council receive the Minutes of the Protective Services Committee held on February 11, 2021.",
+      "operative_body_sha256": "e90d0d58abd9f5b15433b2f7987f9ba3aa314018ea5e63f89a225af8ccc2c025",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fd7dc4a7643edadc3cf07e6d0372305f821d9bfc27c7c9cc9efd7f0e83a04939",
+          "render_sha256": "fae0df157a75153ce95367a72e9327cac3efe7e83cbc2e3381783232a6c3e178"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a647ae5356a627044767b17094e44b8d9264e0c1c96ebbfb3f1e3b843a0a0aaf",
+      "raw_block_sha256": "5d474d91281ba0cdfd9a1d4786d03d656b9fc62abf39a0fad7b44a35f5cc2191",
+      "operative_body": "That Council 1. Council adopt the attached policy relating to parking enforcement in the City of Langford.",
+      "operative_body_sha256": "803d89e71bfc79afb60dd50ff1691d7b6ecdfb7ed8d8dbd3d5b3916f8be6654f",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fd7dc4a7643edadc3cf07e6d0372305f821d9bfc27c7c9cc9efd7f0e83a04939",
+          "render_sha256": "fae0df157a75153ce95367a72e9327cac3efe7e83cbc2e3381783232a6c3e178"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "fe3cad76ed288d2b9a6672d2beac7211224a7f07fcb3831a9e67dc70407de50d",
+      "raw_block_sha256": "39920b66306f4a86d463b30ae3237554cd74ba27e9b54014f6607dd9f5e08042",
+      "operative_body": "That Council 1. Approve the amended Secondary Suite Enforcement Policy; AND 2. Direct staff to bring forward the necessary amendments to the MTI Authorization Bylaw and Bylaw Enforcement Notice Bylaw where necessary to facilitate the application of penalties which will support the implementation and application of this Policy; AND 3. Direct staff to bring forward the necessary amendments to the Zoning Bylaw to update the Definitions and violation sections as proposed by the Planning Department to provide clarification and improved enforceability to staff when addressing public complaints about secondary suites.",
+      "operative_body_sha256": "f627c47e96a63be42118e01e6cf8fcee388ccee6b2e6b5d00589daf827b0f03c",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fd7dc4a7643edadc3cf07e6d0372305f821d9bfc27c7c9cc9efd7f0e83a04939",
+          "render_sha256": "fae0df157a75153ce95367a72e9327cac3efe7e83cbc2e3381783232a6c3e178"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "43f76194078fe81c55260caf75382973e2aec86df1e689ce31dc73fb0378375b",
+      "raw_block_sha256": "2c67d71cd8c4af3328380a32abda44b1e2909b02cdf97fc9b6f836238da8792e",
+      "operative_body": "That Council 1. Approve in principle the Fire Department Five Year Financial Plan for 2021-2025 as presented in the staff report dated February 11, 2021 and refer it to the Director of Finance for consideration and inclusion in the consolidated 2021 - 2025 Five Year Financial Plan.",
+      "operative_body_sha256": "ce60a315f35392c5788d872ebf14cbd4606f26010f1fc19603d03d08b94e722c",
+      "result": "CARRIED",
+      "pages": [
+        13,
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fd7dc4a7643edadc3cf07e6d0372305f821d9bfc27c7c9cc9efd7f0e83a04939",
+          "render_sha256": "fae0df157a75153ce95367a72e9327cac3efe7e83cbc2e3381783232a6c3e178"
+        },
+        {
+          "page": 14,
+          "native_text_sha256": "a1b5814720b106131a9ff3aa8764514db1cd1a718ea1f0b54ebd3e65d96033e1",
+          "render_sha256": "81fd37e3f8047cf0a13937ed725de2f1d562ba2a44d175d617cf6353b506549f"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "fe666e69fdf4ffad6c03cb46f66ade2b2f8e9c89461f5f8d9a1c53a2fb1fab69",
+      "raw_block_sha256": "676236a25d9e14c76c85888826b8753cc9e6c9a910223d6a8e34a7122d44cf6d",
+      "operative_body": "That Council 1. Approve in principle the Building Department Five Year Financial Plan for 2021-2025 as presented in the staff report dated February 11, 2021 and refer it to the Director of Finance for consideration and inclusion in the consolidated 2021 - 2025 Five Year Financial Plan.",
+      "operative_body_sha256": "4361964b32661d652c6e6572fd5f71841643df4dcd408a8a61d40ff4ee0f43f4",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "a1b5814720b106131a9ff3aa8764514db1cd1a718ea1f0b54ebd3e65d96033e1",
+          "render_sha256": "81fd37e3f8047cf0a13937ed725de2f1d562ba2a44d175d617cf6353b506549f"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c977052ec0f50c8ebed4604ad7f8adfcebb3565dc793d21828b738e0ed48a93f",
+      "raw_block_sha256": "40a991021abf546bba18206b5cee774c6fe08a4f15d683972b55716a64c7be53",
+      "operative_body": "That Council 1. Approve in principle the Police Services Five Year Financial Plan for 2021-2025 as presented in the staff report dated February 11, 2021 and refer it to the Director of Finance for consideration and inclusion in the consolidated 2021 - 2025 Five Year Financial Plan.",
+      "operative_body_sha256": "584ba09e04f6759e26c92325b0de97890775056188a59c97f2181c8ad0b2e418",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "a1b5814720b106131a9ff3aa8764514db1cd1a718ea1f0b54ebd3e65d96033e1",
+          "render_sha256": "81fd37e3f8047cf0a13937ed725de2f1d562ba2a44d175d617cf6353b506549f"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "92a38c22cd1662508a38be78d16c5fdb793e2500c08f4137f303b14fbde312cf",
+      "raw_block_sha256": "ebd8dac10b4c3e6b9ebf8996e6eba429b2c31f4248857c4cd0f87d97851ba665",
+      "operative_body": "That Council 1. Approve in principle the 2021-2025 Community Safety and Municipal Bylaw Enforcement Department Five Year Financial Plan and refer it to the Director of Finance for consideration and inclusion in the consolidated 2021 - 2025 Five Year Financial Plan.",
+      "operative_body_sha256": "19bde5dc315460e77c6bfdc0021e7cb7a245d6677a56b711c69aa5d2ee8f5e87",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "a1b5814720b106131a9ff3aa8764514db1cd1a718ea1f0b54ebd3e65d96033e1",
+          "render_sha256": "81fd37e3f8047cf0a13937ed725de2f1d562ba2a44d175d617cf6353b506549f"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e41de667a6ba05eb308f47ff76e7502a6fcbf933e317090900b5bd36eb1b8d45",
+      "raw_block_sha256": "258b4d268100e6707dfd567a5444f4c78ac5298b96902812fb0bf6862ed09ae7",
+      "operative_body": "That Council Table this matter and bring it back to a future meeting for further discussion.",
+      "operative_body_sha256": "07ebc2ffffa2550ba3b7ba7a31b1f87c9faab625722a38ca4e9ebd16d4d60ce6",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "b9ea296a19696115c9ece5300615d0386f3a8c99e03754d073de940542fd30f3",
+          "render_sha256": "8c7c0b57d6898124e46ac2cee92925eec7d07c310abdf5b335be73ed2d533828"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7a9360dc6cf63407b4ba18d94a964bc35ea21cd4bc3ff3ee0f1bd35e40c9d523",
+      "raw_block_sha256": "f6ad503b8efec8b73b45d53b8550469145942b41e7ab09abeb06ad8cf4bf4a45",
+      "operative_body": "That Council Receive the West Shore RCMP 2020 Annual Year End Report as information only.",
+      "operative_body_sha256": "175cf573c09b29abfc0236314f6c40539c92b6988caaf43cc0e60a809b8eadab",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "b9ea296a19696115c9ece5300615d0386f3a8c99e03754d073de940542fd30f3",
+          "render_sha256": "8c7c0b57d6898124e46ac2cee92925eec7d07c310abdf5b335be73ed2d533828"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "690e5793fe99a9f64bedf3c9f5b6a516809495ba6914fed9321eb3ed0a99b4d3",
+      "raw_block_sha256": "3a8a41e94ea05fdd9078d86ecf0b7f09b67bf1ee29d6741093e5c68b03fce10e",
+      "operative_body": "That Development Variance Permit No. DVP20-0007 be issued by the Council for the City of Langford to Matt Pike of On Point Engineering Ltd. has applied on behalf of Westhills Land Corp. for a Development Variance Permit to reduce the required amount of off-street parking for an apartment development comprised of two buildings with a cumulative total of 127 units at 3003 Irwin Road subject to the following terms and conditions: 1. Appendix The site shall be developed in accordance with the site plan attached (Appendix A) to the Planning, Zoning and Affordable Housing report dated 20210111. 2. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off-street parking for a two- building, 127-unit development from the required 1.5 parking spaces per dwelling unit plus 1 per 4 dwelling units assigned to visitors to 1.25 parking space per dwelling unit containing 2 bedrooms or less, of which 0.10 is assigned to visitors; 3. Conditions The following requirements are imposed under Section 498 of the Local Government Act: a) That a minimum of five additional street parking spaces be created adjacent to the project; b) That a minimum of 1 parking space is allocated to each residential unit; c) That a minimum of 13 parking spaces are allocated for the exclusive use of visitors to subject apartment building; d) That, prior to issuance of a Building Permit, a Section 219 Covenant is registered in priority of all other charges on title that agrees that the minimum number of parking stalls specified in conditions (ii) and (iii) above are allocated accordingly; and that these parking spaces are not separated from individual units nor provided in exchange for compensation separate than that of a residential unit.",
+      "operative_body_sha256": "8cf77a2a117cdb72b82a15e69af48165d79411c170c05b3797a112ee28572877",
+      "result": "CARRIED",
+      "pages": [
+        16,
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "c651072b36afe0aaba3a6aefeae3b0694c4a55bfa407494d5a42e2b7be2e811f",
+          "render_sha256": "fefe3fa7c95eee87a740f3ac34525a055d89db3a09746efc74e09acd1e7744b6"
+        },
+        {
+          "page": 17,
+          "native_text_sha256": "a6332fb8e8e33970e4f099cc06c0c39f2f18f423a7966e3c06df9bb182aba16f",
+          "render_sha256": "5516623bc21e2d95941bc3ef52f5fb226bb836bc32c974459bbf6f8d4a66e215"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Development Variance Permit No. DVP20-0007 be issued by the Council for the City of\n        Langford to Matt Pike of On Point Engineering Ltd. has applied on behalf of Westhills Land Corp.\n        for a Development Variance Permit to reduce the required amount of off-street parking for an\n        apartment development comprised of two buildings with a cumulative total of 127 units at\n        3003 Irwin Road subject to the following terms and conditions:\n\n1.   Appendix\n\n\n        The site shall be developed in accordance with the site plan attached (Appendix A) to the Planning,\n        Zoning and Affordable Housing report dated 20210111.\n\n2.   Variances\n\n\n        The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n         Government Act:\n\n\n     a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off-street parking for a two-\n        building, 127-unit development from the required 1.5 parking spaces per dwelling unit plus 1 per 4\n        dwelling units assigned to visitors to 1.25 parking space per dwelling unit containing 2 bedrooms or\n         less, of which 0.10 is assigned to visitors;\n\n3.   Conditions\n\n\n        The following requirements are imposed under Section 498 of the Local Government Act:\n\n                                                                                                      February 16, 2021\n                                                                                                          Page 17 of 28\n\n\n\n\n     a) That a minimum of five additional street parking spaces be created adjacent to the project;\n     b) That a minimum of 1 parking space is allocated to each residential unit;\n     c) Thata minimum of 13 parking spaces are allocated for the exclusive use of visitors to subject\n         apartment building;\n     d) That, prior to issuance of a Building Permit, a Section 219 Covenant is registered in priority of all\n        other charges on title that agrees that the minimum number of parking stalls specified in\n         conditions (ii) and (iii) above are allocated accordingly; and that these parking spaces are not\n        separated from individual units nor provided in exchange for compensation separate than that\n         of a residential unit.",
+          "printed": "That Development Variance Permit No. DVP20-0007 be issued by the Council for the City of\n        Langford to Matt Pike of On Point Engineering Ltd. has applied on behalf of Westhills Land Corp.\n        for a Development Variance Permit to reduce the required amount of off-street parking for an\n        apartment development comprised of two buildings with a cumulative total of 127 units at\n        3003 Irwin Road subject to the following terms and conditions:\n\n1.   Appendix\n\n\n        The site shall be developed in accordance with the site plan attached (Appendix A) to the Planning,\n        Zoning and Affordable Housing report dated 20210111.\n\n2.   Variances\n\n\n        The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n         Government Act:\n\n\n     a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off-street parking for a two-\n        building, 127-unit development from the required 1.5 parking spaces per dwelling unit plus 1 per 4\n        dwelling units assigned to visitors to 1.25 parking space per dwelling unit containing 2 bedrooms or\n         less, of which 0.10 is assigned to visitors;\n\n3.   Conditions\n\n\n        The following requirements are imposed under Section 498 of the Local Government Act:\n\na) That a minimum of five additional street parking spaces be created adjacent to the project;\n     b) That a minimum of 1 parking space is allocated to each residential unit;\n     c) Thata minimum of 13 parking spaces are allocated for the exclusive use of visitors to subject\n         apartment building;\n     d) That, prior to issuance of a Building Permit, a Section 219 Covenant is registered in priority of all\n        other charges on title that agrees that the minimum number of parking stalls specified in\n         conditions (ii) and (iii) above are allocated accordingly; and that these parking spaces are not\n        separated from individual units nor provided in exchange for compensation separate than that\n         of a residential unit.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        },
+        {
+          "native": "Thata minimum",
+          "printed": "That a minimum",
+          "reason": "Printed word spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "93c88b045cfcf1aecb85d1571fe679d48cee47e5ad420dbd9e977ca9d691cf07",
+      "raw_block_sha256": "2fa9b4ae7b25819f26d7bc946ebc675d77269706ac4104c0a182f89b51d7d721",
+      "operative_body": "That Development Variance Permit No. DVP20-0013 be issued by the Council for the City of Langford to Ron Coutre on behalf of Ryan Craycroft to vary the requirements of the RR5 Zone such that lots less than 40 ha may be created by subdivision when not connected to the municipal sanitary sewer system, and to vary the requirements of Development and Servicing Bylaw No. 1000 such that only one emergency access route is provided within 305 m of the development site, for portions of the properties at 738 and 742 Walfred Road, subject to the following terms and conditions: 1. Variances a) That Section 6.14.02(2) of Zoning Bylaw No. 300 be varied such that lots less than 40 ha may be created by subdivision when not connected to the municipal sanitary sewer system; b) That section 4.17.1 of Zoning Bylaw No. 1000 be varied such that only one emergency access route is provided within 305 m of the development site; 2. Conditions The following requirements are imposed under Section 498 of the Local Government Act: a) That the proposed pedestrian trail north of the subject property is constructed on the adjacent parcel, connecting the site to lower Walfred Road, prior to occupancy permit of the subject properties; b) That the applicant retains a registered professional forester to develop a wildfire protection plan based on Firesmart principles for the subdivision, including fuel mitigation in the three priority zones (0-10m, 10-30m and 30m+) on the subject properties; and c) That funding for the pedestrian pathway, including a detailed cost estimate, has been confirmed by the City of Langford, prior to DVP issuance.",
+      "operative_body_sha256": "001ea15ac20741cf869cbb95072b807caba654f80929ded1ef0e770bcb34a496",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "a6332fb8e8e33970e4f099cc06c0c39f2f18f423a7966e3c06df9bb182aba16f",
+          "render_sha256": "5516623bc21e2d95941bc3ef52f5fb226bb836bc32c974459bbf6f8d4a66e215"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "sanitarysewer",
+          "printed": "sanitary sewer",
+          "reason": "Original p17 printed glyph/word spacing."
+        },
+        {
+          "native": "requirementsof",
+          "printed": "requirements of",
+          "reason": "Original p17 printed glyph/word spacing."
+        },
+        {
+          "native": "portionsof",
+          "printed": "portions of",
+          "reason": "Original p17 printed glyph/word spacing."
+        },
+        {
+          "native": "bysubdivision",
+          "printed": "by subdivision",
+          "reason": "Original p17 printed glyph/word spacing."
+        },
+        {
+          "native": "bevaried",
+          "printed": "be varied",
+          "reason": "Original p17 printed glyph/word spacing."
+        },
+        {
+          "native": "priorto",
+          "printed": "prior to",
+          "reason": "Original p17 printed glyph/word spacing."
+        },
+        {
+          "native": "Thatthe applicant retainsa",
+          "printed": "That the applicant retains a",
+          "reason": "Original p17 printed glyph/word spacing."
+        },
+        {
+          "native": "O-lOm",
+          "printed": "0-10m",
+          "reason": "Original p17 printed glyph/word spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "ca803afec3a4d6b939cca3c363b72e7363cac0b3fa30d481628e6251c807cb6f",
+      "raw_block_sha256": "730b8d6638634309268255b346176c5d8ef10f73143611503bfbad8c9c30db6a",
+      "operative_body": "That Development Variance Permit No. DVP20-0014 be issued by the Council for the City of Langford to Ryan Mogensen of Ecoasis Development LLP on behalf of BM Highlander Development Ltd for a development variance permit to reduce the required amount of off-street parking for a 209-unit apartment at 1995 and 2000 Hannington subject to the following terms and conditions: 1. Appendix The site shall be developed in accordance with the site plan attached (Appendix A) of the Planning, Zoning and Affordable Housing report dated 20201214. 2. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off-street parking for a 209-unit apartment from the required 366 spaces to 289 spaces; 3. Conditions The following requirements are imposed under Section 498 of the Local Government Act: a) That a minimum of 1 parking space is allocated to each residential unit; b) That a minimum of 18 parking spaces are allocated for the exclusive use of visitors to subject apartment building; and c) That, prior to issuance of a Building Permit, a Section 219 Covenant is registered in priority of all other charges on title that agrees that the minimum number of parking stalls specified in conditions (i) and (ii) above are allocated accordingly; and that these parking spaces are not separated from individual units nor provided in exchange for compensation separate than that of a residential unit.",
+      "operative_body_sha256": "549447169e7d5869467e59f671ce5fd7fafad81e8a4cd8e3ad6802253f2d87c2",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "9283a489d741316cc0994e2f503a9bded83a4ff06b75bc847ed4ccfd056a371e",
+          "render_sha256": "889cf4bae26337cfeb6c4033ff194204f735ac1ba47079ffaad2a91f0718551c"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "Pernnit",
+          "printed": "Permit",
+          "reason": "Original p18 printed glyph/word spacing."
+        },
+        {
+          "native": "of18",
+          "printed": "of 18",
+          "reason": "Original p18 printed glyph/word spacing."
+        },
+        {
+          "native": "ofvisitors",
+          "printed": "of visitors",
+          "reason": "Original p18 printed glyph/word spacing."
+        },
+        {
+          "native": "ofa Building",
+          "printed": "of a Building",
+          "reason": "Original p18 printed glyph/word spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "cbc55083bccf6b566a916151ae2987a563f4e4abfc63bed02c09a44414eeef03",
+      "raw_block_sha256": "292ecebb4b34ee0fb44c4d8c4aaf202af5dd5924d3947dcbc8bff714ea25eaeb",
+      "operative_body": "That Temporary Use Permit No. TUP20-0007 be issued by the Council for the City of Langford subject to the following terms and conditions: 1. Appendix The site shall be developed in accordance with the site plan attached (Appendix A) with the Planning, Zoning and Affordable Housing Committee report dated 20201214. 2. Conditions The following requirements are imposed under Section 922 of the Local Government Act: a) That the applicant provides 4 parking stalls in the driveway, including two (2) within the portion of the driveway located in the Road ROW 3. Expiry The Temporary Use Permit shall expire three (3) years after the date of issuance.",
+      "operative_body_sha256": "b08b62615d6af5cb25cb370dbd21b7750fd13c0383732c11f0e8c6e83fb1f2ae",
+      "result": "CARRIED",
+      "pages": [
+        18,
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "9283a489d741316cc0994e2f503a9bded83a4ff06b75bc847ed4ccfd056a371e",
+          "render_sha256": "889cf4bae26337cfeb6c4033ff194204f735ac1ba47079ffaad2a91f0718551c"
+        },
+        {
+          "page": 19,
+          "native_text_sha256": "bc1838ab9af48a16c20c058ea1146ded7c07ba5b3d39a9d33f3a79d9f9ed9fad",
+          "render_sha256": "5118cc078adf14d549ef33adb0d69a8c3836a4f7e840516d826a61c715c00a68"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "ThatTemporary Use Permit No. TUP20-0007 be issued bythe Council for the City of Langford\n         subject to the following terms and conditions:\n\n                                                                                                      February 16, 2021\n                                                                                                          Page 19 of 28\n\n\n\n\n1.    Appendix\n\n\nThe site shall be developed in accordance with the site plan attached (Appendix A) with the Planning,\nZoning and Affordable Housing Committee report dated 20201214.\n\n2.    Conditions\n\n\nThe following requirements are imposed under Section 922 of the Local Government Act:\n\n      a) That the applicant provides 4 parking stalls in the driveway, including two (2) within the\n          portion of the driveway located in the Road ROW\n\n3.    Expiry\n\n\nThe Temporary Use Permit shall expire three (3) years after the date of issuance.",
+          "printed": "ThatTemporary Use Permit No. TUP20-0007 be issued bythe Council for the City of Langford\n         subject to the following terms and conditions:\n\n1.    Appendix\n\n\nThe site shall be developed in accordance with the site plan attached (Appendix A) with the Planning,\nZoning and Affordable Housing Committee report dated 20201214.\n\n2.    Conditions\n\n\nThe following requirements are imposed under Section 922 of the Local Government Act:\n\n      a) That the applicant provides 4 parking stalls in the driveway, including two (2) within the\n          portion of the driveway located in the Road ROW\n\n3.    Expiry\n\n\nThe Temporary Use Permit shall expire three (3) years after the date of issuance.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        },
+        {
+          "native": "ThatTemporary",
+          "printed": "That Temporary",
+          "reason": "Printed word spacing."
+        },
+        {
+          "native": "bythe Council",
+          "printed": "by the Council",
+          "reason": "Printed word spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "ba2637418a5f2895f3384f43ce6189500cf1386135a23df7cf0772291c40d795",
+      "raw_block_sha256": "2896f23b9168f239ed25fa10268447b0460e366a48402456882ebd185991819a",
+      "operative_body": "That Council: 1. Approve the 2021 West Shore Parks and Recreation Society budget;",
+      "operative_body_sha256": "5c2d048d4774abc2e7a755c87a2ed8fe4a83288660661be73a74026bda5629a7",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "bc1838ab9af48a16c20c058ea1146ded7c07ba5b3d39a9d33f3a79d9f9ed9fad",
+          "render_sha256": "5118cc078adf14d549ef33adb0d69a8c3836a4f7e840516d826a61c715c00a68"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3c04ee10893c2090f29916f8d9775590a66cc7cb4f8f3b78a5234f83e1867ea5",
+      "raw_block_sha256": "bef4abd6c97292c7687a02cabe24f0392f9c6f91331b72782970286e0c392ff1",
+      "operative_body": "That Council: 1. Approve the request for funding from West Shore Parks and Recreation Society in the amount of $199,624 and that this funding be covered by the COVID-19 Safe Restart Grants for Local Governments funding that was received by the City in 2020;",
+      "operative_body_sha256": "9f9161381262247d6d506536a2bfa020f90107fa37bdb4932c1af6429c577585",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "bc1838ab9af48a16c20c058ea1146ded7c07ba5b3d39a9d33f3a79d9f9ed9fad",
+          "render_sha256": "5118cc078adf14d549ef33adb0d69a8c3836a4f7e840516d826a61c715c00a68"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "34f1734f6297c26809e3a03977cbbf985a0365f67da1e1d5cabd3f4cf99dddc2",
+      "raw_block_sha256": "ccce5a1552da08552aacdc492ff006fcb0989cd3fed66e988aac387aa313d14e",
+      "operative_body": "That Council: 1. Approve the Licence of Occupation substantially in the form attached, subject to minor amendments that do not affect the substantive terms of the licence and authorize the Mayor and CAO to execute the Licence of Occupation.; AND 3. Direct staff to prepare an easement agreement and provide notification of the City's intention to dispose of an interest in the property by way of an easement. This matter is to be brought back before Council once the easement has been prepared and the notice given.",
+      "operative_body_sha256": "32ff3aaff30f1e72633a9fac1718058d4a253ecea084f48a2ea1d084f8534181",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "f8a428d2cf4c72271fcc888c21b1e135ac8680e8bd4b421208672a3f27580ff4",
+          "render_sha256": "dcb5992c04fe1fde9650263358113f636d75b8fda47ccc24ed29652e65342f81"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3dc12d1166b658205bd7d52700de526ea0588aa893209a2c7c6a86fa7bf48416",
+      "raw_block_sha256": "14e72e441368eb1f0b6b6d8516f878a4071340fd89ebc55bdf261b88aff5baae",
+      "operative_body": "That Council: 1. Approve the sale of 1000 Gade Road and authorize the execution of the attached agreement.;",
+      "operative_body_sha256": "5a6a25a5022093fbdbbe73bd33847f1337b75d6d3beaed53e8658a137b3623cd",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "f8a428d2cf4c72271fcc888c21b1e135ac8680e8bd4b421208672a3f27580ff4",
+          "render_sha256": "dcb5992c04fe1fde9650263358113f636d75b8fda47ccc24ed29652e65342f81"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e9fc038ea44c0b291f4bd9c3fe3d1220cf5b771a92a8c1a9bbf3c87de9874936",
+      "raw_block_sha256": "2add2722cd7d6f24dd0ee578fc3134f26b48175590ba521083148de65ebdf6f6",
+      "operative_body": "That Council: 1. THAT Council appoints Michael Bown to the Protective Services Committee for a term ending December 2022.;",
+      "operative_body_sha256": "5839c498d25e14e7119bf3cd999aa6cf9a4075302ad00c8fb12055346b3c3672",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "f8a428d2cf4c72271fcc888c21b1e135ac8680e8bd4b421208672a3f27580ff4",
+          "render_sha256": "dcb5992c04fe1fde9650263358113f636d75b8fda47ccc24ed29652e65342f81"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "289e25a38c34afe2290ae70f371d001c9d4bb1d0d264186ad729a5d193230629",
+      "raw_block_sha256": "fee07f1c5a2adeefd0f091800e6e041174489a17eee2d5ca38c42391a0566ad8",
+      "operative_body": "That Council: 1. Supports the application for grant funding for the replacement of the southern boardwalk at Ed Nixon Trail and the boardwalk at Leigh Place as well as the extension of the trail that is susceptible to flooding through the Investing in Canada Infrastructure Program - COVID-19 Resilience Infrastructure Stream; AND 2. Commits to the City paying for any associated ineligible costs and cost overruns.",
+      "operative_body_sha256": "588fdfca216005deb744245debe77658a800a9e49d400a86c8528521a50a9e37",
+      "result": "CARRIED",
+      "pages": [
+        20,
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "f8a428d2cf4c72271fcc888c21b1e135ac8680e8bd4b421208672a3f27580ff4",
+          "render_sha256": "dcb5992c04fe1fde9650263358113f636d75b8fda47ccc24ed29652e65342f81"
+        },
+        {
+          "page": 21,
+          "native_text_sha256": "8b4f01882b94c6f3d563387842975e3a8fcfd79ae2848c2cef1989f312bc8480",
+          "render_sha256": "ba239091094ae7879822cbae533899bac7c9fa3f8085b4c49b101d05519018fa"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "replacennent",
+          "printed": "replacement",
+          "reason": "Original p21 printed replacement."
+        },
+        {
+          "native": "Conoda",
+          "printed": "Canada",
+          "reason": "Original p21 printed Canada."
+        },
+        {
+          "native": "Infrastructure Stream)",
+          "printed": "Infrastructure Stream;",
+          "reason": "Original p21 printed semicolon, native wrong glyph."
+        }
+      ]
+    },
+    {
+      "source_key": "8421b57c827dcb3c4e12a89a06aa044d248aa140dfef70898cbcb670ce450c35",
+      "raw_block_sha256": "c2919103b63f340861c977d2e485a2da3e8cf60e71d69b1a074c86b08896643b",
+      "operative_body": "That Council: 1. That Council authorize staff to award the construction of the Larkhall extension and ultimate buildout of the Peatt, Brock, and Larkhall roundabout to the lowest compliant bidder and fund the works from the Road DCC program;",
+      "operative_body_sha256": "58ea4ea1b44dfec362e46911ca1cb6498f7cd0ac2918ea2f9b9f8f747e5e2424",
+      "result": "CARRIED",
+      "pages": [
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 21,
+          "native_text_sha256": "8b4f01882b94c6f3d563387842975e3a8fcfd79ae2848c2cef1989f312bc8480",
+          "render_sha256": "ba239091094ae7879822cbae533899bac7c9fa3f8085b4c49b101d05519018fa"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "aac324c7b465b086a3335c047dc53547884da06401a6112e7ac31c1805f798b7",
+      "raw_block_sha256": "0540c97e24abe28e8b5863adfa404af8c8c61e85898ebea321f9c80a18e20659",
+      "operative_body": "That Council: 1. Give the first three readings to Bylaw No. 1959 Development Cost Charge Bylaw No. 1700, 2017 Amendment No. 3, 2021 and refer the Bylaw No. 1700, 2017 Amendment No. 3, 2021 to the Inspector of Municipalities, pursuant to s. 560 of the Local Government Act; AND 2. Give the first three readings to the City of Langford Road Development Cost Charge Bylaw No. 2021, 2021 and refer the Bylaw No. 2021,2021 to the Inspector of Municipalities, pursuant to s. 560 of the Local Government Act; AND 3. Direct Staff to continue to refresh the transportation study and Roads DCC bylaw every 5 years.",
+      "operative_body_sha256": "427d4d65a872e1e8ff2a2904857767c516352ed9e7b933faaeaadc6ee5a31630",
+      "result": "CARRIED",
+      "pages": [
+        21,
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 21,
+          "native_text_sha256": "8b4f01882b94c6f3d563387842975e3a8fcfd79ae2848c2cef1989f312bc8480",
+          "render_sha256": "ba239091094ae7879822cbae533899bac7c9fa3f8085b4c49b101d05519018fa"
+        },
+        {
+          "page": 22,
+          "native_text_sha256": "708a3797a704af24e906f6b7c84226369117b5d535fb2055c9fb20a49556073c",
+          "render_sha256": "0d1c1aa76035237e2e6a0c0e3574ab350be96880d855591575d9ebc9b12a4d15"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council:\n\n\n     1. Give the first three readings to Bylaw No. 1959 Development Cost Charge Bylaw No. 1700, 2017\n        Amendment No. 3, 2021 and refer the Bylaw No. 1700, 2017 Amendment No. 3, 2021 to the\n        Inspector of Municipalities, pursuant to s. 560 of the Local Government Act; AND\n\n     2. Give the first three readings to the City ofLangford Road Development Cost Charge Bylaw No.\n        2021, 2021 and refer the Bylaw No. 2021,2021 to the Inspector of Municipalities, pursuant to s.\n        560 of the Local Government Act; AND\n\n                                                                                                  February 16, 2021\n                                                                                                      Page 22 of 28\n\n\n     3. Direct Staff to continue to refresh the transportation study and Roads DCC bylaw every 5 years.",
+          "printed": "That Council:\n\n\n     1. Give the first three readings to Bylaw No. 1959 Development Cost Charge Bylaw No. 1700, 2017\n        Amendment No. 3, 2021 and refer the Bylaw No. 1700, 2017 Amendment No. 3, 2021 to the\n        Inspector of Municipalities, pursuant to s. 560 of the Local Government Act; AND\n\n     2. Give the first three readings to the City ofLangford Road Development Cost Charge Bylaw No.\n        2021, 2021 and refer the Bylaw No. 2021,2021 to the Inspector of Municipalities, pursuant to s.\n        560 of the Local Government Act; AND\n\n3. Direct Staff to continue to refresh the transportation study and Roads DCC bylaw every 5 years.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        },
+        {
+          "native": "ofLangford",
+          "printed": "of Langford",
+          "reason": "Printed word spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "f653b59858dc30cff0726930e40bf5f82f8614bc07d5131ba2aa320d361a3812",
+      "raw_block_sha256": "89c0dd890ba78ff033cae5e77cdf8a451d91a97b3fed3dcf2a34e0bd795a33f0",
+      "operative_body": "That Council: 1. Direct staff to receive compensation for the trees valued at $40,000 and require the applicant to provide an approved landscape plan for replanting the city boulevard, to the satisfaction of the Parks Manager, prior to bylaw adoption; AND 2. Proceed with bylaw adoption following receipt of the agreed upon compensation;",
+      "operative_body_sha256": "bafb3c2f813a1bcd66884f99ce9a4a5f692222600f85f4706f407ba50106b2be",
+      "result": "CARRIED",
+      "pages": [
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "708a3797a704af24e906f6b7c84226369117b5d535fb2055c9fb20a49556073c",
+          "render_sha256": "0d1c1aa76035237e2e6a0c0e3574ab350be96880d855591575d9ebc9b12a4d15"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e17fbc2fd63bd956f5da5f4460bf72fb4c9a2849c9679221726314b9262d299c",
+      "raw_block_sha256": "238ccf5ac846813be7a8ec25ecdec76177692f62c8e85b94eb7c5776334e4552",
+      "operative_body": "That Council: 1. Proceed with consideration of this rezoning by granting first reading to Bylaw No. 1961;",
+      "operative_body_sha256": "710e02248de4fe778eb739e80642bf441fac0081badcd659f1615ec150239cf0",
+      "result": "CARRIED",
+      "pages": [
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "708a3797a704af24e906f6b7c84226369117b5d535fb2055c9fb20a49556073c",
+          "render_sha256": "0d1c1aa76035237e2e6a0c0e3574ab350be96880d855591575d9ebc9b12a4d15"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "efcd160505e0ce5448a05f406b81bb479e71798d4418f42d1039a9c1bdaf4215",
+      "raw_block_sha256": "6ba73681c8367b1313cd2429dc4f2ac7e1e8e7f66b25a7a96549597c88268592",
+      "operative_body": "That Council: 1. Direct staff to provide notice that Council will consider issuing a Development Variance Permit for the property located at 2786 Wenger Terrace, with the following variances: a) That Subsection 6.20.06(1)(c) be varied to reduce the exterior side setback from the required 3.5 m to 1.5 m for proposed Lot B; AND b) That Subsection 6.20.06(1)(d) be varied to reduce the interior side setback from the required 1.5 m to 1.2 m for proposed Lot A; AND c) That the Table in Subsection 4.01.02 to reduce the length of a driveway stall from the required 5.5m to 4.28 m for proposed Lot A.;",
+      "operative_body_sha256": "1e9f096b803fb18d3c7be0f2ae4a56985535649ee52f94e16709cc4b82a7b723",
+      "result": "CARRIED",
+      "pages": [
+        22,
+        23
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "708a3797a704af24e906f6b7c84226369117b5d535fb2055c9fb20a49556073c",
+          "render_sha256": "0d1c1aa76035237e2e6a0c0e3574ab350be96880d855591575d9ebc9b12a4d15"
+        },
+        {
+          "page": 23,
+          "native_text_sha256": "883b0b349ded019d6b066552f59e7881632688e00a3e2137d3ddc3fee1b006fd",
+          "render_sha256": "ad8f8e7d1f5fe407e3900478f213e6b115ca58d3b33a855aaf2d5abea96252f8"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council:\n\n                                                                                                     February 16, 2021\n                                                                                                         Page 23 of 28\n\n\n    1. Direct staff to provide notice that Council will consider issuing a Development Variance Permit for\n    the property located at 2786 Wenger Terrace, with the following variances:\n\n             a) That Subsection 6.20.06(l)(c) be varied to reduce the exterior side setback from the\n                required 3.5 m to 1.5 m for proposed Lot B; AND\n\n             b) That Subsection 6.20.06(l)(d) be varied to reduce the interior side setback from the\n                required 1.5 m to 1.2 m for proposed Lot A; AND\n\n             c) That the Table in Subsection 4.01.02 to reduce the length of a driveway stall from the\n                required 5.5m to 4.28 m for proposed Lot A.;",
+          "printed": "That Council:\n\n1. Direct staff to provide notice that Council will consider issuing a Development Variance Permit for\n    the property located at 2786 Wenger Terrace, with the following variances:\n\n             a) That Subsection 6.20.06(l)(c) be varied to reduce the exterior side setback from the\n                required 3.5 m to 1.5 m for proposed Lot B; AND\n\n             b) That Subsection 6.20.06(l)(d) be varied to reduce the interior side setback from the\n                required 1.5 m to 1.2 m for proposed Lot A; AND\n\n             c) That the Table in Subsection 4.01.02 to reduce the length of a driveway stall from the\n                required 5.5m to 4.28 m for proposed Lot A.;",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        },
+        {
+          "native": "6.20.06(l)(c)",
+          "printed": "6.20.06(1)(c)",
+          "reason": "Original p23 printed subsection numeral1."
+        },
+        {
+          "native": "6.20.06(l)(d)",
+          "printed": "6.20.06(1)(d)",
+          "reason": "Original p23 printed subsection numeral1."
+        }
+      ]
+    },
+    {
+      "source_key": "6c6a957d5dc569a5d2e27c894cc2c1f5a31e88f5438691089fe99c7994e6accc",
+      "raw_block_sha256": "032ab53e137de87bfbbec5063a3dadb4081fa27376e86b9a9824de77b2b0d0a6",
+      "operative_body": "That Council pass the following motion: BE IT RESOLVED that pursuant to section 18 of the Expropriation Act, R.S.B.C. 1996, c. 125, the Council of the Corporation of the City of Langford, as the approving authority for the expropriation completed in the expropriation notice dated December 2, 2020, and filed in the Victoria Land Title Office under number CA8650385 and the expropriation notice dated December 2, 2020, and registered in the Victoria Land Title Office under number CA8650386 (collectively, the ''Expropriation Notices'') does: (a) Acknowledge that it has been served with the Expropriation Notices and a copy of the Expropriation Act; AND (b) Approve the expropriations contemplated by the Expropriation Notices. BE IT FURTHER RESOLVED that the Corporate Officer is authorized and directed to: (a) Sign the Certificate of Approval in the form prescribed under the Expropriation Act General Regulation; (b) Notify or cause to be notified the expropriating authority and each Owner (as defined in the Expropriation Act) of the Council's approval of the expropriations; (c) Make the advance payments as required under section 20(1)(d) of the Expropriation Act and serve the Notices of Advance Payment in the form prescribed under the Expropriation Act General Regulation with a copy of all appraisal and other reports on which the advance payment is based; (d) File or cause to be filed in the Land Title Office Vesting Notices under section 23 of the Expropriation Act in the form prescribed under the Expropriation Act General Regulation and then serve a copy of the Vesting Notices on each owner (as defined in the Expropriation Act); AND (e) Sign the Notices of Advance Payment and the Vesting Notices.",
+      "operative_body_sha256": "384a712ad7080e9d9d685ea13cb2031edca5d5ed8f84da09c6a6169f35099fe6",
+      "result": "CARRIED",
+      "pages": [
+        23,
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 23,
+          "native_text_sha256": "883b0b349ded019d6b066552f59e7881632688e00a3e2137d3ddc3fee1b006fd",
+          "render_sha256": "ad8f8e7d1f5fe407e3900478f213e6b115ca58d3b33a855aaf2d5abea96252f8"
+        },
+        {
+          "page": 24,
+          "native_text_sha256": "abcdc6cac87a9867c195197672245d2c6349bd6a9f3ae2d44e650158fb618221",
+          "render_sha256": "8756b5c8def4aa72360f80970af3c364b26eaa8bf1fa046b26c013dffeb5716d"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council pass the following motion:\n\nBE IT RESOLVED that pursuant to section 18 of the Expropriation Act, R.S.B.C. 1996, c. 125, the Council of\nthe Corporation of the City of Langford, as the approving authority for the expropriation contemplated in\nthe expropriation notice dated December 2, 2020, and filed in the Victoria Land Title Office under number\nCA8650385 and the expropriation notice dated December 2, 2020, and registered in the Victoria Land\nTitle Office under number CA8650386 (collectively, the ''Expropriation Notices'') does:\n\n             (a) Acknowledge that it has been served with the Expropriation Notices and a copy of the\n                Expropriation Act; AND\n\n             (b) Approve the expropriations contemplated by the Expropriation Notices.\n\nBE IT FURTHER RESOLVED that the Corporate Officer is authorized and directed to:\n\n             (a) Sign the Certificate of Approval in the form prescribed under the Expropriation Act General\n                Regulation;\n\n             (b) Notify or cause to be notified the expropriating authority and each Owner (as defined in\n                 the Expropriation Act) of the Council's approval of the expropriations;\n\n             (c) Make the advance payments as required under section 20(l)(d) of the Expropriation Act\n                 and serve the Notices of Advance Payment in the form prescribed under the Expropriation\n                Act General Regulation with a copy of all appraisal and other reports on which the advance\n                payment is based;\n\n             (d) File or cause to be filed in the Land Title Office Vesting Notices under section 23 of the\n\n                                                                                                       February 16, 2021\n                                                                                                           Page 24 of 28\n\n\n                    ExpropriationAct in the form prescribed under the Expropriation Act General Regulation\n                    and then serve a copy of the Vesting Notices on each owner (as defined in the\n                    Expropriation Act); AND\n\n                (e) Sign the Notices of Advance Payment and the Vesting Notices.",
+          "printed": "That Council pass the following motion:\n\nBE IT RESOLVED that pursuant to section 18 of the Expropriation Act, R.S.B.C. 1996, c. 125, the Council of\nthe Corporation of the City of Langford, as the approving authority for the expropriation contemplated in\nthe expropriation notice dated December 2, 2020, and filed in the Victoria Land Title Office under number\nCA8650385 and the expropriation notice dated December 2, 2020, and registered in the Victoria Land\nTitle Office under number CA8650386 (collectively, the ''Expropriation Notices'') does:\n\n             (a) Acknowledge that it has been served with the Expropriation Notices and a copy of the\n                Expropriation Act; AND\n\n             (b) Approve the expropriations contemplated by the Expropriation Notices.\n\nBE IT FURTHER RESOLVED that the Corporate Officer is authorized and directed to:\n\n             (a) Sign the Certificate of Approval in the form prescribed under the Expropriation Act General\n                Regulation;\n\n             (b) Notify or cause to be notified the expropriating authority and each Owner (as defined in\n                 the Expropriation Act) of the Council's approval of the expropriations;\n\n             (c) Make the advance payments as required under section 20(l)(d) of the Expropriation Act\n                 and serve the Notices of Advance Payment in the form prescribed under the Expropriation\n                Act General Regulation with a copy of all appraisal and other reports on which the advance\n                payment is based;\n\n             (d) File or cause to be filed in the Land Title Office Vesting Notices under section 23 of the\n\nExpropriationAct in the form prescribed under the Expropriation Act General Regulation\n                    and then serve a copy of the Vesting Notices on each owner (as defined in the\n                    Expropriation Act); AND\n\n                (e) Sign the Notices of Advance Payment and the Vesting Notices.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        },
+        {
+          "native": "expropriation contemplated in",
+          "printed": "expropriation completed in",
+          "reason": "Original p23 prints completed, native recognition differs; later contemplated phrase remains unchanged."
+        },
+        {
+          "native": "20(l)(d)",
+          "printed": "20(1)(d)",
+          "reason": "Original p23/c close-up prints subsection numeral1."
+        },
+        {
+          "native": "ExpropriationAct",
+          "printed": "Expropriation Act",
+          "reason": "Printed word spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "9b8399ffa59925c038c233f165916daa55c51522f0a25409020853493d878390",
+      "raw_block_sha256": "229b4d42d7df8c3fc0b114b29814e8b9543d86acc7cdd43e495e8df210f70c3f",
+      "operative_body": "That Council: 1. Direct staff to provide notice that Council will consider issuing a Development Variance Permit for 2716 and 2720 Strathmore Rd with the following variances: a. That Section 3.21.02(2) of Zoning Bylaw No.300 be varied to reduce the width of landscaping required along an interior side property line for buildings within a multi-family residential zone from 1.0 m to 0.3 m. Subject to the following conditions: a. That the site is developed in accordance with the landscape plan and rooftop amenity plan attached to this report as Appendix A; and b. That the applicant provides $10,000 towards the City’s General Amenity Fund to be used to acquire or improve park and open space in the City Centre, prior to DVP issuance.;",
+      "operative_body_sha256": "b8b3b6932a8f7143a549d88a6629c9d4c9c64281bd9ec5f4249a75338ba6f46e",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "abcdc6cac87a9867c195197672245d2c6349bd6a9f3ae2d44e650158fb618221",
+          "render_sha256": "8756b5c8def4aa72360f80970af3c364b26eaa8bf1fa046b26c013dffeb5716d"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "City'sGeneral",
+          "printed": "City’s General",
+          "reason": "Original p24 printed word spacing/apostrophe."
+        }
+      ]
+    },
+    {
+      "source_key": "a961169ca46d1661787f629b4993e1209c438bf6f50dd538d72d3fb98c983965",
+      "raw_block_sha256": "7dba209f703ee27b90f23fc890599ca3ce0f63f28ddf0a669859c0342bfad14e",
+      "operative_body": "That Council give Bylaw No. 1844 first reading.",
+      "operative_body_sha256": "0f6b643c1ad46462382736b25fbaefb3faba152140097d73dd2ecd7d9876c155",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "abcdc6cac87a9867c195197672245d2c6349bd6a9f3ae2d44e650158fb618221",
+          "render_sha256": "8756b5c8def4aa72360f80970af3c364b26eaa8bf1fa046b26c013dffeb5716d"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "8f2356c782919e6e5b91850c1bcfe7303726691b5a0928a7cdae5ad16994e4b4",
+      "raw_block_sha256": "b525df15f63211d45348854746ba23a936d2e0a04ef91340c56eedd2a8033f11",
+      "operative_body": "That Council give Bylaw No. 1940 second and third readings.",
+      "operative_body_sha256": "3610685dd801dc18623aa830e5d0bc0eab9d639d3ec9293975a07a5822b6226e",
+      "result": "CARRIED",
+      "pages": [
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "fe81e349a26ffbf9907f5df1aa97bbf1955f3b74742b85e45a4cce1eaf45f85f",
+          "render_sha256": "8af5f2b021a11cae78dc1920dc14f0a2bbb73fedaf292f8f4f88b16883cb1d10"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a58e318d502e4bae3633d7c214915b77e9364ea1bc3a3c587a0d9840861759a8",
+      "raw_block_sha256": "31f8515b6479af62befe9b8ae9ea284dbe95a23dcefc897078b13a76203084d4",
+      "operative_body": "That Council give Bylaw No. 1941 second and third readings.",
+      "operative_body_sha256": "3bb3b0c75a6de2204d1f5a78b547e7237413fa2ff160d5bf6ebdde96437bbb80",
+      "result": "CARRIED",
+      "pages": [
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "fe81e349a26ffbf9907f5df1aa97bbf1955f3b74742b85e45a4cce1eaf45f85f",
+          "render_sha256": "8af5f2b021a11cae78dc1920dc14f0a2bbb73fedaf292f8f4f88b16883cb1d10"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "2d926ec126628d0e3ad4e6dbe48d421b24d29a820801e5cf9253f642e5fddca0",
+      "raw_block_sha256": "2cf5c8e6315517c54844a70de89aed941183b3b132d75bc4201b29aa743fa3e0",
+      "operative_body": "That Council adopt Bylaw No. 1945.",
+      "operative_body_sha256": "e5119d56a9c20cb4736692f34973c083e089e58dda80266c70c4ab3d032668c8",
+      "result": "CARRIED",
+      "pages": [
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "fe81e349a26ffbf9907f5df1aa97bbf1955f3b74742b85e45a4cce1eaf45f85f",
+          "render_sha256": "8af5f2b021a11cae78dc1920dc14f0a2bbb73fedaf292f8f4f88b16883cb1d10"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "11b7939f6187bf2bf0d23a168b25ad600dc9515207d6bfcae8185da9201c52c9",
+      "raw_block_sha256": "6fe6a1a4e9fb729010ee744cdb42e3b7f43a3d24b352df81292a037f04438631",
+      "operative_body": "That Council adopt Bylaw No. 1948.",
+      "operative_body_sha256": "3368431c7adc1409d24b6324d3997df01bda6c4004135081e26cb1d1bfad7cd6",
+      "result": "CARRIED",
+      "pages": [
+        25,
+        26
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "fe81e349a26ffbf9907f5df1aa97bbf1955f3b74742b85e45a4cce1eaf45f85f",
+          "render_sha256": "8af5f2b021a11cae78dc1920dc14f0a2bbb73fedaf292f8f4f88b16883cb1d10"
+        },
+        {
+          "page": 26,
+          "native_text_sha256": "8504aebaad732f6d4841e5ef2db4117994d19a3a654c0acaf6ef8b29c61415d7",
+          "render_sha256": "0b31b22433b5085add78f23a9a7ad6a28fa59110bf6bd93afa7ff7ef80f476ac"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "February 16, 2021\n                                                                                                       Page 26 of 28\n\n\n            That Council adopt Bylaw No. 1948.",
+          "printed": "\nThat Council adopt Bylaw No. 1948.",
+          "reason": "Remove printed running date/page header from operative body; raw block and original page proof retained."
+        }
+      ]
+    },
+    {
+      "source_key": "d06b32c4490702fffcdd325dc23f1c34001ffc2a67983575f4694fd5ebe70719",
+      "raw_block_sha256": "ef8d5684952db23cbde12fa35b232c93a44220d4080ff62b5acc537289b390d3",
+      "operative_body": "That Council give Bylaw No. 1950 second and third readings.",
+      "operative_body_sha256": "863d645db420db74b8e16fbb7d20082c6dad07d879fc6a65dc26b32916b8166b",
+      "result": "CARRIED",
+      "pages": [
+        26
+      ],
+      "page_evidence": [
+        {
+          "page": 26,
+          "native_text_sha256": "8504aebaad732f6d4841e5ef2db4117994d19a3a654c0acaf6ef8b29c61415d7",
+          "render_sha256": "0b31b22433b5085add78f23a9a7ad6a28fa59110bf6bd93afa7ff7ef80f476ac"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "93163db517103c27c5957c41a77311cbc80d41a5edbddc1511421aa24139dac1",
+      "raw_block_sha256": "c057e2739733f9da6312f5e67d8cd2c986c5b7b9c5569aa9ccc9cc1d1bdd5e89",
+      "operative_body": "That Council give Bylaw No. 1952 first reading.",
+      "operative_body_sha256": "b72a5ded89af77851f6222b03e2f75873464010a7e94c5d9ecb905fa038907b3",
+      "result": "CARRIED",
+      "pages": [
+        26
+      ],
+      "page_evidence": [
+        {
+          "page": 26,
+          "native_text_sha256": "8504aebaad732f6d4841e5ef2db4117994d19a3a654c0acaf6ef8b29c61415d7",
+          "render_sha256": "0b31b22433b5085add78f23a9a7ad6a28fa59110bf6bd93afa7ff7ef80f476ac"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7cf1a93e0ea90261c26d754198f87eab1eb03209f86f8a81cf47b1d5110a9eb1",
+      "raw_block_sha256": "4c55e91460de5ab4283d4c1481a293f09d5e085bfeed2da8d3e8f06e33eeefe6",
+      "operative_body": "That Council give Bylaw No. 1959 first, second, and third readings.",
+      "operative_body_sha256": "01f26b908e7bb309e5a7120df06b2e5266089573c12c6f2d453d0aedc5fe0402",
+      "result": "CARRIED",
+      "pages": [
+        26
+      ],
+      "page_evidence": [
+        {
+          "page": 26,
+          "native_text_sha256": "8504aebaad732f6d4841e5ef2db4117994d19a3a654c0acaf6ef8b29c61415d7",
+          "render_sha256": "0b31b22433b5085add78f23a9a7ad6a28fa59110bf6bd93afa7ff7ef80f476ac"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a2e6ed67a8e63cfbc98a19507d17cb8172158514a7c813ab6b6ee91e3233bece",
+      "raw_block_sha256": "5aee28e6c3ff8ac406d117471d152785b7db039e5eb3d875a0dc2892ccd21ff9",
+      "operative_body": "That Council give Bylaw No. 1961 first reading.",
+      "operative_body_sha256": "db8c5b20b9f00d05ca554b029a84fb2806b1290d037adc4d08af879ad07de8f0",
+      "result": "CARRIED",
+      "pages": [
+        26,
+        27
+      ],
+      "page_evidence": [
+        {
+          "page": 26,
+          "native_text_sha256": "8504aebaad732f6d4841e5ef2db4117994d19a3a654c0acaf6ef8b29c61415d7",
+          "render_sha256": "0b31b22433b5085add78f23a9a7ad6a28fa59110bf6bd93afa7ff7ef80f476ac"
+        },
+        {
+          "page": 27,
+          "native_text_sha256": "681c0724b9f94cd88f11af601d12322e18416bd8a5c806c11e02a56776f267b4",
+          "render_sha256": "d23cf1178c646cb37a72f988474d7b3bfbc0cc1670e84bf77c39f0b555bfb6f8"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f0806da647d031880a672f67044d6eac53d32afe78660e9370203c21489c24ae",
+      "raw_block_sha256": "bb533f39c77c5989c8545e11f2788cafd1b591c79069a8ef5d6b8ef184415efd",
+      "operative_body": "That Council give Bylaw No. 1968 first, second, and third readings.",
+      "operative_body_sha256": "bd38fe0b0926315236ab3e2e0dbeaf270f3235a3c0ccbff9b24c026bffaf09b4",
+      "result": "CARRIED",
+      "pages": [
+        27
+      ],
+      "page_evidence": [
+        {
+          "page": 27,
+          "native_text_sha256": "681c0724b9f94cd88f11af601d12322e18416bd8a5c806c11e02a56776f267b4",
+          "render_sha256": "d23cf1178c646cb37a72f988474d7b3bfbc0cc1670e84bf77c39f0b555bfb6f8"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "8aaca02211960545bf801a27c24d9b17faad480d4e6ada633e01813da7176674",
+      "raw_block_sha256": "5e2603d3492daa3f4e2801bc5ee22c3a82385594365b741a5d0d735d826fae51",
+      "operative_body": "That Council give Bylaw No. 2021 first, second, and third readings.",
+      "operative_body_sha256": "d30e87542bbd578bf048d98ece4398f5f4222cb87bc96a4774dd9ce21f9ef84d",
+      "result": "CARRIED",
+      "pages": [
+        27
+      ],
+      "page_evidence": [
+        {
+          "page": 27,
+          "native_text_sha256": "681c0724b9f94cd88f11af601d12322e18416bd8a5c806c11e02a56776f267b4",
+          "render_sha256": "d23cf1178c646cb37a72f988474d7b3bfbc0cc1670e84bf77c39f0b555bfb6f8"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3362e0dd464255e1563a722cb2b670da7922b0ae0e4f69d07026631fa76f307c",
+      "raw_block_sha256": "ef2e7d15cd1ca5a3e41a20a3fb151e8dbece644017d6a0a93819123dc04d1d6c",
+      "operative_body": "That Council give Bylaw No. 1955 first reading.",
+      "operative_body_sha256": "a114c06ee34795bcb9ae6cd13236e49bdf262fb0a0c835035f1a08c2c6ed6c3c",
+      "result": "CARRIED",
+      "pages": [
+        27
+      ],
+      "page_evidence": [
+        {
+          "page": 27,
+          "native_text_sha256": "681c0724b9f94cd88f11af601d12322e18416bd8a5c806c11e02a56776f267b4",
+          "render_sha256": "d23cf1178c646cb37a72f988474d7b3bfbc0cc1670e84bf77c39f0b555bfb6f8"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c2a9aceed4c91d0702da97a053c215ae4f907cc7a5ab3cc2db652309b8135229",
+      "raw_block_sha256": "a87955015b48665d5f5553a59a9aec7a23af0febd7c623cb93ce59bbbc8dd13a",
+      "operative_body": "That Council give Bylaw No. 1951 first reading.",
+      "operative_body_sha256": "0a7fee08ce9b2bb59977d6a0501dac9b291be484536b132b3936c103e16ef1f3",
+      "result": "CARRIED",
+      "pages": [
+        27,
+        28
+      ],
+      "page_evidence": [
+        {
+          "page": 27,
+          "native_text_sha256": "681c0724b9f94cd88f11af601d12322e18416bd8a5c806c11e02a56776f267b4",
+          "render_sha256": "d23cf1178c646cb37a72f988474d7b3bfbc0cc1670e84bf77c39f0b555bfb6f8"
+        },
+        {
+          "page": 28,
+          "native_text_sha256": "85e21a5163f9f10546db248e2923931fb2db9b6cd19a7e52e2e52c1965a073c5",
+          "render_sha256": "9261449e3550e30ca1dcbda19068b6e07dd3248f4f8d647e2bbad3e763f8e643"
+        }
+      ],
+      "independent_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "feb37d8fcf60b6e3c7d075af8eefeed7cb084601bd76a4b57309bdf9fe4a5da9",
+  "independent_original_image_review_sha256": "2de5b93766af3dbdabb33b5641ea3584a07aee5b129b184c57a806d364f802d1"
+}

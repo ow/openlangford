@@ -14,6 +14,36 @@ from pipeline.ingestion.source_claims import build_claim_inventory, digest, proj
 
 STORE = Path(__file__).parent / 'data' / 'legacy-occurrence-reviews'
 ENROLLED = {
+    30: '57277339b9f9b5a77767aa6998f6533d0706a1a313600a3197d56909040e44cc',
+    69: '829e9a162e1e75cbc63e5b3cf8c16a54c7998f548702904d41c5071120c24dff',
+    164: '0eb784c5ef270c4d2a4c4fb6715fdc9800bdb23ffe3d922943b14591330369e6',
+    150: '3ef4db9f9f789eb8a6ad5dd906e00feac1b155b5cd723881a62177ea78cba688',
+    227: '20371f7340fefef8e0cdac7e66d9410f7f65ef7937f5e7fac6ed20a4bc556469',
+    98: '427d6c34286b10bc473d99467e652fc5088e35baedfe6ece45c7483504eb4e90',
+    62: '8fd906b929274bf8574a757d23245e94683761f4fbfd1e086994187e460da20a',
+    55: '7b545dd31baeba989363300897dfca2209211fa08e4a6901a22dfd10b7a29c02',
+    216: 'fd0191b17e5b1847908dae19e0a7ed227c0460ebfb496f42a8f1045464c6a544',
+    239: '31a3a97a8ac84d2a99a1d749fd7ee6ec282d8adcf4851cca637b2c6fad2938c7',
+    271: 'fdda332788e73b1083472ad3936dd5afc766d747e02a3f16db2d5b0709c228d2',
+    252: 'fb4f42e00ce6c6c8f8dc80935c2ef665102b0c6aeabe06b63fbc52c0499e8486',
+    103: '43b9497f5f945d1913d341721646d016deebf2249f7e4fdd3007cfeec9f2d695',
+    369: 'f211c642bb6e9f4fbdd61ae52245df9789fe009e2f43a99f1946af6ddae3d0a7',
+    79: '396aa3c87da6d21ac9e5ead28d0e5a0e86eaf4a04c5fc6d4431f55701b2745c0',
+    364: 'ac039572d1ee0eca2602eedf6465c3e8afab19b2a438c93757a3f820db1ed969',
+    274: '9621c230b59a8ae3120405b2d44520b6bf97eece2ff6331ca286115abe518900',
+    193: '97736941e3081deb997e935cba0c218e71b13b0e587ee76421c98abd4189f0ea',
+    76: '599088a6179f83fac037d1f7aa6da170e709c31da71b5deb7077204860d293de',
+    110: '12429947201cef62fa4989087feab0ec6cdc8c31bb8d817d38d6d9201ad77765',
+    360: 'c281e7d4c9fa8985683123927a6ba29b7410ba0a770042f569cc7dbc6fc71a1d',
+    308: '9f277f0a05c2dd5743775255f3d4201d231c231c05eaf8e85a8dd78ee13b985c',
+    56: '0f0ef9b1f5dd7a9277647c929b3efa60eb8fef70b82ac5b459cdcbc9ac251381',
+    53: 'faa2f772c2a4d1f214ab1c775baa6b214f80b3a19f64aec49daa616829961cad',
+    111: 'e8ba354f94cf4ce6fa49152352e277c8f9c740bab45a61259fff43f62e7371b3',
+    158: '464003e300ba9c901cdfb9ee471348439f97e01ace6f5ad6ef67627a6adf87e6',
+    323: '74b658feb501387d7944640b7bbdfe06008b8cda77f26a348eaaa3034aab4799',
+    237: '200d11a3758ca8a30d05d1ff0e7cbe83fa84026f9cabf06e860f2428fc15f986',
+    89: '87e5b7ab618c40e573905ceb059aaefc1d1d2603206f6f33ae44d004ddb78102',
+    75: '9ccb52ede4fce4f1a9abece79b37259add625aa59db096477e9f2836de254330',
     144: 'd89cbb8546ec9133c6cf54fc032b9c361404c012a26479ac17531b8eb5eac25b',
     125: 'ed381022fe20cb28bd165b12b38b791b08c388b09743cd6a57cbad86e47ff7c3',
     215: 'b9256db3cfd9a3f794d27072f9b15231237984d867768f93f72a3aec6b67cee4',
@@ -21,8 +51,12 @@ ENROLLED = {
     65: 'e6bccf818dfc6f7b9b84e9af57c3bdac9de243b079705f1cfb3dda02a86c9b41',
     117: '5d9fd893e2f11293b6850acfff6aef3f04485f07e7ebd0226ceb9bc163541dcd',
     253: 'c733a6c568c7be9519fe23babbb8191ab4edceba2cf7e86e0e6de36c673ac64b',
-    199: '53f67191c37d7751a22439e3e45130cc7c248f5503475388b46c57804accec00',
     337: 'a61e8b0f655698108c3a72e4f14b6bc918f2480705ef42bb2fb80c7033642228',
+    32: 'bc0d9c37970b6bd0858d7c486224d15ab050b9fb79ef332cb17245244e0c3288',
+    297: '0082d73b6e1e935994f5cb522d6d95d840d12700010b0c442c8522bd3e12dafe',
+    99: '9a794307d9b4ddbe9b69a3122a265ba70624b777ff2674872335b051eed1919b',
+    361: 'd7c0054f80d79ad865f374a1e24d94d6f8b4361880bd0bb48b941e87b09589bd',
+    199: '53f67191c37d7751a22439e3e45130cc7c248f5503475388b46c57804accec00',
 }
 
 
@@ -111,9 +145,30 @@ def _literal_spans(text, body):
     return [(match.start(), match.end()) for match in re.finditer(pattern, text)]
 
 
-_ADJOURNMENT_LEGACY = re.compile(r'That (?:the )?meeting be adjourned\.', re.I)
-_ADJOURNMENT_NARRATION = re.compile(r'(?:The Chair|Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
-_ADJOURNMENT_COMPACT = re.compile(r'(?:TheChair|Mayor[A-Z][a-z]+)adjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
+_ADJOURNMENT_LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting|Adjournment of the meeting)\.', re.I)
+_COUNCIL_ADJOURNMENT_LEGACY = re.compile(r'That Council adjourn the meeting\.', re.I)
+_SPECIAL_COUNCIL_ADJOURNMENT_LEGACY = re.compile(r'That the Special Council meeting be adjourned\.', re.I)
+_ADJOURNMENT_LEGACY_COMPACT = frozenset(
+    re.sub(r'[^a-z0-9]', '', body.casefold()) for body in (
+        'That the meeting be adjourned.', 'That meeting be adjourned.',
+        'Motion to adjourn the meeting.', 'Adjournment of the meeting.',
+        'That Council adjourn the meeting.',
+        'That the Special Council meeting be adjourned.'))
+_ADJOURNMENT_NARRATION = re.compile(r'(?:The Chair|(?:Acting )?Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
+_ADJOURNMENT_COMPACT = re.compile(r'(?:TheChair|(?:Acting)?Mayor[A-Z][a-z]+)adjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
+
+
+def _adjournment_legacy_eligible(text, meeting, source):
+    if _ADJOURNMENT_LEGACY.fullmatch(text):
+        return True
+    if _COUNCIL_ADJOURNMENT_LEGACY.fullmatch(text):
+        return meeting.get('classification') == source.get('source_classification') == 'Council'
+    # A named meeting is not a generic alias for another meeting type. This
+    # correspondence is limited to the catalog and original header agreeing.
+    return bool(_SPECIAL_COUNCIL_ADJOURNMENT_LEGACY.fullmatch(text)
+        and meeting.get('type') == 'Special Council'
+        and meeting.get('classification') == source.get('source_classification') == 'Council'
+        and re.search(r'(?im)^\s*Special\s+Council\s+Minutes\b', source['text'][:1500]))
 
 
 def _reviewed_native_correction(entry, source, meeting, archive_root, project_ref, municipality_id):
@@ -194,14 +249,22 @@ def validate_documentary_preservations(review, *, source, inventory, current_row
                 if entry['printed_body'] != row['text_content']:
                     raise ValueError('Literal documentary body differs from legacy claim')
             elif kind == 'reviewed_adjournment_narration_preservation':
-                if (not _ADJOURNMENT_LEGACY.fullmatch(row['text_content'])
+                if (not _adjournment_legacy_eligible(row['text_content'], meeting, source)
                         or not _ADJOURNMENT_NARRATION.fullmatch(entry['printed_body'])
                         or len(_ADJOURNMENT_COMPACT.findall(''.join(source['text'].split()))) != 1
-                        or any(other['id'] != row['id'] and _ADJOURNMENT_LEGACY.fullmatch(other['text_content'])
+                        or any(other['id'] != row['id'] and (_ADJOURNMENT_LEGACY.fullmatch(other['text_content'])
+                                   or _COUNCIL_ADJOURNMENT_LEGACY.fullmatch(other['text_content'])
+                                   or _SPECIAL_COUNCIL_ADJOURNMENT_LEGACY.fullmatch(other['text_content']))
                                for other in current_rows)):
                     raise ValueError('Reviewed adjournment narration is not a unique bounded documentary correspondence')
             else:
                 raise ValueError('Unsupported documentary preservation type')
+            if kind == 'reviewed_adjournment_narration_preservation':
+                formal_bodies = [e.get('body_view', e.get('body', '')) for e in formal]
+                formal_bodies.extend(block.get('motion_text', '') for block in source.get('blocks', []))
+                if any(re.sub(r'[^a-z0-9]', '', body.casefold()) in _ADJOURNMENT_LEGACY_COMPACT
+                       for body in formal_bodies):
+                    raise ValueError('Documentary adjournment has an equivalent formal owner')
             if (bound_source_motion(row, source, meeting['id'], inventory) is not None
                     or source_motion_candidates(source, row['text_content'])
                     or any(normalize_text(e.get('body_view', e.get('body', ''))) == normalize_text(row['text_content']) for e in formal)):

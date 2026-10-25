@@ -1,0 +1,575 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 79,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+  "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+  "source_date": "2017-10-02",
+  "source_text_sha256": "af5ca107c8329c628351fee60f552076134722ee030009be198f4e9c5536715b",
+  "formal_inventory_sha256": "cfc330347ea1a74c860f84521f14b886b35490e2bac4c6b6a78c87d711a00a2e",
+  "claim_inventory_sha256": "16d0129ca348c8349371aee11cdb94a7c3e16e254d6c752cf3af15e615006932",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "139c547bb5b54a484dc7f4fd434c0a3a994a90976886a41e620c453248de36df"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "261a35ac12cdd583e5d6df1988a672ba7f43d87f85a1d104def592d6d06d8061"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "f21e509a3dbed2d10ce9537b36ac082affb13397cf303101e130c2a71090852f"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "5a3c467335687439fa43b93d9ee11511831765912d36d587502e9ec7e516f53d"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "838c2f65f4b1e3332bca904c830d21e648bfa29b835dad1ac4a2581058518481"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "4438634012d0cbb5d17ffb8f9fd92b140e48a76904dcbc1378a201cf162f19d9"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "a38ce0610312f889346eaa91058b790b21c3483b796fa7940b5cd0e6f939d653"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "b0f95c75a57b5b51af52db42fdc4f0aaa2c8d948ea6bf172844a06dd9dcdcd48"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "eddf6f1dea4eaad2efa7d3f5801c18edb72cd0ab3091e6022e1b44d510237564"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "242215cdf2fd4431e71bec847a778dba4dc1334eb450ec6367a13f988ef2d325"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "5dad4396164a68fb817de93d3029345f717c204d5a15fb7a190e6e68d759b2b6"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "43353daeb5381152d3781ad9714ca261dbf58c701904254649a27b9b7c849f37"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "fc0ae7e12b824397a07c1daf9b670d7849bc2c5f698cc0caa22731990bc3e815"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "5ed2704343e0efb3206e919b2f5a52f1c7c05b54c9bb40a064856235792d5ba8"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "6dbc80d5b7398052fd46922c95059d84ab19e32eaff21ae86e4761a468591c6f"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "2459f4a2162ceb59bd5a05ee5a330c5c7401e2ca7893dbf76e9f3a474b9314cb"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 736,
+      "claim_sha256": "85793230adf85f19b53337e5744e80515da479c042fe93151767f41ac6acdba2",
+      "legacy_text": "That Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 654,
+        "source_order": 0,
+        "key": "6e010369fa94e918a134565bf6f6293510b82e79cd5ec61e311aa53202e804d8",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR SAHLSTROM\nSECONDED:       COUNCILLOR SIFERT\n\n        That Council approve the agenda as presented.\n\n                                                                                                 CARRIED.\n\n3.      PUBLIC HEARINGS\n\n        a) BYLAW NOs. 1730 and 1724\n           \"Langford Official Community Plan Bylaw, Amendment No. 25, (976 Dunford Ave), 2017\".\n           \"Langford Zoning Bylaw, Amendment No. 498, (976 Dunford Ave), 2017\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1730 and 1724 at 5:30 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Keycorp Developments Ltd. has applied on behalf of Verity Construction Ltd.\nto amend the Official Community Plan from NEIGHBOURHOOD to CITY CENTRE for the property at 976\nDunford Avenue and to rezone the subject property from the RM2 (Attached Housing) Zone to the MU2\n(Mixed Use Residential Commercial) Zone\n\n                                                                                                   October 2, 2017\n                                                                                                        Page 2 of 16\n\n\n\n This is being proposed in order to allow for the construction of a 5 story apartment building, consisting of\n approximately 24 dwelling units. Parking for the development is proposed within two floors of\n underground parking, at a ratio of one stall per dwelling unit.\n\n In support of this application, the applicant has agreed to provide the following:\n\n$2562 per unit towards the General Amenity Reserve Fund and $610 towards the Affordable Housing\nReserve Fund, collected as a bonus for increasing the density on the property.\n\nThe applicant will also be required to provide frontage improvements, including the installation of\nsidewalks and boulevard trees.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for speakers.\n\nNo speakers approached the podium.\n\nMayor Young called a second time for speakers.\n\nNo speakers approached the podium.\n\nThe Mayor called a third and final time for speakers, there being none, the Mayor officially declared the\nPublic Hearing for Bylaw No. 1730 and 1724 closed at 5:31 p.m.\n\n        b) BYLAW NO. 1738\n           \"Langford Official Community Plan Bylaw, Amendment No. 27, (Omnibus Amendment to\n           Map 2\u2014 Growth Management & Land Use) Strategy), 2017\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1738 at 5:31 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that the purpose of Bylaw No. 1738 is to amend the City of Langford Official\nCommunity Plan Bylaw No. 1200 by changing the designation of the areas that are the subject of Bylaw\nNo. 1738 to the City Centre, Business or Light Industrial and Mixed Use Employment Centre designations.\n\nAdvertisements have been placed as required by Council policy.\n\n                                                                                                October 2nd, 2017\n                                                                                                     Page 3 of 16\n\nThe Mayor called a first time for speakers.\n\n Resident on Rita Road addressed Council asking what benefit this change will get us now.\n\nMayor Young spoke to change in the core being important to Langford to grow and densify over the next\n20 years.\n\nResident on Rita Road addressed Council asking about whether taxes will rise.\n\nMayor Young confirmed that taxes would not rise as a result in this change.\n\nResident addressed Council asking how high a building can go.\n\nMayor Young clarified that this is just a mapping change and that changes in building height would still\nneed to go through the rezoning proper process and also spoke to the importance of affordability.\n\nResident asked what would happen when a neighbour wants to sell. What is the process?\n\nMayor Young provided clarification to the neighbourhood process.\n\nResident asked about Council pushing things through, but residents not having a say? Resident is\nconcerned about growth without needed amenities.\n\nCouncillor Blackwell spoke to the fact that Council hasn't seen the 12 story development that residents in\nthe audience are referring too.\n\nMatthew Baldwin said it will come to the committee in October.\n\nResident asked for clarification on height on parcel in question.\n\nMayor Young clarified that it is not before Council.\n\nCouncillor Blackwell provided further clarification on OCP and rezoning processes and explanation of the\ncore.\n\nMayor Young clarified that's why the OCP exists and what it means and does not mean for development.\n\nResident on Sunderland Road addressed Council stating that not selling property doesn't actually stop\ndevelopment.\n\nMayor Young provided further clarification that this change is for information only and there are lots of\nsteps in the process for any development.\n\nResident on Sunderland Road addressed Council with concerns about a 12 story building in the area and\nthat council is not doing enough to support housing and create affordability. Resident is concerned with\nadditional 200 plus units and 300 plus cars, especially on a cul-de-sac. Resident is also concerned about\nincreased traffic and house prices getting saturated in development.\n\n                                                                                                  October 2\", 2017\n                                                                                                       Page 4 of 16\n\nResident on Sunderland Road asked about a 12 story building.\n\nResident on Deville Road addressed Council with concerns about the 12 story building proposal as it will\nopen the flood gates. Resident is concerned that the Mayor said to fight it out amongst themselves.\n\nMayor Young provided further clarification on the process.\n\nResident on Deville Road addressed Council with concerns about the high rise, the negative effect on the\ncommunity and on social well-being. Resident is concerned about visual aesthetics, won't be able to\nconnect with neighbours, will reduce chance encounters, create a finite world, promote isolation, inflates\nprices of adjacent land and is concerned over shadows created from the building.\n\nResident on Knotty Pine Road addressed Council with concerns about traffic and increased number of\npeople.\n\nResident on Arncote Road stated that the area is already condensed, and asked Council to please drive\naround and see how hard it is and think about what is sustainable. Super tall buildings are not family\nfriendly, they need townhomes.\n\nMayor Young provided clarification on expanding the core and mentioned that no one is forcing you to\nsell. If you do sell, they still have to come forward with an application.\n\nResident on Arncote Road Is concerned about lack of notification by the developer.\n\nMayor Young provided further clarification on the notification process.\n\nResident on Deville Road Is concerned about parking with the new development.\n\nResident asked what do we do if we want the development stopped?\n\nMayor Young said he brought this forward because he wanted to hear the dialogue. He then spoke further\nabout the process.\n\nResident All informed and it's clear that we don't want a 12 story building.\n\nResident on Costin Avenue Will this mean change to taxes?\n\nMayor Young said no, the change will not increase taxes.\n\nResident on Costin Avenue asked about sewers.\n\nDirector of Engineering Mahovlich said there is no plan for sewers at this time, but they are close with the\nBray and Carlow Road sewer line.\n\nResident on Costin Avenue With Coast Environmental and Alpine, so close to the core, I am concerned\nabout the smell.\n\nMayor Young said that staff are working on Coast Environmental about the smell and clarified it's the only\n\n                                                                                                   October 2\", 2017\n                                                                                                        Page 5 of 16\n\nseptic dumping place in Langford at the moment.\n\n Resident on Dunford Avenue asked if expanded City core will help taxes?\n\nMayor Young responded that yes, increased density will help lower taxes. The Mayor instructed staff to\ndraft a policy that includes a transition zone for building height.\n\n Resident on Rita Road asked about the public hearing process.\n\n Resident on Kiwi Road asked if the City is looking at traffic, parking and family make-up.\n\nMayor Young provided an explanation that a variety of home options allows people to stay.\n\nCouncillor Blackwell Yes, the city takes into account studies (e.g. Traffic and parking) and that yes, Council\nconsiders them.\n\nResident on Kiwi Road asked who is managing the overall big picture?\n\nMayor Young spoke to the review of traffic studies and the need for density to bring bus service. To solve\nthe traffic problem by bringing jobs and incentive to Langford.\n\nResident Asked why Langford tailors things to luxury rentals?\n\nMayor Young We partner with M'kola/Pacifica to provide affordable housing.\n\nMayor Young called a second time for presentations.\n\nNone presented.\n\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1738 closed at 7:12 p.m.\n\n4.      ADOPTION OF MINUTES\n\n        a) Minutes of the Meeting of Council \u2014 September 18th, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "be9a5baf017a0137c60acf0236a1fc72d9fb5fcac61e3aa4722f586dc2e9b9b5",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 737,
+      "claim_sha256": "04824b923a9522bdd0777118e89d5701a9fd132868064de4bcbb173009c4ebbb",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on September 18th, 2017.",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 11302,
+        "source_order": 1,
+        "key": "7fa81969311997d43aa6d8bc3985fdf06b3bf5fafc74d5ff9eda3fead92849ee",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the Regular Meeting of Council held on September 18th,\n        2017.",
+        "source_block": "MOVED BY:       COUNCILLOR SIFERT\nSECONDED:       COUNCILLOR SAHLSTROM\n\n        That Council approve the minutes of the Regular Meeting of Council held on September 18th,\n        2017.\n\n                                                                                                      CARRIED.\n\n5.      PUBLIC PARTICIPATION\n\n             None.\n\n                                                                                                  October 2\"d, 2017\n                                                                                                       Page 6 of 16\n\n6.        DEVELOPMENT VARIANCE PERMIT\n\n          a)   DVP17-0009 \u2014 3296 Jacklin Road",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "d4e58982d0b66b2707462499ffb1a7237b940fd5502eb666e034eef611aaaaf2",
+      "pages": [
+        5
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 738,
+      "claim_sha256": "dbb94da7a75b720f84bb20c9f6bc49b62dc8cc32a73e3a32c8f0699d4290c5d5",
+      "legacy_text": "That Development Variance Permit No. DVP17-0009 be issued by the Council for the City of Langford to Terry Mogensen on behalf of Doug and Krista Nachtigal and Terry Mogensen for the property located at 3296 Jacklin Rd subject to the terms and conditions noted in the report.",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 11970,
+        "source_order": 2,
+        "key": "45c2b398de72579c171642229564d30ea053cda1cd4ccf299bff99f12c3e5182",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP17-0009 be issued by the Council for the City of Langford\nto Terry Mogensen on behalf of Doug and Krista Nachtigal and Terry Mogensen for the property located\nat 3296 Jacklin Rd subject to the following terms and conditions:\n\n1.   Variances\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a)   To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58 m\n          (31.4 ft) for the proposed one-family dwelling on Site 2A;\n     b)   To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53 m\n          (31.3 feet) for the proposed one-family dwelling on Site 2B;\n     c)   To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10 ft)\n          for the proposed one-family dwelling on Site 2B;\n     d)   To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for the\n          proposed one-family dwelling on Site 2B;\n     e)   To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the\n          proposed one-family dwelling on Site 2A;\n     f)   To reduce the minimum required rear yard setback from 7.5 m (25 ft) to 4.5 m (15 ft) for proposed\n          Townhouse Building 1 on Site 1; and\n     g)   To reduce the minimum required front yard setback from 4.5 m (15 ft) to 3.0 m (10 ft) for the\n          proposed one-family dwelling on Site 2A.\n\n2.   Conditions\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n     a) That the site shall be developed in accordance with the site plan, floor plans, elevation plans and\n        revised landscaping plans attached to the report; and\n     b) That the applicant delineate the drip line of all trees located on abutting properties near the rear\n        property line and ensure that development does not disturb the root systems of these trees.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\nThat Development Variance Permit No. DVP17-0009 be issued by the Council for the City of Langford\nto Terry Mogensen on behalf of Doug and Krista Nachtigal and Terry Mogensen for the property located\nat 3296 Jacklin Rd subject to the following terms and conditions:\n\n1.   Variances\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a)   To increase the maximum permitted height of the principal building from 8.5 m (28 ft) to 9.58 m\n          (31.4 ft) for the proposed one-family dwelling on Site 2A;\n     b)   To increase the maximum permitted height of a principal building from 8.5 m (28 ft) to 9.53 m\n          (31.3 feet) for the proposed one-family dwelling on Site 2B;\n     c)   To reduce the minimum required exterior side yard setback from 5.5 m (18 ft) to 3.05 m (10 ft)\n          for the proposed one-family dwelling on Site 2B;\n     d)   To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 4.7 m (15.5 ft) for the\n          proposed one-family dwelling on Site 2B;\n     e)   To reduce the minimum required rear yard setback from 6.0 m (20 ft) to 1.22 m (4 ft) for the\n          proposed one-family dwelling on Site 2A;\n     f)   To reduce the minimum required rear yard setback from 7.5 m (25 ft) to 4.5 m (15 ft) for proposed\n          Townhouse Building 1 on Site 1; and\n     g)   To reduce the minimum required front yard setback from 4.5 m (15 ft) to 3.0 m (10 ft) for the\n          proposed one-family dwelling on Site 2A.\n\n2.   Conditions\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n     a) That the site shall be developed in accordance with the site plan, floor plans, elevation plans and\n        revised landscaping plans attached to the report; and\n     b) That the applicant delineate the drip line of all trees located on abutting properties near the rear\n        property line and ensure that development does not disturb the root systems of these trees.\n\n                                                                                                     CARRIED.\n\n          b)   DVP17-0019 \u2014 2824 Knotty Pine Road",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5c67ce5b27245618404c23e7812f3d8bf990c398ad56f4afeceb282f8d3a5506",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 739,
+      "claim_sha256": "7c176e16b2870873ce4dc908fd750eea18ea3a8c500e2a5ea7edcb998ef231da",
+      "legacy_text": "That Development Variance Permit No. DVP17-0019 be issued by the Council for the City of Langford to Rohan Rupf on behalf of McCormick Meadows Ltd. to vary building setbacks and parking space length to permit the construction of an 8 unit townhouse development at 2282 and 2824 Knotty Pine Road subject to terms and conditions noted in the report.",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 14231,
+        "source_order": 3,
+        "key": "703efdece25fcc21b07bd2578127103a67d5bc3630a02abc07acc7115b7a42cc",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "October 2\", 2017\n                                                                                                     Page 7 of 16\n\nThat Development Variance Permit No. DVP17-0019 be issued by the Council for the City of Langford\nto Rohan Rupf on behalf of McCormick Meadows Ltd. to vary the building setbacks to the interior side\nand front property lines and the off street parking space length in order to permit the construction of an\n8 unit townhouse development at 2282 and 2824 Knotty Pine Road subject to the following terms and\nconditions:\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Variances\n\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) That Section 6.36A.06(1) of Zoning Bylaw No. 300 be varied to reduce the front lot line setback\n        from 5.57 m, in accordance with Z16-0018, to 3.4 m;\n     b) That Section 6.36A.06(2) of Zoning Bylaw No. 300 be varied to reduce the interior side lot line\n        setback from 2 m, in accordance with Z16-0018, to 1.2 m; and\n     c) That Table 4.01.02 of the Zoning Bylaw No.300 be varied to reduce the required length of an off\n        street parking space from 5.5 m to 4.6 m;\n\n3.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n     a) That the site is developed in accordance with the plan attached to this report as Appendix A; and\n     b) That the applicant submits a revised Frontage Improvement Plan, to the standards of the\n        Subdivision and Servicing Bylaw No. 1000 and the Director of Engineering, prior to the issuance\n        of this Development Variance Permit.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\n                                                                                                October 2\", 2017\n                                                                                                     Page 7 of 16\n\nThat Development Variance Permit No. DVP17-0019 be issued by the Council for the City of Langford\nto Rohan Rupf on behalf of McCormick Meadows Ltd. to vary the building setbacks to the interior side\nand front property lines and the off street parking space length in order to permit the construction of an\n8 unit townhouse development at 2282 and 2824 Knotty Pine Road subject to the following terms and\nconditions:\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Variances\n\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) That Section 6.36A.06(1) of Zoning Bylaw No. 300 be varied to reduce the front lot line setback\n        from 5.57 m, in accordance with Z16-0018, to 3.4 m;\n     b) That Section 6.36A.06(2) of Zoning Bylaw No. 300 be varied to reduce the interior side lot line\n        setback from 2 m, in accordance with Z16-0018, to 1.2 m; and\n     c) That Table 4.01.02 of the Zoning Bylaw No.300 be varied to reduce the required length of an off\n        street parking space from 5.5 m to 4.6 m;\n\n3.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n     a) That the site is developed in accordance with the plan attached to this report as Appendix A; and\n     b) That the applicant submits a revised Frontage Improvement Plan, to the standards of the\n        Subdivision and Servicing Bylaw No. 1000 and the Director of Engineering, prior to the issuance\n        of this Development Variance Permit.\n\n                                                                                                   CARRIED.\n\n          c)   DVP17-0020 \u2014 2207 Millstream Road",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "7638cb0eb0273c1d0b81001744243284e95f4069b7b4f5be31be82844b4f87b3",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 740,
+      "claim_sha256": "7feee7bc7e9b3f008ee4108d6fb105330283c96e5e495c6b66f7fc577e79c2c6",
+      "legacy_text": "That Development Variance Permit No. DVP17-0020 be issued by the Council for the City of Langford to Josh Bisnett on behalf of Westshore Alliance Church to allow for one additional freestanding sign at 2207 Millstream Rd subject to the terms and conditions noted in the report.",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 16305,
+        "source_order": 4,
+        "key": "574e2cc18a2285342b7ed5a847717dfac59752fe1cc234b3c59316bf3f545e6a",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP17-0020 be issued by the Council for the City of Langford\nto Josh Bisnett on behalf of Westshore Alliance Church to allow for one additional freestanding sign at\n2207 Millstream Rd subject to the following terms and conditions:\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Variances\n\n                                                                                                   October 2, 2017\n                                                                                                        Page 8 of 16\n\n      The following regulations of Sign Bylaw No. 1250 are varied under Section 330 of the Local\n      Government Act:\n\n      a) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from one permitted freestanding sign per\n         highway frontage to two freestanding signs per highway frontage.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\nThat Development Variance Permit No. DVP17-0020 be issued by the Council for the City of Langford\nto Josh Bisnett on behalf of Westshore Alliance Church to allow for one additional freestanding sign at\n2207 Millstream Rd subject to the following terms and conditions:\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Variances\n\n                                                                                                   October 2, 2017\n                                                                                                        Page 8 of 16\n\n      The following regulations of Sign Bylaw No. 1250 are varied under Section 330 of the Local\n      Government Act:\n\n      a) That Section 11(a)(i) of Sign Bylaw No. 1250 be varied from one permitted freestanding sign per\n         highway frontage to two freestanding signs per highway frontage.\n\n                                                                                                       CARRIED.\n\n7.        COMMITTEE RESOLUTIONS\n\n          a)   Planning, Zoning and Affordable Housing Committee \u2014 September 25th, 2017\n                   1. Application to Rezone 681 Rockingham Road from R2 to RS1 to allow a three lot\n                      subdivision with homes larger than 200m2",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5153ceef994bc224a4d476236fc8ff3e53f821a6c2f61a05cca1f72b9fcf354f",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 741,
+      "claim_sha256": "77f5cc4819bc4fc699002ffd0e913bc9b13d410dad8d637b3c3ea4d1a61609e9",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the property located at 681 Rockingham Road from R2 to RS1 subject to terms and conditions (including amenity contributions and frontage improvements) and to proceed with amending the RS1 zone text to allow larger principal buildings.",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 17701,
+        "source_order": 5,
+        "key": "ad97bbc88cb3f96b11bee23198f78546077076663c7bca3d164ad0fbd4904344",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n1.    Direct staff to prepare a bylaw to amend the zoning designation of the property located at 681\n      Rockingham Road from R2 to RS1, subject to the following terms and conditions:\n\n               a)   That the owner agrees to provide, as a bonus for increased density, the following\n                    contributions per new lot created above and beyond 2 lots, prior to subdivision approval:\n                       i.   $2,772 towards the General Amenity Reserve Fund;\n                      ii.   $660 towards the Affordable Housing Reserve Fund;\n\n               b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                  in priority of all other charges on title, that agrees to the following:\n                      i.   That prior to subdivision approval, the applicant provides full frontage\n                           improvements to the standards of the Subdivision and Development Servicing\n                           Bylaw No. 1000 standards, and to the Director of Engineering. This will include\n                           but is not limited to removing the rock in the centre of the existing cul de sac,\n                           creating a parking bowtie, and installing a street light;\n                     ii.   That a Stormwater Management Plan shall be provided and all required measures\n                           recommended shall be implemented by the owner as a condition of Subdivision\n                           approval, to the satisfaction of the Director of Engineering;\n                    iii.   That a Construction Parking Management Plan be provided to the satisfaction of\n                           the Director of Engineering prior to any alteration of the land.\nAND\n\n     2.   Direct staff to proceed with amending the text of the RS1 zone to allow the size of the principle\n          use buildings to exceed a gross floor area of 200m2.",
+        "source_block": "MOVED BY:           COUNCILLOR BLACKWELL\nSECONDED:           COUNCILLOR WADE\n\n          That Council:\n\n1.    Direct staff to prepare a bylaw to amend the zoning designation of the property located at 681\n      Rockingham Road from R2 to RS1, subject to the following terms and conditions:\n\n               a)   That the owner agrees to provide, as a bonus for increased density, the following\n                    contributions per new lot created above and beyond 2 lots, prior to subdivision approval:\n                       i.   $2,772 towards the General Amenity Reserve Fund;\n                      ii.   $660 towards the Affordable Housing Reserve Fund;\n\n               b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                  in priority of all other charges on title, that agrees to the following:\n                      i.   That prior to subdivision approval, the applicant provides full frontage\n                           improvements to the standards of the Subdivision and Development Servicing\n                           Bylaw No. 1000 standards, and to the Director of Engineering. This will include\n                           but is not limited to removing the rock in the centre of the existing cul de sac,\n                           creating a parking bowtie, and installing a street light;\n                     ii.   That a Stormwater Management Plan shall be provided and all required measures\n                           recommended shall be implemented by the owner as a condition of Subdivision\n                           approval, to the satisfaction of the Director of Engineering;\n                    iii.   That a Construction Parking Management Plan be provided to the satisfaction of\n                           the Director of Engineering prior to any alteration of the land.\nAND\n\n     2.   Direct staff to proceed with amending the text of the RS1 zone to allow the size of the principle\n          use buildings to exceed a gross floor area of 200m2.\n\n                                                                                                      CARRIED.\n\n                                                                                                       October 2nd, 2017\n                                                                                                            Page 9 of 16\n\n\n\n                     2.     Application for Development Variance Permit to allow a freestanding sign with a\n                            height of 7m and a sign area of 9m2 per side at 721 Station Avenue.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5b0de87aa7bfa64c77d1b51ebc26484093b83798ddb5e399bb74207a0771c8cf",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 742,
+      "claim_sha256": "04fd40cd2eee5b82ea1c1b0da8d6c33bfcedbb530f45985a5d14b9fb5d3648d0",
+      "legacy_text": "That Council direct staff to proceed with consideration of the proposed variances for 721 Station Avenue (increase sign height to 7m and sign area to 8m2 per frontage).",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 20294,
+        "source_order": 6,
+        "key": "e45c9883c227b39c5ec342e72f09204b707671b794c64349377ba26c6e0de42f",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.        Direct staff to proceed with consideration of the following variances for 721 Station Avenue:\n\n        i.      That Section 11(a)(iii) of Sign Bylaw No. 1250 be varied from a maximum height of 3.5m with\n                a maximum sign area of 4.5m2 per road frontage to a maximum height of 7m with a maximum\n                sign area of 8m2 per road frontage.",
+        "source_block": "MOVED BY:            COUNCILLOR BLACKWELL\nSECONDED:            COUNCILLOR WADE\n\n             That Council:\n\n   1.        Direct staff to proceed with consideration of the following variances for 721 Station Avenue:\n\n        i.      That Section 11(a)(iii) of Sign Bylaw No. 1250 be varied from a maximum height of 3.5m with\n                a maximum sign area of 4.5m2 per road frontage to a maximum height of 7m with a maximum\n                sign area of 8m2 per road frontage.\n\n                                                                                                           CARRIED.\n\n                     3.     Application to amend the Official Community Plan designation for 866 Latoria from\n                            Agricultural Strategy Lands to Hillside or Shoreline and to rezone one portion of the\n                            lands from AG1 (Agriculture 1) to the RR6 (Rural Residential 6) Zone and another\n                            portion to the RM2A (Attached Housing) Zone to permit an overall development of\n                            18 single-family lots and a 30-unit townhouse site.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ce7d9c51495640d9ba2d65be4392397b10053f7af2e02baa35d4b3697f7bccce",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 743,
+      "claim_sha256": "4abc0c76b70fadf3483ac399aff4c6c6c9a1b9791996d8d3d74f3b2eb49126ba",
+      "legacy_text": "That Council direct staff to prepare bylaws to amend the Official Community Plan and rezone 866 Latoria Road (AG1 \u2192 RR6 & RM2A) subject to conditions including specified amenity contributions per lot/unit, a $136,000 contribution prior to subdivision approval, and required covenants and frontage works.",
+      "source_identity": {
+        "meeting_id": 79,
+        "source_sha256": "e4614745f7f80b303d92639b7f262d1c8eab35ac75d6642a36c77ee323c3588d",
+        "source_offset": 21414,
+        "source_order": 7,
+        "key": "9069b8f6ef69ebfb1eb6b058583645ed53ad14bb8e7cdb9a7930229507ad042e",
+        "source_file": "archive/langford/Council/2017/10/2017-10-02 Regular Council [legacy]/Minutes/20171002-Signed-Minutes.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20171002-Signed-Minutes.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.    Direct staff to prepare a bylaw to amend the Official Community Plan of the subject property at\n         866 Latoria Road form Agricultural Strategy Lands to Hillside or Shoreline;\n\n   2.    Direct staff to prepare a bylaw to amend the zoning designation of the property located at 866\n         Latoria Road from AG1 (Agriculture 1) to RR6 (Rural Residential 6) and RM2A (Attached Housing)\n         subject to the following terms and conditions:\n\n                a) That the applicant agrees to provide, as a bonus for increased density, the following\n                   contributions per one-family lot created, prior to subdivision approval:\n\n                           i.   $6,000 towards the General Amenity Reserve Fund; and\n                          ii.   $1,000 towards the Affordable Housing Reserve Fund.\n\n                b) That the applicant agrees to provide, as a bonus for increased density, the following\n                   contributions per townhouse unit created, prior to building permit issuance:\n\n                           i.   $3,660 towards the General Amenity Reserve Fund; and\n                          ii.   $610 towards the Affordable Housing Reserve Fund.\n\n                c)   That the applicant agrees to provide, as a condition of removing land from the AIR, the\n                     following contribution, prior to subdivision approval:\n\n                                                                                                October 2nd, 2017\n                                                                                                    Page 10 of 16\n\n                  I.    $136,000 towards the General Amenity Reserve Fund.\n\n         d) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n            in priority of all other charges on title, that agrees to the following:\n\n                  i.    That a 2.0m wide road dedication be provided along Latoria Road;\n                 ii.    That a 15m wide road dedication be provided for the proposed new road;\n                iii.    That all frontage improvements to Bylaw 1000 standards are provide to the\n                        satisfaction of the Director of Engineering;\n                iv.     That all municipal works and third party utility services are installed within\n                         municipal road dedication;\n                 v.     That a storm water management plan be provided, which demonstrates the\n                        required onsite detention, to the satisfaction of the Director of Engineering;\n                vi.     That notification be provided that the properties are close to agricultural\n                        operations and the South Vancouver Rangers property, both of which may\n                        generate nuisances;\n               vii.     That a tree protection plan, and the removal of any hazardous trees, is provide\n                        prior to subdivision approval.\n               viii.    That the Park area shown on Appendix A of this report is dedicated to the City at\n                        the time of subdivision and that the applicant completes improvements within\n                        this Park to the satisfaction of the Parks Manager.\n\n3.   Direct staff to prepare a zoning bylaw amendment to the RR6 (Rural Residential 6) Zone as per\n     the following:\n\n         a) By replacing 6.15.01(5) with, \"secondary suite within a one-family dwelling or within an\n            accessory building on lots 500m2 or greater and in accordance with Section 3.08.\"\n         b) By replacing 6.15.02(4) with, \"Notwithstanding Subsection 6.15.02(1), on land whose\n            legal description is set out in Table 1 of Schedule AD, the minimum parcel area for\n            subdivision may be 500 rn2 (5,382 fe) if the owner of the land proposed to be subdivided:\n\n                 a.   pays to the City the amount specified in Column 4 of Table 1 of Schedule AD, prior\n                     to the time of subdivision.\"\n4.   Direct staff to prepare a zoning bylaw amendment to the RM2A (Attached Housing) Zone as per\n     the following:\n\n\n         a)   By replacing 6.31A.03(1) with, \"Except as provided in articles (2) and (3), buildings in the\n              RM2A Zone shall not exceed a floor area ratio of 0.75;\"\n\n         b)   By replacing 6.31A.03(2) with, \"Notwithstanding subsection 6.31A.03(1), on land whose\n              legal description is set out in Table 1 of Schedule AD, the floor area ratio may be increased\n              to 1.0, if the owner of the land proposed to be developed: (Bylaw No. 1320)\n\n                 a.    pays to the City the amount specified in Column 4 of Table 1 of Schedule AD, prior\n                       to issuance of a building permit.\"\n\n        c)    By replacing 6.31A.03 with, \"Notwithstanding the floor area ratio specified in subsection\n              6.31A.03(2), the floor area ratio may be increased to 1.5 if the owner\n\n        d)    provides 50% of the parking spaces required by this Bylaw in an underground or under\n              building parking structure, subject to compliance with the density bonus provisions\n              specified in Subsection 6.31A.03(2).\"\n\n                                                                                                October 2\"d, 2017\n                                                                                                    Page 11 of 16\n\n   5.   Direct staff to forward the proposed subdivision plan and buffering plan to the Agricultural Land\n        Commission and request that they accept the proposed plans as satisfying their agricultural edge\n        planning condition for ALR exclusion.\n\n   6.   Authorize the Director of Planning to issue the following variances within the required\n        Development Permit for 866 Latoria Road:\n\n            a) That Section 6.31A.06(1) be varied to reduce the minimum front yard setback to 3.0m\n               (13 ft),\n            b) That Section 6.31A.06(2) be varied to reduce the minimum interior side yard setback to\n               5.5m (18 ft);\n            c) That Section 6.31A.06(3) be varied to reduce the minimum exterior side yard setback to\n               3.0m (13 ft); and\n            d) That Section 6.31A.06(4) be varied to reduce the minimum rear yard setback to 5.5m\n               (18 ft).",
+        "source_block": "MOVED BY:            COUNCILLOR BLACKWELL\nSECONDED:            COUNCILLOR WADE\n\n         That Council:\n\n   1.    Direct staff to prepare a bylaw to amend the Official Community Plan of the subject property at\n         866 Latoria Road form Agricultural Strategy Lands to Hillside or Shoreline;\n\n   2.    Direct staff to prepare a bylaw to amend the zoning designation of the property located at 866\n         Latoria Road from AG1 (Agriculture 1) to RR6 (Rural Residential 6) and RM2A (Attached Housing)\n         subject to the following terms and conditions:\n\n                a) That the applicant agrees to provide, as a bonus for increased density, the following\n                   contributions per one-family lot created, prior to subdivision approval:\n\n                           i.   $6,000 towards the General Amenity Reserve Fund; and\n                          ii.   $1,000 towards the Affordable Housing Reserve Fund.\n\n                b) That the applicant agrees to provide, as a bonus for increased density, the following\n                   contributions per townhouse unit created, prior to building permit issuance:\n\n                           i.   $3,660 towards the General Amenity Reserve Fund; and\n                          ii.   $610 towards the Affordable Housing Reserve Fund.\n\n                c)   That the applicant agrees to provide, as a condition of removing land from the AIR, the\n                     following contribution, prior to subdivision approval:\n\n                                                                                                October 2nd, 2017\n                                                                                                    Page 10 of 16\n\n                  I.    $136,000 towards the General Amenity Reserve Fund.\n\n         d) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n            in priority of all other charges on title, that agrees to the following:\n\n                  i.    That a 2.0m wide road dedication be provided along Latoria Road;\n                 ii.    That a 15m wide road dedication be provided for the proposed new road;\n                iii.    That all frontage improvements to Bylaw 1000 standards are provide to the\n                        satisfaction of the Director of Engineering;\n                iv.     That all municipal works and third party utility services are installed within\n                         municipal road dedication;\n                 v.     That a storm water management plan be provided, which demonstrates the\n                        required onsite detention, to the satisfaction of the Director of Engineering;\n                vi.     That notification be provided that the properties are close to agricultural\n                        operations and the South Vancouver Rangers property, both of which may\n                        generate nuisances;\n               vii.     That a tree protection plan, and the removal of any hazardous trees, is provide\n                        prior to subdivision approval.\n               viii.    That the Park area shown on Appendix A of this report is dedicated to the City at\n                        the time of subdivision and that the applicant completes improvements within\n                        this Park to the satisfaction of the Parks Manager.\n\n3.   Direct staff to prepare a zoning bylaw amendment to the RR6 (Rural Residential 6) Zone as per\n     the following:\n\n         a) By replacing 6.15.01(5) with, \"secondary suite within a one-family dwelling or within an\n            accessory building on lots 500m2 or greater and in accordance with Section 3.08.\"\n         b) By replacing 6.15.02(4) with, \"Notwithstanding Subsection 6.15.02(1), on land whose\n            legal description is set out in Table 1 of Schedule AD, the minimum parcel area for\n            subdivision may be 500 rn2 (5,382 fe) if the owner of the land proposed to be subdivided:\n\n                 a.   pays to the City the amount specified in Column 4 of Table 1 of Schedule AD, prior\n                     to the time of subdivision.\"\n4.   Direct staff to prepare a zoning bylaw amendment to the RM2A (Attached Housing) Zone as per\n     the following:\n\n\n         a)   By replacing 6.31A.03(1) with, \"Except as provided in articles (2) and (3), buildings in the\n              RM2A Zone shall not exceed a floor area ratio of 0.75;\"\n\n         b)   By replacing 6.31A.03(2) with, \"Notwithstanding subsection 6.31A.03(1), on land whose\n              legal description is set out in Table 1 of Schedule AD, the floor area ratio may be increased\n              to 1.0, if the owner of the land proposed to be developed: (Bylaw No. 1320)\n\n                 a.    pays to the City the amount specified in Column 4 of Table 1 of Schedule AD, prior\n                       to issuance of a building permit.\"\n\n        c)    By replacing 6.31A.03 with, \"Notwithstanding the floor area ratio specified in subsection\n              6.31A.03(2), the floor area ratio may be increased to 1.5 if the owner\n\n        d)    provides 50% of the parking spaces required by this Bylaw in an underground or under\n              building parking structure, subject to compliance with the density bonus provisions\n              specified in Subsection 6.31A.03(2).\"\n\n                                                                                                October 2\"d, 2017\n                                                                                                    Page 11 of 16\n\n   5.   Direct staff to forward the proposed subdivision plan and buffering plan to the Agricultural Land\n        Commission and request that they accept the proposed plans as satisfying their agricultural edge\n        planning condition for ALR exclusion.\n\n   6.   Authorize the Director of Planning to issue the following variances within the required\n        Development Permit for 866 Latoria Road:\n\n            a) That Section 6.31A.06(1) be varied to reduce the minimum front yard setback to 3.0m\n               (13 ft),\n            b) That Section 6.31A.06(2) be varied to reduce the minimum interior side yard setback to\n               5.5m (18 ft);\n            c) That Section 6.31A.06(3) be varied to reduce the minimum exterior side yard setback to\n               3.0m (13 ft); and\n            d) That Section 6.31A.06(4) be varied to reduce the minimum rear yard setback to 5.5m\n               (18 ft).\n\n                                                                                                    CARRIED.\n\n                 4.     Application to amend the zoning of the properties at 694 Goldstream Ave and 688\n                        Granderson Road from C3, District Commercial, Zone to the C8A, Community Town\n                        Centre Pedestrian A, Zone to allow for mixed commercial and residential uses on\n                        the property.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3bbfe9ddff1f41f8e5a400ee0f87b09e48012ed496949f0dd224cca87326761a",
+      "pages": [
+        9,
+        10,
+        11
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+  "second_independent_original_image_review_sha256": "87bb9b677c7c30dc0bb66fbfca3dc6a4ad56189ada68fe4ce69707998659cc04",
+  "closing_conflict_quarantines": [
+    {
+      "source_review_sha256": "321d8879614b51dde23a275009d124459fdee5c6b641994108d145ccfd8f78cb",
+      "capability": {
+        "type": "reviewed_unresolved_closing_conflict",
+        "authority": "duplicate_screening_only_no_fact_certification",
+        "motion_id": 744,
+        "legacy_text": "That the meeting be adjourned.",
+        "expected_stored_result": "CARRIED",
+        "claim_sha256": "bf57f0913ac3f95ab6b57a952a2ed81e46f0545d9d444a2f3543c45ff60accde",
+        "claim_row_sha256": "331435437bb3177299954e9cc541621ff77b965bb0907093fc448b99c9e50baa",
+        "printed_body": "The Chair adjourned the meeting at 7:30 pm.",
+        "page": 16,
+        "native_text_sha256": "2459f4a2162ceb59bd5a05ee5a330c5c7401e2ca7893dbf76e9f3a474b9314cb",
+        "render_sha256": "cc7c21df26726567f79bb246809f188807cd221dc50dc612975425f71b6a9f67",
+        "source_passage": "The Chair adjourned the meeting at 7:30 pm.",
+        "source_passage_start": 41254,
+        "native_passage": "The Chair adjourned the meeting at 7:30 pm.",
+        "native_passage_start": 993,
+        "allowed_new_decisions": [
+          {
+            "source_key": "65dd4395402b58e834d6397f0d05ad906ee6abfee6543618a57ff793fc40984c",
+            "raw_block_sha256": "19e2daef500bdb74386f087d0f4c943e29466c1ca78b1aaa8161ccb34735c336",
+            "operative_body": "That Council proceed to give Tax Exemption Bylaw No. 1743, 2017 the first three readings.",
+            "operative_body_sha256": "7b6c081bc8234f0b7b24dd2b281f29640db1008412a888a5239acf4785e95942",
+            "result": "CARRIED",
+            "pages": [
+              13
+            ],
+            "page_evidence": [
+              {
+                "page": 13,
+                "native_text_sha256": "fc0ae7e12b824397a07c1daf9b670d7849bc2c5f698cc0caa22731990bc3e815",
+                "render_sha256": "5e3dc2fa7a9ed643c2559678fae5464d21c7800eed551e380c340c71fabf9903"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "7928aa4568c606b2b0d82a71cce375a869bc326f98169c43c611e4998c111cfe",
+            "raw_block_sha256": "da96e3da52b37b85e9508332f1b8a9e97b38079ba2906d519754bb6db72dc2d7",
+            "operative_body": "That Council receive the 2017 Tax Sale Report.",
+            "operative_body_sha256": "9061fbd4dd7064752b8f3119df0db4f82de7acc4cbc551b49adb45c7360a71cc",
+            "result": "CARRIED",
+            "pages": [
+              13
+            ],
+            "page_evidence": [
+              {
+                "page": 13,
+                "native_text_sha256": "fc0ae7e12b824397a07c1daf9b670d7849bc2c5f698cc0caa22731990bc3e815",
+                "render_sha256": "5e3dc2fa7a9ed643c2559678fae5464d21c7800eed551e380c340c71fabf9903"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "bf03e020ac2a4de030db05d995ae50857957982fc719aacadcb76e7ab9323d4c",
+            "raw_block_sha256": "f4650dcfad3582866d9071012294785e201f8f07a19ebcf0cda4c4121344fadc",
+            "operative_body": "That Council grant The Royal Canadian Legion Prince Edward Branch #091 the use of the City's tent for their 2017 Remembrance Day Ceremony.",
+            "operative_body_sha256": "7d2e37be22ec9c00c71922723faf7964b71b983572d34bb4b7d1609d7cb500cb",
+            "result": "CARRIED",
+            "pages": [
+              13
+            ],
+            "page_evidence": [
+              {
+                "page": 13,
+                "native_text_sha256": "fc0ae7e12b824397a07c1daf9b670d7849bc2c5f698cc0caa22731990bc3e815",
+                "render_sha256": "5e3dc2fa7a9ed643c2559678fae5464d21c7800eed551e380c340c71fabf9903"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "847c0e3b9ed873c33c7e0f6cc97bbd2a3b74f99da24ac52e9f49f44112027a71",
+            "raw_block_sha256": "feea47f2e9c894b7bb37af58203836f11222e687175306bf600dc98392208bed",
+            "operative_body": "That Council adopt Bylaw No. 1710.",
+            "operative_body_sha256": "0926cf46222a99f6abaf143addda66a2a2845b42ace35215f42da07b31794c5a",
+            "result": "CARRIED",
+            "pages": [
+              14
+            ],
+            "page_evidence": [
+              {
+                "page": 14,
+                "native_text_sha256": "5ed2704343e0efb3206e919b2f5a52f1c7c05b54c9bb40a064856235792d5ba8",
+                "render_sha256": "f97d7982bba45679a85f03d408f20a38d950016492267e550652f0592a61ff01"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "4533354fb2b2d881d28189f9df4fea8070f7b50ece115d74deb54381f2fdca36",
+            "raw_block_sha256": "b70a2ef7008d2034067c3f4e9c987ac34c7ae6511058a0958aec60cca39ec585",
+            "operative_body": "That Council give Bylaw No. 1718 First, Second and Third Readings.",
+            "operative_body_sha256": "b4ee5f801f7b3c1530c4cd0f7a4b5e5c6ed15777fe177074d7034935f6c7a0ee",
+            "result": "CARRIED",
+            "pages": [
+              14
+            ],
+            "page_evidence": [
+              {
+                "page": 14,
+                "native_text_sha256": "5ed2704343e0efb3206e919b2f5a52f1c7c05b54c9bb40a064856235792d5ba8",
+                "render_sha256": "f97d7982bba45679a85f03d408f20a38d950016492267e550652f0592a61ff01"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "61d873d5d944de5d3510d33ec867c09366becb577a6e4c56b13e67fe4e93aeff",
+            "raw_block_sha256": "7d83dc8d24d8cde46f3f14323c65d0a99b07b2b760151e2b5c15cb5e6053de28",
+            "operative_body": "That Council adopt Bylaw No. 1721.",
+            "operative_body_sha256": "17ef13d4892dda03ce958b21771cad63aab4cdc28e61fcdde147b25bef16217a",
+            "result": "CARRIED",
+            "pages": [
+              14
+            ],
+            "page_evidence": [
+              {
+                "page": 14,
+                "native_text_sha256": "5ed2704343e0efb3206e919b2f5a52f1c7c05b54c9bb40a064856235792d5ba8",
+                "render_sha256": "f97d7982bba45679a85f03d408f20a38d950016492267e550652f0592a61ff01"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "0bd7f5546ddd5b8f9d88b60f6ab6cc82042e112e7afb51b6308169e8697a87ae",
+            "raw_block_sha256": "582cf5531e78c3a1ee033517441a10c395e2f4f7275aba0f91ac83f6645f5bbe",
+            "operative_body": "That Council give Bylaw No. 1730 Second and Third Reading.",
+            "operative_body_sha256": "651c48b9a91c3b222a7128a3d20ba286f43674c0ce7f992415f532ef12df01bb",
+            "result": "CARRIED",
+            "pages": [
+              14
+            ],
+            "page_evidence": [
+              {
+                "page": 14,
+                "native_text_sha256": "5ed2704343e0efb3206e919b2f5a52f1c7c05b54c9bb40a064856235792d5ba8",
+                "render_sha256": "f97d7982bba45679a85f03d408f20a38d950016492267e550652f0592a61ff01"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "d203308cdc7f0a837c028b482881b1e2269fcafae06be095d9a49d5dd49332c6",
+            "raw_block_sha256": "92eea1f0d537215e51e11d2f3c9e571c4483ba2ecef06913bbe7f0359617ae1f",
+            "operative_body": "That Council give Bylaw No. 1724 Second and Third Reading.",
+            "operative_body_sha256": "437109046d723fca45d8ed2e318d19f29d21261bbd35dddf532e7aba978587d7",
+            "result": "CARRIED",
+            "pages": [
+              15
+            ],
+            "page_evidence": [
+              {
+                "page": 15,
+                "native_text_sha256": "6dbc80d5b7398052fd46922c95059d84ab19e32eaff21ae86e4761a468591c6f",
+                "render_sha256": "4d6aaee993f0f323d3fccf4689fc81a2bb2f48d6aaab0f1ccee99bc29b6050c1"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "90843f684140accaaace090412ffd062aab9bb2c2991666df456219d2c07658d",
+            "raw_block_sha256": "f959cee7001cb4c7d1af2996114f117f10cad9a8ca0806850c09b44332ad560d",
+            "operative_body": "That Council give Bylaw No. 1738 Second and Third Reading and that staff draft a transition/step- down policy on building height as part of Avi Friedman's visioning work.",
+            "operative_body_sha256": "249c1d6dabcb933b1d04f23c08b0348a6191093d6227573dc85ca090a0c36daf",
+            "result": "CARRIED",
+            "pages": [
+              15
+            ],
+            "page_evidence": [
+              {
+                "page": 15,
+                "native_text_sha256": "6dbc80d5b7398052fd46922c95059d84ab19e32eaff21ae86e4761a468591c6f",
+                "render_sha256": "4d6aaee993f0f323d3fccf4689fc81a2bb2f48d6aaab0f1ccee99bc29b6050c1"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "34db00b0ebff6507403fe7903cea375f9d6ee749a0649766dbc34431a541ae07",
+            "raw_block_sha256": "01543d27b642d8fc8fe92f4cc1fe02618d39962b51b3db9df82ff1d61ef6ee46",
+            "operative_body": "That Council give Bylaw No. 1739 First Reading.",
+            "operative_body_sha256": "5d542f04c04921fed72bc11b8de78e1c88e2d180c56b429c583860ae43a321c5",
+            "result": "CARRIED",
+            "pages": [
+              15
+            ],
+            "page_evidence": [
+              {
+                "page": 15,
+                "native_text_sha256": "6dbc80d5b7398052fd46922c95059d84ab19e32eaff21ae86e4761a468591c6f",
+                "render_sha256": "4d6aaee993f0f323d3fccf4689fc81a2bb2f48d6aaab0f1ccee99bc29b6050c1"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "043e31cc493de0224d4b0281c4d64097da973e5cdedf8e6784d0e45d1bc889c2",
+            "raw_block_sha256": "bf912a06f956f7dbaf500be388848d8e19113a9bf9a7ddc435a90b124366e92e",
+            "operative_body": "That Council give Bylaw No. 1743 First, Second and Third Reading.",
+            "operative_body_sha256": "8a7240cbbb453c935f99af2e6fba1c7a29fd3adefd704936053b6ad98039d77c",
+            "result": "CARRIED",
+            "pages": [
+              15
+            ],
+            "page_evidence": [
+              {
+                "page": 15,
+                "native_text_sha256": "6dbc80d5b7398052fd46922c95059d84ab19e32eaff21ae86e4761a468591c6f",
+                "render_sha256": "4d6aaee993f0f323d3fccf4689fc81a2bb2f48d6aaab0f1ccee99bc29b6050c1"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "6a9fa7d93e1a5250d65057a1ada0d07c2e014cd12e7dfdeb707a1ea0c802f9ed",
+            "raw_block_sha256": "5e08b5c932346368e91d91a3cc8b363eb9d7888528b33da8c9b3fc3e8f24c38c",
+            "operative_body": "That Council give Bylaw No. 1744 First Reading.",
+            "operative_body_sha256": "f0d0049ea8a054f1d2f1b6f9323a0b05b3bd3cb020bb9b6d2ddc19c9808e6f73",
+            "result": "CARRIED",
+            "pages": [
+              16
+            ],
+            "page_evidence": [
+              {
+                "page": 16,
+                "native_text_sha256": "2459f4a2162ceb59bd5a05ee5a330c5c7401e2ca7893dbf76e9f3a474b9314cb",
+                "render_sha256": "cc7c21df26726567f79bb246809f188807cd221dc50dc612975425f71b6a9f67"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "ab45dcf1679f2e052c7c3e6c61f962bf6729bf107b87d984c1ff09a61aff7233",
+            "raw_block_sha256": "98e7abc7ba015ccd2d6b915359aa0104a55c4765047dfc661a2e81bfd746e563",
+            "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding negotiations between the municipality and the provincial government, as per Section 90(2) (b) of the Community Charter. AND b) That Council waive the requirement for public notice of the In-Camera meeting pursuant to section 127 of the Community Charter; c) That Council continues the meeting in closed session.",
+            "operative_body_sha256": "7c06ddb1e1aaac0df8fce2702ec5ee557716727506d6f8ab6364039930899c18",
+            "result": "CARRIED",
+            "pages": [
+              16
+            ],
+            "page_evidence": [
+              {
+                "page": 16,
+                "native_text_sha256": "2459f4a2162ceb59bd5a05ee5a330c5c7401e2ca7893dbf76e9f3a474b9314cb",
+                "render_sha256": "cc7c21df26726567f79bb246809f188807cd221dc50dc612975425f71b6a9f67"
+              }
+            ],
+            "independent_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          }
+        ],
+        "first_review_sha256": "5acc58639397ba86b48779ef83fd1aac4f409e33a01e50174ce0ab8abce5f728",
+        "independent_review_sha256": "87bb9b677c7c30dc0bb66fbfca3dc6a4ad56189ada68fe4ce69707998659cc04"
+      }
+    }
+  ]
+}

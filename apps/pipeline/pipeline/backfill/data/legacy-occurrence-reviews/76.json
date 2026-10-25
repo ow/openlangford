@@ -1,0 +1,366 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 76,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+  "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+  "source_date": "2020-10-05",
+  "source_text_sha256": "f03f92292330faa36c74c396ee84c6724c5815416879c366cc920d0dd0a8f884",
+  "formal_inventory_sha256": "7c745a9ef400efd604ec144e59d9e89dad30c81d20577cf091d4167576b3db20",
+  "claim_inventory_sha256": "d8249a2a41839ee547d0c81646bf1cd8fc8a60965d4f485e650016e122ce3268",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "0223b0d939b0847d510d207e4e2ab05b656991d11171f92077c3cde0c8731e3e"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "e0dde44102e6acaa87369e76fbe414b292a771787fb7df4b93fe44b0531183ff"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "5246cd1d41a7667996f5cefb73ff3604c40c135b6ee7ae319411e95649c1a395"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "1acfd5798ced1f7eb165ec7da53789356eec664453bef752690634b6c60bea9c"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "0b3b655fe8c922c93ecd382ba829894c90962b137ab9949fcc0e2c90b69745cb"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "d9c0e39a1d5744074449c6dc585f69691c04852daab718a1a227646dde1c7fc6"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "9726db9db2fea04bfd650e9f5e4312dfc3f63d9f107e7fd0da99cbd7e0c3504e"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "3156186aa01419064585df1d2f426cf96688867098917c1dd10853c299491d1e"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "db8be07f818b7b0201185d7ed80f7348409c44655a86a3b07bf8508c2ebbe34f"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "4d151d87c40f35d167b34a29b9bbcb244ca6b0fd880b81eabdfbc59db1ebe97e"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "4059850f85c2201f089b4e0c29cfe383d577215e2a55242d778276eafc4e140c"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "bdeec7bfbd86ea0d564c5e2839bed99bca8992252ff75b55ee48f2db5629809b"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "06254ba172c7ea6823a705beb52370c6de9f33cd25555b1da4ec9084fb555b1a"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "69a991cfbd8d9e5892fd2ed17f0b61ab1880f2e812bc13b9a70faf023e5fd854"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "ba069574bf6a308349f65a494e2ffe6f864fbec3d70a43b7c55dd65172d0b0c9"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "cce90f70c2eaad4ee597f364aa905050260ab23bcc66b43132bfd1f4cde4074f"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 691,
+      "claim_sha256": "4b5335e5ccb2115a5530e6f3c5a92213a2a8cdf7eccc2ce7fb276d216dd06380",
+      "legacy_text": "That Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 884,
+        "source_order": 0,
+        "key": "01aa39806a4ee26c9f8ddc5f7e3487ce718d28695201e84eda246d2ec90e49aa",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR WADE\nSECONDED:       COUNCILLOR BLACKWELL\n\n        That Council approve the agenda as presented.\n\n\n                                                                                                    CARRIED.\n\n3.      PRESENTATION\n\n\n        a)   Mayor Young on behalf of LGMA\n             RE: Executive Service Award for Darren Kiedyk, CAO, for his term as the Vancouver\n             Island Chapter Director for the LGMA Board of Directors\n\n\nThe Executive Service certificate is provided for service on the LGMA provincial Board of Directors upon\nretirement from the Board. On behalf of President Ron Bowles, Mayor Young is pleased to acknowledge\nwith gratitude the contributions of Darren Kiedyk, CAO, City of Langford, who served on the LGMA Board\nof Directors for a term as the Chapter Director for the Vancouver Island Local Government Management\nAssociation. Darren provided advice, guidance and service to the members of the LGMA and made\nsignificant contributions to the leadership of the Chapter.\n\n                                                                                                           October 5, 2020\n                                                                                                              Page 2 of 16\n\n\n\n4.         PUBLIC HEARING\n\n\n          a)        BYLAW NO. 1905\n                    \"Langford Zoning Bylaw, Amendment No. 590, (494 Goldstream Ave), Bylaw No.\n                    1905, 2020\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1905 at 5:35 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDirector of Planning Matthew Baldwin advised that WA Architects has applied on behalf of Le Gers\nProperties Inc. to amend the zoning of 494 Goldstream Avenue from the One- and Two-Family Residential\n(R2) Zone to the City Centre (CC1) Zone.\n\n\nThis is being proposed in order to allow for the construction of a 6-storey mixed-use building that would\nconsist of approximately 71 residential units and 175m2 (1,900 fe) of office space on the ground floor.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\n In support of this application, the applicant has agreed to provide the following:\n\n\na)    That the applicant provides, as a bonus for increased density, the following contributions per residential\n      unit, prior to issuance of a building permit:\n               i.   $750 towards the Affordable Housing Fund;\n              ii.   $2,850 toward the General Amenity Fund; and\n             iii. $10.75 per m2 of commercial Gross Floor Area.\n\n\n b)    That the applicant provides, prior to Public Hearing, the following:\n             i.   A technical memo from an engineer that verifies storm water can be adequately managed\n                  on-site for the proposed developments, to the satisfaction of the Director of Engineering.\n\n\n c)    That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of\n       all other charges on title, that agrees to the following:\n              i.   That all frontage improvements along Goldstream Avenue and Kristina Place are provided\n                   as per Bylaw 1000, to the satisfaction of the Director of Engineering, prior to the issuance\n                       of a Building Permit;\n               ii.     That a storm water management plan be provided prior to issuance of a building permit and\n                       implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering;\n            iii.       That a construction parking and traffic management plan be provided prior to the issuance\n                       of a building permit, to the satisfaction of the Director of Engineering;\n            iv.        That a separate covenant be registered prior to issuance of a building permit for the\n                       proposed residential building that ensures parking is assigned and tied to each unit created\n                       in accordance with the minimum required parking stalls as per the zoning bylaw.\n               v.      That no occupancy permit be issued for the proposed building until a strata plan for the\n                       building has been registered, to the satisfaction of the Approving Officer.\n\n                                                                                                     October 5, 2020\n                                                                                                        Page 3 of 16\n\n\n\nCouncil has authorized the Director of Planning to issue the following variances within the Form and\nCharacter Development Permit:\na. That the exterior side yard setback be reduced from 4.0m to 2.0.m.\nb. That the interior side yard setback be reduced from 3.0m to 2.0m.\nc. That the minimum distance of an unenclosed surface parking space to a lot line abutting a highway be\n     reduced from 3.0m to 2.0m.\nd.   That the minimum landscaped area between surface parking stalls and rear lot line be reduced from\n     3.0m to 2.0m.\n\n\nThis proposal is consistent with the Official Community City Centre designation.\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nResident on Fairway Ave \u2014 Concerns with development and others on Goldstream 1.5km, roughly 1000-\n1500 new units. Traffic, bus and overdevelopment without sufficient infrastructure. There needs to be more\nthought out collaboration on the heels of Goldstream Road and Fairway Ave, 250+ units. Goldstream is over\ncapacity. When COVID lifts it's going to be a nightmare.\n\nResident on Kingswood Rd \u2014 First concern is a decrease in home value, our home is brand new, we are\nconcerned about what we are going to do. Second, the scale of the building dwarfs anything around it, it is\nbuilt in the centre of the neighbourhood. The development will destroy trees. Third, there are several old\nlarge Douglas fir trees, you should study to see what's living in them. Need to try and keep them. The plans\nfor foliage on border of Kingswood Rd need to ensure they provide privacy and in short term, not wait 20\nyears for the trees to grow. There are traffic issues, speeding, using roundabout to turn around, parking\noverflow onto the street. We are concerned about the safety of neighbourhood children and dogs. You are\ntearing apart the community. This was bought and built, it was supposed to be residential.\n\nMayor Young asked about the size of the trees and confirmed that they can plant larger trees.\n\nResident #1 on Goldstream Avenue - We would like a sound barrier fence put up, and our driveway to be\nmoved from the front of Goldstream Ave to Kingsway Rd at the Developer's cost.\n\nMayor Young\u2014Would like to see a sound barrier fence.\n\nMayor Young called a second time for presentations.\n\n\n\n\nResident on Kristina PI \u2014 The design is inappropriate. I bought 20 years ago on a single family lot. Young\nfamilies with young kids are now put in danger. I don't know how we can have this many without sewers.\n\n                                                                                                       October 5, 2020\n                                                                                                          Page 4 of 16\n\n\n\nWe oppose if passed and will probably block or protest.\n\nM. Mahovlich, Direct of Engineering - advised that it is the developer who will pay for the extension of the\nsewer to the development.\n\nResident #1 on Goldstream spoke again saying that their tenant gave notice because of this development.\n\nAnother resident has been here for 50 years or more and is seeing a complete loss of places to build or rent.\nThis is the path that Surrey, BC took, look where that went.\n\nResident #2 on Kingswood spoke again \u2014 the development is on the Developer's bill to pay for sewer. Seems\nwe are being held hostage, if you want sewer you have to allow buildings entitled to the same access to\nsewers. There is a 2 nd petition signed that has been dropped off in addition to letters and emails.\n\nM. Mahovlich, Direct of Engineering - this means the sewer will be extended to the area sooner than the\nCity's timeline and at the cost of the developer rather than the City.\n\nBraden Hutchins, Director of Corporate Services \u2014 Confirmed all documents have been received and are\nincluded in the Public Hearing package considered by Council.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1905 closed at 5:59 p.m.\n\n5.      ADOPTION OF COUNCIL MINUTES\n\n\n        a)   Minutes of the Regular Meeting of Council \u2014 September 8, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9a3270f29aaad2f0668582e962b89f2dbc5351d54f791ec3df577ed0a4684e85",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 692,
+      "claim_sha256": "216171b8b3c4ecb4484dc9fa7dbd159c68f9e5788f377b13c1b3491be52892e8",
+      "legacy_text": "That Council approve the minutes of the special meetings of Council held on September 8, 2020.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 9639,
+        "source_order": 1,
+        "key": "7aae3349afbd42df29b3c77406932063346a8351fdc355f6aa21d47ac822a910",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the special meetings of Council held on September 8, 2020.",
+        "source_block": "MOVED BY:       COUNCILLOR SZPAK\nSECONDED:       COUNCILLOR WADE\n\n\n        That Council approve the minutes of the special meetings of Council held on September 8, 2020.\n\n                                                                                                          CARRIED.\n\n\n\n6.      OTHER BOARD AND COMMISSION MINUTES\n\n\n        a)   Minutes of the West Shore Parks and Recreation Board of Directors Meeting\u2014\n             July 23, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4e1f752c6cd15059a872e4a92edb5fda2a579a41dc108e0e37f257dea7c4969f",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 693,
+      "claim_sha256": "8e6a0ecb128f1c07dffcc8c437c653e93eda7b4cf32c2bbe5d3443f31de17fc6",
+      "legacy_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors Meeting held on July 23, 2020.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 10090,
+        "source_order": 2,
+        "key": "e57ac79d322a4589c21b71f67f13af37246ccbe67e792354572b7f88b9deab0f",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n        Meeting held on July 23, 2020.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SAHLSTROM\n\n\n        That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n        Meeting held on July 23, 2020.\n\n                                                                                                          CARRIED.\n\n                                                                                                             October 5, 2020\n                                                                                                                Page 5 of 16\n\n\n\n\n7.        COMMITTEE RESOLUTIONS\n\n\n          a)   Planning, Zoning and Affordable Housing Committee \u2014 September 14, 2020\n               1. Minutes of the Planning, Zoning and Affordable Housing Committee\n                   Meeting \u2014 September 14, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1bb9357ff620a26ee9767f58510c1b55f8c6f707d2bf1d752e62c6d2df543c3d",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 694,
+      "claim_sha256": "9697dc6aeea80046174b6e679e5da997bb85780d0817d5755e5aab363400126a",
+      "legacy_text": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held on September 14, 2020.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 10925,
+        "source_order": 3,
+        "key": "f354f010adfcab56a139a81a7a755e0585129a92a43a637456b0e6f6229b28f2",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held\n          on September 14, 2020.",
+        "source_block": "MOVED BY:             COUNCILLOR BLACKWELL\nSECONDED:             COUNCILLOR WADE\n\n\n          That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held\n          on September 14, 2020.\n\n                                                                                                               CARRIED.\n\n\n               2.     Application to Rezone 2120 Millstream Road from RR4 (Rural Residential 4) Zone\n                      to the RS1, Residential Small Lot 1, Zone to allow for a 37-lot subdivision for one\n                      family dwellings, and 47 townhouses on the property",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "49513f47831480b35a27816f93ff8964c521344ef7f5f2c4868cfa4a2df57a2b",
+      "pages": [
+        5
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 695,
+      "claim_sha256": "9e9669956bc231115aadcd956cc7c3ca31f5f45dff99b6705195b97c2f0dfe6f",
+      "legacy_text": "That Council: 1. Give First Reading of Bylaw No. 1761, to amend the text within RS1 (Residential Small Lot 1) Zone to add Townhouses, not to exceed 47 units, as an allowable use on the subject property; 2. Give First Reading of Bylaw No. 1761, a Bylaw to amend the zoning designation of the property located at 2120 Millstream Road from the RR4 (Rural Residential 4) Zone to the RS1 (Residential Small Lot 1) Zone, subject to the specified terms and conditions (developer amenity contributions, engineering/stormwater and servicing conditions, covenants and dedications).",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 11551,
+        "source_order": 4,
+        "key": "a40b33de90cb958c23a5b667fb43e5ff4b40615e45febe1e4163ecd2f5fb7218",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n\n     1.   Give First Reading of Bylaw No. 1761, to amend the text within RS1 (Residential Small Lot 1) Zone\n          to add Townhouses, not to exceed 47 units, as an allowable use on the subject property;\n\n\n     2.   Give First Reading of Bylaw No. 1761, a Bylaw to amend the zoning designation of the property\n          located at 2120 Millstream Road from the RR4 (Rural Residential 4) Zone to the RS1 (Residential\n          Small Lot 1) Zone, subject to the following terms and conditions:\n\n\n          a)   That the owner agrees to provide, as a bonus for increased density, the following contributions\n               per dwelling unit, prior to issuance of a building permit:\n\n                     i.    $3,960 per small lot one family dwelling towards the General Amenity Reserve Fund;\n                    ii.    $660 per small lot one family dwelling towards the Affordable Housing Reserve Fund;\n                    iii.   $3660 per townhouse unit towards the General Amenity Reserve Fund; and\n                    iv.    $610 per townhouse unit towards the Affordable Housing Reserve Fund;\n\n\n          b)   That the developer provides, prior to Public Hearing the following:\n\n\n                     i.    A technical Stormwater Management Memo to the satisfaction of the Director of\n                           Engineering;\n                    ii.    A frontage drawing for each road frontage (Millstream Road, Kingbird Drive and\n                           Longspur Drive), to the satisfaction of the Director of Engineering;\n\n                                                                                                    October 5, 2020\n                                                                                                       Page 6 of 16\n\n\n\n\nc)   That the applicant registers, prior to Bylaw Adoption, road dedication for the amount of\n     frontage necessary along Millstream Road to accommodate required improvements, to the\n     approval of the Director of Engineering and the standards of Bylaw No.1000;\n\n\nd)   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in\n     priority of all other charges on title that agrees to the following:\n\n\n          i.      That the developer agrees to submit and implement, prior to subdivision approval, a\n                  formal storm water management plan, approved by the Director of Engineering, and to\n                  complete any required improvements and/or upgrades to on site and off-site\n                  infrastructure necessary to facilitate proper drainage on the subject property at the\n                  developer's expense;\n          ii.     That the developer agrees to install, prior to subdivision approval or building permit\n                  issuance, which ever is first, full frontage improvements including, but not limited to:\n                  the installation of a sidewalks, boulevard landscaping, and light standards in accordance\n                  with Bylaw No.1000 and to the satisfaction of the Director of Engineering;\n      iii.        That the developer agrees that if at time of subdivision of the subject property a\n                  connection to Longspur Drive and Kingbird Road has not been constructed to Bylaw\n                  No.1000 standards and to the approval of the Director or Engineering, a temporary\n                  turnaround must be constructed where these roads meet the property at 2148\n                  Millstream, prior to any subdivision approval on the property;\n      iv.         The developer agrees to register a Section 219 covenant, prior to subdivision approval,\n                  on each individual property, that acknowledges proximity to Western Speedway and\n                  the potential nuisance this establishment may cause to future home owners;\n          v.      That the developer agrees to dedicate to the City internal roads, Longspur Drive and\n                  Kingbird Road, and to develop these to Bylaw No.1000 standards, and to the approval\n                  of the Director of Engineering, prior to subdivision approval;\n      vi.         The developer will be required to submit fire underwriters survey (FUS) calculations\n                  prior to the issuance of a Development Permit to develop the property;\n      vii.        That any necessary above or underground infrastructure or servicing upgrades,\n                  extensions or other required servicing requirements are to be fulfilled to the\n                  standards of Bylaw No. 1000 and the Director of Engineering, and that costs incurred\n                  will be the responsibility of the developer;\n     viii.        That the applicant will submit a construction parking management plan, to the\n                  satisfaction of the Director of Engineering prior to building permit issuance;\n       ix.        That the developer submits a fire safety plan prior to the issuance of development\n                  permit for the construction on the site;\n          x.      That the developer covenants the non-disturbance areas along the westerly and\n                  easterly property boundaries as shown on the conceptual site plan as a condition of\n                  subdivision;",
+        "source_block": "MOVED BY:             COUNCILLOR BLACKWELL\nSECONDED:             COUNCILLOR WADE\n\n\nThat Council:\n\n\n     1.   Give First Reading of Bylaw No. 1761, to amend the text within RS1 (Residential Small Lot 1) Zone\n          to add Townhouses, not to exceed 47 units, as an allowable use on the subject property;\n\n\n     2.   Give First Reading of Bylaw No. 1761, a Bylaw to amend the zoning designation of the property\n          located at 2120 Millstream Road from the RR4 (Rural Residential 4) Zone to the RS1 (Residential\n          Small Lot 1) Zone, subject to the following terms and conditions:\n\n\n          a)   That the owner agrees to provide, as a bonus for increased density, the following contributions\n               per dwelling unit, prior to issuance of a building permit:\n\n                     i.    $3,960 per small lot one family dwelling towards the General Amenity Reserve Fund;\n                    ii.    $660 per small lot one family dwelling towards the Affordable Housing Reserve Fund;\n                    iii.   $3660 per townhouse unit towards the General Amenity Reserve Fund; and\n                    iv.    $610 per townhouse unit towards the Affordable Housing Reserve Fund;\n\n\n          b)   That the developer provides, prior to Public Hearing the following:\n\n\n                     i.    A technical Stormwater Management Memo to the satisfaction of the Director of\n                           Engineering;\n                    ii.    A frontage drawing for each road frontage (Millstream Road, Kingbird Drive and\n                           Longspur Drive), to the satisfaction of the Director of Engineering;\n\n                                                                                                    October 5, 2020\n                                                                                                       Page 6 of 16\n\n\n\n\nc)   That the applicant registers, prior to Bylaw Adoption, road dedication for the amount of\n     frontage necessary along Millstream Road to accommodate required improvements, to the\n     approval of the Director of Engineering and the standards of Bylaw No.1000;\n\n\nd)   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in\n     priority of all other charges on title that agrees to the following:\n\n\n          i.      That the developer agrees to submit and implement, prior to subdivision approval, a\n                  formal storm water management plan, approved by the Director of Engineering, and to\n                  complete any required improvements and/or upgrades to on site and off-site\n                  infrastructure necessary to facilitate proper drainage on the subject property at the\n                  developer's expense;\n          ii.     That the developer agrees to install, prior to subdivision approval or building permit\n                  issuance, which ever is first, full frontage improvements including, but not limited to:\n                  the installation of a sidewalks, boulevard landscaping, and light standards in accordance\n                  with Bylaw No.1000 and to the satisfaction of the Director of Engineering;\n      iii.        That the developer agrees that if at time of subdivision of the subject property a\n                  connection to Longspur Drive and Kingbird Road has not been constructed to Bylaw\n                  No.1000 standards and to the approval of the Director or Engineering, a temporary\n                  turnaround must be constructed where these roads meet the property at 2148\n                  Millstream, prior to any subdivision approval on the property;\n      iv.         The developer agrees to register a Section 219 covenant, prior to subdivision approval,\n                  on each individual property, that acknowledges proximity to Western Speedway and\n                  the potential nuisance this establishment may cause to future home owners;\n          v.      That the developer agrees to dedicate to the City internal roads, Longspur Drive and\n                  Kingbird Road, and to develop these to Bylaw No.1000 standards, and to the approval\n                  of the Director of Engineering, prior to subdivision approval;\n      vi.         The developer will be required to submit fire underwriters survey (FUS) calculations\n                  prior to the issuance of a Development Permit to develop the property;\n      vii.        That any necessary above or underground infrastructure or servicing upgrades,\n                  extensions or other required servicing requirements are to be fulfilled to the\n                  standards of Bylaw No. 1000 and the Director of Engineering, and that costs incurred\n                  will be the responsibility of the developer;\n     viii.        That the applicant will submit a construction parking management plan, to the\n                  satisfaction of the Director of Engineering prior to building permit issuance;\n       ix.        That the developer submits a fire safety plan prior to the issuance of development\n                  permit for the construction on the site;\n          x.      That the developer covenants the non-disturbance areas along the westerly and\n                  easterly property boundaries as shown on the conceptual site plan as a condition of\n                  subdivision;\n\n                                                                                                       CARRIED.\n\n\n     3.        Application to Rezone 630 Strandlund Ave from One-and Two Family Residential\n               (R2) to Residential Townhouse 1 (RT1), to allow for a 10-unit townhouse\n               development\n\n                                                                                                       October 5, 2020\n                                                                                                          Page 7 of 16",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "a1e02e01876685a3a53ec182ac9f7bb8c026d847e552f588dfc2f3aa085b7358",
+      "pages": [
+        5,
+        6
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 696,
+      "claim_sha256": "21af4796d08bd409a41712a306c602aff1254d4071d28355a8cd5aafa9bb6eb0",
+      "legacy_text": "That Council: 1. Direct Staff to prepare a bylaw to amend the zoning designation of the property located at 630 Strandlund Avenue from R2 (One-and Two Family Residential) to RT1 (Residential Townhouse 1), subject to specified terms and conditions (amenity contributions, engineering and covenant requirements, variances).",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 17466,
+        "source_order": 5,
+        "key": "1c6554da7147471d27be1d2f66f9e00d5e8f007b73dfc7f5fdd0b3da107b641f",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n   1. Direct Staff to prepare a bylaw to amend the zoning designation of the property located at 630\n      Strandlund Avenue from R2 (One-and Two Family Residential) to RT1 (Residential Townhouse 1),\n      subject to the following terms and conditions:\n\n\n            a.   That the applicant provide, as a bonus for increased density, the following contributions\n                 per dwelling unit, prior to issuance of a building permit:\n\n\n                      I.   $3,660 towards the General Amenity Reserve Fund\n                     ii.   $610 towards the Affordable Housing Reserve Fund\n\n            b.   That the applicant provide, prior to Public Hearing, the following:\n\n                      i.   A technical memo from a qualified engineer that verifies stormwater can be\n                           managed on site, to the satisfaction of the Director of Engineering;\n\n\n            c.   That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in\n                 priority over all other charges on title, that agrees to the following:\n\n\n                      i. That the developer agrees to install, or bond for, all frontage improvements to\n                         Bylaw 1000 standards, and to the satisfaction of the Director of Engineering, prior\n                         to issuance of a building permit;\n                     ii. That the Oak trees within the City boulevard are to be preserved, and delineated\n                         with tree protection fencing to the satisfaction of the Parks Manager, prior to\n                          commencement of works;\n                     iii. That a stormwater management plan be provided and implemented, to the\n                          satisfaction of the Director of Engineering;\n                     iv. That the applicant provide a construction management plan to the satisfaction of\n                          the Director of Engineering, prior to issuance of a building permit;\n                      v. That the developer will connect and be responsible for any upgrades required to\n                          the services and utilities required to the development;\n                     vi. That the developer will submit Fire Underwriters Survey (FUS) calculations prior to\n                          issuance of a development permit, and acknowledges that the calculations may\n                          determine different setbacks than what is prescribed in the zone or authorized\n                          through variance, and dictate building material or the requirement for additional\n                         fire protection measures including sprinkler protection or fire walls;\n                    vii. That the enclosed parking garages for each unit are designated for parking of\n                         vehicles only and not replaced with storage or hobby space;\n\n\n            d.   That Council authorize of the Director of Planning to issue the following variance within the\n                 Form and Character Development Permit for the subject property:\n\n                      i.   That section 6.28.07(1)(a) be varied to reduce the front lot line setback from the\n                           required 3.0 m to 2.13 m;\n\n                                                                                                          October 5, 2020\n                                                                                                              Page 8 of 16\n\n\n\n                      ii.   That section 6.28.07(1)(d) be varied to reduce the rear lot line setback from the\n                            required 5.5 m to 3.29 m;",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n\n   That Council:\n   1. Direct Staff to prepare a bylaw to amend the zoning designation of the property located at 630\n      Strandlund Avenue from R2 (One-and Two Family Residential) to RT1 (Residential Townhouse 1),\n      subject to the following terms and conditions:\n\n\n            a.   That the applicant provide, as a bonus for increased density, the following contributions\n                 per dwelling unit, prior to issuance of a building permit:\n\n\n                      I.   $3,660 towards the General Amenity Reserve Fund\n                     ii.   $610 towards the Affordable Housing Reserve Fund\n\n            b.   That the applicant provide, prior to Public Hearing, the following:\n\n                      i.   A technical memo from a qualified engineer that verifies stormwater can be\n                           managed on site, to the satisfaction of the Director of Engineering;\n\n\n            c.   That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in\n                 priority over all other charges on title, that agrees to the following:\n\n\n                      i. That the developer agrees to install, or bond for, all frontage improvements to\n                         Bylaw 1000 standards, and to the satisfaction of the Director of Engineering, prior\n                         to issuance of a building permit;\n                     ii. That the Oak trees within the City boulevard are to be preserved, and delineated\n                         with tree protection fencing to the satisfaction of the Parks Manager, prior to\n                          commencement of works;\n                     iii. That a stormwater management plan be provided and implemented, to the\n                          satisfaction of the Director of Engineering;\n                     iv. That the applicant provide a construction management plan to the satisfaction of\n                          the Director of Engineering, prior to issuance of a building permit;\n                      v. That the developer will connect and be responsible for any upgrades required to\n                          the services and utilities required to the development;\n                     vi. That the developer will submit Fire Underwriters Survey (FUS) calculations prior to\n                          issuance of a development permit, and acknowledges that the calculations may\n                          determine different setbacks than what is prescribed in the zone or authorized\n                          through variance, and dictate building material or the requirement for additional\n                         fire protection measures including sprinkler protection or fire walls;\n                    vii. That the enclosed parking garages for each unit are designated for parking of\n                         vehicles only and not replaced with storage or hobby space;\n\n\n            d.   That Council authorize of the Director of Planning to issue the following variance within the\n                 Form and Character Development Permit for the subject property:\n\n                      i.   That section 6.28.07(1)(a) be varied to reduce the front lot line setback from the\n                           required 3.0 m to 2.13 m;\n\n                                                                                                          October 5, 2020\n                                                                                                              Page 8 of 16\n\n\n\n                      ii.   That section 6.28.07(1)(d) be varied to reduce the rear lot line setback from the\n                            required 5.5 m to 3.29 m;\n\n                                                                                                             CARRIED.\n\n\n             4.   Application for Development Variance Permit to reduce the rear yard setback\n                  from the required 6.0 m to 3.0 m for the property located at 628 Kestrel Ridge",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "6390e948e68b05a44342ba66b81cd3a8411b02239efc8d04eae23476ac578901",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 697,
+      "claim_sha256": "7d9bcd9779fd7105584d5b5bfeb97e4c2311bf7418af1473580af9003f5d628c",
+      "legacy_text": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit: a) That Section 6.21.06(1)(a) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0 m; subject to specified conditions.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 21516,
+        "source_order": 6,
+        "key": "3e7d259ccbbb6e44e5ed4595d6d2648c44575947844782d302d53faf876ca89c",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit:\n\n\n        a)   That Section 6.21.06(1)(a) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0 m;\n\nSubject to the following terms and conditions:\n\n\n        i) That the site is developed in accordance with the plan attached to this report as Appendix A;\n        ii) That the applicant constructs the deck in accordance with the recommendations of the report\n            provided by Strathcona Consulting, dated June 2020 attached to this report as Appendix D.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\n\nThat Council direct staff to provide notice that Council will consider issuing a Development Variance Permit:\n\n\n        a)   That Section 6.21.06(1)(a) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0 m;\n\nSubject to the following terms and conditions:\n\n\n        i) That the site is developed in accordance with the plan attached to this report as Appendix A;\n        ii) That the applicant constructs the deck in accordance with the recommendations of the report\n            provided by Strathcona Consulting, dated June 2020 attached to this report as Appendix D.\n\n                                                                                                             CARRIED.\n\n\n             5.   Application to Allow Temporary Parking at 3160 and 3150 Aggregate Court\n                  (NB Correspondence has been received from the developer in respect of this application,\n                  attached and immediately following the original staff report, for review in conjunction with\n                  consideration of the committee recommendation).",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3ede783cc1231ba9483c6f15e3f422380409724ed175a120a26dad3a97e46a94",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 698,
+      "claim_sha256": "83cff34dfc2a78b62fa53fa729bf6de040d5b32d7702387473ac20bd3b68618e",
+      "legacy_text": "That Council reject this application for temporary use permit.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 22667,
+        "source_order": 7,
+        "key": "f1b0610874e443c5317e6a6926037ca150a85e269e015cad9578d8d5346d484d",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council reject this application for temporary use permit.",
+        "source_block": "MOVED BY:         BLACKWELL\nSECONDED:         WADE\n\n\n    That Council reject this application for temporary use permit.\n\n                                                                                                             CARRIED.\n\n\n        b)   Parks, Recreation, Culture and Beautification Committee \u2014 September 24, 2020\n             1. Minutes of the Parks, Recreation, Culture and Beautification Committee\n                Meeting \u2014 September 24, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5b15cee8179af42c3e901ed82048749cb434bbff57538401f6e90768e18b10cf",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 699,
+      "claim_sha256": "3f5a4ef8bffa916021ef7beee54a1380f571febd3d034f6165580801adbf2f09",
+      "legacy_text": "That Council receive the minutes of the Parks, Recreation, Culture and Beautification Committee held on September 24, 2020.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 23132,
+        "source_order": 8,
+        "key": "29bf400749aef6455f5ede8b75d3f1851dbe6b631e9d5b2310492f5ffd254ea9",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the Parks, Recreation, Culture and Beautification Committee\n        held on September 24, 2020.",
+        "source_block": "MOVED BY:         COUNCILLOR SEATON\nSECONDED:         COUNCILLOR WADE\n\n\n        That Council receive the minutes of the Parks, Recreation, Culture and Beautification Committee\n        held on September 24, 2020.\n\n                                                                                                              CARRIED.\n\n                                                                                                          October 5, 2020\n                                                                                                             Page 9 of 16\n\n\n\n8.        PUBLIC PARTICIPATION\n\n\n          None.\n\n\n\n\n9.        NOTICE OF INTENT\n\n\n          a)   TUP20-0003 \u2014 890 Goldstream Ave",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4c8bde839dbed579fd2e02953edbbb4981819b36a45df4e6166f03509e4f110e",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 700,
+      "claim_sha256": "fc173163f53e6869155df126e2a4de9914d2f97082ae22dafe2b3635db371473",
+      "legacy_text": "That Temporary Use Permit No. TUP20-0003 be issued by the Council for the City of Langford to Jesse Bowness of Code Ninjas Westshore on behalf of David Baird to allow an after-school computer coding program for children on the lower floor of the front unit of 890 Goldstream Ave subject to the specified terms and conditions.",
+      "source_identity": {
+        "meeting_id": 76,
+        "source_sha256": "aa601f9212d09ca9e1b105760c5d2f72a5f4e835b08370dcb1033ffc6052fa5b",
+        "source_offset": 23843,
+        "source_order": 9,
+        "key": "1d33f2ebbb4cf9e4091c64c548dfeed92e6dacadb61e13ae5725521f592ced74",
+        "source_file": "archive/langford/Council/2020/10/2020-10-05 Regular Council [legacy]/Minutes/20201005-SIGNED-1.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201005-SIGNED-1.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Temporary Use Permit No. TUP20-0003 be issued by the Council for the City of Langford to Jesse\nBowness of Code Ninjas Westshore on behalf of David Baird to allow an after-school computer coding\nprogram for children on the lower floor of the front unit of 890 Goldstream Ave subject to the following\nterms and conditions:\n\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n\n2.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n\n     a)   That addressing for the three units be clarified and revised as required to the satisfaction of the Fire\n          Chief prior to issuance of a business licence;\n\n\n     b)   That the applicant will retain an Architect to supply the appropriate code analysis for the building\n          change of use and to ensure code compliant fire separations and B.C. Building Code 2018 code\n          requirements are met for the unit prior to a business licence being issued, to the satisfaction of the\n          Chief Building Inspector;\n\n\n     c)   That the Temporary Use Permit be issued only to Jesse Bowness, doing business as Code Ninjas\n          Westshore and not be transferred to any subsequent business or business owner should Jesse\n          Bowness, Code Ninjas Westshore cease to operate.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\n\nThat Temporary Use Permit No. TUP20-0003 be issued by the Council for the City of Langford to Jesse\nBowness of Code Ninjas Westshore on behalf of David Baird to allow an after-school computer coding\nprogram for children on the lower floor of the front unit of 890 Goldstream Ave subject to the following\nterms and conditions:\n\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n\n2.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n\n     a)   That addressing for the three units be clarified and revised as required to the satisfaction of the Fire\n          Chief prior to issuance of a business licence;\n\n\n     b)   That the applicant will retain an Architect to supply the appropriate code analysis for the building\n          change of use and to ensure code compliant fire separations and B.C. Building Code 2018 code\n          requirements are met for the unit prior to a business licence being issued, to the satisfaction of the\n          Chief Building Inspector;\n\n\n     c)   That the Temporary Use Permit be issued only to Jesse Bowness, doing business as Code Ninjas\n          Westshore and not be transferred to any subsequent business or business owner should Jesse\n          Bowness, Code Ninjas Westshore cease to operate.\n\n                                                                                                            CARRIED.\n\n\n          b)   DVP20-0002 \u2014 2029-2061 Pinehurst Terrace",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "55b3c1233b883eb39a89909658be21ce3e764e55f37ece49bebe0a90b4a723a6",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "de301f5ffde2f462dd8b6e795e38d9ec50fb208b2ed6e92c943c4c2ef2d1d7a5",
+  "second_original_image_review_sha256": "dc07736592b1759e5a514960ad3eb8454dc4437c67ae7ad82d6ee844fef9c89d",
+  "original_image_review_sha256s": {
+    "first_review_sha256": "de301f5ffde2f462dd8b6e795e38d9ec50fb208b2ed6e92c943c4c2ef2d1d7a5",
+    "second_review_sha256": "dc07736592b1759e5a514960ad3eb8454dc4437c67ae7ad82d6ee844fef9c89d",
+    "full_snapshot_file_sha256": "8161bdf6eb44944f1512723e819b3d95823e69ccb0eab17e6910d91f2f24ea0a"
+  },
+  "documentary_preservations": [
+    {
+      "type": "reviewed_adjournment_narration_preservation",
+      "motion_id": 701,
+      "claim_sha256": "e8bebc6c442fb0727095cab02acc975bf849e73310fc676781f63a8f9ae33a4c",
+      "claim_row_sha256": "a95bc5a343704741767585a68661b6f98b9605142070093c3c54e96852168f81",
+      "legacy_text": "That the meeting be adjourned.",
+      "printed_body": "Mayor Young adjourned the meeting at 6:32 pm.",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "page": 16,
+      "native_text_sha256": "cce90f70c2eaad4ee597f364aa905050260ab23bcc66b43132bfd1f4cde4074f",
+      "render_sha256": "74399eaf64caa5fba7fcc4f798bf7a15245348dafee75838244414a81874ab88",
+      "native_passage": "Mayor Young adjourned the meeting at 6:32 pm.",
+      "native_passage_start": 1588,
+      "source_passage": "Mayor Young adjourned the meeting at 6:32 pm.",
+      "source_passage_start": 42904,
+      "original_image_review_sha256s": {
+        "first_review_sha256": "de301f5ffde2f462dd8b6e795e38d9ec50fb208b2ed6e92c943c4c2ef2d1d7a5",
+        "second_review_sha256": "dc07736592b1759e5a514960ad3eb8454dc4437c67ae7ad82d6ee844fef9c89d",
+        "full_snapshot_file_sha256": "8161bdf6eb44944f1512723e819b3d95823e69ccb0eab17e6910d91f2f24ea0a"
+      }
+    }
+  ]
+}

@@ -1,0 +1,641 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 158,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+  "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2022-05-02",
+  "source_text_sha256": "11d0c7382265581a980ab236984f37fc30cb89c7f062fbd1bd6294f02be5c6f2",
+  "formal_inventory_sha256": "d2b3509479436d646fc4983ce50a523fc5767e7029115e0cd1daa1716f45c547",
+  "claim_inventory_sha256": "13768116a88a6894bba61babeaff7743fefdc32176b851b118c663ff4a547356",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "8d28a2546f0c65f653f43816d73c300c2b08f8dfdf4c0243dbdd79623f341fef"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "ae0538b78876d799e246f17de70f3a36fddaeee510bfc7c2806f8b3531359270"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "680d8619b5eb39c06f344bf1ac09bda2871c2ff241737b9d0cee8c335b1348cd"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "69315e565de7aac4fb99ac4336947e5a690981f2c572c48c152ec043f103561d"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "53f389a612ac51ae21d52830bbc59769831dbb5dd62234f0fdd2c93344754372"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "7d81068ca0696390724c28333121800cc03fb01aa801cb3978beabf094da1445"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "f5d1873694575a4aefe3af22c20eeb01ad71009e254a62da25e8525158c1b1a5"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "13b6d0edd57549279c445814c1470c0dbe664a9ad6f2087a6d70331956584fc0"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "7553d93dd6ab4513023228e0e06a2e13affd7b7c00171f9b6d63bef40cdee7e6"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "07f235ce187d9f65ee4f96217a303de35b6ab9a4000cec7acb0ba86f62ad1875"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "88dfdbc4d6f774455345ab33d69595d7e9c2d17fec50bedec16efcfb0ecffc25"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "87840c223bddf217f4405f0cdf94f629fdbd06a5a095052a89c54e2b542be721"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "daf2789821a59f67e13f2ed282b54a775bb0a980c7930ed57618516452b661b7"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "4173be03b6873f5f71ae45f6e0f7d7ed61bb5908b83e6323e24bdc1e2224e971"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "d0a00e5882ee44b7e69b99c122d58ce43b3c233d29ba60c6cb1ed526a6caad7c"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "f35eaec5371f673e448d22637928354c441a764097b6f5172f38b6626764b9a1"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "d36e578cab1c1b31e94d8839ec7bc72842326a5611ee1d904155157cd9572221"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 1682,
+      "claim_sha256": "24f038a073ad8b6fa0e314b00117ef71b79510b796cdbea4d79d4f77d801ba17",
+      "legacy_text": "THAT Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 1523,
+        "source_order": 0,
+        "key": "23417042ac724995f8892c136a61ac2cc345902f8045bffb5038cbc342070566",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THATCouncil approve the agenda as presented.",
+        "source_block": "MOVED BY: WADE\n               SECONDED: SEATON\n\n               THATCouncil approve the agenda as presented.\n\n                                                                                                Motion CARRIED.\n\n\n\n               PUBLIC HEARINGS\n\n               4.1    BYLAW NO. 2044\n\n                      The Mayor opened the Public Hearing for Bylaw No. 2044 at 5:35 pm.\n\n\n\n\n\nDirector of Planning Matthew Baldwin advised that Kelsey Waller has applied on behalf\nof 2621 Sooke Developments Ltd. to amend the zoning of 2621 Sooke Road and 3260\nJacklin Road from the One- and Two-Family Residential (R2) Zone to the Residential\nTownhouse (RTl) Zone.\n\nThis is being proposed in order to allow for the development of approximately 92\ntownhomes.\n\nIn support of this application, the applicant has agreed to provide the following:\n\n1.   That as a bonus for increased density:\n\n     a.    $2,074 per unit to the General Amenity Reserve Fund; and\n\n     b. $610 per unit to the Affordable Housing Fund.\n\n2. That frontage improvements, a stormwater management plan and a construction\n   parking and traffic management plan are provided to Bylaw 1000 standards to the\n   satisfaction of the Director of Engineering prior to the issuance of a Building Permit;\n     and\n\n3. That prior to BylawAdoption, a subdivision plan that includes the required road\n     dedication, to the satisfaction of the Director of Engineering.\n\nThis proposal is consistent with the Official Community Plan Neighbourhood and\nNeighbourhood Centre designation.\n\nNotifications and advertiisements have been placed as required by the Local\nGovernment Act.\n\nThis rezoning should include a covenant that indoor parking spaces will be kept clear of\nstorage so as to be used for parking.\n\nMayor Young called a first time for presentations.\n\nThe applicant. Abstract Developments, gave a presentation on the proposal, outlining\nthe site characteristics, neighbourhood consultation process, and the project designs.\n\nJ. Bradlev, 2638 Alderglen PI. expressed opposition to the proposed project, expressing\nconcerns about the high level of density and impacts to wildlife.\n\nA. Spargo. 1013 Gala Crt, expressed support for the proposal, noting that it is a good fit\nfor the area.\n\nB. Cubit. #103-2745 Veterans Memorial Pkwv, expressed support for the proposal.\n\nM. Degagne, 1037 Boxcar Cl. expressed support for the proposal, noting that it would\nhelp first-time homeowners and that the location is fitting for the proposal.\n\nI. Philips. 3509 Mvles Mansell Rd. expressed support for the proposal, noting that the\nimpacts to current residents would be minimal and that there would be net benefits to\nthe community.\n\nM. Wagner. #104-2669 Deville Rd. expressed concerns about the density to the area and\nwould like retention of mature trees.\n\n\n\n\n      T. Baldwin. 2642 Alderglen PI. expressed concerns about the proposed density.\n      L. Webb. 2669 Mill Pond Ter. expressed support for the proposal and the additional\n      housing that it would create.\n\n      I. Davkin. 2618 Ernhill Drive, expressed concerns about the proposed density and innpact\n      to trees.\n\n\n      S. Koloiian, 896 Rowils Cr. expressed support for the proposal.\n\n      N. Everett. 2611 Sooke Rd. expressed concerns about the proposed density.\n\n      Mayor Young called a second time for presentations.\n\n      None presented.\n\n      Mayor Young called for a third and final time for presentations.\n\n      R. Larose. 3260 Jacklin Rd. expressed support for the proposal.\n\n      The Mayor declared the Public Hearing for Bylaw No. 2044 closed at 6:12 pm.\n      Mayor Young left the meeting at 6:15 pm. due to a perceived conflict with Item 4.2.\n\n4.2   BYLAW NO. 2052\n\n      Acting Mayor Wade opened the Public Hearing for Bylaw No.2052 at 6:13 pm.\n\n      Director of Planning Matthew Baldwin advised that Chad Bryden has applied on behalf\n      of Darlene & David Smith, Limona Construction Ltd, Thomas Gruber, and Carol &\n      Andrew Mack to amend the zoning of 829, 831, 835, and 839 Hockley Avenue from the\n      R2 (One- and Two-Family Residential) Zone and RM3 (Apartment) Zone to the CCl (City\n      Centre) Zone.\n\n      This is being proposed in order to allow for the development of two six-storey\n      apartment buildings.\n\n      In support of this application, the applicant has agreed to provide the following as a\n      bonus for increased density:\n\n      1. $750 towards the Affordable Housing Reserve Fund; and\n      2. $2,850 towards the General Amenity Reserve Fund,\n\n      Subject to reductions depending on the use and height in accordance with the\n      Affordable Housing and Amenity Contribution Policy\n\n      3. That the applicant also agrees to provide, prior to bylaw adoption, a Section 219\n         covenant, registered in priority of all other charges on title, that agrees to the\n         following:\n\n          a.   That frontage improvements, a stormwater management plan and a\n               construction parking and traffic management plan are provided to Bylaw 1000\n               standards to the satisfaction of the Director of Engineering prior to the issuance\n               of a Building Permit;\n\n\n\n\n\n    b. That the developer will connect and be responsible for any upgrades required\n         to the services and utilities required for the development;\n\n    c. That no occupancy permits shall be issued until the roundabout at Peatt Road,\n       and Hockley Avenue has been completed and is operational, to the satisfaction\n         of the Director oif Engineering;\n\n    d. That the building be strata titled into individual residential units prior to the\n       issuance of an occupancy permit, to the satisfaction of the Approving Officer;\n\n    e. That the developer consolidate the parcels into a minimum of two lots in\n       accordance with the CCl zone regulations, prior to the issuance of a\n         development permit;\n\n    f.   That a separate covenant be registered prior to issuance of a building permit for\n         the proposed residential building(s) that ensures parking is allocated to each\n         unit and visitors as required by the zoning bylaw and is not provided in\n         exchange for compensation separate from that of a residential unit; and\n    g. That 100% of residential parking spaces, excluding visitor parkingspaces, shall\n       feature an energized outlet capable of providing Level 2 charging or higher to\n         the parking space; and\n\n         1. Energized outlets shall be labelled for the use of electric vehicle charging;\n         2. Where an electric vehicle energy management system is implemented (load\n            sharing), a qualified professional may specify a minimum performance\n             standard to ensure a sufficient rate of electric vehicle charging; and\n\n         3. The owner is required to keep the Electric Vehicle Servicing Equipment\n            (EVSE) in operation and the Strata Council may not prevent an owner,\n            occupant, or tenant from installing the EV charging equipment.\n\nThis proposal is consistent with the Official Community Plan City Centre designation.\nNotifications and advertisements have been placed as required by the Local\nGovernment Act.\n\nActing Mayor Wade called a first time for presentations.\n\nThe applicant gave a presentation on the proposal, providing an overview of the project\ncomponents, design, and location.\n\nS. O'Sullivan. 821 Hocklev Ave. expressed concerns about parking and potential impacts\nto trees.\n\n\nActing Mayor Wade called a second time for presentations.\n\nR. Stoerzer. #7-848 Hocklev Ave, expressed concerns about traffic, parking, and\npedestrian safety.\n\nM. Wagner. #104-2669 Deville Rd, expressed concerns about the lack of proposed green\nspace.\n\n\n\n\n\n             Acting IVIayor Wade called for a third and final time for presentations. There being none,\n             he declared the Public Hearing for Bylaw No. 2052 closed at 6:31 pm.\n\n             Mayor Young returned to the meeting at 6:34 pm.\n\n5.   PUBLIC PARTICIPATION\n\n     T. Baldwin. 2642 Alderglen PI. - Item 11.7; expressed support for the proposed noise bylaw.\n\n     M. McNaughton. 967 Laneford Pkwv. - Item 9.2; expressed support.\n\n     R. Coutrev. #205-847 Goldstream Ave. - Items 9.2 and 11.7; expressed support for the Attainable\n     Housing Policy. Expressed support for the proposed noise bylaw but expressed concerns for the\n     restrictions in construction hours.\n\n     M. Wagner. #104-2669 Deville Rd. Item 11.7; expressed support for the proposed noise bylaw.\n\n6.   ADOPTION OF COUNCIL MINUTES\n\n     6.1     Regular Council Meeting - April 19. 2022",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "954268c1ed1d59ff61fd04d803e85b480e5eb04bc0e5d5a8958daaac1e3ae5a9",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1683,
+      "claim_sha256": "e23c62b06e661aa085e9e12dd00ab24db0585aa58c17fee9aa2275799c29b9d2",
+      "legacy_text": "That Council approve the minutes of the regular meeting of Council held April 19, 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 10155,
+        "source_order": 1,
+        "key": "623846610fcb189ba871701abdc784f4b4d90bb145d7ad23e72aa7c170db9fd9",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the regular meeting of Council held April 19, 2022.",
+        "source_block": "MOVED BY: SEATON\n             SECONDED: WADE\n\n             That Council approve the minutes of the regular meeting of Council held April 19, 2022.\n                                                                                            Motion CARRIED.\n\n\n\n7.   OTHER BOARD AND COMMISSION MINUTES\n\n     7.1     West Shore Parks and Recreation Society Board of Directors Meeting - March 10. 2022.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "713f4b5f9cfe35cdd1a79446789b7504df9d7bd419174b97b41963c3367a4679",
+      "pages": [
+        5
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1684,
+      "claim_sha256": "c48eaec9112e005ffdccf5eea5b204d77364f7056b0bba48335f6eb5eed26567",
+      "legacy_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors Meeting held on March 10, 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 10566,
+        "source_order": 2,
+        "key": "96fcea52fd1851226bdf7979a398d236a61427f7116c71dcd246fbdca3730dfe",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of\n             Directors Meeting held on March 10, 2022.",
+        "source_block": "MOVED BY: WADE\n             SECONDED: SEATON\n\n             That Council receive the minutes of the West Shore Parks and Recreation Board of\n             Directors Meeting held on March 10, 2022.\n\n                                                                                            Motion CARRIED.\n\n\n\n8.   COMMITTEE RESOLUTIONS\n\n     8.1     Transportation and Public Works Committee Meeting - April 12. 2022\n\n             CouncillorSzpak and CouncillorSahlstrom left the meeting at 6:45 pm. due to a\n             perceived conflict with Item 8.1.1.\n\n             8.1.1    Request for Designated Parking Use",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b1db3693c4d207ac4b1bb7c082255bb7bf2ebc843897571e727b558da91b71a8",
+      "pages": [
+        5
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1685,
+      "claim_sha256": "ee8b287ee83ec61480e75a22b316edd150bcdf8ebe286204538dc1afe7f06f33",
+      "legacy_text": "THAT Council direct staff to designate the area located immediately north of the residence at 508 Langvista Drive for mobility assisted vehicle loading and unloading for the next 5 years or for the duration of Landon Court's stay, whichever comes first, and fund the sign installation from the Engineering Department's annual signs budget.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 11194,
+        "source_order": 3,
+        "key": "f567501aa069c4b134f39eb025c259245b8055646cf1cf987fb8bf036e693882",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council direct staff to designate the area located immediately north of the\n                      residence at 508 Langvista Drive for mobility assisted vehicle loading and\n                      unloading for the next 5 years or for the duration of Landon Court's stay.\n\n\n\n\n\n              whichever comes first, and fund the sign installation from the Engineering\n              Department's annual signs budget.",
+        "source_block": "MOVED BY: WADE\n                      SECONDED: SEATON\n\n                      THAT Council direct staff to designate the area located immediately north of the\n                      residence at 508 Langvista Drive for mobility assisted vehicle loading and\n                      unloading for the next 5 years or for the duration of Landon Court's stay.\n\n\n\n\n\n              whichever comes first, and fund the sign installation from the Engineering\n              Department's annual signs budget.\n\n                                                                                   Motion CARRIED.\n\n\n\n              Councillor Szpak and Councillor Sahlstrom returned to the meeting at 6:46 pm.\n\n8.2   Special Administration and Finance Committee Meeting - April 20. 2022\n\n      8.2.1   Minutes of the Special Administration and Finance Committee Meeting - April\n              20, 2022",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "85eff974d1a910bde3ec6334dcee6db683206e7b1f008e7ce8650a437fc0190f",
+      "pages": [
+        5,
+        6
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1686,
+      "claim_sha256": "021153f648893ac02c3517644ea1608a12b8d42b5603c055bc34d0132fedc6be",
+      "legacy_text": "THAT Council receive the minutes of the Special Administration and Finance Committee meeting held on April 12, 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 12097,
+        "source_order": 4,
+        "key": "bf9165a2735492f4dfb75cd048a1b9f299d380e60ed2918c75e1b16cce8ddb3b",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the Special Administration and Finance\n              Committee meeting held on April 12, 2022.",
+        "source_block": "MOVED BY: SAHLSTROM\n              SECONDED: STEWART\n\n              THAT Council receive the minutes of the Special Administration and Finance\n              Committee meeting held on April 12, 2022.\n\n                                                                                   Motion CARRIED.\n\n\n\n      8.2.2   Proposed Amendments to Election Bylaw No. 1819",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "6d224e1106461035bc9aa5cafc85f5b4ad6604ec038dd2cf8569a6515d218fd6",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1687,
+      "claim_sha256": "65eeac3847b2021d73506a69086dac6cc140be55de440f13c84dcc238d44106c",
+      "legacy_text": "THAT Council consider first, second, and third reading of the Election Bylaw No. 1819, Amendment No. 1, Bylaw No. 2057, 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 12474,
+        "source_order": 5,
+        "key": "bdc0218f579c0b556c28ef9eaf0fa0033161a557bf2205f65b220300710dce06",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council consider first, second, and third reading of the Election Bylaw No.\n              1819, Amendment No. 1, Bylaw No. 2057, 2022.",
+        "source_block": "MOVED BY: SAHLSTROM\n              SECONDED: STEWART\n\n              THAT Council consider first, second, and third reading of the Election Bylaw No.\n              1819, Amendment No. 1, Bylaw No. 2057, 2022.\n\n                                                                                   Motion CARRIED.\n\n\n\n      8.2.3   February and March 2022 Accounts Payable",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "dad68751d7ac2a15e3172b2067264d92a356bf9d92300d70f69a9e6c08568d56",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1688,
+      "claim_sha256": "4aba0e4d8eff66408735085dbb3e83d37c5df17ed634e5870cb54f4740177f63",
+      "legacy_text": "THAT Council approve the City of Langford disbursements from February and March 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 12854,
+        "source_order": 6,
+        "key": "98edf419a5815c21d8cf4790222ac260bbe3c1d5893d752ccd6f76b328afe868",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council approve the City of Langford disbursements from February and\n              March 2022.",
+        "source_block": "MOVED BY: SAHLSTROM\n              SECONDED: STEWART\n\n              THAT Council approve the City of Langford disbursements from February and\n              March 2022.\n\n                                                                                   Motion CARRIED.\n\n\n\n8.3   Planning. Zoning and Affordable Housing Committee Meeting - April 25. 2022\n\n      8.3.1   Minutes of the Planning, Zoning and Affordable Housing Committee Meeting -\n              April 25, 2022",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3a90d96f15e24c34e4597d154fcca357b40cf082d469d74bd1b9c012db63bd3e",
+      "pages": [
+        6
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1689,
+      "claim_sha256": "c71b6da044efae91d57b16a9c45cfa1d8ed1018eb0f759f06ab8c822bb8ac65b",
+      "legacy_text": "THAT Council receive the minutes of the Planning, Zoning and Affordable Housing Committee meeting held on April 25, 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 13339,
+        "source_order": 7,
+        "key": "6e9e768bba8cd810e9caa8f61b63f6c8b8fec04de5886dfa45852cb0f377ce35",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the Planning, Zoning and Affordable\n              Housing Committee meeting held on April 25, 2022.",
+        "source_block": "MOVED BY: WADE\n              SECONDED: STEWART\n\n              THAT Council receive the minutes of the Planning, Zoning and Affordable\n              Housing Committee meeting held on April 25, 2022.\n\n\n\n\n\n                                                                                    Motion CARRIED.\n\n\n\n8.3.2   Application for a temporary use permit at 2874 Peatt Road to allow for a\n        commercial office space",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "8b48a9ab740f465c8ca5ee963e8c611f33ae5c0d17158881ee0011e1fca00b4a",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1690,
+      "claim_sha256": "d5af36c9ed5920dfb5e249743d07b7e9fc75379fe7a197cb2ca8e62913e61bb4",
+      "legacy_text": "THAT Council: 1. Proceed with the consideration of the temporary use permit for a commercial office at 2874 Peatt Road, subject to the following terms and conditions: i. That the temporary use permit be issued for a period of three years from time of issuance; ii. That there are no clients on site; iii. That a business licence and building permit be obtained from the City of Langford;",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 13773,
+        "source_order": 8,
+        "key": "840be15b6c4c44124d9a4c45e2e1c077923b9764688c322d18359a48fe189f70",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n        1.   Proceed with the consideration of the temporary use permit for a\n             commercial office at 2874 Peatt Road, subject to the following terms and\n             conditions:\n\n             i.    That the temporary use permit be issued for a period of three years\n                   from time of issuance;\n\n             ii.   That there are no clients on site;\n\n             iii. That a business licence and building permit be obtained from the City of\n                  Langford;",
+        "source_block": "MOVED BY: WADE\n        SECONDED: STEWART\n\n\n\n\n        THAT Council:\n\n        1.   Proceed with the consideration of the temporary use permit for a\n             commercial office at 2874 Peatt Road, subject to the following terms and\n             conditions:\n\n             i.    That the temporary use permit be issued for a period of three years\n                   from time of issuance;\n\n             ii.   That there are no clients on site;\n\n             iii. That a business licence and building permit be obtained from the City of\n                  Langford;\n\n\n\n                                                                                     Motion CARRIED.\n\n\n\n8.3.3   Application to Rezone 2870 and 2874 Peatt Road from the R2 (One- and Two-\n        Family Residential) Zone to the CCP (City Centre Pedestrian) Zone to Allow for a\n        Six-Storey Mixed-Use Building",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1983093d2e4c5b357d6637c38c5af060ec830c07b095f3ce48f5c0c73c4c7eec",
+      "pages": [
+        7
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1691,
+      "claim_sha256": "92d505c282ab814226f5449c9843dd774384b919148b106efe4add083aeef0fe",
+      "legacy_text": "THAT Council: 1. Consider proceeding with First Reading of Bylaw No. 2066 to amend the zoning designation of 2870 and 2874 Peatt Road from R2 (One- and Two-Family Residential) to CCP (City Centre Pedestrian) subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to the issuance of a building permit: i. $750 towards the Affordable Housing Reserve Fund; and ii. $2,850 towards the General Amenity Reserve Fund; and Subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy. [motion text truncated in minutes for full conditions]",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 14660,
+        "source_order": 9,
+        "key": "ebdb34985af864d7664c1bf0c0a0e93bd65e111451031c9a80732fba4c9aee82",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n        1. Consider proceeding with First Reading of Bylaw No. 2066 to amend the\n           zoning designation of 2870 and 2874 Peatt Road from R2 (One- and Two-\n           Family Residential) to CCP (City Centre Pedestrian) subject to the following\n             terms and conditions:\n\n             a. That the applicant provides, as a bonus for increased density, the\n                following contributions per residential unit, prior to the issuance of a\n                   building permit:\n\n                   i.   $750 towards the Affordable Housing Reserve Fund; and\n\n                   ii. $2,850 towards the General Amenity Reserve Fund; and\n\n                                                                     f\n\n\n\n\n\nSubject to reductions depending on the use and height in accordance with the\nAffordable Housing and Amenity Contribution Policy.\n\n         iii. $10.75 per      of commercial gross floor area.\n\n    b. That the applicant provides the following, prior to Public Hearing:\n\n         i.   A technical memo from an engineer that verifies storm water can\n              be adequately managed on-site for the proposed development to\n              the satisfaction of the Director of Engineering;\n\n    c.   That the applicant provides, prior to Bylaw Adoption, a Section 219\n         covenant, registered in priority of all other charges on title, that agrees\n         to the following:\n\n         i.   That the following will be provided and implemented to Bylaw No.\n              1000 standards to the satisfaction of the Director of Engineering\n              prior to the issuance of a building permit:\n\n              1.   Full frontage improvements inclusive of sidewalks, boulevards,\n                   and street parking;\n\n              2.   A storm water management plan; and\n\n              3.   A construction parking management plan.\n\n         ii. That the developer will connect and be responsible for any\n             upgrades required to the services and utilities required for the\n              development;\n\n         iii. That the building be strata titled into individual residential units\n              prior to the issuance of an occupancy permit, to the satisfaction of\n              the Approving Officer;\n\n         iv. That the developer consolidate the parcels in accordance with the\n             CCP zone regulations, prior to the issuance of a development\n              permit;\n\n         V.   That a separate covenant be registered prior to issuance of a\n              building permit for the proposed development that ensures\n              residential parking is allocated to each unit and visitors as required\n              by the zoning bylaw and is not provided in exchange for\n              compensation separate from that of a residential unit; and\n\n         vi. That 100% of residential parking spaces, excluding visitor parking\n             spaces, shall feature an energized outlet capable of providing Level\n             2 charging or higher to the parking space; and\n\n              1.   Energized outlets shall be labelled for the use of electric vehicle\n                   charging;\n\n              2. Where an electric vehicle energy management system is\n                 implemented (load sharing), a qualified professional may\n\n                           specify a minimum performance standard to ensure a sufficient\n                           rate of electric vehicle charging; and\n\n                      3. The owner is required to keep the Electric Vehicle Servicing\n                         Equipment (EVSE) in operation and the Strata Council may not\n                         prevent an owner, occupant, or tenant from installing the EV\n                           charging equipment.\n\n        2.   Direct staff to prepare a bylaw to amend Section 6.58.06(2)(b) and Section\n             6.58.06(2)(c) within the CCP (City Centre Pedestrian) Zone to change the\n             interior side lot line and rear lot line setback requirement of 5 m to apply\n             when the adjoining lot is zoned to permit a building of 7 or more storeys in\n             height.",
+        "source_block": "MOVED BY: WADE\n        SECONDED: SAHLSTROM\n\n        THAT Council:\n\n        1. Consider proceeding with First Reading of Bylaw No. 2066 to amend the\n           zoning designation of 2870 and 2874 Peatt Road from R2 (One- and Two-\n           Family Residential) to CCP (City Centre Pedestrian) subject to the following\n             terms and conditions:\n\n             a. That the applicant provides, as a bonus for increased density, the\n                following contributions per residential unit, prior to the issuance of a\n                   building permit:\n\n                   i.   $750 towards the Affordable Housing Reserve Fund; and\n\n                   ii. $2,850 towards the General Amenity Reserve Fund; and\n\n                                                                     f\n\n\n\n\n\nSubject to reductions depending on the use and height in accordance with the\nAffordable Housing and Amenity Contribution Policy.\n\n         iii. $10.75 per      of commercial gross floor area.\n\n    b. That the applicant provides the following, prior to Public Hearing:\n\n         i.   A technical memo from an engineer that verifies storm water can\n              be adequately managed on-site for the proposed development to\n              the satisfaction of the Director of Engineering;\n\n    c.   That the applicant provides, prior to Bylaw Adoption, a Section 219\n         covenant, registered in priority of all other charges on title, that agrees\n         to the following:\n\n         i.   That the following will be provided and implemented to Bylaw No.\n              1000 standards to the satisfaction of the Director of Engineering\n              prior to the issuance of a building permit:\n\n              1.   Full frontage improvements inclusive of sidewalks, boulevards,\n                   and street parking;\n\n              2.   A storm water management plan; and\n\n              3.   A construction parking management plan.\n\n         ii. That the developer will connect and be responsible for any\n             upgrades required to the services and utilities required for the\n              development;\n\n         iii. That the building be strata titled into individual residential units\n              prior to the issuance of an occupancy permit, to the satisfaction of\n              the Approving Officer;\n\n         iv. That the developer consolidate the parcels in accordance with the\n             CCP zone regulations, prior to the issuance of a development\n              permit;\n\n         V.   That a separate covenant be registered prior to issuance of a\n              building permit for the proposed development that ensures\n              residential parking is allocated to each unit and visitors as required\n              by the zoning bylaw and is not provided in exchange for\n              compensation separate from that of a residential unit; and\n\n         vi. That 100% of residential parking spaces, excluding visitor parking\n             spaces, shall feature an energized outlet capable of providing Level\n             2 charging or higher to the parking space; and\n\n              1.   Energized outlets shall be labelled for the use of electric vehicle\n                   charging;\n\n              2. Where an electric vehicle energy management system is\n                 implemented (load sharing), a qualified professional may\n\n                           specify a minimum performance standard to ensure a sufficient\n                           rate of electric vehicle charging; and\n\n                      3. The owner is required to keep the Electric Vehicle Servicing\n                         Equipment (EVSE) in operation and the Strata Council may not\n                         prevent an owner, occupant, or tenant from installing the EV\n                           charging equipment.\n\n        2.   Direct staff to prepare a bylaw to amend Section 6.58.06(2)(b) and Section\n             6.58.06(2)(c) within the CCP (City Centre Pedestrian) Zone to change the\n             interior side lot line and rear lot line setback requirement of 5 m to apply\n             when the adjoining lot is zoned to permit a building of 7 or more storeys in\n             height.\n\n                                                                                 Motion CARRIED.\n\n\n\n8.3.4   Application to Rezone 892 Walfred Road from Rural Residential 5 (RR5) to One-\n        and Two-Family Residential (R2) to accommodate a five lot bare land strata\n        subdivision",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "cdbbd2cb43ed5337f4b13f58f8145d3063c650036c0e136ba8179ea363534393",
+      "pages": [
+        7,
+        8,
+        9
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1692,
+      "claim_sha256": "2e2c3dac83aa9b5ac8330b499f64a1c3228bbf6e4977291aebafc3c3b3dfe45a",
+      "legacy_text": "THAT Council: 1. Proceed with consideration of Bylaw No. 2067 to amend the zoning designation of 892 Walfred Road from the RR5 (Rural Residential 5) Zone to the R2 (One- and Two-Family Residential) Zone subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions per lot prior to subdivision approval: ... [conditions as listed in minutes].",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 19143,
+        "source_order": 10,
+        "key": "d2935ed3f778e2062792ee06f031e8a210d688f17aec9ce503914f4e1823bf06",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n        1.   Proceed with consideration of Bylaw No. 2067 to amend the zoning\n             designation of 892 Walfred Road from the RR5 (Rural Residential 5) Zone to\n             the R2 (One- and Two-Family Residential) Zone subject to the following\n             terms and conditions:\n\n             a. That the applicant provides, as a bonus for increased density, the\n                following contributions per lot prior to subdivision approval:\n\n                 i.   $660 (Small Lot) towards the Affordable Housing Fund;\n\n                 ii. $1,000 (Single Family - 550 m^ or more) towards the Affordable\n                      Housing Fund;\n\n                 iii. $3,960 (Small Lot) towards the General Amenity Fund; and\n\n                 iv. $6,000 (Single Family - 550 m^ or more) towards the General\n                      Amenity Fund.\n\n             b. That, prior to Public Hearing, the applicant provides a technical memo\n                from an engineer that verifies stormwater can be adequately managed\n                on-site for the proposed developments, to the satisfaction of the\n                 Director of Engineering;\n\n\n\n             c. That the applicant provides, prior to Bylaw Adoption, a Section 219\n                covenant, registered in priority of all other charges on that title, that\n                 agrees:\n\n\n\n\n\n                      i.   That the following will be provided and innplemented to Bylaw No.\n                           1000 standards to the satisfaction of the Director of Engineering\n                           prior to subdivision approval or the issuance of a building permit,\n                           whichever is first:\n\n                           1.   Full frontage improvements; and\n\n                           2.   A storm water management plan;\n\n                      ii. That a Construction Parking and Traffic Management Plan be\n                          provided to the satisfaction of the Director of Engineering prior to\n                          any alteration of the land;\n\n                      iii. That vegetation within the road allowance on Walfred Road should\n                           be retained. If any vegetation is removed, the applicant is required\n                           to replant the area and provide a temporary irrigation system from\n                           a private irrigation system to the satisfaction of the Manager of\n                           Parks;\n\n                      iv. That a non-disturbance covenant be registered over 20% of the\n                          landls to preserve these areas as greenspace prior to subdivision\n                          approval, to the satisfaction of the Approving Officer.",
+        "source_block": "MOVED BY: WADE\n        SECONDED: STEWART\n\n        THAT Council:\n\n        1.   Proceed with consideration of Bylaw No. 2067 to amend the zoning\n             designation of 892 Walfred Road from the RR5 (Rural Residential 5) Zone to\n             the R2 (One- and Two-Family Residential) Zone subject to the following\n             terms and conditions:\n\n             a. That the applicant provides, as a bonus for increased density, the\n                following contributions per lot prior to subdivision approval:\n\n                 i.   $660 (Small Lot) towards the Affordable Housing Fund;\n\n                 ii. $1,000 (Single Family - 550 m^ or more) towards the Affordable\n                      Housing Fund;\n\n                 iii. $3,960 (Small Lot) towards the General Amenity Fund; and\n\n                 iv. $6,000 (Single Family - 550 m^ or more) towards the General\n                      Amenity Fund.\n\n             b. That, prior to Public Hearing, the applicant provides a technical memo\n                from an engineer that verifies stormwater can be adequately managed\n                on-site for the proposed developments, to the satisfaction of the\n                 Director of Engineering;\n\n\n\n             c. That the applicant provides, prior to Bylaw Adoption, a Section 219\n                covenant, registered in priority of all other charges on that title, that\n                 agrees:\n\n\n\n\n\n                      i.   That the following will be provided and innplemented to Bylaw No.\n                           1000 standards to the satisfaction of the Director of Engineering\n                           prior to subdivision approval or the issuance of a building permit,\n                           whichever is first:\n\n                           1.   Full frontage improvements; and\n\n                           2.   A storm water management plan;\n\n                      ii. That a Construction Parking and Traffic Management Plan be\n                          provided to the satisfaction of the Director of Engineering prior to\n                          any alteration of the land;\n\n                      iii. That vegetation within the road allowance on Walfred Road should\n                           be retained. If any vegetation is removed, the applicant is required\n                           to replant the area and provide a temporary irrigation system from\n                           a private irrigation system to the satisfaction of the Manager of\n                           Parks;\n\n                      iv. That a non-disturbance covenant be registered over 20% of the\n                          landls to preserve these areas as greenspace prior to subdivision\n                          approval, to the satisfaction of the Approving Officer.\n\n                                                                                    Motion CARRIED.\n\n\n\n8.4   Protective Services Committee Meeting - April 26. 2022\n\n      8.4.1   Minutes of the Protective Services Committee Meeting - April 26, 2022",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "58e1ef87d6022776c37ecd851afd93cf46ba1a643ed32171829d6a5e0790a32f",
+      "pages": [
+        9,
+        10
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1693,
+      "claim_sha256": "3b54d9298250218090ffbb1b3628c48a2a786772414044f411a7c09e26756850",
+      "legacy_text": "THAT Council receive the minutes of the Protective Services Committee meeting held on April 26, 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 22179,
+        "source_order": 11,
+        "key": "1c4cbb2b71a7c86180fcc73336982f0e013f24cf6f8ef0a6149e444c612e9e4c",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the Protective Services Committee meeting\n              held on April 26, 2022.",
+        "source_block": "MOVED BY: WADE\n              SECONDED: SEATON\n\n              THAT Council receive the minutes of the Protective Services Committee meeting\n              held on April 26, 2022.\n\n                                                                                    Motion CARRIED.\n\n\n\n      8.4.2   Departmental Update",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "07de476d948e67bfb25e40c4f32044c8bcae532cc3c548cfd5e462da8f308e14",
+      "pages": [
+        10
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1697,
+      "claim_sha256": "d0c648e0f3b7edf173d410a79faca880ab566a4fb03d62227b28b41e5fcf2746",
+      "legacy_text": "THAT Council receive the minutes of the Protective Services Committee meeting held on April 28, 2022.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 23599,
+        "source_order": 15,
+        "key": "a7290ea9e6710b17a222ef74f2b1dda4eaa62470a5ed46d43b113d49b4de99a4",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the Protective Services Committee meeting\n                   held on April 28, 2022.",
+        "source_block": "MOVED BY: SEATON\n                   SECONDED: WADE\n\n                   THAT Council receive the minutes of the Protective Services Committee meeting\n                   held on April 28, 2022.\n\n                                                                                          Motion CARRIED.\n\n\n\n           8.5.2   Park Name Proposal -1851 Bear Mountain Parkway",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "c1566dbdec6c476ecc08024cdb066bd0572f460f04f25b7b2fa92db92c0f113e",
+      "pages": [
+        11
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1698,
+      "claim_sha256": "f2bfbdbb583030b0dfead5f10b9e8413adf0d566e5cd7fb92c21041ccf83bcd6",
+      "legacy_text": "THAT Council direct staff that the park located at 1851 Bear Mountain Parkway be named 'Tlying Firemen Park' and that Council direct staff to prepare a historical information board for installation at the park.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 23987,
+        "source_order": 16,
+        "key": "2301a3cc298a90e2018f33c53354f92389d8d132653f5221fd93c6d031c494e0",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council direct staff that the park located at 1851 Bear Mountain Parkway\n                   be named 'Tlying Firemen Park\" and that Council direct staff to prepare a\n                   historical information board for installation at the park.",
+        "source_block": "MOVED BY: WADE\n                   SECONDED: SEATON\n\n                   THAT Council direct staff that the park located at 1851 Bear Mountain Parkway\n                   be named 'Tlying Firemen Park\" and that Council direct staff to prepare a\n                   historical information board for installation at the park.\n\n                                                                                          Motion CARRIED.\n\n\n\n9.   REPORTS\n\n     9.1   Agricultural Land Reserve Exclusion Policy",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1e993d7e85ab46791c8d06d39a75e06b7bb884c1b15ca17ceb75e83b93fa0711",
+      "pages": [
+        11
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1699,
+      "claim_sha256": "d31057e577eb0351088b8903a4eac3f0e1fee63a094f694aea07f80c21edd26b",
+      "legacy_text": "THAT Council: 1. Will no longer consider ALR exclusion applications from individual property owners on a case by case or lot by lot basis but reserves the right to refer exclusion applications to the Agricultural Land Commission in cases where the City requires the exclusion for a public purpose; and 2. Direct staff to inform the relevant property owners of this new policy.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 24505,
+        "source_order": 17,
+        "key": "94c47487c600eee965d58763a129695d49a99dedb06e2ebf015df443deab7b30",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n           1.   Will no longer consider ALR exclusion applications from individual property owners\n                on a case by case or lot by lot basis but reserves the right to refer exclusion\n                applications to the Agricultural Land Commission in cases where the City requires\n                the exclusion for a public purpose; and\n\n\n\n           2.   Direct staff to inform the relevant property owners of this new policy.",
+        "source_block": "MOVED BY: WADE\n           SECONDED: STEWART\n\n           THAT Council:\n\n           1.   Will no longer consider ALR exclusion applications from individual property owners\n                on a case by case or lot by lot basis but reserves the right to refer exclusion\n                applications to the Agricultural Land Commission in cases where the City requires\n                the exclusion for a public purpose; and\n\n\n\n           2.   Direct staff to inform the relevant property owners of this new policy.\n\n                                                                                     Motion CARRIED.\n\n\n\n9.2   Amendment to Attainable Home Ownership Program Policy",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "e841ecc5955732795a858f849b522ed8d4c6cfcdc3f880de55d3bdac58ef502d",
+      "pages": [
+        11,
+        12
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1700,
+      "claim_sha256": "92355f78ca3f8697d7fdeb113d4aa35dc1ed22df45716eb81251ce69923172d5",
+      "legacy_text": "THAT Council: 1. Approve Attainable Home Ownership Program Policy POL-O166-Plan as amended; with a further amendment to have Section 3(b) of the Policy apply to rezoning applications that create buildings with more than four residential storeys; and 2. Proceed with consideration of Bylaw No. 20",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 25193,
+        "source_order": 18,
+        "key": "f7da175e2ff5ee260e69bfbdf40ae0e4013316a209f5a769adec504dee115e38",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n      1.    Approve Attainable Home Ownership Program Policy POL-O166-Plan as amended;\n            with a further amendment to have Section 3(b) of the Policy apply to rezoning\n            applications that create buildings with more than four residential storeys; and\n\n\n\n      2.    Proceed with consideration of Bylaw No. 2077 to update off-street parking\n            requirement for housing developed within the Affordable Housing Policy and\n            Attainable Home Ownership Program Policy;",
+        "source_block": "MOVED BY: WADE\n      SECONDED: STEWART\n\n      THAT Council:\n\n      1.    Approve Attainable Home Ownership Program Policy POL-O166-Plan as amended;\n            with a further amendment to have Section 3(b) of the Policy apply to rezoning\n            applications that create buildings with more than four residential storeys; and\n\n\n\n      2.    Proceed with consideration of Bylaw No. 2077 to update off-street parking\n            requirement for housing developed within the Affordable Housing Policy and\n            Attainable Home Ownership Program Policy;\n\n                                                                                     Motion CARRIED.\n\n\n\n9.3   Road Closure and Disposition 3620 Jacklin and 2621 Sooke Roads",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "760fadb4e60128a082f8aa882fcee39d94e79ff495d687d2d57a873287c885e0",
+      "pages": [
+        12
+      ],
+      "reason": "Unique complete source occurrence identified by agenda/minutes/property/permit/policy/stage; preserve abbreviated/truncated and native-OCR-derived old wording, actors/results/meta. Occurrence reservation only, no text restoration or ballot authority.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1694,
+      "claim_sha256": "9bcd849854a9ca64054fca54633ea45be407504b1afd9ff8214758f1118071e8",
+      "legacy_text": "THAT Council receive this report for information.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 22509,
+        "source_order": 12,
+        "key": "91d510c75f994339946195721de79ec34060805fa72fb756b95cd5b0c4bead99",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive this report for information.",
+        "source_block": "MOVED BY: WADE\n              SECONDED: SEATON\n\n              THAT Council receive this report for information.\n\n                                                                                    Motion CARRIED.\n\n\n\n      8.4.3   LANGFORD - West Shore RCMP 2021 Annual Report",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4592c1259b81c8b6dd1d77b9b3a481579638243602ed159cb31ab4c53f8b1956",
+      "pages": [
+        10
+      ],
+      "reason": "Diagnostic candidate only: explicit unchanged agenda parent ID/title/item_order matches independently image-reviewed source heading and formal occurrence. Preserve printed/stored operative body and old outcome/actors/meta; no row-order inference or month correction.",
+      "authority": "occurrence_reservation_only",
+      "review_evidence": {
+        "first_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+        "second_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+        "bounded_parent_titles_sha256": "efe7bf36b2616893e4245b8c16fc6cf843f83b53dc037a483c6df58f3f8ccb8f"
+      },
+      "parent_identity": {
+        "id": 2604,
+        "meeting_id": 158,
+        "item_order": "8.4.2",
+        "title": "Departmental Update"
+      },
+      "parent_full_row_sha256": "d90494679bd002713abcb156aa6c92fc794ac4ade1d03c5f6aff4e6347edecd9"
+    },
+    {
+      "motion_id": 1695,
+      "claim_sha256": "6d0a3306db11d74406fbb1fe2d3f77f872f36c05d7020be77bca21001cafa4cf",
+      "legacy_text": "THAT Council receive this report for information.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 22799,
+        "source_order": 13,
+        "key": "17ed284d18de7e1fc10fd12f08f3c0cc0731e8c1435b8809b9a8f4ef93b7d75f",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THATCouncil receive this report for information.",
+        "source_block": "MOVED BY: WADE\n              SECONDED: SEATON\n\n              THATCouncil receive this report for information.\n\n                                                                                          Motion CARRIED.\n\n\n\n           8.4.4   Victoria Family Court and Youth Justice Committee 2021 Annual Report",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "73f94fe27dc5004b3f665fda665a4f493f8d6b5030c26067eacfa7daf5a02e4b",
+      "pages": [
+        10,
+        11
+      ],
+      "reason": "Diagnostic candidate only: explicit unchanged agenda parent ID/title/item_order matches independently image-reviewed source heading and formal occurrence. Preserve printed/stored operative body and old outcome/actors/meta; no row-order inference or month correction.",
+      "authority": "occurrence_reservation_only",
+      "review_evidence": {
+        "first_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+        "second_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+        "bounded_parent_titles_sha256": "efe7bf36b2616893e4245b8c16fc6cf843f83b53dc037a483c6df58f3f8ccb8f"
+      },
+      "parent_identity": {
+        "id": 2605,
+        "meeting_id": 158,
+        "item_order": "8.4.3",
+        "title": "LANGFORD - West Shore RCMP 2021 Annual Report"
+      },
+      "parent_full_row_sha256": "1ddf70b4cc6b44e749e8ac98a4a9a74f9c92c5178433b528e5323d06dc60ade9"
+    },
+    {
+      "motion_id": 1696,
+      "claim_sha256": "acbc448b78f24a8e808f01762277ecb3d9fc589935fe15e094912c2a1eeb29da",
+      "legacy_text": "THAT Council receive this report for information.",
+      "source_identity": {
+        "meeting_id": 158,
+        "source_sha256": "a1b993e65ba981727c64988ab0cf97d01c54e250012c2731b0dab21686e2a42e",
+        "source_offset": 23122,
+        "source_order": 14,
+        "key": "b96e0351217ffd80a08949c9581e67e462952508b9b9ae6df1d758145617d456",
+        "source_file": "archive/langford/Council/2022/05/2022-05-02 530pm Regular Council [ce5da176]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13849",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THATCouncil receive this report for information.",
+        "source_block": "MOVED BY: WADE\n                   SECONDED: SEATON\n\n                   THATCouncil receive this report for information.\n\n                                                                                          Motion CARRIED.\n\n\n\n     8.5   Parks. Recreation. Culture and Beautification Committee Meeting - April 28. 2022\n\n           8.5.1   Minutes of the Parks, Recreation, Culture and Beautification Committee\n                   Meeting - April 28, 2022",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1172c14daa6df1b034326dcd0e90cd14e92e3e6fdf88b1f653d7946e309987f6",
+      "pages": [
+        11
+      ],
+      "reason": "Diagnostic candidate only: explicit unchanged agenda parent ID/title/item_order matches independently image-reviewed source heading and formal occurrence. Preserve printed/stored operative body and old outcome/actors/meta; no row-order inference or month correction.",
+      "authority": "occurrence_reservation_only",
+      "review_evidence": {
+        "first_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+        "second_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+        "bounded_parent_titles_sha256": "efe7bf36b2616893e4245b8c16fc6cf843f83b53dc037a483c6df58f3f8ccb8f"
+      },
+      "parent_identity": {
+        "id": 2606,
+        "meeting_id": 158,
+        "item_order": "8.4.4",
+        "title": "Victoria Family Court and Youth Justice Committee 2021 Annual Report"
+      },
+      "parent_full_row_sha256": "fbc278f76cd0a4f162e5231eac25e357c419a258855dfa100997723f41cb99b1"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+  "parent_ownership_diagnostic_evidence": {
+    "first_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+    "second_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+    "bounded_parent_titles_sha256": "efe7bf36b2616893e4245b8c16fc6cf843f83b53dc037a483c6df58f3f8ccb8f"
+  },
+  "original_image_review_sha256s": {
+    "first_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+    "second_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+    "full_snapshot_file_sha256": "db95778e09daa4fb5541031ecd4e8019717269993b03de28b46884c816b6e0ed"
+  },
+  "second_original_image_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+  "documentary_preservations": [
+    {
+      "motion_id": 1701,
+      "type": "reviewed_adjournment_narration_preservation",
+      "claim_sha256": "d663f8b1771d8a4121e2e611a82864cc46e8664a7f2394e8912436ece43157b3",
+      "claim_row_sha256": "f874a1e09f7cb14f81c5f48fab1cd22b994f59d23529e1893316fc9ed33abbba",
+      "legacy_text": "THAT the meeting be adjourned.",
+      "printed_body": "Mayor Young adjourned the meeting at 7:11 pm.",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "page": 17,
+      "native_text_sha256": "d36e578cab1c1b31e94d8839ec7bc72842326a5611ee1d904155157cd9572221",
+      "render_sha256": "ea745794e0ae6a9f4fec335ec7ba7f229f84dc6b34b89b1c942f8f8f96d078b1",
+      "native_passage": "Mayor Young adjourned the meeting at 7:11 pm.",
+      "native_passage_start": 16,
+      "source_passage": "Mayor Young adjourned the meeting at 7:11 pm.",
+      "source_passage_start": 33256,
+      "original_image_review_sha256s": {
+        "first_review_sha256": "a588c22ec42c2251437fa2f961b310f5400bd953e5d60d2f1288ac4fc87272b1",
+        "second_review_sha256": "7a8fda4e43cc4f7ad5a68ba5a5d129e492a012c1c78d420526a8d421c8af9ba1",
+        "full_snapshot_file_sha256": "db95778e09daa4fb5541031ecd4e8019717269993b03de28b46884c816b6e0ed"
+      }
+    }
+  ]
+}

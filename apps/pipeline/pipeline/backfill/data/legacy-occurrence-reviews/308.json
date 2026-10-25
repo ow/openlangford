@@ -1,0 +1,392 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 308,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+  "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2023-07-17",
+  "source_text_sha256": "f0ff2517f200626bda448edb54c1ab8be2bfc23479fc3391abbe0fedde564973",
+  "formal_inventory_sha256": "3616c909a1b5bd00157124918d9e38a490dd217368fa0e544e19a75db9910c6a",
+  "claim_inventory_sha256": "d5559a008f4ec85efe12a4a34cf4c24936748a00b2f671c306a94822f4b60ac3",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "6504964a6356785cdc6903462ecd5d379a0a8f04da0bdcc78688d52826742c02"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "6375aab84b835fdef97f10c8f7534eedfdffa221639416195541198d23bebcb2"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "89e88e91175ad678524a19cd8e7178994bc547531e2e6411397ed17bbc5f6714"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "210d66b7114c9037c46c4b37fcfaf362f926b9a764c7ffc91608448c9edf1163"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "fdd892b6cd73a51ee032e6e8d84928676a7be6dbf42cd39eaa9dffd33e9a8451"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "2b001343b08b7cfe1dcd079e4149bfdf5ef03287f739c8698bd3effcb8308bb5"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "a54a988e83c4a8576e39f5deed5d40c3291246cbe994a79be972b4e988acfe01"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "51e272aaf01469e0741a2262898cc62d13ca6a62423cc599a7bad08b6b2ad70a"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "a4e0990453ff1e616afd22a70702a33ca4864df2eac80297cca9a3d610053a8e"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "4500b7e66b2265a82aa02e0744a709601399cc7d41325ab343f1c30a7b038c97"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "7078d41f209e5d0fdf482ddaa29cde69c5aad38d17c44ebebff40cb12dc611e6"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "d0316ce4d2d936aa70c6477d68075a66408ccdfbede1563ff45a230c049e36b4"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "47b7e1b69f193a319ec82bd760439cd9a52e485f0a615d71dcff44e9a7cdc690"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "b125a8a3427a3a06a5997d9d4dd77e3a902c1e400abe619110ce42c8b48076bc"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "536802585926bb797566f10a50f058d2a636eae49a2c44329b23c80b7638fce1"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "6df7ea77ba782134e5e0b96fdff36db6fdda78ebd248b59822170d7a1facc802"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "7f06d729fea1ec0d8785f8b25380b4ef41f00e5b6db07d91731e307c995ca6ed"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 3080,
+      "claim_sha256": "4a817689f5aaeca7f0039510adf20ef48ecc5a2d7b0aa9615998eae9ef97fb08",
+      "legacy_text": "THAT Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 1593,
+        "source_order": 0,
+        "key": "ec2ca7f8ee983151808270c07443df3c895e902c0c7a5b1c668af09a0ff7507b",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council approve the agenda as presented.",
+        "source_block": "MOVED BY: SZPAK\n       SECONDED: WAGNER\n\n       THAT Council approve the agenda as presented.\n\n                                                                                      Motion CARRIED.\n\n4.   PRESENTATIONS\n\n     4.1   CRD Arts and Culture - Mayor Marianne Alto & Chris Gilpin",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "d15c621b3b5de67e4a0ac238ece84e1959383f8a9d3c3d37c8f7d3236358a584",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3081,
+      "claim_sha256": "abf251d046f346354d107de59b3db47607dfc51aa1b9e2c458bad129127f1d8c",
+      "legacy_text": "THAT Council direct staff to prepare a report that summarizes all of the City's commitments with respect to arts and culture and the impacts of joining the CRD Arts and Culture Service and bring it back to Council in conjunction with the Strategic Plan.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 1888,
+        "source_order": 1,
+        "key": "5de2bc62b465e1c97d70c09b3a7df615e5d315ce6fef0a60499d4fba40230a1e",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council direct staff to prepare a report that summarizes all of the City's\n           commitments with respect to arts and culture and the impacts of joining the CRD Arts\n           and Culture Service and bring it back to Council in conjunction with the Strategic Plan.",
+        "source_block": "MOVED BY: HARDER\n           SECONDED: SZPAK\n\n           THAT Council direct staff to prepare a report that summarizes all of the City's\n           commitments with respect to arts and culture and the impacts of joining the CRD Arts\n           and Culture Service and bring it back to Council in conjunction with the Strategic Plan.\n\n                                                                                          Motion CARRIED.\n\n\n     4.2   Zero Carbon -Jane Devonshire",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b1f08bcc77e1ea194c6e0f6e427c24fb4b91c24200032d0a24b95106e3c47b86",
+      "pages": [
+        2
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3082,
+      "claim_sha256": "7e51a276076122abfd9b16155422b881efc13534c82e25208c8207ae7a9be5ba",
+      "legacy_text": "THAT Council direct staff to conduct a gaps analysis to explore what resources and policy changes would be needed to meet our GHG reduction goals, including but not limited to best practices in other municipalities in the region, staffing needs, financial implications, and other factors necessary to ensure long-term sustainability and the ability of Langford to enact a Climate Action Plan that is anticipated to be an initiative resulting from the Strategic Plan that is currently underway.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 2381,
+        "source_order": 2,
+        "key": "2e076346a7ab55eb1d76f7e7ee4b66d743b0cda6a199c9653f73aadb466b5bdb",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council direct staff to conduct a gaps analysis to explore what resources and policy\n           changes would be needed to meet our GHG reduction goals, including but not limited to\n           best practices in other municipalities in the region, staffing needs, financial implications,\n           and other factors necessary to ensure long-term sustainability and the ability of\n           Langford to enact a Climate Action Plan that is anticipated to be an initiative resulting\n           from the Strategic Plan that is currently underway.",
+        "source_block": "MOVED BY: WAGNER\n           SECONDED: GUIRY\n\n           THAT Council direct staff to conduct a gaps analysis to explore what resources and policy\n           changes would be needed to meet our GHG reduction goals, including but not limited to\n           best practices in other municipalities in the region, staffing needs, financial implications,\n           and other factors necessary to ensure long-term sustainability and the ability of\n           Langford to enact a Climate Action Plan that is anticipated to be an initiative resulting\n           from the Strategic Plan that is currently underway.\n\n                                                                                          Motion CARRIED.\n\n\n5.   PUBLIC HEARINGS\n\n     5.1   BYLAW NO. 2082\n\n           \"Langford Zoning Bylaw, Amendment No. 679, (Omnibus No. 60 \u2014Various Housekeeping\n           Items), Bylaw No. 2082, 2023\"\n\n           The Mayor opened the Public Hearing for Bylaw No. 2082 at 7:47 p.m.\n\n            Director of Planning Matthew Baldwin advised that The City of Langford is proposing to\n           amend Zoning Bylaw No. 300 in the following ways:\n           \u2022 By introducing regulations with respect to tandem parking in townhouse\n           developments;\n           \u2022 By increasing the width of interior, or in-garage, parking spaces;\n           \u2022 By introducing \"accessory dormitories which may include a kitchenette\" as a permitted\n           use in the CD2 (Hull's Field) zone;\n           \u2022 By restricting where apartments may occur at the ground level in the City Centre\n           Pedestrian (CCP) zone to exclude Peatt Road, Claude Road, Bryn Maur Avenue, Jacklin\n           Road and Veterans Memorial Parkway;\n           \u2022 By deleting the requirement for a lm wide landscaping strip adjacent to an interior\n           side\n           lot line in the City Centre 1 (CC1) zone.\n           \u2022 By consolidating all daycare capacity exemptions from each zone into Part 3 of the\n           Zoning\n\n      bylaw.\n      \u2022 By allowing R2 (One-and Two-family Residential) lots to be less than 600m2 but not\n      less\n      than 500m2 if the lot width is 17m.\n      \u2022 By prohibiting landscape retaining walls that are visitable from municipal roads that\n      are\n      finished as smooth concrete blocks and/or a natural concrete colour.\n      AND\n      \u2022 By introducing requirements for accessible parking in all types of multi-family\n      residential\n      development.\n      Notifications and advertisements have been placed as required by the Local Government\n      Act.\n\n      Mayor Goodmanson called a first time for presentations.\n\n      B. Armstrong, Rodney Rd - Expressed concern with the deletion of the requirement for a\n      lm wide landscaping strip adjacent to an interior side lot line in the City Centre 1 (CC1)\n      zone.\n\n      Mayor Goodmanson called a second time for presentations.\n\n      None presented.\n\n      Mayor Goodmanson called a third time for presenters.\n\n      None presented.\n\n      Mayor Goodmanson declared the Public Hearing for Bylaw No. 2082 closed at 7:52 pm.\n\n5.2   BYLAW NO. 2099\n\n      \"Langford Zoning Bylaw, Amendment No. 693, (971 Walfred Road) Bylaw No. 2099,\n      2023\".\n\n      The Mayor opened the Public Hearing for Bylaw No. 2099 at 7:52 p.m.\n\n      Director of Planning Matthew Baldwin advised that Pat Guiney has applied on behalf of\n      1157393 BC Ltd. to amend the zoning of 971 Walfred Road from the One- and Two-\n      Family Zone to the Residential Townhouse 1 Zone.\n\n\n      This is being proposed in order to allow for the development of approximately 13\n      townhouses.\n\n\n      Prior to Public Hearing, the applicant has provided a technical memo from an engineer\n      that verifies stormwater can be adequately managed on-site for the proposed\n      development, which has been approved by the Director of Engineering AND a memo by\n      a Landscape Architect that examines existing trees on site and along the frontages to\n      provide comment on potential tree retention, which has been approved by the Director\n      of Planning.\n\nIn support of this application, the applicant has agreed to provide the following:\n1. Amenity Contributions as a bonus for increased density as follows:\na. $610 per unit towards the Affordable Housing Reserve Fund; and\nb. $3,660 per unit towards the General Amenity Reserve Fund.\n\n\n2. Road dedication, full frontage improvements, a stormwater management plan, and a\nconstruction parking plan \u2014 all to the satisfaction of the Director of Engineering;\n\n\n3. Onsite paver stones, an arbour with a pedestrian gate, and variable rooflines \u2014 all to\nthe satisfaction of the Director of Planning;\n\n\n4. That storage within garages does not prevent parking of vehicles, tree protection\nmeasures are carried out throughout the entire construction period, and that concrete\nused will comply with Council's Low Carbon Concrete Policy;\n\n\n5. With respect to the neighbouring property at 3303 Lodmell, the developer will install\ndrainage improvements, remove the existing retaining wall, install a 6-foot fence along\nthe shared property line, retain trees along the shared property line, and plant an\nadditional 8 tree along the shared property line.\n\n\nThis proposal is consistent with the Official Community Plan 'Neighbourhood'\ndesignation.\n\n\nNotifications and advertisements have been placed as required by the Local Government\nAct.\n\nMayor Goodmanson called a first time for presentations.\n\nPat Guinev, Applicant - expressed support for the proposed development and provided\nan overview of some energy efficient features of the build including solar energy, electric\ncar chargers, heat pumps, electric water heaters and induction cook tops. Speaker also\nconcerned about parking in the area, noting visitor spots including oversized parking\nthat will be accessible.\n\nMayor Goodmanson called a second time for presentations.\n\nD. Knudson, Lodmell Rd - expressed concerns with the proposed development including\nchanges to the neighbourhood over time, effects of previous developments have had on\nthe speaker's property, and proposed possible remedies for Council's consideration.\n\nL. Plomp, Whimfield Terr - expressed support for the proposed development including\nextensive public engagement undertaken by the applicant, and addressing of close\nproximity resident's concerns.\n\nMendez, Mesa PI - expressed concern with the proposed development including concern\nfor safety of children and pedestrians in the area, size of the proposed buildings, and\nemergency safety considerations.\n\nM. Wignall, Selwyn Rd - expressed support for the proposed development including the\napplicants work in the community previously.\n\nJ.Patterson, Lodmell Rd - expressed concerns with parking within and nearby the\nproposed development and concern for safety of children and pedestrians in the area.\n\nMayor Goodmanson called a third time for presenters.\n\nCouncillor Wagner inquired to the Engineering Department. What is the current parking\nsituation near the proposed development?\n\nK.Balzer, Director of Engineering and Public Works responded - there is currently no\nvisitor parking on Lodmell Rd, only on Walfred Rd. Parking issues, should they arise, will\nbe monitored by the Bylaw Enforcement Department. No parking or limited parking\nsignage would be erected if necessary.\n\nCouncillor Wagner inquired to the Engineering Department. Is the current parking there\nscalloped?\n\nK. Balzer, Director of Engineering and Public Works responded confirming the scalloped\nparking style on Walfred Rd.\n\nCouncillor Szpak inquired to staff and Council. Regarding the neighbour at 3303 Lodmell\nRd who has been experiencing difficulties, what can be done to mitigate these issues?\n\nM. Baldwin, Director of Planning responded - staff included the owners of 3303 Lodmell\nRd's concerns as conditions of zoning.\n\nCouncillor Szpak wished to confirm that the conditions of zoning as presented were\namenable to the owner of 3303 Lodmell Rd.\n\nD. Knudson, Lodmell Rd - responded confirming these conditions are satisfactory.\n\nCouncillor Harder inquired to the Engineering Department. Based off the traffic safety\ncomments, it appears that the landscaping plans show a sheltered area with pavers and\na bench for those waiting for the bus. Preferably, this is landscaped like the rest of\nWalfred Rd.\n\nK. Balzer, Director of Engineering and Public Works responded confirming the bench and\nshelter will be present with a 2.2m sidewalk that connects to the existing ones on\nWalfred Rd as well as a stop sign on Lodmell Rd.\n\nCouncillor Harder noted appreciation for comments regarding families reducing to one\nvehicle.\n\nMayor Goodmanson inquired to the Engineering and Public Works Department. Is the\nparking on Walfred signed for use by this development or is it for anyone?\n\nK. Balzer, Director of Engineering and Public Works responded confirming the parking\nspots are for the public.\n\n             Mayor Goodmanson declared the Public Hearing for Bylaw No. 2099 closed at 8:18 pm.\n\n6.   PUBLIC PARTICIPATION\n\n     Councillor Harder left the meeting at 8:18 p.m.\n\n     Mayor Goodmanson opened the public participation period.\n\n     Councillor Harder returned to the meeting at 8:19 p.m.\n\n     S. Perry, Glen Lake Rd \u2014 re: item 4.1\u2014 Speaker expressed opposition to the City joining the CRD\n     Arts and Culture Program noting Langford and Victoria do not share a border. Speaker also\n     encouraged the City to plan for an arts and culture space within the new university building.\n     Speaker expressed a wish for Langford's money to stay within the municipality. Speaker\n     expressed concern for safety within the City of Victoria and cautioned Council against providing\n     funding. re: item 4.2 \u2014Speaker expressed concern with electric water heating tanks noting costs\n     associated with this feature including insurance and replacement. Speaker also noted electric\n     water heating tanks occupy a large amount of space.\n\n     J. Withers, Woodhampton Rise \u2014 re: item 4.1 \u2014 Speaker expressed support for the City joining\n     the CRD Arts and Culture Program noting a need to travel into Victoria currently to experience\n     live music and a wish to have this form of entertainment locally. Speaker noted that music\n     fosters a sense of community and local identity.\n\n     J. Rye, Finney Rd \u2014 re: item 13.1 \u2014 Speaker attempted to address an item that was the subject of\n     a previous Public Hearing. As a result, the speaker was interrupted and their comments\n     disallowed.\n\n     S. Sifert, Walfred Rd \u2014 re: 9.1.7 Speaker expressed concern with the report noting that\n     homelessness and camping in public spaces cause negative impacts to residents and businesses.\n     Speaker noted that shelters are appearing in many places throughout the City and consideration\n     of residents and business safety is important.\n\n     R. Louie, Bellamy Rd \u2014 re: item 4.1 \u2014Speaker expressed opposition to the City joining the\n     program as there is no opt out feature. Speaker also noted that Langford organizations are not\n     guaranteed to receive funding from the program and if they do, it may not be proportionate.\n     Speaker noted that the funding should stay within the community and the funding rates through\n     the CRD may increase in the future.\n\n     M. Morton, Phelps Ave \u2014 re: item 13.5 \u2014Speaker expressed concern with the Tree Bylaw noting\n     that homeowners and residents of Langford are experiencing issues with the Bylaw including\n     adverse financial effects and unfair process.\n\n     M. Wignall, 2375 Selwyn Rd \u2014 re: item 4.1 \u2014Speaker expressed concern with the costs of the\n     CRD Arts and Culture program noting the City may not receive the value for the money invested.\n     re: item 13.7 \u2014Speaker expressed concern with sheltering within the City, noting the difficult\n     relationship between enforcement and allowing sheltering to occur from a public safety\n     perspective.\n\n     W. Bowers, Millstream Rd \u2014 re: item 4.1 \u2014 Speaker expressed concern with the CRD Arts and\n     Culture program noting high costs. Speaker also noted that outreach to directly neighbouring\n     municipalities is needed and could result in more programs locally rather than providing money\n     to the City of Victoria. Speaker noted many programs locally such as the P.A.C.E program and\n\n     programs available through organizations like the Y.M.C.A. Speaker expressed concern with the\n     permanency of the agreement noting there is no opt-out feature.\n\n     B. Armstrong, Rodney Rd \u2014 re: item 4.1 \u2014 Speaker noted that the CRD Arts and Culture program\n     is a CRD initiative and not a City of Victoria one. Speaker expressed support for regional arts and\n     culture noting many residents of Langford travel around the CRD. Speaker noted that currently\n     there is a need to travel outside of the City to experience arts and culture. Speaker also noted\n     interest in seeing a report regarding the program in the future.\n\n     S. Rossander, Ravensview Dr \u2014 re: item 4.1\u2014 Speaker expressed support for a report being\n     written exploring the pros and cons of joining the CRD Arts and Culture program. Speaker\n     expressed opposition to joining the CRD Arts and Culture program noting the permanency of the\n     agreement as there is no opt-out feature.\n\n     L. Foxall, Players Dr \u2014 re: item 9.4 -- Speaker noted the minutes did not mention the\n     repercussions of the social media clause, only the policies. re: item 4.1 \u2014 Speaker noted that they\n     have received feedback from residents wishing not to partner with the City of Victoria. Speaker\n     noted that the City partners with many neighbouring municipalities who share borders on\n     numerous issues and in order to keep investment and jobs in the City, Langford should not\n     partner with the CRD on this program. Speaker expressed concern with the permanency of the\n     agreement as there is no opt-out feature. Speaker noted an arts and culture center could be\n     built at the new university in partnership with nearby municipalities.\n\n7.   ADOPTION OF COUNCIL MINUTES\n\n     7.1     Minutes of the Council Meeting - June 19, 2023",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "0dc5df653ec303b6cfbd813081432ea888c880ebac22b70ccaf0facee28a4df2",
+      "pages": [
+        2
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3083,
+      "claim_sha256": "5399c958b16d368235ffd6f678456731c5b1ebc11c63ada7a10a7bc2fe720f5b",
+      "legacy_text": "THAT Council approve the minutes of the meeting of Council held on June 19, 2023.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 16569,
+        "source_order": 3,
+        "key": "b3ad2a8e1962cbb8a199b9451978d68a4da5574b5ed075dd61fa831d89856519",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council approve the minutes of the meeting of Council held on June 19, 2023.",
+        "source_block": "MOVED BY: HARDER\n             SECONDED: WAGNER\n\n             THAT Council approve the minutes of the meeting of Council held on June 19, 2023.\n\n                                                                                            Motion CARRIED.\n\n\n8.   OTHER BOARD AND COMMISSION MINUTES\n\n     8.1     Minutes of the West Shore Parks and Recreation Society Board of Directors Meeting -\n             May 11, 2023",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1e847191eeba5c69a33d7e3afc466e2ad25d4a0d0a1fb349ef91ed74cae46827",
+      "pages": [
+        7
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3084,
+      "claim_sha256": "05136a48feb7cfdc5afb9d2adc9e44d34d4dad3a2b3272337247f71cb1c68c95",
+      "legacy_text": "THAT Council receive the minutes of the West Shore Parks and Recreation Society Board of Directors meeting held on May 11, 2023.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 17001,
+        "source_order": 4,
+        "key": "7177cba293b5d168b51b3485249f9ecfd8beb8d7e78ab10d0ab3e1e536d93fa4",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the West Shore Parks and Recreation Society Board\n             of Directors meeting held on May 11, 2023",
+        "source_block": "MOVED BY: GUIRY\n             SECONDED: WAGNER\n\n             THAT Council receive the minutes of the West Shore Parks and Recreation Society Board\n             of Directors meeting held on May 11, 2023\n\n                                                                                            Motion CARRIED.\n\n\n     8.2     Minutes of the West Shore Parks & Recreation Society Annual General Meeting - June\n             16, 2022",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "7377c7b73e7dea60344a4dcaff4f48401550e06532dce3bfef865fbff84fe6d0",
+      "pages": [
+        7
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3085,
+      "claim_sha256": "2438e1732976adf611b65f47cb193af250be9a8e7a85487631c1bfc69881927e",
+      "legacy_text": "THAT Council receive the minutes of the West Shore Parks & Recreation Society Annual General meeting held on June 16, 2022.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 17445,
+        "source_order": 5,
+        "key": "5985dc4c03aeef1ced5ca6a4b572d8e6309582047d2c4d3d5f98725fef5fec52",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the West Shore Parks & Recreation Society Annual\n           General meeting held on June 16, 2022.",
+        "source_block": "MOVED BY: GUIRY\n             SECONDED: SZPAK\n\n           THAT Council receive the minutes of the West Shore Parks & Recreation Society Annual\n           General meeting held on June 16, 2022.\n\n                                                                                       Motion CARRIED.\n\n\n9.   COMMITTEE RESOLUTIONS\n\n     9.1   Community Advisory Committee - June 27, 2023\n\n           9.1.1   Minutes of the Community Advisory Committee Meeting - June 27, 2023",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "0f0af944cfcfe99de210cb907a0bfefa61b64bf485fcc1193831b16a2e878903",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3086,
+      "claim_sha256": "dedb7ade505add7336397319816b3bf32ed95bc13e97d9e66503f80faf7bef26",
+      "legacy_text": "THAT Council receive the minutes of the Community Advisory Committee meeting held on June 27, 2023.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 17929,
+        "source_order": 6,
+        "key": "d38f5775bb3d14b0c8fc3487522b6371beab7d210dff9a709c27f0e97f390a26",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the Community Advisory Committee\n                   meeting held on June 27, 2023.",
+        "source_block": "MOVED BY: HARDER\n                   SECONDED: SZPAK\n\n                   THAT Council receive the minutes of the Community Advisory Committee\n                   meeting held on June 27, 2023.\n\n                                                                                       Motion CARRIED.\n\n\n           9.1.2   BC SPCA - Sarah Herring\n\n           9.1.3   West Shore Arts & Culture Centre Proposal - Judith Cullington",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b2740a8c4882e81bf7a897710b24d23ea53e4d3dadd185bd2e002316a29fe91d",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3087,
+      "claim_sha256": "4b9188f23f1cb5b6c5643324c9b85e3f4a76ac952b6560e694fb75882ac6dccd",
+      "legacy_text": "THAT Council designate a member of Council as the City of Langford's representative on the Intermunicipal Advisory Committee no later than the end of September 2023.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 18371,
+        "source_order": 7,
+        "key": "785e50b9d82589199564414904e121daffa19fd76e7fdfc0ef9acc03d894d1ea",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council designate a member of Council as the City of Langford's\n                   representative on the Intermunicipal Advisory Committee no later than the end\n                   of September 2023.",
+        "source_block": "MOVED BY: HARDER\n                   SECONDED: SZPAK\n\n                   THAT Council designate a member of Council as the City of Langford's\n                   representative on the Intermunicipal Advisory Committee no later than the end\n                   of September 2023.\n\n                                                                                       Motion CARRIED.\n\n\n           9.1.4   Badminton Facility Proposal - Rhea Siu",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3730ba542561f997b242915734b1c67743a1a70d54851ca93358a2a936e995ea",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3088,
+      "claim_sha256": "a57f8fe3cee7fd26cdc72e0fcada65ecdc9b3b53fdaa6a84218fad675ff744e8",
+      "legacy_text": "THAT Council direct the Parks and Recreation department to note a community ask for a dedicated space to play and host programs for badminton in the City of Langford; and THAT staff provide a response to the Vancouver Island Badminton Academy regarding the potential for municipal partnership following the result of the Parks and Recreation needs assessment in the City of Langford, specifically to their ask for location, and potential for promotion of the badminton program.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 18831,
+        "source_order": 8,
+        "key": "318de0ed6dd4f1c473fe0202181c322c0073887581bffa945659555bf357465d",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council direct the Parks and Recreation department to note a community\n                   ask for a dedicated space to play and host programs for badminton in the City of\n                   Langford\n\n                   And\n\n                   THAT staff provide a response to the Vancouver Island Badminton Academy\n                   regarding the potential for municipal partnership following the result of the\n                   Parks and Recreation needs assessment in the City of Langford, specifically to\n                   their ask for location, and potential for promotion of the badminton program.",
+        "source_block": "MOVED BY: HARDER\n                   SECONDED: GUIRY\n\n                   THAT Council direct the Parks and Recreation department to note a community\n                   ask for a dedicated space to play and host programs for badminton in the City of\n                   Langford\n\n                   And\n\n                   THAT staff provide a response to the Vancouver Island Badminton Academy\n                   regarding the potential for municipal partnership following the result of the\n                   Parks and Recreation needs assessment in the City of Langford, specifically to\n                   their ask for location, and potential for promotion of the badminton program.\n\n                                                                                       Motion CARRIED.\n\n      9.1.5   Royal Roads University - Langford Education Fund, Rebecca Sharma & Gwen\n              Campden\n\n      9.1.6   Royal Roads University - Langford Education Fund",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9d0873dc13e34feecf02e19006d90009bc60cac613ca059cc379177efcd82b3a",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3089,
+      "claim_sha256": "dbe9802947623cc332de4a5366d100e5dfbef2161a35479ef6a5c821a3f96fd9",
+      "legacy_text": "THAT Council:\n\n              1. That Royal Roads University allocate and disburse the annual $75,000 pledge\n              payment from City of Langford per the Gift Agreement to each partnering post-\n              secondary institution (Royal Roads University, University of Victoria, Camosun\n              College, Justice Institute of BC) proportionately to their projected annual\n              student enrolment numbers to programs available at the RRU Langford Campus.\n\n              AND\n\n              2. That the Langford Education Awards eligibility criteria focus on students who:\n\n              a. Are 26 years or younger.\n\n              b. Have graduated from a high school in School District 62 and resided in the City\n              of Langford at the time of graduation.\n\n              c. Are enrolled and are entering a Royal Roads University, University of Victoria,\n              Camosun College, and/or Justice Institute of British Columbia program offered at\n              the Royal Roads University Langford campus.\n\n              d. Have demonstrated reasonable financial need.\n\n              AND\n\n              3. And that preference be given to students who self-identify as belonging to an\n              under-represented group, including but not limited to: Indigenous, racialized,\n              2SLGBTQQIA+, neuro-diverse, persons living with a visible or invisible disability,\n              youth from care, and/or first in family to attend post-secondary.\n\n              AND\n\n              That the funds available provide student entrance awards with a maximum value\n              of $10,000 to students as long as funds are available.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 19812,
+        "source_order": 9,
+        "key": "fdf7dbd821e7fefd6097d1aa9f7cbfa5ebc85568bb78649bd2ac7cc5d40dd68b",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n              1. That Royal Roads University allocate and disburse the annual $75,000 pledge\n              payment from City of Langford per the Gift Agreement to each partnering post-\n              secondary institution (Royal Roads University, University of Victoria, Camosun\n              College, Justice Institute of BC) proportionately to their projected annual\n              student enrolment numbers to programs available at the RRU Langford Campus.\n\n              AND\n\n              2. That the Langford Education Awards eligibility criteria focus on students who:\n\n              a. Are 26 years or younger.\n\n              b. Have graduated from a high school in School District 62 and resided in the City\n              of Langford at the time of graduation.\n\n              c. Are enrolled and are entering a Royal Roads University, University of Victoria,\n              Camosun College, and/or Justice Institute of British Columbia program offered at\n              the Royal Roads University Langford campus.\n\n              d. Have demonstrated reasonable financial need.\n\n              AND\n\n              3. And that preference be given to students who self-identify as belonging to an\n              under-represented group, including but not limited to: Indigenous, racialized,\n              2SLGBTQQIA+, neuro-diverse, persons living with a visible or invisible disability,\n              youth from care, and/or first in family to attend post-secondary.\n\n              AND\n\n              That the funds available provide student entrance awards with a maximum value\n              of $10,000 to students as long as funds are available.",
+        "source_block": "MOVED BY: HARDER\n              SECONDED: WAGNER\n\n              THAT Council:\n\n              1. That Royal Roads University allocate and disburse the annual $75,000 pledge\n              payment from City of Langford per the Gift Agreement to each partnering post-\n              secondary institution (Royal Roads University, University of Victoria, Camosun\n              College, Justice Institute of BC) proportionately to their projected annual\n              student enrolment numbers to programs available at the RRU Langford Campus.\n\n              AND\n\n              2. That the Langford Education Awards eligibility criteria focus on students who:\n\n              a. Are 26 years or younger.\n\n              b. Have graduated from a high school in School District 62 and resided in the City\n              of Langford at the time of graduation.\n\n              c. Are enrolled and are entering a Royal Roads University, University of Victoria,\n              Camosun College, and/or Justice Institute of British Columbia program offered at\n              the Royal Roads University Langford campus.\n\n              d. Have demonstrated reasonable financial need.\n\n              AND\n\n              3. And that preference be given to students who self-identify as belonging to an\n              under-represented group, including but not limited to: Indigenous, racialized,\n              2SLGBTQQIA+, neuro-diverse, persons living with a visible or invisible disability,\n              youth from care, and/or first in family to attend post-secondary.\n\n              AND\n\n              That the funds available provide student entrance awards with a maximum value\n              of $10,000 to students as long as funds are available.\n\n                                                                                   Motion CARRIED.\n\n\n      9.1.7   Departmental Update\n\n      9.1.8   RCMP Annual Report\n\n9.2   Special Community Advisory Committee Meeting - July 11, 2023\n\n      9.2.1   Minutes of the Special Community Advisory Committee Meeting - July 11, 2023",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "e114669ae5ba067ada53a30c775624215c81d3b0728f3fdfe0a176058acf340e",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3090,
+      "claim_sha256": "6b456ef60d9ee8a4843828d1ee5233ed138ba053faf34daae2e6902cf6e8e939",
+      "legacy_text": "THAT Council receive the minutes of the Special Community Advisory Committee meeting held on July 11, 2023.",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 21882,
+        "source_order": 10,
+        "key": "f447dcaa635065cc9752c2b5177b42c433eecd23d939264b2bc509774a941e69",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive the minutes of the Special Community Advisory Committee\n        meeting held on July 11, 2023.",
+        "source_block": "MOVED BY: HARDER\n              SECONDED: WAGNER\n\n        THAT Council receive the minutes of the Special Community Advisory Committee\n        meeting held on July 11, 2023.\n\n                                                                                 Motion CARRIED.\n\n\n9.2.2   2023 Funding Requests",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f920a30d46e631fddf8cb83fc2971953e355ff2047e82da637021f06d29d6e87",
+      "pages": [
+        9,
+        10
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3091,
+      "claim_sha256": "7d78c2e578ef44977467916e932fcb3fd3fdb8fb842f8ba30d400873fe080bd3",
+      "legacy_text": "THAT Council direct staff as follows: The following funding applications are approved for the 2023 year: [list of organizations and amounts as recorded in the minutes].",
+      "source_identity": {
+        "meeting_id": 308,
+        "source_sha256": "0041d156fee4dc84c1e8955b80eecca60f3a3a06b3d2c38d1953bca2b0273f4b",
+        "source_offset": 22200,
+        "source_order": 11,
+        "key": "8b38e5b3cf083f6676f46fe13c83248edd998e85e87c81b7db1b265a211767c1",
+        "source_file": "archive/langford/Council/2023/07/2023-07-17 700pm Regular Council [fbb90c62]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7449",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council direct staff as follows:\n\n        The following funding applications are approved for the 2023 year:\n\n              1.   BC Parks Foundation (Goldstream Nature House): $1,000\n\n              2.   Big Brothers Big Sisters: $3,000\n\n              3.   Capital Bike: $4,425\n\n              4.   Fed Urban Agriculture Society: $1,500\n\n              5.   Royal Canadian Legion \u2014 Remembrance Day: $3,000\n\n              6.   Royal Canadian Legion \u2014 Christmas Dinner: $3,000\n\n              7.   Peninsula Streams: $12,500\n\n              8.   Victoria Sexual Assault Centre: $5,000\n\n              9.   City of Langford Pipe Band: $1,200\n\n              10. Juan de Fuca Lacrosse Association: $2,500\n\n              11. Juan de Fuca Minor Hockey Association: $2,500\n\n              12. Royal Canadian Legion: $2,500\n\n              13. Mill Bay & District Conservation Society: $1,000\n\n              14. Sport Assists: $2,000\n\n              15. Wear2Start Society: $1,000\n\n              16. Canadian Forces Base Esquimalt: $3,500\n\n              17. Fateh Care Community: $4,000\n\n              18. Pexsisen PAC: $775\n\n              19. Rewired Recovery Foundation: $6,000\n\n              20. Open Gate Church: $5,000\n\n              21. Bear Mountain Community Association: $1,500\n\n        And\n\n                    THAT Council direct staff bring back a more in depth report with respect to the\n                    proposed use of the requested funds from the Juan de Fuca Performing Arts\n                    Society for Council's consideration in conjunction with the Strategic Plan.\n\n                    And\n\n                    THAT the following funding applications be denied due to budgetary constraints\n                    for the 2023 year:\n\n                    Golf for Kids\n\n                    Island Kids Cancer Association\n\n                    Pacific Institute for Sport Education (PISE)\n\n                    Victoria Hospitals Foundation\n\n                    Belmont Secondary School \u2014 Dry Grad\n\n                    Royal Bay Dry Grad Carnival Committee\n\n                    Sarah Beckett Memorial Run\n\n                    Victoria Blazers Lacrosse\n\n                    Pacific Edge Chorus",
+        "source_block": "MOVED BY: HARDER\n        SECONDED: SZPAK\n\n        THAT Council direct staff as follows:\n\n        The following funding applications are approved for the 2023 year:\n\n              1.   BC Parks Foundation (Goldstream Nature House): $1,000\n\n              2.   Big Brothers Big Sisters: $3,000\n\n              3.   Capital Bike: $4,425\n\n              4.   Fed Urban Agriculture Society: $1,500\n\n              5.   Royal Canadian Legion \u2014 Remembrance Day: $3,000\n\n              6.   Royal Canadian Legion \u2014 Christmas Dinner: $3,000\n\n              7.   Peninsula Streams: $12,500\n\n              8.   Victoria Sexual Assault Centre: $5,000\n\n              9.   City of Langford Pipe Band: $1,200\n\n              10. Juan de Fuca Lacrosse Association: $2,500\n\n              11. Juan de Fuca Minor Hockey Association: $2,500\n\n              12. Royal Canadian Legion: $2,500\n\n              13. Mill Bay & District Conservation Society: $1,000\n\n              14. Sport Assists: $2,000\n\n              15. Wear2Start Society: $1,000\n\n              16. Canadian Forces Base Esquimalt: $3,500\n\n              17. Fateh Care Community: $4,000\n\n              18. Pexsisen PAC: $775\n\n              19. Rewired Recovery Foundation: $6,000\n\n              20. Open Gate Church: $5,000\n\n              21. Bear Mountain Community Association: $1,500\n\n        And\n\n                    THAT Council direct staff bring back a more in depth report with respect to the\n                    proposed use of the requested funds from the Juan de Fuca Performing Arts\n                    Society for Council's consideration in conjunction with the Strategic Plan.\n\n                    And\n\n                    THAT the following funding applications be denied due to budgetary constraints\n                    for the 2023 year:\n\n                    Golf for Kids\n\n                    Island Kids Cancer Association\n\n                    Pacific Institute for Sport Education (PISE)\n\n                    Victoria Hospitals Foundation\n\n                    Belmont Secondary School \u2014 Dry Grad\n\n                    Royal Bay Dry Grad Carnival Committee\n\n                    Sarah Beckett Memorial Run\n\n                    Victoria Blazers Lacrosse\n\n                    Pacific Edge Chorus\n\n                                                                                        Motion CARRIED.\n\n\n\n10.   NOTICES OF INTENT\n\n      10.1   DVP22-0013 - 2750 Leigh Rd",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "40c205b90adf9b4326bc086d8fa3256217e70892bbdb88649cbcfe204c303d9b",
+      "pages": [
+        10,
+        11
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "0ed2c79887f692c6e2479546a956fab62b8dac4c0013b4e0b499424dcbdd85d3",
+  "second_independent_original_image_review_sha256": "8bcc28dcf75012570d6513642f9f752d7cfffff91158df31107ae171baf97346"
+}

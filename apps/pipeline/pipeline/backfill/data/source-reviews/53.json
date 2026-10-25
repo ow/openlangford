@@ -1,0 +1,496 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 53,
+    "title": "Regular Council",
+    "meeting_date": "2017-04-03",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+      "sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2017/04/2017-04-03 Regular Council [legacy]/Minutes/20170403-SIGNED.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170403-SIGNED.pdf",
+  "source_sha256": "009ea63407709d220133b846757043a3146da322306d175ec386abce2e93de2a",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "3ffb87268e2b6fa5d3e43d54e0ea632fa09438188319f26e9b3a90063f042d02",
+  "corrected_text_sha256": "3ffb87268e2b6fa5d3e43d54e0ea632fa09438188319f26e9b3a90063f042d02",
+  "parsed_blocks_sha256": "5f7ce5ee0f8b15388d03b8b82f6c0b956b63f8aba9c28f571820214db497f164",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "0ccf4b80200d5441b76fb09fd06305f68f9969dd405c7a8ed6addcc6653b5a2d",
+      "render_sha256": "55b8463cd1f78b6b3cb784170e960697f905e47c71c4e1c65d550345f0b76008"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "19292077a2b2f3c52af0b6c270fa0f623b6c173212081bafabd7427cf473b8b2",
+      "render_sha256": "9d919a58481a6c4b7c1cdf5452bab4428b23e3d106916ac475ec788dd86556b1"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "334dae95683700015b00801116f3abac2aa488891b7b98a48f72fd9ab8ed8c01",
+      "render_sha256": "cec7f1e9f570c5a4bb9c951c5e39a661f206b52e8007dcdc799bc54f82ba7f0c"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "bd48eb07da0cde21e4071e296ddbd853ccf8e15b4010bbab1bb316f7dce5bc25",
+      "render_sha256": "1e554fbca1303928e4110b895b0b7eae014d7c84cd1e93321b064a6d24469db1"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "7998432c861df2164cef972718648e3be2f46f3c31beef9e9eb2bfe77fcf05ac",
+      "render_sha256": "7004f622c1171c801e92fd54efd679b2486d403e62cde8e2cceda8f220f74024"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "d02e59f8fec0568c8213d54207a63238ae846278a8549f70a500122347930e18",
+      "render_sha256": "fcfc220b7885af9842b802be4b69ccdd7cf0d87af184bfaefea01461045403ca"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "b8367be9b5142653fb008e655d2849dad055e9d8ae8fbc02233f2b7f991387f0",
+      "render_sha256": "0dc1e9f19d39c1bc62e719d715862fe8d8f5607f149e2bf7fd9e07f8199c94f4"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "4bdff0695457f08ad77a35f72ef6c1dcbb572bd794cc2aa3c17e6e73575300f3",
+      "render_sha256": "aef25858ee18c5f5cd81ed48257a5751439a8a41b50ace87f7dc6da2fbdbe649"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "6746d64244e98e618af33d530fbe72e35cdf8c060e84a5a24f2fe6728367bb4c",
+      "render_sha256": "e39f255d9235f704a3e03e8fb049e77fcce9a749ee51c13d5e9152ea99fefd88"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "86c3091845f22fd2b1ef4f7d3f4134f78d2cf9b28978ef0d2fbb2c69f6ef5a70",
+      "render_sha256": "a234b121f20c8f3288d806a58404a417062af98700f6a2f662d646153a28933d"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "dea21c4ae70bf96aa9eac2349bc165110c0df3fb138a0e3461682ea1370aaf46",
+      "render_sha256": "839e8ad49082eb220445466b2311a7f5edab71779083e471cbebec87bccea683"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "18a5e119af86d4339ab84815e9470189620c8e16455d21703633a33b53ed1462",
+      "render_sha256": "bfc33c8eb369c7262b11e2dce7e45f8cd155972554fc12f4ea9f3f2dde63974a"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "fc2f0695cb62aa5cec3d8cbbfeb0b08a7770d823e30a73730332152523535b50",
+      "render_sha256": "d69317d29505224ded11631b9616258cc4e73a427e3504c86cb8e432ca9206bc"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "68bf5b87c8e051b7d8552fa77b8968fe22ed1836b015f2ada821ea62a68a3979",
+      "render_sha256": "d8ef0a2679eed7a343695f2089089746c683f1f812143585c0b39004fdaa1cb0"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "5c17afa3954d24eb69ebc33c1fcaa28970f4dfd91c4f9fa976b9318012a28fa7",
+      "raw_block_sha256": "a0a912d78fd91af2de5e940acbabb55b8f9c74d6e9bb3bfb3ec628e6f1950773",
+      "operative_body": "That Council direct staff to proceed with consideration of the following variances for 1189 Goldstream Avenue: a) That Section 6.20.06(2)(a) of Zoning Bylaw No. 300 be varied from 6 m to nil for the front lot line; b) That Section 6.20.06(2)(a) of Zoning Bylaw No. 300 be varied from 6 m to 4.4 m for the rear lot line; c) That Section 6.20.06(2)(b) of Zoning Bylaw No. 300 be varied from 1.5 m to 0.3 m for the eastern interior side lot line; d) That Section 6.20.06(2)(b) of Zoning Bylaw No. 300 be varied from 1.5 m to 0.5 m for the western interior side lot line; e) That Section 3.18.01 of the Zoning Bylaw No. 300 be varied to increase the allowable projection of a deck from 1 m to 2.9 m for the third floor deck only; Subject to the following terms and conditions: i) That the site is developed in accordance with the plan attached to this report as Appendix A; ii) That the variances are only granted for the proposed plan attached to this report as Appendix A. All other future construction will be required to comply with the Zoning Bylaw No. 300 or apply for another variance permit; iii) That the applicant minimized the number and size of windows on the westerly fa\u00e7ade of the house; iv) That the applicant use opaque glass for the deck screen;",
+      "operative_body_sha256": "2423db6aed5567da9cafdfa1dd2dfabb4395e155167b1711959dc2902a3fa218",
+      "result": "CARRIED",
+      "pages": [
+        9,
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "6746d64244e98e618af33d530fbe72e35cdf8c060e84a5a24f2fe6728367bb4c",
+          "render_sha256": "e39f255d9235f704a3e03e8fb049e77fcce9a749ee51c13d5e9152ea99fefd88"
+        },
+        {
+          "page": 10,
+          "native_text_sha256": "86c3091845f22fd2b1ef4f7d3f4134f78d2cf9b28978ef0d2fbb2c69f6ef5a70",
+          "render_sha256": "a234b121f20c8f3288d806a58404a417062af98700f6a2f662d646153a28933d"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "Page 10 of 14 That Council direct staff to proceed with consideration of the following variances for 1189 Goldstream Avenue: a) That Section 6.20.06(2)(a) of Zoning Bylaw No. 300 be varied from 6 m to nil for the front lot line; b) That Section 6.20.06(2)(a) of Zoning Bylaw No. 300 be varied from 6 m to 4.4 m for the rear lot line; c) That Section 6.20.06(2)(b) of Zoning Bylaw No. 300 be varied from 1.5 m to 0.3 m for the eastern interior side lot line; d) That Section 6.20.06(2)(b) of Zoning Bylaw No. 300 be varied from 1.5 m to 0.5 m for the western interior side lot line; e) That Section 3.18.01 of the Zoning Bylaw No. 300 be varied to increase the allowable projection of a deck from 1 m to 2.9 m for the third floor deck only; Subject to the following terms and conditions: i) That the site is developed in accordance with the plan attached to this report as Appendix A; ii) That the variances are only granted for the proposed plan attached to this report as Appendix A. All other future construction will be required to comply with the Zoning Bylaw No. 300 or apply for another variance permit; iii) That the applicant minimized the number and size of windows on the westerly fa\u00e7ade of the house; iv) That the applicant use opaque glass for the deck screen;",
+          "printed": "That Council direct staff to proceed with consideration of the following variances for 1189 Goldstream Avenue: a) That Section 6.20.06(2)(a) of Zoning Bylaw No. 300 be varied from 6 m to nil for the front lot line; b) That Section 6.20.06(2)(a) of Zoning Bylaw No. 300 be varied from 6 m to 4.4 m for the rear lot line; c) That Section 6.20.06(2)(b) of Zoning Bylaw No. 300 be varied from 1.5 m to 0.3 m for the eastern interior side lot line; d) That Section 6.20.06(2)(b) of Zoning Bylaw No. 300 be varied from 1.5 m to 0.5 m for the western interior side lot line; e) That Section 3.18.01 of the Zoning Bylaw No. 300 be varied to increase the allowable projection of a deck from 1 m to 2.9 m for the third floor deck only; Subject to the following terms and conditions: i) That the site is developed in accordance with the plan attached to this report as Appendix A; ii) That the variances are only granted for the proposed plan attached to this report as Appendix A. All other future construction will be required to comply with the Zoning Bylaw No. 300 or apply for another variance permit; iii) That the applicant minimized the number and size of windows on the westerly fa\u00e7ade of the house; iv) That the applicant use opaque glass for the deck screen;",
+          "reason": "Remove only running page header; raw source identity and full printed operative body/result retained."
+        }
+      ]
+    },
+    {
+      "source_key": "babd52066251fdae5fb737655a6612a6bcabae12d8e77983bdc8750332bdafd6",
+      "raw_block_sha256": "1e95f5ff9e5c2b685c8d5b1f37141ad1e378444dc81a8751ab6a9d895c44e5c1",
+      "operative_body": "That Council direct staff to prepare a bylaw to amend the CD10 (Boulder Ridge \u2014 Comprehensive Development) zone for 903 Tayberry Terrace to no longer require the applicant to provide 4 one-family dwellings as rental houses.",
+      "operative_body_sha256": "15dbf4ad6c7c22049b14b2cdda2de16e0c0a21afb25d825bbd5ae5c03108cd49",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "86c3091845f22fd2b1ef4f7d3f4134f78d2cf9b28978ef0d2fbb2c69f6ef5a70",
+          "render_sha256": "a234b121f20c8f3288d806a58404a417062af98700f6a2f662d646153a28933d"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "17990b6709af0c588ae9d5476ba8b4afcdabee2f76c07e75651127c3c629b736",
+      "raw_block_sha256": "92ff4f6d93ba339a850c11650b8cada789d21639dc07a3589416c55a32f2c2ec",
+      "operative_body": "That Council approve in principle the Police Services Five Year Financial Plan for 2017-2021 as presented in the staff report dated March 28, 2017 and refer it to the Treasurer for inclusion in the budget.",
+      "operative_body_sha256": "b4dd96936d4b113b5b79940b8d4d2e093a120eb774d806cb432975d8192cbc8d",
+      "result": "CARRIED",
+      "pages": [
+        10,
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "86c3091845f22fd2b1ef4f7d3f4134f78d2cf9b28978ef0d2fbb2c69f6ef5a70",
+          "render_sha256": "a234b121f20c8f3288d806a58404a417062af98700f6a2f662d646153a28933d"
+        },
+        {
+          "page": 11,
+          "native_text_sha256": "dea21c4ae70bf96aa9eac2349bc165110c0df3fb138a0e3461682ea1370aaf46",
+          "render_sha256": "839e8ad49082eb220445466b2311a7f5edab71779083e471cbebec87bccea683"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council approve in principle the Police Services Five Year Financial Plan for 2017-2021 as presented in the staff report dated March 28, 2017 and refer it to the Treasurer for inclusion in the budget. Page 11 of 14",
+          "printed": "That Council approve in principle the Police Services Five Year Financial Plan for 2017-2021 as presented in the staff report dated March 28, 2017 and refer it to the Treasurer for inclusion in the budget.",
+          "reason": "Remove only running page header; raw source identity and full printed operative body/result retained."
+        }
+      ]
+    },
+    {
+      "source_key": "b85865e3435abfcb130eaa6afc733285232da94c7b27861d573672fe3f7306e9",
+      "raw_block_sha256": "052cc24d3532b97ca8cca03dc58481a83944acced85408dcb770a75ebdffa899",
+      "operative_body": "That Council give Hartsdale Drive Closure Bylaw No. 1672 First, Second and Third readings.",
+      "operative_body_sha256": "c07daf40a049856620939a144b2f6af229c5b3eb9d35b42129a4b3260dee376a",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "dea21c4ae70bf96aa9eac2349bc165110c0df3fb138a0e3461682ea1370aaf46",
+          "render_sha256": "839e8ad49082eb220445466b2311a7f5edab71779083e471cbebec87bccea683"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "4780b70b362b7dd1213486e0dc92a436f8323273660766dfe5aa38d901d75d8a",
+      "raw_block_sha256": "b56deec0bb3d9914226ce78639aecdc9eb9fde809b35d2f204a8bf4c7811e5dc",
+      "operative_body": "That Council: a) Proceed to remediate the peat deposits located north of the Westhills turf field and south of the Langford Parkway from the east end of the field to the west end of the field in the Spring and Summer of 2017 and pay for this work from the Parks Development Cost Charge fund; AND b) Continue to use WSP Canada Inc as the geotechnical engineers designing and monitoring the peat remediation project.",
+      "operative_body_sha256": "23290d26b3b567cf20c4dab09e615dc233f2a74f5df5c5edf232dc3032e0ee7d",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "dea21c4ae70bf96aa9eac2349bc165110c0df3fb138a0e3461682ea1370aaf46",
+          "render_sha256": "839e8ad49082eb220445466b2311a7f5edab71779083e471cbebec87bccea683"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b60638e49b31df359efa18f093ca77bc86bc71de7315dd654d83d038f1bc8cd4",
+      "raw_block_sha256": "5a176f3705352c553b7a5669ed981044bee5e3ddf40841b48fd62b955eaa12e9",
+      "operative_body": "That Council adopt Bylaw No. 1667.",
+      "operative_body_sha256": "ca1db892ace94cda59df30b86b2425cace421593bfd4a8b30f95c9c0223116b7",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "dea21c4ae70bf96aa9eac2349bc165110c0df3fb138a0e3461682ea1370aaf46",
+          "render_sha256": "839e8ad49082eb220445466b2311a7f5edab71779083e471cbebec87bccea683"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "893196c454fa7d7125d349e9e7e4f5a11dae274db7592bdc1bd87ea85f0007f8",
+      "raw_block_sha256": "04e9036a6ea8d1130d029d0e8fc7718efd8d7269b2f3383dd3a97e23d66cc98b",
+      "operative_body": "That Council adopt Bylaw No. 1671.",
+      "operative_body_sha256": "c83e5f83554b220d9cbeea344bfea83ab5709495800e62a49dc2f922cbf6760d",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "dea21c4ae70bf96aa9eac2349bc165110c0df3fb138a0e3461682ea1370aaf46",
+          "render_sha256": "839e8ad49082eb220445466b2311a7f5edab71779083e471cbebec87bccea683"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "18a5e119af86d4339ab84815e9470189620c8e16455d21703633a33b53ed1462",
+          "render_sha256": "bfc33c8eb369c7262b11e2dce7e45f8cd155972554fc12f4ea9f3f2dde63974a"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "592141af42306c24deb23066c4955c16fd9a6ea86db5844c21e5a4756191cb06",
+      "raw_block_sha256": "9ebcd56dc4e6513631a6b4235894045461ff1e7ca3f832754a85639b2fc3ccf0",
+      "operative_body": "That Council give Bylaw No. 1672 First, Second and Third Reading.",
+      "operative_body_sha256": "eeb9989f863807560afbaf67516fb98a0113e8ea1c4f0802c831f268af65fc87",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "18a5e119af86d4339ab84815e9470189620c8e16455d21703633a33b53ed1462",
+          "render_sha256": "bfc33c8eb369c7262b11e2dce7e45f8cd155972554fc12f4ea9f3f2dde63974a"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "926e0191492400e307001039359be62767400ee3856c903c4583b80158b42cc6",
+      "raw_block_sha256": "d2bf78d95daa51b4095bc6292cf9b85b8550b447472baa8251381b279241716a",
+      "operative_body": "That Council give Bylaw No. 1673 First, Second and Third Reading.",
+      "operative_body_sha256": "ef0e0235b3901aab1d46855d0a7eab2338a52c8f0ce7a3fae3601cf3c8cd6111",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "18a5e119af86d4339ab84815e9470189620c8e16455d21703633a33b53ed1462",
+          "render_sha256": "bfc33c8eb369c7262b11e2dce7e45f8cd155972554fc12f4ea9f3f2dde63974a"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "95325d91692c6e0fb9218509319c7698b4168fd10063fd27e313d2d553ecec21",
+      "raw_block_sha256": "03ce3ba221a7433f821d17a9c654f2673c258c64dd594973736731c0b6b2ef0e",
+      "operative_body": "That Council give Bylaw No. 1674 First Reading.",
+      "operative_body_sha256": "f45d500bc13574239433070e3dd32a9bf116013afa8d9aad199504123329a5a0",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "18a5e119af86d4339ab84815e9470189620c8e16455d21703633a33b53ed1462",
+          "render_sha256": "bfc33c8eb369c7262b11e2dce7e45f8cd155972554fc12f4ea9f3f2dde63974a"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "0ed54efe3e0f983080ca1d71020536188788cb14beba228e386ae879808b0039",
+      "raw_block_sha256": "3cfd3ca6e24185244f72e020b32f1aa74dcda5efa52c5de646ff64f1dfd5e8ac",
+      "operative_body": "That Council give Bylaw No. 1675 First Reading.",
+      "operative_body_sha256": "a9fba738905059f2cbd27c23f88f4650f635f706ff747d828e4d8e1c81b83281",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "18a5e119af86d4339ab84815e9470189620c8e16455d21703633a33b53ed1462",
+          "render_sha256": "bfc33c8eb369c7262b11e2dce7e45f8cd155972554fc12f4ea9f3f2dde63974a"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "638995b9379eb2d702877673f83d35e67e46249ef70c598708f48586b3cc5690",
+      "raw_block_sha256": "6e82145c7d6b9e3525a015a1cc40a2e123006772e727c883191b064877d24852",
+      "operative_body": "That Council give Bylaw No. 1676 First, Second and Third Reading.",
+      "operative_body_sha256": "434c16df054efe480715ed7896b618d9846b61e050e9ebeb031e0734647e9fc8",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fc2f0695cb62aa5cec3d8cbbfeb0b08a7770d823e30a73730332152523535b50",
+          "render_sha256": "d69317d29505224ded11631b9616258cc4e73a427e3504c86cb8e432ca9206bc"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c1d06da09ec904d58d0350832d49a550e39f73ea08f19d8a360a21c8b2935069",
+      "raw_block_sha256": "2fa442090fbf289e6239f18733771eb7508024665278126ec6e039c9794ccfe5",
+      "operative_body": "That Council give Bylaw No. 1677 First, Second and Third Reading.",
+      "operative_body_sha256": "1fff824412cc7ff8cc8e4b14b258e86e40a16aacc0d11cd740b84e06314f8998",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fc2f0695cb62aa5cec3d8cbbfeb0b08a7770d823e30a73730332152523535b50",
+          "render_sha256": "d69317d29505224ded11631b9616258cc4e73a427e3504c86cb8e432ca9206bc"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "40171679ec3e52f7713c763dcbae18d96741722465215f078bbd1f01751bf16a",
+      "raw_block_sha256": "5e8db0cee55eedde61de674ab6af2c668435236ad087ea0b921a41f8cf517cf0",
+      "operative_body": "That Council give Bylaw No. 1678 First, Second and Third Reading.",
+      "operative_body_sha256": "77b92b0981f8361e6acf80e9f84ed181e129195eeefae5367dad7c8e72674fb9",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fc2f0695cb62aa5cec3d8cbbfeb0b08a7770d823e30a73730332152523535b50",
+          "render_sha256": "d69317d29505224ded11631b9616258cc4e73a427e3504c86cb8e432ca9206bc"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "206f68f4f5b0cabf3322fe84138c2494a50cd586182e843c36b855b2fd199e4e",
+      "raw_block_sha256": "363bba16f8d18bb2fa69a28641e90c84132f83b31c2de2a404646cda67ef4e88",
+      "operative_body": "That Council give Bylaw No. 1680 First Reading.",
+      "operative_body_sha256": "98f97bfad91857575ab4534985616f6a8bcacd7936cd49f23701cfefa191ea57",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "fc2f0695cb62aa5cec3d8cbbfeb0b08a7770d823e30a73730332152523535b50",
+          "render_sha256": "d69317d29505224ded11631b9616258cc4e73a427e3504c86cb8e432ca9206bc"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c64b760c735ca47942b32677edd9fcd68fdff99809b82a48176ddfc7bd27bdf5",
+      "raw_block_sha256": "e35d24a34d2ad3338e091cd38e99b6909e5f313080199b62581a4446c11d2354",
+      "operative_body": "a) That the following criteria apply to the potential installation of all new cell towers within the City of Langford: i. That the public notification period for a new cell tower be 30 days to match the Industry Canada requirement; ii. That potential cell tower companies must work with staff and landowners to identify suitable locations; iii. That potential cell tower companies must liaise with BC Hydro to determine if there are any hydro poles that would be a suitable location; iv. That cellular equipment on hydro poles and cellular equipment on buildings be prioritized over a standalone cell tower; and v. That staff have the authority to provide comment to Industry Canada, as needed. b) That Council endorses the proposed cell tower at 865 Station Avenue.",
+      "operative_body_sha256": "f32eb6e7499eb8d0bab4cc3e0db5c84bb8111c4a9a5b2013e522385a2e72d574",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "68bf5b87c8e051b7d8552fa77b8968fe22ed1836b015f2ada821ea62a68a3979",
+          "render_sha256": "d8ef0a2679eed7a343695f2089089746c683f1f812143585c0b39004fdaa1cb0"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "ab0b4b6e7729fad7307c317572bcac8c19fda01ee118d1c5cf56544ab669378b",
+      "raw_block_sha256": "534b005c61e3d10ec782140f5c20d9ccc208c8041bd28a001553a5dd989e516b",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding property matters and road improvements under Section 90 (1) (e) and (k) of the Community Charter. b) That Council continues the meeting in closed session.",
+      "operative_body_sha256": "166a94dc7ba4e25f9a4fd06ab62978c3ca6f0d2c9487f14c7ce669e8656d7997",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "68bf5b87c8e051b7d8552fa77b8968fe22ed1836b015f2ada821ea62a68a3979",
+          "render_sha256": "d8ef0a2679eed7a343695f2089089746c683f1f812143585c0b39004fdaa1cb0"
+        }
+      ],
+      "independent_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "0ccf4b80200d5441b76fb09fd06305f68f9969dd405c7a8ed6addcc6653b5a2d",
+  "independent_original_image_review_sha256": "0558124c2317014f9339dc4233bc681d5406973eabb1957ce0961dea9aa900b7",
+  "second_independent_original_image_review_sha256": "40fcdc19a0b834bef1ca720d48b9ae5e3af003eea4baa7a3a1acbb3a5497d2ca",
+  "remaining_holds": [
+    {
+      "source_key": "07b202b5d88595d1f3f9898b8fdfebf527ca6dd6e856e8de8df8c4904fa63e72",
+      "reason": "Originalp13headingexplicit1682butp14completeoperativebodyexplicit1672. No automaticreplacementwith1682,nocollapsewith1672report/readingselsewhere. Thisisoneactualformaloutcomeabsentfromsnapshot,butnewdataidentityrequiresreviewchoice; notimageadmittedinthispacket.",
+      "pages": [
+        13,
+        14
+      ],
+      "status": "held_bylaw_identity_contradiction_no_intended_number_inference",
+      "printed_operative_body": "That Council give Bylaw No. 1672 First Reading.",
+      "heading": "BYLAW NO.1682; (2845,2847&2850BrynMawrRdandaportion737GoldstreamAve)"
+    },
+    {
+      "reason": "The lowercase carried out prior to the Public Hearing phrase is narrative, not a new formal result; diagnostic lead retained, no outcome invented.",
+      "page": 3,
+      "evidence_sha256": "16eba358c101691eada15619e3dd8377daff7eb70788b9ca048e8109abf1696e"
+    }
+  ]
+}

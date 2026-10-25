@@ -1,0 +1,482 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 227,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "8b9b618f544882e7437609d112c3450baaa686d90a945b27988ecf3b8f49561d",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13760",
+  "source_file": "archive/langford/Council/2021/08/2021-08-16 530pm Regular Council [4b026c7d]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2021-08-16",
+  "source_text_sha256": "0fcff28fb3092eb5ac2611807c37dd349b00bde4b079f815bae83d177529a62e",
+  "formal_inventory_sha256": "aed725ec70dd8067a02cea91efcf0fa6f25a530f84e718fde4d1e86a5702e22b",
+  "claim_inventory_sha256": "0ffcf743719ef3e648e07a6b00a137a68264af1f8023df72f26dd2c14f85e0cc",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "b143750fd167eb9859d8ed4b045225f65feb14224906417fb63594aa1d66f727"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "30311e08db530f17ee3ef8273c33793dadac9c5b33b290472ab233a9cae2837a"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "533ec4ff5c7ee9b7fa0b4a8bb7973cf98768c9d141ac46ceb75467c718e211da"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "62d11d20a1fa7742742bbfa59e152c1cf45c5c3a80a3f104ceb12f16672676a6"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "c58ac6c9b22d6b0e15f0f3df81a41b38261bbd168e8cb79139f3da82533d0c3b"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "bb72a3190bf894b13b74a0479dab7816475628b7b883453ee21bb2b4bb8ee4bb"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "9ff052aa8eeba6d7e1fd1e2c6e1b58823d8cd261beebb1fb0530c140eeea4bae"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "f75ef2c3030830aabc37ce1130f67d4d4e49be589f692a9bc6327bd216dafcad"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "55d411d6bb0ff731b2e90085e995e3a3f319fc966b07698e47b0538d170f747e"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "641f440d06f09cd529dbcb692e09f7a27367f5908d3d6ced41f726bf6dce5ac3"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "d01dc270b78139e03f3d5c63a111aa58d42efa38f3e1ba0503199a0c43554b08"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "bb9aafbf24312bce01c59d77c917ca247f6c261350e66e0736e92edfa4ad064c"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "93853072fbbedb7fc89965a9f22d6ebb20c6c3cac7c8f0f58af43c4ca4d5e530"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "ba23cf01d5dc680bdaada0722f6bcf423d94b7840200309a0c5fe66e8e10ef2e"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "d4fcc7103e61ebb6954af4c16278366c01eda71f2faf8a40ab3e0d8df42f0ffe"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "10b7b1d26fcbea59db5185feb345c743398f28de11c936aea3a4ffe6f2f48573"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "6342e90c65d86d34abce1d9ac24ae56bfcf89136e741717066a1d39484fff1e7"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "bfba069dc3119ffe442771875321dcf2e8d89c0873c9508f22396c0fa818a2ca"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "b9b7d9125102e5dfc7f15119b68df99a38287c348587b9fd86b949fcb87d0179"
+    },
+    {
+      "page": 20,
+      "native_text_sha256": "1341a92f18106c2e2aa6ae00ad47a44187a52aa0ea7efcb53e8fcc0c913adab0"
+    },
+    {
+      "page": 21,
+      "native_text_sha256": "e2c1e86115b100aa3da49187a5f59ee794db94613dca0ffa2d97261169ca0553"
+    },
+    {
+      "page": 22,
+      "native_text_sha256": "03e88100d4d95ad4d64b36f87fa04ffd001e38e5c6a42273d83a2e6a26dbf2c0"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 2341,
+      "claim_sha256": "b688f9f15526636e5350b855ad9669a1649c96aae72656342ae674fac7b350c7",
+      "legacy_text": "That Council approve the agenda with the addition of item 10 a), Town of View Royal, Re: Review of the Policy to Release Violent and/or Repeat Offenders.",
+      "source_identity": {
+        "meeting_id": 227,
+        "source_sha256": "8b9b618f544882e7437609d112c3450baaa686d90a945b27988ecf3b8f49561d",
+        "source_offset": 903,
+        "source_order": 0,
+        "key": "29984347b1d33d37533d8a35b92aa00e3aa07da41aa6ac2850d4e6f86313fc91",
+        "source_file": "archive/langford/Council/2021/08/2021-08-16 530pm Regular Council [4b026c7d]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13760",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda with the addition of item 10 a), Town of View Royal, Re: Review\n         of the Policy to Release Violent and/or Repeat Offenders.",
+        "source_block": "MOVED BY:        COUNCILLOR SAHLSTROM\nSECONDED:        COUNCILLOR SZPAK\n\n\n         That Council approve the agenda with the addition of item 10 a), Town of View Royal, Re: Review\n         of the Policy to Release Violent and/or Repeat Offenders.\n\n                                                                                                 CARRIED.\n\n\n3.       PUBLIC HEARING\n\n\n         a)   BYLAW NO. 1896\n              \"Langford Official Community Plan Bylaw, Amendment No. 37, (2981 & 2985\n              Awsworth Rd), Bylaw No. 1896, 2021\".\n\n              BYLAW NO. 1897\n              \"Langford Zoning Bylaw, Amendment No. 587, (2981 & 2985 Awsworth Rd), Bylaw\n              No. 1897, 2021\".\n\n                                                                                                       August 16, 2021\n                                                                                                          Page 2 of 22\n\n\nThe Mayor opened the Public Hearing for Bylaw Nos. 1896and 1897at 5:33 pm.\n\nDeputy Director of Leah Stohmann advised that Susan Gale Wilson has applied to amend the Official\nCommunity Plan designation of 2981 and 2985 Awsworth Road from \"Hillside or Shoreline\" to \"Business or\nLight Industrial\" and \"Agriculture\", and to amend the text of the Rural Residential 4 Zone to allow a Truck\nTerminal Facility at 2981 and 2985 Awsworth Road.\n\nThis is being proposed in order to allow for the development of truck terminal facility.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nIn support of this application, the applicant has agreed to provide the following:\n\n    1. That prior to Bylaw Adoption, the applicant registers a Section 219 Covenant, in priorityof all other\n       charges on title that agrees to the following prior to the issuance of a building permit:\n                a. To provide and implement a stormwater management plan;\n                b. To provide a Fire Underwriters Survey (FUS);\n                c. To connect the building to the municipal sanitary sewer system within 6 months of a\n                   sewer main being installed in a highway or City statutory right of way abutting the parcel;\n\n                d. To pay the Sewer Capital Recovery Fee (SCRF) to West Shore Environmental Services or\n                     the City of Langford;\n\n                e. To install all on-site plumbing necessary between the building and a point 1.0 m from\n                   the boundary of the highway or statutory right of way that the City designates as the\n                   future location of the sewer, in accordance with the requirements of the City;\n\n                f.   To applyfor a Form and Character Development Permit for any buildings constructed on\n                     site that relate to the business use;\n\n        2. And that prior to the Bylaw Adoption, the applicant shall provide a $5,000 bond for the\n            construction of a fence along the boundary of the RR4 and AGl zone to delineate the land within\n            the Agricultural Land Reserve to the satisfaction of the Director of Planning.\n\nThis proposal is consistent with the proposed Official Community Plan designation.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nVal Creed. 3445 Luxton Road - Supports application for truck facility.\n\nSusan Wilson, applicant - Here to answer any questions.\n\nAnita Miller, 653 Seedtree Road - Fully support proposal, prime location for a truck facility, and barn needs\nto come down as it's unsafe.\n\n                                                                                                     August 16, 2021\n                                                                                                         Page 3 of 22\n\n\nLaurie Plomp, 3592 Whimfield Terrace - The OCP and zoning bylaw are changed too often, there should be\nmore limits on the uses. Signage should be better placed to ensure the public is notified. This property is\nabove an aquifer. TUP is good for two more years, should not be rezoned yet.\n\nJoel Hanicka, 670 Mountainview Avenue - Support this proposal, as a heavy-duty mechanic apprentice for\nTodd Wilson. The barn is ready to fall down, a proper facility is needed.\n\nMayor Young called a second time for presentations.\n\nGlen Creed - Lives in the neighbourhood, support application. Need more parking in the West Shore for\nthese trucks.\n\n\nPat Carvello - Supports the application.\n\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw Nos. 1896 and 1897 closed at 5:46 p.m.\n\n        b)       BYLAW NO. 1912\n                 \"Langford Zoning Bylaw, Amendment No. 592, (925 and 929 Bray Ave), Bylaw No.\n                 1912, 2021\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1912 at 5:46 pm.\n\nDeputy Director of Planning Leah Stohmann advised that Rachael Sansom has applied on behalf of\nRejuvenate Downtown Langford Nominee Incorporated to amend the zoning of 925 and 929 Bray Avenue\nfrom the One- and Two-Family Residential (R2) Zone to the City Centre 1 (CCl) Zone.\n\nThis is being proposed in order to allow for the development of a residential building with a maximum height\nof 6-storeys.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nIn support of this application, the applicant has agreed to the following:\n\na) That as a bonus for increased density, the applicant provides the following contributions per residential\n   unit prior to issuance of a building permit:\n           i.    $2,850 towards the General Amenity Reserve Fund;\n          ii.    $750 towards the Affordable Housing Reserve Fund, subject to permitted reductions in\n                    accordance with the applicable Policy; and\n          iii.      $10.75 per m^ of commercial Gross Floor Area towards the General Amenity Reserve Fund.\n\n b) That the applicant provides, prior to bylaw adoption, a section 219 covenant that agrees to the\n    following:\n         i.  To install all required frontage improvements, servicing upgrades, and any recommendations\n             from the Traffic Impact Assessment, all to Bylaw 1000 standards;\n        ii.  To provide and implement a storm water management plan;\n\n                                                                                                         August 16, 2021\n                                                                                                             Page 4 of 22\n\n\n        iii.    To provide a construction parking management plan;\n        iv.     To provide driveway access that aligns with Knotty Pine Road;\n           V.   That parking stalls are allocated to individual units;\n        vi.     That a Fire Underwriters Survey and a Fire Safety Plan are provided; and\n       vii.     That a strata plan of the building is registered priorto occupancy.\n\n c) The applicant has provided the following prior to this Public Hearing, as required by Council:\n\n           i.   Frontage drawings, a traffic impact assessment, and a stormwater management memo, all to\n                the satisfaction of the Director of Engineering.\n\nThis proposal is consistent with the Official Community Plan City Centre designation.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nRachel Sansom, Represents Owners - Introduced development.\n\nMayor Young called a second time for presentations.\n\nDana Elizabeth - Resident homeowner and businessperson in Langford. Support density and affordable\nhousing.\n\nMayor Young called a third time for speakers.\n\nSally Boulevant, 2867 Rita Road - Lives near Bray. Not in support of a condo building, feels like residents\nare getting pushed out. Nothing is becoming more affordable. Parking concerns, this will cause more\nparking on the side streets.\n\nGary Brown, 1319 Ravensview Drive - Support this project, more units and density.\n\nBernadette Armstrong, 2813 Rodney Road - Glad this is a condo and not a rental building. Traffic concerns\non Bray, Costin, Carlow. Difficult to get onto Leigh road, there should be a traffic light at one of the\nintersections. Interchange needs more signage for park, perhaps flashing lights. Will water lines be\nincreased to the development, so it doesn't impact the neighbourhood?\n\nMike Wignall, 866 Goldstream Avenue - Support development, all about accommodating people who want\nto move to Langford, and providing affordable housing.\n\nJacqueline Gintaut, 1331 Ravensview Drive - Concerned about size and scope of project, as well as traffic\nand parking, we don't have the infrastructure for this. Please address the community's concerns. Needs\ncommunity consultation.\n\nMayor Young responded to questions.\n\nScott Emerv, 2866 Rita Road - Opposed to density, traffic and parking are getting worse.\n\n                                                                                                        August 16, 2021\n                                                                                                           Page 5 of 22\n\n\nSally Boulevant. 2867 Rita Road - Parking is one of the biggest concerns. There are 4 potential projects\ngoing on in a small area and there is not enough parking.\n\nNadia Hood. 273 Lone Oak Place - Supports this project and affordable housing.\n\nRyan Alden. 845 Orono Avenue - Supports project, we need affordable housing.\n\nJaqueline Gintaut, 1331 Ravensview Drive - It is relevant for speakers to address nearby developments.\nCondos aren't necessarily affordable - need public consultation. There was no broad public consultation\nfor OCP. Want to speak directly with elected officials.\n\nDarlene Younger. 119 St Clair Boulevard - Support this project, need affordable housing.\n\nMatthew McKay, 784 Hocklev Avenue - Support development, parking has been fine where density has\nincreased.\n\n\nKen Rant, 2145 Triangle Trail - Support this development, kids will need housing.\n\nRyan Craycroft, 3431 Luxton Road - This is a good project for the community.\n\nDylan Durance, 2689 Ernhill Drive - Support development.\n\nReece Harry, 3090 Shoreview Drive - Support downtown densification.\n\n\nBrad Weatherall - Need affordable housing, support development.\n\nSally Boulevant, at 2867 Rita Road - Can you clarify whether this is affordable housing.\n\nMayor Young - Clarified that this was affordable housing.\n\nSally Boulevant - The project at the corner of Jacklin and Bray is not an affordable housing project.\n\nMayor Young - This is not an affordable housing project under the CRD or any government, this is private\ninvestment funds to provide housing in the condo market. There will not be low-cost housing in this\nbuilding, but it will provide a lower cost alternative to buying a single-family home.\n\nResident at 3240 Woodruff Road - In support of this project, in need of housing in a central location.\n\nJacqueline Gintaut, Ravensview Drive - Wants broad-based community consultation and for issues to be\naddressed.\n\n\nMayor Young called a fourth and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1912 closed at 6:23 p.m.\n\n        c)   BYLAW NO. 1956\n             \"Langford Zoning Bylaw, Amendment No. 616, (905, 909, 913, 917, 921 Bray\n             Avenue, and 2884, 2886 Jacklin Road), Bylaw No. 1956, 2021\".\n\n                                                                                                      August 16, 2021\n                                                                                                         Page 6 of 22\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1956 at 6:24 pm.\n\nDeputy Director of Planning Leah Stohmann advised that Rachael Sansom has applied on behalf of\nRejuvenate Downtown Langford Nominee Incorporated to amend the zoning of2884 Jacklin Road and 905,\n909, 913, 917, and 921 Bray Avenue from the One- and Two-Family Residential (R2) Zone to the City Centre\nPedestrian (CCP) Zone.\n\nThis is being proposed in order to allow for the development ofa mixed-use residential building.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nIn support of this application, the applicant has agreed to the following:\n\n        a) That as a bonus for increased density, the applicant provides the following contributions per\n              residential unit prior to issuance of a building permit:\n                  i.   $2,850 towards the General Amenity Reserve Fund;\n                  ii.   $750 towards the Affordable Housing Reserve Fund, subjectto permitted reductions in\n                        accordance with the applicable Policy; and\n                iii.    $10.75 per m^ of commercial Gross Floor Area towards the General Amenity Reserve\n                        Fund.\n\n\n b) That the applicant provides, prior to bylaw adoption, a section 219 covenant that agrees to the\n     following:\n               That no Development Permit be issued until lot consolidation has occurred;\n               That at least 5% of the lot area be outdoor amenity space;\n               That the applicant will install all required frontage improvements, provide, and implement a\n               storm water management plan, and provide a construction parking management plan;\n        iv.    That parking stalls are allocated to individual units;\n        V.     That residential parkingstalls are provided with Level 2 charging capabilities;\n        vi.    That a strata plan of the building is registered prior to occupancy; and\n       vii.    That buildings west of the east side of Knotty Pine be limited in heightto 6 storeys;\n\nc) The applicant has provided the following prior to this Public Hearing, as required by Council:\n\n         i.    Frontage drawings, a traffic impact assessment, and a stormwater management memo, all to\n               the satisfaction of the Director of Engineering.\n\nThis proposal isconsistent with the Official Community Plan City Centre designation.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nTanner Hansom, 917 Bray Avenue - Lives in one of the buildings set to be demolished. Already lives with\ncomplete strangers in order to be able to afford to live in Langford. A youth support worker, an essential\nworker; roommates are essential workers. This development will displace children and essential workers.\n\n                                                                                                      August 15, 2021\n                                                                                                         Page 7 of 22\n\n\n\nThe landlord did not notify the tenants of this.\n\nRachel Sansom - Community was informed, notices went to the surrounding neighbourhood.\n\nBernadette Armstrong. 2813 Rodney Road - Don't know height of the proposed development. There are 2\ncars per home, cars are clogging our roads, infrastructure is not keeping up.\n\nLeah Stohmann, Deputy Director of Planning and Subdivision - Clarified height and parking requirements.\nThere is 1 visitor parking space required for every 4 units.\n\nLaurie Plomp, 3592 Whimfield Terrace - This is a big change from 1 and 2 family residential, should require\nplans at this point in the proposal.\n\nDylan MacLean, 1063 Costin Avenue - Support this development.\n\nRachel Sansom - Difficult to provide renderings at this point.\n\nDana Elizabeth. 2850 Aldwynd Road - Support condos over rentals. Electric vehicle chargers are good.\n\nScott Emery, 2866 Rita Road - Against the rezoning - not enough information.\n\nJacqueline Gintaut, 1331 Ravensview Drive - Need more than 1 parking spot per unit, we already have traffic\nissues.\n\n\nLaurie Plomp, 3592 Whimfield Terrace - Don't understand details likefloor space ratio, probably the majority\nof residents don't either.\n\n\nAlan Churchill, 658 Atkins Road - We don't know how many units there are. It appears that there are too\nmany issues with this application to approve rezoning. This many new residents will increase demand for\ndoctors and schools.\n\n\nSally Boulevant. 2867 Rita Road - Concerns about height, there should be a maximum height. Don't think it's\npossible to accommodate necessary parking.\n\nAlison Gettis, 3311 Mesa Place - Do not support, too much traffic and congestion.\n\nTanner Hansom. 917 Bray Avenue - Do we know the approximate cost to won one of these condos. Working\n48 hours per week and can't afford a studio.\n\nRachel Sansom - Available to answer any questions.\n\nMayor Young called a second time for presentations.\n\nMike Wignall, 866 Goldstream Avenue - The community is growing. We need to create density nodes.\nRegional growth strategy identifies the West Shore as a place for this growth. Support this application.\n\nCouncillor Blackwell left the meeting at 6:53 pm.\n\n                                                                                                          August 16, 2021\n                                                                                                              Page 8 of 22\n\n\nBrianna Champagne. 917 Bray Avenue - Disapproves ofthis application. Will be displaced, and can't afford\nreplacement housing, have to live w/ith roommates in orderto afford living here.\n\nJeff Heslop, 905 Bray Avenue - Need a 4-bedroom rental home that allows pets. Need housing that fits\nlarger/blended families. Current condos and apartments in the area do not fit larger families. Can't find any\nrentals.\n\n\nSarah Desone, 905 Bray Avenue-If this application goes through, will have to leave yet another home. There\nare no houses available for largerfamilies. Not in support of this application. This will uproot 13 families and\ntheir children.\n\n\nCouncillor Blackwell returned to the meeting at 6:55 pm.\n\nJacqueline Gintaut, 1331 Ravensview Drive- Procedural concerns about speakingat meetings.\n\nMayorYoung called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1956 closed at 7:00 p.m.\n\n           d)   BYLAW NO. 1985\n                \"Langford Official Community Plan Bylaw, Amendment No. 43, (3553 and 3559\n                Happy Valley Rd), Bylaw No. 1985, 2021\".\n\n                BYLAW NO. 1986\n                \"Langford Zoning Bylaw, Amendment No. 629, (3553 and 3559 Happy Valley Rd),\n                Bylaw No. 1986, 2021\".\n\nThe Mayor opened the Public Hearing for Bylaw Nos. 1985 and 1986 at 7:00 pm.\n\nDeputy Director of Planning Leah Stohmann advised that Karen Colangeli has applied to amend the zoning\nof 3553 and 3559 Happy Valley Road from the Agricultural (AGl) Zone to the Neighbourhood Commercial\n(Cl), to add additional uses to the C1 Zone, and to amend the Official Community Plan designation of the\nsubject properties from Agricultural to Neighbourhood Centre.\n\nThis is being proposed in order to allow for a neighbourhood commercial centre consisting of various small-\nscale commercial uses.\n\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nIn support of this application, the applicant has agreed to provide the following:\n\n    l.That the applicant agrees to provide, prior to Bylaw Adoption, the following:\n            a. Asubdivision plan that consolidates the two subject properties and includes road dedication,\n                   to the satisfaction of the Director of Engineering\n                b. AStatutory Right of Way (SRW) in favour of the City of Langford on the northwest corner at\n                   the intersection to allow a stormwater culvert to be installed\n\n                                                                                                          August 16, 2021\n                                                                                                             Page 9 of 22\n\n\n             c.   A Section 219 covenant, registered in priority of all other charges on title that agrees to the\n                  following;\n                       i. That the following will be provided and implemented to Bylaw No. 1000 standards\n                          to the satisfaction of the Director of Engineering prior to subdivision approval or the\n                          issuance of a building permit, whichever is first:\n                                   1. frontage improvements, including but not limited to separated\n                                       boulevards of soil and sod, with irrigation from a dedicated water meter;\n                            a. A storm water management plan; and\n                            b.A construction management plan\n\nThis proposal is consistent with the proposed Official Community Plan \"Neighbourhood Centre\" designation\n\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\n\nThe Mayor called a first time for presentations.\n\nNone presented.\n\nMayor Young called a second time for presentations.\n\nNone presented.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw Nos. 1985 and 1986 closed at 7:02 p.m.\n\n        e)   BYLAW NO. 1991\n             \"Langford Zoning Bylaw, Amendment No. 631, (#136-1047 Langford Pkwy), Bylaw\n             No. 1991, 2021\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1991 at 7:02 pm.\n\nDeputy Director of Planning Leah Stohmann advised that Chris Anctil of K9 SK8 Park has applied on behalf of\nDuncan Magee of Hulls Business Park to amend the text of the Comprehensive Development 2 - Hull's Field\n{CD2) Zone to add pet daycare and grooming as a permitted use at #136-1047 Langford Parkway.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nThis proposal is consistent with the Official Community Plan \"Neighbourhood\" designation\n\n\nNotifications and advertisements have been placed as required by the Local Government Act.\nThe Mayor called a first time for presentations.\n\nNone presented.\n\nMayor Young called a second time for presentations.\n\n                                                                                                         August 15, 2021\n                                                                                                           Page 10 of 22\n\n\nNone presented.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1991 closed at 7:03 p.m.\n\n        f)   BYLAW NO. 1994\n             \"Langford Zoning Bylaw, Amendment No. 634, (648, 652, 656, 660 Granderson\n             Road), Bylaw No. 1994, 2021\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1994 at 7:03 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDeputy Director of Planning Leah Stohmann advised that Stew Gordon of Gordon n Gordon Interiors Ltd. Has\napplied to amendthe zoning of 648, 652, 656, and 660Granderson Road from the R2 (One- and Two-Family\nResidential) Zone to the CCl (City Centre 1) Zone.\n\nThis is being proposed inorder to allow for the developmentof a six-storey building containing approximately\n84 apartment units.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nIn support of this application, the applicant has agreed to provide the following:\n\n1. That the applicant provides, as a bonus for increased density, the following contributions per\n    residential unit, prior to the issuance of a building permit:\n        a. $750 towards the Affordable Housing Reserve Fund; and\n        b. $2,850 towards the General Amenity Reserve Fund.\n             Subject to reductions depending on the use and height in accordance with the Affordable\n             Housing and Amenity Contribution Policy.\n\n2. That the applicant provides, prior to bylaw adoption, a Section 219 covenant, registered in priority of all\n    other charges on title, that agrees to the following:\n\n        a.   That the following are provided to Bylaw No. 1000 standards to the satisfaction of the Director\n             of Engineering prior to the issuance of a Building Permit:\n                  i. Frontage improvements;\n                 ii. A storm water management plan; and\n                iii. A construction parking and traffic management plan;\n\n        b. That parking stalls are allocated to individual units;\n        c. That residential parking stalls are provided with Level 2 charging capabilities;\n\n        d. That a strata plan of the building is registered prior to occupancy;\n\n                                                                                                      August 16, 2021\n                                                                                                        Page 11 of 22\n\n\n        e. Acknowledgement that the site is in proximity to an existing rail corridor that may be utilized for\n           transportation uses in the future such as, but not limited to rail, bus, or other, that these uses\n           may result in general nuisances, and that the owner and all future owners assume all risk and\n            annoyance of such nuisances;\n\n3. The applicant has provided the following prior to this Public Hearing, as required by Council:\n      a. Frontage drawings to confirm that road dedication is not required, a traffic impact assessment,\n            and a stormwater management memo, all to the satisfaction of the Director of Engineering.\n\nThis proposal is consistent with the Official Community Plan City Centre designation.\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nColby Messer, 2149 Triangle Trail - Represent owners. We need density now in order to get better public\ntransportation. Construction parking will be managed. Affordable housing is needed.\n\nTyler Lister, 2958 Brock Place - Support project, more development will help small businesses and improve\nneighbourhood.\n\nRob LeClair, 1323 Ravensview Drive - Supports development which provides affordable housing, good for\nretirees and young families.\n\nMelissa Olsen, 933 Latoria Road - Supports this project.\n\nRael Patterson, 929 Latoria Road - Supports this project.\n\nGeorge Wetherall, 925 Latoria Road - Supports project.\n\nDylan McLean, 1063 Costin Avenue - Supports development.\n\nNadia Hood, 273 Lone Oak Place - Supports project.\n\nRyan Oldman, 845 Orono Avenue - Supports project, need affordable housing in city core.\n\nBrad Weatherall, 1015 Torrence Avenue - Supports project.\n\nReece Harry, 3090 Shoreview Drive - Supports project.\n\nMelinda Courser-Supports project.\n\nResident at 3240 Woodruff Road - Supports project.\n\nBrandon Storey, 1051 Englewood Avenue - Supports project.\n\nDylan Durance, 2689 Hernell Drive - Supports proiect.\n\n\nDavid Mullen. 662 Goldstream Avenue - Does not support project, will increase traffic problems.\n\n                                                                                                      August 16, 2021\n                                                                                                         Page 12 of 22\n\n\nKen Rant - Supports project. We need more affordable housing for young people in the market.\n\nCheryl Gervais. 3579 Happy Valley Road - Supports project.\n\nJody Twa. 2320 Lairds Gate - Good choice, great location next to E&N corridor.\n\nAlan Churchill, 658 Atkins Avenue - Will overlook houses, concerned about traffic issues. When\ndevelopments are considered one at a time, overall planning may be lacking. What is the goal density?\nLeah Stohmann, Deputy Director of Planning and Subdivision - We don't have detailed projections for the\ncity centre in particular, we have overall growth projections for Langford as a whole. The housing needs\nreport is on the Langford website.\n\nAlan Churchill - We need more schools and doctors to support density.\n\nMayor Young - Langford is proactive in recruiting doctors, but Island Health and the Provincial Government\nare responsible.\n\nCouncillor Blackwell - Explained the application process and how information is relayed regarding schools.\n\nAlan Churchill- Expressed concerns regarding traffic on Granderson Road. Concerned that a lot of the callers\nwere calling in to support affordable housing but none of them were specific to this development or live\nclose to the area.\n\n\nMayor Young clarifiedthe process and purpose of speaking at the public hearing.\n\nRobert Orr, 662 Granderson Road - Granderson is a small street, there are access issues. Langford will be\nmore walkable but the majority of people who live in Langford commute to work. Why is the traffic study\nbeing done after the rezoning and public hearing and not prior. Concerned that the large Garry Oak will be\ncoming down.\n\nMayorYoung - Final approval isn't given until the final traffic study has been sent to staff (Engineering and\nPlanning Departments) and staff have reviewed.\n\nRyan Cravcroft. 3431 Luxton Road - Supports project.\n\nSusan Goulet. 2569 Jeanine Drive - Supports project.\n\nMike Wignall, 866 Goldstream Avenue- Supports downtown development.\n\nJacqueline Gintaut, 1331 Ravensview Drive - Need to balance growth and services.\n\nMark Simpson. 1049 Torrence Avenue - Supports project.\n\nBrandi G, 3517 Happy Valley Road - Good addition to downtown, will allow people to work closer to home.\n\nColby Messer, 2149 Triangle Trail - Traffic impact assessment was completed.\n\n                                                                                                      August 16, 2021\n                                                                                                        Page 13 of 22\n\n\nLane Britten, 3022 Shoreview Drive - Support more housing in the core.\n\nMatthew McKay, 784 Hocklev Avenue - Adds walkability to the downtown core, supports this project.\n\nAlexandros Paravatos, 662 Goldstream Avenue - Opposed to project. It is too big for area and insufficient\ninfrastructure to support. Everyone close to project is opposed and everyone distanced from it supports it.\n\nBernadette Armstrong, 2813 Rodney Road - Commute through the area, proposal is too dense for the area.\n\nGary Brown, 1319 Ravensview Road- 25yr resident, has business downtown, supports project. Need more\nhousing, need to avoid urban sprawl since sprawl destroys more trees. Good location for LRT.\n\nCaroline Smith, 662 Goldstream Avenue - Supportive of affordable housing in Langford but very concerned\nabout parking, and number of units.\n\nBob Milne, 644 Goldstream Avenue - Did the E&N Rail have a say in the light at McMurdo when Granderson\nbuilding went up, was there an issue? Why haven't we seen drawings of the project.\n\nCouncillor Blackwell_- You would need to cross the railway for it to have an impact. Drawings are on the\nwebsite in the agenda, or they are available at City Hall\n\nMayor Young called a second time for presentations.\n\nNone presented.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1994 closed at 7:59 p.m.\n\nMayor Young left the meeting at 7:59 pm.\n\n4.      ADOPTION OF COUNCIL MINUTES\n\n\n        a) Minutes of the Regular Meeting of Council - July 19, 2021\n        b) Minutes of the Special Meeting of Council - July 29, 2021",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "2301cd2f5726fc6745b17935cbf95b9d9c74c650e0630ab0ff71bfeeab8ced0e",
+      "pages": [
+        1
+      ],
+      "reason": "Exact agenda amendment occurrence; reserve only, preserving every old field, result and actor ID.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+  "second_independent_original_image_review_sha256": "cc4d6ad500bc2a89bfbd3abba7d0c1e9e127f903257dc62b0a5ca0797d4f0e28",
+  "closing_conflict_quarantines": [
+    {
+      "source_review_sha256": "8ed4894f90c5ae1322223d3ea4f4d8f9098787a8b56dbd68ebf4d2aec51a6928",
+      "capability": {
+        "type": "reviewed_unresolved_closing_conflict",
+        "authority": "duplicate_screening_only_no_fact_certification",
+        "motion_id": 2342,
+        "legacy_text": "That the meeting be adjourned.",
+        "expected_stored_result": "CARRIED",
+        "claim_sha256": "abf2b82e1f40a2d45551810dfcac159a7732b6cb590b00a488d8542959e8789d",
+        "claim_row_sha256": "ae044ca15de76fc560dc66e785d2262d5276d6510f752643aee3d11981d16722",
+        "printed_body": "Mayor Young adjourned the meeting at 8:52 pm.",
+        "page": 22,
+        "native_text_sha256": "03e88100d4d95ad4d64b36f87fa04ffd001e38e5c6a42273d83a2e6a26dbf2c0",
+        "render_sha256": "062207cf72878b9b8e066aa86abbce71a926d725a5111cbf64fe6c2216fe3de6",
+        "source_passage": "Mayor Young adjourned the meeting at 8:52 pm.",
+        "source_passage_start": 53948,
+        "native_passage": "Mayor Young a \nurned the meeting at 8:52 pm.",
+        "native_passage_start": 1073,
+        "native_correction": {
+          "page": 22,
+          "native_text_sha256": "03e88100d4d95ad4d64b36f87fa04ffd001e38e5c6a42273d83a2e6a26dbf2c0",
+          "render_sha256": "062207cf72878b9b8e066aa86abbce71a926d725a5111cbf64fe6c2216fe3de6",
+          "native_quote": "Mayor Young a \nurned the meeting at 8:52 pm.",
+          "printed_quote": "Mayor Young adjourned the meeting at 8:52 pm.",
+          "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+          "authority": "reviewed_documentary_native_witness_correction_only",
+          "second_independent_image_review_sha256": "cc4d6ad500bc2a89bfbd3abba7d0c1e9e127f903257dc62b0a5ca0797d4f0e28"
+        },
+        "allowed_new_decisions": [
+          {
+            "source_key": "4876b9cd39e2145c5c9a52a0501d6e0380b8358d73baf0cd40eed95bd13d27a8",
+            "raw_block_sha256": "fef65cde9058dc1cdede793567b8801390f1dce41b9231fa64c375ca47618b9f",
+            "operative_body": "That Council approve the minutes of the regular meeting of Council held on July 19, 2021, and the special meeting of Council on July 29, 2021.",
+            "operative_body_sha256": "66e24ad1cabd00baa83dba4e047adca3dcd1d815fb8d4e1aa1a0a0ae36c3b360",
+            "result": "CARRIED",
+            "pages": [
+              13
+            ],
+            "page_evidence": [
+              {
+                "page": 13,
+                "native_text_sha256": "93853072fbbedb7fc89965a9f22d6ebb20c6c3cac7c8f0f58af43c4ca4d5e530",
+                "render_sha256": "065cbc347927994438668b99d28e0639a0cface71bf51adc9e07d0e16de96d44"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "881cd3bda6e6f91ef6a6c517ce379dacfeae4af2384a2b8416129aac4048f90b",
+            "raw_block_sha256": "d9e4565987fbe87d7733fb645efe54d95fd226c884345322fe06051f6bf56f38",
+            "operative_body": "That Council receive the minutes of the Planning, Zoning and Affordable Housing Committee held on August 9, 2021.",
+            "operative_body_sha256": "3a4557230618153e6ef55a20bf140b9fcca2d6fa287d47fe98ce428896e713df",
+            "result": "CARRIED",
+            "pages": [
+              14
+            ],
+            "page_evidence": [
+              {
+                "page": 14,
+                "native_text_sha256": "ba23cf01d5dc680bdaada0722f6bcf423d94b7840200309a0c5fe66e8e10ef2e",
+                "render_sha256": "589025e0531b1b9f95e9e10619f6077d3bca1b43246ddc4984ed27e83fe4628b"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "81f36ca5c8aabdea45398aa27490d82c5e3eeebe35a2272bce66e321cec5a0b6",
+            "raw_block_sha256": "097b469ad80b9812aeb22561607a092b4435642a8393884e013e659d3b536770",
+            "operative_body": "That Council: 1. Direct staff to provide notice that Council will consider issuing amended Temporary Use Permits for the following properties: #105 693 Hoffman Ave (TUP19-0001 - Clarity Cannabis), #101 945 Reunion Ave (TUP19-0002 - The Original Farm), #107 2317 Millstream Rd (TUP19-0004 - Honeycomb Cannabis) and #101 977 Langford Pkwy (TUP20-0002 - Flight Cannabis), to allow for the following: a) To amend the operating hours as follows, 9am to 9pm Sunday through Wednesday and 9am to 10pm Thursday through Saturday; b) To increase the permitted signage from two signs to three signs subject to the regulations in Bylaw 1250.",
+            "operative_body_sha256": "d09680b165c864fc3e6f0a5c9fc5149f5615c1089cd40b59f2dd42464dc054c7",
+            "result": "CARRIED",
+            "pages": [
+              18
+            ],
+            "page_evidence": [
+              {
+                "page": 18,
+                "native_text_sha256": "bfba069dc3119ffe442771875321dcf2e8d89c0873c9508f22396c0fa818a2ca",
+                "render_sha256": "759fe58af3841b090e6e605415bcd72f8afbc8936733f6fbf03b7fbe0b1e752a"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "30f61ed6e814d4e1bb2ef5446963cfbedd61a902bc31adfed051cc15fdb299f9",
+            "raw_block_sha256": "b71bfce9ca7b5a982d0b2b2d8e97e4d800494763f77f06945b69e7830ed38299",
+            "operative_body": "That Council give Bylaw No. 1896 second and third readings.",
+            "operative_body_sha256": "a102f42949ec5e53959b598eef2e8ae8d0b0f3b9e21ac1599fc5440333b96f90",
+            "result": "CARRIED",
+            "pages": [
+              19
+            ],
+            "page_evidence": [
+              {
+                "page": 19,
+                "native_text_sha256": "b9b7d9125102e5dfc7f15119b68df99a38287c348587b9fd86b949fcb87d0179",
+                "render_sha256": "1378d8b83090bab7d1e500431f84d4c34c12ca60164a27f628544f69f849c838"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "3eb1a97e82e9b3a3638428159d5b3250d269b9bebc12957c35faf7e4e4193d93",
+            "raw_block_sha256": "6d074d48c08c5682624d4c11facea3819718a733adc3ee4225fb4e6b5280a682",
+            "operative_body": "That Council give Bylaw No. 1897 second and third readings.",
+            "operative_body_sha256": "5223e0213cd1658e70097ca87e94a18c49268a171c726cdd04a5952d1600bcc6",
+            "result": "CARRIED",
+            "pages": [
+              19
+            ],
+            "page_evidence": [
+              {
+                "page": 19,
+                "native_text_sha256": "b9b7d9125102e5dfc7f15119b68df99a38287c348587b9fd86b949fcb87d0179",
+                "render_sha256": "1378d8b83090bab7d1e500431f84d4c34c12ca60164a27f628544f69f849c838"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "8298664c0c2b0f9fc6c5e91a207840ca29b8e030eea16b20e33422f6658085ce",
+            "raw_block_sha256": "8a79a67549354f986bc54751b451ccbd4d8db9e586734df7f7cf47c0c3fe7513",
+            "operative_body": "That Council give Bylaw No. 1912 second and third readings.",
+            "operative_body_sha256": "de1039b7cd87b6bd3a4165b98585395124502ad2077897f8e271a62c01a3dd75",
+            "result": "CARRIED",
+            "pages": [
+              19
+            ],
+            "page_evidence": [
+              {
+                "page": 19,
+                "native_text_sha256": "b9b7d9125102e5dfc7f15119b68df99a38287c348587b9fd86b949fcb87d0179",
+                "render_sha256": "1378d8b83090bab7d1e500431f84d4c34c12ca60164a27f628544f69f849c838"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "6d556ee694079ce723bfa2ac6daeafd2c31672ff77e414c2865bb99dd6d33281",
+            "raw_block_sha256": "339b5d20ad799ada782944d694c3dee50870c41866c4c4d23164ecb1eb4b6733",
+            "operative_body": "That Council adopt Bylaw No. 1949.",
+            "operative_body_sha256": "e0918200599e27551fdd45063375fe71f814a767fb404be6f00037ebcad9c68e",
+            "result": "CARRIED",
+            "pages": [
+              20
+            ],
+            "page_evidence": [
+              {
+                "page": 20,
+                "native_text_sha256": "1341a92f18106c2e2aa6ae00ad47a44187a52aa0ea7efcb53e8fcc0c913adab0",
+                "render_sha256": "d6f520c7fbc3d53ba664a7ee2fa735afcd8167949bf0eec19ddab6ee90d8b48b"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "d2b0ad6740bc16c2cc628fe34ad30e95f259df2b3686bc6d3ddd8df6430b0453",
+            "raw_block_sha256": "6f075269ef4899f02f358070386d3c8d1710c0781d583b09e8e4731f5ed62bdd",
+            "operative_body": "That Council give Bylaw No. 1956 second and third readings.",
+            "operative_body_sha256": "8c7ec3249315e21853d27602b79cce16ecfbe85d82c5bc1f05dd057252eca5b2",
+            "result": "CARRIED",
+            "pages": [
+              20
+            ],
+            "page_evidence": [
+              {
+                "page": 20,
+                "native_text_sha256": "1341a92f18106c2e2aa6ae00ad47a44187a52aa0ea7efcb53e8fcc0c913adab0",
+                "render_sha256": "d6f520c7fbc3d53ba664a7ee2fa735afcd8167949bf0eec19ddab6ee90d8b48b"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "18dfb995b70156f9e2671368a8acc775c025ce551bee36e018365bb05b2b0a02",
+            "raw_block_sha256": "7a7712c2252029a748db1e59f18ce542a3aa0942317c41e6b714ed3b34046857",
+            "operative_body": "That Council give Bylaw No. 1981 first reading.",
+            "operative_body_sha256": "82b9424fc8cf59a309420f68cbf59d6be44282451a0cc53ce747efa230139d3b",
+            "result": "CARRIED",
+            "pages": [
+              20
+            ],
+            "page_evidence": [
+              {
+                "page": 20,
+                "native_text_sha256": "1341a92f18106c2e2aa6ae00ad47a44187a52aa0ea7efcb53e8fcc0c913adab0",
+                "render_sha256": "d6f520c7fbc3d53ba664a7ee2fa735afcd8167949bf0eec19ddab6ee90d8b48b"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "89bc054b636b687e15f45a6f442cde022a372a681e5ce3f9ebf4b4df800b4d18",
+            "raw_block_sha256": "97127c3d2f242202e7151ee42809c28e37b06148fedad60df9923185713583fa",
+            "operative_body": "That Council give Bylaw No. 1985 second and third readings.",
+            "operative_body_sha256": "d1df380d6a6df9589168438753108f91b32bed0e1948b6e212e127daed583eaf",
+            "result": "CARRIED",
+            "pages": [
+              20,
+              21
+            ],
+            "page_evidence": [
+              {
+                "page": 20,
+                "native_text_sha256": "1341a92f18106c2e2aa6ae00ad47a44187a52aa0ea7efcb53e8fcc0c913adab0",
+                "render_sha256": "d6f520c7fbc3d53ba664a7ee2fa735afcd8167949bf0eec19ddab6ee90d8b48b"
+              },
+              {
+                "page": 21,
+                "native_text_sha256": "e2c1e86115b100aa3da49187a5f59ee794db94613dca0ffa2d97261169ca0553",
+                "render_sha256": "c4a838ac20b7afb42f4a55f04b7e3e33f357601813c7660a39473d28ea25fc47"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "3133f6f661aaff3c9c2e16609e58cf75d0247bc30aaf36670219ee81d2de54fd",
+            "raw_block_sha256": "96a112589328006774f0df67ce8eca5667cc19db022ae53c36b34dedfef2cd84",
+            "operative_body": "That Council give Bylaw No. 1986 second and third readings.",
+            "operative_body_sha256": "bbc8b6d28d9300dda0bd57a339b01ea53f045dd709c0cc6c2002cb9484ab5518",
+            "result": "CARRIED",
+            "pages": [
+              21
+            ],
+            "page_evidence": [
+              {
+                "page": 21,
+                "native_text_sha256": "e2c1e86115b100aa3da49187a5f59ee794db94613dca0ffa2d97261169ca0553",
+                "render_sha256": "c4a838ac20b7afb42f4a55f04b7e3e33f357601813c7660a39473d28ea25fc47"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "9eb2dd478a93ae933fce6d1d1ef82c988958784361c9bd5febbda8259f89a382",
+            "raw_block_sha256": "9f74721ab10f8f4c0e4929a21ea350af2191abbbf630d3c2a8fc123439bac51b",
+            "operative_body": "That Council give Bylaw No. 1991 second and third readings.",
+            "operative_body_sha256": "95bff7cb96742d4ef0e7ac6d48695fe1594046de9d13326724c62d5575a7fd61",
+            "result": "CARRIED",
+            "pages": [
+              21
+            ],
+            "page_evidence": [
+              {
+                "page": 21,
+                "native_text_sha256": "e2c1e86115b100aa3da49187a5f59ee794db94613dca0ffa2d97261169ca0553",
+                "render_sha256": "c4a838ac20b7afb42f4a55f04b7e3e33f357601813c7660a39473d28ea25fc47"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "bb8069e2096cf4cc8deb8463c6ee007d71519113880cdf46638c05f709050642",
+            "raw_block_sha256": "34d79b73001d5693cd670c27866ff0d3d5ed8ff7a617bd0a7f51a87800514835",
+            "operative_body": "That Council give Bylaw No. 1994 second and third readings.",
+            "operative_body_sha256": "1980574a600a5db70c88a0492a2d392d406c5452c6a1392753564280923a6f48",
+            "result": "CARRIED",
+            "pages": [
+              21
+            ],
+            "page_evidence": [
+              {
+                "page": 21,
+                "native_text_sha256": "e2c1e86115b100aa3da49187a5f59ee794db94613dca0ffa2d97261169ca0553",
+                "render_sha256": "c4a838ac20b7afb42f4a55f04b7e3e33f357601813c7660a39473d28ea25fc47"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "f63895744047a962e2819492f1e937d1e0527e53450a93b95351fbdb27fc43d4",
+            "raw_block_sha256": "920aee3fa74fbe37f0e4dc9b3bfe09bebc830e5df2d3099681a1a04aafdfe39a",
+            "operative_body": "That Council direct staff to draft a letter supporting the City of Victoria and the Town of View Royal in requesting a review of the policy to release violent and/or repeat offenders awaiting charged disposition, in support of our West Shore RCMP.",
+            "operative_body_sha256": "58d51cf76b76e190ddda30f5845588be9639736cab43b13008195e418ed05358",
+            "result": "CARRIED",
+            "pages": [
+              21,
+              22
+            ],
+            "page_evidence": [
+              {
+                "page": 21,
+                "native_text_sha256": "e2c1e86115b100aa3da49187a5f59ee794db94613dca0ffa2d97261169ca0553",
+                "render_sha256": "c4a838ac20b7afb42f4a55f04b7e3e33f357601813c7660a39473d28ea25fc47"
+              },
+              {
+                "page": 22,
+                "native_text_sha256": "03e88100d4d95ad4d64b36f87fa04ffd001e38e5c6a42273d83a2e6a26dbf2c0",
+                "render_sha256": "062207cf72878b9b8e066aa86abbce71a926d725a5111cbf64fe6c2216fe3de6"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "827951a7d7bbdbf48032e6c7c4ea24273a1b72c82b964ac293d1704d2aa6eaf3",
+            "raw_block_sha256": "ef91049ae1a42048609abc4ec713def499125cae5f6c84808db4373eba8b3d1c",
+            "operative_body": "THAT Council close the meeting to the public pursuant to section 90 (1) c, e, and g of the Community Charter to consider: \u2022 Labour relations or other employee relations; \u2022 the acquisition, disposition or expropriation of land or improvements, if the council considers that disclosure could reasonably be expected to harm the interests of the municipality; \u2022 litigation or potential litigation affecting the municipality.",
+            "operative_body_sha256": "853ccd9bd75cb5fc2b3c864244cc6c685cdfbef57082c04ad91c3109a78e4973",
+            "result": "CARRIED",
+            "pages": [
+              22
+            ],
+            "page_evidence": [
+              {
+                "page": 22,
+                "native_text_sha256": "03e88100d4d95ad4d64b36f87fa04ffd001e38e5c6a42273d83a2e6a26dbf2c0",
+                "render_sha256": "062207cf72878b9b8e066aa86abbce71a926d725a5111cbf64fe6c2216fe3de6"
+              }
+            ],
+            "independent_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          }
+        ],
+        "first_review_sha256": "b5db2caf7b9c914855663e483730708def74ad6ee2470eec8ca38fd4b049fcbd",
+        "independent_review_sha256": "cc4d6ad500bc2a89bfbd3abba7d0c1e9e127f903257dc62b0a5ca0797d4f0e28"
+      }
+    }
+  ]
+}

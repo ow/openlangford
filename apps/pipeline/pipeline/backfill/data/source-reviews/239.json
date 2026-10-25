@@ -1,0 +1,410 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 239,
+    "title": "Regular Council",
+    "meeting_date": "2021-03-15",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2021/03/2021-03-15 530pm Regular Council [1c45de3e]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2021/03/2021-03-15 530pm Regular Council [1c45de3e]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "310332e6ba00c73e169d700939ca4c93d1e3fe79ca74218f5a6a95f10dfc77c6",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13716"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2021/03/2021-03-15 530pm Regular Council [1c45de3e]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13716",
+  "source_sha256": "310332e6ba00c73e169d700939ca4c93d1e3fe79ca74218f5a6a95f10dfc77c6",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "f2a4af71fbab223466ff1e2b9c76ee0151dca39d70b54d543c8fb181164002cd",
+  "corrected_text_sha256": "f2a4af71fbab223466ff1e2b9c76ee0151dca39d70b54d543c8fb181164002cd",
+  "parsed_blocks_sha256": "c3fcdc401d23a6263820ed5991229ee7dc28689f81cf0253ca66bbbf9fc34f4a",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "c91fe102939e85cb6a06db36f233e7efd301a2c5a6492d101810ac8b22899d4c",
+      "render_sha256": "1cdf97be79e57247baf19508791f9cbd60b47cdd401532803630e69447436d08"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "6c7fa3888094f75b9eb5cbe689be59eec7dcec7fd8eca799b613c2ecdac80c74",
+      "render_sha256": "f1421df1b6f8db574d2f851fdb955515cc0400e742924c0be8203c5f0c92ab7e"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "7aa091508f1a2b1ac25fc0defdd2356eaa979b246428245ffa225e24b471201a",
+      "render_sha256": "139108e3c5254882c172f8a5bc0ad9935b8aa05f1b79707faa20d9d45f517736"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "240a9eca4b763b527f9bcc0504479b24e3b9cbefa225e8b67328ccf3cf0ae290",
+      "render_sha256": "d26b2e4991fa29326adfdee0eec7998b734643a4f16a3edbf71bde4fe1894956"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "83c9e47b1dc23d07d47c13d273f51e9556e5ef62b3dfada6575b3a61b749339e",
+      "render_sha256": "5dbdc3b4feae0e840696fe38d870ca76fc5a66db9b116394b1f7ef8cd494be0d"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "c67efb961a199e627d86b7181d817b6d9b4dcbc65bfe66e06497e3839a5e572f",
+      "render_sha256": "6afd80f6da9bfbb20c7d8d4e6bd1bac30c65cf50ce58e0e4206c89aeebbf1ef9"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "2a333b1921cd527a226546960079769e30bb0380ba442d26f856b2e74e1a7e27",
+      "render_sha256": "6d5c6e0731126645da91ade1801eb6e05e273393d7e996b697182c9ef5ac2894"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "2b40b0e55d718c7470f16b61b08a0cb8a1fe1e602e1e8c6e513988a4ae542859",
+      "render_sha256": "51a3b0705fc73cc04124c3cde8244a81969bef18e3fb0d3fd135e535c2abb2d8"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "4ca799e6381a2ac4cd7ff1e943f82307b50c263e61a5d1bdf4f2a0a999bda1dd",
+      "render_sha256": "a370369c7a452e3bf5afa029d9b3fc80512221516a79352688a2edf89b0f247c"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "015b909b125d08fea6d66604817d340b30b8d16169e0eaba53fd194ca94ea286",
+      "render_sha256": "572147c12a872187f852d779180fc805e7b8ecdec8bdd7377991974e83db4242"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "b7a196b6788e0ce65aa3a4bbd284564035629a05eae92c0838e624216366a768",
+      "render_sha256": "ba2959b3c6874031fa982e3058fdefd742351cdefd0b4a453e4dcf1567338321"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "d18f7f888bd9b657e554e8091cb1a128e42ccf569758c07ebc4462ccfa44fd7d",
+      "render_sha256": "6a1dbb6e8311eea2e94110bca5af6bfd6abfa27fb18c45c79d4f9806514ac66b"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "70b0a03ac341d2d9c9c2d13f2be7aaf504dc725bc75a9e28883c1208a774bf8c",
+      "render_sha256": "45036a00afa9a54f8a518441bc1aa25641bfb10895ea000fcbbb7c92e8c516a7"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "2a1ef3f99ee4ec9aa2490eccedd14e4041de8e998d8e7bae4eb365ab30a0b406",
+      "render_sha256": "397e5ba3c26ab4b45c116135e3c0990bb205bf46aa80433bdff94bde60fcc06a"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "213758e041471d15dd5381e306ef50a27a524a72cca295e53215c35e859b009b",
+      "render_sha256": "f93aa01ecf0b04e1feccb2aa4a1fdff2c18dbd083241e822c5b8605e4f602e7c"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "24efe29d35a4f88d214dc8f6f9aabc04f6696be6bbb556487e992d4a252336b8",
+      "render_sha256": "2577e3ded16dbe2c6b2ead804f4f7611cebb33eac81c0535d829ba2e3676a03b"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "92db3524d5da790bb62495e990977a4efa44a253dfb57dbe9ce4216be539b1bf",
+      "raw_block_sha256": "cb80ddf8dfd072c170e093623e51ec3f0a9d5c02f77df560b2243ceb52455e61",
+      "operative_body": "That Council: 1. Approve the cancellation of the April 6th, May 3rd, May 17th, and June 7th, 2021Council meetings; and 2. Hold a Special Meeting of Council on May 10th, 2021 at 5:30 p.m. in City of Langford Council Chambers.",
+      "operative_body_sha256": "7b7daec1daff4a755144d40dec9a6983d20cbc2a862dbe9c27e86eac4c7f3f22",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "d18f7f888bd9b657e554e8091cb1a128e42ccf569758c07ebc4462ccfa44fd7d",
+          "render_sha256": "6a1dbb6e8311eea2e94110bca5af6bfd6abfa27fb18c45c79d4f9806514ac66b"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9c197d5eafaa54496c4bac1ff85a53acce0e93599d293c45b7c0eeab3f55293b",
+      "raw_block_sha256": "fb763cbc2a6bdfd182f8e33acf5e798d2b2151068d32110c7068cea82ced1b19",
+      "operative_body": "That Council adopt Bylaw No 1938.",
+      "operative_body_sha256": "4287668362900fd6d5d4e7587583e073e4ab613dae4bb7e4bff0d75d820267b7",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "d18f7f888bd9b657e554e8091cb1a128e42ccf569758c07ebc4462ccfa44fd7d",
+          "render_sha256": "6a1dbb6e8311eea2e94110bca5af6bfd6abfa27fb18c45c79d4f9806514ac66b"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a9c38ef489a5cbc9dc3e3f48e035c0ccf3b9d26a78acf200fa9a8e524d8efaa7",
+      "raw_block_sha256": "bbcf2ad32f1ff678b2b5b1d16f2046a20a3fb2f22e90beebab1d43989d72710e",
+      "operative_body": "That Council give First Reading to Bylaw No. 1944 as drafted.",
+      "operative_body_sha256": "ad378799d1db0c52079d7a68bb983d19f567a54e30d46a54a42540d84f1d0286",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "d18f7f888bd9b657e554e8091cb1a128e42ccf569758c07ebc4462ccfa44fd7d",
+          "render_sha256": "6a1dbb6e8311eea2e94110bca5af6bfd6abfa27fb18c45c79d4f9806514ac66b"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "70b0a03ac341d2d9c9c2d13f2be7aaf504dc725bc75a9e28883c1208a774bf8c",
+          "render_sha256": "45036a00afa9a54f8a518441bc1aa25641bfb10895ea000fcbbb7c92e8c516a7"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "March 15, 2021 Page 13 of 16",
+          "printed": "",
+          "reason": "Original running date/folio excluded from operative body; raw source/PDF/native/identity unchanged."
+        }
+      ]
+    },
+    {
+      "source_key": "f9a728cb55c3a3cd622254f04a26a8db6bab64055f1856d97f18dcb9ca6672d9",
+      "raw_block_sha256": "72d7e4bc2b5888bcd89ffbf174c841295aa8a80e06f8247e03a45c95ddee1127",
+      "operative_body": "That Council give Bylaw No. 1955 second and third readings.",
+      "operative_body_sha256": "d6d55c8e39900cd22b3ab8260fe517755bef924d39af96accfe02ff9768aa1c2",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "70b0a03ac341d2d9c9c2d13f2be7aaf504dc725bc75a9e28883c1208a774bf8c",
+          "render_sha256": "45036a00afa9a54f8a518441bc1aa25641bfb10895ea000fcbbb7c92e8c516a7"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "8876aa1db40a0e0905ed5b2189aae995615a263a7aa329fdac1e3f81cc629bd0",
+      "raw_block_sha256": "3f0de6e7f89f9f68cd177a03ff99f42844dfb7fb6cb3eec61786fb78ce8bada3",
+      "operative_body": "That Council give Bylaw No. 1951 second and third readings.",
+      "operative_body_sha256": "7a9de2e07040c3db36d0fa3686601ee613a08ab4de503260245eb6a97f691f9b",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "70b0a03ac341d2d9c9c2d13f2be7aaf504dc725bc75a9e28883c1208a774bf8c",
+          "render_sha256": "45036a00afa9a54f8a518441bc1aa25641bfb10895ea000fcbbb7c92e8c516a7"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9057279baa6424be1bd8ffdaabd2020e138aa378472a1e716bddc5815f0e1ae3",
+      "raw_block_sha256": "8e31437a56e79a1c6efb360458516f0455a94c4d205f9b4fa6a21c8f55392b04",
+      "operative_body": "That Council give Bylaw No. 1953 second and third readings.",
+      "operative_body_sha256": "aa57b295320ba14422060f8fdcbad7d566033c7982d8e348e0c0057440cfa507",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "70b0a03ac341d2d9c9c2d13f2be7aaf504dc725bc75a9e28883c1208a774bf8c",
+          "render_sha256": "45036a00afa9a54f8a518441bc1aa25641bfb10895ea000fcbbb7c92e8c516a7"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "26766d8b13b13a86a548568eb1f6e17ff1c582b46015065f7c7a2c6f9dedce6b",
+      "raw_block_sha256": "043d5cee58132d3bd4dd6feed3094c864468065ad21fdb758d8271ad8723358d",
+      "operative_body": "That Council give Bylaw No. 1958 first reading.",
+      "operative_body_sha256": "4d1e1958036f1e61973c6c494813a41fa07f3a2b92280db96f5d8c3729fde715",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "2a1ef3f99ee4ec9aa2490eccedd14e4041de8e998d8e7bae4eb365ab30a0b406",
+          "render_sha256": "397e5ba3c26ab4b45c116135e3c0990bb205bf46aa80433bdff94bde60fcc06a"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "2da435dc651798622793738b2e3a8fd5cf5f8c2b245c5957d1894ea1c6273062",
+      "raw_block_sha256": "ea43bd63c0ea4ac2ece998dbbc7e2fbdc6ecb8f7f5591a64beeace37c54c6c45",
+      "operative_body": "That Council adopt Bylaw No. 1959.",
+      "operative_body_sha256": "6222933f469e279bd430f95f3af9ea3fdd732c9140e826918a21fe8f3e659b75",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "2a1ef3f99ee4ec9aa2490eccedd14e4041de8e998d8e7bae4eb365ab30a0b406",
+          "render_sha256": "397e5ba3c26ab4b45c116135e3c0990bb205bf46aa80433bdff94bde60fcc06a"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "47dfdf09fbb11f9a998e01970bbf349f060eee0a01fcf120c55ed80e74d66bcf",
+      "raw_block_sha256": "df5b2aba9e2523cd52e8b9e2929427405516c1dd04d6afb0c60b6dfb3fe1ab81",
+      "operative_body": "That Council give Bylaw No. 1961 second and third readings.",
+      "operative_body_sha256": "9b2919e27840470807a62a9ce51e18ca065babc6ad4a9f18daaf71f51cf645e9",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "2a1ef3f99ee4ec9aa2490eccedd14e4041de8e998d8e7bae4eb365ab30a0b406",
+          "render_sha256": "397e5ba3c26ab4b45c116135e3c0990bb205bf46aa80433bdff94bde60fcc06a"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "ec6b53bb2163ff232d1f827834f9d94144aa3652194e8de92ddb56a2b0e8a8c8",
+      "raw_block_sha256": "d22e60b5ad2ece9f9a99296fd31587ee48f04049bd7f222e24b2c117b413c190",
+      "operative_body": "That Council adopt Bylaw No. 1968.",
+      "operative_body_sha256": "c2636696028d6302ef150afc376f170d4f699739a297e7e62585e99ce8170f17",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "2a1ef3f99ee4ec9aa2490eccedd14e4041de8e998d8e7bae4eb365ab30a0b406",
+          "render_sha256": "397e5ba3c26ab4b45c116135e3c0990bb205bf46aa80433bdff94bde60fcc06a"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "0e450c4d1304e0a1e0e619044741702a36a2f66c2a4717d25abfdc9a6c8d310e",
+      "raw_block_sha256": "a1c6e240f4cf8a958b636783ba4ce7dca969c601b0170d9cc11e62d0e835a97d",
+      "operative_body": "That Council give Bylaw No. 1970 first reading.",
+      "operative_body_sha256": "d3d3865b2c1e8bbc8dd18fe55f75c4ce12fbe132c85e6abf2b90e886ebc7b0cf",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "213758e041471d15dd5381e306ef50a27a524a72cca295e53215c35e859b009b",
+          "render_sha256": "f93aa01ecf0b04e1feccb2aa4a1fdff2c18dbd083241e822c5b8605e4f602e7c"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3707a7985ae9c4a9d712c5b3725cb392be04ab684fae86c27fef3862bc6c08df",
+      "raw_block_sha256": "12a8dd722afe288770b38114345a4ee5c8face9578d7de5b1f330c6780d92b75",
+      "operative_body": "That Council give Bylaw No. 1972 first reading.",
+      "operative_body_sha256": "c44e4b11b8c59af628aea06f3f347f02df1d50bd360a5904c4da7576d61f36e8",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "213758e041471d15dd5381e306ef50a27a524a72cca295e53215c35e859b009b",
+          "render_sha256": "f93aa01ecf0b04e1feccb2aa4a1fdff2c18dbd083241e822c5b8605e4f602e7c"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "52cc98234de54e7940631029e3b4071e46d3f3bdb137fb0332b92030052eaadf",
+      "raw_block_sha256": "3ca820da569ef392f4109d5ee5a7f80e86c2114e84c612dcdf9d796a0c24a000",
+      "operative_body": "That Council adopt Bylaw No. 2021.",
+      "operative_body_sha256": "91d9f5937ad8a06d1195ebf8ff1e069de23ab8fb96b23e4d07797a18afa48f1b",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "213758e041471d15dd5381e306ef50a27a524a72cca295e53215c35e859b009b",
+          "render_sha256": "f93aa01ecf0b04e1feccb2aa4a1fdff2c18dbd083241e822c5b8605e4f602e7c"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d493f566e8642a718773c70b95ab8601d03cd72d5cd8ac3e8d462903f1c10596",
+      "raw_block_sha256": "fef707637d1e924a5f97b870804f8f41ea1d432b48eb123391d79273038c7a4c",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding labour relations or other employee relations; the acquisition, disposition or expropriation of land or improvements, if the council considers that disclosure could reasonably be expected to harm the interests of the municipality; and negotiations and related discussions respecting the proposed provision of a municipal service that are at their preliminary stages and that, in the view of the council, could reasonably be expected to harm the interests of the municipality if they were held in public; information that is prohibited, or information that if it were presented in a document would be prohibited, from disclosure under section 21 of the Freedom of Information and Protection of Privacy Act; and receipt of advice that is subject to solicitor-client privilege, including communications necessary for that purpose; under Section 90 (1) (c) (e) and (k) of the Community Charter. b) That Council continue the meeting in closed session.",
+      "operative_body_sha256": "be73ebb1012cbc35162282ed56358e697d855c2fbb82f1449c5b342d5c897b28",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "24efe29d35a4f88d214dc8f6f9aabc04f6696be6bbb556487e992d4a252336b8",
+          "render_sha256": "2577e3ded16dbe2c6b2ead804f4f7611cebb33eac81c0535d829ba2e3676a03b"
+        }
+      ],
+      "independent_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "c91fe102939e85cb6a06db36f233e7efd301a2c5a6492d101810ac8b22899d4c",
+  "independent_original_image_review_sha256": "f86a8a35b2dd4d517eb90462c4a3208562987449bf2d58bdb3c1e3c75aa40785",
+  "second_independent_original_image_review_sha256": "082a0b9521e895c8650d6a09af428e48469bfdc7af54bdcb78736ac9a4685902"
+}
