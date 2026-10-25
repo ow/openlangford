@@ -64,7 +64,7 @@ export function sourceMeetingState(
   meeting: {
     status: string;
     meeting_date: string;
-    latest_job?: { status?: string } | null;
+    latest_job?: { status?: string; resolved?: boolean } | null;
   },
   today: string = todayKey(),
 ): SourceMeetingState {
@@ -76,7 +76,9 @@ export function sourceMeetingState(
   const date = meeting.meeting_date?.slice(0, 10);
   if (!date || date >= today) return "upcoming";
 
-  if (meeting.latest_job?.status === "failed") return "attention";
+  if (meeting.latest_job?.status === "failed" && !meeting.latest_job.resolved) {
+    return "attention";
+  }
   if (daysBetween(date, today) > STUCK_AFTER_DAYS) return "attention";
   return "waiting";
 }

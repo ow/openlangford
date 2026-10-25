@@ -5,6 +5,13 @@ import {
   NOT_HELD_STATUSES,
   todayKey,
 } from "../lib/pipeline-status";
+import {
+  jobTarget,
+  resolveFailedJob,
+  type Resolution,
+  type ResolutionJob,
+  type ResolutionMeeting,
+} from "../lib/pipeline-resolution";
 import { getMunicipality } from "./municipality";
 
 export type PipelineJobType =
@@ -42,6 +49,89 @@ async function exactCount(query: any, applyFilters?: (query: any) => any) {
   return count || 0;
 }
 
+/**
+ * Resolution of every failed job (see lib/pipeline-resolution). Reads the
+ * failed jobs, the later successes of the same types, and the meetings they
+ * target; the rule itself stays a pure function.
+ */
+async function getFailureResolutions(
+  supabase: SupabaseClient,
+  municipalityId: number,
+): Promise<Map<number, Resolution>> {
+  const resolutions = new Map<number, Resolution>();
+  const cols = "id, job_type, status, args, requested_at, finished_at";
+
+  const { data: failed, error } = await supabase
+    .from("pipeline_jobs")
+    .select(cols)
+    .eq("municipality_id", municipalityId)
+    .eq("status", "failed")
+    .order("id", { ascending: false })
+    .limit(1000);
+  if (error) throw error;
+  const failedJobs = (failed || []) as ResolutionJob[];
+  if (failedJobs.length === 0) return resolutions;
+
+  const types = [...new Set(failedJobs.map((job) => job.job_type))];
+  const since = failedJobs
+    .map((job) => job.requested_at || "")
+    .filter(Boolean)
+    .sort()[0];
+  let successQuery = supabase
+    .from("pipeline_jobs")
+    .select(cols)
+    .eq("municipality_id", municipalityId)
+    .eq("status", "succeeded")
+    .in("job_type", types)
+    .order("requested_at", { ascending: false })
+    .limit(1000);
+  if (since) successQuery = successQuery.gte("requested_at", since);
+  const { data: succeeded, error: succeededError } = await successQuery;
+  if (succeededError) throw succeededError;
+
+  const sourceIds = new Set<number>();
+  const appMeetingIds = new Set<number>();
+  for (const job of failedJobs) {
+    const args = (job.args || {}) as Record<string, unknown>;
+    if (args.source_meeting_id != null) sourceIds.add(Number(args.source_meeting_id));
+    else if (args.meeting_id != null) appMeetingIds.add(Number(args.meeting_id));
+  }
+  const meetingCols = "id, status, ingested_meeting_id, updated_at";
+  const [bySource, byApp] = await Promise.all([
+    sourceIds.size
+      ? supabase.from("source_meetings").select(meetingCols).in("id", [...sourceIds])
+      : { data: [], error: null },
+    appMeetingIds.size
+      ? supabase
+          .from("source_meetings")
+          .select(meetingCols)
+          .in("ingested_meeting_id", [...appMeetingIds])
+      : { data: [], error: null },
+  ]);
+  if (bySource.error) throw bySource.error;
+  if (byApp.error) throw byApp.error;
+  const meetingBySource = new Map<number, ResolutionMeeting>(
+    (bySource.data || []).map((m: any) => [Number(m.id), m]),
+  );
+  const meetingByApp = new Map<number, ResolutionMeeting>(
+    (byApp.data || []).map((m: any) => [Number(m.ingested_meeting_id), m]),
+  );
+
+  for (const job of failedJobs) {
+    const target = jobTarget(job);
+    const meeting = target
+      ? target.startsWith("source:")
+        ? meetingBySource.get(Number(target.slice(7)))
+        : meetingByApp.get(Number(target.slice(8)))
+      : undefined;
+    resolutions.set(
+      job.id,
+      resolveFailedJob(job, (succeeded || []) as ResolutionJob[], meeting),
+    );
+  }
+  return resolutions;
+}
+
 export async function getPipelineDashboard(
   supabase: SupabaseClient,
   options: PipelineDashboardOptions = {},
@@ -74,7 +164,7 @@ export async function getPipelineDashboard(
     jobQueued,
     jobRunning,
     jobSucceeded,
-    jobFailed,
+    resolutions,
     activeJobsResult,
     jobsResult,
     sourcesResult,
@@ -116,9 +206,7 @@ export async function getPipelineDashboard(
     exactCount(supabase.from("pipeline_jobs"), (query) =>
       query.eq("municipality_id", municipalityId).eq("status", "succeeded"),
     ),
-    exactCount(supabase.from("pipeline_jobs"), (query) =>
-      query.eq("municipality_id", municipalityId).eq("status", "failed"),
-    ),
+    getFailureResolutions(supabase, municipalityId),
     supabase
       .from("pipeline_jobs")
       .select("*")
@@ -160,10 +248,25 @@ export async function getPipelineDashboard(
   const jobsById = new Map<number, any>();
   for (const job of activeJobsResult.data || []) jobsById.set(job.id, job);
   for (const job of jobsResult.data || []) jobsById.set(job.id, job);
+  const isResolved = (job: any) => {
+    const resolution = resolutions.get(job.id);
+    return Boolean(resolution?.resolved);
+  };
+  for (const job of jobsById.values()) {
+    const resolution = resolutions.get(job.id);
+    if (resolution?.resolved) {
+      job.resolved = true;
+      job.resolved_reason = resolution.reason;
+    }
+  }
+  // Resolved failures are history: rank them with the other finished jobs.
+  const jobRank = (job: any) =>
+    job.status === "failed" && isResolved(job)
+      ? jobStatusRank.succeeded
+      : (jobStatusRank[job.status] ?? 99);
   const jobs = [...jobsById.values()]
     .sort((a: any, b: any) => {
-      const rankDelta =
-        (jobStatusRank[a.status] ?? 99) - (jobStatusRank[b.status] ?? 99);
+      const rankDelta = jobRank(a) - jobRank(b);
       if (rankDelta !== 0) return rankDelta;
       const aTime = new Date(a.requested_at || 0).getTime();
       const bTime = new Date(b.requested_at || 0).getTime();
@@ -233,9 +336,38 @@ export async function getPipelineDashboard(
       .limit(250);
     if (sourceJobsError) throw sourceJobsError;
 
+    const doneSourceIds = new Set<number>(
+      (sourcesResult.data || [])
+        .filter(
+          (meeting: any) =>
+            meeting.ingested_meeting_id &&
+            (DONE_STATUSES as readonly string[]).includes(meeting.status),
+        )
+        .map((meeting: any) => meeting.id),
+    );
+    const mutedFallback = new Map<number, any>();
     for (const job of sourceJobs || []) {
       const sourceMeetingId = Number((job.args as any)?.source_meeting_id);
       if (!sourceIds.includes(sourceMeetingId)) continue;
+      const resolution = resolutions.get(job.id);
+      if (resolution?.resolved) {
+        (job as any).resolved = true;
+        (job as any).resolved_reason = resolution.reason;
+        // A Done meeting should not lead with an old, resolved failure:
+        // show its latest successful job instead.
+        if (doneSourceIds.has(sourceMeetingId)) {
+          if (!mutedFallback.has(sourceMeetingId)) {
+            mutedFallback.set(sourceMeetingId, job);
+          }
+          continue;
+        }
+      }
+      if (!latestJobBySourceId.has(sourceMeetingId)) {
+        latestJobBySourceId.set(sourceMeetingId, job);
+      }
+    }
+    // Done meetings with no successful job on record keep the resolved failure (shown muted).
+    for (const [sourceMeetingId, job] of mutedFallback) {
       if (!latestJobBySourceId.has(sourceMeetingId)) {
         latestJobBySourceId.set(sourceMeetingId, job);
       }
@@ -265,7 +397,9 @@ export async function getPipelineDashboard(
       jobQueued,
       jobRunning,
       jobSucceeded,
-      jobFailed,
+      jobFailed: [...resolutions.values()].filter((r) => !r.resolved).length,
+      jobFailedResolved: [...resolutions.values()].filter((r) => r.resolved)
+        .length,
     },
     jobs,
     sourceMeetings,

@@ -33,6 +33,10 @@ import {
 } from "../services/pipeline-admin.server";
 import { formatCost, formatTokens } from "../lib/job-usage";
 import {
+  RESOLUTION_LABELS,
+  type ResolutionReason,
+} from "../lib/pipeline-resolution";
+import {
   SOURCE_STATE_LABELS,
   SOURCE_STATE_TONES,
   rawStatusLabel,
@@ -140,16 +144,35 @@ function formatStatus(status: string) {
 
 function StatusBadge({
   status,
+  resolvedReason,
   className,
 }: {
   status: string;
+  /** Set for a failed job that no longer needs attention. */
+  resolvedReason?: ResolutionReason;
   className?: string;
 }) {
+  if (status === "failed" && resolvedReason) {
+    return (
+      <Badge
+        variant="muted"
+        className={className}
+        title={RESOLUTION_LABELS[resolvedReason]}
+      >
+        Failed · resolved
+      </Badge>
+    );
+  }
   return (
     <Badge variant={statusTones[status] ?? "muted"} className={className}>
       {formatStatus(status)}
     </Badge>
   );
+}
+
+/** A failed job that is still waiting on someone. */
+function needsAttention(job: any) {
+  return job?.status === "failed" && !job.resolved;
 }
 
 function SourceStatusBadge({
@@ -363,9 +386,9 @@ function workerSummary(counts: any, jobs: any[]) {
 
 function JobRow({ job, isSubmitting }: { job: any; isSubmitting: boolean }) {
   return (
-    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-1 px-4 py-3 sm:grid-cols-[88px_minmax(0,200px)_minmax(0,1fr)_auto] sm:items-baseline">
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-1 px-4 py-3 sm:grid-cols-[120px_minmax(0,200px)_minmax(0,1fr)_auto] sm:items-baseline">
       <div className="order-2 sm:order-none">
-        <StatusBadge status={job.status} />
+        <StatusBadge status={job.status} resolvedReason={job.resolved ? job.resolved_reason : undefined} />
       </div>
       <div className="order-1 min-w-0 sm:order-none">
         <Link
@@ -420,7 +443,8 @@ function JobRow({ job, isSubmitting }: { job: any; isSubmitting: boolean }) {
 
 function LatestJob({ job }: { job: any }) {
   if (!job) return <span className="text-zinc-300">—</span>;
-  const failed = job.status === "failed";
+  const failed = needsAttention(job);
+  const resolved = job.status === "failed" && job.resolved;
   return (
     <div className="min-w-0">
       <Link
@@ -428,10 +452,14 @@ function LatestJob({ job }: { job: any }) {
         title={job.last_error ? shortError(job.last_error) : undefined}
         className={cn(
           "text-sm hover:underline",
-          failed ? "font-medium text-red-700" : "text-zinc-700 hover:text-brand-700",
+          failed
+            ? "font-medium text-red-700"
+            : resolved
+              ? "text-zinc-500"
+              : "text-zinc-700 hover:text-brand-700",
         )}
       >
-        {formatStatus(job.status)}
+        {resolved ? "Failed · resolved" : formatStatus(job.status)}
         <span className="tabular-nums text-zinc-400"> #{job.id}</span>
       </Link>
       <div className="text-xs text-zinc-500">
@@ -641,10 +669,10 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
             detail={`${counts.jobRunning.toLocaleString()} running · ${counts.jobQueued.toLocaleString()} queued`}
           />
           <StatMetric
-            label="Failed jobs"
+            label="Needs attention"
             value={counts.jobFailed}
             tone={counts.jobFailed > 0 ? "danger" : "quiet"}
-            detail={`${counts.jobSucceeded.toLocaleString()} succeeded`}
+            detail={`${counts.jobFailedResolved.toLocaleString()} resolved failures · ${counts.jobSucceeded.toLocaleString()} succeeded`}
           />
           <StatMetric
             label="Awaiting ingest"
@@ -746,7 +774,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums">
                         <SourceStatusBadge meeting={meeting} />
                         <MeetingOutput meeting={meeting} />
-                        {meeting.latest_job?.status === "failed" && (
+                        {needsAttention(meeting.latest_job) && (
                           <Link
                             to={`/admin/pipeline/jobs/${meeting.latest_job.id}`}
                             className="font-medium text-red-700 hover:underline"
