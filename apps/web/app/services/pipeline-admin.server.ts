@@ -1,5 +1,10 @@
 import { summarizeJobUsage, type JobUsageRow } from "../lib/job-usage";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  DONE_STATUSES,
+  NOT_HELD_STATUSES,
+  todayKey,
+} from "../lib/pipeline-status";
 import { getMunicipality } from "./municipality";
 
 export type PipelineJobType =
@@ -62,7 +67,7 @@ export async function getPipelineDashboard(
 
   const [
     sourceTotal,
-    sourceIngested,
+    sourceAwaiting,
     appMeetings,
     appExtractedDocuments,
     appSections,
@@ -78,12 +83,19 @@ export async function getPipelineDashboard(
       supabase.from("source_meetings"),
       (query) => query.eq("municipality_id", municipalityId),
     ),
+    // Awaiting ingest = already happened, not done, not cancelled/postponed.
+    // Mirrors the "Waiting for minutes" / "Needs attention" states in the UI.
     exactCount(
       supabase.from("source_meetings"),
       (query) =>
         query
           .eq("municipality_id", municipalityId)
-          .not("ingested_meeting_id", "is", null),
+          .not(
+            "status",
+            "in",
+            `(${[...DONE_STATUSES, ...NOT_HELD_STATUSES].join(",")})`,
+          )
+          .lt("meeting_date", todayKey()),
     ),
     exactCount(supabase.from("meetings"), (query) =>
       query.eq("municipality_id", municipalityId),
@@ -246,8 +258,7 @@ export async function getPipelineDashboard(
     municipality,
     counts: {
       sourceTotal,
-      sourceIngested,
-      sourcePendingIngest: Math.max(sourceTotal - sourceIngested, 0),
+      sourcePendingIngest: sourceAwaiting,
       appMeetings,
       appExtractedDocuments,
       appSections,

@@ -21,7 +21,7 @@ from supabase import create_client
 
 from pipeline import config
 from pipeline.email_outbox import EmailEnqueuePersistenceError, DELIVERY_WINDOW, record_email_enqueue
-from pipeline.ops import record_job_event
+from pipeline.ops import mark_source_meeting_ingested, record_job_event
 from pipeline.orchestrator import Archiver, load_municipality_by_id
 
 
@@ -503,18 +503,16 @@ def run_job(supabase, job: dict):
         ):
             raise RuntimeError("Meeting enrichment incomplete: missing summary or advertised official sources")
         if source_meeting_id:
-            update_payload = {"status": "ingested"} if ingested_meeting_id else {}
             if ingested_meeting_id:
-                update_payload["ingested_meeting_id"] = ingested_meeting_id
                 if source and source.get("video_url") and not meeting_result.data[0].get("video_url"):
                     supabase.table("meetings").update(
                         {"video_url": source["video_url"]}
                     ).eq("id", ingested_meeting_id).execute()
                     print("  [+] Attached source video URL to public meeting.")
-            if update_payload:
-                supabase.table("source_meetings").update(update_payload).eq(
-                    "id", source_meeting_id
-                ).execute()
+                if not mark_source_meeting_ingested(
+                    supabase, int(ingested_meeting_id), source_meeting_id
+                ):
+                    print("  [i] Meeting has no content yet; leaving source status unchanged.")
             else:
                 print(
                     "  [i] No public meeting row was created; leaving source status unchanged."
@@ -529,9 +527,9 @@ def run_job(supabase, job: dict):
                 force=bool(args.get("force_extract", False)),
             )
             if source_meeting_id and not extraction_result.get("incomplete_attachment_extraction"):
-                supabase.table("source_meetings").update(
-                    {"status": "extracted"}
-                ).eq("id", source_meeting_id).execute()
+                mark_source_meeting_ingested(
+                    supabase, int(ingested_meeting_id), source_meeting_id
+                )
 
         if not source_only_refresh:
             print("  [Stage] Generating embeddings for newly ingested content.")
@@ -558,9 +556,7 @@ def run_job(supabase, job: dict):
             force=bool(args.get("force", False)),
         )
         if source_meeting_id and not result.get("incomplete_attachment_extraction"):
-            supabase.table("source_meetings").update(
-                {"status": "extracted"}
-            ).eq("id", source_meeting_id).execute()
+            mark_source_meeting_ingested(supabase, int(meeting_id), source_meeting_id)
         return result
 
     if job_type == "embed_content":
@@ -585,9 +581,7 @@ def run_job(supabase, job: dict):
             municipality_id=municipality.id,
         )
         if source_meeting_id:
-            supabase.table("source_meetings").update({"status": "ingested"}).eq(
-                "id", source_meeting_id
-            ).execute()
+            mark_source_meeting_ingested(supabase, int(meeting_id), source_meeting_id)
         return result
 
     if job_type == "transcribe_meeting":

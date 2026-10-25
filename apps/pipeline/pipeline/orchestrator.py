@@ -10,7 +10,11 @@ from supabase import create_client
 from tqdm import tqdm
 
 from pipeline import config, parser, utils
-from pipeline.ops import meeting_source_record, upsert_source_meetings
+from pipeline.ops import (
+    mark_source_meeting_ingested,
+    meeting_source_record,
+    upsert_source_meetings,
+)
 from pipeline.paths import ARCHIVE_ROOT, BASE_DIR, get_municipality_archive_root
 from pipeline.scrapers import get_scraper, MunicipalityConfig
 from pipeline.scrapers.civicweb import CivicWebScraper
@@ -823,7 +827,17 @@ class Archiver:
         )
         return stats
 
+    def _mark_source_ingested(self, meeting_id: int):
+        """Record the successful ingest on source_meetings. Never fatal."""
+        try:
+            supabase = self._get_admin_supabase()
+            if supabase is not None:
+                mark_source_meeting_ingested(supabase, int(meeting_id))
+        except Exception as e:
+            print(f"  [ops] Could not mark source meeting ingested: {e}")
+
     def _after_meeting_ingested(self, meeting_id: int, *, source_only_refresh=False):
+        self._mark_source_ingested(meeting_id)
         # Documentary repairs do not announce new content or buy new profiles.
         if source_only_refresh:
             return
