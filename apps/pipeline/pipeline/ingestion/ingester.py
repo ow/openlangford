@@ -838,6 +838,7 @@ class MeetingIngester:
 
                 # Title from filename (strip extension)
                 title = os.path.splitext(filename)[0]
+                from pipeline.ingestion.letter_privacy import scrub_emails
 
                 doc_data = {
                     "meeting_id": meeting_id,
@@ -846,7 +847,7 @@ class MeetingIngester:
                     "source_url": source_url,
                     "file_path": rel_path,
                     "file_hash": file_hash,
-                    "full_text": full_text.strip() if full_text else None,
+                    "full_text": scrub_emails(full_text.strip()) if full_text else None,
                     "page_count": page_count,
                     "municipality_id": self.municipality_id,
                 }

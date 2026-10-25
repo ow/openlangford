@@ -95,3 +95,19 @@ def test_probability_split_across_one_matters_items_still_places_the_letter():
                                  document_title="Public submissions re Bylaw No. 2037")
     assert placed == {365: letters} and held == []  # the matter's first item in the meeting
     assert "Public submissions re Bylaw No. 2037" in contexts[0]
+
+
+def test_long_documents_are_read_in_chunks_without_losing_text():
+    from pipeline.ingestion.written_submissions import _chunks
+    sections = [{"section_text": "a" * 30000}, {"section_text": "b" * 30000}, {"section_text": "c" * 120000}]
+    chunks = _chunks(sections, limit=50000)
+    assert all(len(c) <= 50000 for c in chunks)
+    assert "".join(chunks).replace("\n", "") == "a" * 30000 + "b" * 30000 + "c" * 120000
+
+
+def test_author_uses_the_letters_own_spelling():
+    from pipeline.ingestion.written_submissions import _source_spelling
+    text = "From: Debbie FitzGerald\nSent: ...\n### Submission: Deb (Deborah) Wormald"
+    assert _source_spelling("Debbie Fitzgerald", text) == "Debbie FitzGerald"
+    assert _source_spelling("Deborah Wormald", text) == "Deborah Wormald"
+    assert _source_spelling("Someone Else", text) == ""

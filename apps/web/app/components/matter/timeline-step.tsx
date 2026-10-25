@@ -89,6 +89,7 @@ export function TimelineStep({
   layoutImage,
   participation,
   written,
+  notes,
 }: {
   item: any;
   headline?: string;
@@ -96,6 +97,7 @@ export function TimelineStep({
   layoutImage?: { url: string; width?: number; height?: number } | null;
   participation?: any;
   written?: any;
+  notes?: { speaker: (who: string) => string | null; letter: (who: string) => string | null };
 }) {
   const motions: Motion[] = item.motions || [];
   const letterCount = writtenLetters(written).length;
@@ -169,7 +171,7 @@ export function TimelineStep({
       {participation?.speakers?.length > 0 && (
         <div className="mt-4">
           <p className="mb-2 text-xs font-semibold text-zinc-500">Who spoke</p>
-          <ParticipationList participation={participation} />
+          <ParticipationList participation={participation} note={notes?.speaker} />
         </div>
       )}
 
@@ -179,6 +181,7 @@ export function TimelineStep({
           <WrittenSubmissions
             written={written}
             documentHref={(documentId) => documentPath({ id: item.meeting_id, slug: item.meetings?.slug }, documentId)}
+            note={notes?.letter}
           />
         </div>
       )}
