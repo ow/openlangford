@@ -6,7 +6,6 @@ import os
 import re
 import subprocess
 import time
-from datetime import datetime, timezone
 from urllib.parse import quote, urljoin
 
 import requests
@@ -302,10 +301,13 @@ class ISILiveClient:
 
     @staticmethod
     def _meeting_date_key(raw: dict) -> str | None:
-        start = raw.get("Start") or ""
-        match = re.search(r"/Date\((-?\d+)\)/", start)
-        if match:
-            return datetime.fromtimestamp(int(match.group(1)) / 1000, tz=timezone.utc).date().isoformat()
+        # Must agree with the folder date chosen by the eSCRIBE scraper, which
+        # prefers the official display dates (the epoch is not real UTC).
+        from pipeline.scrapers.escribe import EscribeScraper
+
+        official = EscribeScraper._parse_meeting_date(raw)
+        if official:
+            return official.isoformat()
         return utils.extract_date_from_string(raw.get("FormattedStart") or "")
 
     @staticmethod

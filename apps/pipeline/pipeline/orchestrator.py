@@ -119,8 +119,42 @@ class Archiver:
         if limit:
             meetings = meetings[:limit]
 
+        self._pin_known_archive_paths(meetings)
         self._record_source_meetings(meetings)
         return meetings
+
+    def _pin_known_archive_paths(self, meetings):
+        """Keep the archive folder (and DB archive_path) of already-ingested eSCRIBE
+        meetings stable when the folder date is corrected upstream.
+
+        Folder names embed the meeting date, and meetings.archive_path / documents /
+        transcript metadata point at them. If the date derivation is ever fixed, a
+        fresh scrape would otherwise re-download every affected meeting into a second,
+        correctly-dated folder and repoint source_meetings away from the ingested one.
+        """
+        source_type = self.municipality.source_config.get("type") if self.municipality else None
+        if source_type != "escribe" or not meetings:
+            return
+        supabase = self._get_admin_supabase()
+        if not supabase:
+            return
+        ids = [m.source_id for m in meetings if m.source_id]
+        pinned = {}
+        for start in range(0, len(ids), 100):
+            rows = (
+                supabase.table("source_meetings")
+                .select("source_id,archive_path,ingested_meeting_id")
+                .eq("municipality_id", self.municipality.id)
+                .eq("source_type", source_type)
+                .in_("source_id", ids[start : start + 100])
+                .execute()
+                .data
+                or []
+            )
+            for row in rows:
+                if row.get("ingested_meeting_id") and row.get("archive_path"):
+                    pinned[row["source_id"]] = row["archive_path"]
+        self._pinned_archive_paths = {**getattr(self, "_pinned_archive_paths", {}), **pinned}
 
     def _get_admin_supabase(self):
         supabase_key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
@@ -137,6 +171,9 @@ class Archiver:
         )
 
         if source_type == "escribe":
+            pinned = getattr(self, "_pinned_archive_paths", {}).get(meeting.source_id)
+            if pinned:
+                return pinned if os.path.isabs(pinned) else os.path.join(BASE_DIR, pinned)
             top_level = utils.normalize_top_level(meeting_type or meeting.title)
             if "committee of the whole" in (meeting_type or "").lower():
                 top_level = "Committee of the Whole"

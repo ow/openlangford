@@ -41,7 +41,7 @@ from pipeline.scrapers.escribe import EscribeScraper
         ),
         pytest.param(
             {'MeetingDate': '', 'DateMedium': None, 'Start': '/Date(1741046400000)/'},
-            None, [date(2025, 3, 4)], id='absent-display-fields-preserve-epoch-fallback',
+            None, [date(2025, 3, 3)], id='absent-display-fields-epoch-fallback-is-local-date',
         ),
         pytest.param({}, None, [], id='no-date-held'),
     ],
