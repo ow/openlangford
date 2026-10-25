@@ -24,6 +24,7 @@ import { Input } from "../components/ui/input";
 import { DetailHeader } from "../components/ui/detail-header";
 import { SearchField } from "../components/ui/search-field";
 import { cn, formatDate, formatRelativeTime } from "../lib/utils";
+import { shortError } from "../lib/pipeline-format";
 import {
   enqueuePipelineJob,
   cancelPipelineJob,
@@ -209,18 +210,6 @@ function SectionHeader({
       {action}
     </div>
   );
-}
-
-/**
- * Worker errors arrive as raw Python reprs and absolute archive paths. Keep
- * the human-readable part for list views; the job page shows the full text.
- */
-function shortError(error: string) {
-  const message = error.match(/['"]message['"]:\s*['"]([^'"]+)['"]/)?.[1];
-  return (message ?? error)
-    .replace(/\/\S*?\/archive\/[^/\s]+\//g, "archive/")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 function QueueJobMenu({ isSubmitting }: { isSubmitting: boolean }) {

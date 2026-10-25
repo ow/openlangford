@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Form,
+  Link,
   redirect,
   useActionData,
   useNavigation,
@@ -14,6 +15,13 @@ import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { DetailHeader } from "../components/ui/detail-header";
 import { cn, formatDate, formatRelativeTime } from "../lib/utils";
+import {
+  errorDetails,
+  formatDateTime,
+  formatDuration,
+  formatLogTime,
+  shortError,
+} from "../lib/pipeline-format";
 import {
   cancelPipelineJob,
   getPipelineJobDetail,
@@ -66,11 +74,6 @@ const statusTones: Record<string, BadgeTone> = {
   diarized: "brand",
 };
 
-const levelTones: Record<string, BadgeTone> = {
-  error: "danger",
-  warning: "warning",
-};
-
 function sentence(value: string) {
   const text = value.replaceAll("_", " ");
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -94,27 +97,17 @@ function JsonBlock({ value, className }: { value: unknown; className?: string })
   );
 }
 
-function SectionTitle({
-  title,
-  description,
-}: {
-  title: string;
-  description?: string;
-}) {
+function SectionTitle({ title, meta }: { title: string; meta?: ReactNode }) {
   return (
-    <div className="mb-3">
+    <div className="mb-3 flex items-baseline gap-3">
       <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>
-      {description && <p className="text-sm text-zinc-500">{description}</p>}
+      {meta && <span className="text-sm tabular-nums text-zinc-500">{meta}</span>}
     </div>
   );
 }
 
 function EmptyNote({ children }: { children: ReactNode }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
-      {children}
-    </div>
-  );
+  return <p className="text-sm text-zinc-500">{children}</p>;
 }
 
 function jobLifecycleSummary(job: any) {
@@ -140,30 +133,44 @@ function isStreamEvent(event: any) {
   return event.data?.stream === "info" || event.data?.stream === "warning";
 }
 
+/** Opens scrolled to the end: that's where a failure, or live progress, is. */
 function TerminalLog({ events }: { events: any[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const lastId = events.at(-1)?.id;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [lastId]);
+
   if (events.length === 0) {
-    return (
-      <EmptyNote>No terminal output has been recorded for this job yet.</EmptyNote>
-    );
+    return <EmptyNote>No terminal output has been recorded for this job yet.</EmptyNote>;
   }
 
   return (
     <div
+      ref={ref}
       role="log"
       aria-label="Terminal output"
       tabIndex={0}
-      className={cn(logPanel, "max-h-[560px] whitespace-pre")}
+      className={cn(logPanel, "max-h-[560px]")}
     >
       {events.map((event) => {
-        const timestamp = new Date(event.created_at).toLocaleTimeString();
         const isStderr = event.level === "warning";
         return (
-          <div key={event.id} className={cn(isStderr && "text-amber-800")}>
-            <span className="text-zinc-400">[{timestamp}]</span>{" "}
-            <span className={isStderr ? "text-amber-600" : "text-zinc-400"}>
-              {isStderr ? "stderr" : "stdout"}&gt;
-            </span>{" "}
-            {event.message}
+          <div
+            key={event.id}
+            className={cn(
+              "grid grid-cols-[auto_minmax(0,1fr)] gap-x-3",
+              isStderr && "text-amber-800",
+            )}
+          >
+            <span className="select-none tabular-nums text-zinc-400">
+              {formatLogTime(event.created_at)}
+            </span>
+            <span className="whitespace-pre-wrap break-words">
+              {event.message}
+            </span>
           </div>
         );
       })}
@@ -173,11 +180,29 @@ function TerminalLog({ events }: { events: any[] }) {
 
 function MetaRow({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-3 px-4 py-2.5 text-sm">
+    <div className="grid grid-cols-[112px_minmax(0,1fr)] gap-3 px-4 py-2.5 text-sm">
       <dt className="text-zinc-500">{label}</dt>
       <dd className="min-w-0 text-zinc-900">{children}</dd>
     </div>
   );
+}
+
+function ArgumentValue({ name, value }: { name: string; value: unknown }) {
+  if (name === "meeting_id" && value != null) {
+    return (
+      <Link
+        to={`/meetings/${value}`}
+        className="tabular-nums text-brand-700 hover:underline"
+      >
+        Meeting #{String(value)}
+      </Link>
+    );
+  }
+  if (Array.isArray(value)) return <>{value.join(", ")}</>;
+  if (value && typeof value === "object") {
+    return <span className="break-all font-mono text-xs">{JSON.stringify(value)}</span>;
+  }
+  return <span className="break-all tabular-nums">{String(value)}</span>;
 }
 
 export default function AdminPipelineJob({ loaderData }: Route.ComponentProps) {
@@ -189,23 +214,18 @@ export default function AdminPipelineJob({ loaderData }: Route.ComponentProps) {
   const canCancel = job.status === "queued";
   const canRetry = ["failed", "cancelled", "succeeded"].includes(job.status);
   const isActive = ["queued", "running"].includes(job.status);
+  const isRunning = job.status === "running";
   const heartbeatAgeMs = job.locked_at
     ? Date.now() - new Date(job.locked_at).getTime()
     : null;
-  const heartbeatState =
-    job.status !== "running"
-      ? "Not running"
-      : heartbeatAgeMs != null && heartbeatAgeMs < 90_000
-        ? "Alive"
-        : "Stale";
-  const heartbeatTone: BadgeTone =
-    heartbeatState === "Alive"
-      ? "success"
-      : heartbeatState === "Stale"
-        ? "danger"
-        : "muted";
+  const heartbeatAlive = heartbeatAgeMs != null && heartbeatAgeMs < 90_000;
   const streamEvents = events.filter(isStreamEvent);
   const lifecycleEvents = events.filter((event: any) => !isStreamEvent(event));
+  const args = Object.entries((job.args as Record<string, unknown>) || {}).filter(
+    ([name]) => !(name === "source_meeting_id" && sourceMeeting),
+  );
+  const hasResult = job.result && Object.keys(job.result).length > 0;
+  const details = job.last_error ? errorDetails(job.last_error) : null;
 
   useEffect(() => {
     if (!isActive) return;
@@ -251,6 +271,7 @@ export default function AdminPipelineJob({ loaderData }: Route.ComponentProps) {
                       type="submit"
                       name="intent"
                       value="retry"
+                      variant={job.status === "failed" ? "default" : "outline"}
                       disabled={isSubmitting}
                     >
                       Requeue
@@ -280,58 +301,72 @@ export default function AdminPipelineJob({ loaderData }: Route.ComponentProps) {
         )}
 
         {job.last_error && (
-          <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 p-4">
-            <div className="text-sm font-medium text-red-800">Last error</div>
-            <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-red-800">
-              {job.last_error}
-            </pre>
+          <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 px-5 py-4">
+            <p className="text-base font-medium text-red-900">
+              {shortError(job.last_error)}
+            </p>
+            {details && <p className="mt-1 text-sm text-red-800">{details}</p>}
+            <details className="group mt-2">
+              <summary className="cursor-pointer text-xs font-medium text-red-700/80 hover:text-red-900">
+                <span className="group-open:hidden">Show raw error</span>
+                <span className="hidden group-open:inline">Hide raw error</span>
+              </summary>
+              <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-red-800">
+                {job.last_error}
+              </pre>
+            </details>
           </div>
         )}
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="min-w-0 space-y-8">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="min-w-0 space-y-10">
             <section>
               <SectionTitle
                 title="Terminal log"
-                description="Worker stdout and stderr, oldest first."
+                meta={
+                  streamEvents.length > 0
+                    ? `${streamEvents.length.toLocaleString()} lines`
+                    : undefined
+                }
               />
               <TerminalLog events={streamEvents} />
             </section>
 
             <section>
-              <SectionTitle
-                title="Job events"
-                description="Structured lifecycle events and payloads."
-              />
+              <SectionTitle title="Job events" />
               {lifecycleEvents.length === 0 ? (
                 <EmptyNote>
                   No lifecycle events have been recorded for this job yet.
                 </EmptyNote>
               ) : (
-                <ul className={cn(card, "divide-y divide-zinc-100")}>
+                <ol className={cn(card, "divide-y divide-zinc-100")}>
                   {lifecycleEvents.map((event: any) => {
                     const hasData =
                       event.data && Object.keys(event.data).length > 0;
                     return (
-                      <li key={event.id} className="px-4 py-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0 text-sm font-medium text-zinc-900">
+                      <li key={event.id} className="px-4 py-2.5 text-sm">
+                        <div className="flex items-baseline gap-3">
+                          <span className="w-20 shrink-0 text-xs tabular-nums text-zinc-400">
+                            {formatLogTime(event.created_at)}
+                          </span>
+                          <span
+                            className={cn(
+                              "min-w-0 flex-1",
+                              event.level === "error"
+                                ? "font-medium text-red-700"
+                                : event.level === "warning"
+                                  ? "text-amber-800"
+                                  : "text-zinc-900",
+                            )}
+                          >
                             {event.message}
-                          </div>
-                          <Badge variant={levelTones[event.level] ?? "muted"}>
-                            {sentence(event.level || "info")}
-                          </Badge>
-                        </div>
-                        <div className="mt-0.5 text-xs tabular-nums text-zinc-500">
-                          {new Date(event.created_at).toLocaleString()}
+                          </span>
                         </div>
                         {hasData && (
-                          <details className="group mt-2">
+                          <details className="group mt-1 pl-[92px]">
                             <summary className="cursor-pointer text-xs font-medium text-zinc-500 hover:text-brand-700">
                               <span className="group-open:hidden">Show data</span>
-                              <span className="hidden group-open:inline">
-                                Hide data
-                              </span>
+                              <span className="hidden group-open:inline">Hide data</span>
                             </summary>
                             <JsonBlock value={event.data} className="mt-2" />
                           </details>
@@ -339,90 +374,99 @@ export default function AdminPipelineJob({ loaderData }: Route.ComponentProps) {
                       </li>
                     );
                   })}
-                </ul>
+                </ol>
               )}
             </section>
 
-            <section>
-              <SectionTitle
-                title="Result"
-                description="Final payload written by the worker."
-              />
-              {job.result && Object.keys(job.result).length > 0 ? (
-                <JsonBlock value={job.result} className="max-h-96" />
-              ) : (
-                <EmptyNote>
-                  {isActive
-                    ? "No result yet. The worker writes one when the job finishes."
-                    : "This job did not record a result payload."}
-                </EmptyNote>
-              )}
-            </section>
+            {(hasResult || isActive) && (
+              <section>
+                <SectionTitle title="Result" />
+                {hasResult ? (
+                  <JsonBlock value={job.result} className="max-h-96" />
+                ) : (
+                  <EmptyNote>
+                    No result yet. The worker writes one when the job finishes.
+                  </EmptyNote>
+                )}
+              </section>
+            )}
           </div>
 
           <aside className="min-w-0 space-y-8">
             <section>
               <SectionTitle title="Details" />
               <dl className={cn(card, "divide-y divide-zinc-100")}>
-                <MetaRow label="Attempts">
-                  <span className="tabular-nums">
-                    {job.attempt_count} / {job.max_attempts}
-                  </span>
-                </MetaRow>
-                <MetaRow label="Worker">
-                  <span className="break-all">{job.locked_by || "None"}</span>
-                </MetaRow>
-                <MetaRow label="Heartbeat">
-                  <span className="flex flex-wrap items-center gap-2">
-                    <Badge variant={heartbeatTone}>{heartbeatState}</Badge>
-                    {job.locked_at && (
-                      <span className="text-xs text-zinc-500">
-                        {formatRelativeTime(job.locked_at)}
-                      </span>
-                    )}
-                  </span>
-                </MetaRow>
+                {sourceMeeting && (
+                  <MetaRow label="Meeting">
+                    <div className="font-medium">{sourceMeeting.title}</div>
+                    <div className="text-xs text-zinc-500">
+                      {formatDate(sourceMeeting.meeting_date, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                      {sourceMeeting.ingested_meeting_id && (
+                        <>
+                          {" · "}
+                          <Link
+                            to={`/meetings/${sourceMeeting.ingested_meeting_id}`}
+                            className="text-brand-700 hover:underline"
+                          >
+                            View meeting
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                  </MetaRow>
+                )}
+                {args.map(([name, value]) => (
+                  <MetaRow key={name} label={sentence(name.replace(/_id$/, ""))}>
+                    <ArgumentValue name={name} value={value} />
+                  </MetaRow>
+                ))}
                 <MetaRow label="Started">
                   <span className="tabular-nums">
-                    {job.started_at
-                      ? new Date(job.started_at).toLocaleString()
-                      : "Not started"}
+                    {job.started_at ? formatDateTime(job.started_at) : "Not started"}
                   </span>
                 </MetaRow>
-                <MetaRow label="Finished">
+                {job.started_at && job.finished_at && (
+                  <MetaRow label="Duration">
+                    <span className="tabular-nums">
+                      {formatDuration(job.started_at, job.finished_at)}
+                    </span>
+                  </MetaRow>
+                )}
+                <MetaRow label="Attempts">
                   <span className="tabular-nums">
-                    {job.finished_at
-                      ? new Date(job.finished_at).toLocaleString()
-                      : "Not finished"}
+                    {job.attempt_count} of {job.max_attempts}
                   </span>
                 </MetaRow>
-                <div className="px-4 py-3">
-                  <dt className="mb-1.5 text-sm text-zinc-500">Arguments</dt>
-                  <dd>
-                    <JsonBlock value={job.args} className="max-h-60" />
-                  </dd>
-                </div>
+                {isRunning && (
+                  <MetaRow label="Heartbeat">
+                    <span
+                      className={cn(
+                        "tabular-nums",
+                        heartbeatAlive ? "text-zinc-900" : "font-medium text-red-700",
+                      )}
+                    >
+                      {job.locked_at
+                        ? `${heartbeatAlive ? "Alive" : "Stale"} · ${formatRelativeTime(job.locked_at)}`
+                        : "No heartbeat"}
+                    </span>
+                    {job.locked_by && (
+                      <div className="break-all text-xs text-zinc-500">
+                        {job.locked_by}
+                      </div>
+                    )}
+                  </MetaRow>
+                )}
               </dl>
             </section>
 
-            {sourceMeeting && (
-              <section>
-                <SectionTitle title="Source meeting" />
-                <div className={cn(card, "space-y-2 p-4 text-sm")}>
-                  <div className="font-medium text-zinc-900">
-                    {sourceMeeting.title}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 text-zinc-500">
-                    <span className="tabular-nums">
-                      {formatDate(sourceMeeting.meeting_date)}
-                    </span>
-                    <StatusBadge status={sourceMeeting.status} />
-                  </div>
-                  <div className="break-all font-mono text-xs text-zinc-500">
-                    {sourceMeeting.archive_path || "No archive path"}
-                  </div>
-                </div>
-              </section>
+            {sourceMeeting?.archive_path && (
+              <p className="break-all px-1 font-mono text-xs text-zinc-400">
+                {sourceMeeting.archive_path}
+              </p>
             )}
           </aside>
         </div>
