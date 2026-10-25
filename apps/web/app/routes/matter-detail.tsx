@@ -50,7 +50,7 @@ import { TimelineStep, isProceduralStep } from "../components/matter/timeline-st
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
 import { matterStatusVariant } from "../lib/matter-status";
-import { getPropertiesForMatter, propertyPath } from "../services/properties";
+import { getPropertiesForMatter, propertyPath, propertyPin } from "../services/properties";
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 
@@ -346,7 +346,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       const g = (item as any).geo_location;
       if (g?.lat && g?.lng) pins.set(`${g.lat.toFixed(5)},${g.lng.toFixed(5)}`, { ...g, address: g.address || parseRelatedAddresses((item as any).related_address)[0] });
     }
-    (matter as any).locations = Array.from(pins.values());
+    // The matter's lots (BC-geocoded) replace ingest-time pins, which were often a street fallback.
+    const lots = properties.map(propertyPin).filter((p): p is NonNullable<typeof p> => p !== null);
+    (matter as any).locations = lots.length ? lots : Array.from(pins.values());
 
     return { matter, matterDocuments, matterEvidence, story, images, properties };
   } catch (error) {

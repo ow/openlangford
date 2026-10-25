@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * named it. Written by the pipeline's properties stage (property_links).
  */
 
-export type PropertyRef = { id: number; slug: string; address: string; geo: { lat: number; lng: number } | null };
+export type PropertyRef = { id: number; slug: string; address: string; civic_number: string; geo: any };
 
 const MATTER_FIELDS = "id, slug, title, status, category, first_seen, last_seen, plain_english_summary, meta";
 
@@ -22,7 +22,7 @@ export async function getPropertiesForMatter(supabase: SupabaseClient, matterId:
   }
   const propertyIds = [...new Set(own.map((l) => l.property_id))];
   const [{ data: properties }, { data: links }] = await Promise.all([
-    supabase.from("properties").select("id, slug, address, geo").in("id", propertyIds),
+    supabase.from("properties").select("id, slug, address, civic_number, geo").in("id", propertyIds),
     supabase.from("property_links").select("property_id, matter_id").in("property_id", propertyIds).not("matter_id", "is", null).neq("matter_id", matterId).eq("hidden", false),
   ]);
   const otherIds = [...new Set((links || []).map((l) => l.matter_id as number))];
@@ -180,6 +180,56 @@ async function getNearbyMatters(
     .map((m) => ({ ...m, lot: nearest.get(m.id)! }))
     .sort((a, b) => a.lot.rank - b.lot.rank || String(b.last_seen || b.first_seen).localeCompare(String(a.last_seen || a.first_seen)))
     .slice(0, 8);
+}
+
+export type Pin = { lat: number; lng: number; address: string };
+
+/** A lot's pin when it's trustworthy: geocoded to the lot or its block, not a street fallback. */
+export function propertyPin(p: { address: string; civic_number?: string | null; geo: any }): Pin | null {
+  const g = p.geo;
+  if (!p.civic_number || !g?.lat || !g?.lng || g.precision === "street") return null;
+  return { lat: g.lat, lng: g.lng, address: p.address };
+}
+
+/**
+ * Matter id -> map pins from its properties (BC-geocoded lots), for every matter or just some. Pins
+ * agenda items got at ingest were often a street fallback; these replace them wherever a matter has one.
+ */
+export async function getPropertyPinsByMatter(supabase: SupabaseClient, matterIds?: number[]) {
+  const pins = new Map<number, Pin[]>();
+  const rows: any[] = [];
+  if (matterIds) {
+    for (let i = 0; i < matterIds.length; i += 300) {
+      const { data, error } = await supabase
+        .from("property_links")
+        .select("matter_id, properties(address, civic_number, geo)")
+        .in("matter_id", matterIds.slice(i, i + 300))
+        .eq("hidden", false);
+      if (error) throw error;
+      rows.push(...(data || []));
+    }
+  } else {
+    for (let start = 0; ; start += 1000) {
+      const { data, error } = await supabase
+        .from("property_links")
+        .select("matter_id, properties(address, civic_number, geo)")
+        .not("matter_id", "is", null)
+        .eq("hidden", false)
+        .order("id")
+        .range(start, start + 999);
+      if (error) throw error;
+      rows.push(...(data || []));
+      if ((data || []).length < 1000) break;
+    }
+  }
+  for (const row of rows) {
+    const pin = row.properties ? propertyPin(row.properties) : null;
+    if (!pin || !row.matter_id) continue;
+    const list = pins.get(row.matter_id) || [];
+    if (!list.some((p) => p.address === pin.address)) list.push(pin);
+    pins.set(row.matter_id, list);
+  }
+  return pins;
 }
 
 /** Agenda item id -> the properties (lots and streets) it names, for linking addresses on meeting pages. */

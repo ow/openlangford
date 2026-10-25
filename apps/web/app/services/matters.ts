@@ -1,4 +1,5 @@
 import { writtenLetters } from "../lib/written";
+import { getPropertyPinsByMatter, type Pin } from "./properties";
 import { parseRelatedAddresses } from "../lib/addresses";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Matter, Municipality, AgendaItem } from "../lib/types";
@@ -99,6 +100,12 @@ export async function getMatters(
     }
   }
 
+  // Pins from the matters' properties (BC-geocoded) beat the ones agenda items got at ingest.
+  const propertyPins = await getPropertyPinsByMatter(supabase).catch((error) => {
+    console.error("Error fetching property pins:", error);
+    return new Map<number, Pin[]>();
+  });
+
   return allData.map((matter) => {
     // Aggregate addresses from agenda items
     const addresses = new Set<string>();
@@ -123,6 +130,8 @@ export async function getMatters(
       }
     });
 
+    const lots = propertyPins.get(matter.id);
+
     // The list only renders a row and a pin per matter: drop agenda items, merge bookkeeping
     // and the long description when a plain-English summary exists (keeps the payload small).
     const { agenda_items, geo_location, merged_matter_ids, display_title, description, ...rest } = matter;
@@ -131,7 +140,7 @@ export async function getMatters(
       description: matter.plain_english_summary ? null : description,
       meta: display_title ? { display_title } : null,
       addresses: Array.from(addresses),
-      locations: Array.from(locationsMap.values()),
+      locations: lots?.length ? lots : Array.from(locationsMap.values()),
       letter_count: (matter.agenda_items || []).reduce(
         (sum: number, item: any) => sum + writtenLetters(item.written).length,
         0,
