@@ -67,7 +67,7 @@ incomplete site-wide reconciliation.
 
 ## Additional reviewed closing cases
 
-The prepared draft now includes 572 additions across 30 meetings. The latest
+The prepared draft now includes 599 additions across 33 meetings. The preceding
 42 are meeting55 (10),62 (10),98 (7) and227 (15), independently reviewed from
 original pages and matched exactly by a current read-only production audit:
 `ea59050a41a5a04f20db74a0e5803f5f67902d4870bc8bda4ac53ee9ab01b997`.
@@ -85,3 +85,12 @@ The 36 separately verified source/catalog date mismatches intersect none of
 this draft's prepared meeting batches or the355 previously applied additions.
 They remain a review-only date-correction proposal. The stricter date guard
 blocks new additions on those mismatches; it changes no catalog dates.
+
+A further27 reviewed decisions are prepared from150 (9),164 (10) and69 (8).
+All match current read-only full-row/source audits exactly, with matching source
+and catalog dates; audit digest
+`1e010e8d9a38f4cf1defeede45a3749f6b85223be942f0d055609b22a3618b88`.
+Meeting150's1610/1611 NULL outcomes remain NULL. Its original bylaw-number
+contradictions remain explicit. Meeting164's unseconded RCMP amendment and
+unresulted FIFA introduction remain held; their outcomes are never invented.
+No application, date correction or release is part of this draft publication.

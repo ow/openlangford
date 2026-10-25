@@ -1,0 +1,429 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 150,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+  "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+  "source_date": "2020-06-29",
+  "source_text_sha256": "a33fdc468b23593056cb5ecb5877b6a5e349a8171b90b10bc952ea5b5a04aeec",
+  "formal_inventory_sha256": "406cf6e2b00d0b8428c9b965dd988cdee527c8a00a97e5bf21cfdbab199a0288",
+  "claim_inventory_sha256": "9337ea5889d52017995cc1aae1d60c0018e2a5f46eaf9510c808ad325486f160",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "a640b8b31167caff84d83e5aa1648913500051feaee83c85152c35199793b5de"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "1369f74b5c5c6a9c035f8a4b63809e5dc55939ad757f2e6254ac3ec18d2d9821"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "7ccab1a78fb5c49c0a3bf9a1a7d3a5efd9b8668620231666a1c96b4b4fb91dd4"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "b53382217845f7e61d74d9e59e4db6844841debda7e36edbb9e0d097cf6d6323"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "fc4485f9c2439a57674238153e3e37beba1b3db24116b3bb796861ecc371ec23"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "6a2e8fbebd1e76a14a3b25aa949a1e45f38d754d244a67733bc9b46face011ac"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "24a1d6e9431b854392edb339a53182f90b691439152f36ab41bf11013f45f06a"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "efcbcdd0fd7fe4758422a73712f463f6a4f356b869e6b57fcdc678b19cc6874a"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "ab1544cf8cb6a91e79d1f64220963fd03e0308ccac9242f1b5bd37f31ec4e839"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "94a68a6edf408396387cc018d37b12474b05c32a31e0abf7d7f15fc17b5261ad"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "384914c791026444041905be01a310085aa61212eefcc610f1f0a3e6f0dd22b3"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 1598,
+      "claim_sha256": "9bc6fdb748ef5ca22954c84618a72509627e1f2903a7214990d29875b5751423",
+      "legacy_text": "That Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 961,
+        "source_order": 0,
+        "key": "06c71bafef79c1fa71d4d57a1388ece7c87315cfa9ee8171ba647605efffec75",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR WADE\nSECONDED:       COUNCILLOR STEWART\n\n\n        That Council approve the agenda as presented.\n\n                                                                                                        CARRIED.\n3.      PUBLIC HEARING\n\n\n        a)   BYLAW NO. 1883\n             \"Langford Zoning Bylaw, Amendment No. 581, (2627 Sooke Rd), Bylaw No. 1883, 2020\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1893 at 5:34 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDirector of Planning Matthew Baldwin advised that Danny Jadresko, has applied on behalf of Woodsmere\nHoldings Corp to amend the zoning of 2627 Sooke Roadfrom the R2 (One- and Two-Family Residential) Zone\nto the C9 (Community Town Centre Pedestrian 9) Zone.\n\nThis is being proposed in order to allow for the development of approximately 90-units and a single ground\nlevel commercial unit that faces Sooke Road.\n\n                                                                                                                June 29, 2020\n                                                                                                                  Page 2 of 12\n\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\nIn support of this application, the applicant has agreed to provide the following:\n\na) That the applicant provides, as a bonus for increased density, the following contributions per residential\n          unit, prior to issuance of a building permit:\n\n           i.     $610 towards the Affordable Housing Fund; and\n          ii.     $2,074 toward the General Amenity Fund.\n\nsubject to reductions depending on the use and height in accordance with the Affordable Housing and\nAmenity Contribution Policy.\n\nb) That the applicant provides, prior to Public Hearing, the following:\n\n           i.     A technical memo from an engineer that verifies storm water can be adequately managed on-site\n                  for the proposed developments, to the satisfaction of the Director of Engineering.\n\nc)        That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of\n          all other charges on title, that agrees to the following;\n\n           i.     That all frontage improvements along Sooke Road are provided as per the Sooke Road Corridor\n                  Concept Plan, to the satisfaction of the Director of Engineering and the Ministry of Transportation\n                  and Infrastructure, and that any road dedication required to contain these frontage\n                  improvements within the road right of way is provided prior to the issuance of a Building Permit;\n          ii.     That a storm water management plan be provided prior to issuance of a building permit and\n                  implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering;\n      iii.        That a construction parking and traffic management plan be provide prior to the issuance of a\n                  building permit, to the satisfaction of the Director of Engineering;\n      iv.         That an SRW for emergency access through the site is registered on title prior to the issuance of\n                  a Building Permit;\n          v.      That a separate covenant be registered prior to issuance of a building permit for the proposed\n                  residential building that ensures parking is assigned and tied to each unit created in accordance\n                  with the minimum required parking stalls as per the zoning bylaw.\n\nd)             Authorize the Director of Planning to issue the following variance in the Form and Character\n               Development Permit for 2627 Sooke Road:\n\n     i.         That Table 1 of Section 4.01.01 be varied to reduce the minimum parking requirement from the\n                required 2.75 spaces per dwelling unit with two bedrooms or less and 3.75 spaces per dwelling unit\n                with more than two bedrooms to 1.25 spaces per dwelling unit with two bedrooms or less and 2.75\n                spaces per dwelling unit with more than two bedrooms.\n\nThis proposal is consistent with the Official Community Plan Neighborhood Centre designation.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\n                                                                                                           June 29, 2020\n                                                                                                             Page 3 of 12\n\n\nThe Mayor called a first time for presentations.\n\nNeighbourhood resident - This building will cause up to 180 extra vehicles plus visitor vehicles to enter a\nquiet neighbourhood every day, causing increased traffic, parking concerns, and safety concerns. It will\ndecrease property values and impact current residents' enjoyment of their property. Resident requested\nmore information about any traffic studies done for this application. Neighbourhood streets are poorly\nmaintained and this will cause them to get worse. In the past, inadequate snow clearing has caused\nHandyDART and BC Ambulance to refuse to come.\n\nResident on Ernhill Drive - The resident bought their property because the community is quiet. They have\ncomplained about development in part, and think further development unacceptable. They think current\nresidents are being driven away, and that no improvements such as lights or speed bumps have been made\nby the city. They believe traffic should not be directed through a quiet neighborhood, but should go through\nthe highway instead.\n\nNeighbourhood resident-The resident asked why traffic needs to be routed through a quiet neighborhood\nwhere children frequently play. There is currently little infrastructure, and no sidewalks or lights. The\nresident said there are currently 58 residents, and that this proposal will double traffic in the neighborhood.\nIn addition, it is already difficult to drive in when it snows, and the proposal will reduce parking and force\nvisitors to park on the street. The resident thinks this will negatively affect property values. They said this is\nnot in line with OCP, and that this is not best suited to the surrounding properties.\n\nResident on Southglen Drive - The resident asked if the road will be widened. They believe it is not large\nenough for this proposal, especially when it snows\n\nResident on Southglen Drive - The resident has lived here for a number of years, and thinks there is a nice\nmix of ages between adults, seniors, and children. They think increased traffic will double the vehicles\nparking in the area, and that the streets are already too congested. They are strongly opposed to this\nproposal, and think access to the site should be from elsewhere.\n\nNeighbourhood resident - The resident likes how quiet the neighborhood is, they had previously lived in a\nvery congested neighborhood before moving here. They think this proposal will cause the same issue, and\nfear the impact of construction on residents' daily lives will change how kids can play on the street.\n\nMayor Young called a second time for presentations.\n\nResident on Ernhill Drive - The resident thinks the neighborhood has well-established and maintained\nhomes, and that this is not a neighborhood in transition. The resident referred to the report of a similar\ndevelopment in the Sooke Road corridor, but stated there are no other developments that will impact quiet\nstreets like this. They stated that Happy Valley to Jacklin Road is the busiest corridor in Langford, and that\nthey cannot add more traffic to it as the parking requirements are inadequate.\n\nCouncillor Blackwell - Asked if the traffic can go on a different route or reduce its density.\n\nM. Mahovlich, Director of Engineering - Stated that the Ministry of Transportation and Infrastructure did\n\n                                                                                                        June 29, 2020\n                                                                                                          Page 4 of 12\n\n\nnot prefer traffic to go along Sooke Road.\n\nCouncillor Sahlstrom - Asked what prevents us from having a left-hand turn into the development instead\nof going through quiet streets?\n\nCouncillor Stewart - Suggested making the building for seniors only.\n\nMayor Young - Suggested the city work with the Ministry of Transportation and Infrastructure to develop a\nSooke Road access option as an alternative.\n\nM. Mahovlich, Director of Engineering - Stated she can discuss a new plan with highways, but that it may\nbe contrary to the corridor masterplan.\n\nMayor Young called a third and final time for speakers.\n\nStephen Earnest with Woodsmere Holdings, Developer - The Developer stated that peak hours would have\n24 vehicles in the afternoon, and that traffic leaves onto Sooke Road going right.\n\nNeighbourhood resident - The resident thought the neighborhood cannot accommodate the incoming\nconstruction traffic.\n\n\nCouncillor Seaton - Expressed his concerns about routes and overall parking reduction from this proposal.\n\nM. Baldwin, Director of Planning - Stated that parking would be the same as the downtown core, and that\nonly residential traffic would go through the residential streets.\n\nCouncillor Szpak - Stated that she echoes the concerns about traffic flow.\n\n\nMayor Young then declared the Public Hearing for Bylaw No. 1893 closed at 6:13 p.m.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "237f18a8a23c29ffc59a320207df25e10d9a2a413849fba18bdf80f6361184ce",
+      "pages": [
+        1
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1599,
+      "claim_sha256": "f488327c4dc35b5b34795043e9591828e7968dc4325aff669e864d431c6f50b2",
+      "legacy_text": "That Council direct staff to work with the Province and the 2627 Sooke Road developer to have traffic come and go via Sooke Road rather than quieter residential streets.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 10482,
+        "source_order": 1,
+        "key": "656dc3c801d08db40720f43b20b29faa1fad2605007a9bb968705ce7affc354c",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to work with the Province and the 2627 Sooke Road developer to have\n        traffic come and go via Sooke Road rather than quieter residential streets.",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR SAHLSTROM\n\n\n        That Council direct staff to work with the Province and the 2627 Sooke Road developer to have\n        traffic come and go via Sooke Road rather than quieter residential streets.\n\n                                                                                                         CARRIED.\n\n\n\n\n4.      ADOPTION OF COUNCIL MINUTES\n\n\n        a)   Minutes of the Special Meeting of Council - October 22, 2019",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "6ee991dff0c5b2c20b954ba35fdae0fb59754e4ced4e5719bae81bf5b210fd5e",
+      "pages": [
+        4
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1600,
+      "claim_sha256": "f4e2d6fcf49204d59357208ed391d9655df3ee584a96cccb09cc6d22b931b08d",
+      "legacy_text": "That Council approve the minutes of the special meetings of Council held on October 22, 2019.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 10978,
+        "source_order": 2,
+        "key": "b0dc1554d4179c1b03828125a91d498b7be33a90563e6044d3d59e9e82d33562",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "June 29, 2020\n                                                                                                        Page 5 of 12\n\n\n\n\n         That Council approve the minutes of the special meetings of Council held on October 22, 2019.",
+        "source_block": "MOVED BY:       COUNCILLOR SAHLSTROM\nSECONDED:       COUNCILLOR BLACKWELL\n\n                                                                                                      June 29, 2020\n                                                                                                        Page 5 of 12\n\n\n\n\n         That Council approve the minutes of the special meetings of Council held on October 22, 2019.\n\n                                                                                                              CARRIED.\n\n\n         b)   Minutes of the Special Meeting of Council - June 8, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "e730ba2729ef9c163f7c1accd07b02b0fb31a64a6e3437e7fea0d3633cd42cd5",
+      "pages": [
+        4,
+        5
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1601,
+      "claim_sha256": "8b0981d9271f9bd7d970d9488099d6f46da372e748c25bab41f08e2456d8e33a",
+      "legacy_text": "That Council approve the minutes of the special meetings of Council held on June 8, 2020.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 11587,
+        "source_order": 3,
+        "key": "ded5aaee2865f917e83bbe974342075d30642a1ba46ef90635ddcfcfb97c864d",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the special meetings of Council held on June 8, 2020.",
+        "source_block": "MOVED BY:         COUNCILLOR SAHLSTROM\nSECONDED:        COUNCILLOR BLACKWELL\n\n\n         That Council approve the minutes of the special meetings of Council held on June 8, 2020.\n\n                                                                                                       CARRIED.\n\n\n5.       OTHER BOARD AND COMMISSION MINUTES\n\n\n         a) West Shore Parks and Recreation Board of Directors Meeting- May 14, 2020\n         b) West Shore Parks and Recreation Annual General Meeting - June 20, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b9c8da45fbf3c48560fe0428dfa085f1a6bf1df171c6455b8d1c34911d472876",
+      "pages": [
+        5
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1602,
+      "claim_sha256": "9b0e0a25b8d9c8a80368bf40e105602d131a3e50157bf32612b7abf0919c0ed6",
+      "legacy_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors Meeting held on May 14, 2020 and Annual General Meeting held on June 20, 2020.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 12095,
+        "source_order": 4,
+        "key": "e40743d2d511892ed0d4ed8be60c9354056b8d54cc13ac7e3c5666e32413c5ec",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n         Meeting held on May 14, 2020 and Annual General Meeting held on June 20^^ 2020.",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n\n         That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n         Meeting held on May 14, 2020 and Annual General Meeting held on June 20^^ 2020.\n\n                                                                                                       CARRIED.\n\n\n6.       PUBLIC PARTICIPATION\n\n\n         None.\n\n\n7.       NOTICE OF INTENT\n\n\n         a)   DVP20-0004 - Portions of Donna Ave; 1106 & 1112 Goldstream Ave",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ca78942a09422e1f5b582f26018f83571f31129c70df226e56c7884680f53b84",
+      "pages": [
+        5
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1603,
+      "claim_sha256": "f61eed7789ba65a85f59437d08d1b009823d4adb052b31d17346e16383c6988f",
+      "legacy_text": "That Development Variance Permit No. DVP20-0004 be issued by the Council for the City of Langford to Rohan Rupf, Keycorp Consulting Ltd. on behalf of Samuel and Samson Mow to allow for a reduction in parking and side lot setbacks at 1109 Donna Ave and 1106 and 1112 Goldstream Ave subject to the terms and conditions set out in the staff report (site plan compliance, variances, on-street parking, purchase and sale agreement for closed road, SRW and covenants).",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 12627,
+        "source_order": 5,
+        "key": "e048750772c694bbd656bc665f81854390330ae805930497eea65a8996df5463",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP20-0004 be issued by the Council for the City of Langford\nto Rohan Rupf, Keycorp Consulting Ltd. on behalf of Samuel and Samson Mow to allow for a reduction in\nparking and side lot setbacks at 1109 Donna Ave and 1106 and 1112 Goldstream Ave subject to the following\nterms and conditions:\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A) to the Planning,\n     Zoning and Affordable Housing staff report dated 27 January 2020.\n\n                                                                                                             r\n\n                                                                                                        June 29, 2020\n                                                                                                          Page 6 of 12\n\n\n2.   Variances\n\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government\n     Act:\n\n\n     a) That Section 6.41.06(l)(a) of Zoning Bylaw No. 300 be varied to reduce the setback between a\n        building and a front or exterior side lot line from 7.5m to Om;\n     b) That Section 6.41.06(l)(c) of Zoning Bylaw No. 300 be varied to reduce the setback between a\n        building and a rear lot line from 3m to Om; and\n     c) That Section 4.01.01 Table 1 of Zoning Bylaw No. 300 be varied from the requirement applicable to\n        individual commercial uses to 1 space per 39m^ of commercial GFA;\n\n3.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n       i) That the site is developed in accordance with the plan attached to this report as Appendix A;\n       ii) That a minimum of 5 on-street parking spaces are created on Donna Ave; AND\n\n     Enter into a Purchase and Sale Agreement with the applicant to sell the portions of closed road shown\n     in road Closure Plan EPP100736 and Rem Lot 6, Section 99, Esquimalt District, Plan 8198, except Part\n     in Plan VIP84403. The Applicant is required to pay $31.50 per square foot minus the cost to construct\n     the new public access and parking within the transfer area;\n\n       a. Register a Statutory Right of Way over the land to allow public access and after-hours parking\n          within the transfer area, along with a Section 219 Covenant requiring the applicant to maintain\n          the access and parking spaces in perpetuity; and\n       b. Post a public notice as prescribed in the Local Government Act for a road closure (posting in a\n             local newspaper for two consecutive weeks); AND\n\n     Proceed with consideration of      2\"^ and 3^^^ readings for Road Closure Bylaw No. 1916, 2020 (portion\n     of Donna Avenue and Leigh Road).",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n\nThat Development Variance Permit No. DVP20-0004 be issued by the Council for the City of Langford\nto Rohan Rupf, Keycorp Consulting Ltd. on behalf of Samuel and Samson Mow to allow for a reduction in\nparking and side lot setbacks at 1109 Donna Ave and 1106 and 1112 Goldstream Ave subject to the following\nterms and conditions:\n\n1.   Appendix\n\n\n     The site shall be developed in accordance with the site plan attached (Appendix A) to the Planning,\n     Zoning and Affordable Housing staff report dated 27 January 2020.\n\n                                                                                                             r\n\n                                                                                                        June 29, 2020\n                                                                                                          Page 6 of 12\n\n\n2.   Variances\n\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government\n     Act:\n\n\n     a) That Section 6.41.06(l)(a) of Zoning Bylaw No. 300 be varied to reduce the setback between a\n        building and a front or exterior side lot line from 7.5m to Om;\n     b) That Section 6.41.06(l)(c) of Zoning Bylaw No. 300 be varied to reduce the setback between a\n        building and a rear lot line from 3m to Om; and\n     c) That Section 4.01.01 Table 1 of Zoning Bylaw No. 300 be varied from the requirement applicable to\n        individual commercial uses to 1 space per 39m^ of commercial GFA;\n\n3.   Conditions\n\n\n     The following requirements are imposed under Section 498 of the Local Government Act:\n\n       i) That the site is developed in accordance with the plan attached to this report as Appendix A;\n       ii) That a minimum of 5 on-street parking spaces are created on Donna Ave; AND\n\n     Enter into a Purchase and Sale Agreement with the applicant to sell the portions of closed road shown\n     in road Closure Plan EPP100736 and Rem Lot 6, Section 99, Esquimalt District, Plan 8198, except Part\n     in Plan VIP84403. The Applicant is required to pay $31.50 per square foot minus the cost to construct\n     the new public access and parking within the transfer area;\n\n       a. Register a Statutory Right of Way over the land to allow public access and after-hours parking\n          within the transfer area, along with a Section 219 Covenant requiring the applicant to maintain\n          the access and parking spaces in perpetuity; and\n       b. Post a public notice as prescribed in the Local Government Act for a road closure (posting in a\n             local newspaper for two consecutive weeks); AND\n\n     Proceed with consideration of      2\"^ and 3^^^ readings for Road Closure Bylaw No. 1916, 2020 (portion\n     of Donna Avenue and Leigh Road).\n\n                                                                                                        CARRIED.\n8.      REPORTS\n\n\n        a)    Deputy Corporate Officer Appointment\n                 Staff Report (Administration)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "0caa09bd9e41f33af7115d408705c651456d4163a849a712a1f4c6543ae62aaf",
+      "pages": [
+        5,
+        6
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1604,
+      "claim_sha256": "c1de18bbe9c98e8c0284e091581c63ef7d5f3ddfd8e44108cd0abead060fdb58",
+      "legacy_text": "That Council rescind the appointment of Adriana Proton as Deputy Corporate Officer; That Council appoint and confirm the appointments of the following employees: Manager of Legislative Services Marie Watmough as Deputy Corporate Officer; Executive Assistant Julie Coneybeer as Deputy Corporate Officer; AND THAT Council appoint and confirm Marie Watmough and Julie Coneybeer as signing authorities for Council-approved contracts and agreements.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 15724,
+        "source_order": 6,
+        "key": "2f59aea6126db6d247b09f078f89abd783a9d741da212eea2ae98f88ebde08ce",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council rescind the appointment of Adriana Proton as Deputy Corporate Officer;\n\n        That Council appoint and confirm the appointments of the following employees:\n           \u2022 Manager of Legislative Services Marie Watmough as Deputy Corporate Officer\n             \u2022    Executive Assistant Julie Coneybeer as Deputy Corporate Officer\n\n                                                                                                       June 29, 2020\n                                                                                                         Page 7 of 12\n\n\n\n\n        AND THAT Council appoint and confirm Marie Watmough and Julie Coneybeer as signing authorities\n        for Council-approved contracts and agreements.",
+        "source_block": "MOVED BY:         COUNCILLOR SAHLSTROM\nSECONDED:         COUNCILLOR SZPAK\n\n\n        That Council rescind the appointment of Adriana Proton as Deputy Corporate Officer;\n\n        That Council appoint and confirm the appointments of the following employees:\n           \u2022 Manager of Legislative Services Marie Watmough as Deputy Corporate Officer\n             \u2022    Executive Assistant Julie Coneybeer as Deputy Corporate Officer\n\n                                                                                                       June 29, 2020\n                                                                                                         Page 7 of 12\n\n\n\n\n        AND THAT Council appoint and confirm Marie Watmough and Julie Coneybeer as signing authorities\n        for Council-approved contracts and agreements.\n\n                                                                                                           CARRIED.\n\n\n        b) City Centre Park Revenue Sharing\n               Staff Report (Parks)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "acd9175a204cac7aefaf2b13590ab3fd087b095c1673ac3d7be6a1b9b8bdb140",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1605,
+      "claim_sha256": "4382d98585096f8953480cc979572a7762a200be462663342d6500b442c1025b",
+      "legacy_text": "That Council authorize the amendment of the Stadium, Fieldhouse and Artificial Turf Fields 1 and 2 Operating and Management Agreement; Langford Lanes Bowling Alley Operations and Management Agreement; and Sportsplex Operating and Management Agreement Modification Agreements to postpone the payment of the City's revenue share from the operation of the facilities at City Centre Park until December 2020.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 16747,
+        "source_order": 7,
+        "key": "1361f6708c84cd0584835c4926b5f229524bc2528500b26694b1a0776f8e5e93",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council authorize the amendment of the Stadium, Fieldhouse and Artificial Turf Fields 1 and 2\n        Operating and Management Agreement; Langford Lanes Bowling Alley Operations and\n        Management Agreement; and Sportsplex Operating and Management Agreement Modification\n        Agreements to postpone the payment of the City's revenue share from the operation of the facilities\n        at City Centre Park until December 2020.",
+        "source_block": "MOVED BY:         COUNCILLOR SEATON\nSECONDED:         COUNCILLOR SZPAK\n\n\n        That Council authorize the amendment of the Stadium, Fieldhouse and Artificial Turf Fields 1 and 2\n        Operating and Management Agreement; Langford Lanes Bowling Alley Operations and\n        Management Agreement; and Sportsplex Operating and Management Agreement Modification\n        Agreements to postpone the payment of the City's revenue share from the operation of the facilities\n        at City Centre Park until December 2020.\n\n                                                                                                           CARRIED.\n\n\n        c)   Application for Development Variance Permit to allow a reduction in the rear\n             Year setbacks from the required 6.0 m to 3.0 m for proposed lots 13 - 22 at\n             the properties located at 1950 Bear Mountain Parkway.\n                 Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "2ede8c5dde539381b8e4e3158381ca260057c4de691278b035e3247f19b7c950",
+      "pages": [
+        7
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1606,
+      "claim_sha256": "4f8a3e549da713bcd35603d8525b367c5de63f75523638b7c5d02167448c6126",
+      "legacy_text": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit for proposed lots 13 - 22 within the 39-lot subdivision at 1950 Bear Mountain Parkway to vary the rear setback from 6.0 m to 3.0 m, subject to the specified terms and conditions (section 219 covenant for sprinklers or alternate solution, replanting, environmental monitoring, vegetation management).",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 17672,
+        "source_order": 8,
+        "key": "0a408dd12c7eb26c128ef75402de5621107ded3ffbff147ce2604cb84854fd84",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to provide notice that Council will consider issuing a Development\n        Variance Permit for proposed lots 13 - 22 within the 39-lot subdivision at 1950 Bear Mountain\n        Parkway, with the following variance:\n\n        a)   That Section 6.95A.08(l)(b) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0\n             m;\n\n\n\nSubject to the following terms and conditions:\n        i) That the setback variance applies to lots 13 - 22 only;\n\n        ii) That the applicant provides prior to Development Variance Permit issuance, a Section 219\n            covenant, registered in priority of all other charges on title, that agrees to the following:\n\n                  a) That residential fire sprinklers be installed to the NFPA standard as a condition of\n                     building permit for lots 15 - 22 or an acceptable alternate solution as approved by the\n                     forestry consultant and Fire Chief; and\n                  b) The area between the 2.0 m non-disturbance area and 3.0 m required setback be\n                     replanted with native vegetation prior to issuance of an Occupancy Permit;\n\n                                                                                                         June 29, 2020\n                                                                                                           Page 8 of 12\n\n\n        iii) That the applicant provides environmental monitoring reports verifying all conditions of the\n             Development Permit DP18-0008 have been satisfied prior to issuance of the Development\n              Variance Permit;\n\n        iv) That the applicant conduct selective vegetation management (thinning, pruning) of the BC\n              Hydro Right-of-way behind Lot 14 to reduce surface and ladder fuels;\n\n        v) That the applicant remove broom along the perimeter boundary interface, under the direction\n           of a project biologist and to the satisfaction of the Director of Planning.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\n\n        That Council direct staff to provide notice that Council will consider issuing a Development\n        Variance Permit for proposed lots 13 - 22 within the 39-lot subdivision at 1950 Bear Mountain\n        Parkway, with the following variance:\n\n        a)   That Section 6.95A.08(l)(b) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0\n             m;\n\n\n\nSubject to the following terms and conditions:\n        i) That the setback variance applies to lots 13 - 22 only;\n\n        ii) That the applicant provides prior to Development Variance Permit issuance, a Section 219\n            covenant, registered in priority of all other charges on title, that agrees to the following:\n\n                  a) That residential fire sprinklers be installed to the NFPA standard as a condition of\n                     building permit for lots 15 - 22 or an acceptable alternate solution as approved by the\n                     forestry consultant and Fire Chief; and\n                  b) The area between the 2.0 m non-disturbance area and 3.0 m required setback be\n                     replanted with native vegetation prior to issuance of an Occupancy Permit;\n\n                                                                                                         June 29, 2020\n                                                                                                           Page 8 of 12\n\n\n        iii) That the applicant provides environmental monitoring reports verifying all conditions of the\n             Development Permit DP18-0008 have been satisfied prior to issuance of the Development\n              Variance Permit;\n\n        iv) That the applicant conduct selective vegetation management (thinning, pruning) of the BC\n              Hydro Right-of-way behind Lot 14 to reduce surface and ladder fuels;\n\n        v) That the applicant remove broom along the perimeter boundary interface, under the direction\n           of a project biologist and to the satisfaction of the Director of Planning.\n\n                                                                                                            CARRIED.\n\n\n        d) Application for a Development Variance Permit to reduce the required building\n              setbacks from the front and exterior property lines to facilitate a two-lot\n              subdivision at the property located at 2486 Jeanine Drive.\n                  Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "6201291bc0210e5f979b772cc6fef9adee13c9d237a779fc3b386d9c708fc8c0",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1607,
+      "claim_sha256": "85539bed0d1d380ca2d8ddec0388e6711c50276188734b31de3d95051600d367",
+      "legacy_text": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit with the variances for 2486 Jeanine Drive as set out in the staff report, subject to site development in accordance with Appendix A and that two parking spaces be constructed on proposed Strata Lot A prior to subdivision approval.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 20185,
+        "source_order": 9,
+        "key": "6743a743534255b2e8e5f8c9aaf094506f51e1dfc60bf2240fddfb0bd577fd4e",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to provide notice that Council will consider issuing a Development\n        Variance Permit with the following variances for 2486 Jeanine Drive:\n\n        a) That Section 6.21.06(3)(c) of Zoning Bylaw No. 300 be varied from the required 4.5 m to 1.31 m\n           for the north exterior property line of proposed Strata Lot A;\n        b) That Section 6.21.06(3)(c) of Zoning Bylaw No. 300 be varied from the required 5.5 m to 4.01m\n           for the south exterior property line of proposed Strata Lot A; and\n        c) That Section 6.21.06(l)(a) of Zoning Bylaw No. 300 be varied from 4.5 m to 3.07 m for the front\n              property line of proposed Strata Lot A.\n\nSubject to the following terms and conditions:\n\n        i)    That the site is developed in accordance with the plan attached to this report as Appendix A;\n              and\n        ii)   That two parking spaces shall be constructed on proposed Strata Lot A prior to subdivision\n              approval.",
+        "source_block": "MOVED BY:           COUNCILLOR BLACKWELL\nSECONDED:           COUNCILLOR WADE\n\n\n        That Council direct staff to provide notice that Council will consider issuing a Development\n        Variance Permit with the following variances for 2486 Jeanine Drive:\n\n        a) That Section 6.21.06(3)(c) of Zoning Bylaw No. 300 be varied from the required 4.5 m to 1.31 m\n           for the north exterior property line of proposed Strata Lot A;\n        b) That Section 6.21.06(3)(c) of Zoning Bylaw No. 300 be varied from the required 5.5 m to 4.01m\n           for the south exterior property line of proposed Strata Lot A; and\n        c) That Section 6.21.06(l)(a) of Zoning Bylaw No. 300 be varied from 4.5 m to 3.07 m for the front\n              property line of proposed Strata Lot A.\n\nSubject to the following terms and conditions:\n\n        i)    That the site is developed in accordance with the plan attached to this report as Appendix A;\n              and\n        ii)   That two parking spaces shall be constructed on proposed Strata Lot A prior to subdivision\n              approval.\n                                                                                                            CARRIED.\n\n\n        e) Application for a Temporary Use Permit at 2981 & 2985 Awsworth Road to Allow\n           For the operation of a Truck Terminal Facility\n               Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "608a802542842c6ac0ec766c3278393a81a3336e7ce5e6293deb9ea9b4088618",
+      "pages": [
+        8
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1608,
+      "claim_sha256": "65493089f1f5987c0c9f85e69e4e28d39bdadd99f851dcfd0fc87f39b77d9e97",
+      "legacy_text": "That Council proceed with consideration of issuing a Temporary Use Permit for a period of three years at 2981 & 2985 Awsworth Road for a truck terminal facility, subject to the terms and conditions set out in the staff report.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 21576,
+        "source_order": 10,
+        "key": "dcefab2c0c6f9534712533594f93a8475341b85a843ccccc81f2e6038d7e97a8",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council proceed with consideration of issuing a Temporary Use Permit for a period of three\n       years at 2981 & 2985 Awsworth Road for a truck terminal facility, subject to the following terms\n       and conditions:\n\n                                                                                                         June 29, 2020\n                                                                                                           Page 9 of 12\n\n\n            a) That applicant must, prior to issuance, complete the following:\n\n                     i. Remove trucks from the site and cease use of a truck terminal facility until a\n                        Development Permit has been issued by the Director of Planning or a Business\n                        License has been issued, whichever is first;\n                    ii. Remove any dirt piles left in City road right of way to the satisfaction of the Director\n                        of Engineering;\n                   iii. Decommission site access from Sooke Road/Highway 14 to the satisfaction of the\n                        Director of Engineering. Vehicular access to the site may only occur from Awsworth\n                        Road;\n                   iv. Register a Section 219 covenant, registered in priority of all other charges on title,\n                       that agrees to the following:\n\n                           1. That the property shall only be used for a single-family dwelling until a\n                              Development Permit has been issued (or exemption if applicable) and a\n                                Business License has been issued; and\n                           2. That the applicant agrees to implement and maintain any and all\n                              recommendations regarding proximity to the Agricultural Land Reserve as\n                                per the Edge Plan prepared by C&F Land Resource Consultants Ltd, dated\n                                April 17, 2020.\n            b) That the activities relating to the Temporary Use Permit occur outside of the Agricultural\n                Land Reserve designated land.\n            c) That they be allowed to stay a week plus one day, then be required to move.",
+        "source_block": "MOVED BY:           COUNCILLOR BLACKWELL\nSECONDED:           COUNCILLOR WADE\n\n\n       That Council proceed with consideration of issuing a Temporary Use Permit for a period of three\n       years at 2981 & 2985 Awsworth Road for a truck terminal facility, subject to the following terms\n       and conditions:\n\n                                                                                                         June 29, 2020\n                                                                                                           Page 9 of 12\n\n\n            a) That applicant must, prior to issuance, complete the following:\n\n                     i. Remove trucks from the site and cease use of a truck terminal facility until a\n                        Development Permit has been issued by the Director of Planning or a Business\n                        License has been issued, whichever is first;\n                    ii. Remove any dirt piles left in City road right of way to the satisfaction of the Director\n                        of Engineering;\n                   iii. Decommission site access from Sooke Road/Highway 14 to the satisfaction of the\n                        Director of Engineering. Vehicular access to the site may only occur from Awsworth\n                        Road;\n                   iv. Register a Section 219 covenant, registered in priority of all other charges on title,\n                       that agrees to the following:\n\n                           1. That the property shall only be used for a single-family dwelling until a\n                              Development Permit has been issued (or exemption if applicable) and a\n                                Business License has been issued; and\n                           2. That the applicant agrees to implement and maintain any and all\n                              recommendations regarding proximity to the Agricultural Land Reserve as\n                                per the Edge Plan prepared by C&F Land Resource Consultants Ltd, dated\n                                April 17, 2020.\n            b) That the activities relating to the Temporary Use Permit occur outside of the Agricultural\n                Land Reserve designated land.\n            c) That they be allowed to stay a week plus one day, then be required to move.\n\n                                                                                                            CARRIED.\n\n\n      f)    Capital Regional District Municipal Consent for Bylaw No. 4304 Liquid Waste\n            Management Core Area and Western Communities Establishment Bylaw\n            NO. 1, 1995, Amendment Bylaw No. 3, 2020\n               Staff Report (Engineering)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1004b6397efe5a592578fa05778489f1d7ce5e7bd899decc11feb72c1722362e",
+      "pages": [
+        8,
+        9
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1609,
+      "claim_sha256": "280a6157b902899bd52b2331b12fe48a99a05e5a87ad9c9973c3eabf483ba879",
+      "legacy_text": "That Council consent to the CRD adopting Bylaw No. 4304, Liquid Waste Management Core Area and Western Communities Service Establishment Bylaw No. 1,1995, Amendment Bylaw No. 3, 2020.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 24282,
+        "source_order": 11,
+        "key": "3900278c13b2d474d86c356a95fcdacf780edc877e13cfa2d074813a27eeee57",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council consent to the CRD adopting Bylaw No. 4304, Liquid Waste Management Core Area\n      and Western Communities Service Establishment Bylaw No. 1,1995, Amendment Bylaw No. 3,\n      2020.",
+        "source_block": "MOVED BY:      COUNCILLOR BLACKWELL\nSECONDED:      COUNCILLOR SEATON\n\n\n      That Council consent to the CRD adopting Bylaw No. 4304, Liquid Waste Management Core Area\n      and Western Communities Service Establishment Bylaw No. 1,1995, Amendment Bylaw No. 3,\n      2020.\n\n\n                                                                                                            CARRIED.\n\n\n\n      g)    Pre-Approval to Award Bear Mountain Parkway Ultimate Construction Contract\n               Staff Report (Engineering)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "288d090dde98244e3e118e867c7280ea0de2d153cd7bd9feefb148d7b43895d4",
+      "pages": [
+        9
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1610,
+      "claim_sha256": "df00b7c9d1acd11f9edcd4b5493ecd749c2fbf963e3820b6afc6b5925fd573ce",
+      "legacy_text": "That Council work with the Developer group responsible for constructing the ultimate road configuration of Bear Mountain Parkway from Flint Avenue to up to Marble Drive, including the construction of the roundabout at Marble Drive; and Award the construction contract to the lowest compliant bidder subject to all funding agreements being in place.",
+      "source_identity": {
+        "meeting_id": 150,
+        "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+        "source_offset": 24807,
+        "source_order": 12,
+        "key": "606866498699e4f2b99f5de04eadd5ad9727974e9d21aec97a2615a9733c8228",
+        "source_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "June 29, 2020\n                                                                                                      Page 10 of 12\n\n\n      That Council work with the Developer group responsible for constructing the ultimate road\n      configuration of Bear Mountain Parkway from Flint Avenue to up to Marble Drive, including the\n      construction of the roundabout at Marble Drive; and\n\n      Award the construction contract to the lowest compliant bidder subject to all funding agreements\n      being in place and subject to the bid amount being within the project budget.",
+        "source_block": "MOVED BY:      COUNCILLOR WADE\nSECONDED:      COUNCILLOR SZPAK\n\n                                                                                                      June 29, 2020\n                                                                                                      Page 10 of 12\n\n\n      That Council work with the Developer group responsible for constructing the ultimate road\n      configuration of Bear Mountain Parkway from Flint Avenue to up to Marble Drive, including the\n      construction of the roundabout at Marble Drive; and\n\n      Award the construction contract to the lowest compliant bidder subject to all funding agreements\n      being in place and subject to the bid amount being within the project budget.\n\n                                                                                                          CARRIED.\n\n\n\n\n      h) COVID-19 and City Hall Access\n            -   Staff Report (Legislative Services)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "a563d52cbca883ad26ddab67b3137f1bcaca4c90eb6dc0281d88b8a4acf3afdf",
+      "pages": [
+        9,
+        10
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+  "second_independent_original_image_review_sha256": "22385b96157b55e86db9d02a7cc5a3774ce4b75c1f9612216d3ee9eb340724e5",
+  "documentary_preservations": [
+    {
+      "motion_id": 1611,
+      "type": "reviewed_adjournment_narration_preservation",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "claim_sha256": "f2b23b3ce28cecf1cdcce9e0fce05321c3ffe16e445c7b3908d27a4f7814232c",
+      "claim_row_sha256": "e19848e04ef72f851658066d6d02455288b357d8c67bb6ed338dc34c38546ad5",
+      "legacy_text": "That the meeting be adjourned.",
+      "printed_body": "Mayor Young adjourned the meeting at 7:00 pm.",
+      "page": 12,
+      "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208",
+      "render_sha256": "dc9a1de81528d3a190f6ef640e9d2d73d2b91dda0166af9d27d6923944727f8c",
+      "source_passage": "Mayor Young adjourned the meeting at 7:00 pm.",
+      "source_passage_start": 30600,
+      "native_passage": "Mayor Young adjc^ffned the meeting at 7:00 pm.",
+      "native_passage_start": 1085,
+      "native_correction": {
+        "page": 12,
+        "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208",
+        "render_sha256": "dc9a1de81528d3a190f6ef640e9d2d73d2b91dda0166af9d27d6923944727f8c",
+        "native_quote": "Mayor Young adjc^ffned the meeting at 7:00 pm.",
+        "printed_quote": "Mayor Young adjourned the meeting at 7:00 pm.",
+        "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+        "authority": "reviewed_documentary_native_witness_correction_only",
+        "second_independent_image_review_sha256": "22385b96157b55e86db9d02a7cc5a3774ce4b75c1f9612216d3ee9eb340724e5"
+      }
+    }
+  ]
+}

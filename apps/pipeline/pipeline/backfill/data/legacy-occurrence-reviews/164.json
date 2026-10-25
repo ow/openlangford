@@ -1,0 +1,482 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 164,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+  "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2025-03-03",
+  "source_text_sha256": "32919c971dc3b8d84d5a4ac2828593a3668aece4b4a4dbd367227b928f839ba1",
+  "formal_inventory_sha256": "ce75fbf0e1d1ad662e3fbc110622028cff00291360735ec8a6996a5a5260a21e",
+  "claim_inventory_sha256": "8c16ff42be4e4be74849d1a9a9fbfa7c88f8618e87c0484944af5d4367f3d153",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "3516d85edf4a32fe07310718078c340e400dea0effc01ef179aec264c56de807"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "d7f98061b0364926eabf90caf13bf3108e3ae92e946157d4e23659246855c8b1"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "d50d4fb7a88ea39ba80c14497f86e9c102261933a945d0024ac394e434fe1c90"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "94e019437afdd9ec7882ff752a3cda4df747f588d05b98c7d957781b2e965cc6"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "16eb7101a868da1e49b818a7da6c0c66163b634ec79d979d7623de7c3b221453"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "bba8894e2f5ef0e6df23316a7c494ef6e9316bcfcf306a549e85f8dfa4fcb666"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "23d6b0be54e84913ec2003a5b784905738f2c6757b01203ebd154d9ef65f28f4"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "66c59c23e1b3d036c038e3815b5b73e72b0c9e761e3758396e7d8eb1bce48351"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "34344f07867b334f095760e48f93812b6d50e58b3e256b9f9a9b403daae738ca"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "fae64e3967daa96db9f62b97e78020c7aaa648390d266f74673852698525ee25"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "ed24a834835e9995f8c7df41ea1cfa2e8e93fb5252666c095ba32e42b60b23df"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "b490d14ed8782bed28805b2c1db4dc334b0ecb3c97caa9df3302dedcfcc5bdc1"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "dca7e0be955b89a3a5a589b9dbe27607427e0785013dd6cb5e8e0017076924e0"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 1737,
+      "claim_sha256": "aeacf683c7cda2c55f47570cc406c5b884a74de5b50a61cd52b51c4773465aed",
+      "legacy_text": "THAT Council approve the agenda as amended by adding a new section eleven (11) titled 'Reports' and a new item numbered 11.1 titled 'Verbal Report - Latoria Approval to Issue Tender' and that the agenda be renumbered accordingly.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 1822,
+        "source_order": 0,
+        "key": "7409c9f38677c97018564d87dbe88afa82132942661f70f0e60d0142aba5df9b",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council approve the agenda as amended by adding a new section eleven (11) titled\n     \"Reports\" and a new item numbered 11.1 titled \"Verbal Report - Latoria Approval to Issue\n     Tender\" and that the agenda be renumbered accordingly.",
+        "source_block": "MOVED BY: GUIRY\n       SECONDED: HARDER\n\n     THAT Council approve the agenda as amended by adding a new section eleven (11) titled\n     \"Reports\" and a new item numbered 11.1 titled \"Verbal Report - Latoria Approval to Issue\n     Tender\" and that the agenda be renumbered accordingly.\n\n                                                                                        Motion CARRIED.\n\n5.   PRESENTATIONS\n\n     5.1     Active Transportation Plan & Transportation Master Plan (Background/Phase 1) - Nadine\n             King, Vice President & Tim Shah, Team Lead, Watt Consulting Group\n\n             N. King, Vice President, Watt Consulting, T. Shah, Team Lead, Watt Consulting, and K.\n             Balzer, Director of Engineering and Public Works provided a presentation and responded\n             to questions from Council.\n\n6.   PUBLIC PARTICIPATION\n\n     Mayor Goodmanson opened public participation at 7:56 pm\n\n     C. Foxall, Langford Resident - Item 5.1 - Speaker expressed support for proposed updates\n     regarding the Veterans Memorial Parkway and Goldstream Avenue intersection. Item 9.2.4 -\n     Speaker expressed concern regarding the proposed bylaw amendment. Speaker expressed\n     concern regarding payment methods currently offered by the City.\n\n     R.Louie, Langford Resident - Item 10.1 - Speaker expressed support for the proposed RCMP\n     town hall. Item 9.2.4 - Speaker expressed concern with the proposed bylaw amendment as\n     presented.\n\n     S.Rossander, Langford Resident - Item 9.2.4 - Speaker expressed concern with the proposed\n     bylaw amendment as presented. Speaker expressed concern regarding payment methods\n     currently offered by the City.\n\n     W. Bowers, Langford Resident - Item 10.1 - Speaker expressed support for the proposed RCMP\n     town hall. Item 9.2.4 and 11.4 - Speaker expressed opposition to the bylaw amendment as\n     presented. Item 5.1 - Speaker expressed concern regarding the costs associated with the\n     development of the Active Transportation Plan and Transportation Master Plan work that is\n     underway.\n\n     W. Hobbs, Langford Resident - Item 9.2.4 - Speaker expressed concern with the proposed bylaw\n     amendment as presented. Item 5.1 - Speaker expressed concern with the hours of the upcoming\n     open house. Item 10.1 - Speaker expressed support for the proposed RCMP town hall.\n\n     A. Allan, Langford Resident - Item 9.1.2 - Speaker expressed concern with the rezoning\n     application as presented. Item 9.2.4 - Speaker expressed concern regarding payment methods\n     currently offered by the City.\n\n     S. Sifert, Langford Resident - Item 9.2.4 - Speaker expressed concern with the proposed bylaw\n     amendment as presented. Item 10.1 - Speaker expressed support for the proposed RCMP town\n     hall. Item 9.2.2 - Speaker expressed support for the policy as presented. Speaker expressed\n     support for the City's policy work that is underway.\n\n     L.Foxall, Langford Resident - Item 11.1 - Speaker expressed concern regarding the addition of\n     the late item. Item 10.1- Speaker expressed support for the proposed RCMP town hall. Item\n     9.2.4 - Speaker expressed concern with the proposed bylaw amendment as presented.\n\n     P. Hamilton, Langford Resident - Item 5.1- Speaker inquired about public consultation and\n     accessibility considerations regarding the Active Transportation Plan and Transportation Master\n     Plan work that is underway.\n\n     M. Morton, Langford Resident - Item 9.2.4 - Speaker expressed concern regarding the proposed\n     bylaw as presented. Item 10.1 - Speaker expressed support for the proposed RCMP town hall.\n\n     L. Foxall, Langford Resident - Item 5.1 - Speaker expressed concerns with the Active\n     Transportation Plan and Transportation Master Plan work that is underway.\n\n     S. Sifert, Langford Resident - Item 5.1 - Speaker expressed concerns with the Active\n     Transportation Plan and Transportation Master Plan work that is underway.\n\n     Mayor Goodmanson closed public participation at 8:26 pm.\n\n7.   CONSENT AGENDA",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4a0e0fba227d74445d8f78d326d2f332c7c1188ca0ba591349e0131c9bf6bf5d",
+      "pages": [
+        1,
+        2
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1738,
+      "claim_sha256": "41bfa419bd5ca63f4d8ea403ecf01e2afcdc33697f1ff2fc4a84912ddc0b8304",
+      "legacy_text": "THAT Council adopt the recommendations for each item of the Consent Agenda as presented.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 5901,
+        "source_order": 1,
+        "key": "de43e635890034fa9a9a967a6eeb268e83a59f74b195fcf5e42bb2fa93eef8ef",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council adopt the recommendations for each item of the Consent Agenda as presented.\n\n           •   Minutes of the West Shore Parks and Recreation Society Board of Directors Meeting -\n               January 16, 2025 (RECEIVE)\n\n           •   Minutes of the Council Meeting - February 18, 2025 (ADOPT)\n\n           •   Draft Minutes of the Special Sustainable Development Advisory Committee Meeting -\n               February 24, 2025 (RECEIVE)\n\n           •   Draft Minutes of the Community Advisory Committee Meeting - February 25, 2025\n               (RECEIVE)",
+        "source_block": "MOVED BY: HARDER\n     SECONDED: MORLEY\n\n     THAT Council adopt the recommendations for each item of the Consent Agenda as presented.\n\n           •   Minutes of the West Shore Parks and Recreation Society Board of Directors Meeting -\n               January 16, 2025 (RECEIVE)\n\n           •   Minutes of the Council Meeting - February 18, 2025 (ADOPT)\n\n           •   Draft Minutes of the Special Sustainable Development Advisory Committee Meeting -\n               February 24, 2025 (RECEIVE)\n\n           •   Draft Minutes of the Community Advisory Committee Meeting - February 25, 2025\n               (RECEIVE)\n\n                                                                                         Motion CARRIED.\n8.   CONSIDERATION OF MATTERS REMOVED FROM THE CONSENT AGENDA\n\n     None removed.\n\n9.   COMMITTEE RESOLUTIONS\n\n     9.1       Special Sustainable Development Advisory Committee Meeting Resolutions - February\n               24. 2025\n\n               9.1.1   Application to renew a Temporary Use Permit TUP21-0006 to allow for a light\n                       industrial use in a Heavy Industrial (M3) zone at 1057 Marwood Avenue for\n                       additional three years.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "e45fb45a68049757629f1a42d04b3bc20e9aacd7193269dffab110536780596c",
+      "pages": [
+        3
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1739,
+      "claim_sha256": "f44aa2e3285e314f6c87c7f7d541ce42def97da162bee31ddc1bb23ec1d32b28",
+      "legacy_text": "THAT Council renew TUP21-0006 to allow for light industrial business of HVAC/R\n        fabrication, installation, and service at 1057 Marwood Avenue for a period of\n        three years, subject to the following terms and conditions:\n\n            i.   That the temporary use permit renewal be issued for a period of three\n                 years from time of issuance;\n\n            ii. That the unenclosed storage use is completely screened to a height of at\n                least 2.5 m (8.2 ft) by building a solid decorative fence located within a\n                landscape and screening area not less than 1.5 (4.9 ft) in width;\n\n            iii. That business operations at the site be restricted to the hours of 7 a.m.\n                 to 7 p.m.;\n\n            iv. That site lighting will be shielded to ensure that light does not shine\n                directly onto or spill onto the neighboring properties;\n\n            v. That existing vehicles and materials that do not pertain to the business\n               be removed;\n\n            vi. That fire and safety equipment be up to date to the satisfaction of the\n                Fire Chief;\n\n                 AND\n\n            vii. That Council direct staff to work with the applicant to provide a bond for\n                 the value of the fencing and landscaping.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 7100,
+        "source_order": 2,
+        "key": "9832313e3159b300a1fd07547e02ae9324f8bb02d42ce11af830a07b261255a6",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council renew TUP21-0006 to allow for light industrial business of HVAC/R\n        fabrication, installation, and service at 1057 Marwood Avenue for a period of\n        three years, subject to the following terms and conditions:\n\n            i.   That the temporary use permit renewal be issued for a period of three\n                 years from time of issuance;\n\n            ii. That the unenclosed storage use is completely screened to a height of at\n                least 2.5 m (8.2 ft) by building a solid decorative fence located within a\n                landscape and screening area not less than 1.5 (4.9 ft) in width;\n\n            iii. That business operations at the site be restricted to the hours of 7 a.m.\n                 to 7 p.m.;\n\n            iv. That site lighting will be shielded to ensure that light does not shine\n                directly onto or spill onto the neighboring properties;\n\n            v. That existing vehicles and materials that do not pertain to the business\n               be removed;\n\n            vi. That fire and safety equipment be up to date to the satisfaction of the\n                Fire Chief;\n\n                 AND\n\n            vii. That Council direct staff to work with the applicant to provide a bond for\n                 the value of the fencing and landscaping.",
+        "source_block": "MOVED BY: GUIRY\n                       SECONDED: WAGNER\n\n        THAT Council renew TUP21-0006 to allow for light industrial business of HVAC/R\n        fabrication, installation, and service at 1057 Marwood Avenue for a period of\n        three years, subject to the following terms and conditions:\n\n            i.   That the temporary use permit renewal be issued for a period of three\n                 years from time of issuance;\n\n            ii. That the unenclosed storage use is completely screened to a height of at\n                least 2.5 m (8.2 ft) by building a solid decorative fence located within a\n                landscape and screening area not less than 1.5 (4.9 ft) in width;\n\n            iii. That business operations at the site be restricted to the hours of 7 a.m.\n                 to 7 p.m.;\n\n            iv. That site lighting will be shielded to ensure that light does not shine\n                directly onto or spill onto the neighboring properties;\n\n            v. That existing vehicles and materials that do not pertain to the business\n               be removed;\n\n            vi. That fire and safety equipment be up to date to the satisfaction of the\n                Fire Chief;\n\n                 AND\n\n            vii. That Council direct staff to work with the applicant to provide a bond for\n                 the value of the fencing and landscaping.\n\n                                                                             Motion CARRIED.\n\n9.1.2   Application to Rezone 2795 and 2799 Scafe Road from One- and Two-Family\n        Residential (R2) to City Centre (CC1) to allow for the Development of a 6-Storey\n        Residential Building\n\n        Councillor Harder declared a perceived conflict of interest regarding the 2795\n        and 2799 Scafe Road Rezoning Application due to the site's proximity to her\n        home where she serves on the strata board and left the meeting at 8:33 pm.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "333cd232cbd871b0cc2c016fae7687e37cccfb12692cf43cfaaeeee6411b0777",
+      "pages": [
+        3,
+        4
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1740,
+      "claim_sha256": "57c9afd776f97a31b959212c1a986e30bb89233adad35536887cf0211145ccb4",
+      "legacy_text": "THAT Council direct staff to prepare a bylaw to amend the zoning designation of the properties located at 2795 and 2799 Scafe Road from 'One- and Two-Family Residential' (R2) to City Centre (CC1) subject to the listed terms and conditions, and authorize the Director of Development Services to issue a variance to reduce minimum parking and require enhanced bicycle provisions.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 9055,
+        "source_order": 3,
+        "key": "7a0b80f8f01479176d238cd9e565cec55442235922bf5250f6730c3a00268224",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n            1. Direct staff to prepare a bylaw to amend the zoning the zoning\n               designation of the properties located at 2795 and 2799 Scafe Road from\n               'One- and Two-Family Residential' (R2) to City Centre (CC1) subject to\n               the following terms and conditions:\n\n                 a. That the applicant provides, as a bonus for increased density, the\n                    following contributions per dwelling unit, prior to the issuance of a\n                    building permit:\n\n                     i.   $750 towards the Affordable Housing Reserve Fund; and\n\n                     ii. $2,850 towards the General Amenity Reserve Fund;\n\nsubject to reductions in accordance with the Affordable Housing and Amenity\nContribution Policy and the Attainable Housing Policy depending on use and\nheight.\n\n       b. That the applicant, prior to Bylaw Adoption, registers a Section 219\n       covenant in priority of all other charges on title, that agrees to the\n       following:\n\n       i.   That the following will be provided and implemented to Bylaw No.\n            1000 standards to the satisfaction of the Director of Engineering\n            prior to the issuance of a building permit:\n\n            1. Full frontage improvements, which includes additional frontage\n               works immediately north of the lobby as presented to Council at\n               the time of rezoning to be maintained by the owner(s)/strata;\n               and\n\n            2. A storm water management plan; and\n\n       ii. That the following will be provided and implemented to Bylaw No.\n           1000 standards to the satisfaction of the Director of Engineering\n           prior to any development permit or land alterations:\n\n            1. A construction parking and delivery management plan; and\n\n            2. A mitigation plan; and\n\n       iii. That the properties be consolidated prior to issuance of a\n            Development Permit for Form and Character;\n\n       iv. That a separate covenant be registered prior to issuance of a\n           building permit for the proposed development that ensures\n           residential parking is allocated to each unit and is not provided in\n           exchange for compensation separate from that of a residential unit;\n\n       v. That tree protection measures, inclusive of tree protection fencing,\n          are implemented prior to commencement of work to protect the\n          trees identified for retention in the arborist report throughout the\n          construction period;\n\n       vi. That the building be constructed with electric heat pumps for each\n           unit, or an equivalent electric centralized system that allows each\n           unit to control their own temperature, be installed prior to issuance\n           of an occupancy permit;\n\n      vii. That all concrete used on-site will utilize ready-mix concrete that\n           meets or exceeds the weighted average Global Warming Potential\n           targets based on Concrete BC Baseline (average) mix data, and that\n           prior to the issuance of a Building Permit the applicant shall provide\n           a Type Ill Environmental Product Declaration that is 3rd party\n           verified specifying the total Global Warming Potential value and\n           confirming that the proposed development meets the requirements\n           of Low Carbon Concrete Policy POL-0167-PLAN;\n\n                      viii. That, prior to the issuance of a Building Permit, the developer\n                            enters into a Housing Agreement with the City that requires a\n                            minimum 5% of units constructed be directed to and sold in\n                            accordance with the terms of the Attainable Home Ownership\n                            Program Policy (POL-0166-PLAN) OR a minimum 10% of units\n                            constructed be rented for at least 10% below the benchmark rent\n                            for the unit type for a term not less than 25 years, and that the\n                            developer identify the Attainable Units on the plans submitted for\n                            the required Development Permit application.\n\n                      ix. That the building plan reflects the rendering by the architect in its\n                          form and character and use of materials; and\n\n                      x. That the landscaping plan include native and performance species.\n\n              AND\n\n                      2. Authorize the Director of Development Services to issue the following\n                      variance within the future Development Permit for Form and Character\n                      of this site:\n\n                          a) That Table 1 of Section 4.01.01 be varied by reducing the\n                          minimum number of parking spaces from the required 1.25 spaces\n                          per dwelling, of which 0.25 shall be designed for visitor parking, to\n                          1.08 spaces per dwelling, of which 0.08 shall be designed for visitor\n                          parking, subject to the following:\n\n                              i. Provide at least 2 bike parking stalls per residential unit;\n                              ii. Provide a bike wash and repair station;\n                              iii. Provide 11 bike stalls that will accommodate cargo bikes;\n                              and\n                              iv. Provide electricity to all the bike stalls for e-bike charging.",
+        "source_block": "MOVED BY: GUIRY\n        SECONDED: SZPAK\n\n        THAT Council:\n\n            1. Direct staff to prepare a bylaw to amend the zoning the zoning\n               designation of the properties located at 2795 and 2799 Scafe Road from\n               'One- and Two-Family Residential' (R2) to City Centre (CC1) subject to\n               the following terms and conditions:\n\n                 a. That the applicant provides, as a bonus for increased density, the\n                    following contributions per dwelling unit, prior to the issuance of a\n                    building permit:\n\n                     i.   $750 towards the Affordable Housing Reserve Fund; and\n\n                     ii. $2,850 towards the General Amenity Reserve Fund;\n\nsubject to reductions in accordance with the Affordable Housing and Amenity\nContribution Policy and the Attainable Housing Policy depending on use and\nheight.\n\n       b. That the applicant, prior to Bylaw Adoption, registers a Section 219\n       covenant in priority of all other charges on title, that agrees to the\n       following:\n\n       i.   That the following will be provided and implemented to Bylaw No.\n            1000 standards to the satisfaction of the Director of Engineering\n            prior to the issuance of a building permit:\n\n            1. Full frontage improvements, which includes additional frontage\n               works immediately north of the lobby as presented to Council at\n               the time of rezoning to be maintained by the owner(s)/strata;\n               and\n\n            2. A storm water management plan; and\n\n       ii. That the following will be provided and implemented to Bylaw No.\n           1000 standards to the satisfaction of the Director of Engineering\n           prior to any development permit or land alterations:\n\n            1. A construction parking and delivery management plan; and\n\n            2. A mitigation plan; and\n\n       iii. That the properties be consolidated prior to issuance of a\n            Development Permit for Form and Character;\n\n       iv. That a separate covenant be registered prior to issuance of a\n           building permit for the proposed development that ensures\n           residential parking is allocated to each unit and is not provided in\n           exchange for compensation separate from that of a residential unit;\n\n       v. That tree protection measures, inclusive of tree protection fencing,\n          are implemented prior to commencement of work to protect the\n          trees identified for retention in the arborist report throughout the\n          construction period;\n\n       vi. That the building be constructed with electric heat pumps for each\n           unit, or an equivalent electric centralized system that allows each\n           unit to control their own temperature, be installed prior to issuance\n           of an occupancy permit;\n\n      vii. That all concrete used on-site will utilize ready-mix concrete that\n           meets or exceeds the weighted average Global Warming Potential\n           targets based on Concrete BC Baseline (average) mix data, and that\n           prior to the issuance of a Building Permit the applicant shall provide\n           a Type Ill Environmental Product Declaration that is 3rd party\n           verified specifying the total Global Warming Potential value and\n           confirming that the proposed development meets the requirements\n           of Low Carbon Concrete Policy POL-0167-PLAN;\n\n                      viii. That, prior to the issuance of a Building Permit, the developer\n                            enters into a Housing Agreement with the City that requires a\n                            minimum 5% of units constructed be directed to and sold in\n                            accordance with the terms of the Attainable Home Ownership\n                            Program Policy (POL-0166-PLAN) OR a minimum 10% of units\n                            constructed be rented for at least 10% below the benchmark rent\n                            for the unit type for a term not less than 25 years, and that the\n                            developer identify the Attainable Units on the plans submitted for\n                            the required Development Permit application.\n\n                      ix. That the building plan reflects the rendering by the architect in its\n                          form and character and use of materials; and\n\n                      x. That the landscaping plan include native and performance species.\n\n              AND\n\n                      2. Authorize the Director of Development Services to issue the following\n                      variance within the future Development Permit for Form and Character\n                      of this site:\n\n                          a) That Table 1 of Section 4.01.01 be varied by reducing the\n                          minimum number of parking spaces from the required 1.25 spaces\n                          per dwelling, of which 0.25 shall be designed for visitor parking, to\n                          1.08 spaces per dwelling, of which 0.08 shall be designed for visitor\n                          parking, subject to the following:\n\n                              i. Provide at least 2 bike parking stalls per residential unit;\n                              ii. Provide a bike wash and repair station;\n                              iii. Provide 11 bike stalls that will accommodate cargo bikes;\n                              and\n                              iv. Provide electricity to all the bike stalls for e-bike charging.\n\n                                                                                   Motion CARRIED.\n\n                                                                    OPPOSED: Councillor Yacucha\n\n              Councillor Harder returned to the meeting at 8:55 pm.\n\n9.2   Community Advisory Committee Meeting Resolutions - February 25, 2025\n\n      9.2.1   West Shore RCMP 2024 Annual Report",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "cb45064e1b00f8839b4312db44272106c536056a9d0efeb23f681e563268915f",
+      "pages": [
+        4,
+        5,
+        6
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1741,
+      "claim_sha256": "c43a7617043b4e5157094e6569a3fec82262c286b2f200ae8ba1946ee0db6145",
+      "legacy_text": "THAT Council receive this report for information.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 15056,
+        "source_order": 4,
+        "key": "0f9116cc1fad654ac6baf58e7f08ea0eb798e216ef8dd1bbf6e333deccdad515",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council receive this report for information.",
+        "source_block": "MOVED BY: YACUCHA\n              SECONDED: HARDER\n\n              THAT Council receive this report for information.\n\n                                                                                   Motion CARRIED.\n\n      9.2.2   Lowering of Langford Flags Policy — Proposed Repeal and Replacement",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f93cf6bbcef610dfa4f214a33e685e8c33430a894498c94a28a0644849cd9f14",
+      "pages": [
+        6
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1742,
+      "claim_sha256": "e6f607c31d9d3afcfcb7091ac024d86cdf00fefb34364c2ff00ff894bd79c2cf",
+      "legacy_text": "THAT Council repeal City of Langford 'Lowering of Langford Flag Policy' (POL-0010-ADMIN) and replace with City of Langford 'Flag Protocol Policy' (POL-0179-ADMIN) as presented.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 15368,
+        "source_order": 5,
+        "key": "340c49da22e1974827cf9653fab6fefec085433d1b93e26f95ee8042429e3e21",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council repeal City of Langford \"Lowering of Langford Flag Policy\" (POL-\n         0010-ADMIN) and replace with City of Langford \"Flag Protocol Policy\" (POL-\n         0179-ADMIN) as presented.",
+        "source_block": "MOVED BY: YACUCHA\n              SECONDED: MORLEY\n\n         THAT Council repeal City of Langford \"Lowering of Langford Flag Policy\" (POL-\n         0010-ADMIN) and replace with City of Langford \"Flag Protocol Policy\" (POL-\n         0179-ADMIN) as presented.\n\n                                                                            Motion CARRIED.\n9.2.3   Bylaw No's. 2120, 2121, 2122, and 2125 - Development Services Fees and\n        Charges Report",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "dcb890297941408febcd351d12dda68440ffd4a21f3eaeb1905bff1c4983e50e",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1743,
+      "claim_sha256": "053ff36d8c65d4020d883f99977d6640114c4041117c3197bacbd4e1e7b75304",
+      "legacy_text": "THAT Council:\n\n        1. Consider first, second, and third readings to Bylaw Nos. 2120, 2121, 2122\n        and 2125;\n\n        AND\n\n        2. Direct staff to:\n\n                a) Bring forward an amended fee schedule with respect to DP\n                amendment fees.\n\n                b) Engage a consultant to conduct a wholesale review of Development\n                Services fees and charges.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 15834,
+        "source_order": 6,
+        "key": "036a4cf3c3e21c1219185206dbf6048575ce63721671977c18ea6a9f7f7a72bb",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council:\n\n        1. Consider first, second, and third readings to Bylaw Nos. 2120, 2121, 2122\n        and 2125;\n\n        AND\n\n        2. Direct staff to:\n\n                a) Bring forward an amended fee schedule with respect to DP\n                amendment fees.\n\n                b) Engage a consultant to conduct a wholesale review of Development\n                Services fees and charges.",
+        "source_block": "MOVED BY: YACUCHA\n        SECONDED: HARDER\n\n        THAT Council:\n\n        1. Consider first, second, and third readings to Bylaw Nos. 2120, 2121, 2122\n        and 2125;\n\n        AND\n\n        2. Direct staff to:\n\n                a) Bring forward an amended fee schedule with respect to DP\n                amendment fees.\n\n                b) Engage a consultant to conduct a wholesale review of Development\n                Services fees and charges.\n\n                                                                           Motion CARRIED.\n\n9.2.4   Bylaw No. 2123 - Revised Fees and Charges Report",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "6b0d71db77694f4326981ec7067b63a02957861ce75dcb1bb4c8230a010404fb",
+      "pages": [
+        7
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1744,
+      "claim_sha256": "fcd5575a6a64b46356af7a05a0fec7664f36638322fb80b54816f0be4185e69c",
+      "legacy_text": "THAT Council consider first, second, and third reading to Fees and Charges Bylaw No. 113, 1995 Amendment #16, Bylaw No. 2123, 2024 as presented.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 16442,
+        "source_order": 7,
+        "key": "0beedf83a9de1d14923acc72312b0fd1a52ca3279917f380299d284e6e1edf8c",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council consider first, second, and third reading to Fees and Charges Bylaw\n        No. 113, 1995 Amendment #16, Bylaw No. 2123, 2024 as presented.",
+        "source_block": "MOVED BY: YACUCHA\n        SECONDED: HARDER\n\n        THAT Council consider first, second, and third reading to Fees and Charges Bylaw\n        No. 113, 1995 Amendment #16, Bylaw No. 2123, 2024 as presented.\n\n                                                                           Motion CARRIED.\n\n9.2.5   Potential Addition of Annual Funding Request Presentation Meeting",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b5d2b4cc92ca82a71252ad46c73e010fc18370ce3e6694191d392321e5d814fb",
+      "pages": [
+        7
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1745,
+      "claim_sha256": "200cb12899a99114a25b4a0af00dd6e21b02f2b9253fc2ebcb2bd86d386e5f12",
+      "legacy_text": "THAT that Council provide a designated opportunity for the annual community and group organization funding request applicants to make a short presentation to the Community Advisory Committee (CAC) for a maximum of three (3) minutes on one or more evenings prior to the scheduled CAC meeting prior to allow for better community engagement and informed discussions and decision-making.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 17755,
+        "source_order": 10,
+        "key": "cfc02e8cc4f20391690427bfa1c91b6a4b9868ee5cfa77a9930ead1c15773027",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT that Council provide a designated opportunity for the annual community\n                     and group organization funding request applicants to make a short presentation\n                     to the Community Advisory Committee (CAC) for a maximum of three (3)\n                     minutes on one or more evenings prior to the scheduled CAC meeting prior to\n                     allow for better community engagement and informed discussions and decision-\n                     making.",
+        "source_block": "On the Main Motion:\n\n                     THAT that Council provide a designated opportunity for the annual community\n                     and group organization funding request applicants to make a short presentation\n                     to the Community Advisory Committee (CAC) for a maximum of three (3)\n                     minutes on one or more evenings prior to the scheduled CAC meeting prior to\n                     allow for better community engagement and informed discussions and decision-\n                     making.\n\n                                                                                        Motion CARRIED.\n\n                                                      OPPOSED: Councillors Guiry, Szpak, and Harder\n\n10.   CORRESPONDENCE\n\n      10.1   West Shore RCMP Police Priorities for 2025 Letter\n\n             S. Rose, Inspector, Westshore RCMP provided an overview of the letter.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "resumed_main_motion"
+      },
+      "raw_block_sha256": "16e5877623c7899b104940d0cad9a9cffbd83b03aad086e7d531f04b37620e6c",
+      "pages": [
+        8
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1746,
+      "claim_sha256": "6b5c8b461d2e8c9228a1472f475a4312a835df5a1424620eb8db4ebd9a36e316",
+      "legacy_text": "THAT Council consider the following as policing priorities for the West Shore RCMP in 2025: Police presence in the community including attention to the unhoused population; Drug issues; Addressing concerns regarding gangs; Youth issues; Mental health; Traffic; Property crime and theft; Cybercrime; Online fraud; and Social media driven issues particularly those affecting youth.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 21505,
+        "source_order": 18,
+        "key": "aee3ba6894e922e51a8997a518ae03b2d9e9824e58e1ab58c77c734bc4a730bc",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council consider the following as policing priorities for the West Shore RCMP in\n             2025:\n\n                 •      Police presence in the community including attention to the unhoused\n                        population;\n                 •      Drug issues;\n                 •      Addressing concerns regarding gangs;\n                 •      Youth issues;\n                 •      Mental health\n                 •      Traffic;\n                 •      Property crime and theft;\n                 •      Cybercrime;\n                 •      Online fraud; and\n                 •      Social media driven issues particularly those affecting youth.",
+        "source_block": "On the Main Motion:\n\n             THAT Council consider the following as policing priorities for the West Shore RCMP in\n             2025:\n\n                 •      Police presence in the community including attention to the unhoused\n                        population;\n                 •      Drug issues;\n                 •      Addressing concerns regarding gangs;\n                 •      Youth issues;\n                 •      Mental health\n                 •      Traffic;\n                 •      Property crime and theft;\n                 •      Cybercrime;\n                 •      Online fraud; and\n                 •      Social media driven issues particularly those affecting youth.\n                                                                                       Motion CARRIED.\n\n                                                                          OPPOSED: Councillor Yacucha",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "resumed_main_motion"
+      },
+      "raw_block_sha256": "3dcdea0f19299635cc4caad807df7116212beaea057e9fa4be4c88b770b25879",
+      "pages": [
+        8,
+        9,
+        10
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1747,
+      "claim_sha256": "a9a9011699634ef4c4c207387aabddc52e8bf69d1905ead53716185229f2d98c",
+      "legacy_text": "That Council direct staff to bring a report to the Community Advisory Committee (CAC) or subsequent Committee during the earliest possible meeting of the calendar year for Committee to review and make recommendations to Council to set the Westshore RCMP priorities for the year.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 22416,
+        "source_order": 19,
+        "key": "5f84141c7f230c25fa8ac548ef6b3107cde67c5dd8b1924557ec3f31a32b1554",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to bring a report to the Community Advisory Committee (CAC)\n             or subsequent Committee during the earliest possible meeting of the calendar year for\n             Committee to review and make recommendations to Council to set the Westshore RCMP\n             priorities for the year.",
+        "source_block": "MOVED BY: YACUCHA\n             SECONDED: HARDER\n\n             That Council direct staff to bring a report to the Community Advisory Committee (CAC)\n             or subsequent Committee during the earliest possible meeting of the calendar year for\n             Committee to review and make recommendations to Council to set the Westshore RCMP\n             priorities for the year.\n\n                                                                                          Motion CARRIED.\n\n\n11.   REPORTS\n\n      11.1   Latoria Road Approval to Issue Tender\n\n             K. Balzer, Director of Engineering and Public Works provided a verbal report to Council.",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "fc1b3569a50e512a45e7892e5a431638d2473b62a09a09fcde4c0594c695159a",
+      "pages": [
+        10
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1748,
+      "claim_sha256": "33c0252b94bbf4790c7948277453c683014315daa64e19c165e5606071e83e14",
+      "legacy_text": "THAT Council amend the resolution from October 21st, 2024 relating to the Latoria Road\n             Phase 1A and 1B projects, as follows:\n\n                 1. BY CHANGING the dollar amount in item 1, Latoria Road Phase 1A from Triangle\n                    Trail to Golden Spire Crescent, from $4,500,000 to $3,725,800;\n\n             AND\n\n                   2.    BY CHANGING the dollar amount in item 2, Latoria Road Phase 1B from\n                         Golden Spire Crescent to Whimfield Terrace from $4,000,000 to $2,629,500;\n\n             AND\n\n                  3. BY DELETING \"if the project is approved in the 2025-2029 five-year financial\n                     plan\"•\n\n             AND\n\n                  4. BY ADDING \"THAT Council authorize the Mayor and CAO, or Corporate Officer,\n                     to execute all related contract documents subject to final approval of the 2025-\n                     2029 five-year financial plan.\"",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 23088,
+        "source_order": 20,
+        "key": "2312ad25617e57eb33b0be65ae7654482ae5d25688b689147694e9bcaa4e3b7b",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council amend the resolution from October 21st, 2024 relating to the Latoria Road\n             Phase 1A and 1B projects, as follows:\n\n                 1. BY CHANGING the dollar amount in item 1, Latoria Road Phase 1A from Triangle\n                    Trail to Golden Spire Crescent, from $4,500,000 to $3,725,800;\n\n             AND\n\n                   2.    BY CHANGING the dollar amount in item 2, Latoria Road Phase 1B from\n                         Golden Spire Crescent to Whimfield Terrace from $4,000,000 to $2,629,500;\n\n             AND\n\n                  3. BY DELETING \"if the project is approved in the 2025-2029 five-year financial\n                     plan\"•\n\n             AND\n\n                  4. BY ADDING \"THAT Council authorize the Mayor and CAO, or Corporate Officer,\n                     to execute all related contract documents subject to final approval of the 2025-\n                     2029 five-year financial plan.\"",
+        "source_block": "MOVED BY: GUIRY\n             SECONDED: HARDER\n\n             THAT Council amend the resolution from October 21st, 2024 relating to the Latoria Road\n             Phase 1A and 1B projects, as follows:\n\n                 1. BY CHANGING the dollar amount in item 1, Latoria Road Phase 1A from Triangle\n                    Trail to Golden Spire Crescent, from $4,500,000 to $3,725,800;\n\n             AND\n\n                   2.    BY CHANGING the dollar amount in item 2, Latoria Road Phase 1B from\n                         Golden Spire Crescent to Whimfield Terrace from $4,000,000 to $2,629,500;\n\n             AND\n\n                  3. BY DELETING \"if the project is approved in the 2025-2029 five-year financial\n                     plan\"•\n\n             AND\n\n                  4. BY ADDING \"THAT Council authorize the Mayor and CAO, or Corporate Officer,\n                     to execute all related contract documents subject to final approval of the 2025-\n                     2029 five-year financial plan.\"\n\n                                                                                         Motion CARRIED.\n\n12.   BYLAWS\n\n      12.1   BYLAW NO. 2120\n\n             \"Subdivision and Development Servicing Bylaw, Amendment No. 24, (Fee Schedule),\n             Bylaw No. 2120, 2025\". (FIRST, SECOND AND THIRD READINGS)",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "c09d1cfb8908909ae9cab5bebecd0c4568ee0d2c2b6a1c2666782b3da1470574",
+      "pages": [
+        10,
+        11
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1749,
+      "claim_sha256": "c759d86cb8d624c21b6661ed8806d3a86dc406a09a82328a7c78ed5e708d531b",
+      "legacy_text": "THAT Council give Subdivision and Development Servicing Bylaw, Amendment No. 24, (Fee Schedule), Bylaw No. 2120, 2025, first, second and third readings.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 24421,
+        "source_order": 21,
+        "key": "57ba995c8b127f22256cd7fc8ef1b095ba9086059d1d7562d5e800fc37004c0b",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council give Subdivision and Development Servicing Bylaw, Amendment No. 24,\n             (Fee Schedule), Bylaw No. 2120, 2025, first, second and third readings.",
+        "source_block": "MOVED BY: YACUCHA\n             SECONDED: MORLEY\n\n             THAT Council give Subdivision and Development Servicing Bylaw, Amendment No. 24,\n             (Fee Schedule), Bylaw No. 2120, 2025, first, second and third readings.\n\n                                                                                        Motion CARRIED.\n\n      12.2   BYLAW NO. 2121\n\n             \"Langford Building Bylaw No. 1160, Amendment No. 16, Bylaw No. 2121, 2025\". (FIRST,\n             SECOND AND THIRD READINGS)",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9b9b994b6a9aa65eaf75e5e33bf34647a7d75608a76088a74138255476f618e8",
+      "pages": [
+        11
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1750,
+      "claim_sha256": "084e3af7a71e8d8f7651d56bfe4fcbcde7a0c2695755afa9476d09597c6586a9",
+      "legacy_text": "THAT Council give Langford Building Bylaw No. 1160, Amendment No. 16, Bylaw No. 2121, 2025, first, second and third readings.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 24935,
+        "source_order": 22,
+        "key": "4f0dd31592365439da097430cf80e66b491c6fc2606a24d249f14a9c11d3d39a",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council give Langford Building Bylaw No. 1160, Amendment No. 16, Bylaw No.\n             2121, 2025, first, second and third readings.",
+        "source_block": "MOVED BY: YACUCHA\n             SECONDED: HARDER\n\n             THAT Council give Langford Building Bylaw No. 1160, Amendment No. 16, Bylaw No.\n             2121, 2025, first, second and third readings.\n\n                                                                                        Motion CARRIED.\n\n      12.3   BYLAW NO. 2122\n\n             \"City of Langford Development Procedures, Amendment Bylaw No. 24, Bylaw No. 2122,\n             2025\". (FIRST, SECOND AND THIRD READINGS)",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "bec38c48f2c4f845b26afc9b49a785485e87e7c8002445b9a96142f1a40a089f",
+      "pages": [
+        11
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1751,
+      "claim_sha256": "2b4f95c240b1844504a3b938c768ddfceb9e51aa25907f689bd02dcf3681c26a",
+      "legacy_text": "THAT Council give City of Langford Development Procedures, Amendment Bylaw No. 24, Bylaw No. 2122, 2025, first, second and third readings.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 25435,
+        "source_order": 23,
+        "key": "d978ef7819941f6d05a0218325e15ce783f6b9a4fd6e498cc4c72f7d695c0791",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council give City of Langford Development Procedures, Amendment Bylaw No. 24,\n             Bylaw No. 2122, 2025, first, second and third readings.",
+        "source_block": "MOVED BY: YACUCHA\n             SECONDED: HARDER\n\n             THAT Council give City of Langford Development Procedures, Amendment Bylaw No. 24,\n             Bylaw No. 2122, 2025, first, second and third readings.\n\n                                                                                        Motion CARRIED.\n\n      12.4   BYLAW NO. 2123\n\n             \"City of Langford Fees and Charges, Amendment No. 16, Bylaw No. 2123, 2025\". (FIRST,\n             SECOND AND THIRD READINGS)",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3d66e78c7153a45416496a2a9cf5c1d1a140ac2fbc6679a8d7822c544b1ecfcf",
+      "pages": [
+        11
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 1752,
+      "claim_sha256": "0580784fe3819df03d4de4adbca4f9f4ea4d53cd82c4a2876a93f0aa9b15e0fb",
+      "legacy_text": "THAT Council give City of Langford Fees and Charges, Amendment No. 16, Bylaw No. 2123, 2025, first, second and third readings.",
+      "source_identity": {
+        "meeting_id": 164,
+        "source_sha256": "2e89cf3dbfd7af625fc5a3a2ed66996d4e0ed651afbf6fba34419be82ffa7e94",
+        "source_offset": 25936,
+        "source_order": 24,
+        "key": "0206f4acc13e7042ea147dabfb9f7502afb02d0bad797a770cc3f8a2a30472ea",
+        "source_file": "archive/langford/Council/2025/03/2025-03-04 700pm Regular Council [e01547f2]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13603",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Bylaw No 2123 Fees and Charges be amended to include \"after the first hour\" after\n              \"$15.00 per quarter hour\" in the proposed fee increased for \"staff time to obtain,\n              photograph, produce and research documents in Schedule A;\n\n              AND\n\n              THAT Council give City of Langford Fees and Charges Bylaw No 2123, 2025 first, second\n              and third readings as amended.",
+        "source_block": "MOVED BY: HARDER\n              SECONDED: YACUCHA\n\n              That Bylaw No 2123 Fees and Charges be amended to include \"after the first hour\" after\n              \"$15.00 per quarter hour\" in the proposed fee increased for \"staff time to obtain,\n              photograph, produce and research documents in Schedule A;\n\n              AND\n\n              THAT Council give City of Langford Fees and Charges Bylaw No 2123, 2025 first, second\n              and third readings as amended.\n\n                                                                                         Motion CARRIED.\n\n                                           OPPOSED Mayor Goodmanson, Councillors Guiry and Szpak\n\n      12.5    BYLAW NO. 2125\n\n              \"City of Langford Sign Bylaw, Amendment No. 3, Bylaw No. 2125, 2025\". (FIRST, SECOND\n              AND THIRD READINGS)",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "770aced464c4de5fbf2602c7bf1fefad42e09890647ec3e915f8a4b27714e5c6",
+      "pages": [
+        11,
+        12
+      ],
+      "reason": "Unique original formal occurrence identified by subject/body/content; preserve all existing fields, metadata, actors and results. Occurrence ownership only, not certification of full transcription or individual ballots.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "76bbbc5ed0c9a0ebcbae83db059a3a96c355ef3c91d4acb67d5c8d66af4376d9",
+  "second_independent_original_image_review_sha256": "178f85f60207dab3e2a5cd45b6352fa7b8895046cd0439f9bd959c7634876708"
+}

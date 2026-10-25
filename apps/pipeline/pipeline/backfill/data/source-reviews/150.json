@@ -1,0 +1,331 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 150,
+    "title": "Public Hearing",
+    "meeting_date": "2020-06-29",
+    "type": "Special Council",
+    "archive_path": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+      "sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2020/06/2020-06-29 Public Hearing [legacy]/Minutes/20200629-Special-SIGNED-council.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200629-Special-SIGNED-council.pdf",
+  "source_sha256": "074650c066858dce5013bc0a2b7724e6a68cee0718732aa7267d0cf582561a67",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "253294a0ddae958942928af08d10137a9266acec4fafbf522b451e3193973300",
+  "corrected_text_sha256": "020c717d462369d98e51a45a46adff00f193ebeae1ba436e59ef79af76b03f2a",
+  "parsed_blocks_sha256": "0526172d5ce1ceee8943a420ff50d37bd5682448b37ceb66c918c913a6b78e15",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "a640b8b31167caff84d83e5aa1648913500051feaee83c85152c35199793b5de",
+      "render_sha256": "3eced2cbc29f65532544cfe4b5d6da945987253521bbfafee174bab1e18e7e93"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "1369f74b5c5c6a9c035f8a4b63809e5dc55939ad757f2e6254ac3ec18d2d9821",
+      "render_sha256": "084799bf4c7a1deefceba47bede1b5dce4232cda10d5a87b9b80e057be62e9ef"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "7ccab1a78fb5c49c0a3bf9a1a7d3a5efd9b8668620231666a1c96b4b4fb91dd4",
+      "render_sha256": "927a8696fddc840a2662355adc545c5944c9f3fd4aba5f1642197e6865740f7b"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "b53382217845f7e61d74d9e59e4db6844841debda7e36edbb9e0d097cf6d6323",
+      "render_sha256": "baed715ed233614705a4a3cf183f1a6772c9caeb119a492cd00b23e35bd876d7"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "fc4485f9c2439a57674238153e3e37beba1b3db24116b3bb796861ecc371ec23",
+      "render_sha256": "ca2da3fcf7995f81188175ed92330034b494f10737e1374276a3733d107f5e13"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "6a2e8fbebd1e76a14a3b25aa949a1e45f38d754d244a67733bc9b46face011ac",
+      "render_sha256": "292c52a754d4395b9f8d0890a76e5045c4d40a169e293b8a06f16244215ba32b"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "24a1d6e9431b854392edb339a53182f90b691439152f36ab41bf11013f45f06a",
+      "render_sha256": "4fab86335e9717cf33d419188a590f5cf6a222c5896254408d7935ad3cae2200"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "efcbcdd0fd7fe4758422a73712f463f6a4f356b869e6b57fcdc678b19cc6874a",
+      "render_sha256": "3555725820dc1df2b6766f4fab4b2e84dd3f10616798365d837d78e0dd3f6b0a"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "ab1544cf8cb6a91e79d1f64220963fd03e0308ccac9242f1b5bd37f31ec4e839",
+      "render_sha256": "eb8ddb27c6d9b3f663891a0ce7ef10c2e4b46ae2c7ecc8efd5333de175f781b5"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "94a68a6edf408396387cc018d37b12474b05c32a31e0abf7d7f15fc17b5261ad",
+      "render_sha256": "3bbcbe64143f7c9459be6473e21b1769b407a3543bab03d1b9102e3451e22c80"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "384914c791026444041905be01a310085aa61212eefcc610f1f0a3e6f0dd22b3",
+      "render_sha256": "9fd6bab6605f72b0f06c0fb243f04804edabd277200b3dbb375532dddcd12473"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208",
+      "render_sha256": "dc9a1de81528d3a190f6ef640e9d2d73d2b91dda0166af9d27d6923944727f8c"
+    }
+  ],
+  "text_corrections": [
+    {
+      "page": 12,
+      "native_quote": "Mayor Young adjc^ffned the meeting at 7:00 pm.",
+      "reviewed_quote": "Mayor Young adjourned the meeting at 7:00 pm.",
+      "authority": "original_image_text_correction_only",
+      "first_image_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "second_image_review_sha256": "22385b96157b55e86db9d02a7cc5a3774ce4b75c1f9612216d3ee9eb340724e5"
+    }
+  ],
+  "accepted_decisions": [
+    {
+      "source_key": "a7a5d608b39a101556587c8880bf4b3f7a22bbe70bef4be94574ead0a8c69ef0",
+      "raw_block_sha256": "b0231645f6f0276f6c79bcc77c6209f819f360ef8e13256b04dcd45c682efba2",
+      "operative_body": "That Council and Committee meetings be held with Council members or Committee members in attendance in person or by electronic means, and that Council and Committee meetings be accessible to the public only by electronic means to ensure openness and continued transparency; AND THAT the changing situation with respect to public access to City Hall and the risks to the public and City Staff is deemed to be an administrative matter and responsibility for related decisions is delegated to the CAO or their delegate for regular City business, except for public attendance at Council or Committee meetings.",
+      "operative_body_sha256": "9357e1f3fd712540a8320f501713496e42a8598d0a66eaf85b2fe825568e6f52",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "94a68a6edf408396387cc018d37b12474b05c32a31e0abf7d7f15fc17b5261ad",
+          "render_sha256": "3bbcbe64143f7c9459be6473e21b1769b407a3543bab03d1b9102e3451e22c80"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "kind": "native_spacing",
+          "reason": "Page10 prints AND THAT the with distinct word boundary; restore only native joinedword spacing."
+        }
+      ]
+    },
+    {
+      "source_key": "98f4149b4e13d6551ae9033684f388d6062912593002f1f03a1172dc930609c0",
+      "raw_block_sha256": "afff64327e4ca9b3cc60266a87b62626433bd3e49d9701f052de9de93d66c24a",
+      "operative_body": "That Council adopt Bylaw 1891.",
+      "operative_body_sha256": "2fcc87ff10ae7c6a71dbf421a571f90e12777b43645833b68388640a5854f902",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "94a68a6edf408396387cc018d37b12474b05c32a31e0abf7d7f15fc17b5261ad",
+          "render_sha256": "3bbcbe64143f7c9459be6473e21b1769b407a3543bab03d1b9102e3451e22c80"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6aa60ef31efc876f357124f5f8f27cb26e864e07ebb425d53fa3707d10304efd",
+      "raw_block_sha256": "aefb18980252998a7f84782cc99709c6f0693e9643758b9f7b908cf5876ffc96",
+      "operative_body": "That Council adopt Bylaw 1900.",
+      "operative_body_sha256": "d9df6a2f32e4664e8fb97c58ec04c0922c8e018214490d3aea3ab7efff3c7158",
+      "result": "CARRIED",
+      "pages": [
+        10,
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "94a68a6edf408396387cc018d37b12474b05c32a31e0abf7d7f15fc17b5261ad",
+          "render_sha256": "3bbcbe64143f7c9459be6473e21b1769b407a3543bab03d1b9102e3451e22c80"
+        },
+        {
+          "page": 11,
+          "native_text_sha256": "384914c791026444041905be01a310085aa61212eefcc610f1f0a3e6f0dd22b3",
+          "render_sha256": "9fd6bab6605f72b0f06c0fb243f04804edabd277200b3dbb375532dddcd12473"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "16900c97b0f4e2e39a8507db68818f04b00734b856590f962018945f882f6490",
+      "raw_block_sha256": "d6db36e9454bbb7402fa4418d15ec13fd79052073bdb165a1d8629e3f3c88ce9",
+      "operative_body": "That Council adopt Bylaw 1901.",
+      "operative_body_sha256": "489d30943f4e61b00d36beb4bd316991ca73a6061647248389b939c96b73a87f",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "384914c791026444041905be01a310085aa61212eefcc610f1f0a3e6f0dd22b3",
+          "render_sha256": "9fd6bab6605f72b0f06c0fb243f04804edabd277200b3dbb375532dddcd12473"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "1e011fe3efa9156c97c69b02aeb55f588af8432613454caa24022d0e4205b7ca",
+      "raw_block_sha256": "38fc885d3d34fc1a256bc17989a53fc349f584270ec8d83b0e836b670fda0575",
+      "operative_body": "That Council adopt Bylaw 1902.",
+      "operative_body_sha256": "097e202ef81868b840097cdfc300f87f0a95ca36ce8a6c4b30792bce3612ce10",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "384914c791026444041905be01a310085aa61212eefcc610f1f0a3e6f0dd22b3",
+          "render_sha256": "9fd6bab6605f72b0f06c0fb243f04804edabd277200b3dbb375532dddcd12473"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "ae13440b9e108c894e424ad9396e5160da52bd097af4c08d2679e1385d862234",
+      "raw_block_sha256": "c52b9bdfebcb50357141b39a5e5906eecc492f6f3e35d69a3865d059194ea1bc",
+      "operative_body": "That Council adopt Bylaw 1911.",
+      "operative_body_sha256": "32abed75830638db2a15dd45e7f1f75808a7c192895bd94d1fb6f91e175ff15c",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "384914c791026444041905be01a310085aa61212eefcc610f1f0a3e6f0dd22b3",
+          "render_sha256": "9fd6bab6605f72b0f06c0fb243f04804edabd277200b3dbb375532dddcd12473"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6ca68c827a0880d2682279e98ad2bc1721a416bf2cd73e3ddf5f493b3917a5d3",
+      "raw_block_sha256": "d6287040a32638aee0b702d7a8da227419b705d92f9dfc28b5f93cba7472f178",
+      "operative_body": "That Council adopt Bylaw 1916.",
+      "operative_body_sha256": "3e9aa8adae255dc8e7f804f4f5c10c39bde9458a49b4d99e39b7a3f5c06b22eb",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "384914c791026444041905be01a310085aa61212eefcc610f1f0a3e6f0dd22b3",
+          "render_sha256": "9fd6bab6605f72b0f06c0fb243f04804edabd277200b3dbb375532dddcd12473"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208",
+          "render_sha256": "dc9a1de81528d3a190f6ef640e9d2d73d2b91dda0166af9d27d6923944727f8c"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "2db65245b35439a8525bebaff15814ab2c9aa59af31f174bc8f122ead2fb29f6",
+      "raw_block_sha256": "fdfdda8fcbcdb17abe75d632d58d345cde9f156c50448d3255f01ed6b200e5dc",
+      "operative_body": "That Council give Bylaw 1921 first, second and third readings.",
+      "operative_body_sha256": "75ed916b9fc425b54553df4b59cbcf8a68d05fe8690ec8572b988e1e5b77bc9b",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208",
+          "render_sha256": "dc9a1de81528d3a190f6ef640e9d2d73d2b91dda0166af9d27d6923944727f8c"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "24b19e07a8572ebfd0b141b0a0ab309dae350700669e86eb20ca6eb30e349c33",
+      "raw_block_sha256": "fe2ffb85af11f012ab31082f598906fbb03c82ea722b861410d22a38094e7d29",
+      "operative_body": "THAT Council close the meeting to the public pursuant to section 90 (1) e, g and i of the Community Charter to consider: \u2022 The acquisition, disposition or expropriation of land or improvements, if the council considers that disclosure could reasonably be expected to harm the interests of the municipality; \u2022 Litigation or potential litigation affecting the municipality \u2022 The receipt of advice that is subject to solicitor-client privilege, including communications necessary for that purpose.",
+      "operative_body_sha256": "b6a6fc02192f433401d7e5ceda482408b737e536fbf336d539693093946d8003",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208",
+          "render_sha256": "dc9a1de81528d3a190f6ef640e9d2d73d2b91dda0166af9d27d6923944727f8c"
+        }
+      ],
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "kind": "native_glyph_spacing",
+          "reason": "Page12 prints section90(1)e,g and i of the CommunityCharter; native1of is glyph/spacing error, no statutory section inferred."
+        }
+      ]
+    }
+  ],
+  "native_first_page_sha256": "a640b8b31167caff84d83e5aa1648913500051feaee83c85152c35199793b5de",
+  "independent_original_image_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+  "second_independent_original_image_review_sha256": "22385b96157b55e86db9d02a7cc5a3774ce4b75c1f9612216d3ee9eb340724e5",
+  "documentary_native_corrections": [
+    {
+      "page": 12,
+      "native_text_sha256": "cc5c8963c30eee287c60bbb0c120ec59ef482eb5f05393af354672c5d03db208",
+      "render_sha256": "dc9a1de81528d3a190f6ef640e9d2d73d2b91dda0166af9d27d6923944727f8c",
+      "native_quote": "Mayor Young adjc^ffned the meeting at 7:00 pm.",
+      "printed_quote": "Mayor Young adjourned the meeting at 7:00 pm.",
+      "independent_review_sha256": "c4d038580ac36f4e423b1e0bcb5667bc5d43f1ed4d42efa2d6d5ad84bd1a1e7d",
+      "authority": "reviewed_documentary_native_witness_correction_only",
+      "second_independent_image_review_sha256": "22385b96157b55e86db9d02a7cc5a3774ce4b75c1f9612216d3ee9eb340724e5"
+    }
+  ],
+  "remaining_holds": [
+    {
+      "reason": "Original public-hearing heading1883 versus narrative1893 contradiction retained; no intended bylaw identity correction.",
+      "authority": "coverage_diagnostic_only"
+    },
+    {
+      "reason": "Original1902 heading title prints1850; operative adoption explicitly1902 retained without intended identity correction.",
+      "authority": "coverage_diagnostic_only"
+    }
+  ]
+}
