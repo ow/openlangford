@@ -34,10 +34,13 @@ export function speakersAbout(p: Participation | undefined, about: string): Part
 export function ParticipationList({
   participation,
   speakers,
+  note,
   className,
 }: {
   participation?: Participation;
   speakers?: ParticipationSpeaker[];
+  /** Short aside per person, e.g. "also wrote in". */
+  note?: (who: string) => string | null;
   className?: string;
 }) {
   const list = speakers ?? participation?.speakers ?? [];
@@ -53,6 +56,7 @@ export function ParticipationList({
             </span>
           )}
           <span className="text-zinc-400"> · {s.topic}</span>
+          {note?.(s.who) && <span className="text-zinc-400"> · {note(s.who)}</span>}
           <br />
           {s.point}
         </li>
@@ -84,11 +88,13 @@ export function positionTally(list: { position: string }[]) {
 export function WrittenSubmissions({
   written,
   documentHref,
+  note,
   limit = 4,
   className,
 }: {
   written?: WrittenParticipation;
   documentHref?: (documentId: number) => string;
+  note?: (who: string) => string | null;
   limit?: number;
   className?: string;
 }) {
@@ -100,7 +106,7 @@ export function WrittenSubmissions({
   return (
     <div className={cn("space-y-2", className)}>
       <p className="text-xs tabular-nums text-zinc-500">{positionTally(letters)}</p>
-      <ParticipationList speakers={shown as ParticipationSpeaker[]} />
+      <ParticipationList speakers={shown as ParticipationSpeaker[]} note={note} />
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
         {letters.length > limit && (
           <button

@@ -415,6 +415,14 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
                                 </span>
                               </>
                             )}
+                            {(matter as any).letter_count > 0 && (
+                              <>
+                                <span aria-hidden="true">·</span>
+                                <span className="tabular-nums">
+                                  {(matter as any).letter_count} {(matter as any).letter_count === 1 ? "letter" : "letters"}
+                                </span>
+                              </>
+                            )}
                             {matter.addresses?.slice(0, 3).map((addr: string) => (
                               <span key={addr} className="inline-flex items-center gap-1">
                                 <span aria-hidden="true">·</span>

@@ -13,6 +13,7 @@ export interface MeetingStats {
   motion_defeated_count: number;
   motion_other_count: number;
   topics: string[];
+  letter_count?: number;
 }
 
 interface MeetingCardProps {
@@ -60,6 +61,7 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
 
   const carried = stats?.motion_carried_count ?? 0;
   const defeated = stats?.motion_defeated_count ?? 0;
+  const letters = stats?.letter_count ?? 0;
 
   const sources = [
     { key: "agenda", label: "Agenda", icon: FileText, on: !!meeting.has_agenda },
@@ -126,7 +128,7 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
           </p>
         )}
 
-        {(topics.length > 0 || carried + defeated > 0) && (
+        {(topics.length > 0 || carried + defeated > 0 || letters > 0) && (
           <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
             {carried + defeated > 0 && (
               <span className="font-medium text-zinc-700">
@@ -136,7 +138,13 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
                 )}
               </span>
             )}
-            {carried + defeated > 0 && topics.length > 0 && (
+            {letters > 0 && (
+              <span className="tabular-nums">
+                {carried + defeated > 0 && <span aria-hidden="true" className="mr-2 text-zinc-300">·</span>}
+                {letters} {letters === 1 ? "letter" : "letters"}
+              </span>
+            )}
+            {(carried + defeated > 0 || letters > 0) && topics.length > 0 && (
               <span aria-hidden="true" className="text-zinc-300">|</span>
             )}
             {topics.length > 0 && <span>{topics.join(", ")}</span>}
