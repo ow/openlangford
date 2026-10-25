@@ -1,0 +1,755 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 199,
+    "title": "Regular Council",
+    "meeting_date": "2022-07-18",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2022/07/2022-07-18 530pm Regular Council [28047a58]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2022/07/2022-07-18 530pm Regular Council [28047a58]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "708fc0231783737abdedf9867ff729da97803c3e20f99c41109849925766d71d",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=4060"
+    },
+    {
+      "file": "archive/langford/Council/2022/07/2022-07-18 530pm Regular Council [28047a58]/Minutes/Minutes.pdf",
+      "sha256": "35384f6441d440ec971ea6bb51a54fa79d89907b508dbdfa806a2ad2ab0a5546",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=3363"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2022/07/2022-07-18 530pm Regular Council [28047a58]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=4060",
+  "source_sha256": "708fc0231783737abdedf9867ff729da97803c3e20f99c41109849925766d71d",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "16fafc75d54ac33fb2fc38d2db4fc1c979f477a7aea0877a4f779143a21e4e7a",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "004a92b579db85fe061a7acdf11e4bcd965ddb38295d75456c71f54617a9a460",
+      "render_sha256": "0db3a9132b9383669658d1fe00189a55e0b424edd8c232f31f64f120d63d0647"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "e97025ea051f1aaf860ff05cfdf74c676f36308580b42f3f088faca7da25f27a",
+      "render_sha256": "c0952736e69dd545e295e236a0aa69b1f6e9f0fd88957bfc7bc3adc7ab206b56"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "5f93d40e9af884a77be682c3065e1b3ee8962128a44fbdd1465f491572836327",
+      "render_sha256": "d710019f4f98afa098d939102e7309a60071e69daba6bf3a2a1df15e33baad92"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "1cac76488e59bc2369b0bae0f8034fa343cee1d23d3a3b32244a470f221bb9ff",
+      "render_sha256": "51dfd0ffd6b7059c463e3c9c838971b40e902dba4fa906327622525d754e958b"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "a716f323e6849b80c8b7f2058b9192766b5906cb7f71394a266e93c68c071a61",
+      "render_sha256": "fa5d8acb5ecc53fc821c6188a339f9bf507aa826cc5cad71a8d06be4ab40c5f8"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "e0a6fd468fe37f09a2c0f3856afb858e5a07a6477ed6068d1dab557edd80dd0f",
+      "render_sha256": "a543edae42005bd4ccae0f8cc98d0d9423659cc950f41b2e2c964b40b28b1c63"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "6c74f9bac8ce6f3c579c3e3e203dd97434cda13f162d59455bfc2d2511089999",
+      "render_sha256": "55e5a754ff0e9accfa601d14eeb8c9544084d5b029667430098fb0d6a501a88d"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "a98ad4a1943141e57d0aa1c9076b0dcc30e7218cf33f81dd1dd5eb300a959bc2",
+      "render_sha256": "be3fc9bf42dbfa9768e8777c3aa646e1f4181901bc7afde73900333494683dea"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "5ee88df8505cc7e0709d3f0c220bb4073f004e8e1c3f1e00d873fbfb2e04edae",
+      "render_sha256": "204641e10b577c9074ad62ac7fd7158a6abfeac31a8233309120f137b4f2f6bd"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "63263fcc14f5c447eaea550c4af1a5176ea0134d950c7a78de9ed12619dcfaa1",
+      "render_sha256": "d55c78b122feac2ad993aa507866f12c68a553e16fe72d532407cf795ab8721d"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "848b26991346faa10ee355381a010c507b87bf5dbe254130740d59d0c12a33c4",
+      "render_sha256": "9e1afd29a0d2ebb13a42aef0955626f24def1a4794561dae181ae8d188a2852c"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "da01c331da15bf8f2bf2e01d907a1fbbd50b356399349d03cbfde87146cc5324",
+      "render_sha256": "65b568af70528a9159fcfa6c943162c96ead707b7bde1f64bc5c8efb22e40c74"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "ca39929831ab70938ec20a5ae777597eda1e8592745b32738ed7bb5d703fd33f",
+      "render_sha256": "52e2bc6b59ceb77827ee033ddca169e9dfc87d7eb003ba148d659de2d18c207f"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "3a6cab3e39e44dcf1e4adb78e303213da90bf89f8750acd4a99133c758e99e37",
+      "render_sha256": "0ebbf1b0897372462eb146c7b17566d170719202dde450bd6f46e3bfb3c1cbcc"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "17f1c03f982138bc8c37673f965fe00570db643150444a7bb727be47e87d4862",
+      "render_sha256": "d182db58afa5465c1433ee8051aba3f3100f5dc050f69647190dd0204cafe4be"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "afb44110250e0fd1d10b681a4f0e4c04779519167b9639f2a165203962716547",
+      "render_sha256": "538f8f6e079a4f7627829d3d225b4aff16ce27e4e90ebc992d0e617e107c8e48"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "2a2a3d9ce4d0a6beeb20fe6a300c9400d8e259e011e76806c1bc290389954046",
+      "render_sha256": "791163ba50a0403ea6c70466dd56d97abb96b04a79e5c620603829b43c0a8ac1"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "38a2f019beaac142dc29dd16cc364b95c104402c2978ba04d6c4d582a8780b19",
+      "render_sha256": "b503a99c79aa1a8eb4e405a458fd7e998b2e4af2b32b121496bc30faa4978bad"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "57aaa008019b56d6345abe114d052367982a20f86fa9836e53ee7321e09dc521",
+      "render_sha256": "4a72d1a21e7777c00a4b7f4b9b19f4bdeab5b9352cfbbec0f4b0cabb1f47ce09"
+    },
+    {
+      "page": 20,
+      "native_text_sha256": "9aa03192c4d88fb6959e4706ee5cfdb1a992e83d5bf67eb7882223ff09df09d6",
+      "render_sha256": "1d92c7604adc718eb07485795843931be755b501d5991696f33329e34413d4ec"
+    },
+    {
+      "page": 21,
+      "native_text_sha256": "0337d61702525efbeed2a6571381706982f0d46fb30372a43f0e0865322029d4",
+      "render_sha256": "b701981d0db7b767f571d99ecd5e6455b8c3e4559a052dfec16c6e362722f856"
+    }
+  ],
+  "text_corrections": [
+    {
+      "page": 13,
+      "native_quote": "IVlotion CARRIED.",
+      "reviewed_quote": "Motion CARRIED.",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "Motion CARRIED.",
+      "reason": "Original image prints formal outcome Motion CARRIED.; native IV corrupts the M."
+    },
+    {
+      "page": 18,
+      "native_quote": "MOVE0BY:WADE",
+      "reviewed_quote": "MOVED BY: WADE",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "MOVED BY: WADE",
+      "reason": "Original image prints MOVED BY: WADE for adoption2039; structural header restoration only."
+    },
+    {
+      "page": 18,
+      "native_quote": "MOVEDBYlWADE",
+      "reviewed_quote": "MOVED BY: WADE",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "MOVED BY: WADE",
+      "reason": "Original image prints MOVED BY: WADE for adoption2043; structural header restoration only."
+    },
+    {
+      "page": 18,
+      "native_quote": "SEGONDED: WADE",
+      "reviewed_quote": "SECONDED: WADE",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "SECONDED: WADE",
+      "reason": "Original image prints SECONDED: WADE for adoption2034; no actor authority."
+    }
+  ],
+  "accepted_decisions": [
+    {
+      "source_key": "de151894a2abbd8c1e0a2a9cea4c1bb824a19321579cd8dc91dccd882a422163",
+      "raw_block_sha256": "0f15a9ae11de4bc5e5a9ef05ef31dee04200df452e5b00bb04fed6537c679220",
+      "operative_body": "THAT Council:\n1. Proceed with consideration of 1st reading of Bylaw No. 2078 to amend the zoning designation of the property located at 3608 Happy Valley from the Rural Residential 2 (RR2) Zone to the Residential Townhouse 1 (RT1) Zone subject to the following terms and conditions:\na. That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to issuance of a building permit:\ni. $610 towards the Affordable Housing Fund; and\nii. $3,660 towards the General Amenity Reserve Fund.\nb. That the applicant provides, prior to Public Hearing, the following to the satisfaction of the Director of Engineering:\ni. A technical memo from a qualified engineer that verifies stormwater can be adequately managed on-site for the proposed development; and\nii. A tree retention memo from a Landscape Architect that examines potential tree retention onsite and along the fronting roads.\nc. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following:\ni. That the following are implemented to Bylaw 1000 standards to the satisfaction of the Director of Engineering prior to issuance of a building permit:\n1. Full frontage improvements;\n2. A storm water management plan; and\n3. A construction parking management plan\nii. That all concrete used on-site will be produced using post-industrial CO2 mineralization technology, or equivalent which offers concrete with lower embodied CO2 than all other competing bids, and that prior to the issuance of a Building Permit the applicant shall provide a product-specific Type III Environmental Product Declaration that is 3rd party verified specifying the total embodied carbon content of concrete.\nAND\n2. Authorize the Director of Planning to issue the following variances in the Form and Character Development Permit for 3608 Happy Valley Road:\na. That Section 6.28.07(1)(c) be varied to reduce the minimum exterior side yard setback from the required 3.5m (11.5 ft) to 3.0m (9.8 ft).\nb. That Section 6.28.07(1)(d) be varied to reduce the minimum rear yard setback from the required 5.5m (18 ft) to 3.5m (11.5 ft).",
+      "operative_body_sha256": "974c1f502855c216121973d4057f52599c184a39066a0fd9da87879f647dbecc",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "da01c331da15bf8f2bf2e01d907a1fbbd50b356399349d03cbfde87146cc5324",
+          "render_sha256": "65b568af70528a9159fcfa6c943162c96ead707b7bde1f64bc5c8efb22e40c74"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "ca39929831ab70938ec20a5ae777597eda1e8592745b32738ed7bb5d703fd33f",
+          "render_sha256": "52e2bc6b59ceb77827ee033ddca169e9dfc87d7eb003ba148d659de2d18c207f"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "73dd897e0840804ce8e9375643d51fc8311329d83a936f39fdb6f36d8f0609b9",
+      "raw_block_sha256": "b3606fc95335e45392ba289a5384230426e4b555a4c25e4ea1898c2298c469d2",
+      "operative_body": "That Temporary Use Permit No. TUP22-0002 be issued by the Council for the City of Langford to Tri-X Excavating on behalf of Gordon \"N\" Gordon Interiors Ltd and 1109572 BC Ltd to allow for the sale of rock extracted and crushed on site at 1324 and 1336 Langshire Road subject to the following terms and conditions:\n1. Conditions\nThe following requirements are imposed under section 493 of the Local Government Act:\na) That the temporary use permit is issued for a period of 1 year and 6 months from time of issuance;\nb) That the extraction and crushing of the rock on each site is in compliance with the covenants (CA8225513 and CA8518672) registered on title of the subject properties;\nc) That a sediment and erosion control and mud control plan is submitted to the satisfaction of the Director of Engineering prior to the commencement of rock extraction and crushing;\nd) That a security bond in the amount of $5,000 be deposited to the satisfaction of the Director of Engineering in case of dirt on the roads during operations.",
+      "operative_body_sha256": "e33acfba43d9b4343cf5b0febf16fa39bb700afdae07c8ae1fba041137cad686",
+      "result": "CARRIED",
+      "pages": [
+        13,
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "ca39929831ab70938ec20a5ae777597eda1e8592745b32738ed7bb5d703fd33f",
+          "render_sha256": "52e2bc6b59ceb77827ee033ddca169e9dfc87d7eb003ba148d659de2d18c207f"
+        },
+        {
+          "page": 14,
+          "native_text_sha256": "3a6cab3e39e44dcf1e4adb78e303213da90bf89f8750acd4a99133c758e99e37",
+          "render_sha256": "0ebbf1b0897372462eb146c7b17566d170719202dde450bd6f46e3bfb3c1cbcc"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "92dff017c619556d93eed061a8c0a0459673f1d5ecc0bb7c8fcccd573e2f7c6f",
+      "raw_block_sha256": "dfeccc7f0c7fcf51bed0bb53d85946575fae1c513a0a69c08c3ec142325683bb",
+      "operative_body": "THAT Council receive the 2021 Annual Report.",
+      "operative_body_sha256": "b1e1f06c15dc082462c2260dac642aa99563cdab827af04c536bc1d2b74dc923",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "3a6cab3e39e44dcf1e4adb78e303213da90bf89f8750acd4a99133c758e99e37",
+          "render_sha256": "0ebbf1b0897372462eb146c7b17566d170719202dde450bd6f46e3bfb3c1cbcc"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "f53578a275781ba37ef20ec837a1ad509c958657f186a1d5c031dd2371041b32",
+      "raw_block_sha256": "220d5c8032c7da4115e13183a1e7294e3cc788c3653ef48d2dca40418cde39aa",
+      "operative_body": "THAT Council:\n1. Support application ALR21-0001 to subdivide the property at 3649 Happy Valley Rd within the ALR, subject to further review and approval of the required rezoning application, development permit application and subdivision application and the completion of any specified conditions; and\n2. Authorize staff to forward the application to the ALC upon receipt of a revised plan that includes a viable proposal to provide legal access and servicing to the new lot either through the subject property from Happy Valley Rd or via registered easement through an adjoining property to the satisfaction of the Director or Engineering and Approving Officer.",
+      "operative_body_sha256": "a93e1ebeb49b82c5a6dcbc6f05ba838280894fe233fa02d432c0690786d7eb75",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "3a6cab3e39e44dcf1e4adb78e303213da90bf89f8750acd4a99133c758e99e37",
+          "render_sha256": "0ebbf1b0897372462eb146c7b17566d170719202dde450bd6f46e3bfb3c1cbcc"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "9d7a82daec7a5b3302976eb7f2daf1f324e6e550bb22f770035c5496d8350864",
+      "raw_block_sha256": "2c9d813221e21f649bcbe26cf5d6441fc880e9e62d5a617df46a77605863d130",
+      "operative_body": "That Council:\n1. Give the first three readings to City of Langford Road Development Cost Charge Bylaw No. 2021, Amendment No. 1, Bylaw No. 2025, 2022. and refer the City of Langford Road Development Cost Charge Bylaw No. 2021, Amendment No. 1, Bylaw No. 2025, 2022 to the Inspector of Municipalities, pursuant to s. 560 of the Local Government Act.\nAND\n2. Direct Staff to continue to refresh the transportation study and Roads DCC bylaw at least every 5 years.",
+      "operative_body_sha256": "f136036d4a2287142c63f4e54cd9a5dfc3579cbef0d671016f4f2316e7c9b6b1",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "17f1c03f982138bc8c37673f965fe00570db643150444a7bb727be47e87d4862",
+          "render_sha256": "d182db58afa5465c1433ee8051aba3f3100f5dc050f69647190dd0204cafe4be"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "042001b57177130db2383271096d8ff09dd05a2ba73f8edf1038ab444c129580",
+      "raw_block_sha256": "fa13232a9abfb1d3736d336b0017535e2f8495857f0a7278f4fa1d03eb136c83",
+      "operative_body": "THAT Council approve the lease and sale agreements for the strata lots at 2826 Bryn Maur Road, and that the Mayor and Chief Administrative Officer be authorized to enter into an agreement with IMagic Productions Ltd. for the sale of the strata lot for not less than $350,000.00, with a buy back option clause;\nAND THAT Council approve a two-year lease agreement with the Vancouver Island South Film and Media Commission for $1,200 per month;\nAND THAT Council approve a two-year triple net lease agreement with March of Dimes Canada for $1.00 per year, in which the utilities would be paid for by the charity.",
+      "operative_body_sha256": "89e98f3b1447227457fa867428ec9d09bec88f53d7b02a353f2f1d0204e66b69",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "17f1c03f982138bc8c37673f965fe00570db643150444a7bb727be47e87d4862",
+          "render_sha256": "d182db58afa5465c1433ee8051aba3f3100f5dc050f69647190dd0204cafe4be"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "a0674c57f5c8e5190d347ea53a6bb1e59ad434e2b10ca50b0e21b2f2b44a3849",
+      "raw_block_sha256": "c7fc6f9a67239c9b50c84d8662741ca6ce845c307f4766d771126a241d19b999",
+      "operative_body": "THAT Council direct staff to cancel the Council meetings scheduled for September 19, October 3 and October 17 together with the related PZAH meetings and to post notice of such cancellations.",
+      "operative_body_sha256": "9f4b38cc8b21cd062f435be998cd95927e255a981ed144ace2f2d0152d865f63",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "17f1c03f982138bc8c37673f965fe00570db643150444a7bb727be47e87d4862",
+          "render_sha256": "d182db58afa5465c1433ee8051aba3f3100f5dc050f69647190dd0204cafe4be"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "ba7482adbf52e77b3fadb0753da532ff60cbb41722324c7f122192cfed4da942",
+      "raw_block_sha256": "abf971461b89fa9bc29c8dab4ff5a1bb040436c02a71ebf17e8ce15ecb07a137",
+      "operative_body": "WHEREAS the E&N Rail Corridor, now known as the Island Corridor, which has connected Vancouver Island communities, businesses and services for more that 135 years is a risk of being lost forever by March 15, 2023, without the financial support and commitments of the Provincial and Federal governments;\nAND WHEREAS because 80 percent of Vancouver Island's population lives within five kilometers of the corridor, it presents viable options for commuter and inter-regional passenger rail, as well as strong economic opportunities for excursion and freight services that will reduce traffic congestion and greenhouse gas emissions;\nTHERFORE BE IT RESOVED that the UBCM call on the Provincial and Federal governments to commit to making the necessary investments to preserve the Island Corridor so that it can continue to connect communities, establish safe and environmentally sound passenger and freight rail service, and strengthen economies up, down, and across Vancouver Island.",
+      "operative_body_sha256": "bcef218d3e7444d78853c6817f5cc4e4ee0e49850a803c798ef1c7ecd75ed68c",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "afb44110250e0fd1d10b681a4f0e4c04779519167b9639f2a165203962716547",
+          "render_sha256": "538f8f6e079a4f7627829d3d225b4aff16ce27e4e90ebc992d0e617e107c8e48"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "0b0e1940308213e24857d2af16e08b1cffefffbc76e700d803bd5b4a430ad413",
+      "raw_block_sha256": "8bdb16bc0e8a251c4150e8f41a1a5100f1c5afb5470b5cf0c7c3c9f20a275f24",
+      "operative_body": "Whereas Langford has resolved to develop to its urban containment boundaries and has extended its City Centre Zone for densification including residential towers where quality of life, health and wellness of residents living in urban towers requires neighbourhood access to green spaces;\nAnd whereas environmental, amenity and heritage values of trees are important factors that need to be considered at rezonings;\nBe it resolved that the City of Langford sets as priority a process and policy for the retention of trees and natural spaces for rezonings as a condition of development, not just an option, and that a separate permit be created for removal of mature trees on all developments.",
+      "operative_body_sha256": "467286f8c6029af7ebc2be5e53ab1399de76fa7bfe3147760c280735ec388a86",
+      "result": "DEFEATED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "afb44110250e0fd1d10b681a4f0e4c04779519167b9639f2a165203962716547",
+          "render_sha256": "538f8f6e079a4f7627829d3d225b4aff16ce27e4e90ebc992d0e617e107c8e48"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "8c09570b3e74d4356dcde98e056b6aceb3066fc7fe6cca357c0079a44ca394af",
+      "raw_block_sha256": "e0f3de4ee1fbaaf2a6a31f241e7b5c0f0090c7696e50d88d68f205f8e8147981",
+      "operative_body": "THAT Council adopt Bylaw No. 1952.",
+      "operative_body_sha256": "591041c31f7597ff3da4c238d69e187f64d974d01f24546c014e01c648395ad4",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "2a2a3d9ce4d0a6beeb20fe6a300c9400d8e259e011e76806c1bc290389954046",
+          "render_sha256": "791163ba50a0403ea6c70466dd56d97abb96b04a79e5c620603829b43c0a8ac1"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "5771979c9e336f839b9e519b511080778a4fc0d290e44214b1bab34e1bb34395",
+      "raw_block_sha256": "5d0ec1b2234190734ec8b89ff61e49aa0f7e34dde94d7bc18c60ae8407e1992f",
+      "operative_body": "THAT Council give Bylaw No. 1993 second and third readings.",
+      "operative_body_sha256": "826088bc817f3843961cf7a747b464b85ffa386306b6b05877d1e7f11fb6aae8",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "2a2a3d9ce4d0a6beeb20fe6a300c9400d8e259e011e76806c1bc290389954046",
+          "render_sha256": "791163ba50a0403ea6c70466dd56d97abb96b04a79e5c620603829b43c0a8ac1"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "e8d4915e3131cc6ccaf27f87db1946a66083f5c45ea97f31e0d843321fcbf16d",
+      "raw_block_sha256": "7c6982f70e8bcbc08fdec98ec54d68c5d139e5989fb38359a5a91a7f1a280549",
+      "operative_body": "THAT Council rescind first, second and third readings of Bylaw No. 2022; AND\nTHAT Council give new first, second and third readings to Bylaw No. 2022.",
+      "operative_body_sha256": "ac1261464b29e68e2e67237be2f1829dd3928cbeeef4fa9e4cbbb8ed9f6bf994",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "2a2a3d9ce4d0a6beeb20fe6a300c9400d8e259e011e76806c1bc290389954046",
+          "render_sha256": "791163ba50a0403ea6c70466dd56d97abb96b04a79e5c620603829b43c0a8ac1"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "14e919fd2df5719f81bb2392fd3f083b9bee7203ecc96b2930bee3539fbf3f17",
+      "raw_block_sha256": "68f2fc650441b23ec20cd8abea716c30cad8519691529c79c8f70068ce2517af",
+      "operative_body": "THAT Council give Bylaw No. 2025 first, second and third readings.",
+      "operative_body_sha256": "fa744fe5e704555d09596eafd94cb1deb02615dc4be448984d5cb62bd2956563",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "2a2a3d9ce4d0a6beeb20fe6a300c9400d8e259e011e76806c1bc290389954046",
+          "render_sha256": "791163ba50a0403ea6c70466dd56d97abb96b04a79e5c620603829b43c0a8ac1"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "5369b3d92ceb8e65d3d854ed72e1cf1dd2a0220301855c23f0f93252bbb139f9",
+      "raw_block_sha256": "ba687779b463b28af40ceaa92e682e6972e20250b038e78aed072e8f61f1d708",
+      "operative_body": "THAT Council adopt Bylaw No. 2032.",
+      "operative_body_sha256": "54cd4c52dcd06b32c3486e01005393c0573fb8f1d2196540c9470593852aac31",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "2a2a3d9ce4d0a6beeb20fe6a300c9400d8e259e011e76806c1bc290389954046",
+          "render_sha256": "791163ba50a0403ea6c70466dd56d97abb96b04a79e5c620603829b43c0a8ac1"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "a42a75d6188b07b5fba44f4a86db942ebb6a4ff1da2cb2d408eba388c43b2f13",
+      "raw_block_sha256": "aad24c740626dde2713348a3d3528c52470b558e4e0c0b6e6b684add83430fac",
+      "operative_body": "That Council adopt Bylaw No. 2034.",
+      "operative_body_sha256": "5f9382d0c1fde516602c6a118b64f015c830edfac430c23648ce62b0be0a78d6",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "38a2f019beaac142dc29dd16cc364b95c104402c2978ba04d6c4d582a8780b19",
+          "render_sha256": "b503a99c79aa1a8eb4e405a458fd7e998b2e4af2b32b121496bc30faa4978bad"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "6ab7cffde0b54e09b5b25b8a044949f850fc8d26391a1904ab7dfded8e830385",
+      "raw_block_sha256": "68380ec895247057176cb30b4aef2c20721d1ede5da30c32f15f36c498c34dbf",
+      "operative_body": "THAT Council adopt Centre Mountain Water Service Loan Authorization Bylaw No. 2039.",
+      "operative_body_sha256": "ca03d56a2ca88518a5555f4e7a272a524592be28fb54514fb0cc4af41a37dd16",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "38a2f019beaac142dc29dd16cc364b95c104402c2978ba04d6c4d582a8780b19",
+          "render_sha256": "b503a99c79aa1a8eb4e405a458fd7e998b2e4af2b32b121496bc30faa4978bad"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "b4a3a0e8d261da01b148cfeb7f9c2a0bfc13adfc2f3dea461daa03468e59308c",
+      "raw_block_sha256": "82b6d8cab76e14b988de5b39c2d808036edd41070a44754e08ec755dc1b5b567",
+      "operative_body": "THAT Council adopt Centre Mountain Residential Community Roadway Loan Authorization Bylaw No. 2041.",
+      "operative_body_sha256": "2adf483a541a8832bf01938e2a64a0e8fd9377e56148291d3d134374dbf7bbe9",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "38a2f019beaac142dc29dd16cc364b95c104402c2978ba04d6c4d582a8780b19",
+          "render_sha256": "b503a99c79aa1a8eb4e405a458fd7e998b2e4af2b32b121496bc30faa4978bad"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "3dab54746173acdd4641504003b4f8f22f45d35b258b551999787223185ceb9b",
+      "raw_block_sha256": "2934c18a5876f9bfc1fe6aab14297fa0d508d6938a75fbec0ee55505de11b60f",
+      "operative_body": "THAT Council adopt Centre Mountain Business Park Community Roadway Loan Authorization Bylaw No. 2043.",
+      "operative_body_sha256": "35b0c3c0316f44eb2ce5940b925c95146e55e64a3062ae5d0ad3a4517c6a46a1",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "38a2f019beaac142dc29dd16cc364b95c104402c2978ba04d6c4d582a8780b19",
+          "render_sha256": "b503a99c79aa1a8eb4e405a458fd7e998b2e4af2b32b121496bc30faa4978bad"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "18416af74e0834b97b23926307988c301699f463372c3a90289071472f244f9b",
+      "raw_block_sha256": "6e7249b4edba826f2222391d338db56090a5201f1dd587584db8fde656cf5116",
+      "operative_body": "THAT Council:\n1. Rescind first reading of Bylaw No. 2068;\nAND\n1. Give first reading to Bylaw No. 2068 to amend the text of the BP1A (Business Park 1A – Millstream Road East) Zone subject to the following terms and conditions:\na. That the applicant provides, prior to Public Hearing, the following:\ni. A Traffic Impact Assessment based on the total proposed gross floor area of 20,250m (218,000 ft²), to the satisfaction of the Director of Engineering.\nb. That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following:\ni. That all recommended road improvements with the required Traffic Impact Assessment for this development are completed prior to issuance of a building permit or subdivision, whichever occurs first.\nii. That a reciprocal access easement between 658 and 664 Redington Avenue, which the City would be party to, is registered prior to issuance of a building permit or subdivision approval, whichever occurs first.",
+      "operative_body_sha256": "541249158b81cd675f6cb8bcf1b43651b21ff0d76c335b4dd91010f76fd2ba90",
+      "result": "CARRIED",
+      "pages": [
+        18,
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "38a2f019beaac142dc29dd16cc364b95c104402c2978ba04d6c4d582a8780b19",
+          "render_sha256": "b503a99c79aa1a8eb4e405a458fd7e998b2e4af2b32b121496bc30faa4978bad"
+        },
+        {
+          "page": 19,
+          "native_text_sha256": "57aaa008019b56d6345abe114d052367982a20f86fa9836e53ee7321e09dc521",
+          "render_sha256": "4a72d1a21e7777c00a4b7f4b9b19f4bdeab5b9352cfbbec0f4b0cabb1f47ce09"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "2162d933b5bf040a49d764e01714b8a97f36408acd1e6d125df13cf908a5ffa7",
+      "raw_block_sha256": "bade71cba1d5d7ea1dcb4f53fe3f667b6eadfbfbb2c8ae1fbd219dbc27e41756",
+      "operative_body": "THAT Council adopt Bylaw No. 2076.",
+      "operative_body_sha256": "eb65e69ad53343154100a7e9944fef2325923652ab1c478aca5f61816bacf3a6",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "57aaa008019b56d6345abe114d052367982a20f86fa9836e53ee7321e09dc521",
+          "render_sha256": "4a72d1a21e7777c00a4b7f4b9b19f4bdeab5b9352cfbbec0f4b0cabb1f47ce09"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "3c475d0d3f366f4ed25a08305131fa455ee18b137d4f4d7cefae4bd6e9c87e44",
+      "raw_block_sha256": "c18ac7dd2e8126446f6ff877cab62fcc9017e4d6df8b82bf4a2a655dc5de91b5",
+      "operative_body": "THAT Council give Bylaw No. 2078 first reading.",
+      "operative_body_sha256": "5a694cce33206e9893badcc47dc21867fbdcd16a724e95f1ce988a7e147fa51c",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "57aaa008019b56d6345abe114d052367982a20f86fa9836e53ee7321e09dc521",
+          "render_sha256": "4a72d1a21e7777c00a4b7f4b9b19f4bdeab5b9352cfbbec0f4b0cabb1f47ce09"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "e9e4f77653b73e78f23f580fee32171c2c8b13a603706d0f554fadb26c50216e",
+      "raw_block_sha256": "2b5f447a4796756c123df0f2674bc1eef58785beefdc5efa1d44955126f34a71",
+      "operative_body": "THAT Council give Bylaw No. 2080 second and third readings.",
+      "operative_body_sha256": "3673df86b5cc7497b9c49da5cecd7001a1c280c1172fa28340ad0a7545016c67",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "57aaa008019b56d6345abe114d052367982a20f86fa9836e53ee7321e09dc521",
+          "render_sha256": "4a72d1a21e7777c00a4b7f4b9b19f4bdeab5b9352cfbbec0f4b0cabb1f47ce09"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "13175cb5bd652a59c72cd3a208156838a311efe43178b794f2957db21e3125c4",
+      "raw_block_sha256": "c371304a7ef7fa9742a4cb98f3761b13a5de45dc8453eb268625f41139038ff6",
+      "operative_body": "THAT Council adopt Bylaw No. 2084.",
+      "operative_body_sha256": "6a781d38af716a1155484ca7a134111fc6e11bca0fe0fa398b940e95d1ab94f0",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "57aaa008019b56d6345abe114d052367982a20f86fa9836e53ee7321e09dc521",
+          "render_sha256": "4a72d1a21e7777c00a4b7f4b9b19f4bdeab5b9352cfbbec0f4b0cabb1f47ce09"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "9115e4209485f8b959b4c823c218bd0f68661a5f88069085b4e9e10b761f81c9",
+      "raw_block_sha256": "5cc572ddb58271a9ed481baa9ca0fd165b5a88285e24153a60fdad83d8484c20",
+      "operative_body": "THAT Council give Bylaw No. 2090 first reading.",
+      "operative_body_sha256": "d284c642268d379d8c3b09c08ef752012f69b66ed3411235bd7dac255b254d6c",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "9aa03192c4d88fb6959e4706ee5cfdb1a992e83d5bf67eb7882223ff09df09d6",
+          "render_sha256": "1d92c7604adc718eb07485795843931be755b501d5991696f33329e34413d4ec"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "b36c211508ec79b5e58ba0ac4c2706036a2e14f3d1c344745dace76dfa600bd0",
+      "raw_block_sha256": "d3f1ff7ca34af940824739676097a934ac4a738c52b17580142ecee4b4fe9cb3",
+      "operative_body": "THAT Council give Bylaw No. 2091 first reading.",
+      "operative_body_sha256": "7a490ac56f36e02fdf3484b6842742c98f2d6c07daeb6e24e68a084c70235872",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "9aa03192c4d88fb6959e4706ee5cfdb1a992e83d5bf67eb7882223ff09df09d6",
+          "render_sha256": "1d92c7604adc718eb07485795843931be755b501d5991696f33329e34413d4ec"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "1cbd5fbae9df6e7d12cc603f1d2a49ec44366cdea9824d117cac21f4ef454983",
+      "raw_block_sha256": "98c53a8d8ee058715924e790493b26f9963783e40caffca77fb11d4588d7001c",
+      "operative_body": "THAT Council give Bylaw No. 2092 first reading.",
+      "operative_body_sha256": "884f360c889ba158d9b320835b8b463d494d7b107f41749b7054bfe90d6501a1",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "9aa03192c4d88fb6959e4706ee5cfdb1a992e83d5bf67eb7882223ff09df09d6",
+          "render_sha256": "1d92c7604adc718eb07485795843931be755b501d5991696f33329e34413d4ec"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "9380a044d97d7d0c520285dbab28741e5cf6a3eb7effb4561596556e3eeacf8b",
+      "raw_block_sha256": "df30d176937c90ce6687e313199990e527c0302bb11d105edf928120148f99eb",
+      "operative_body": "THAT Council give Bylaw No. 2094 first reading.",
+      "operative_body_sha256": "2cc588689c9ba3ecc3058dd7186e8bc468c4da7fc3992ec565327fdf805538cb",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "9aa03192c4d88fb6959e4706ee5cfdb1a992e83d5bf67eb7882223ff09df09d6",
+          "render_sha256": "1d92c7604adc718eb07485795843931be755b501d5991696f33329e34413d4ec"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "37fef3b99d4726802f16bef0b7e90231d32aa0ff6b2bd02776fd01f4cde76c6d",
+      "raw_block_sha256": "ee1564f1640603c26914b19e39474c006b7c68204eb458c57a32a68a271cce52",
+      "operative_body": "THAT Council give Bylaw No. 2096 first reading.",
+      "operative_body_sha256": "246d26bf08301253e79d85a6929905dbe2094fa745aaee46713dba40d0cb2045",
+      "result": "CARRIED",
+      "pages": [
+        20
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "9aa03192c4d88fb6959e4706ee5cfdb1a992e83d5bf67eb7882223ff09df09d6",
+          "render_sha256": "1d92c7604adc718eb07485795843931be755b501d5991696f33329e34413d4ec"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    },
+    {
+      "source_key": "e06e2195316b8bfd83a3eafce1c89237074e6544284f73b2b56568f1e6684666",
+      "raw_block_sha256": "d290ff30fa2cb0fda036ef45a5570877438f3cb266455ecc135c91bcc3acd259",
+      "operative_body": "THAT Council give first, second, and third readings to City of Langford Noise Regulation Bylaw No. 2056, Amendment No. 1, Bylaw No. 2100, 2022.",
+      "operative_body_sha256": "660d77925d9b9fadc82c9886ed7446410cbbf0ec51af0ce76fb70545348f6c31",
+      "result": "CARRIED",
+      "pages": [
+        20,
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "9aa03192c4d88fb6959e4706ee5cfdb1a992e83d5bf67eb7882223ff09df09d6",
+          "render_sha256": "1d92c7604adc718eb07485795843931be755b501d5991696f33329e34413d4ec"
+        },
+        {
+          "page": 21,
+          "native_text_sha256": "0337d61702525efbeed2a6571381706982f0d46fb30372a43f0e0865322029d4",
+          "render_sha256": "b701981d0db7b767f571d99ecd5e6455b8c3e4559a052dfec16c6e362722f856"
+        }
+      ],
+      "independent_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23",
+      "authority": "operative_body_and_result_only"
+    }
+  ],
+  "native_first_page_sha256": "004a92b579db85fe061a7acdf11e4bcd965ddb38295d75456c71f54617a9a460",
+  "corrected_text_sha256": "131c6b4def976b1276ef0226c1454f67bcc14c1365f2643d6372051f5afd4445",
+  "parsed_blocks_sha256": "2343f254e35c5e0ecb2d0afefe4a3cc1a5ae3bb0843f7d76623aa9db3e63f004",
+  "independent_original_image_review_sha256": "f1bb56196b56c02efcf8af26de6946c29731f2fd17db937d2634e256ea4bca23"
+}
