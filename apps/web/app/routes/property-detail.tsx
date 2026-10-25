@@ -79,7 +79,7 @@ function Unlink({ field, id }: { field: "matter_id" | "agenda_item_id"; id: numb
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
-  const { property, matters, items, neighbours, lots, isStreet, streetSlug, isAdmin } = loaderData;
+  const { property, matters, items, nearby, lots, isStreet, streetSlug, isAdmin } = loaderData;
   const geo = property.geo as { lat: number; lng: number } | null;
   const dates = [...matters.flatMap((m: any) => [m.first_seen, m.last_seen]), ...items.map((i: any) => i.meetings?.meeting_date)]
     .filter(Boolean)
@@ -217,25 +217,39 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             </section>
           )}
 
-          {neighbours.length > 0 && (
+          {nearby.length > 0 && (
             <section>
               <SectionHeading
-                title={`Nearby on ${property.street}`}
+                title="Nearby"
                 icon={MapPin}
+                description={
+                  nearby[0].lot.distance != null
+                    ? "What Council has considered around this address, closest first."
+                    : `What Council has considered at neighbouring addresses on ${property.street}.`
+                }
                 href={streetSlug ? propertyPath({ slug: streetSlug }) : undefined}
                 linkLabel={`All of ${property.street}`}
               />
-              <div className="flex flex-wrap gap-2">
-                {neighbours.map((n: any) => (
-                  <Link
-                    key={n.slug}
-                    to={propertyPath(n)}
-                    className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-sm text-zinc-700 hover:border-brand-300 hover:text-brand-700"
-                  >
-                    {n.address}
-                  </Link>
-                ))}
-              </div>
+              <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                {nearby.map((m: any) => {
+                  const variant = matterStatusVariant(m.status);
+                  return (
+                    <li key={m.id} className="px-5 py-3.5">
+                      <Link to={matterPath(m)} className="font-medium leading-snug text-zinc-900 hover:text-brand-700 hover:underline">
+                        {matterTitle(m)}
+                      </Link>
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                        <Link to={propertyPath(m.lot)} className="font-medium text-zinc-600 hover:text-brand-700 hover:underline">
+                          {m.lot.address}
+                        </Link>
+                        {m.lot.distance != null && <span className="tabular-nums">· {m.lot.distance < 1000 ? `${Math.max(10, Math.round(m.lot.distance / 10) * 10)} m` : `${(m.lot.distance / 1000).toFixed(1)} km`}</span>}
+                        {(m.last_seen || m.first_seen) && <span className="tabular-nums">· {String(m.last_seen || m.first_seen).slice(0, 4)}</span>}
+                        {variant && <Badge variant={variant}>{m.status}</Badge>}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
             </section>
           )}
         </div>

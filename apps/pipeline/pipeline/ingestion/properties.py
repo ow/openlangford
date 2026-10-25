@@ -261,7 +261,7 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
         geo = None
         if points.get(key):
             geo = {"lat": statistics.median(p["lat"] for p in points[key]), "lng": statistics.median(p["lng"] for p in points[key]),
-                   "precision": "address"}
+                   "precision": "address"}  # mark_shared_points downgrades pins other lots share
         row = {"slug": slug_of(key), "address": display(key), "civic_number": key[0],
                "street": display(("", key[1], key[2])).strip(), "updated_at": now}
         rows.append({**row, "geo": geo} if geo else row)
@@ -296,6 +296,7 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
     for start in range(0, len(orphans), 200):
         supabase.table("properties").delete().in_("id", orphans[start:start + 200]).execute()
     geocoded = geocode_missing(supabase, limit=geocode_limit)
+    mark_shared_points(supabase)
     return {**stats, "inserted": len(inserts), "removed": len(stale), "updated": len(updates),
             "orphans_removed": len(orphans), "geocoded": geocoded}
 
@@ -323,6 +324,30 @@ def geocode(address: str, *, get=None) -> dict | None:
     top = results[0]
     precise = top.get("addresstype") in ("house", "building") or top.get("class") in ("building", "place") and top.get("type") == "house"
     return {"lat": float(top["lat"]), "lng": float(top["lon"]), "precision": "address" if precise else "street"}
+
+
+def shared_points(rows: list[dict]) -> set[int]:
+    """Ids of lots whose pin is shared with another lot: a geocoder's fallback to the street (or an
+    agenda item geocoded that way), not the lot itself."""
+    by_point = defaultdict(list)
+    for row in rows:
+        geo = row.get("geo") or {}
+        if geo.get("lat") is not None:
+            by_point[(round(geo["lat"], 6), round(geo["lng"], 6))].append(row["id"])
+    return {i for ids in by_point.values() if len(ids) > 1 for i in ids}
+
+
+def mark_shared_points(supabase) -> int:
+    """Mark shared pins as street-precision so distances and "nearby" never treat them as exact."""
+    rows = _pages(lambda: supabase.table("properties").select("id,geo").neq("civic_number", "").not_.is_("geo", "null").order("id"))
+    shared = shared_points(rows)
+    changed = 0
+    for row in rows:
+        precision = "street" if row["id"] in shared else (row["geo"].get("precision") or "address")
+        if row["id"] in shared and row["geo"].get("precision") != "street":
+            supabase.table("properties").update({"geo": {**row["geo"], "precision": precision}}).eq("id", row["id"]).execute()
+            changed += 1
+    return changed
 
 
 def geocode_missing(supabase, *, limit: int | None = None, sleep=None) -> int:

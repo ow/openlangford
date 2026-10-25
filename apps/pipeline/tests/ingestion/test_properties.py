@@ -81,3 +81,10 @@ def test_geocode_reports_precision():
     road = geocode("2751 Leigh Road", get=lambda *a, **k: Response([{"lat": "48.45", "lon": "-123.5", "addresstype": "road"}]))
     assert house["precision"] == "address" and road["precision"] == "street"
     assert geocode("nowhere", get=lambda *a, **k: Response([])) is None
+
+
+def test_pins_shared_by_several_lots_are_not_exact():
+    from pipeline.ingestion.properties import shared_points
+    rows = [{"id": 1, "geo": {"lat": 48.47059271, "lng": -123.5038207}}, {"id": 2, "geo": {"lat": 48.4705927, "lng": -123.5038207}},
+            {"id": 3, "geo": {"lat": 48.4703, "lng": -123.5036}}]
+    assert shared_points(rows) == {1, 2}
