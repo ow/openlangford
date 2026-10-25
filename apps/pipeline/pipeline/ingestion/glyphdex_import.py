@@ -274,7 +274,15 @@ def run_shard(shard_file: str):
             folder = download_meeting(m, archive_root)["folder"]
             entry["folder"] = folder
             print(f"[{entry['at']}] {m['date']} {m['body']}", flush=True)
-            ingester.process_meeting(folder, force_update=True, force_refine=True)
+            path = ingester._normalize_archive_path(folder)
+            before = ingester.supabase.table("meetings").select("id").eq("archive_path", path).limit(1).execute().data
+            try:
+                ingester.process_meeting(folder, force_update=True, force_refine=True)
+            except Exception:
+                # Never leave a half-ingested meeting behind: a rerun would think it was done.
+                if not before:
+                    ingester.supabase.table("meetings").delete().eq("archive_path", path).execute()
+                raise
             row = (ingester.supabase.table("meetings").select("id").eq("archive_path", ingester._normalize_archive_path(folder))
                    .limit(1).execute().data)
             items = row and ingester.supabase.table("agenda_items").select("id", count="exact").eq("meeting_id", row[0]["id"]).limit(1).execute().count

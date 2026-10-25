@@ -365,7 +365,22 @@ class MeetingIngester:
         if identifier:
             data["identifier"] = identifier
 
-        res = self.supabase.table("matters").insert(data).execute()
+        try:
+            res = self.supabase.table("matters").insert(data).execute()
+        except Exception as error:
+            # The identifier is unique: the matcher missed an existing matter (or a parallel ingest
+            # created it a moment ago). Link to that matter, following a merge to its canonical row.
+            if not identifier or "matters_identifier_key" not in str(error):
+                raise
+            existing = (self.supabase.table("matters").select("*").eq("identifier", identifier)
+                        .limit(1).execute().data)
+            if not existing:
+                raise
+            row = existing[0]
+            canonical = (row.get("meta") or {}).get("canonical_matter_id")
+            print(f"  [~] {identifier} already exists as matter {row['id']}; linking to it")
+            self.matcher._add_matter_to_indices(row)
+            return int(canonical) if canonical else row["id"]
         new_record = res.data[0]
         # Update matcher cache to avoid duplicates in the same run
         self.matcher._add_matter_to_indices(new_record)
