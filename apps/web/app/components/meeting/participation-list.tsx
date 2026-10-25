@@ -4,7 +4,7 @@ import { cn } from "../../lib/utils";
 import { writtenLetters, writtenSources, type WrittenParticipation } from "../../lib/written";
 
 export type ParticipationSpeaker = { who: string; position: string; point: string; topic: string };
-export type Participation = { overview?: string; speakers?: ParticipationSpeaker[] };
+export type Participation = { overview?: string; source?: "minutes" | "transcript"; speakers?: ParticipationSpeaker[] };
 
 const POSITION_LABEL: Record<string, string> = {
   supports: "Supports",

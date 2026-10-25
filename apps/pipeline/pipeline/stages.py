@@ -38,6 +38,7 @@ from pipeline.ai.usage import usage_context
 from pipeline.ingestion.matter_images import IMAGES_VERSION
 from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
 from pipeline.ingestion.motion_headlines import HEADLINE_VERSION
+from pipeline.ingestion.participation_minutes import MINUTES_VERSION as MINUTES_PARTICIPATION_VERSION
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
 
 When = Literal["post_ingest", "backfill_only"]
@@ -200,6 +201,37 @@ def stale_participation(ctx: StageContext) -> list[int]:
     # Items without discussion times can't be summarized yet; they aren't stale, just unaligned.
     rows = [r for r in participation_items(ctx) if r["has_times"]]
     return select_stale(rows, "participation_version", PARTICIPATION_VERSION)
+
+
+def minutes_participation_items(ctx: StageContext, meeting_ids: list[int] | None = None) -> list[dict]:
+    """Participation-titled items in meetings without video, with their minutes stamp.
+
+    Items already summarized from a transcript are excluded; the stage function re-checks for transcripts."""
+    from pipeline.ingestion.participation_summaries import PARTICIPATION_TITLE
+
+    select = ("id, meeting_id, title, stamp:meta->>participation_minutes_version, source:meta->participation->>source, "
+              "has_summary:meta->participation->>overview, meetings!inner(video_url, meeting_date)")
+
+    def q():
+        query = (ctx.supabase.table("agenda_items").select(select).or_(PARTICIPATION_ILIKE)
+                 .is_("meetings.video_url", "null").order("id"))
+        if meeting_ids is not None:
+            query = query.in_("meeting_id", meeting_ids)
+        if ctx.since:
+            query = query.gte("meetings.meeting_date", ctx.since)
+        return query
+
+    if meeting_ids is not None and not meeting_ids:
+        return []
+    return [{"id": r["id"], "meeting_id": r["meeting_id"], "participation_minutes_version": r.get("stamp")}
+            for r in _paginate(q)
+            if PARTICIPATION_TITLE.search(r.get("title") or "") and (not r.get("has_summary") or r.get("source") == "minutes")]
+
+
+def stale_minutes_participation(ctx: StageContext) -> list[int]:
+    from pipeline.ingestion.participation_minutes import MINUTES_VERSION
+
+    return select_stale(minutes_participation_items(ctx), "participation_minutes_version", MINUTES_VERSION)
 
 
 # ── helpers ──────────────────────────────────────────────────────────────
@@ -420,6 +452,37 @@ def run_participation_summaries(ctx: StageContext):
             print(f"  [!] Participation summary for item {item_id} failed: {e}")
     if ids:
         print(f"  [Participation] {done}/{len(ids)} item(s) summarized")
+    return {"items": len(ids), "summarized": done}
+
+
+def run_participation_from_minutes(ctx: StageContext):
+    from pipeline.ingestion.participation_minutes import summarize_from_minutes
+
+    if ctx.post_ingest:
+        rows = minutes_participation_items(ctx, ctx.meeting_ids)
+    elif ctx.target_id() is not None:  # a meeting id
+        rows = minutes_participation_items(ctx, [ctx.target_id()])
+    else:
+        rows = minutes_participation_items(ctx)
+    if ctx.stale:
+        stale = set(stale_minutes_participation(ctx))
+        rows = [r for r in rows if r["id"] in stale]
+    elif not ctx.force:  # already checked at this version (even if the minutes listed no speakers)
+        from pipeline.ingestion.participation_minutes import MINUTES_VERSION
+        rows = [r for r in rows if r["participation_minutes_version"] != MINUTES_VERSION]
+    ids = [r["id"] for r in rows]
+    if ctx.dry_run:
+        _preview("minutes participation items", ids)
+        return None
+    done = 0
+    for item_id in ids:
+        try:
+            if summarize_from_minutes(ctx.supabase, item_id) is not None:
+                done += 1
+        except Exception as e:
+            print(f"  [!] Minutes participation for item {item_id} failed: {e}")
+    if ids:
+        print(f"  [Participation/minutes] {done}/{len(ids)} item(s) with speakers")
     return {"items": len(ids), "summarized": done}
 
 
@@ -776,6 +839,12 @@ STAGES: list[Stage] = [
         description="Per-speaker bullets for public participation / delegation items (--target is a meeting id).",
         run=run_participation_summaries, when="post_ingest", scope="meeting", version=PARTICIPATION_VERSION,
         depends_on=("agenda-alignment",), stale=stale_participation,
+    ),
+    Stage(
+        name="participation-from-minutes",
+        description="Who-spoke bullets from the minutes for transcript-less meetings (hearings, public participation, delegations; --target is a meeting id).",
+        run=run_participation_from_minutes, when="post_ingest", scope="meeting", version=MINUTES_PARTICIPATION_VERSION,
+        stale=stale_minutes_participation,
     ),
     Stage(
         name="participation-names",
