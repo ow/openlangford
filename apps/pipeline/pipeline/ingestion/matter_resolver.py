@@ -102,7 +102,9 @@ def load_records(supabase: Client, municipality_id: int = 1) -> dict[int, Matter
     records: dict[int, MatterRecord] = {}
     for m in matters:
         meta = m.get("meta") or {}
-        if meta.get("canonical_matter_id"):
+        # Aliases are already merged; hidden matters (procedural containers,
+        # empty records) are kept out of listings, so never propose them.
+        if meta.get("canonical_matter_id") or meta.get("hidden") is not None:
             continue
         records[m["id"]] = MatterRecord(
             id=m["id"],

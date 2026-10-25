@@ -7,6 +7,7 @@ import { PageHeader } from "../components/ui/page-header";
 import { Badge } from "../components/ui/badge";
 import { matterTitle } from "../lib/display-text";
 import { formatDate } from "../lib/utils";
+import { currentMatterIds, planMerge, type MatterMergeRow } from "../lib/matter-merge";
 
 type Decision = {
   a: number;
@@ -24,23 +25,53 @@ const VERDICT_LABEL: Record<string, string> = {
 
 export const meta: Route.MetaFunction = () => [{ title: "Matter merge review" }];
 
+const MERGE_ROW_FIELDS = "id, first_seen, last_seen, meta";
+
+/** Loads the given matters plus whatever they're aliased to, so proposals resolve to today's matters. */
+async function loadMergeRows(supabase: ReturnType<typeof getSupabaseAdminClient>, ids: number[]) {
+  const byId = new Map<number, MatterMergeRow>();
+  let pending = [...new Set(ids)];
+  for (let hop = 0; hop < 5 && pending.length > 0; hop++) {
+    const { data, error } = await supabase.from("matters").select(MERGE_ROW_FIELDS).in("id", pending);
+    if (error) throw error;
+    for (const row of data || []) byId.set(row.id, row as MatterMergeRow);
+    pending = [
+      ...new Set(
+        (data || [])
+          .map((row: any) => Number(row.meta?.canonical_matter_id))
+          .filter((id) => id && !byId.has(id)),
+      ),
+    ];
+  }
+  return byId;
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   await requireAdmin(request);
-  const supabase = getSupabaseAdminClient();
-  const [{ data: proposals }, { count: decided }] = await Promise.all([
+  return loadMergeQueue(getSupabaseAdminClient());
+}
+
+export async function loadMergeQueue(supabase: ReturnType<typeof getSupabaseAdminClient>) {
+  const [{ data: proposals, error }, { count: decided }] = await Promise.all([
     supabase
       .from("matter_merge_proposals")
       .select("id, matter_ids, decisions, created_at")
       .eq("status", "pending")
-      .order("created_at", { ascending: true })
-      .limit(50),
+      .order("created_at", { ascending: true }),
     supabase
       .from("matter_merge_proposals")
       .select("id", { count: "exact", head: true })
       .neq("status", "pending"),
   ]);
+  if (error) throw error;
 
-  const ids = [...new Set((proposals || []).flatMap((p: any) => p.matter_ids as number[]))];
+  // Only show proposals that still have two or more separate, visible matters to merge.
+  const byId = await loadMergeRows(supabase, (proposals || []).flatMap((p: any) => p.matter_ids as number[]));
+  const open = (proposals || [])
+    .map((p: any) => ({ ...p, current_ids: currentMatterIds(p.matter_ids, byId) }))
+    .filter((p) => p.current_ids.length >= 2);
+
+  const ids = [...new Set(open.flatMap((p) => p.current_ids))];
   const { data: matters } = ids.length
     ? await supabase
         .from("matters")
@@ -49,14 +80,14 @@ export async function loader({ request }: Route.LoaderArgs) {
         )
         .in("id", ids)
     : { data: [] as any[] };
-  const byId = new Map((matters || []).map((m: any) => [m.id, m]));
+  const display = new Map((matters || []).map((m: any) => [m.id, m]));
 
   return {
     decided: decided || 0,
-    proposals: (proposals || []).map((p: any) => ({
+    proposals: open.map((p) => ({
       ...p,
-      matters: (p.matter_ids as number[])
-        .map((id) => byId.get(id))
+      matters: p.current_ids
+        .map((id: number) => display.get(id))
         .filter(Boolean)
         .sort((x: any, y: any) => String(x.first_seen).localeCompare(String(y.first_seen))),
     })),
@@ -79,31 +110,43 @@ export async function action({ request }: Route.ActionArgs) {
   if (!proposal || proposal.status !== "pending") return { error: "That proposal was already decided." };
 
   if (intent === "merge") {
-    const { data: rows, error } = await supabase
-      .from("matters")
-      .select("id, slug, first_seen, last_seen, meta")
-      .in("id", proposal.matter_ids);
-    if (error || !rows || rows.length < 2) return { error: error?.message || "Matters not found." };
-    if (rows.some((r: any) => r.meta?.canonical_matter_id)) {
-      return { error: "One of these matters has already been merged elsewhere." };
+    const byId = await loadMergeRows(supabase, proposal.matter_ids);
+    const currentIds = currentMatterIds(proposal.matter_ids, byId);
+    if (currentIds.length < 2) {
+      // Already combined (or the rest are hidden): close it so it leaves the queue.
+      await supabase
+        .from("matter_merge_proposals")
+        .update({ status: "approved", decided_at: new Date().toISOString(), decided_by: user.email ?? null })
+        .eq("id", id);
+      return { ok: "Nothing left to merge: these matters were already combined." };
     }
-    // Earliest matter becomes canonical; the rest become aliases (reversible).
-    rows.sort((x: any, y: any) => String(x.first_seen || "9999").localeCompare(String(y.first_seen || "9999")) || x.id - y.id);
-    const [canonical, ...aliases] = rows as any[];
-    const merged = [...new Set([...(canonical.meta?.merged_matter_ids || []), ...aliases.map((a) => a.id)])].sort(
-      (x, y) => x - y,
-    );
-    const lastSeen = rows.map((r: any) => r.last_seen || "").sort().pop() || canonical.last_seen;
+    const plan = planMerge(currentIds.map((matterId) => byId.get(matterId)!));
+    const { data: repointRows, error: repointError } = plan.repointIds.length
+      ? await supabase.from("matters").select("id, meta").in("id", plan.repointIds)
+      : { data: [] as any[], error: null };
+    if (repointError) return { error: repointError.message };
+
     const updates = [
       supabase
         .from("matters")
-        .update({ meta: { ...(canonical.meta || {}), merged_matter_ids: merged }, last_seen: lastSeen })
-        .eq("id", canonical.id),
-      ...aliases.map((a) =>
+        .update({
+          meta: { ...(plan.canonical.meta || {}), merged_matter_ids: plan.mergedIds },
+          last_seen: plan.lastSeen,
+        })
+        .eq("id", plan.canonical.id),
+      ...plan.aliases.map((a) => {
+        const { merged_matter_ids: _absorbed, ...meta } = a.meta || {};
+        return supabase
+          .from("matters")
+          .update({ meta: { ...meta, canonical_matter_id: plan.canonical.id, merge_reason: "admin-review" } })
+          .eq("id", a.id);
+      }),
+      // Earlier aliases of an absorbed matter point straight at the new canonical.
+      ...(repointRows || []).map((r: any) =>
         supabase
           .from("matters")
-          .update({ meta: { ...(a.meta || {}), canonical_matter_id: canonical.id, merge_reason: "admin-review" } })
-          .eq("id", a.id),
+          .update({ meta: { ...(r.meta || {}), canonical_matter_id: plan.canonical.id } })
+          .eq("id", r.id),
       ),
     ];
     for (const res of await Promise.all(updates)) {
