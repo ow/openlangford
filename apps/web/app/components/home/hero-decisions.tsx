@@ -45,24 +45,26 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
             What council decided lately
           </p>
 
-          <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-0">
+          <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6 lg:gap-8">
             {lead.map((d, i) => (
-              <li
-                key={d.id}
-                className={i > 0 ? "md:border-l md:border-white/20 md:pl-8" : "md:pr-8"}
-              >
-                <Link to={meetingPath({ id: d.meetingId, slug: d.meetingSlug })} className="group block">
+              <li key={d.id} className="border-t border-white/25 pt-5">
+                <Link
+                  to={meetingPath({ id: d.meetingId, slug: d.meetingSlug })}
+                  className="group flex h-full flex-col"
+                >
                   <span className="text-sm font-bold tabular-nums text-brand-300">0{i + 1}</span>
-                  <p className="mt-2 text-2xl md:text-3xl font-extrabold leading-tight tracking-tight group-hover:underline decoration-2 underline-offset-4">
+                  <p className="mt-2 text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight group-hover:underline decoration-2 underline-offset-4">
                     {d.headline || d.summary}
                   </p>
-                  <p className="mt-3 text-sm text-brand-100">
-                    {voteLabel(d)}
-                    {d.isDivided && <span className="ml-2 rounded-full bg-amber-300 px-2 py-0.5 text-xs font-semibold text-amber-950">Dissent</span>}
-                  </p>
-                  <p className="mt-1 text-xs text-brand-200">
-                    {formatDate(d.meetingDate)} · {d.meetingTitle}
-                  </p>
+                  <div className="mt-auto pt-4">
+                    <p className="text-sm text-brand-100">
+                      {voteLabel(d)}
+                      {d.isDivided && <span className="ml-2 rounded-full bg-amber-300 px-2 py-0.5 text-xs font-semibold text-amber-950">Dissent</span>}
+                    </p>
+                    <p className="mt-1 text-xs text-brand-200">
+                      {formatDate(d.meetingDate)} · {d.meetingTitle}
+                    </p>
+                  </div>
                 </Link>
               </li>
             ))}
@@ -83,26 +85,29 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
         // Top of the strip overlaps the teal; the rest blends into the white section below.
         <div className="relative z-10 -mt-24 bg-[linear-gradient(to_bottom,transparent_6rem,white_6rem)]">
           <div className="container mx-auto max-w-6xl px-4">
-          <ol className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-            {upcoming.map((m, i) => (
+          <ol className="grid gap-3 md:grid-cols-3 md:gap-6 lg:gap-8">
+            {upcoming.slice(0, 3).map((m, i) => (
               <li key={m.id}>
                 <Link
                   to={meetingPath(m)}
-                  className="group flex h-full flex-col rounded-2xl bg-white p-4 shadow-lg ring-1 ring-black/5 transition-shadow hover:shadow-xl md:p-5"
+                  className="group flex h-full items-center gap-4 rounded-2xl bg-white p-4 shadow-lg ring-1 ring-black/5 transition-shadow hover:shadow-xl md:p-5"
                 >
-                  <span className="flex items-baseline gap-2">
-                    <span className="text-3xl font-extrabold tabular-nums tracking-tight text-zinc-900">
+                  <span className="flex w-14 shrink-0 flex-col items-center rounded-xl bg-brand-50 py-2 text-brand-800">
+                    <span className="text-[11px] font-bold uppercase tracking-wide">
+                      {formatDate(m.meeting_date, { month: "short" })}
+                    </span>
+                    <span className="text-2xl font-extrabold leading-none tabular-nums">
                       {formatDate(m.meeting_date, { day: "numeric" })}
                     </span>
-                    <span className="text-sm font-semibold text-brand-700">
-                      {formatDate(m.meeting_date, { month: "short" })} · {formatDate(m.meeting_date, { weekday: "short" })}
-                    </span>
-                    {i === 0 && (
-                      <span className="ml-auto rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700">Next</span>
-                    )}
                   </span>
-                  <span className="mt-2 line-clamp-2 text-sm font-semibold leading-snug text-zinc-800 group-hover:text-brand-700">
-                    {m.title}
+                  <span className="min-w-0">
+                    <span className="block text-xs font-semibold text-zinc-500">
+                      {i === 0 ? "Next · " : ""}
+                      {formatDate(m.meeting_date, { weekday: "long" })}
+                    </span>
+                    <span className="mt-0.5 block line-clamp-2 font-semibold leading-snug text-zinc-900 group-hover:text-brand-700">
+                      {m.title}
+                    </span>
                   </span>
                 </Link>
               </li>
