@@ -775,9 +775,12 @@ class MeetingIngester:
         # Fallback: return as-is if marker not found
         return folder_path
 
-    def _classify_document(self, filename):
-        """Classify a document by filename keywords."""
+    def _classify_document(self, filename, subfolder=None):
+        """Classify a document by filename keywords (and the folder it was filed in)."""
         lower = filename.lower()
+        # Langford files signed minutes as e.g. "20200203-SIGNED.pdf" inside Minutes/.
+        if subfolder == "Minutes" and re.search(r"minute|mins|sign", lower):
+            return "Minutes"
         if "addend" in lower:
             return "Addendum"
         if "late" in lower and "item" in lower:
@@ -853,7 +856,7 @@ class MeetingIngester:
                         pass
 
                 # Classify
-                category = self._classify_document(filename)
+                category = self._classify_document(filename, subfolder_name)
 
                 # Title from filename (strip extension)
                 title = os.path.splitext(filename)[0]
