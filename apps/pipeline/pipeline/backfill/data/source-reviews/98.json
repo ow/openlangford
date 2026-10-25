@@ -1,0 +1,484 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 98,
+    "title": "Regular Council",
+    "meeting_date": "2020-03-02",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+      "sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+  "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "a07084d7d3950f7e5e4c314c0998169b249e79a161567314411492f338771c30",
+  "corrected_text_sha256": "d3104c775da6eb7e93945796e27d50ce73b70ebd35c2b989fa6b6b188d461d66",
+  "parsed_blocks_sha256": "c55f9a4a9ecb07dbd1539fb6f2c995e02fc1f044ea36ea5d9a24eca7b26628ae",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "a5af92e0e5b930c7ed35be4d43360c2479c63332af32663d3dde64a174e8c2cb",
+      "render_sha256": "a1dbbae59da4f52da913c4213fc1974d60abb7fec4026647237ff21831b5a267"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "5d22037db6e5781efcf3c47ab0f8433fb62c9c82e499c5b76eca888e4cb0c5fc",
+      "render_sha256": "b499d8b7236dd3bb4bd08710b21c38151f18cb651cc49bc9c9e7172ced921792"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "966c64c47dbc9ad1ddcd9fb8af454a344bfc7e42deeed64c7a19f05911edc8a3",
+      "render_sha256": "2e11af4e4b9512bdcd081504918ec0b046df8f34c0009028db6d38bbf872ea58"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "df99a99ce3a02b8b7ba2912cfa828beeb4b1b2bb347a0631ff43a90871208378",
+      "render_sha256": "997b33fa3dbeae0375dfcc42f2c11e7e87a81f03731801f7b43ce57481e8dc4c"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "3ef171b45615789d20df763e3823fecfa289909ef812d2e77523812c0815fd94",
+      "render_sha256": "485367e9d0024530d42b715a8580b9029076d8ef6fbc51590d992a75e2750a51"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "207a5bf4b8481bc708ff900695b4dcfd62166f94bac31772f597a304d72f5be0",
+      "render_sha256": "e16509a7c014f182183151ca5afc125abffb5f409ff655fbf6e28955aba8d4d1"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "61ee520d1852e5d1f308a04d216cff131b8be19b9677f55182eb1a6c40a56bd4",
+      "render_sha256": "1631ee560eba4777a0400774af016aa41fcfc4b2067127087a0eecd213a34259"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "ff2a205c6180fcc1f85bb8aff5ca0e8c02a89a3e49db1171020a7301096911a5",
+      "render_sha256": "e864a4c6e9c86f475af69ed91e3734c17ac49d8d6e0756669386eae628786168"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5",
+      "render_sha256": "fb03b4375641e8d7ae0e418bafcad376a194a1531a821cf31346452784a90b27"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85",
+      "render_sha256": "86ab074eae36b9bc373dee9c126a0251fa5a14fc165510df344db9e2149b8bfb"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+      "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "599cf78c9947ab62bac2dd6ac72bb686cc9fa126f93351aa143c84509619523c",
+      "render_sha256": "4401d6f900874f1db3c8fc5ca187d646c0c80a3bd3dccc8b268b4218cbf91965"
+    }
+  ],
+  "text_corrections": [
+    {
+      "page": 12,
+      "native_quote": "Mayor Young adjou     ed the meeting at 6:45 pm.",
+      "reviewed_quote": "Mayor Young adjourned the meeting at 6:45 pm.",
+      "authority": "original_image_text_correction_only",
+      "first_image_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "second_image_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc"
+    }
+  ],
+  "accepted_decisions": [
+    {
+      "source_key": "2367f3f61d3f55b9a39f43f6f154934e8c42ff92d2c5d67b40b8bac447486830",
+      "raw_block_sha256": "463109a56bb21cdb8eb5f31489e1a2af884531cf19c27691821e8c1ae9b47375",
+      "operative_body": "That Council authorize the Mayor and CAO to execute CON20-0014, the aid agreement for aerial apparatus or water tender between the City of Langford and the City of Victoria.",
+      "operative_body_sha256": "7a06a10f7cffccf89979c6eb2fc057d709bde80819df1d177c296fb1bd70bce0",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5",
+          "render_sha256": "fb03b4375641e8d7ae0e418bafcad376a194a1531a821cf31346452784a90b27"
+        }
+      ],
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f7bc59e551fd0f12ce5cf3de69315ccd78feafa124266f65095582d41ed234ba",
+      "raw_block_sha256": "263b2f2c65e997002ad983b85b659daf7f0d64c982216eef29efd222bd838a45",
+      "operative_body": "That Council approve the 2020 \u2014 2024 Five Year Financial Plan and direct staff to bring forward the Five Year Financial Plan Bylaw, 2020 and the 2020 Tax Rate Bylaw.",
+      "operative_body_sha256": "6be0c56dde643db372e9e3a83614e90ef4cf0959548da5966f5e69931312329c",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5",
+          "render_sha256": "fb03b4375641e8d7ae0e418bafcad376a194a1531a821cf31346452784a90b27"
+        }
+      ],
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "feaa57be930e50bbcfa7afb1613d5c84db8a7c0bab6dfc3bf7158190aca51766",
+      "raw_block_sha256": "825a4c0dd705b0308735b595ef08e6e45787e8d95295e600d0ed854ebfe77273",
+      "operative_body": "That Council adopt Bylaw 1858.",
+      "operative_body_sha256": "78e0a98adf058f54333e1ada80987a0e84d26222d3a04336d2fc55525a61cae8",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85",
+          "render_sha256": "86ab074eae36b9bc373dee9c126a0251fa5a14fc165510df344db9e2149b8bfb"
+        }
+      ],
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "8c642f5368f157ca2139edb36f62179f5a6240b7ef21afc59c18c77dcc180e22",
+      "raw_block_sha256": "b35adaeac8b15993ca6ca254b0c6b772fe268c3ebff402285ca102825ac69806",
+      "operative_body": "That Council give Bylaw 1878 second and third readings.",
+      "operative_body_sha256": "70f99d6031d5ade617da983926dd7f739a74d4a6c1e7075e56910addd3f29f6c",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85",
+          "render_sha256": "86ab074eae36b9bc373dee9c126a0251fa5a14fc165510df344db9e2149b8bfb"
+        }
+      ],
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b436e68726d0d03ce24d1cc2eef9214bb4c3980b9cc9fe5bdafae37e0d57c6fe",
+      "raw_block_sha256": "5264a01d359500ac95b59efe261f84b36cea31a0c4b0758a781272ddb1491254",
+      "operative_body": "That Council give Bylaw 1887 first reading.",
+      "operative_body_sha256": "04c5111024f7ebafb1cfac70c861fae73e33433ec2e975a79bd2d41587021201",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+          "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+        }
+      ],
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5db0b458adb8b51c98a8f71f72933e4baf6c2ea1901df31c2b6e7f16d011cf65",
+      "raw_block_sha256": "e44d3bd8d6eb8db439deb2ee21c622205a4ab97ebb2c3f4f48459a71881d240b",
+      "operative_body": "That Council give Bylaw 1888 first reading.",
+      "operative_body_sha256": "54eb48a3f16d0ce26bbdc4b9fcff5fe76021ce30d1e6415a736e1a34c1a5a69b",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+          "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+        }
+      ],
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c6090223123d91adedea7629bec54f75507b2530204fcf79b905b36a52633d25",
+      "raw_block_sha256": "f3188b6ea73420f965b4176d6417741b76ec952ee44ce790244e86b09ff89961",
+      "operative_body": "That Council give Bylaw 1889 first reading.",
+      "operative_body_sha256": "dcce6438dcda4bae7c28cac45b0111175d65c1e6d05600239f67ed62b62ea73c",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+          "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+        }
+      ],
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "a5af92e0e5b930c7ed35be4d43360c2479c63332af32663d3dde64a174e8c2cb",
+  "independent_original_image_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+  "second_independent_original_image_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc",
+  "documentary_native_corrections": [
+    {
+      "page": 12,
+      "native_text_sha256": "599cf78c9947ab62bac2dd6ac72bb686cc9fa126f93351aa143c84509619523c",
+      "render_sha256": "4401d6f900874f1db3c8fc5ca187d646c0c80a3bd3dccc8b268b4218cbf91965",
+      "native_quote": "Mayor Young adjou ed the meeting at 6:45 pm.",
+      "printed_quote": "Mayor Young adjourned the meeting at 6:45 pm.",
+      "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "authority": "reviewed_documentary_native_witness_correction_only",
+      "second_independent_image_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc"
+    }
+  ],
+  "remaining_holds": [
+    {
+      "source_key": "bd82db851bcbe5aabfa200ee43618cae91c693ecadd77896106f7757e3e05310",
+      "reason": "Closing-conflict strict full-body/ownership rule holds otherwise image-reviewed decision: native_full_body_differs_from_independently_image_reviewed_operative_body",
+      "pages": [
+        9,
+        10
+      ],
+      "operative_body_sha256": "7ad6eea896b1fc73d7762524a83c9fdc3c1bb54161d5f7e877028a4d123a709b",
+      "native_full_body_sha256": "3d597479e5087452ac7ca6f537eb93ea722fb531e952ae3b1b316e319a0aa7c6",
+      "authority": "coverage_diagnostic_only_no_fact_admission"
+    },
+    {
+      "source_key": "8ed12b0a4d1c0543aa20be301e89195fada249e3cca3668489f4fa139786608f",
+      "reason": "Closing-conflict strict full-body/ownership rule holds otherwise image-reviewed decision: native_full_body_differs_from_independently_image_reviewed_operative_body",
+      "pages": [
+        10,
+        11
+      ],
+      "operative_body_sha256": "56a9db3ebe5e5a745f01bd494859833789577e0e65c4ad22a1866d042f2c6d49",
+      "native_full_body_sha256": "ad18515db939c40e5d0195ef1ffee290ed2ac705837c5bc48c121091aa843b92",
+      "authority": "coverage_diagnostic_only_no_fact_admission"
+    },
+    {
+      "source_key": "1203fdb55b8559813e1374440c727e01fd752096af63fada4413f126eb4d41dd",
+      "reason": "Closing-conflict strict full-body/ownership rule holds otherwise image-reviewed decision: native_full_body_differs_from_independently_image_reviewed_operative_body",
+      "pages": [
+        11,
+        12
+      ],
+      "operative_body_sha256": "2597d57c22e56e44efdb0750ad982c9e68a6da50579d9b53d4d3163f3a651002",
+      "native_full_body_sha256": "6b0028c9ae3dadf2dc24f479406365d46dd74a035f0a132c804b6714c0711d3e",
+      "authority": "coverage_diagnostic_only_no_fact_admission"
+    },
+    {
+      "source_key": "b186befdc7b32d6ebb77a48c64e45b349b9cf3e764c0f66ec6404effc5e99f53",
+      "reason": "Closing-conflict strict full-body/ownership rule holds otherwise image-reviewed decision: native_full_body_differs_from_independently_image_reviewed_operative_body",
+      "pages": [
+        12
+      ],
+      "operative_body_sha256": "20abb8e41a110cbfb165f6e48680210aa152b3921af4dba48489b1a2f2391045",
+      "native_full_body_sha256": "3ca7daf186966e51790b894187661b4037499e94346ea679b33acd48776952ff",
+      "authority": "coverage_diagnostic_only_no_fact_admission"
+    },
+    {
+      "reason": "Existing902 CARRIED generic closing lacks a formal source outcome; preserve every existing field unresolved, unmapped, no formal key or result/body rewrite.",
+      "legacy_ids": [
+        902
+      ],
+      "authority": "coverage_diagnostic_only_no_fact_certification"
+    }
+  ],
+  "closing_conflict_capabilities": [
+    {
+      "type": "reviewed_unresolved_closing_conflict",
+      "authority": "duplicate_screening_only_no_fact_certification",
+      "motion_id": 902,
+      "legacy_text": "That the meeting be adjourned.",
+      "expected_stored_result": "CARRIED",
+      "claim_sha256": "536608ddeeadaff396c7f7dee94450af4fda4f9ff551729c38082cca9f25c088",
+      "claim_row_sha256": "2e427352ef1388f71b50231a37551c849de5dd0ac3f0b44400e61d3b51db131d",
+      "printed_body": "Mayor Young adjourned the meeting at 6:45 pm.",
+      "page": 12,
+      "native_text_sha256": "599cf78c9947ab62bac2dd6ac72bb686cc9fa126f93351aa143c84509619523c",
+      "render_sha256": "4401d6f900874f1db3c8fc5ca187d646c0c80a3bd3dccc8b268b4218cbf91965",
+      "source_passage": "Mayor Young adjourned the meeting at 6:45 pm.",
+      "source_passage_start": 31279,
+      "native_passage": "Mayor Young adjou ed the meeting at 6:45 pm.",
+      "native_passage_start": 85,
+      "native_correction": {
+        "page": 12,
+        "native_text_sha256": "599cf78c9947ab62bac2dd6ac72bb686cc9fa126f93351aa143c84509619523c",
+        "render_sha256": "4401d6f900874f1db3c8fc5ca187d646c0c80a3bd3dccc8b268b4218cbf91965",
+        "native_quote": "Mayor Young adjou ed the meeting at 6:45 pm.",
+        "printed_quote": "Mayor Young adjourned the meeting at 6:45 pm.",
+        "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+        "authority": "reviewed_documentary_native_witness_correction_only",
+        "second_independent_image_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc"
+      },
+      "allowed_new_decisions": [
+        {
+          "source_key": "2367f3f61d3f55b9a39f43f6f154934e8c42ff92d2c5d67b40b8bac447486830",
+          "raw_block_sha256": "463109a56bb21cdb8eb5f31489e1a2af884531cf19c27691821e8c1ae9b47375",
+          "operative_body": "That Council authorize the Mayor and CAO to execute CON20-0014, the aid agreement for aerial apparatus or water tender between the City of Langford and the City of Victoria.",
+          "operative_body_sha256": "7a06a10f7cffccf89979c6eb2fc057d709bde80819df1d177c296fb1bd70bce0",
+          "result": "CARRIED",
+          "pages": [
+            9
+          ],
+          "page_evidence": [
+            {
+              "page": 9,
+              "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5",
+              "render_sha256": "fb03b4375641e8d7ae0e418bafcad376a194a1531a821cf31346452784a90b27"
+            }
+          ],
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "f7bc59e551fd0f12ce5cf3de69315ccd78feafa124266f65095582d41ed234ba",
+          "raw_block_sha256": "263b2f2c65e997002ad983b85b659daf7f0d64c982216eef29efd222bd838a45",
+          "operative_body": "That Council approve the 2020 \u2014 2024 Five Year Financial Plan and direct staff to bring forward the Five Year Financial Plan Bylaw, 2020 and the 2020 Tax Rate Bylaw.",
+          "operative_body_sha256": "6be0c56dde643db372e9e3a83614e90ef4cf0959548da5966f5e69931312329c",
+          "result": "CARRIED",
+          "pages": [
+            9
+          ],
+          "page_evidence": [
+            {
+              "page": 9,
+              "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5",
+              "render_sha256": "fb03b4375641e8d7ae0e418bafcad376a194a1531a821cf31346452784a90b27"
+            }
+          ],
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "feaa57be930e50bbcfa7afb1613d5c84db8a7c0bab6dfc3bf7158190aca51766",
+          "raw_block_sha256": "825a4c0dd705b0308735b595ef08e6e45787e8d95295e600d0ed854ebfe77273",
+          "operative_body": "That Council adopt Bylaw 1858.",
+          "operative_body_sha256": "78e0a98adf058f54333e1ada80987a0e84d26222d3a04336d2fc55525a61cae8",
+          "result": "CARRIED",
+          "pages": [
+            10
+          ],
+          "page_evidence": [
+            {
+              "page": 10,
+              "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85",
+              "render_sha256": "86ab074eae36b9bc373dee9c126a0251fa5a14fc165510df344db9e2149b8bfb"
+            }
+          ],
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "8c642f5368f157ca2139edb36f62179f5a6240b7ef21afc59c18c77dcc180e22",
+          "raw_block_sha256": "b35adaeac8b15993ca6ca254b0c6b772fe268c3ebff402285ca102825ac69806",
+          "operative_body": "That Council give Bylaw 1878 second and third readings.",
+          "operative_body_sha256": "70f99d6031d5ade617da983926dd7f739a74d4a6c1e7075e56910addd3f29f6c",
+          "result": "CARRIED",
+          "pages": [
+            10
+          ],
+          "page_evidence": [
+            {
+              "page": 10,
+              "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85",
+              "render_sha256": "86ab074eae36b9bc373dee9c126a0251fa5a14fc165510df344db9e2149b8bfb"
+            }
+          ],
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "b436e68726d0d03ce24d1cc2eef9214bb4c3980b9cc9fe5bdafae37e0d57c6fe",
+          "raw_block_sha256": "5264a01d359500ac95b59efe261f84b36cea31a0c4b0758a781272ddb1491254",
+          "operative_body": "That Council give Bylaw 1887 first reading.",
+          "operative_body_sha256": "04c5111024f7ebafb1cfac70c861fae73e33433ec2e975a79bd2d41587021201",
+          "result": "CARRIED",
+          "pages": [
+            11
+          ],
+          "page_evidence": [
+            {
+              "page": 11,
+              "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+              "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+            }
+          ],
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "5db0b458adb8b51c98a8f71f72933e4baf6c2ea1901df31c2b6e7f16d011cf65",
+          "raw_block_sha256": "e44d3bd8d6eb8db439deb2ee21c622205a4ab97ebb2c3f4f48459a71881d240b",
+          "operative_body": "That Council give Bylaw 1888 first reading.",
+          "operative_body_sha256": "54eb48a3f16d0ce26bbdc4b9fcff5fe76021ce30d1e6415a736e1a34c1a5a69b",
+          "result": "CARRIED",
+          "pages": [
+            11
+          ],
+          "page_evidence": [
+            {
+              "page": 11,
+              "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+              "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+            }
+          ],
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "c6090223123d91adedea7629bec54f75507b2530204fcf79b905b36a52633d25",
+          "raw_block_sha256": "f3188b6ea73420f965b4176d6417741b76ec952ee44ce790244e86b09ff89961",
+          "operative_body": "That Council give Bylaw 1889 first reading.",
+          "operative_body_sha256": "dcce6438dcda4bae7c28cac45b0111175d65c1e6d05600239f67ed62b62ea73c",
+          "result": "CARRIED",
+          "pages": [
+            11
+          ],
+          "page_evidence": [
+            {
+              "page": 11,
+              "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+              "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+            }
+          ],
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        }
+      ],
+      "first_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+      "independent_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc"
+    }
+  ]
+}

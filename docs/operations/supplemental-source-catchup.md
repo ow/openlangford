@@ -64,3 +64,24 @@ atomic receipts and preservation of every prior row. Any drift requires review.
 No models, credentials, schema changes, original-file replacement or production
 mutation are part of preparing this batch. This is another bounded batch in an
 incomplete site-wide reconciliation.
+
+## Additional reviewed closing cases
+
+The prepared draft now includes 572 additions across 30 meetings. The latest
+42 are meeting55 (10),62 (10),98 (7) and227 (15), independently reviewed from
+original pages and matched exactly by a current read-only production audit:
+`ea59050a41a5a04f20db74a0e5803f5f67902d4870bc8bda4ac53ee9ab01b997`.
+All four source dates match the catalog. No production records were changed.
+
+Meeting62's NULL closing543 remains documentary only, without an outcome, actor
+ID or formal source key. Meetings98/227 retain their existing unresolved CARRIED
+closing claims902/2342 unchanged. Narrow original-image/native verb witnesses
+repair only the damaged closing narration; all formal decision identities,
+bodies, results and offsets remain unchanged. Four additional bodies in98 and
+six in227 still fail strict native-body correspondence and remain unenrolled.
+These are partial batches, not certificates of complete meeting processing.
+
+The 36 separately verified source/catalog date mismatches intersect none of
+this draft's prepared meeting batches or the355 previously applied additions.
+They remain a review-only date-correction proposal. The stricter date guard
+blocks new additions on those mismatches; it changes no catalog dates.

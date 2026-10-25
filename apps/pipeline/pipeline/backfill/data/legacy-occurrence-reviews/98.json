@@ -1,0 +1,475 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 98,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+  "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+  "source_date": "2020-03-02",
+  "source_text_sha256": "e0090985549da940a6eb318524aeecd7d0230a3a8a7b28502bb653d3f2f26fb2",
+  "formal_inventory_sha256": "a4729cde94f41637a129d141f783e1169db8057715645288a06764a5dba2e027",
+  "claim_inventory_sha256": "08f1864cac292e0a7a36d09d4ccd22e1154a2e81de0390a509acae619cc5daf4",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "a5af92e0e5b930c7ed35be4d43360c2479c63332af32663d3dde64a174e8c2cb"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "5d22037db6e5781efcf3c47ab0f8433fb62c9c82e499c5b76eca888e4cb0c5fc"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "966c64c47dbc9ad1ddcd9fb8af454a344bfc7e42deeed64c7a19f05911edc8a3"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "df99a99ce3a02b8b7ba2912cfa828beeb4b1b2bb347a0631ff43a90871208378"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "3ef171b45615789d20df763e3823fecfa289909ef812d2e77523812c0815fd94"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "207a5bf4b8481bc708ff900695b4dcfd62166f94bac31772f597a304d72f5be0"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "61ee520d1852e5d1f308a04d216cff131b8be19b9677f55182eb1a6c40a56bd4"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "ff2a205c6180fcc1f85bb8aff5ca0e8c02a89a3e49db1171020a7301096911a5"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "599cf78c9947ab62bac2dd6ac72bb686cc9fa126f93351aa143c84509619523c"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 893,
+      "claim_sha256": "73e78916913c2570846b7efffe999de2afb26a99bdb683cf713a08d9c2b91ead",
+      "legacy_text": "That Council approve the agenda by moving 10c) Bylaw No. 1878 to 10b) and renumbering accordingly.",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 648,
+        "source_order": 0,
+        "key": "07a878dae0fa3200a360f848a2f61d8f9af5acb2039fde5d3ec1d4f7c67dccb9",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda by moving 10c) Bylaw No. 1878 to 10b) and renumbering\n        accordingly.",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR SZPAK\n\n        That Council approve the agenda by moving 10c) Bylaw No. 1878 to 10b) and renumbering\n        accordingly.\n\n\n                                                                                                  CARRIED.\n\nCouncillor Stewart left the meeting at 5:30pm after declaring a conflict of interest as she owns a property in\nthe vicinity of 2929 & 2995 Sooke Rd and 3201 & 3211 Loledo Pl.\n\n3.      PUBLIC HEARINGS\n\n        a)   BYLAW NO. 1873\n             \"Langford Official Community Plan Bylaw, Amendment No. 34, (2929 & 2995 Sooke\n             Rd and 3201 & 3211 Loledo PI), Bylaw No. 1873, 2020\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1873 at 5:30 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\n                                                                                                      March 2nd, 2020\n                                                                                                         Page 2 of 12\n\n\nDirector of Planning Matthew Baldwin advised that the purpose of the public hearing for Bylaw No. 1873 is\nto amend the OCP designation of 2929 & 2995 Sooke Road, as well as 3201 & 3211 Loledo Place from\n'Hillside or Shoreline' to 'Business or Light Industrial' to allow for onsite works to start, that being site\nclearing and blasting.\n\nThe applicant has also applied to rezone the lands, but prior to commencing that process the applicant\nwishes to amend to OCP in order to start the onsite works.\n\nIn support of the OCP Amendment, the applicant has agreed to:\n\n    \u2022   Register a section 219 restrictive covenant on the titles of the subject properties prior to Bylaw\n        Adoption that states onsite works, defined as clearing and blasting of all the lands, may only occur\n        on weekdays from 8:30am to 4:30pm, may not occur beyond 2 years from the commencement of\n        these works, and that blasting and rock crushing may not occur beyond 1 year from the\n        commencement of blasting and rock crushing.\n\nCouncil may wish to direct the City Planner to process the Development Permit that has been applied for\non these lands, and to issue the Development Permit if this OCP Amendment is successful, in accordance\nwith the applicable Development Permit Guidelines.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nNone presented.\n\nMayor Young called a second time for presentations.\n\nNone presented.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1873 closed at 5:31 p.m.\n\nCouncillor Stewart re-entered the meeting at 5:32 pm.\n\n        b)   BYLAW NO. 1878\n             \"Langford Zoning Bylaw, Amendment No. 579, (991 Loch Glen PI), Bylaw No.\n             1878, 2020\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1878 at 5:32 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDirector of Planning Matthew Baldwin advised that John Story and Jozica Kolarich have applied to amend\nthe zoning of a portion of 991 Loch Glen PI from the R2 (One- and Two-Family Residential) Zone to the RS4\n(Residential Small Lot) Zone and to amend the text within the R2 zone to remove the requirement to exclude\nthe SPEA non-disturbance area in the calculation of minimum lot size, to facilitate a two-lot subdivision.\n\n                                                                                                      March 2\"d, 2020\n                                                                                                         Page 3 of 12\n\n\nThis is being proposed in order to allow for the development of a two-lot subdivision.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nIn support of these/this application, the applicant has agreed to provide the following:\n\na)      That the applicant provides, as a bonus for increased density, the following contributions prior to\n        subdivision approval:\n                $6,000 per lot towards the General Amenity Reserve Fund; and\n                $1,000 per lot towards the Affordable Housing Reserve Fund.\n\nb)      That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority\n        over all other charges on title, that agrees to the following:\n                That the applicant agrees to install all frontage improvements to Bylaw No. 1000 standards,\n                and to the satisfaction of the Direction of Engineering, prior to subdivision approval, or\n                building permit issuance, whichever occurs first;\n        iv.      That a stormwater management plan be provided to the satisfaction of the Director of\n                 Engineering and in accordance with Bylaw No. 1000, prior to subdivision approval, or\n                 building permit issuance, whichever occurs first;\n        v.       That the applicant agrees to implement the approved storm water management plan and\n                 to complete any required improvements and/or upgrades to on-site and off-site\n                 infrastructure necessary to facilitate proper drainage on the subject property at the\n                 applicant's expense;\n        vi.      That any necessary above or underground infrastructure or servicing upgrades, extensions\n                 or other required servicing requirements are to be fulfilled at the applicant's expense; and\n        vii.     That the applicant provides a construction management plan to the satisfaction of the\n                 Director of Engineering.\n\nThis proposal is consistent with the Official Community Plan Hillside or Shoreline designation.\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\nThe Mayor called a first time for presentations.\n\nNone presented.\n\nMayor Young called a second time for presentations.\n\nNone presented.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1878 closed at 5:32 p.m.\n\n4.      ADOPTION OF COUNCIL MINUTES\n\n        a)   Minutes of the Regular Meeting of Council \u2014 February 18th , 2020\n\n                                                                                                      March 2nd, 2020\n                                                                                                         Page 4 of 12",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5e1aba0854d99d4b8674ca8ad854968c75e31115640a84d6adc83b49e195ee45",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 894,
+      "claim_sha256": "474a655fa56744fd72fd12bda927c1e43df3ad26e026624f7b4b5bdf94e2b627",
+      "legacy_text": "That Council approve the minutes of the regular meeting of Council held on February 18th, 2020.",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 7225,
+        "source_order": 1,
+        "key": "a6589031f4495254d0320d69e9de089bee332431d7c7ee1a0ce90322def39d07",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the regular meeting of Council held on February 18th, 2020.",
+        "source_block": "MOVED BY:         COUNCILLOR SAHLSTROM\nSECONDED:         COUNCILLOR STEWART\n\n        That Council approve the minutes of the regular meeting of Council held on February 18th, 2020.\n\n\n                                                                                                        CARRIED.\n\n        b)   Minutes of the Special Meeting of Council \u2014 February 25th, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4863b025964caf1267dd44d69a2ac5ae318906daf9f954df9c8fbf2291e50ddd",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 895,
+      "claim_sha256": "092f2ad763e7b721207fe0ef007d79289c1e50ea37cb49a44c7267931efff759",
+      "legacy_text": "That Council approve the minutes of the special meeting of Council held on February 25th, 2020.",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 7601,
+        "source_order": 2,
+        "key": "1f830b66be89f6fb105078c29b62d1d28a1986fc37ba097a7d6a26f5c2bdffa5",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the special meeting of Council held on February 25th, 2020.",
+        "source_block": "MOVED BY:         COUNCILLOR SAHLSTROM\nSECONDED:         COUNCILLOR STEWART\n\n        That Council approve the minutes of the special meeting of Council held on February 25th, 2020.\n\n\n                                                                                                        CARRIED.\n\n5.      OTHER BOARD AND COMMISSION MINUTES\n\n        a)   West Shore Parks and Recreation \u2014January 16th, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ca98ba01d88d271dfc015728605b7a4b62074554b342ac2c8c504c50361a8edc",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 896,
+      "claim_sha256": "42aa07605909a8dee8a36f681996e72edfe5ebb9f7af222144ae84f4c16a7071",
+      "legacy_text": "That Council receive the minutes of the West Shore Parks and Recreation Board, held on January 16th, 2020.",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 8009,
+        "source_order": 3,
+        "key": "225721e6c5f70dda80586a7bbf38aaebec4df7f2371c1820f1258c936e4d036a",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the West Shore Parks and Recreation Board, held on January\n        16th, 2020.",
+        "source_block": "MOVED BY:         COUNCILLOR SAHLSTROM\nSECONDED:         COUNCILLOR BLACKWELL\n\n        That Council receive the minutes of the West Shore Parks and Recreation Board, held on January\n        16th, 2020.\n\n\n                                                                                                        CARRIED.\n\n6.      PUBLIC PARTICIPATION\n\nNone.\n\n7.      COMMITTEE RESOLUTIONS\n\n5:34 pm Councillor Stewart left the meeting after declaring a conflict of interest as the properties discussed\nin 7a) and 7b) are in proximity to her own property.\n\n\n        a)   Planning, Zoning and Affordable Housing Committee \u2014 February 24th, 2020\n             1.   Minutes of the Planning, Zoning & Affordable Housing Committee \u2014\n                  February 24th, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "8f94bdc219586b16adbe32638d2e821aef5dcc6962a2afc7788c447f9d3203cc",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 897,
+      "claim_sha256": "23ab0bbce50218d180190071d653bd721fe9ea7f88e352c404d1a6d71a87186b",
+      "legacy_text": "That Council receive the minutes of the Planning, Zoning and Affordable Housing Committee held on February 24th, 2020.",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 8769,
+        "source_order": 4,
+        "key": "983d034587e06eeb2b768131e82d72a7c37d286339d096c9d6c7fc1169038010",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the Planning, Zoning and Affordable Housing Committee held\n        on February 24 th, 2020.\n\n                                                                                                            March 2nd, 2020\n                                                                                                               Page 5 of 12",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR SZPAK\n\n        That Council receive the minutes of the Planning, Zoning and Affordable Housing Committee held\n        on February 24 th, 2020.\n\n                                                                                                            March 2nd, 2020\n                                                                                                               Page 5 of 12\n\n\n                                                                                                              CARRIED.\n\n            2.        Application to Rezone 1336 Langshire Road from RR4 (Rural Residential 4) Zone\n                      to the BP2A (Business Park \u2014 Sooke Road West) Zone and amend the policy\n                      designation from Hillside or Shoreline to the Business or Light Industrial\n                      designation within Langford's OCP in order to allow a for commercial and light\n                      industrial uses to be developed on the property.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5adcd64e332e7815aa8050dc06ac033e31a92c9ea1d11868d491676955d4adfc",
+      "pages": [
+        4,
+        5
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 898,
+      "claim_sha256": "1f669fd9256c5ab61b52d7ef8741be1e55c57ccb2f31bab09342968611144a40",
+      "legacy_text": "That Council proceed with consideration of first reading of Bylaw No. 1889 to amend the policy designation within Langford's OCP from the Hillside or Shoreline Policy designation to the Business or Light Industrial Policy designation for the property located at 1336 Langshire Road; include within Bylaw No. 1890 a clause to remove 'Gravel and Aggregate Processing and sale' as an allowable use within the BP2A Zone; and proceed with consideration of first reading of Bylaw No. 1890 to rezone the property at 1336 Langshire Road from RR4 to BP2A subject to specified terms and conditions (technical memos, covenants, frontage works, stormwater, servicing, limits on rock extraction/crushing, etc.).",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 9815,
+        "source_order": 5,
+        "key": "ab2a5ea248fa762c23a4563bdd635d44d89fbb3f7b0996dc670791a68a8ca940",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council proceed with consideration of first reading of Bylaw No. 1889 to amend the policy\n      designation within Langford's OCP from the Hillside or Shoreline Policy designation to the Business\n      or Light Industrial Policy designation for the property located at 1336 Langshire Road;\n\n      Include within Bylaw No. 1890 a clause to remove \"Gravel and Aggregate Processing and sale\", as\n      an allowable use within the BP2A (Business Park \u2014 Sooke Road West) Zone; and\n\n      Proceed with consideration of first reading of Bylaw No. 1890 to rezone the property at 1336\n      Langshire Road from the RR4 (Rural Residential 4) Zone to the BP2A (Business Park \u2014 Sooke Road\n      West) subject to the following terms and conditions:\n\n                 a)    That the applicant provides, prior to Public Hearing, the following:\n\n                        i. A technical memo from an engineer that verifies storm water can be adequately\n                           managed on-site for the proposed developments, to the satisfaction of the Director of\n                           Engineering;\n                       ii. A memo or report from a registered professional biologist, addressing the\n                           watercourse identified on the adjacent property at 1348 Langshire Road;\n\n                 b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                    in priority of all other charges on title, that agrees to the following:\n\n\n                        i. That the developer agrees to install, or bond for, all required frontage improvements\n                           along Langshire Road to Bylaw No. 1000 standards, including the installation of road\n                           edge paved parking and streetlights, to the satisfaction of the Director of Engineering,\n                           prior to subdivision approval or the issuance of a building permit, whichever is first;\n                       ii. That the developer agrees to build up the full width and extent of Langshire Road to\n                           Bylaw No.100 Standards including the construction of a cul-de-sac in a location to be\n                           determined and as approved by the Director of Engineering;\n                      iii. That the applicant will submit frontage drawings, within 1 month of request from the\n                           City of Langford, to the satisfaction of the Director of Engineering and prior to the\n                           approval of subdivision or issuance of a building permit, whichever is first;\n                      iv. That the developer agrees to register road dedication, within in 2 months of request\n                           from the City of Langford, to the satisfaction of the Director of Engineering;\n\n                                                                                                       March 2\"d, 2020\n                                                                                                          Page 6 of 12\n\n\n                    v. That the developer agrees that until road dedication is registered, to the satisfaction\n                        of the Director of Engineering, there will be no approval of subdivision or issuance of\n                        a building permit to develop the subject property;\n                  vi. That the developer will connect and be responsible for any upgrades, connections and\n                        installation of services and utilities required to support the proposed development, to\n                        the standards of Bylaw No. 1000 and to the satisfaction of the Director of Engineering;\n                  vii. That a formal storm water management plan is submitted and implemented prior to\n                        issuance of a building permit or subdivision approval, whichever is first, and\n                        implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering;\n                 viii. That a construction parking and traffic management plan, prepared to the satisfaction\n                        of the Director of Engineering, be provided prior to the issuance of a building permit;\n                   ix. That the developer submits the Fire Underwriters Survey (FUS) calculations prior to\n                        the issuance of a development permit to develop the property, and acknowledges that\n                        these calculations may determine different setbacks than what is prescribed in the\n                        zone or from what has been granted through variances;\n                    x. That the developer agrees that rock extraction and rock crushing on the subject\n                        property will only be permitted for a period of two years, commencing on a date\n                        agreed to, in writing, by the Director of Engineering; and\n                 xi. That the developer agrees that rock extraction and rock crushing on the subject\n                       properties will only be permitted between specified times to the discretion of the\n                       Director of Engineering.",
+        "source_block": "MOVED BY:             COUNCILLOR BLACKWELL\nSECONDED:             COUNCILLOR SZPAK\n\n      That Council proceed with consideration of first reading of Bylaw No. 1889 to amend the policy\n      designation within Langford's OCP from the Hillside or Shoreline Policy designation to the Business\n      or Light Industrial Policy designation for the property located at 1336 Langshire Road;\n\n      Include within Bylaw No. 1890 a clause to remove \"Gravel and Aggregate Processing and sale\", as\n      an allowable use within the BP2A (Business Park \u2014 Sooke Road West) Zone; and\n\n      Proceed with consideration of first reading of Bylaw No. 1890 to rezone the property at 1336\n      Langshire Road from the RR4 (Rural Residential 4) Zone to the BP2A (Business Park \u2014 Sooke Road\n      West) subject to the following terms and conditions:\n\n                 a)    That the applicant provides, prior to Public Hearing, the following:\n\n                        i. A technical memo from an engineer that verifies storm water can be adequately\n                           managed on-site for the proposed developments, to the satisfaction of the Director of\n                           Engineering;\n                       ii. A memo or report from a registered professional biologist, addressing the\n                           watercourse identified on the adjacent property at 1348 Langshire Road;\n\n                 b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                    in priority of all other charges on title, that agrees to the following:\n\n\n                        i. That the developer agrees to install, or bond for, all required frontage improvements\n                           along Langshire Road to Bylaw No. 1000 standards, including the installation of road\n                           edge paved parking and streetlights, to the satisfaction of the Director of Engineering,\n                           prior to subdivision approval or the issuance of a building permit, whichever is first;\n                       ii. That the developer agrees to build up the full width and extent of Langshire Road to\n                           Bylaw No.100 Standards including the construction of a cul-de-sac in a location to be\n                           determined and as approved by the Director of Engineering;\n                      iii. That the applicant will submit frontage drawings, within 1 month of request from the\n                           City of Langford, to the satisfaction of the Director of Engineering and prior to the\n                           approval of subdivision or issuance of a building permit, whichever is first;\n                      iv. That the developer agrees to register road dedication, within in 2 months of request\n                           from the City of Langford, to the satisfaction of the Director of Engineering;\n\n                                                                                                       March 2\"d, 2020\n                                                                                                          Page 6 of 12\n\n\n                    v. That the developer agrees that until road dedication is registered, to the satisfaction\n                        of the Director of Engineering, there will be no approval of subdivision or issuance of\n                        a building permit to develop the subject property;\n                  vi. That the developer will connect and be responsible for any upgrades, connections and\n                        installation of services and utilities required to support the proposed development, to\n                        the standards of Bylaw No. 1000 and to the satisfaction of the Director of Engineering;\n                  vii. That a formal storm water management plan is submitted and implemented prior to\n                        issuance of a building permit or subdivision approval, whichever is first, and\n                        implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering;\n                 viii. That a construction parking and traffic management plan, prepared to the satisfaction\n                        of the Director of Engineering, be provided prior to the issuance of a building permit;\n                   ix. That the developer submits the Fire Underwriters Survey (FUS) calculations prior to\n                        the issuance of a development permit to develop the property, and acknowledges that\n                        these calculations may determine different setbacks than what is prescribed in the\n                        zone or from what has been granted through variances;\n                    x. That the developer agrees that rock extraction and rock crushing on the subject\n                        property will only be permitted for a period of two years, commencing on a date\n                        agreed to, in writing, by the Director of Engineering; and\n                 xi. That the developer agrees that rock extraction and rock crushing on the subject\n                       properties will only be permitted between specified times to the discretion of the\n                       Director of Engineering.\n\n                                                                                                          CARRIED.\n\n            3.   Application to amend the policy designation within Langford's OCP from the\n                 Hillside or Shoreline designation to the Business and Light Industrial designation\n                 for the property at 4342 West Shore Parkway and the property at 1324 Langshire Rd.\n\n                 Application to amend the zoning designation within Langford's Zoning Bylaw No.300\n                 from the RS4 (Residential Small Lot) Zone for the property located at 4342 West Shore\n                 Parkway, and the RR4, (Rural Residential 4), Zone for the property at 1324 Langshire\n                 Road to the BP2A (Business Park \u2014 Sooke Road West) Zone.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "3bcf8e57bc7f32fff14671b660022cae7f9ccff149ebaf62f4ef2bf505f7874e",
+      "pages": [
+        5,
+        6
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 899,
+      "claim_sha256": "830ade4010d97fcbe8be374150732b6e770c9799e917b5d579577be525c4926b",
+      "legacy_text": "That Council proceed with consideration of first reading of Bylaw No. 1887 to amend the policy designation for the property at 4342 West Shore Parkway and 1324 Langshire Road from the Hillside or Shoreline Policy designation to the Business or Light Industrial Policy designation; proceed with consideration of first reading of Bylaw No. 1888 to remove 'Gravel and Aggregate Processing and sale' as an allowable use within the BP2A Zone; and proceed with consideration of first reading to rezone the properties subject to specified terms and conditions (technical memos, covenants, frontage works, stormwater, servicing, limitations on rock extraction/crushing, etc.).",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 15859,
+        "source_order": 6,
+        "key": "c26cf89bc054b736e704c1d7c59e99b82760f758855c205304821dd642a8c058",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council proceed with consideration of first reading of Bylaw No. 1887 to amend the policy\n      designation for the property at 4342 West Shore Parkway and 1324 Langshire Road from the Hillside\n      or Shoreline Policy designation to the Business or Light Industrial Policy designation within\n      Langford's Official Community Plan;\n\n      Proceed with consideration of first reading of Bylaw No.1888 to remove \"Gravel and Aggregate\n      Processing and sale\", as an allowable use within the BP2A (Business Park \u2014 Sooke Road West) Zone;\n      and\n\n      Proceed with consideration of first reading of Bylaw No. 1888 to rezone the property at 1324\n      Langshire Road from the RR4 (Rural Residential 4), Zone and to rezone the property at 4342 West\n\n                                                                                               March 2\", 2020\n                                                                                                  Page 7 of 12\n\n\nShore Parkway from the from the RS4, (Residential Small Lot 4) Zone to the BP2A (Business Park \u2014\nSooke Road West) Zone subject to the following terms and conditions:\n\n    a.   That the applicant provides, prior to Public Hearing, the following:\n\n           i.   A technical memo from an engineer that verifies storm water can be adequately\n                managed on-site for the proposed developments, to the satisfaction of the Director of\n                Engineering;\n\n\n    b. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in\n       priority of all other charges on title of each property, that agrees to the following:\n\n            i. That, for the property located at 1324 Langshire Road, the developer agrees to install,\n               or bond for, all required frontage improvements along Langshire Road to Bylaw No.\n               1000 standards, including the installation of road edge paved parking and streetlights,\n               to the satisfaction of the Director of Engineering, prior to subdivision approval or the\n               issuance of a building permit, whichever is first;\n           ii. That, for the property located at 1324 Langshire Road the developer agrees to build\n               out Langshire Road to the full width and extent along the subject property's frontage,\n               to the satisfaction of the Director of Engineering and to the standards of Bylaw No.100;\n          iii. That the applicant will submit frontage drawings, within 1 month of a formal written\n               request from the City of Langford, to the satisfaction of the Director of Engineering;\n          iv. That the developer agrees to register road dedication, within 2 months of formal\n               written request from the City of Langford, to the satisfaction of the Director of\n               Engineering;\n           v. That the developer agrees that until road dedication is registered, to the satisfaction\n               of the Director of Engineering, will be no approval of subdivision or issuance of a\n               building permit to develop the subject property;\n          vi. That the developer will connect and be responsible for any upgrades, connections and\n               installation of services and utilities required to support the proposed development, to\n               the standards of Bylaw No. 1000 and to the satisfaction of the Director of Engineering\n               and that as far as water servicing, costs may be shared between developers of the\n               properties being serviced.\n         vii. That a formal storm water management is submitted and implemented prior to\n               issuance of a building permit or subdivision approval, whichever is first, as per Bylaw\n               1000, all to the satisfaction of the Director of Engineering;\n         viii. That a construction parking and traffic management plan, prepared to the satisfaction\n               of the Director of Engineering, be provided prior to the issuance of a building permit;\n          ix. That the developer submits the Fire Underwriters Survey (FUS) calculations prior to\n               the issuance of a development permit to develop the property, and acknowledges that\n               these calculations may determine different setbacks than what is prescribed in the\n               zone or from what has been granted through variances;\n           x. That the developer agrees that all rock extraction and rock crushing will not be\n               permitted on the subject properties;\n          xi. That the developer agrees that rock extraction and rock crushing on the subject\n               properties will only be permitted for a span of two years, commencing on a date\n               agreed to, in writing, by the Director of Engineering; and\n\n                                                                                                          March 2\"d, 2020\n                                                                                                             Page 8 of 12\n\n\n                   xii. That the developer agrees that rock extraction and rock crushing on the subject\n                        properties will only be permitted between specified times to the discretion of the\n                        Director of Engineering.",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR SZPAK\n\n      That Council proceed with consideration of first reading of Bylaw No. 1887 to amend the policy\n      designation for the property at 4342 West Shore Parkway and 1324 Langshire Road from the Hillside\n      or Shoreline Policy designation to the Business or Light Industrial Policy designation within\n      Langford's Official Community Plan;\n\n      Proceed with consideration of first reading of Bylaw No.1888 to remove \"Gravel and Aggregate\n      Processing and sale\", as an allowable use within the BP2A (Business Park \u2014 Sooke Road West) Zone;\n      and\n\n      Proceed with consideration of first reading of Bylaw No. 1888 to rezone the property at 1324\n      Langshire Road from the RR4 (Rural Residential 4), Zone and to rezone the property at 4342 West\n\n                                                                                               March 2\", 2020\n                                                                                                  Page 7 of 12\n\n\nShore Parkway from the from the RS4, (Residential Small Lot 4) Zone to the BP2A (Business Park \u2014\nSooke Road West) Zone subject to the following terms and conditions:\n\n    a.   That the applicant provides, prior to Public Hearing, the following:\n\n           i.   A technical memo from an engineer that verifies storm water can be adequately\n                managed on-site for the proposed developments, to the satisfaction of the Director of\n                Engineering;\n\n\n    b. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in\n       priority of all other charges on title of each property, that agrees to the following:\n\n            i. That, for the property located at 1324 Langshire Road, the developer agrees to install,\n               or bond for, all required frontage improvements along Langshire Road to Bylaw No.\n               1000 standards, including the installation of road edge paved parking and streetlights,\n               to the satisfaction of the Director of Engineering, prior to subdivision approval or the\n               issuance of a building permit, whichever is first;\n           ii. That, for the property located at 1324 Langshire Road the developer agrees to build\n               out Langshire Road to the full width and extent along the subject property's frontage,\n               to the satisfaction of the Director of Engineering and to the standards of Bylaw No.100;\n          iii. That the applicant will submit frontage drawings, within 1 month of a formal written\n               request from the City of Langford, to the satisfaction of the Director of Engineering;\n          iv. That the developer agrees to register road dedication, within 2 months of formal\n               written request from the City of Langford, to the satisfaction of the Director of\n               Engineering;\n           v. That the developer agrees that until road dedication is registered, to the satisfaction\n               of the Director of Engineering, will be no approval of subdivision or issuance of a\n               building permit to develop the subject property;\n          vi. That the developer will connect and be responsible for any upgrades, connections and\n               installation of services and utilities required to support the proposed development, to\n               the standards of Bylaw No. 1000 and to the satisfaction of the Director of Engineering\n               and that as far as water servicing, costs may be shared between developers of the\n               properties being serviced.\n         vii. That a formal storm water management is submitted and implemented prior to\n               issuance of a building permit or subdivision approval, whichever is first, as per Bylaw\n               1000, all to the satisfaction of the Director of Engineering;\n         viii. That a construction parking and traffic management plan, prepared to the satisfaction\n               of the Director of Engineering, be provided prior to the issuance of a building permit;\n          ix. That the developer submits the Fire Underwriters Survey (FUS) calculations prior to\n               the issuance of a development permit to develop the property, and acknowledges that\n               these calculations may determine different setbacks than what is prescribed in the\n               zone or from what has been granted through variances;\n           x. That the developer agrees that all rock extraction and rock crushing will not be\n               permitted on the subject properties;\n          xi. That the developer agrees that rock extraction and rock crushing on the subject\n               properties will only be permitted for a span of two years, commencing on a date\n               agreed to, in writing, by the Director of Engineering; and\n\n                                                                                                          March 2\"d, 2020\n                                                                                                             Page 8 of 12\n\n\n                   xii. That the developer agrees that rock extraction and rock crushing on the subject\n                        properties will only be permitted between specified times to the discretion of the\n                        Director of Engineering.\n\n\n                                                                                                             CARRIED.\n\nCouncillor Stewart re-entered the meeting at 5:35 pm.\n\n\n8.        TEMPORARY USE PERMIT\n\n          a)   TUP19-0004 \u2014 2317 Millstream Road",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "4b64be85df3f4ddfe002b1c394e43be1ed16c31c42cc3d6e6143d0419232502a",
+      "pages": [
+        6,
+        7,
+        8
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 900,
+      "claim_sha256": "b741608b19a258a1fa5559eb3e9a4ca9c09cc9bb72b1f21dc1e20e3e9939c68c",
+      "legacy_text": "That Temporary Use Permit No. TUP19-0004 be issued by the Council for the City of Langford to Honeycomb Cannabis Inc. to operate a cannabis retail store at 2317 Millstream Road by means of a Temporary Use Permit subject to the following terms and conditions (site plan, conditions and effectiveness tied to issuance of required occupancy permit).",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 21508,
+        "source_order": 7,
+        "key": "172fccb52b6be10927da59c2b642b1824145367fec26dcacba68d53b3a8a3330",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Temporary Use Permit No. TUP19-0004 be issued by the Council for the City of Langford\nto Honeycomb Cannabis Inc. (formerly known as Planet Cannabis 1188770 BC Ltd.) to operate a cannabis\nretail store at 2317 Millstream Road by means of a Temporary Use Permit subject to the following terms\nand conditions:\n\n1.   Appendix\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Conditions\n\n     a)   The non-medicinal use of cannabis and cannabis related products has historically been prohibited\n          by federal law in Canada and, as a result, has historically been prohibited by the City under its Zoning\n          Bylaw No. 300;\n     b)   On October 17, 2018, the Federal Government legalized the non-medicinal use of cannabis and\n          cannabis products;\n     c)   The Federal Government and the Provincial Government have developed a regulatory framework\n          for the retail sale of cannabis and cannabis products for non-medicinal use;\n     d)   The City wishes to authorize the retail sale of cannabis and cannabis products within its boundaries,\n          but recognizes that there are challenges associated with it doing so;\n     e)   The City issued the Request for Proposals for the Retail Sales of Cannabis and Cannabis Related\n          Products to seek proposals from individuals and organizations interested in undertaking the retail\n          sale of cannabis and cannabis products for non-medicinal use within the City's boundaries, and\n          required that proposals include details as to how the challenges with the retail sale of cannabis and\n          cannabis products would be addressed;\n     f)   The City received and reviewed over 30 proposals in response to the Request for Proposals, and\n          identified Honeycomb Cannabis Inc. proposal as one that best addressed the challenges with the\n          retail sale of cannabis and cannabis products; and,\n     g)   Honeycomb Cannabis Inc. is committed to assisting the City and taking positive steps to address the\n          challenges with the retail sale of cannabis and cannabis products, subject to an occupancy permit\n          for the purpose built addition to 2317 Millstream Road being issued by the City, Council hereby\n          resolves to issue Temporary Use Permit TUP19-0004 to Honeycomb Cannabis Inc. for it to operate\n\n                                                                                                     March 2\"d, 2020\n                                                                                                        Page 9 of 12\n\n\n      a Cannabis Retail Store at 2317 Millstream Road, subject to the terms and conditions in the\n      Temporary Use Permit. For clarity, this resolution becomes effective and Temporary Use Permit\n      TUP19-0004 is issued at the time that the City issues an occupancy permit for the purpose-built\n      addition to 2317 Millstream Road.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR SZPAK\n\nThat Temporary Use Permit No. TUP19-0004 be issued by the Council for the City of Langford\nto Honeycomb Cannabis Inc. (formerly known as Planet Cannabis 1188770 BC Ltd.) to operate a cannabis\nretail store at 2317 Millstream Road by means of a Temporary Use Permit subject to the following terms\nand conditions:\n\n1.   Appendix\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Conditions\n\n     a)   The non-medicinal use of cannabis and cannabis related products has historically been prohibited\n          by federal law in Canada and, as a result, has historically been prohibited by the City under its Zoning\n          Bylaw No. 300;\n     b)   On October 17, 2018, the Federal Government legalized the non-medicinal use of cannabis and\n          cannabis products;\n     c)   The Federal Government and the Provincial Government have developed a regulatory framework\n          for the retail sale of cannabis and cannabis products for non-medicinal use;\n     d)   The City wishes to authorize the retail sale of cannabis and cannabis products within its boundaries,\n          but recognizes that there are challenges associated with it doing so;\n     e)   The City issued the Request for Proposals for the Retail Sales of Cannabis and Cannabis Related\n          Products to seek proposals from individuals and organizations interested in undertaking the retail\n          sale of cannabis and cannabis products for non-medicinal use within the City's boundaries, and\n          required that proposals include details as to how the challenges with the retail sale of cannabis and\n          cannabis products would be addressed;\n     f)   The City received and reviewed over 30 proposals in response to the Request for Proposals, and\n          identified Honeycomb Cannabis Inc. proposal as one that best addressed the challenges with the\n          retail sale of cannabis and cannabis products; and,\n     g)   Honeycomb Cannabis Inc. is committed to assisting the City and taking positive steps to address the\n          challenges with the retail sale of cannabis and cannabis products, subject to an occupancy permit\n          for the purpose built addition to 2317 Millstream Road being issued by the City, Council hereby\n          resolves to issue Temporary Use Permit TUP19-0004 to Honeycomb Cannabis Inc. for it to operate\n\n                                                                                                     March 2\"d, 2020\n                                                                                                        Page 9 of 12\n\n\n      a Cannabis Retail Store at 2317 Millstream Road, subject to the terms and conditions in the\n      Temporary Use Permit. For clarity, this resolution becomes effective and Temporary Use Permit\n      TUP19-0004 is issued at the time that the City issues an occupancy permit for the purpose-built\n      addition to 2317 Millstream Road.\n                                                                                                       CARRIED.\n\n9.    REPORTS\n\n      a) CON19-0026 Renewal of the Victoria Fire Dispatch Co-Location Agreement\n           Staff Report (Fire)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5509f23c99d1e6bea6dc16d7e9c194219ffcbe27ba966ab6431704d832d0e47d",
+      "pages": [
+        8,
+        9
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 901,
+      "claim_sha256": "41866dba8daddd99ec1cc77d03e1e14fc406608ec5da26faf5e7685179e6fcff",
+      "legacy_text": "That Council authorize Mayor and CAO to execute CON19-0026, the renewal of the Victoria Fire Dispatch Co-Location Agreement.",
+      "source_identity": {
+        "meeting_id": 98,
+        "source_sha256": "87a9f5d214ea22578d2498b1ca79b5b84d48197e1424f00a96451deef38baa41",
+        "source_offset": 24773,
+        "source_order": 8,
+        "key": "057b96e2f085c104eca523a1684b77dfe409c13c7595b76e5b9aa5dad563fa06",
+        "source_file": "archive/langford/Council/2020/03/2020-03-02 Regular Council [legacy]/Minutes/20200302-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20200302-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council authorize Mayor and CAO to execute CON19-0026, the renewal agreement between\n            the City of Langford and the City of Victoria Fire Dispatch Centres to co-locate.",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR SZPAK\n\n            That Council authorize Mayor and CAO to execute CON19-0026, the renewal agreement between\n            the City of Langford and the City of Victoria Fire Dispatch Centres to co-locate.\n\n\n                                                                                                             CARRIED.\n\n      b) CON20-0014 Aid Agreement with Victoria Fire Department\n         - Staff Report (Fire)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9c76e1ce791db104c3f6e7f1619b0fbc8c5675f976266a916b5c3edc188cd178",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete original occurrence distinguished by legal permit/property/bylaw or report subject. Existing full/shortened wording,actors/results/manualmeta preserved; ownership only,no fulltranscription or individualballot certification.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+  "second_independent_original_image_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc",
+  "closing_conflict_quarantines": [
+    {
+      "source_review_sha256": "892df294bd2223add716c49978692130b3eda90b8bbc42e16a06cf96d1c27fb2",
+      "capability": {
+        "type": "reviewed_unresolved_closing_conflict",
+        "authority": "duplicate_screening_only_no_fact_certification",
+        "motion_id": 902,
+        "legacy_text": "That the meeting be adjourned.",
+        "expected_stored_result": "CARRIED",
+        "claim_sha256": "536608ddeeadaff396c7f7dee94450af4fda4f9ff551729c38082cca9f25c088",
+        "claim_row_sha256": "2e427352ef1388f71b50231a37551c849de5dd0ac3f0b44400e61d3b51db131d",
+        "printed_body": "Mayor Young adjourned the meeting at 6:45 pm.",
+        "page": 12,
+        "native_text_sha256": "599cf78c9947ab62bac2dd6ac72bb686cc9fa126f93351aa143c84509619523c",
+        "render_sha256": "4401d6f900874f1db3c8fc5ca187d646c0c80a3bd3dccc8b268b4218cbf91965",
+        "source_passage": "Mayor Young adjourned the meeting at 6:45 pm.",
+        "source_passage_start": 31279,
+        "native_passage": "Mayor Young adjou ed the meeting at 6:45 pm.",
+        "native_passage_start": 85,
+        "native_correction": {
+          "page": 12,
+          "native_text_sha256": "599cf78c9947ab62bac2dd6ac72bb686cc9fa126f93351aa143c84509619523c",
+          "render_sha256": "4401d6f900874f1db3c8fc5ca187d646c0c80a3bd3dccc8b268b4218cbf91965",
+          "native_quote": "Mayor Young adjou ed the meeting at 6:45 pm.",
+          "printed_quote": "Mayor Young adjourned the meeting at 6:45 pm.",
+          "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+          "authority": "reviewed_documentary_native_witness_correction_only",
+          "second_independent_image_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc"
+        },
+        "allowed_new_decisions": [
+          {
+            "source_key": "2367f3f61d3f55b9a39f43f6f154934e8c42ff92d2c5d67b40b8bac447486830",
+            "raw_block_sha256": "463109a56bb21cdb8eb5f31489e1a2af884531cf19c27691821e8c1ae9b47375",
+            "operative_body": "That Council authorize the Mayor and CAO to execute CON20-0014, the aid agreement for aerial apparatus or water tender between the City of Langford and the City of Victoria.",
+            "operative_body_sha256": "7a06a10f7cffccf89979c6eb2fc057d709bde80819df1d177c296fb1bd70bce0",
+            "result": "CARRIED",
+            "pages": [
+              9
+            ],
+            "page_evidence": [
+              {
+                "page": 9,
+                "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5",
+                "render_sha256": "fb03b4375641e8d7ae0e418bafcad376a194a1531a821cf31346452784a90b27"
+              }
+            ],
+            "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "f7bc59e551fd0f12ce5cf3de69315ccd78feafa124266f65095582d41ed234ba",
+            "raw_block_sha256": "263b2f2c65e997002ad983b85b659daf7f0d64c982216eef29efd222bd838a45",
+            "operative_body": "That Council approve the 2020 \u2014 2024 Five Year Financial Plan and direct staff to bring forward the Five Year Financial Plan Bylaw, 2020 and the 2020 Tax Rate Bylaw.",
+            "operative_body_sha256": "6be0c56dde643db372e9e3a83614e90ef4cf0959548da5966f5e69931312329c",
+            "result": "CARRIED",
+            "pages": [
+              9
+            ],
+            "page_evidence": [
+              {
+                "page": 9,
+                "native_text_sha256": "0d09671e62fdbe8e1efd8550ec4a5b9d4fb1b9fcb6200ddd0905da5b914588e5",
+                "render_sha256": "fb03b4375641e8d7ae0e418bafcad376a194a1531a821cf31346452784a90b27"
+              }
+            ],
+            "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "feaa57be930e50bbcfa7afb1613d5c84db8a7c0bab6dfc3bf7158190aca51766",
+            "raw_block_sha256": "825a4c0dd705b0308735b595ef08e6e45787e8d95295e600d0ed854ebfe77273",
+            "operative_body": "That Council adopt Bylaw 1858.",
+            "operative_body_sha256": "78e0a98adf058f54333e1ada80987a0e84d26222d3a04336d2fc55525a61cae8",
+            "result": "CARRIED",
+            "pages": [
+              10
+            ],
+            "page_evidence": [
+              {
+                "page": 10,
+                "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85",
+                "render_sha256": "86ab074eae36b9bc373dee9c126a0251fa5a14fc165510df344db9e2149b8bfb"
+              }
+            ],
+            "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "8c642f5368f157ca2139edb36f62179f5a6240b7ef21afc59c18c77dcc180e22",
+            "raw_block_sha256": "b35adaeac8b15993ca6ca254b0c6b772fe268c3ebff402285ca102825ac69806",
+            "operative_body": "That Council give Bylaw 1878 second and third readings.",
+            "operative_body_sha256": "70f99d6031d5ade617da983926dd7f739a74d4a6c1e7075e56910addd3f29f6c",
+            "result": "CARRIED",
+            "pages": [
+              10
+            ],
+            "page_evidence": [
+              {
+                "page": 10,
+                "native_text_sha256": "2ea08036f7bfc50d1d8371a58f9bd5dba831a9d90cd93f52b1eb2120dddd6f85",
+                "render_sha256": "86ab074eae36b9bc373dee9c126a0251fa5a14fc165510df344db9e2149b8bfb"
+              }
+            ],
+            "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "b436e68726d0d03ce24d1cc2eef9214bb4c3980b9cc9fe5bdafae37e0d57c6fe",
+            "raw_block_sha256": "5264a01d359500ac95b59efe261f84b36cea31a0c4b0758a781272ddb1491254",
+            "operative_body": "That Council give Bylaw 1887 first reading.",
+            "operative_body_sha256": "04c5111024f7ebafb1cfac70c861fae73e33433ec2e975a79bd2d41587021201",
+            "result": "CARRIED",
+            "pages": [
+              11
+            ],
+            "page_evidence": [
+              {
+                "page": 11,
+                "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+                "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+              }
+            ],
+            "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "5db0b458adb8b51c98a8f71f72933e4baf6c2ea1901df31c2b6e7f16d011cf65",
+            "raw_block_sha256": "e44d3bd8d6eb8db439deb2ee21c622205a4ab97ebb2c3f4f48459a71881d240b",
+            "operative_body": "That Council give Bylaw 1888 first reading.",
+            "operative_body_sha256": "54eb48a3f16d0ce26bbdc4b9fcff5fe76021ce30d1e6415a736e1a34c1a5a69b",
+            "result": "CARRIED",
+            "pages": [
+              11
+            ],
+            "page_evidence": [
+              {
+                "page": 11,
+                "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+                "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+              }
+            ],
+            "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "c6090223123d91adedea7629bec54f75507b2530204fcf79b905b36a52633d25",
+            "raw_block_sha256": "f3188b6ea73420f965b4176d6417741b76ec952ee44ce790244e86b09ff89961",
+            "operative_body": "That Council give Bylaw 1889 first reading.",
+            "operative_body_sha256": "dcce6438dcda4bae7c28cac45b0111175d65c1e6d05600239f67ed62b62ea73c",
+            "result": "CARRIED",
+            "pages": [
+              11
+            ],
+            "page_evidence": [
+              {
+                "page": 11,
+                "native_text_sha256": "0ade53416bda049deceb715a2cff83805a0ba21289b26a4f249da4d869a5b8ba",
+                "render_sha256": "0601baf659daac11f60748e0bde49aa6ac57178c41682dc1c8bab587267fe932"
+              }
+            ],
+            "independent_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          }
+        ],
+        "first_review_sha256": "9aa5c8e77e8190dbf2a1e8ac9a65b476cc876800318e9c6b3ff49bc981a7280d",
+        "independent_review_sha256": "e2bc0d1a1ef648b567ad57978e0df3c5de1ebc0cdc886a9afe2388411b8972fc"
+      }
+    }
+  ]
+}
