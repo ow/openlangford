@@ -6,7 +6,6 @@ import time as _time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
-import requests
 from supabase import create_client
 from tqdm import tqdm
 
@@ -644,6 +643,7 @@ class Archiver:
     def _ingest_meetings(self, diarized_folders=None, target_folder=None, force_update=False, replace_transcript=False, identity_only=False):
         from pipeline.ingestion.ingester import MeetingIngester
         from pipeline.ingestion.audit import find_meetings_needing_reingest
+        from pipeline.email_outbox import EmailEnqueuePersistenceError
 
         supabase_key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
         if not config.SUPABASE_URL or not supabase_key:
@@ -678,6 +678,8 @@ class Archiver:
                 if result and not identity_only and (result["meeting"].get("has_minutes") or result["meeting"].get("has_transcript")):
                     self._after_meeting_ingested(result["meeting_id"], source_only_refresh=result.get("source_only_refresh", False))
                 return result
+            except EmailEnqueuePersistenceError:
+                raise
             except Exception as e:
                 print(f"  [!] {target_folder}: {e}")
                 raise
@@ -713,6 +715,8 @@ class Archiver:
                     )
                     if result and (result["meeting"].get("has_minutes") or result["meeting"].get("has_transcript")):
                         self._after_meeting_ingested(result["meeting_id"], source_only_refresh=result.get("source_only_refresh", False))
+                except EmailEnqueuePersistenceError:
+                    raise
                 except Exception as e:
                     print(f"  [!] {root}: {e}")
             else:
@@ -720,6 +724,8 @@ class Archiver:
                     result = ingester.process_meeting(root)
                     if result and (result["meeting"].get("has_minutes") or result["meeting"].get("has_transcript")):
                         self._after_meeting_ingested(result["meeting_id"], source_only_refresh=result.get("source_only_refresh", False))
+                except EmailEnqueuePersistenceError:
+                    raise
                 except Exception as e:
                     print(f"  [!] {root}: {e}")
 
@@ -875,27 +881,9 @@ class Archiver:
             self._ingested_meeting_ids = []
 
     def _trigger_alerts(self, meeting_id: int):
-        """POST to the send-alerts Edge Function after ingesting a meeting.
-
-        Triggers digest email alerts for subscribers. Failures are logged
-        but never crash the pipeline.
-        """
-        if not config.SUPABASE_URL or not config.ALERT_WORKER_KEY:
-            print("  [i] Email alert enqueue not configured; skipped")
-            return
-        url = f"{config.SUPABASE_URL}/functions/v1/send-alerts"
-        headers = {"X-Alert-Worker-Key": config.ALERT_WORKER_KEY, "Content-Type": "application/json"}
-        payload = {"action": "enqueue", "meeting_id": meeting_id}
-
-        try:
-            resp = requests.post(url, json=payload, headers=headers, timeout=30)
-            if resp.ok:
-                data = resp.json()
-                print(f"  [i] Email queue: {data.get('queued', 0)} new messages; skipped={bool(data.get('skipped', False))}")
-            else:
-                print(f"  [!] Alert enqueue failed: HTTP {resp.status_code}")
-        except Exception:
-            print("  [!] Alert enqueue failed; no response details logged")
+        """Persist enqueue intent before network I/O; matching happens after embedding."""
+        from pipeline.email_outbox import record_email_enqueue
+        record_email_enqueue(meeting_id)
 
     def _embed_new_content(self, force=False, tables=None):
         """The registry's `embeddings` stage: embed rows missing a vector."""
@@ -904,6 +892,8 @@ class Archiver:
 
         with usage_context(job="embeddings"):
             embed_tables(force=force, tables=tables)
+        from pipeline.email_outbox import retry_email_enqueues
+        retry_email_enqueues()
 
     def generate_stances(self, person_id=None):
         """Generate AI stance summaries for councillors.

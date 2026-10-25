@@ -23,3 +23,11 @@ INSERT INTO agenda_items VALUES(1,1,1,'Park plan','Transportation','Downtown','{
 INSERT INTO motions VALUES(1,1,1,'Approve a park plan','Approve plan','CARRIED',6,1,99,null);
 INSERT INTO auth.users VALUES('11111111-1111-4111-8111-111111111111','reader@example.test',now()),('22222222-2222-4222-8222-222222222222','pending@example.test',null);
 INSERT INTO user_profiles(id,notification_email,digest_enabled,location_lat,location_lng) VALUES('11111111-1111-4111-8111-111111111111','reader@example.test',true,48.45,-123.5),('22222222-2222-4222-8222-222222222222',null,true,null,null);
+
+UPDATE agenda_items SET embedding=(ARRAY[1::real] || array_fill(0::real, ARRAY[383]))::halfvec;
+
+ALTER TABLE agenda_items ADD COLUMN plain_english_summary text;
+ALTER TABLE agenda_items ADD COLUMN debate_summary text;
+ALTER TABLE agenda_items ADD COLUMN discussion_start_time double precision;
+ALTER TABLE agenda_items ADD COLUMN discussion_end_time double precision;
+CREATE TABLE transcript_segments(id bigint PRIMARY KEY,meeting_id bigint,agenda_item_id bigint,start_time double precision,speaker_name text,text_content text);
