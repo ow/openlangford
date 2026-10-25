@@ -351,3 +351,13 @@ it("makes provider retry when persistence fails instead of acknowledging a lost 
     (await createEmailEventHandler(secret, rpc)(await signed(event()))).status,
   ).toBe(503);
 });
+
+it("returns a retryable provider response when the database transport throws", async () => {
+  rpc.mockRejectedValue(new Error("private transport details"));
+  const response = await createEmailEventHandler(
+    secret,
+    rpc,
+  )(await signed(event()));
+  expect(response.status).toBe(503);
+  expect(await response.text()).not.toContain("private transport details");
+});

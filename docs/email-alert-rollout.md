@@ -95,7 +95,11 @@ unclassified provider events cannot create application email history.
    EMAIL_ALERT_DISPATCH_ENABLED=false. Set Edge `ALERT_DELIVERY_MODE=test`, a valid
    `ALERT_START_DATE`, and an explicitly approved `ALERT_TEST_RECIPIENT`. That Auth
    account must have a confirmed email and explicit per-meeting consent (do not
-   create an account or force consent without approval). POST `{action:"test",
+   create an account or force consent without approval). While production UI readiness
+   stays off, the approved test identity can sign in to a local preview of the app
+   with EMAIL_ALERTS_AVAILABLE=true only in that local environment and save its own
+   consent through the authenticated settings flow. Do not change Auth SiteURL or
+   confirmation redirects for this test. POST `{action:"test",
    meeting_id:<approved existing Langford meeting with minutes/transcript>}` using
    the worker key. This bypasses cutoff only for that configured test identity;
    normal pipeline enqueue is skipped. POST `{action:"dispatch"}` with the same
@@ -124,3 +128,17 @@ timeouts/retry classification, signatures and no provider-body logging. Run web
 route/DOM/auth/admin tests, typecheck/build, Deno check, and focused pipeline tests.
 Production confirmations, inbox delivery, DNS and webhook configuration are separate
 proof. The admin pages from PR40 show only this ledger; they do not import old emails.
+
+
+Latest local validation: the complete web suite passed (605 tests, 4 skipped) after
+integrating main 35a62c6, including the SQL/queue and delivery tests. Eight focused
+pipeline tests passed, and both Edge entrypoints passed Deno checking. Independent
+review's two reliability findings (unrelated saves rotating consent and a timeout
+following known provider acceptance) were repaired with real SQL regressions and
+re-reviewed. Exact frozen request-key validation also excludes cc/bcc in test mode.
+The production provider has not been called by any test.
+
+Enqueue ingress is idempotent but not a second ingestion event log: if the pipeline
+cannot reach the function before queue insertion, it logs a failed enqueue. Retry
+that specific approved, cutoff-eligible meeting after resolving the fault; do not
+run a broad historical catch-up. Once inserted, message retries/leases are durable.

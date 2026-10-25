@@ -1,3 +1,7 @@
+> Current implementation and staged approvals: [Per-meeting rollout](email-alert-rollout.md).
+> The owner now reports RESEND_API_KEY/domain setup complete. The dated inspection
+> below is historical; no production activation is implied by this PR.
+
 # Application email alert readiness
 
 ## Verified state (2026-10-22)

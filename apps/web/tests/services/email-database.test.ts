@@ -1,7 +1,21 @@
+import {
+  createAlertHandler,
+  dispatchOne,
+  type Rpc,
+} from "../../../../supabase/functions/_shared/alerts";
+import { createEmailEventHandler } from "../../../../supabase/functions/_shared/email-events";
 import { PGlite } from "@electric-sql/pglite";
 import { vector } from "@electric-sql/pglite/vector";
 import { readFileSync } from "node:fs";
-import { afterAll, afterEach, beforeAll, beforeEach, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  expect,
+  it,
+  vi,
+} from "vitest";
 let db: PGlite;
 const uid = "11111111-1111-4111-8111-111111111111";
 const text = (path: string) =>
@@ -334,4 +348,113 @@ it("consent RPC derives the caller identity and cannot change another account", 
       )
     ).rows[0].email_alerts_enabled,
   ).toBe(false);
+});
+
+it("runs the real queue RPC contracts through dispatch and a signed provider event using only in-memory data and fake transport", async () => {
+  await consent();
+  const scalar = new Set([
+    "enqueue_meeting_emails",
+    "email_alert_eligible",
+    "freeze_email_alert",
+    "finish_email_alert",
+    "record_email_provider_event",
+  ]);
+  const rpc: Rpc = async (name, args) => {
+    if (!scalar.has(name) && name !== "claim_email_alert")
+      throw new Error("Unexpected RPC");
+    const entries = Object.entries(args),
+      bindings = entries.map(([, value]) =>
+        value && typeof value === "object" ? JSON.stringify(value) : value,
+      );
+    const named = entries
+      .map(([key], index) => `${key} => $${index + 1}`)
+      .join(",");
+    const result = await db.query<any>(
+      name === "claim_email_alert"
+        ? `SELECT * FROM public.${name}(${named})`
+        : `SELECT public.${name}(${named}) AS result`,
+      bindings,
+    );
+    return {
+      data: name === "claim_email_alert" ? result.rows : result.rows[0].result,
+      error: null,
+    };
+  };
+  const env = {
+    ALERT_WORKER_KEY: "synthetic-integration-worker-key-123",
+    ALERT_DELIVERY_MODE: "test",
+    ALERT_START_DATE: new Date().toISOString().slice(0, 10),
+    ALERT_TEST_RECIPIENT: "reader@example.test",
+    RESEND_API_KEY: "synthetic-provider-key",
+  };
+  const provider = "33333333-3333-4333-8333-333333333333",
+    send = vi.fn().mockResolvedValue(Response.json({ id: provider }));
+  const response = await createAlertHandler(
+    env,
+    rpc,
+    send,
+  )(
+    new Request("https://edge.test/send-alerts", {
+      method: "POST",
+      headers: { "X-Alert-Worker-Key": env.ALERT_WORKER_KEY },
+      body: JSON.stringify({ action: "test", meeting_id: 1 }),
+    }),
+  );
+  expect(await response.json()).toEqual({ queued: 1 });
+  await dispatchOne(env, rpc, send);
+  expect(send).toHaveBeenCalledTimes(1);
+  const row = (
+    await db.query<any>(
+      "SELECT id,status,provider_message_id FROM email_messages",
+    )
+  ).rows[0];
+  expect(row.status).toBe("accepted");
+  expect(row.provider_message_id).toBe(provider);
+  const body = JSON.parse(send.mock.calls[0][1].body);
+  const payload = JSON.stringify({
+    type: "email.delivered",
+    created_at: new Date().toISOString(),
+    data: {
+      email_id: provider,
+      to: body.to,
+      tags: Object.fromEntries(
+        body.tags.map((tag: any) => [tag.name, tag.value]),
+      ),
+    },
+  });
+  const stamp = String(Math.floor(Date.now() / 1000)),
+    eventId = "msg_integration",
+    secret = btoa("synthetic-integration-hmac-key-32");
+  const key = await crypto.subtle.importKey(
+    "raw",
+    Uint8Array.from(atob(secret), (c) => c.charCodeAt(0)),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = new Uint8Array(
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      new TextEncoder().encode(`${eventId}.${stamp}.${payload}`),
+    ),
+  );
+  const eventResponse = await createEmailEventHandler(
+    "whsec_" + secret,
+    rpc,
+  )(
+    new Request("https://edge.test/email-events", {
+      method: "POST",
+      headers: {
+        "svix-id": eventId,
+        "svix-timestamp": stamp,
+        "svix-signature": "v1," + btoa(String.fromCharCode(...signature)),
+      },
+      body: payload,
+    }),
+  );
+  expect(eventResponse.status).toBe(204);
+  expect(
+    (await db.query<any>("SELECT status FROM email_messages")).rows[0].status,
+  ).toBe("delivered");
 });

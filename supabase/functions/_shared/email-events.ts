@@ -63,14 +63,19 @@ export function createEmailEventHandler(secret: string | undefined, rpc: Rpc) {
         Number.isNaN(Date.parse(event.created_at))
       )
         return new Response("Invalid event", { status: 400 });
-      const result = await rpc("record_email_provider_event", {
-        p_event_id: id,
-        p_provider_id: data.email_id,
-        p_type: type[event.type],
-        p_at: event.created_at,
-        p_message: UUID.test(message ?? "") ? message : null,
-        p_recipient: data.to[0].toLowerCase(),
-      });
+      let result;
+      try {
+        result = await rpc("record_email_provider_event", {
+          p_event_id: id,
+          p_provider_id: data.email_id,
+          p_type: type[event.type],
+          p_at: event.created_at,
+          p_message: UUID.test(message ?? "") ? message : null,
+          p_recipient: data.to[0].toLowerCase(),
+        });
+      } catch {
+        return new Response("Event persistence unavailable", { status: 503 });
+      }
       if (result.error)
         return new Response("Event persistence unavailable", { status: 503 });
       return new Response(null, {
