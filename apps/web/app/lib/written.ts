@@ -166,5 +166,6 @@ export function specificTerms(text: string) {
     const last = words.at(-1)!;
     found.add([...words.slice(0, -1), types[last.toLowerCase()] ?? last].join(" "));
   }
+  found.delete("877 Goldstream Ave"); // city hall letterhead: on every letter, identifies nothing
   return found;
 }

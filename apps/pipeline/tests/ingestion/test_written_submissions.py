@@ -242,3 +242,8 @@ def test_similar_admin_decisions_are_shown_as_examples():
     place_letters([letter], [{"id": 7, "title": "Bylaw 1951"}], linked_item_id=None,
                   decide=lambda c, o: seen.append(c) or [(0, 0.9)], examples=examples)
     assert 'How a reviewer placed similar letters' in seen[0] and "-> Bylaw 1951 hearing" in seen[0]
+
+
+def test_city_hall_address_is_not_an_identifier():
+    from pipeline.ingestion.written_submissions import specific_terms
+    assert specific_terms("Mayor and Council, 877 Goldstream Avenue; re 2207 Millstream Road") == {"2207 Millstream Rd"}

@@ -473,6 +473,10 @@ SPECIFIC_TERMS = [
 ]
 
 
+# City hall and other letterhead addresses: on every letter, so they identify nothing.
+NOT_IDENTIFYING = {"877 Goldstream Ave"}
+
+
 def specific_terms(text: str) -> set[str]:
     """Normalised identifiers in a text: bylaw numbers, file numbers, zone codes and civic addresses."""
     found = set()
@@ -488,7 +492,7 @@ def specific_terms(text: str) -> set[str]:
                                     .get(words[-1].lower(), words[-1])]))
             else:
                 found.add(value.upper())
-    return found
+    return found - NOT_IDENTIFYING
 
 
 def _item_text(item: dict) -> str:
