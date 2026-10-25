@@ -423,6 +423,27 @@ def run_participation_summaries(ctx: StageContext):
     return {"items": len(ids), "summarized": done}
 
 
+def run_participation_names(ctx: StageContext):
+    from pipeline.ingestion.participation_summaries import name_speakers_from_minutes
+
+    if ctx.post_ingest:
+        meetings = ctx.meeting_ids
+    elif ctx.target_id() is not None:
+        meetings = [ctx.target_id()]
+    else:
+        meetings = None
+    ids = [r["id"] for r in participation_items(ctx, meetings) if r["has_summary"]]
+    named = 0
+    for item_id in ids:
+        try:
+            named += name_speakers_from_minutes(ctx.supabase, item_id, dry_run=ctx.dry_run)
+        except Exception as e:
+            print(f"  [!] Naming speakers for item {item_id} failed: {e}")
+    verb = "would name" if ctx.dry_run else "named"
+    print(f"  [Participation] {verb} {named} speaker(s) from minutes across {len(ids)} item(s)")
+    return {"items": len(ids), "named": named}
+
+
 def _motion_headline_stamps(ctx: StageContext) -> list[dict]:
     """One row per meeting with decided, non-procedural motions: the oldest headline stamp among them."""
     rows = _paginate(
@@ -651,6 +672,12 @@ STAGES: list[Stage] = [
         description="Per-speaker bullets for public participation / delegation items (--target is a meeting id).",
         run=run_participation_summaries, when="post_ingest", scope="meeting", version=PARTICIPATION_VERSION,
         depends_on=("agenda-alignment",), stale=stale_participation,
+    ),
+    Stage(
+        name="participation-names",
+        description="Name resident-labelled speakers in existing summaries from the meeting minutes (no redraft; --target is a meeting id).",
+        run=run_participation_names, when="post_ingest", scope="meeting", version="1",
+        depends_on=("participation-summaries",),
     ),
     Stage(
         name="motion-headlines",

@@ -55,15 +55,37 @@ def load_public_name_context(supabase: Client, item: dict) -> dict:
     }
 
 
+def _for_review(candidate: dict) -> dict:
+    """The reviewer audits the public summary; name bookkeeping isn't part of it."""
+    validation = {k: v for k, v in candidate["validation"].items() if k != "name_records"}
+    return {**candidate, "validation": validation}
+
+
+ADMISSION_ATTEMPTS = 2
+
+
+def _admitted_candidate(evidence, item, window, excluded, **context):
+    """Draft, then admit against the source. A draft that misquotes gets one fresh try before the item is held."""
+    for attempt in range(ADMISSION_ATTEMPTS):
+        proposal = evidence.generate(item, window, excluded)
+        try:
+            return evidence.prepare_candidate(proposal, window=window, excluded_names=excluded, **context)
+        except ValueError:
+            if attempt == ADMISSION_ATTEMPTS - 1:
+                raise
+
+
 def _minutes_decider():
     from pipeline import ai
 
     def decide(context: str, entries: list[dict]):
         question = ai.choice(
             "entry",
-            "Council minutes list each public speaker with a one-line summary of what they said. Which entry is "
-            "this same person making this same contribution? Match on substance (position, topic, specific points), "
-            "not just a shared subject. Choose none unless it clearly matches.",
+            "Council minutes list public speakers in speaking order, each with a one-line summary. The options are "
+            "already limited to the entries listed where this speaker falls in that order. Choose the entry whose "
+            "summary is consistent with this speaker's position and points (summaries are brief and may mention "
+            "different details). Choose none only if every option contradicts this speaker or clearly describes "
+            "someone else, such as the applicant presenting the proposal.",
             [(f"e{i}", f"{e['name']} ({e['affiliation']}): {e['said']}"[:400]) for i, e in enumerate(entries)]
             + [("none", "None of these entries.")],
         )
@@ -121,13 +143,8 @@ def record_public_names(supabase: Client, item: dict, records: list[dict]) -> No
         supabase.table("public_speaker_names").delete().in_("id", stale).execute()
 
 
-def summarize_participation(supabase: Client, agenda_item_id: int, *, dry_run: bool = False) -> dict | None:
-    """Generate only from complete, reviewed source windows; preserve concurrent edits."""
-    from . import participation_evidence as evidence
-    item = supabase.table("agenda_items").select("id,meeting_id,title,meta,discussion_start_time,discussion_end_time").eq("id", agenda_item_id).single().execute().data
-    start, end = item.get("discussion_start_time"), item.get("discussion_end_time")
-    if start is None or end is None or end <= start:
-        return None
+def _window_segments(supabase: Client, item: dict) -> list[dict]:
+    start, end = item["discussion_start_time"], item["discussion_end_time"]
     segments = []
     while True:
         rows = (supabase.table("transcript_segments")
@@ -136,17 +153,11 @@ def summarize_participation(supabase: Client, agenda_item_id: int, *, dry_run: b
                 .order("start_time").order("id").range(len(segments), len(segments) + 999).execute().data or [])
         segments.extend(rows)
         if len(rows) < 1000 or len(segments) > 2000:
-            break
-    window = evidence.source_window(item, segments)
-    chunk_plan = None
-    if window.get("reason") == "source_window_requires_reviewed_chunking":
-        chunk_plan = evidence.chunk_source_window(item, segments)
-        if chunk_plan["status"] == "ready":
-            window = chunk_plan["window"]
-    if window["status"] != "ready":
-        return None
-    people, statements = load_name_evidence(supabase)
-    streets = load_streets()
+            return segments
+
+
+def _meeting_officials(supabase: Client, item: dict, people: list[dict]) -> set[str]:
+    """Council and staff on the meeting date: never public speakers."""
     meeting = supabase.table("meetings").select("meeting_date,meta").eq("id", item["meeting_id"]).single().execute().data
     dated = meeting["meeting_date"]
     memberships = []
@@ -163,6 +174,63 @@ def summarize_participation(supabase: Client, agenda_item_id: int, *, dry_run: b
     for role in ((meeting.get("meta") or {}).get("participant_roles") or {}).values():
         if role.get("classification") in {"government_staff", "committee_service"} and role.get("person_id") in registry:
             excluded.add(registry[role["person_id"]])
+    return excluded
+
+
+def name_speakers_from_minutes(supabase: Client, agenda_item_id: int, *, dry_run: bool = False, decide=None) -> int:
+    """Name resident-labelled speakers in an existing, reviewed summary from the minutes. No redraft.
+
+    Returns how many speakers were named.
+    """
+    import copy
+    item = supabase.table("agenda_items").select("id,meeting_id,title,meta,discussion_start_time,discussion_end_time").eq("id", agenda_item_id).single().execute().data
+    oldmeta = item.get("meta") or {}
+    participation = oldmeta.get("participation") or {}
+    if not any(s["who"].startswith("A resident") and not s.get("name_ref") for s in participation.get("speakers") or []):
+        return 0
+    if item.get("discussion_start_time") is None or item.get("discussion_end_time") is None:
+        return 0
+    names = load_public_name_context(supabase, item)
+    if not names["minutes"]:
+        return 0
+    people, _ = load_name_evidence(supabase)
+    segments = _window_segments(supabase, item)
+    result = copy.deepcopy(participation)
+    result.setdefault("validation", {}).setdefault("name_records", [])
+    result["validation"].setdefault("speaker_proofs", [])
+    before = len(result["validation"]["name_records"])
+    attach_minutes_names(result, names, segments, _meeting_officials(supabase, item, people), decide=decide)
+    named = len(result["validation"]["name_records"]) - before
+    if not named or dry_run:
+        return named
+    meta = dict(oldmeta)
+    meta["participation"] = result
+    if not supabase.rpc("apply_public_participation_summary", {"p_item_id": agenda_item_id, "p_expected_item": item,
+                        "p_expected_segments": segments, "p_after_meta": meta}).execute().data:
+        return 0
+    record_public_names(supabase, item, result["validation"]["name_records"])
+    return named
+
+
+def summarize_participation(supabase: Client, agenda_item_id: int, *, dry_run: bool = False) -> dict | None:
+    """Generate only from complete, reviewed source windows; preserve concurrent edits."""
+    from . import participation_evidence as evidence
+    item = supabase.table("agenda_items").select("id,meeting_id,title,meta,discussion_start_time,discussion_end_time").eq("id", agenda_item_id).single().execute().data
+    start, end = item.get("discussion_start_time"), item.get("discussion_end_time")
+    if start is None or end is None or end <= start:
+        return None
+    segments = _window_segments(supabase, item)
+    window = evidence.source_window(item, segments)
+    chunk_plan = None
+    if window.get("reason") == "source_window_requires_reviewed_chunking":
+        chunk_plan = evidence.chunk_source_window(item, segments)
+        if chunk_plan["status"] == "ready":
+            window = chunk_plan["window"]
+    if window["status"] != "ready":
+        return None
+    people, statements = load_name_evidence(supabase)
+    streets = load_streets()
+    excluded = _meeting_officials(supabase, item, people)
     names = load_public_name_context(supabase, item)
     # Published names and admin decisions change as other items are reviewed; they
     # are applied at write time and patched in place, so they don't force a rerun.
@@ -180,20 +248,18 @@ def summarize_participation(supabase: Client, agenda_item_id: int, *, dry_run: b
         if chunk_plan:
             parts = []
             for chunk in chunk_plan["chunks"]:
-                proposal = evidence.generate(item, chunk, excluded)
-                candidate = evidence.prepare_candidate(proposal, window=chunk, people=people, statement_names=statements,
-                                                       streets=streets, excluded_names=excluded, names=names)
-                checked = evidence.review(item, chunk, candidate, excluded)
+                candidate = _admitted_candidate(evidence, item, chunk, excluded, people=people, statement_names=statements,
+                                                streets=streets, names=names)
+                checked = evidence.review(item, chunk, _for_review(candidate), excluded)
                 if not evidence.review_passed(checked, candidate):
                     raise ValueError("independent_chunk_review_rejected: " + "; ".join(checked["issues"]))
                 parts.append({"candidate": candidate, "review": checked})
             result = evidence.merge_reviewed_chunks(chunk_plan, parts)
             review = {"all_chunk_reviews_passed": True, "chunk_count": len(parts)}
         else:
-            proposal = evidence.generate(item, window, excluded)
-            result = evidence.prepare_candidate(proposal, window=window, people=people, statement_names=statements,
-                                                streets=streets, excluded_names=excluded, names=names)
-            review = evidence.review(item, window, result, excluded)
+            result = _admitted_candidate(evidence, item, window, excluded, people=people, statement_names=statements,
+                                         streets=streets, names=names)
+            review = evidence.review(item, window, _for_review(result), excluded)
             if not evidence.review_passed(review, result):
                 raise ValueError("independent_source_review_rejected: " + "; ".join(review["issues"]))
     except ValueError as error:

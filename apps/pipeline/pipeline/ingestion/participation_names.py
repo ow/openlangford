@@ -7,9 +7,11 @@ has to be earned. In order:
 2. a confident people-registry spelling (``display_name``);
 3. the meeting minutes list the speaker (same surname, compatible first name);
 4. the name exactly matches one already published elsewhere;
-5. a near miss against the minutes, the registry or a published name is held
-   for admin review (shown as "A resident" meanwhile);
-6. otherwise it is a first-time name and is published as introduced.
+5. a near miss against the minutes, the registry or a published name, or any
+   name the meeting's minutes don't list, is held for admin review (shown as
+   "A resident" meanwhile);
+6. otherwise (no minutes speaker list to check) it is a first-time name and is
+   published as introduced.
 
 A name is only considered when its words appear literally in the speaker's
 own introduction, so a model cannot invent or "correct" one.
@@ -20,7 +22,7 @@ import re
 
 from .participation_validation import display_name, folded, name_score, one_edit
 
-VERSION = "public-speaker-names-v1"
+VERSION = "public-speaker-names-v5"
 
 SECTION_TITLE = re.compile(r"public (?:participation|hearing|input)|delegations?|question period", re.I)
 NAME = r"(?:(?:[A-Z]\.\s*){1,2}|[A-Z][a-z'’\-]+\s+)(?:[A-Z][a-z]?['’]?)?[A-Z][A-Za-z'’\-]+"
@@ -37,11 +39,17 @@ def name_key(name: str) -> str:
 def parse_minutes_speakers(sections: list[dict]) -> list[dict]:
     """Public speakers listed in minutes ("J. Harris, Langford Resident - re: Item 11.2 - ...")."""
     found, seen = [], set()
-    for section in sections:
+    for section_index, section in enumerate(sections):
         if not SECTION_TITLE.search(f"{section.get('section_title') or ''} {(section.get('section_text') or '')[:200]}"):
             continue
-        for match in MINUTES_LINE.finditer(section.get("section_text") or ""):
+        text = section.get("section_text") or ""
+        matches = list(MINUTES_LINE.finditer(text))
+        for position, match in enumerate(matches):
             name = re.sub(r"\s+", " ", match["name"]).strip()
+            # An entry's summary may continue on the following lines, up to the next speaker.
+            end = matches[position + 1].start() if position + 1 < len(matches) else len(text)
+            body = re.split(r"\n\s*(?:#|\n)", text[match.start("rest"):end])[0]
+            rest = re.sub(r"\s+", " ", body).strip()
             words = folded(name)
             if len(words) < 2 or NOT_PEOPLE.intersection(words):
                 continue
@@ -49,10 +57,13 @@ def parse_minutes_speakers(sections: list[dict]) -> list[dict]:
             if key in seen:
                 continue
             seen.add(key)
-            affiliation, _, said = match["rest"].partition(" - ")
+            affiliation, _, said = rest.partition(" - ")
             if OFFICIAL_ROLE.search(affiliation):
                 continue
-            found.append({"name": name, "affiliation": affiliation.strip(" ,-")[:120], "said": said.strip()[:400]})
+            # Keep the street, never the house or unit number.
+            affiliation = re.sub(r"#?\b\d[\w/-]*\b|\b(?:unit|suite|apt\.?)\b|&", "", affiliation, flags=re.I)
+            found.append({"name": name, "affiliation": re.sub(r"\s+", " ", affiliation).strip(" ,-")[:120],
+                          "said": said.strip()[:400], "section": section_index, "order": len(found)})
     return found
 
 
@@ -128,34 +139,88 @@ def resolve_public_name(spoken: str, introduction: str, *, people, statement_nam
         if name_score(spoken, name) or _surname_relation(words, folded(name)):
             near.append({"name": name, "source": "known"})
 
-    if near:
-        return {**record, "status": "review", "basis": "introduction", "display": None, "conflict": {"near": near[:5]}}
+    if not near and minutes:
+        # The minutes list this meeting's speakers and none matches: likely a
+        # mishearing. Offer listed names with the same first initial.
+        near = [{"name": m["name"], "source": "minutes", "affiliation": m.get("affiliation")}
+                for m in minutes if folded(m["name"])[0][0] == words[0][0]]
+        reason = "not_in_minutes"
+    else:
+        reason = "near_miss"
+    if near or minutes:
+        return {**record, "status": "review", "basis": "introduction", "display": None,
+                "conflict": {"near": near[:5], "reason": reason}}
     return {**record, "status": "published", "basis": "introduction", "display": record["transcribed"]}
 
 
-def match_unnamed_to_minutes(speakers, minutes, *, taken_names, decide, excluded_names=()):
-    """Pair resident-labelled speakers with minutes entries by what they said.
+MINUTES_MATCH_FEW = 0.75  # enough when order leaves at most three candidates
 
-    ``decide(context, choices)`` returns ``(choice_index_or_None, probability)``.
-    Only confident, one-to-one pairings survive; an entry chosen twice is
-    dropped for both, and entries already named elsewhere are not offered.
+
+def _minutes_index(name: str, minutes: list[dict]) -> int | None:
+    words = folded(name)
+    hits = [m["order"] for m in minutes if _surname_relation(words, folded(m["name"])) == "match"]
+    return hits[0] if len(hits) == 1 else None
+
+
+def match_unnamed_to_minutes(speakers, minutes, *, taken_names, decide, excluded_names=()):
+    """Pair resident-labelled speakers with minutes entries.
+
+    Minutes list speakers in speaking order, so speakers already named act as
+    anchors: an unnamed speaker can only be an entry listed between the
+    entries of its named neighbours. Within that range ``decide(context,
+    choices)`` -> ``(index_or_None, probability)`` picks by what was said.
+    Picks must be confident, one-to-one, and keep minutes order.
     """
     taken = [folded(n) for n in taken_names]
-    entries = [m for m in minutes
-               if not any(_surname_relation(t, folded(m["name"])) == "match" for t in taken)
-               and not any(name_score(m["name"], official) for official in excluded_names)]
-    if not entries:
+    available = [m for m in minutes
+                 if not any(_surname_relation(t, folded(m["name"])) == "match" for t in taken)
+                 and not any(name_score(m["name"], official) for official in excluded_names)]
+    if not available:
         return {}
+    anchors = {}
+    for index, speaker in enumerate(speakers):
+        if not speaker["who"].startswith("A resident"):
+            position = _minutes_index(speaker["who"].split(" (")[0], minutes)
+            if position is not None:
+                anchors[index] = position
+    sections = {minutes[o]["section"] for o in anchors.values()}
     picks = {}
     for index, speaker in enumerate(speakers):
         if not speaker["who"].startswith("A resident") or speaker.get("name_ref"):
             continue
+        before = [anchors[i] for i in anchors if i < index]
+        after = [anchors[i] for i in anchors if i > index]
+        low, high = (max(before) if before else -1), (min(after) if after else len(minutes))
+        options = [m for m in available if low < m["order"] < high
+                   and (len(sections) != 1 or m["section"] in sections)]
+        slot_speakers = [i for i in range(len(speakers))
+                         if (not before or i > max(b for b in anchors if anchors[b] == max(before)))
+                         and (not after or i < min(a for a in anchors if anchors[a] == min(after)))
+                         and speakers[i]["who"].startswith("A resident")]
+        # With no summary to compare, order alone must be unambiguous: one entry, one speaker.
+        if not (len(options) == 1 and len(slot_speakers) == 1):
+            options = [m for m in options if m.get("said")]
+        if not options:
+            continue
+        neighbours = []
+        if before:
+            neighbours.append(f"listed after {minutes[max(before)]['name']}")
+        if after:
+            neighbours.append(f"listed before {minutes[min(after)]['name']}")
         context = (f"Public speaker (summarised from the recording): position {speaker['position']}; "
-                   f"topic: {speaker['topic']}; point: {speaker['point']}; label: {speaker['who']}")
-        choice, probability = decide(context, entries)
-        if choice is not None and 0 <= choice < len(entries) and probability >= MINUTES_MATCH_MIN:
-            picks[index] = (entries[choice], probability)
+                   f"topic: {speaker['topic']}; point: {speaker['point']}; label: {speaker['who']}. "
+                   f"Minutes list speakers in speaking order; this speaker should be "
+                   f"{' and '.join(neighbours) or 'somewhere in the list'}.")
+        choice, probability = decide(context, options)
+        needed = MINUTES_MATCH_FEW if len(options) <= 3 else MINUTES_MATCH_MIN
+        if choice is not None and 0 <= choice < len(options) and probability >= needed:
+            picks[index] = (options[choice], probability)
     counts = {}
     for entry, _ in picks.values():
-        counts[name_key(entry["name"])] = counts.get(name_key(entry["name"]), 0) + 1
-    return {i: pick for i, pick in picks.items() if counts[name_key(pick[0]["name"])] == 1}
+        counts[entry["order"]] = counts.get(entry["order"], 0) + 1
+    picks = {i: pick for i, pick in picks.items() if counts[pick[0]["order"]] == 1}
+    # Drop any pair of picks that cross each other's minutes order.
+    crossed = {i for i in picks for j in picks
+               if i < j and picks[i][0]["order"] > picks[j][0]["order"]}
+    crossed |= {j for i in picks for j in picks if i < j and picks[i][0]["order"] > picks[j][0]["order"]}
+    return {i: pick for i, pick in picks.items() if i not in crossed}
