@@ -243,3 +243,51 @@ one formal source occurrence and no competing claim, including a raw body that
 still contains excluded page headers. Different explicit roles, missing clauses,
 identifiers or quantities remain held. Derived evidence is labelled separately
 from manual reviews; old text, unknown outcomes and ballots remain unchanged.
+
+### Draft: unresolved closing conflicts
+
+`closing_conflict_quarantines` is a separate deterministic catch-up capability,
+not an extension of the NULL-only documentary validator. It is not enrolled for
+any real meeting. A disputed generic CARRIED closing can remain unchanged and
+explicitly unresolved while an exact allowlist of independently reviewed,
+strictly unique and disjoint formal decisions proceeds. The closing receives no
+formal source key, verified outcome, ballot authority or actor attribution.
+
+Both byte-pinned source and legacy artifacts must contain the same reviewed
+capability and two distinct review hashes. Every current row field, the complete
+claim inventory, source/date/tenant, page/native/render proof and complete new
+body/key/result allowlist are bound. Unknown or manual metadata authority,
+named actors, a possible formal adjournment envelope, competing ownership, source
+or claim drift, and nonliteral/full-body stage changes all fail closed. This
+first draft requires whitespace-only equality between the full native motion
+body and reviewed new body; any OCR correction must already be independently
+reviewed and pinned in the source admission.
+
+Disputed IDs stay in `unmapped_legacy_ids` and the separate
+`unresolved_closing_conflict_ids`; they never enter `bound_ids` or make the
+all-bound uniqueness fallback available. Partial coverage and explicit held
+legacy IDs remain in the plan's receipt fields after insertion. Ordinary
+ingestion cannot opt into this capability. Broader substantive proceeding,
+bylaw-number and unresulted-proposal conflicts remain outside its scope.
+
+The operator audit obtains linked-vote counts only for the explicitly enrolled
+closing ID; no vote/person payload is exported. The validator requires exactly
+zero, and the manifest records that scoped proof. Source parsing and manifest
+regeneration finish before write locks. For quarantine applies only, the
+operator briefly takes a `votes` table `SHARE ROW EXCLUSIVE NOWAIT` lock alongside
+its existing motions/agenda locks. This directly excludes vote inserts, updates
+and deletes without assuming an active or immediate FK; ordinary SELECT browsing
+remains compatible. It then locks the closing motion row and repeats the scoped
+zero count in a fresh READ COMMITTED statement before any insertion. An already
+active vote writer makes NOWAIT fail; later writers wait for commit/rollback.
+
+The receipt retains the count proof, explicit unresolved IDs and partial
+coverage. Ordinary manifests without this capability perform no new vote read
+or votes-table lock. Real full-row/source/inventory checks and reviewed
+enrollment remain necessary; no manual out-of-band attestation substitutes for
+the operator's authoritative locked recheck. The parent verified all ten real
+disposable-PostgreSQL tests (including no-FK concurrent writers, partial persisted
+receipts and ordinary-manifest isolation); the selected non-DB suite passed 325
+tests. Independent review is still required before publication. No real meeting
+is enrolled in this closing-conflict capability; separately reviewed NULL-only
+documentary phrase eligibility does not opt into it.

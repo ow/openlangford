@@ -14,6 +14,7 @@ from pipeline.ingestion.source_claims import build_claim_inventory, digest, proj
 
 STORE = Path(__file__).parent / 'data' / 'legacy-occurrence-reviews'
 ENROLLED = {
+    89: '87e5b7ab618c40e573905ceb059aaefc1d1d2603206f6f33ae44d004ddb78102',
     75: '9ccb52ede4fce4f1a9abece79b37259add625aa59db096477e9f2836de254330',
     144: 'd89cbb8546ec9133c6cf54fc032b9c361404c012a26479ac17531b8eb5eac25b',
     125: 'ed381022fe20cb28bd165b12b38b791b08c388b09743cd6a57cbad86e47ff7c3',
@@ -115,11 +116,11 @@ def _literal_spans(text, body):
     return [(match.start(), match.end()) for match in re.finditer(pattern, text)]
 
 
-_ADJOURNMENT_LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting)\.', re.I)
+_ADJOURNMENT_LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting|Adjournment of the meeting)\.', re.I)
 _ADJOURNMENT_LEGACY_COMPACT = frozenset(
     re.sub(r'[^a-z0-9]', '', body.casefold()) for body in (
         'That the meeting be adjourned.', 'That meeting be adjourned.',
-        'Motion to adjourn the meeting.'))
+        'Motion to adjourn the meeting.', 'Adjournment of the meeting.'))
 _ADJOURNMENT_NARRATION = re.compile(r'(?:The Chair|Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
 _ADJOURNMENT_COMPACT = re.compile(r'(?:TheChair|Mayor[A-Z][a-z]+)adjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
 

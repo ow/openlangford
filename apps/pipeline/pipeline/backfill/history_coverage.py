@@ -50,6 +50,8 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
             'catalog_sha256': digest(meeting), 'claims_sha256': digest(motions),
             'agenda_sha256': digest(items), 'new_motions': [], 'held': [],
             'stored_outcome_unknown_ids': [row['id'] for row in motions if not row.get('result')]}
+    if review_scope and 'closing_linked_vote_counts' in review_scope:
+        base['closing_linked_vote_counts']=review_scope['closing_linked_vote_counts']
     if source.get('error'):
         if source['error']=='no_decisions_expected_from_original_notice' and not motions:
             return {**base,'coverage':'no_decisions_expected_from_notice','notice':source['notice'],
@@ -109,6 +111,22 @@ def remaining_coverage(plan):
             ('missing_source_decisions','source_occurrences_accounted_for') else plan['coverage'])
 
 
+def closing_linked_vote_counts(connection, meeting_id, motion_ids):
+    """Only explicitly scoped closing IDs, no vote text/person exports.
+
+    Quarantine applies serialize vote writes with a short table lock; the count
+    and concurrency contract does not depend on foreign-key trigger settings.
+    """
+    if len(motion_ids)!=1 or type(motion_ids[0]) is not int:
+        raise ValueError('Exactly one reviewed closing ID required for linked-vote audit')
+    counts=query(connection, '''SELECT m.id motion_id,COUNT(v.id)::bigint linked_votes
+        FROM motions m LEFT JOIN votes v ON v.motion_id=m.id
+        WHERE m.meeting_id=%s AND m.id=ANY(%s) GROUP BY m.id ORDER BY m.id''', (meeting_id,motion_ids))
+    if [r['motion_id'] for r in counts]!=motion_ids:
+        raise ValueError('Reviewed closing ID is absent or belongs to another meeting')
+    return {'authority':'operator_scoped_linked_vote_count_v1','meeting_id':meeting_id,'counts':counts}
+
+
 def audit(connection, meeting_ids, municipality_id, archive_root, cache_dir, project_ref=None):
     people = query(connection, 'SELECT id,name FROM people ORDER BY id')
     plans = []
@@ -122,9 +140,20 @@ def audit(connection, meeting_ids, municipality_id, archive_root, cache_dir, pro
                                        project_ref=project_ref,municipality_id=municipality_id)
         if source is None:
             source = load_official_minutes(meeting, root=archive_root, people=people, cache_dir=cache_dir)
-        plans.append(plan_meeting(meeting, motions, items, source, review_scope={
-            'allow_reviewed_legacy_reservations': True, 'allow_reviewed_source_header':True, 'project_ref': project_ref,
-            'municipality_id': municipality_id, 'archive_root': archive_root}))
+        scope={'allow_reviewed_legacy_reservations': True, 'allow_reviewed_source_header':True,
+            'project_ref':project_ref, 'municipality_id':municipality_id, 'archive_root':archive_root}
+        from .legacy_occurrence_reviews import load_review
+        try:
+            review=load_review(meeting_id)
+        except (ValueError,OSError,KeyError):
+            review=None  # Existing planner reports stale reviews without widening scope.
+        entries=review.get('closing_conflict_quarantines',[]) if review else []
+        if entries:
+            ids=[e['capability']['motion_id'] for e in entries]
+            if not set(ids)<={m['id'] for m in motions}:
+                raise ValueError('Reviewed closing ID not in current meeting claim inventory')
+            scope['closing_linked_vote_counts']=closing_linked_vote_counts(connection,meeting_id,ids)
+        plans.append(plan_meeting(meeting, motions, items, source, review_scope=scope))
     return {'version': 1, 'municipality_id': municipality_id, 'people_sha256': digest(people), 'meetings': plans}
 
 
@@ -163,7 +192,27 @@ def apply_manifest(connection, manifest, regenerate, archive_root):
     # Source parsing/OCR runs before any global write lock.
     if digest(regenerate()) != manifest_sha:
         raise ValueError('Source/catalog/agenda/claims changed; audit and review again')
-    query(connection, 'LOCK TABLE motions, agenda_items IN SHARE ROW EXCLUSIVE MODE NOWAIT')
+    closing_plans=[p for p in manifest['meetings'] if 'closing_linked_vote_counts' in p]
+    if closing_plans and query(connection,'SHOW transaction_isolation')[0]['transaction_isolation']!='read committed':
+        raise ValueError('Closing linked-vote recheck requires READ COMMITTED isolation')
+    # Only this scoped capability locks vote DML. Ordinary public SELECTs are
+    # compatible; source parsing/regeneration has already completed above.
+    tables='motions, agenda_items, votes' if closing_plans else 'motions, agenda_items'
+    query(connection, 'LOCK TABLE '+tables+' IN SHARE ROW EXCLUSIVE MODE NOWAIT')
+    for plan in sorted(closing_plans,key=lambda p:p['meeting_id']):
+        proof=plan['closing_linked_vote_counts'];counts=proof.get('counts',[])
+        ids=[c['motion_id'] for c in counts]
+        if (proof.get('authority')!='operator_scoped_linked_vote_count_v1'
+                or proof.get('meeting_id')!=plan['meeting_id'] or len(ids)!=1
+                or ids!=plan.get('source_report',{}).get('unresolved_closing_conflict_ids')
+                or counts!=[{'motion_id':ids[0],'linked_votes':0}]):
+            raise ValueError('Closing linked-vote manifest scope is not exactly reviewed zero')
+        # The vote table lock excludes all vote DML, including installations
+        # with absent/deferred/disabled FKs; row pins remain a separate guard.
+        locked=query(connection, 'SELECT id FROM motions WHERE meeting_id=%s AND id=ANY(%s) ORDER BY id FOR UPDATE NOWAIT',
+            (plan['meeting_id'],ids))
+        if [r['id'] for r in locked]!=ids or closing_linked_vote_counts(connection,plan['meeting_id'],ids)!=proof:
+            raise ValueError('Closing linked votes changed; audit and review again')
     query(connection, 'SELECT id FROM meetings WHERE id=ANY(%s) ORDER BY id FOR UPDATE', (mids,))
     query(connection, 'SELECT id FROM agenda_items WHERE meeting_id=ANY(%s) ORDER BY id FOR UPDATE', (mids,))
     prior = verify_manifest(connection, manifest)
@@ -209,6 +258,9 @@ def apply_manifest(connection, manifest, regenerate, archive_root):
         entry = {'inserted_claims': inserted, 'source_sha256': plan.get('source_sha256'),
                  'remaining_coverage': remaining_coverage(plan), 'held': plan.get('held', []),
                  'stored_outcome_unknown_ids': plan.get('stored_outcome_unknown_ids', [])}
+        if 'closing_linked_vote_counts' in plan:
+            entry['unresolved_closing_conflict_ids']=plan['source_report']['unresolved_closing_conflict_ids']
+            entry['closing_linked_vote_counts']=plan['closing_linked_vote_counts']
         query(connection, "UPDATE meetings SET meta=jsonb_set(COALESCE(meta,'{}'::jsonb),'{history_catchup_receipts}',COALESCE(meta->'history_catchup_receipts','{}'::jsonb)||jsonb_build_object(%s,%s::jsonb)) WHERE id=%s", (manifest_sha, Json(entry), meeting_id))
         receipt['meetings'].append({'meeting_id': meeting_id, 'inserted_ids': [r['id'] for r in inserted], 'coverage': remaining_coverage(plan)})
     return receipt
