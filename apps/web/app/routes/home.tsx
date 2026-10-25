@@ -55,7 +55,6 @@ export async function loader({ request }: { request: Request }) {
       upcomingMeeting: data.upcomingMeeting,
       recentMeeting: data.recentMeeting,
       recentMeetingStats: data.recentMeetingStats,
-      recentMeetingDecisions: data.recentMeetingDecisions,
       activeMatters: data.activeMatters,
       recentDecisions: data.recentDecisions,
       publicNotices,
@@ -73,7 +72,6 @@ export default function Home({ loaderData }: any) {
     upcomingMeeting,
     recentMeeting,
     recentMeetingStats,
-    recentMeetingDecisions,
     activeMatters,
     recentDecisions,
     publicNotices,
@@ -93,11 +91,7 @@ export default function Home({ loaderData }: any) {
       <HeroSection
         shortName={shortName}
         user={user}
-        recentMeeting={{
-          meeting: recentMeeting,
-          stats: recentMeetingStats,
-          decisions: recentMeetingDecisions,
-        }}
+        recentMeeting={{ meeting: recentMeeting, stats: recentMeetingStats }}
         upcomingMeeting={upcomingMeeting}
       />
       <IncomingCouncilSection council={incomingCouncil} />

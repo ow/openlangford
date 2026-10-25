@@ -5,14 +5,14 @@ import { CalendarProvenance } from "../../app/components/calendar-provenance";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { IncomingCouncilSection } from "../../app/components/home/incoming-council-section";
 import { MeetingCard } from "../../app/components/meeting-card";
-import { UpcomingMeetingSection } from "../../app/components/home/upcoming-meeting-section";
+import { ComingUp } from "../../app/components/home/hero-section";
 
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-20T16:00:00Z")); });
 afterEach(() => vi.useRealTimers());
 
 it("presents inauguration as the next event without implying a regular council meeting", () => {
   const html = renderToStaticMarkup(h(MemoryRouter, null,
-    h(UpcomingMeetingSection, { meeting: {
+    h(ComingUp, { meeting: {
       id: 1, title: "Inauguration", type: "Inauguration",
       meeting_date: "2026-11-02", agendaPreview: [],
     } }),
@@ -42,7 +42,7 @@ const calendarEvent = {
   } },
 };
 
-it.each([UpcomingMeetingSection, MeetingCard])("keeps concise schedule metadata inside the card with separate accessible source and event links", Component => {
+it.each([ComingUp, MeetingCard])("keeps concise schedule metadata inside the card with separate accessible source and event links", Component => {
   const html = renderToStaticMarkup(h(MemoryRouter, null,
     h(Component as any, { meeting: calendarEvent }),
   ));
