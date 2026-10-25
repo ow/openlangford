@@ -148,6 +148,96 @@ pnpm dev        # http://localhost:5173
 pnpm deploy     # build + deploy to Cloudflare Workers
 ```
 
+### Local preview (checking changes against real data)
+
+Use this to see a web change with real data before it ships. The root `.env`
+points at the **production** Supabase project, so a local preview reads (and,
+if you submit a form, writes) live data.
+
+**1. Work in a separate worktree, not the main checkout.** Other sessions may
+be working in `~/Projects/viewroyal`.
+
+```bash
+git fetch origin main
+git worktree add ../viewroyal-preview -b my-change origin/main
+cd ../viewroyal-preview && pnpm install
+ln -s ../viewroyal/.env .env    # in the worktree only: link to the real .env
+```
+
+> **Never overwrite `.env` in the main checkout.** `ln -sf ../viewroyal/.env .env`
+> run *inside* `~/Projects/viewroyal` replaces the real file with a symlink to
+> itself (this destroyed it once). Check first with `[ -f .env ] && [ ! -L .env ]`,
+> and use `ln -s` without `-f` so an existing file makes the command fail.
+
+**2. Start the dev server.** `wrangler.toml` declares a Cloudflare `[ai]`
+binding, and `pnpm dev` opens a remote proxy for it, which needs a Cloudflare
+login. Either:
+
+- run `npx wrangler login` once (preferred), or
+- for a quick local run, comment out the `[ai]` block in `apps/web/wrangler.toml`
+  and create `apps/web/.dev.vars` with `AI_GATEWAY_ID=""` (it's gitignored).
+  Without the empty gateway id, pages that touch AI fail with
+  `Cannot read properties of undefined (reading 'gateway')`. Don't commit the
+  `wrangler.toml` change.
+
+```bash
+cd apps/web
+pnpm dev --port 5288 --strictPort
+```
+
+**3. Admin pages.** `/admin/*` needs a signed-in account listed in
+`ADMIN_EMAILS`. Signing in at `http://localhost:5288/login` with your own
+account should work (not yet verified; email sign-in links may point at the
+live site). For automated screenshots (e.g. an agent without your login), add a temporary,
+localhost-only route that calls the page's exported data function, and never
+commit it:
+
+```tsx
+// apps/web/app/routes/zz-preview-admin-letters.tsx — LOCAL PREVIEW ONLY
+import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { loadLetterQueue } from "./admin-letters";
+export { default } from "./admin-letters";
+export async function loader({ request }: { request: Request }) {
+  if (new URL(request.url).hostname !== "localhost") throw new Response("", { status: 404 });
+  return loadLetterQueue(getSupabaseAdminClient());
+}
+```
+
+and register it in `app/routes.ts` with a `// PREVIEW` comment:
+`route("zz-preview/admin/letters", "routes/zz-preview-admin-letters.tsx"), // PREVIEW`.
+The merge, speaker-name and letter pages export their data loading
+(`loadMergeQueue`, `loadNameQueue`, `loadLetterQueue`) for this; other admin
+pages need the same small split before they can be previewed this way. The
+preview route only has a loader, so its buttons can't write.
+
+**4. Screenshots.** Playwright's Chromium is already installed under
+`~/Library/Caches/ms-playwright`; point `executablePath` at it instead of
+downloading another browser:
+
+```js
+import { chromium } from "playwright";
+const browser = await chromium.launch({
+  executablePath: `${process.env.HOME}/Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`,
+});
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+await page.goto("http://localhost:5288/zz-preview/admin/letters", { waitUntil: "networkidle" });
+await page.screenshot({ path: "/tmp/preview.png", fullPage: true });
+await browser.close();
+```
+
+**5. Before you commit, clean up** everything the preview added:
+
+```bash
+rm app/routes/zz-preview-*.tsx
+git checkout app/routes.ts wrangler.toml    # drop the PREVIEW route and [ai] edit
+rm .dev.vars                                # only if you created it
+git status                                  # nothing preview-related left
+```
+
+**Scripts that change live data** (backfills, cleanups): run a dry run first,
+print a sample of the changes, and save the rows you're about to change to a
+backup file so they can be restored.
+
 ### Data Pipeline
 
 See [Pipeline README](apps/pipeline/README.md) for full documentation.

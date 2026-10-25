@@ -125,4 +125,19 @@ Four independently reviewed decisions now pass the strict native-body, source,
 ownership and full-row checks; all20 oldmotions and28agendas remain unchanged.
 Current read-only audit:
 `924c5a73656a3695171c9c884faec6bf4921d645ecfc9c242bc960ecfc47712c`.
-The prior held packet is retained. This is draft preparation, not application.
+The prior held packet is retained. This is reviewed preparation, not application.
+
+
+## Integration after PR51 merged
+
+Integrated main `c22d6f38` (including PRs48–52) on October25,2026 after
+retargeting PR53 to main. Conflict resolution retains the union of all 43 legacy
+review pins and 56 source-review pins without changing any review artifact.
+The merged MOVE BY parser remains identical to current main. All 56 enrolled
+source packets pass original-byte, page-evidence and parser-bound digest
+validation. All 43 legacy reservations also match the merged source/date/text
+and formal-inventory digests. The 34 packets added here still contain exactly 603 decisions.
+All 455 affected regression tests pass, including disposable PostgreSQL
+transaction/rollback tests. Independent integration review found no blocking
+issue. Production application still requires a fresh exact-code source/full-row
+audit, approval and receipt verification; merging this code applies no data.

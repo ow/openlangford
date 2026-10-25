@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from supabase import create_client
 
 from pipeline import config
+from pipeline.email_outbox import EmailEnqueuePersistenceError, DELIVERY_WINDOW, record_email_enqueue
 from pipeline.ops import record_job_event
 from pipeline.orchestrator import Archiver, load_municipality_by_id
 
@@ -95,7 +96,7 @@ def claim_job(supabase, worker_id: str, job_types: list[str] | None = None):
     return jobs[0] if jobs else None
 
 
-def finish_job(supabase, job_id: int, status: str, result=None, error: str | None = None):
+def finish_job(supabase, job_id: int, status: str, result=None, error: str | None = None, recovery_args=None):
     payload = {
         "status": status,
         "finished_at": datetime.now(timezone.utc).isoformat(),
@@ -104,6 +105,8 @@ def finish_job(supabase, job_id: int, status: str, result=None, error: str | Non
         "last_error": error,
         "result": result or {},
     }
+    if recovery_args is not None:
+        payload['args'] = recovery_args
     supabase.table("pipeline_jobs").update(payload).eq("id", job_id).execute()
 
 
@@ -440,6 +443,13 @@ def run_job(supabase, job: dict):
             if not result or not result.get("identity_only"):
                 raise RuntimeError("Identity-only work produced no acknowledged stage result")
             return result
+        if args.get('email_enqueue_retry') is not None:
+            from pipeline.paths import BASE_DIR
+            # Validate the original canonical target and restore its original clock
+            # BEFORE forced/noncached ingestion can attempt to record it again.
+            canonical = (supabase.table('meetings').select('id').eq('municipality_id', municipality.id)
+                         .eq('archive_path', os.path.relpath(target_folder, BASE_DIR)).execute()).data
+            restore_email_enqueue_retry(supabase, job, canonical[0]['id'] if canonical else None)
         source = _get_source_meeting(supabase, source_meeting_id) if source_meeting_id else None
         downloaded_documents = []
         if source:
@@ -631,6 +641,26 @@ def run_job(supabase, job: dict):
     raise ValueError(f"Unsupported job_type: {job_type}")
 
 
+def restore_email_enqueue_retry(supabase, job, meeting_id):
+    marker = (job.get('args') or {}).get('email_enqueue_retry')
+    if marker is None:
+        return
+    if job.get('job_type') != 'ingest_meeting' or not isinstance(marker, dict):
+        raise ValueError('Invalid email enqueue recovery job')
+    original = marker.get('created_at')
+    deadline = marker.get('expires_at')
+    if (marker.get('version') != 1 or type(marker.get('meeting_id')) is not int
+            or marker['meeting_id'] != meeting_id
+            or type(original) not in (int, float) or type(deadline) not in (int, float)
+            or deadline != original + DELIVERY_WINDOW or not original <= time.time() < deadline):
+        raise ValueError('Invalid or expired email enqueue recovery receipt')
+    result = supabase.table('meetings').select('id,municipality_id').eq('id', meeting_id).single().execute()
+    if not result.data or result.data['municipality_id'] != job['municipality_id']:
+        raise ValueError('Email enqueue recovery municipality mismatch')
+    if not record_email_enqueue(meeting_id, created_at=original):
+        raise RuntimeError('Scoped email key missing; recovery receipt retained in job args')
+
+
 def work_once(
     worker_id: str,
     heartbeat_interval: float,
@@ -656,14 +686,23 @@ def work_once(
         print(f"[worker] job {job_id} succeeded")
     except Exception as exc:
         error = str(exc)
-        record_job_event(
-            supabase,
-            job_id,
-            "Job failed",
-            level="error",
-            data={"error": error, "traceback": traceback.format_exc()},
-        )
-        finish_job(supabase, job_id, "failed", error=error)
+        recovery_args = None
+        if isinstance(exc, EmailEnqueuePersistenceError):
+            previous = (job.get('args') or {}).get('email_enqueue_retry')
+            # A forced ingest may fail its second record even after restoration.
+            # Never replace that exact meeting's original clock with a new one.
+            receipt = previous if (isinstance(previous, dict)
+                and previous.get('meeting_id') == exc.receipt['meeting_id']) else exc.receipt
+            recovery_args = {**(job.get('args') or {}), 'email_enqueue_retry': receipt}
+        # Persist failure and scoped recovery evidence atomically before best-effort logs.
+        finish_job(supabase, job_id, "failed", error=error, recovery_args=recovery_args)
+        try:
+            record_job_event(
+                supabase, job_id, "Job failed", level="error",
+                data={"error": error, "traceback": traceback.format_exc()},
+            )
+        except Exception:
+            print('[worker] failure event unavailable; failed job receipt retained')
         print(f"[worker] job {job_id} failed: {error}")
     finally:
         stop_heartbeat.set()
@@ -694,6 +733,10 @@ def main():
     scope = ",".join(job_types) if job_types else "all"
     print(f"[worker] started {args.worker_id} job_types={scope}")
     while True:
+        # Poll explicit durable intents even while no ingestion job is queued.
+        # The Edge/SQL gate defers matching until agenda embeddings exist.
+        from pipeline.email_outbox import retry_email_enqueues
+        retry_email_enqueues(limit=1)
         claimed = work_once(args.worker_id, args.heartbeat_interval, job_types=job_types)
         if usage_sink is not None:
             usage_sink.flush(timeout=5)

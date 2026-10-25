@@ -45,6 +45,7 @@ beforeAll(async () => {
   await db.exec(
     text("../../../../supabase/migrations/47-21-per-meeting-email-alerts.sql"),
   );
+  await db.exec(text("../../../../supabase/migrations/47-22-email-enqueue-readiness.sql"));
 }, 30000);
 afterAll(async () => {
   await db?.close();
@@ -139,6 +140,26 @@ it("matches saved topics, matters, people and current numeric/JSON proximity fie
     `INSERT INTO subscriptions(id,user_id,type,is_active) VALUES(1,'${uid}','neighborhood',true)`,
   );
   expect(await enqueue()).toBe(1);
+});
+it.each(["title", "summary", "debate", "linked transcript", "timed transcript"])("defers keyword matching for %s until embeddings are ready, then enqueues exactly once", async (source) => {
+  await consent();
+  await db.exec(`UPDATE user_profiles SET digest_enabled=false WHERE id='${uid}';
+    INSERT INTO subscriptions(id,user_id,type,is_active,keyword_embedding)
+    SELECT 1,'${uid}','topic',true,embedding FROM agenda_items WHERE id=1;
+    UPDATE agenda_items SET embedding=NULL WHERE id=1;`);
+  if (source !== "title") await db.exec("UPDATE agenda_items SET title=NULL WHERE id=1");
+  if (source === "summary") await db.exec("UPDATE agenda_items SET plain_english_summary='Park expansion' WHERE id=1");
+  if (source === "debate") await db.exec("UPDATE agenda_items SET debate_summary='Park expansion' WHERE id=1");
+  if (source === "linked transcript") await db.exec("INSERT INTO transcript_segments VALUES(1,1,1,100,'A resident','Park expansion')");
+  if (source === "timed transcript") await db.exec("UPDATE agenda_items SET discussion_start_time=90,discussion_end_time=110 WHERE id=1; INSERT INTO transcript_segments VALUES(1,1,NULL,100,'A resident','Park expansion')");
+  await db.exec("SAVEPOINT unready");
+  await expect(enqueue()).rejects.toThrow("Email matching data not ready");
+  await db.exec("ROLLBACK TO unready");
+  expect((await db.query("SELECT id FROM email_messages")).rows).toHaveLength(0);
+  await db.exec("UPDATE agenda_items SET embedding=(ARRAY[1::real] || array_fill(0::real, ARRAY[383]))::halfvec WHERE id=1");
+  expect(await enqueue()).toBe(1);
+  expect(await enqueue()).toBe(0);
+  expect((await claim()).recipient).toBe("reader@example.test");
 });
 it("persists one logical email across duplicate ingestion, leases only one attempt and freezes the first provider payload", async () => {
   await consent();
