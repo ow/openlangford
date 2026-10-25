@@ -164,3 +164,10 @@ def test_display_name_casing():
     assert display_name("Kirk And Stephanie Lewis, Langford Triathlon") == "Kirk and Stephanie Lewis, Langford Triathlon"
     assert display_name("Constable Kyle Ross, West Shore RCMP") == "Constable Kyle Ross, West Shore RCMP"
     assert display_name("BC Hydro") == "BC Hydro"
+
+
+def test_item_description_includes_contents():
+    from pipeline.ingestion.written_submissions import _item_description
+    text = _item_description({"item_order": "9", "title": "BYLAWS", "plain_english_summary": "Council adopted bylaws.",
+                              "context_documents": ["Bylaw No. 2000 — Westhills CD3 zone"], "context_decisions": ["Gave readings to Bylaw 2000"]})
+    assert "9 BYLAWS" in text and "Westhills CD3" in text and "Decided: Gave readings" in text

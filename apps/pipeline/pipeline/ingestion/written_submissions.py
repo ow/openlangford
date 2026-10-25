@@ -213,47 +213,86 @@ def _is_heading(item: dict, items: list[dict]) -> bool:
                                for other in items if other is not item)
 
 
-def replace_held(supabase, meeting_id: int, *, decide=None) -> dict:
-    """Re-run placement for a meeting's held letters (no re-extraction); move confident ones onto items."""
+def guarded_update(supabase, table: str, row_id: int, mutate, attempts: int = 6):
+    """Read-modify-write guarded by meta.written_rev (same scheme as /admin/letters), so pipeline
+    and admin decisions on the same row can't overwrite each other. Returns the new meta or None."""
+    for _ in range(attempts):
+        meta = (supabase.table(table).select("meta").eq("id", row_id).single().execute().data or {}).get("meta") or {}
+        new = mutate(dict(meta))
+        if new is None:
+            return None
+        rev = int(meta.get("written_rev") or 0)
+        query = supabase.table(table).update({"meta": {**new, "written_rev": rev + 1}}).eq("id", row_id)
+        query = query.eq("meta->>written_rev", str(rev)) if rev else query.is_("meta->>written_rev", "null")
+        if query.execute().data:
+            return new
+    raise RuntimeError(f"{table} {row_id} kept changing; try again")
+
+
+def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = False) -> dict:
+    """Re-run placement for a meeting's held letters (no re-extraction); move confident ones onto items.
+    Letters leave the queue first (guarded), then join their items (guarded)."""
     meeting = supabase.table("meetings").select("id,meta").eq("id", meeting_id).single().execute().data
-    meta = dict(meeting.get("meta") or {})
-    unplaced = dict(meta.get("written_unplaced") or {})
+    unplaced = dict((meeting.get("meta") or {}).get("written_unplaced") or {})
     if not unplaced:
-        return {"placed": 0, "held": 0}
-    items = (supabase.table("agenda_items").select("id,meeting_id,matter_id,item_order,title,plain_english_summary,meta")
-             .eq("meeting_id", meeting_id).order("item_order").execute().data or [])
+        return {"placed": 0, "held": 0, "preview": []}
+    items = with_item_context(supabase, supabase.table("agenda_items").select("id,meeting_id,matter_id,item_order,title,plain_english_summary")
+                              .eq("meeting_id", meeting_id).order("item_order").execute().data or [])
     by_id = {it["id"]: it for it in items}
-    moved = held = 0
-    for extracted_id, source in list(unplaced.items()):
-        letters = [{k: v for k, v in l.items() if k not in ("key", "candidates")} for l in source["letters"]]
-        placed, still = place_letters(letters, items, linked_item_id=None, decide=decide or _item_decider(),
-                                      document_title=source.get("title") or "")
-        for item_id, group_letters in placed.items():
-            item = by_id[item_id]
-            written = dict((item.get("meta") or {}).get("written_participation") or {})
-            documents = list(written.get("documents") or [])
-            match = next((d for d in documents if str(d["extracted_document_id"]) == str(extracted_id)), None)
-            if match:
-                match["letters"] = match["letters"] + group_letters
-            else:
-                documents.append({"extracted_document_id": int(extracted_id), "document_id": source["document_id"],
-                                  "title": source.get("title"), "fingerprint": source.get("fingerprint"), "letters": group_letters})
-            item_meta = {**(item.get("meta") or {}), "written_participation": {"version": VERSION, "documents": documents}}
-            supabase.table("agenda_items").update({"meta": item_meta}).eq("id", item_id).execute()
-            item["meta"] = item_meta
-            moved += len(group_letters)
-        held += len(still)
-        if still:
-            unplaced[extracted_id] = {**source, "letters": still}
+    plan = []  # (extracted_id, key, item_id, letter)
+    held = 0
+    for extracted_id, source in unplaced.items():
+        for entry in source["letters"]:
+            letter = {k: v for k, v in entry.items() if k not in ("key", "candidates")}
+            placed, still = place_letters([letter], items, linked_item_id=None, decide=decide or _item_decider(),
+                                          document_title=source.get("title") or "")
+            if placed:
+                plan.append((extracted_id, entry["key"], next(iter(placed)), letter))
+            held += len(still)
+    if dry_run or not plan:
+        return {"placed": len(plan), "held": held, "preview": [(l, by_id[i]) for _, _, i, l in plan]}
+
+    taken = []
+    def take(meta):
+        taken.clear()
+        queue = {k: {**v, "letters": list(v["letters"])} for k, v in (meta.get("written_unplaced") or {}).items()}
+        placements = {k: dict(v) for k, v in (meta.get("written_placements") or {}).items()}
+        for extracted_id, key, item_id, letter in plan:
+            source = queue.get(extracted_id)
+            if not source or not any(l.get("key") == key for l in source["letters"]):
+                continue  # decided meanwhile (e.g. by an admin)
+            source["letters"] = [l for l in source["letters"] if l.get("key") != key]
+            placements.setdefault(extracted_id, {})[key] = item_id
+            taken.append((extracted_id, item_id, letter, source))
+        if not taken:
+            return None
+        queue = {k: v for k, v in queue.items() if v["letters"]}
+        meta["written_placements"] = placements
+        if queue:
+            meta["written_unplaced"] = queue
         else:
-            unplaced.pop(extracted_id)
-    fresh = dict((supabase.table("meetings").select("meta").eq("id", meeting_id).single().execute().data or {}).get("meta") or {})
-    if unplaced:
-        fresh["written_unplaced"] = unplaced
-    else:
-        fresh.pop("written_unplaced", None)
-    supabase.table("meetings").update({"meta": fresh}).eq("id", meeting_id).execute()
-    return {"placed": moved, "held": held}
+            meta.pop("written_unplaced", None)
+        return meta
+    guarded_update(supabase, "meetings", meeting_id, take)
+
+    by_item: dict = {}
+    for extracted_id, item_id, letter, source in taken:
+        by_item.setdefault(item_id, []).append((extracted_id, letter, source))
+    for item_id, group in by_item.items():
+        def add(meta, group=group):
+            written = dict(meta.get("written_participation") or {})
+            documents = [dict(d) for d in written.get("documents") or []]
+            for extracted_id, letter, source in group:
+                match = next((d for d in documents if str(d["extracted_document_id"]) == str(extracted_id)), None)
+                if match:
+                    match["letters"] = list(match["letters"]) + [letter]
+                else:
+                    documents.append({"extracted_document_id": int(extracted_id), "document_id": source["document_id"],
+                                      "title": source.get("title"), "fingerprint": source.get("fingerprint"), "letters": [letter]})
+            meta["written_participation"] = {"version": VERSION, "documents": documents}
+            return meta
+        guarded_update(supabase, "agenda_items", item_id, add)
+    return {"placed": len(taken), "held": held, "preview": []}
 
 
 def letter_key(letter: dict) -> str:
@@ -323,14 +362,43 @@ def merge_written(meta: dict | None, group: dict) -> dict:
     return meta
 
 
+def _item_description(item: dict) -> str:
+    """Title, summary, and what the item contains (its documents and decisions): section headings like
+    "REPORTS" or "BYLAWS" say nothing on their own."""
+    parts = [f"{item.get('item_order') or ''} {item.get('title') or ''}".strip()]
+    if item.get("plain_english_summary"):
+        parts.append(item["plain_english_summary"][:200])
+    if item.get("context_documents"):
+        parts.append("Documents: " + "; ".join(item["context_documents"])[:400])
+    if item.get("context_decisions"):
+        parts.append("Decided: " + "; ".join(item["context_decisions"])[:300])
+    return " — ".join(parts)
+
+
+def with_item_context(supabase, items: list[dict]) -> list[dict]:
+    """Attach the titles of documents filed under each item and its decisions."""
+    ids = [it["id"] for it in items]
+    if not ids:
+        return items
+    docs = supabase.table("extracted_documents").select("agenda_item_id,title").in_("agenda_item_id", ids).execute().data or []
+    motions = (supabase.table("motions").select("agenda_item_id,plain_english_summary,text_content")
+               .in_("agenda_item_id", ids).execute().data or [])
+    out = []
+    for item in items:
+        titles = sorted({d["title"] for d in docs if d["agenda_item_id"] == item["id"] and d.get("title")})
+        decided = [(m.get("plain_english_summary") or m.get("text_content") or "")[:160]
+                   for m in motions if m["agenda_item_id"] == item["id"]]
+        out.append({**item, "context_documents": titles[:8], "context_decisions": [d for d in decided if d][:5]})
+    return out
+
+
 def _item_decider():
     def decide(context: str, items: list[dict]):
         question = ai.choice(
             "item",
             "A resident's letter was included in a council agenda package. Which agenda item is it about? "
             "Choose none if it fits no single item.",
-            [(f"i{i}", f"{it.get('item_order') or ''} {it.get('title') or ''} — {(it.get('plain_english_summary') or '')[:160]}".strip())
-             for i, it in enumerate(items[:60])] + [("none", "Not about any single agenda item.")],
+            [(f"i{i}", _item_description(it)) for i, it in enumerate(items[:60])] + [("none", "Not about any single agenda item.")],
         )
         answer = ai.decide(context, [question]).get("item")
         if answer is None or answer.type != "choice":
@@ -352,8 +420,8 @@ def summarize_document(supabase, extracted: dict, *, streets: dict, dry_run: boo
     if not sections or chars > MAX_CHARS:
         return {"status": "skipped", "reason": "empty" if not sections else "too_long", "letters": 0}
     meeting_id = (extracted.get("documents") or {}).get("meeting_id")
-    items = (supabase.table("agenda_items").select("id,meeting_id,matter_id,item_order,title,plain_english_summary,meta")
-             .eq("meeting_id", meeting_id).order("item_order").execute().data or [])
+    items = with_item_context(supabase, supabase.table("agenda_items").select("id,meeting_id,matter_id,item_order,title,plain_english_summary,meta")
+                              .eq("meeting_id", meeting_id).order("item_order").execute().data or [])
     fingerprint = digest({"version": VERSION, "sections": [s.get("section_text") for s in sections],
                           "linked": extracted.get("agenda_item_id")})
     meeting = supabase.table("meetings").select("id,meta").eq("id", meeting_id).single().execute().data

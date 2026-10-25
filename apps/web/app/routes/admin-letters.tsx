@@ -72,6 +72,30 @@ export async function loadLetterQueue(supabase: Supabase) {
   ]);
   if (itemsError) throw itemsError;
 
+  // What each candidate item contains: the documents filed under it and what Council decided.
+  const candidateItemIds = [
+    ...new Set(
+      (meetings || []).flatMap((m) =>
+        Object.values((m.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap((doc) =>
+          doc.letters.flatMap((l) => l.candidates.map((c) => c.item_id)),
+        ),
+      ),
+    ),
+  ];
+  const [{ data: itemDocs }, { data: itemMotions }] = candidateItemIds.length
+    ? await Promise.all([
+        supabase.from("extracted_documents").select("agenda_item_id, title").in("agenda_item_id", candidateItemIds),
+        supabase.from("motions").select("agenda_item_id, text_content, plain_english_summary, result").in("agenda_item_id", candidateItemIds),
+      ])
+    : [{ data: [] as any[] }, { data: [] as any[] }];
+  const docsByItem = new Map<number, string[]>();
+  for (const d of itemDocs || []) docsByItem.set(d.agenda_item_id, [...(docsByItem.get(d.agenda_item_id) || []), d.title]);
+  const motionsByItem = new Map<number, string[]>();
+  for (const m of itemMotions || []) {
+    const text = (m.plain_english_summary || m.text_content || "").replace(/\s+/g, " ").trim();
+    if (text) motionsByItem.set(m.agenda_item_id, [...(motionsByItem.get(m.agenda_item_id) || []), `${text.length > 160 ? `${text.slice(0, 159)}…` : text}${m.result ? ` (${m.result.toLowerCase()})` : ""}`]);
+  }
+
   const textByDoc = new Map<number, string>();
   for (const s of sections) textByDoc.set(s.extracted_document_id, `${textByDoc.get(s.extracted_document_id) || ""}\n\n${s.section_text || ""}`);
 
@@ -106,6 +130,8 @@ export async function loadLetterQueue(supabase: Supabase) {
             summary: (it.plain_english_summary as string | null) || null,
             matter: it.matters ? { slug: it.matters.slug as string | null, id: it.matters.id as number, title: matterTitle(it.matters) } : null,
             placed: (it.written?.documents || []).reduce((n: number, d: any) => n + (d.letters?.length || 0), 0) as number,
+            documents: [...new Set(docsByItem.get(it.id) || [])].slice(0, 6),
+            decisions: (motionsByItem.get(it.id) || []).slice(0, 4),
             suggested: entries.filter((e) => !e.likelyNone && e.candidates[0]?.itemId === it.id).map((e) => e.id),
           }))
           .sort((a, b) => b.suggested.length - a.suggested.length);
@@ -246,6 +272,22 @@ function SuggestedItem({ meeting, item, hidden, handlers }: { meeting: MeetingGr
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-zinc-900" title={item.title}>{item.label}</p>
         {item.summary && <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-zinc-500">{item.summary}</p>}
+        {item.documents.length > 0 && (
+          <div className="mt-1.5 text-xs text-zinc-600">
+            <span className="font-medium text-zinc-500">Documents: </span>
+            {item.documents.join(" · ")}
+          </div>
+        )}
+        {item.decisions.length > 0 && (
+          <ul className="mt-1 space-y-0.5 text-xs text-zinc-600">
+            {item.decisions.map((d, i) => (
+              <li key={i}>
+                <span className="font-medium text-zinc-500">Decided: </span>
+                {d}
+              </li>
+            ))}
+          </ul>
+        )}
         <p className="mt-1 text-xs text-zinc-500">
           {item.matter && (
             <>
@@ -381,26 +423,12 @@ function MeetingQueue({ meeting, hidden, handlers }: { meeting: MeetingGroup; hi
 
       {decideCount > 0 && meeting.items.length > 0 && (
         <div className="border-b border-zinc-100 bg-zinc-50/60">
-          <p className="px-4 pt-3 text-xs font-medium text-zinc-500">Suggested items</p>
+          <p className="px-4 pt-3 text-xs font-medium text-zinc-500">Agenda items the letters might be about</p>
           <ul className="divide-y divide-zinc-100">
-            {meeting.items
-              .filter((item) => item.suggested.some((id) => !hidden.has(id)))
-              .map((item) => (
-                <SuggestedItem key={item.id} meeting={meeting} item={item} hidden={hidden} handlers={handlers} />
-              ))}
+            {meeting.items.map((item) => (
+              <SuggestedItem key={item.id} meeting={meeting} item={item} hidden={hidden} handlers={handlers} />
+            ))}
           </ul>
-          {meeting.items.some((item) => !item.suggested.some((id) => !hidden.has(id))) && (
-            <details className="px-4 pb-3">
-              <summary className="cursor-pointer text-xs font-medium text-zinc-500 hover:text-brand-700">Other candidate items</summary>
-              <ul className="mt-1 divide-y divide-zinc-100">
-                {meeting.items
-                  .filter((item) => !item.suggested.some((id) => !hidden.has(id)))
-                  .map((item) => (
-                    <SuggestedItem key={item.id} meeting={meeting} item={item} hidden={hidden} handlers={handlers} />
-                  ))}
-              </ul>
-            </details>
-          )}
         </div>
       )}
 
