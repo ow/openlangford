@@ -94,3 +94,23 @@ Meeting150's1610/1611 NULL outcomes remain NULL. Its original bylaw-number
 contradictions remain explicit. Meeting164's unseconded RCMP amendment and
 unresulted FIFA introduction remain held; their outcomes are never invented.
 No application, date correction or release is part of this draft publication.
+
+## Further source flags: records already present
+
+Independent original-image reviews of meetings362,43,113,128 and353 cover
+37pages and105 formal decisions. All105 are represented in the saved inventory;
+none warrants a duplicate addition. Their110 stored claims include five retained
+source-evidence holds:3634,309,1085,1091 and1256. Unsupported stored outcomes
+remain unchanged; documentary narration never supplies a formal vote.
+
+Examples include an abbreviated AVICC resolution, an omitted DVP qualification,
+and superscript/OCR differences. The initial tasting-only proposal in113 has no
+own printed outcome; the later separately introduced compound proposal owns the
+printed carried result. Meeting362's apparent native-text February15 header is
+a superscript-st extraction artifact: the original prints February1st. This is
+not another catalog-date correction.
+
+These are source/snapshot checks, not new canonical production receipts or a
+site-wide completeness certificate. The census still contains208 other source
+flags, including active reviews; flags are not counts of missing decisions.
+Prepared additions remain772 across PR50/51/53, with355 previously applied.
