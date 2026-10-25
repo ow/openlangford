@@ -271,6 +271,9 @@ enrolled source/legacy artifact pairs may use it. A disputed generic CARRIED clo
 explicitly unresolved while an exact allowlist of independently reviewed,
 strictly unique and disjoint formal decisions proceeds. The closing receives no
 formal source key, verified outcome, ballot authority or actor attribution.
+This disputed-closing mode also recognizes the exact grammatical variant
+“That the Council adjourn the meeting.” The optional article changes no source,
+outcome, full-row, competing-owner or zero-vote requirement; negation is ineligible.
 
 Both byte-pinned source and legacy artifacts must contain the same reviewed
 capability and two distinct review hashes. Every current row field, the complete

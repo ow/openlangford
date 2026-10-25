@@ -68,7 +68,7 @@ def case(tmp_path, monkeypatch, request):
         source=minutes_text_source(context['meeting'],root=tmp_path,people=PEOPLE,cache_dir=tmp_path/'cache',
             path=path,text=corrected,source_format=source['source_format'],source_sha256=source['source_sha256'])
     rows=[{'id':100,'meeting_id':77,'agenda_item_id':99,'text_content':AGENDA,'result':'CARRIED','mover_id':21,'seconder_id':23,'meta':{}},
-          {'id':309,'meeting_id':77,'agenda_item_id':100,'text_content':CLOSING,'result':'CARRIED','mover_id':None,'seconder_id':None,
+          {'id':309,'meeting_id':77,'agenda_item_id':100,'text_content':config.get('closing_text',CLOSING),'result':'CARRIED','mover_id':None,'seconder_id':None,
            'meta':{},'created_at':datetime(2026,1,8,tzinfo=timezone.utc)}]
     rows=config.get('rows',rows)
     inventory=build_claim_inventory(rows,meeting_id=77,expected_count=2)
@@ -76,7 +76,7 @@ def case(tmp_path, monkeypatch, request):
     accepted={'source_key':identity['key'],'raw_block_sha256':digest(new),'operative_body':TEXT,'operative_body_sha256':sha(TEXT.encode()),
         'result':'CARRIED','pages':[1],'page_evidence':[page],'independent_review_sha256':FIRST,'authority':'operative_body_and_result_only'}
     cap={'type':'reviewed_unresolved_closing_conflict','authority':'duplicate_screening_only_no_fact_certification',
-        'motion_id':309,'legacy_text':CLOSING,'expected_stored_result':'CARRIED','claim_sha256':digest(project_claim(rows[1])),
+        'motion_id':309,'legacy_text':rows[1]['text_content'],'expected_stored_result':'CARRIED','claim_sha256':digest(project_claim(rows[1])),
         'claim_row_sha256':row_sha(rows[1]),'printed_body':NARRATION,**page,
         'source_passage':NARRATION,'source_passage_start':source['text'].index(NARRATION),
         'native_passage':native_narration,'native_passage_start':native.index(native_narration),
@@ -121,6 +121,7 @@ def plan(case):
 
 
 @pytest.mark.parametrize('case',[{},
+    {'closing_text':'That the Council adjourn the meeting.'},
     {'native_narration':'Acting Mayor Stewart adjou ed the meeting at 6:42 pm.','native_correction':True},
     {'native_narration':'Acting Mayor Stewart a\nurned the meeting at 6:42 pm.','native_correction':True}],indirect=True)
 def test_only_disjoint_reviewed_fact_can_proceed_while_closing_stays_unresolved(case):
@@ -201,7 +202,7 @@ def test_native_witness_correction_cannot_remove_authority_or_change_event_or_es
 @pytest.mark.parametrize('change,expected',[
     ('row_metadata_drift','row changed'),('unknown_metadata_authority','manual authority'),
     ('formal_metadata','manual authority'),('actor','manual authority'),('ballot_count','manual authority'),('row_timestamp_drift','row changed'),
-    ('row_body_not_generic','row changed'),('stored_result_NULL','row changed'),('stored_result_DEFEATED','row changed'),
+    ('row_body_not_generic','row changed'),('row_closing_negated','row changed'),('stored_result_NULL','row changed'),('stored_result_DEFEATED','row changed'),
     ('linked_vote_proof_missing','zero linked-vote'),('linked_vote_count_positive','zero linked-vote'),
     ('linked_vote_wrong_ID','zero linked-vote'),('inventory_drift','scope changed'),('source_hash','scope changed'),('project','scope changed'),
     ('tenant','scope changed'),('date','catalog'),('source_capability_not_enrolled','capability'),
@@ -227,6 +228,7 @@ def test_enrolled_closing_exclusion_cannot_bypass_drift_ownership_or_unsupported
     elif change=='ballot_count':rows[1]['yes_votes']=5;row_change=True;source_change=True
     elif change=='row_timestamp_drift':rows[1]['created_at']=datetime(2026,1,9,tzinfo=timezone.utc)
     elif change=='row_body_not_generic':rows[1]['text_content']='That Council adopt Bylaw No. 2030.';row_change=True;source_change=True
+    elif change=='row_closing_negated':rows[1]['text_content']='That the Council not adjourn the meeting.';row_change=True;source_change=True
     elif change.startswith('stored_result_'):rows[1]['result']=None if change.endswith('NULL') else 'DEFEATED';row_change=True;source_change=True
     elif change=='inventory_drift':review['claim_inventory_sha256']='changed'
     elif change=='source_hash':review['source_sha256']='changed'

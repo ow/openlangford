@@ -9,7 +9,7 @@ from pipeline.ingestion.source_occurrences import original_formal_inventory, tex
 from .legacy_occurrence_reviews import _validate_scope, _literal_spans, full_row_fingerprint, _reviewed_native_correction
 from .supplemental_preservation import _source_admission
 
-_LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting|That Council adjourn the meeting)\.',re.I)
+_LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting|That (?:the )?Council adjourn the meeting)\.',re.I)
 _EVENT = re.compile(r'(?:The Chair|(?:Acting )?Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
 _COMPACT_EVENT = re.compile(_EVENT.pattern.replace(' ', ''))
 
