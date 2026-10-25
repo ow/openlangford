@@ -6,7 +6,7 @@ import type { AttendanceInfo } from "../../lib/attendance";
 import { CalendarProvenance } from "../calendar-provenance";
 import { MeetingSummary } from "../meeting/MeetingSummary";
 
-interface RecentMeeting {
+export interface RecentMeeting {
   meeting: any;
   stats: {
     agendaItems: number;
@@ -17,7 +17,7 @@ interface RecentMeeting {
   };
 }
 
-interface UpcomingMeeting {
+export interface UpcomingMeeting {
   id: number;
   slug?: string | null;
   calendar_source_id?: number | null;
@@ -39,7 +39,7 @@ interface HeroSectionProps {
   laterMeetings?: LaterMeeting[];
 }
 
-interface LaterMeeting {
+export interface LaterMeeting {
   id: number;
   slug?: string | null;
   title: string;
@@ -50,7 +50,7 @@ interface LaterMeeting {
  * Strip leading item numbers/letters from agenda titles.
  * Handles patterns like "6.a) ", "14.a) 1. ", "7.b) ", "10.c) 1. "
  */
-function cleanAgendaTitle(title: string): string {
+export function cleanAgendaTitle(title: string): string {
   return title
     .replace(/^[\d]+\.?[a-z]?\)\s*(\d+\.?\s*)?/i, "")
     .replace(/^[A-Z]\)\s*/i, "")
