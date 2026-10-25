@@ -142,7 +142,7 @@ export async function loadLetterQueue(supabase: Supabase) {
           meeting_date: meeting.meeting_date as string,
           entries,
           items: itemInfo,
-          allItems: meetingItems.map((it: any) => ({ id: it.id as number, label: shortItemLabel(it.item_order, displayTitle(it.title), 70) })),
+          allItems: meetingItems.map((it: any) => ({ id: it.id as number, label: shortItemLabel(it.item_order, displayTitle(it.title), 140) })),
         };
       })
       .filter((m) => m.entries.length > 0)
@@ -270,7 +270,7 @@ function SuggestedItem({ meeting, item, hidden, handlers }: { meeting: MeetingGr
   return (
     <li className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-4 py-3">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-zinc-900" title={item.title}>{item.label}</p>
+        <p className="break-words text-sm font-medium text-zinc-900" title={item.title}>{item.label}</p>
         {item.summary && <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-zinc-500">{item.summary}</p>}
         {item.documents.length > 0 && (
           <div className="mt-1.5 text-xs text-zinc-600">
@@ -302,7 +302,7 @@ function SuggestedItem({ meeting, item, hidden, handlers }: { meeting: MeetingGr
         </p>
       </div>
       {remaining.length > 0 && (
-        <Button type="button" size="sm" variant="outline" onClick={() => decide("place", item.id)}>
+        <Button type="button" size="sm" variant="outline" className="w-full sm:w-auto" onClick={() => decide("place", item.id)}>
           Place {remaining.length} suggested here
         </Button>
       )}
@@ -340,20 +340,27 @@ function LetterRow({ meeting, entry, hidden, handlers }: { meeting: MeetingGroup
           </div>
         </details>
       )}
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        {entry.candidates.slice(0, 2).map((c) => {
+      <div className="mt-2 space-y-1.5">
+        {entry.candidates.slice(0, 3).map((c) => {
           const label = labels.get(c.itemId);
           if (!label) return null;
           return (
-            <Button key={c.itemId} type="button" size="sm" variant="outline" onClick={() => decide("place", c.itemId)} title={label}>
-              {label}
-              <span className="ml-1.5 tabular-nums text-zinc-400">{Math.round(c.probability * 100)}%</span>
-            </Button>
+            <button
+              key={c.itemId}
+              type="button"
+              onClick={() => decide("place", c.itemId)}
+              className="flex w-full items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-left text-sm text-zinc-800 transition-colors hover:border-brand-300 hover:bg-brand-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            >
+              <span className="min-w-0 break-words">{label}</span>
+              <span className="shrink-0 tabular-nums text-xs text-zinc-400">{Math.round(c.probability * 100)}%</span>
+            </button>
           );
         })}
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
         {other ? (
-          <span className="inline-flex items-center gap-2">
-            <NativeSelect className="h-8 max-w-xs" value={otherItem} onChange={(e) => setOtherItem(e.target.value)}>
+          <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
+            <NativeSelect className="h-9 w-full min-w-0 sm:max-w-md" value={otherItem} onChange={(e) => setOtherItem(e.target.value)}>
               <option value="" disabled>
                 Choose an item
               </option>
@@ -363,18 +370,25 @@ function LetterRow({ meeting, entry, hidden, handlers }: { meeting: MeetingGroup
                 </option>
               ))}
             </NativeSelect>
-            <Button type="button" size="sm" disabled={!otherItem} onClick={() => decide("place", Number(otherItem))}>
-              Place
-            </Button>
-          </span>
+            <div className="flex gap-2">
+              <Button type="button" size="sm" disabled={!otherItem} onClick={() => decide("place", Number(otherItem))}>
+                Place
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setOther(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
         ) : (
-          <Button type="button" size="sm" variant="ghost" onClick={() => setOther(true)}>
+          <button type="button" onClick={() => setOther(true)} className="font-medium text-brand-700 hover:underline">
             Other item…
-          </Button>
+          </button>
         )}
-        <Button type="button" size="sm" variant="ghost" className="text-zinc-500" onClick={() => decide("dismiss")}>
-          Not about an item
-        </Button>
+        {!other && (
+          <button type="button" onClick={() => decide("dismiss")} className="font-medium text-zinc-500 hover:text-zinc-800 hover:underline">
+            Not about an item
+          </button>
+        )}
       </div>
     </li>
   );
