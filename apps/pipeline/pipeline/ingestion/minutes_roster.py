@@ -12,7 +12,8 @@ import re
 import subprocess
 
 LABEL = re.compile(r"^\s*(PRESENT|ABSENT|REGRETS|ATTENDING|ALSO PRESENT|STAFF)\s*:\s*(.*)$", re.I)
-ROLE = re.compile(r"\b(?:Acting\s+Mayor|Mayor|Councillor)\s+([A-Z]\.\s*[A-Z][A-Za-z'’-]+)(\s*\(Acting Mayor\))?(\s*-\s*Remote)?")
+# Initial's period is optional ("Councillor L Szpak") and "Mayors. Goodmanson" is a known scan misread of "Mayor S.".
+ROLE = re.compile(r"\b(?:Acting\s+Mayor\s+(?!Councillor)|Mayor\s+(?!Councillor)|Mayors\.\s*|Councillor\s+)((?:[A-Z]\.?\s*)?[A-Z][A-Za-z'’-]+)(\s*\(Acting Mayor\))?(\s*-\s*Remote)?")
 END = re.compile(r"^\s*(?:1\.|CALL TO ORDER|TERRITORIAL)", re.I)
 
 
@@ -47,4 +48,4 @@ def parse_roster(text: str) -> dict:
 
 
 def surname(name: str) -> str:
-    return re.sub(r"^[A-Z]\.\s*", "", name).lower()
+    return re.sub(r"^[A-Z]\.?\s*(?=[A-Z])", "", name).lower()
