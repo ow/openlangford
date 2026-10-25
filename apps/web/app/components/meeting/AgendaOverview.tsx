@@ -455,7 +455,6 @@ function AgendaItemRow({
                     Written submissions ({item.meta.written_participation.letters.length})
                   </h4>
                   <WrittenSubmissions written={item.meta.written_participation} className="pl-0.5" />
-                  <p className="text-xs text-zinc-400">Summarized from letters in the agenda package. Contact details and house numbers are left out.</p>
                 </div>
               )}
 
