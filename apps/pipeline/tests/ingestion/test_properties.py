@@ -88,3 +88,33 @@ def test_pins_shared_by_several_lots_are_not_exact():
     rows = [{"id": 1, "geo": {"lat": 48.47059271, "lng": -123.5038207}}, {"id": 2, "geo": {"lat": 48.4705927, "lng": -123.5038207}},
             {"id": 3, "geo": {"lat": 48.4703, "lng": -123.5036}}]
     assert shared_points(rows) == {1, 2}
+
+
+def test_bc_geocoder_accepts_parcels_and_blocks_only():
+    from pipeline.ingestion.properties import bc_geocode
+
+    class Response:
+        def __init__(self, data): self.data = data
+        def raise_for_status(self): pass
+        def json(self): return self.data
+
+    def answer(precision, score=99, where="2750 Leigh Rd, Langford, BC"):
+        feature = {"geometry": {"coordinates": [-123.51, 48.45]},
+                   "properties": {"matchPrecision": precision, "score": score, "fullAddress": where}}
+        return lambda *a, **k: Response({"features": [feature]})
+
+    assert bc_geocode("1234 Goldstream Avenue", get=answer("CIVIC_NUMBER"))["precision"] == "address"
+    assert bc_geocode("2750 Leigh Road", get=answer("BLOCK")) == {"lat": 48.45, "lng": -123.51, "precision": "block", "source": "bc"}
+    assert bc_geocode("2750 Leigh Road", get=answer("STREET")) is None
+    assert bc_geocode("2750 Leigh Road", get=answer("BLOCK", score=70)) is None
+    assert bc_geocode("2750 Leigh Road", get=answer("BLOCK", where="2750 Leigh Rd, Colwood, BC")) is None
+
+
+def test_years_and_spacing_variants():
+    assert keys("Contract 2019-2024 Eagle Ridge Centre") == []
+    assert keys("2019 Eagle Ridge") == [] and keys("2016 Apple Day Fund-Raising Drive") == []
+    assert keys("2000 Hannington Road") == [("2000", "Hannington", "Road")]
+    sources = [(a, {"id": i}) for i, text in enumerate(["4342 West Shore Parkway", "4342 West Shore Pkwy", "4342 Westshore Parkway"])
+               for a in parse_addresses(text, need_type=False)]
+    assert list(resolve(sources)) == [("4342", "west shore", "Parkway")]
+    assert display(("116", "mccallum", "Road")) == "116 McCallum Road"

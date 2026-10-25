@@ -29,7 +29,13 @@ TYPES = {
 # City hall: on letterheads and in "submit to" lines everywhere; says nothing about a lot.
 NOT_PROPERTIES = {("877", "goldstream", "Avenue")}
 # Legal descriptions ("Section 114, Esquimalt District, Plan VIP1234", "PID 000-874") and run-ons.
-NOT_NAMES = re.compile(r"\b(?:district|plan|lots?|section|pid|block|and|road|rd|avenue|ave|street|drive|highway|hwy)\b", re.I)
+NOT_NAMES = re.compile(r"\b(?:district|plan|lots?|section|pid|block|and|road|rd|avenue|ave|street|drive|highway|hwy|"
+                       r"fund-raising|fundraising|unnamed)\b", re.I)
+# "2019 Eagle Ridge (Community Centre)", "2016 Apple Day": a year before a name is an address only with a
+# common street type.
+COMMON_TYPES = {"Road", "Avenue", "Street", "Drive", "Way", "Place", "Court", "Crescent", "Terrace", "Parkway",
+                "Highway", "Lane", "Close", "Boulevard", "Trail"}
+YEAR = re.compile(r"(?:199\d|20[0-3]\d)")
 
 _WORD = r"[A-Z][A-Za-z'’.-]*"
 _NUMS = r"(?P<nums>\d{1,5}[A-Za-z]?(?:\s*(?:[-–/&,]|(?i:\band\b|\bto\b))\s*\d{1,5}[A-Za-z]?)*)"
@@ -41,7 +47,10 @@ UNTYPED = re.compile(_NUMS + r"\s+(?P<name>" + _WORD + r"(?:\s+" + _WORD + r"){0
 def _case(word: str) -> str:
     if any(c.isupper() for c in word[1:]) and not word.isupper():
         return word  # McCallum
-    return "-".join(part[:1].upper() + part[1:].lower() for part in word.split("-"))
+    def one(part: str) -> str:
+        part = part[:1].upper() + part[1:].lower()
+        return "Mc" + part[2:3].upper() + part[3:] if part.startswith("Mc") and len(part) > 3 else part
+    return "-".join(one(part) for part in word.split("-"))
 
 
 def _civic_numbers(nums: str) -> tuple[list[str], list[tuple[int, int]]]:
@@ -84,9 +93,13 @@ def parse_addresses(text: str, *, need_type: bool) -> list[dict]:
             kind = TYPES.get((m.groupdict().get("type") or "").lower().rstrip("."))
             singles, ranges = _civic_numbers(m.group("nums"))
             for number in singles:
+                if YEAR.fullmatch(number) and kind not in COMMON_TYPES:
+                    continue
                 if re.fullmatch(r"\d{3,4}[A-Za-z]?", number):  # Langford civic numbers; longer ones are PIDs
                     found.append({"number": number.upper(), "name": name, "type": kind})
             for low, high in ranges:
+                if YEAR.fullmatch(str(low)) and YEAR.fullmatch(str(high)) and kind not in COMMON_TYPES:
+                    continue  # "Contract 2019-2024 Eagle Ridge Centre"
                 if 100 <= low and high < 10000:
                     found.append({"range": (low, high), "name": name, "type": kind})
     return found
@@ -158,14 +171,16 @@ def resolve(addresses_by_source: list[tuple[dict, dict]]) -> dict[tuple, list[di
                 continue
             kind = next(iter(options), None)
         out[(address["number"], address["name"].lower(), kind)].append(source)
-    # Spellings that differ only in punctuation ("Trans-Canada" / "Trans Canada") are one lot,
+    # Spellings that differ only in punctuation or spacing ("Trans-Canada" / "Trans Canada") are one lot,
     # shown with its most common spelling.
+    def compact(key):  # "Westshore" / "West Shore" / "West-Shore"
+        return slug_of(key).replace("-", "")
     merged: dict[str, tuple] = {}
     for key in sorted(out, key=lambda k: -len(out[k])):
-        merged.setdefault(slug_of(key), key)
+        merged.setdefault(compact(key), key)
     result: dict[tuple, list[dict]] = defaultdict(list)
     for key, sources in out.items():
-        result[merged[slug_of(key)]] += sources
+        result[merged[compact(key)]] += sources
     return {k: v for k, v in result.items() if (k[0], k[1], k[2]) not in NOT_PROPERTIES}
 
 
@@ -255,7 +270,7 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
         stats["sample"] = sorted(groups, key=lambda k: -len(groups[k]))[:15]
         return stats
 
-    existing = {p["slug"]: p for p in _pages(lambda: supabase.table("properties").select("id,slug").order("id"))}
+    existing = {p["slug"]: p for p in _pages(lambda: supabase.table("properties").select("id,slug,geo").order("id"))}
     rows, now = [], datetime.now(timezone.utc).isoformat()
     for key in groups:
         geo = None
@@ -264,7 +279,9 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
                    "precision": "address"}  # mark_shared_points downgrades pins other lots share
         row = {"slug": slug_of(key), "address": display(key), "civic_number": key[0],
                "street": display(("", key[1], key[2])).strip(), "updated_at": now}
-        rows.append({**row, "geo": geo} if geo else row)
+        # Agenda items' pins only seed new properties; geocode_missing replaces them with BC's.
+        pinned = (existing.get(row["slug"]) or {}).get("geo")
+        rows.append({**row, "geo": {**geo, "source": "items"}} if geo and not pinned else row)
     ids = {}
     # Rows without item coordinates leave geo alone (it may hold an earlier geocode). PostgREST bulk
     # upserts need one column set per request, so the two kinds go separately.
@@ -307,6 +324,31 @@ LANGFORD_VIEWBOX = "-123.62,48.39,-123.45,48.50"  # same area the ingester's geo
 RETRY_AFTER_DAYS = 30
 
 
+BC_GEOCODER_URL = "https://geocoder.api.gov.bc.ca/addresses.json"
+BC_MIN_SCORE = 90
+
+
+def bc_geocode(address: str, *, get=None) -> dict | None:
+    """BC's Address Geocoder (DataBC), built from the province's civic address registry: knows lots
+    OpenStreetMap doesn't. CIVIC_NUMBER matches are the parcel itself; BLOCK matches are placed along
+    the right block by civic number (tens of metres). Anything vaguer is rejected."""
+    import requests
+
+    get = get or requests.get
+    response = get(BC_GEOCODER_URL, params={"addressString": f"{address}, Langford, BC", "maxResults": 1,
+                                            "echo": "false", "locationDescriptor": "parcelPoint"},
+                   headers={"User-Agent": NOMINATIM_USER_AGENT}, timeout=10)
+    response.raise_for_status()
+    features = response.json().get("features") or []
+    if not features:
+        return None
+    props, (lng, lat) = features[0]["properties"], features[0]["geometry"]["coordinates"]
+    precision = {"CIVIC_NUMBER": "address", "BLOCK": "block"}.get(props.get("matchPrecision"))
+    if not precision or (props.get("score") or 0) < BC_MIN_SCORE or "langford" not in (props.get("fullAddress") or "").lower():
+        return None
+    return {"lat": lat, "lng": lng, "precision": precision, "source": "bc"}
+
+
 def geocode(address: str, *, get=None) -> dict | None:
     """Nominatim, restricted to Langford. Returns {lat, lng, precision} ("address" when OpenStreetMap
     knows the house, else "street": new builds are often missing, and the street is close enough for a pin)."""
@@ -323,7 +365,8 @@ def geocode(address: str, *, get=None) -> dict | None:
         return None
     top = results[0]
     precise = top.get("addresstype") in ("house", "building") or top.get("class") in ("building", "place") and top.get("type") == "house"
-    return {"lat": float(top["lat"]), "lng": float(top["lon"]), "precision": "address" if precise else "street"}
+    return {"lat": float(top["lat"]), "lng": float(top["lon"]), "precision": "address" if precise else "street",
+            "source": "osm"}
 
 
 def shared_points(rows: list[dict]) -> set[int]:
@@ -344,32 +387,50 @@ def mark_shared_points(supabase) -> int:
     changed = 0
     for row in rows:
         precision = "street" if row["id"] in shared else (row["geo"].get("precision") or "address")
-        if row["id"] in shared and row["geo"].get("precision") != "street":
+        if row["id"] in shared and row["geo"].get("precision") != "street" and row["geo"].get("source") != "bc":
             supabase.table("properties").update({"geo": {**row["geo"], "precision": precision}}).eq("id", row["id"]).execute()
             changed += 1
     return changed
 
 
 def geocode_missing(supabase, *, limit: int | None = None, sleep=None) -> int:
-    """Geocode properties and streets with no coordinates (1 request/second, Nominatim's policy)."""
+    """Geocode lots with BC's geocoder (falling back to OpenStreetMap), and streets with OpenStreetMap.
+
+    Picks up properties with no pin, and lots whose pin came from elsewhere (agenda items geocoded at
+    ingest, OpenStreetMap) that haven't had a BC attempt yet. Failed attempts are retried after
+    RETRY_AFTER_DAYS. OpenStreetMap allows 1 request/second."""
     import time
     from datetime import timedelta
 
     sleep = sleep or time.sleep
     cutoff = (datetime.now(timezone.utc) - timedelta(days=RETRY_AFTER_DAYS)).isoformat()
-    rows = _pages(lambda: supabase.table("properties").select("id,address,civic_number").is_("geo", "null")
-                  .or_(f"geocode_attempted_at.is.null,geocode_attempted_at.lt.{cutoff}").order("id"))
+    missing = _pages(lambda: supabase.table("properties").select("id,address,civic_number,geo").is_("geo", "null")
+                     .or_(f"geocode_attempted_at.is.null,geocode_attempted_at.lt.{cutoff}").order("id"))
+    upgrade = [row for row in _pages(lambda: supabase.table("properties").select("id,address,civic_number,geo")
+                                     .neq("civic_number", "").not_.is_("geo", "null").order("id"))
+               if not (row["geo"] or {}).get("bc_tried") and (row["geo"] or {}).get("source") != "bc"]
     found = 0
-    for row in rows[:limit] if limit else rows:
-        try:
-            geo = geocode(row["address"])
-        except Exception as error:
-            print(f"    [!] Geocoding failed for {row['address']}: {error}")
-            geo = None
+    for row in (missing + upgrade)[:limit] if limit else missing + upgrade:
+        geo = None
+        if row["civic_number"]:
+            try:
+                geo = bc_geocode(row["address"])
+            except Exception as error:
+                print(f"    [!] BC geocoder failed for {row['address']}: {error}")
+            sleep(0.2)
+        if not geo and not row.get("geo"):
+            try:
+                geo = geocode(row["address"])
+            except Exception as error:
+                print(f"    [!] Geocoding failed for {row['address']}: {error}")
+            sleep(1.1)
+            if geo and row["civic_number"] == "" and geo["precision"] == "address":
+                geo = None  # a street resolved to one house is not the street
         update = {"geocode_attempted_at": datetime.now(timezone.utc).isoformat()}
-        if geo and not (row["civic_number"] == "" and geo["precision"] == "address"):
-            update["geo"] = geo
+        if geo:
+            update["geo"] = {**geo, "bc_tried": True} if row["civic_number"] else geo
             found += 1
+        elif row.get("geo"):
+            update["geo"] = {**row["geo"], "bc_tried": True}  # keep the old pin; don't ask BC again
         supabase.table("properties").update(update).eq("id", row["id"]).execute()
-        sleep(1.1)
     return found
