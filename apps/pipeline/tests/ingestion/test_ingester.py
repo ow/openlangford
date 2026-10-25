@@ -338,8 +338,11 @@ class TestSelfHealingCheck:
             MagicMock(count=5, data=[]),
         ]
 
-        result = self.ingester.process_meeting("/fake/path")
+        # Skipping still reconciles transcript identities from source evidence.
+        with patch.object(self.ingester, "reconcile_transcript_identities") as reconcile:
+            result = self.ingester.process_meeting("/fake/path")
         assert result is None  # Should skip (items exist)
+        reconcile.assert_called_once_with("/fake/path", 1)
 
     def test_reprocess_when_has_agenda_but_no_items(self, tmp_path):
         """Meeting with has_agenda=true but 0 items should be re-processed."""
