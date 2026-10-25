@@ -276,6 +276,17 @@ class TestClassifyDocument:
     def test_other(self):
         assert self.ingester._classify_document("random_file.pdf") == "Other"
 
+    @pytest.mark.parametrize("name", ["20200203-SIGNED.pdf", "20200525-Public-Hearing-SIGNED1.pdf",
+                                      "20200406-SIGNED-MINS.pdf", "20200504-2020SIGNED.pdf"])
+    def test_signed_minutes_in_minutes_folder(self, name):
+        assert self.ingester._classify_document(name, "Minutes") == "Minutes"
+
+    def test_non_minutes_in_minutes_folder_stay_other(self):
+        assert self.ingester._classify_document("20201207-Award-of.pdf", "Minutes") == "Other"
+
+    def test_signed_outside_minutes_folder_unchanged(self):
+        assert self.ingester._classify_document("20200203-SIGNED.pdf", "Agenda") == "Other"
+
 
 # --- _normalize_archive_path ---
 
