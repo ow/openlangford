@@ -14,6 +14,7 @@ from pipeline.ingestion.source_claims import build_claim_inventory, digest, proj
 
 STORE = Path(__file__).parent / 'data' / 'legacy-occurrence-reviews'
 ENROLLED = {
+    75: '9ccb52ede4fce4f1a9abece79b37259add625aa59db096477e9f2836de254330',
     144: 'd89cbb8546ec9133c6cf54fc032b9c361404c012a26479ac17531b8eb5eac25b',
     125: 'ed381022fe20cb28bd165b12b38b791b08c388b09743cd6a57cbad86e47ff7c3',
     215: 'b9256db3cfd9a3f794d27072f9b15231237984d867768f93f72a3aec6b67cee4',
@@ -25,6 +26,7 @@ ENROLLED = {
     32: 'bc0d9c37970b6bd0858d7c486224d15ab050b9fb79ef332cb17245244e0c3288',
     297: '0082d73b6e1e935994f5cb522d6d95d840d12700010b0c442c8522bd3e12dafe',
     99: '9a794307d9b4ddbe9b69a3122a265ba70624b777ff2674872335b051eed1919b',
+    361: 'd7c0054f80d79ad865f374a1e24d94d6f8b4361880bd0bb48b941e87b09589bd',
 }
 
 

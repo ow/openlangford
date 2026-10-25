@@ -1,0 +1,250 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 75,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf",
+  "source_file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+  "source_date": "2020-11-02",
+  "source_text_sha256": "8506bce9a5596b379517de6c747afa78e72a511d4ec5807a5900e26daba7c331",
+  "formal_inventory_sha256": "e5dbd3b99834e666bb51cb505e3e5269fdb66e7f109197d6edadc26120f92e63",
+  "claim_inventory_sha256": "479d33be6b18645542f49dfb4a862e1f1132a6e8b82380dcb98a2f131c2c60d0",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "03eb6a5fd7feafe471025078ee80892285f190633b38a0d1548bbbc552148b3f"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "3c4577092ad4a9468f150e1ba7de229a58375461cda941a4924e76a5d03ff4d7"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "6b79bd8d330e0b8a1950378e978a7c7d9ff0bdcc6a6bcd1b65bf328d266e3ed7"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "31c79849851509698eabf1fbd897cbaf10d254605e5b083b7406461664799815"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "09066d6a27731ddddb0d1503a812885bb17337e8a5c8e7912ebfcad51b24a52e"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "32786cbcad5c675cad852cc8ed203bbbcb01bf6bd8c255a59f1423d410d82786"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "2af3492abef00c37120f8bfe69e0421491ceb8a5ff915eb7e60f2b22483fc2b2"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "5b1a9aedbc5d79c64d91804bf2c46eb088a4e4ba25a2896e19f580de71c5936c"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "86db6b12ac86cff43d6bacd201c0b2b0c9cdb6e85a8ee7554efb9795226fbe90"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "54c7c3e56a7da3264d8a809a8c1fb7d6a8c21959d384fa157c0f8e019dada91d"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "36830ecdfddaeea361efe80c46c5e308186b6fe296c7e58e3145afc8b925462d"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "d50a5a9d1c3354277372e2d098256496184715f6c0b04f85b74a960669a9bb6c"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "c3910c9a03841047eb42c4f3dcb71579be51861782f230407eb947ea7eaf3dc0"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "863c94e9382d405eb0227018020556a32c867861c746ebd71fa431e6bd65aa95"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "8365166d68a79754409f6adf6eb082faf2a065d8e0e5193458ef541f9790ece0"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "c29eb31b712e0442b8acf34e81648f6229b6a67be02fc7df68aad5b184d1f3f3"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "e947c35929a568bf62f67ccfb78c307768d8907b10ba267f6a19e6c6e9af3405"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "53a27a26a8e07494a96b31e31f0f2b989b588c241f224599c12f47aca2658516"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "0b9b419c60bf5f5c16b4a69697e92e7d4424d1a63e64046e8c7511bf18e53958"
+    },
+    {
+      "page": 20,
+      "native_text_sha256": "8e6a3853f52eba636284c6d244fd9f279f7edafd8c0bf0ec1e8e862dc44a63d8"
+    },
+    {
+      "page": 21,
+      "native_text_sha256": "fd0e60a7c265979dfe6c8d2e76ece9110c376baf88619fa2028eec73e7dfed99"
+    },
+    {
+      "page": 22,
+      "native_text_sha256": "5ea2e2e43bd369cba495a37a4261531a77a09bf0dcfeaf34fa98903b81e3d285"
+    },
+    {
+      "page": 23,
+      "native_text_sha256": "5044a66229dd696a3b8f22ff9ec6717a8cd6c24661de76174ce60af4de657c3e"
+    },
+    {
+      "page": 24,
+      "native_text_sha256": "1013c253a3454dbb075d02eeac081c67120ed5b431a41ecff99d50a670b840d5"
+    },
+    {
+      "page": 25,
+      "native_text_sha256": "376a1e5bc483b1f271b043bef3c6bca8df73eeed48e475e3eb6a5c6e91f745b3"
+    },
+    {
+      "page": 26,
+      "native_text_sha256": "da209d743d1d977fdcf9f6645e93c42a43f475f1553820bea45b62d6cf79f130"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 686,
+      "claim_sha256": "9c981624b7965772acd5c649dc30944a046b0ccadfb9f9e9b1e1ae700630067d",
+      "legacy_text": "That Council approve the agenda by moving item 10d Bylaw No. 1918, to 10b; 10e Bylaw No. 1920, to 10c; and 10f Bylaw No. 1931, to 10d; and renumbering accordingly.",
+      "source_identity": {
+        "meeting_id": 75,
+        "source_sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+        "source_offset": 945,
+        "source_order": 0,
+        "key": "78e611a9e36e821608281fb2701b737e2c068599ea885e4590fa1d50f5079f8f",
+        "source_file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda by moving item 10d Bylaw No. 1918, to lob; 10e Bylaw No.\n        1920, to 10c; and 10f Bylaw No. 1931, to 10d; and renumbering accordingly.",
+        "source_block": "MOVED BY:       COUNCILLOR SEATON\nSECONDED:       COUNCILLOR WADE\n\n        That Council approve the agenda by moving item 10d Bylaw No. 1918, to lob; 10e Bylaw No.\n        1920, to 10c; and 10f Bylaw No. 1931, to 10d; and renumbering accordingly.\n\n\n                                                                                                   CARRIED.\n\n3.      PUBLIC HEARING\n\n\n        a)   BYLAW NO. 1883\n             \"Langford Zoning Bylaw, Amendment No. 581, (2627 Sooke Rd), Bylaw No.\n             1883, 2020\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1883 at 5:34 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDirector of Planning Matthew Baldwin advised that Danny Jadresko, has applied on behalf of Woodsmere\nHoldings Corporation to amend the zoning of 2627 Sooke Road from the R2 (One- and Two-Family\nResidential) Zone to the C9 (Community Town Centre Pedestrian 9) Zone.\n\n                                                                                                          November 2, 2020\n                                                                                                                Page 2 of 26\n\n\nThis is being proposed in order to allow for the development of approximately 90-units and a single ground\nlevel commercial unit that faces Sooke Road.\n\nA public hearing was previously held on June 29, 2020 and Council passed the following resolution, 'That\nCouncil direct staff to work with the Province and the 2627 Sooke Road developer to have traffic come and\ngo via Sooke Road rather than quieter residential streets.' The developer has since revised the site plan,\nwhich now demonstrates residential traffic to and from the site will be from Sooke Road only.\n\nAt this time, Council may also wish to require the applicant to strata title the building prior to occupancy\nand to include infrastructure to support electric vehicle charging.\n\nIn support of this application, the applicant has agreed to provide the following:\n\na)    That the applicant provides, as a bonus for increased density, the following contributions per residential\n      unit, subject to reductions depending on the use and height in accordance with the Affordable Housing\n      and Amenity Contribution Policy, prior to issuance of a building permit:\n\n          i.     $610 towards the Affordable Housing Fund; and\n                 $2,074 toward the General Amenity Fund.\n\nb) That the applicant provides, prior to Public Hearing, the following:\n\n                 A technical memo from an engineer that verifies storm water can be adequately managed on-site\n                 for the proposed developments, to the satisfaction of the Director of Engineering.\n\nc)    That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of\n      all other charges on title, that agrees to the following:\n\n          i.     That all frontage improvements along Sooke Road are provided as per the Sooke Road Corridor\n                 Concept Plan, to the satisfaction of the Director of Engineering and the Ministry of Transportation\n                 and Infrastructure, and that any road dedication required to contain these frontage\n                 improvements within the road right of way is provided prior to the issuance of a Building Permit;\n          ii.    That a storm water management plan be provided prior to issuance of a building permit and\n                 implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering;\n      iii.       That a construction parking and traffic management plan be provide prior to the issuance of a\n                 building permit, to the satisfaction of the Director of Engineering;\n      iv.        That a separate covenant be registered prior to issuance of a building permit for the proposed\n                 residential building that ensures parking is assigned and tied to each unit created in accordance\n                 with the minimum required parking stalls as per the zoning bylaw.\n\nAnd finally, that Council authorizes the Director of Planning to issue the following variance in the Form and\nCharacter Development Permit for 2627 Sooke Road:\n\n     i.         That Table 1 of Section 4.01.01 be varied to reduce the minimum parking requirement from the\n                required 2.75 spaces per dwelling unit with two bedrooms or less and 3.75 spaces per dwelling unit\n                with more than two bedrooms to 1.25 spaces per dwelling unit with two bedrooms or less and 2.75\n                spaces per dwelling unit with more than two bedrooms.\n\n                                                                                                    November 2, 2020\n                                                                                                          Page 3 of 26\n\n\nThis proposal is consistent with the Official Community Plan Neighbourhood Centre designation.\n\n\nNotifications and advertisements have been placed as required by the Local Government Act.\n\n\nThe Mayor called a first time for presentations.\n\nResident on Rodney Rd — Wants to ensure there is no egress onto the cul-de-sac by foot to ensure the\nresidents in the townhouses cannot park on Southglen.\n\n   Matthew Baldwin, Director of Planning — a development permit could exclude pedestrian.\n\nResident on Alderglen Rd —There is a potential traffic issue, with garbage, recycling and emergency vehicles.\nWe don't want it to turn into a parkade on Southglen Dr. When does parking become a \"problem\"? Are\npeople still allowed to walk through? Will there be a right of way through 2627 Sooke?\n\nMayor Young called a second time for presentations.\n\nResident on Luxton road - 400 apartments on Happy Valley. There needs to be one big traffic plan to get out\nof Happy Valley.\n\nResident on Southglen Dr — A walkway is not necessary, it opens potential for parking. We don't need\ngarbage and recycling or emergency access. I believe it's a can of worms, we don't need it opened. The\nneighbourhood is closed and we like it. Everyone should be satisfied with just the Sooke Rd exit.\n\nMayor Young called a third and final time for speakers.\n\nSteven Hurst, Applicant — Would like to make a request, at this point new requirements for strata have\nbeen added. This wasn't required at the last public hearing. I request that council not require this.\n\nCouncillor Blackwell — Council's position is that given the number of rentals in Langford we want to see\ncondos and stratas.\n\nMayor Young declared the Public Hearing for Bylaw No. 1883 closed at 5:59 p.m.\n\n        b)   BYLAW NO. 1931\n             \"Langford Zoning Bylaw, Amendment No. 600, (2885 West Shore Parkway, 1365\n             Goldstream Avenue), Bylaw No. 1931, 2020\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1931 at 5:59 pm, and read a statement to inform those\npresent of the public hearing procedure.\n\nDirector of Planning Matthew Baldwin advised that The City of Langford has applied to amend the zoning of\na portion of the property at 2885 West Shore Pkwy and 1365 Goldstream Ave from the AM (Amenity) Zone\nto CT1 (Tourist Commercial) and a portion to the RT2 (Residential Townhouse 2) Zone.\n\n                                                                                                       November 2, 2020\n                                                                                                             Page 4 of 26\n\n\n\nThis is being proposed in order to allow for the development of a hotel and a freestanding restaurant with\naccess only from West Shore Parkway and approximately 30 townhouse residential units with access from\nGoldstream Avenue and West Shore Parkway.\n\n\nThat portion of the subject property that is the Streamside Protection and Enhancement Area, or SPEA, as\ndetermined by a Registered Professional Biologist, will remain undisturbed.\n\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\n\n In support of these/this application, the applicant has agreed to provide the following:\n\n\na)    That the owner agrees to provide, as a bonus for increased density, the following contributions per\n      dwelling unit, prior to issuance of a building permit:\n\n\n        i.   $3660 per townhouse unit towards the General Amenity Reserve Fund; and\n       ii.   $610 per townhouse unit towards the Affordable Housing Reserve Fund;\n\n\nb)   That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all\n     other charges on title that agrees to the following:\n\n      i.     That the developer agrees to submit and implement, prior to subdivision approval, a formal storm\n             water management plan, approved by the Director of Engineering, and to complete any required\n             improvements and/or upgrades to on site and off-site infrastructure necessary to facilitate proper\n             drainage on the subject property at the developer's expense;\n     ii.     That the developer agrees to install, prior to subdivision approval or building permit issuance,\n             which ever is first, full frontage improvements including, but not limited to: the installation of a\n             sidewalks, boulevard landscaping, and light standards in accordance with Bylaw No.1000 and to\n             the satisfaction of the Director of Engineering;\n     iii.    The developer will be required to submit fire underwriters survey (FUS) calculations prior to the\n             issuance of a Development Permit to develop the property;\n     iv.     That any necessary above or underground infrastructure or servicing upgrades, extensions or other\n             required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the\n             Director of Engineering, and that costs incurred will be the responsibility of the developer;\n     v.      That the applicant will submit a construction parking management plan, to the satisfaction of the\n             Director of Engineering prior to building permit issuance;\n\n\n That the developer submits a fire safety plan prior to the issuance of development permit for the\n construction on the site.\n\n\n This proposal is consistent with the Official Community Plan Mixed Use Employment designation.\n\n\n Notifications and advertisements have been placed as required by the Local Government Act.\n\n\n The Mayor called a first time for presentations.\n\n 1st Resident on Lake End Rd — We are concerned about the destruction of trees and Ed Nixon Trail. There is\n\n                                                                                                       November 2, 2020\n                                                                                                             Pages of 26\n\n\n\nthe potential for environmental impacts to wetlands and Langford Lake. Is there going to be access from\nWest Shore Parkway to Goldstream ??\n\n   Matthew Baldwin, Director or Planning — Riparian areas are protected and will be protected, the City\n   maintains ownership of the SPEA. Townhouses will have access to Goldstream but it will not be a\n   throughfa re.\n\n1s5 Resident on Lakeshore P1— Much of the land in question is considered wetlands overflow. How will that\nlook in the Langford Lake area, it's been flooding for over 2 years, how is this going to be addressed.\n\n   Michelle Mahovlich, Director of Engineering — There were 2 instances where rockslides did damage and\n   caused the flooding, we have done a remediation project and have rennediated the 2 areas.\n\n   Resident — There was a document WPT, Western Painted Turtle management plan done. Langford lake\n   houses this endangered animal. On page 2 of the report, it sets out that where there is a new\n   development adjacent to the water, you must adhere to the RAR and retain a professional. Has the\n   Ministry of Environment been consulted, and a Registered Professional Biologist been retained?\n\n   Matthew Baldwin, Director of Planning - Yes, the area is entirely out of the SPEA, all work is done under\n   RAR.\n\n   Mayor Young — The City has done all proper requirements.\n\n   Resident — I have a hard time believing this will not impact the environment and watershed.\n\n2' Resident on Lakeshore PI — Traffic impacts on Goldstream and Leigh rd. When you add a hotel and a\ntownhouse development to the existing development you have not really done a thorough investigation of\nroads' ability to handle the traffic. Traffic is already insane, it's hard to get around. Seeing a lot of\ndevelopments and questioning if we have the infrastructure.\n\n   Mayor Young — Council took safeguards and closed off Goldstream. This one is the furthest away from\n   Langford lake with access to highway and flyover. We took thousands of cars off of Goldstream. We've\n   done a lot of planning and are all in agreement that this has to be done properly. Priority to improve\n   safety and walkability. Eventually there will be a full loop around the lake.\n\n   Resident —You talked about the ability to walk, there is no sidewalk on Goldstream to Leigh rd. Will there\n   be a sidewalk along Goldstream?\n\n   Mayor Young—Yes, this has been a project concentrating on making it safe to walk around. Some people\n   may have parking displaced. We will see some permanent solutions.\n\n   Michelle Mahovlich, Director of Engineering—There will be a paved multi-use trail by Leigh rd. Early next\n   year there will be parking stalls on the north side of Goldstream Rd.\n\n   Resident — Along the Ed Nixon trail has trees and berms — will there be visual barriers.\n\n                                                                                                      November 2, 2020\n                                                                                                            Page 6 of 26\n\n\n\n   Mayor Young — Landscaping areas are determined on development.\n\nResident on Rodney Rd — Riparian areas go onto Ed Nixon Trail and takes you to West Shore Parkway, will\nthat stay? I agree with previous caller, Goldstream is a nightmare at Leigh road.\n\n   Matthew Baldwin, Director of Planning — Ed Nixon trail forks at the boardwalk to the TCH as the trail\n   enters the property there will be a sidewalk.\n\n   Resident — It is a congested intersection, it's hard to get through now we are going to have that much\n   more traffic. We need to have it remain a quiet space, not have the intrusion of commercial space. We\n   need quiet spaces where we can see nature.\n\n1s5 Resident on Goldstream Ave — I echo the neighbours concerns, there is a lot of traffic and the connection\nto West Shore Parkway is one way. My biggest concern is that its an environmental wetland. The water table\nis close to the surface. The City is not very good at conserving natural amenities, this is the last natural area\naround the lake. The vegetation is being damaged, would like to know where exactly development will be.\nBasically, I want to voice opposition.\n\n   Mayor Young— Close to Amy road, close to the highway. This is more the entryway to Langford. We have\n   improved the area, development paid for that.\n\n3rd Resident on Lakeshore PI — Comment overtop of the other callers; these are valid points. My opposition\nis to the manner in which area is developed. It's hard to believe it's not a riparian area. Greenspace is going\nto disappear, the lake is a beautiful place, We pretty much purchased in this area for the serenity, it's\nunfortunate that parking and thoroughfare issues are creeping in. I voice my position - it's unfortunate that\ngreenspace will be lost.\n\n2nd Resident on Goldstream Ave —Traffic on Goldstream is around 160 vehicles per hour, to add townhouses\nto this will add to the count. Safety - will we be consulted on sidewalks? How will we be notified? How will\ntraffic be diverted?\n\n   Michelle Mahovlich, Director of Engineering—Volume is not expected to impact Goldstream. There is no\n   direct connection between Goldstream and West Shore Parkway.\n\n   Mayor Young — Traffic will not increase a lot, we have made a lot of other changes to reduce traffic.\n\n   Resident — We are not clear if hotel residents will have access to the lake.\n\n   Mayor Young — They can walk to it if they want at the Langford entrance.\n\n3rd Resident on Goldstream Ave — I agree with everything brought forward. I am concerned about speeding,\nwill there be speed bumps.\n\n   Michelle Mahovlich, Director of Engineering — The City policy is no speed bumps, people accelerate off\n   of them and it affects emergency vehicles. We can do routine enforcement.\n\n                                                                                                        November 2, 2020\n                                                                                                              Page 7 of 26\n\n\n\n1s5 Resident on Lakeshore PI — No one mentioned size or scope. Are there any proposed plans?\n\n   Matthew Baldwin, Director of Planning — No.\n\nResident on Gwen —You are clearing the whole west side, why not build there. B. Hutchins advised resident\nwe can only discuss/consider the matter at hand.\n\n4th Resident on Goldstream — With your earlier proposal, what will happen if we all sign that we oppose to\nthis?\n\n   Mayor Young — each development comes forward on its own.\n\n   Resident — Will sidewalks be concrete and not asphalt? Only 30 units need access to Goldstream,\n   neighbours will be supportive. We had assurance no further access would go onto Goldstream, we\n   support traffic dampening, people fly through the area. This is an ecosystem and wetlands. Draw your\n   attention to the study of June 15, 2018 — 3.1 Langford lake, the water quality continues to be a concern.\n   Did the stakeholder sign off? Ministry of Environment? First Nation?\n\n   Matthew Baldwin —the Area has been mapped and registered, the Riparian Area Regulations have been\n   followed. There is no duty to consult, this is fee simple land and is not next to First Nation land.\n\n   Resident —Sometimes we move too fast, all too often we give opinions then after approval is given it all\n   changes.\n\n2nd Resident on Lake End Rd —Thank you for work. SPEA before development, walkway before development.\nThe construction noise around the lake goes from 7am to 7pm, there are extreme amounts of noise. Can\nyou assure that is not the case with this development.\n\n   Mayor Young —We are hopeful this development will pay for the improvements along Goldstream. We\n   know people park along the bike trail and sidewalk.\n\nResident — What is the requirement for 30 townhouses? B. Hutchins advised must focus on the rezoning\nissue.\n\nResident on Leigh PI — What percent of an impact will public input have?\n\n        Mayor — there is no %.\n\n        Resident —Regarding the hotel, everyone can hear everything on the lake, will the pub be right on the\n        water? What about green space? In riparian areas, there is an endangered species zone that may not\n        be within the riparian zone. Are we able to find out what the habitat is?\n\n        Matthew Baldwin, Director of Planning — the habitat is withing the riparian area of the lake.\n\n3rd Resident on Lake End rd — I concur with the neighbours, I've been on the lake for 31 years and I am not\nconvinced the changes aren't coming. Look at Westhills and the Highway. B. Hutchins advised must focus\n\n                                                                                                November 2, 2020\n                                                                                                      Page 8 of 26\n\n\n\non the rezoning issue.\n\nMayor Young called a second time for presentations.\n\nMayor Young called a third and final time for speakers. There being none, he declared the Public Hearing\nfor Bylaw No. 1931 closed at 7:12 p.m.\n\n4.      ADOPTION OF COUNCIL MINUTES\n\n\n        a)   Amended Minutes of the Regular Meeting of Council — February 18, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ec21cda8d7d8c455bca4eded7850b90a6b3866e8aa46ecf6c9200cbd7bb825b8",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 687,
+      "claim_sha256": "1df150fae4da0e24f9e69076a60881a11a51e7f5f2e313b5cfe01a90441aa246",
+      "legacy_text": "That Council approve the amended minutes of the regular meetings of Council held on February 18, 2020.",
+      "source_identity": {
+        "meeting_id": 75,
+        "source_sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+        "source_offset": 20910,
+        "source_order": 1,
+        "key": "0c270a72bb1443060a20201d5da52aeae14b499ce2908be049899164ed549c0d",
+        "source_file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the amended minutes of the regular meetings of Council held on February\n        18, 2020.",
+        "source_block": "MOVED BY:       COUNCILLOR WADE\nSECONDED:       COUNCILLOR STEWART\n\n\n        That Council approve the amended minutes of the regular meetings of Council held on February\n        18, 2020.\n\n                                                                                                     CARRIED.\n\n\n\n        b)   Minutes of the Regular Meeting of Council — October 5, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "832730d9c3873224341b96c0de44bfbad16bab864675ba318fee0499f0af88f5",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 688,
+      "claim_sha256": "b4575bc5d1793856119816fde31f696a9f5913b457b31c61132ba1d3cdc49368",
+      "legacy_text": "That Council approve the minutes of the regular meetings of Council held on October 5, 2020.",
+      "source_identity": {
+        "meeting_id": 75,
+        "source_sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+        "source_offset": 21287,
+        "source_order": 2,
+        "key": "3d08a0eb66603aecdb0eb76720cd63e87a90e20964df2da1d2c2121261f8e6c3",
+        "source_file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the regular meetings of Council held on October 5, 2020.",
+        "source_block": "MOVED BY:       COUNCILLOR WADE\nSECONDED:       COUNCILLOR SEATON\n\n\n        That Council approve the minutes of the regular meetings of Council held on October 5, 2020.\n\n                                                                                                     CARRIED.\n\n5.      OTHER BOARD AND COMMISSION MINUTES\n\n        a)   Minutes of the West Shore Parks and Recreation Board of Directors Meeting—\n             September 10, 2020",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "cc6e44e72c5ec24fad7d7ec42c22657fe99934e2bce50e9912b0d6ec3d274aef",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 689,
+      "claim_sha256": "80b85f8cd5b499a8c1182afa02702cea8c3a5faea3d136234bd8cea83e892819",
+      "legacy_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors Meeting held on September 10, 2020.",
+      "source_identity": {
+        "meeting_id": 75,
+        "source_sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+        "source_offset": 21734,
+        "source_order": 3,
+        "key": "fdb61b76da10950111190ba8e6e91596b3d41ebf7c6333feaa9a75acf7038979",
+        "source_file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n        Meeting held on September 10, 2020.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\nSECONDED:        COUNCILLOR SZPAK\n\n\n        That Council receive the minutes of the West Shore Parks and Recreation Board of Directors\n        Meeting held on September 10, 2020.\n\n                                                                                                     CARRIED.\n\n\n6.      COMMITTEE RESOLUTIONS\n\n\n        a)   Transportation and Public Works Committee — October 13, 2020\n             1. Minutes of the Transportation and Public Works Committee\n                Meeting — October 13, 2020\n\n                                                                                                    November 2, 2020\n                                                                                                          Page 9 of 26",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "8382944387a677330b78c2d63b1f373cf80986460e7465da03a6a3a10f7403f8",
+      "pages": [
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 690,
+      "claim_sha256": "5c95fa52d3c3b82e7ddae034d0141b8870eefba7c77ef0a051c75bc03fa364e2",
+      "legacy_text": "That Council receive the minutes of the Transportation and Public Works Committee held on October 13, 2020.",
+      "source_identity": {
+        "meeting_id": 75,
+        "source_sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+        "source_offset": 22521,
+        "source_order": 4,
+        "key": "9fdecb77541f9c2812c777e3d8c981c9139747ba5f266ec48d63d27324282d2a",
+        "source_file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receive the minutes of the Transportation and Public Works Committee held on\n         October 13, 2020.",
+        "source_block": "MOVED BY:          COUNCILLOR WADE\nSECONDED:          COUNCILLOR SZPAK\n\n\n         That Council receive the minutes of the Transportation and Public Works Committee held on\n         October 13, 2020.\n\n                                                                                                         CARRIED.\n\n\n              2.   Humpback Road Goldstream Meadows Access/Egress Staff Update",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f32c6706d9b08d8dae75a31e31cfcf5472d21e875e3f7d3dd71f204b98e34b37",
+      "pages": [
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+  "second_independent_original_image_review_sha256": "75eda4a6e5b2a586f67692c84d793832f787bdb71b775b1a87a71aa980c148c5"
+}

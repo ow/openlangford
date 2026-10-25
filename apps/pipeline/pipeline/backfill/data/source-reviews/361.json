@@ -1,0 +1,705 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 361,
+    "title": "Regular Council",
+    "meeting_date": "2017-05-15",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+      "sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+  "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "f41248178417abf9bc43f981e26619aac7159c3b57fd8b1c8e03cb1703a5e9e6",
+  "corrected_text_sha256": "f41248178417abf9bc43f981e26619aac7159c3b57fd8b1c8e03cb1703a5e9e6",
+  "parsed_blocks_sha256": "c6da778602f07e2893ec7736ff92f03abe6a6e3592d5dddd2e41ec83c1df6486",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "edb302d408d66feb8de7b0e6652086e79735b4501c744d7aba85a44886eac802",
+      "render_sha256": "2b87fe88459a649803154e4b6e86ec2d35be6c3742a047792f6f0da9f7d2bf61"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "1cdf4b920063cc6bd8a5f9f3049fe2c2da0647cbfb7855cae4fdce06e2c6cf63",
+      "render_sha256": "3b4fc5b55418bf34163c0f30f795180aa3c0df3b24e704ddbc016d6b8e8e38cd"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "b1c864308fbb85449d4bf23edd4293a2ede4137fb0dfc2f5e71fa3b5970db1f1",
+      "render_sha256": "d1742a81585c5b63632cad726432d25924c8716b917da28aee8d4851f5570a57"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "a2743dd8f09db80ac0a5a5ced0b6ba22ccecbd6bc36282d69579e1a92e887f5b",
+      "render_sha256": "c7b03c94a9b908cfa72d1b51f449e77a3db601027fc387cf95009e859d0d3ba5"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "02318e5765b46b09692a3cdb00ff62ba125a38c7d6bf5c7af5f41e2e1e581baa",
+      "render_sha256": "7c71ef60db9965f07ab5be48c94599dd17be4ba9796b4bd3a1dec22f7191132e"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "1cde000c1110c8583478624995186314c1f47ab8bd48855c67a663c8a267ab3d",
+      "render_sha256": "c942d0328230a12fa207faaf95cb314304813145598a14a288bdebcc51cbcf3f"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "fa874521802d5ebf9722fce3ebea2de79a7cb25ef6c05dd023a9382f723d3548",
+      "render_sha256": "9e911cbe1a7084542ddcd1384c4f80e0a46e96409d4c4f24c92166c0512fcc8d"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "64469a47b00f21d6458e48c055e43b139d7d8ca266784ab8c64d75006bdf3ad8",
+      "render_sha256": "0cc4c7d9846797b3fca1461f3ff3d9105a5d0d105c67b168a608deaa8a15db5f"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "ef340c28935571f28180902916addb74f3ab097d1ec11b1740431fe5a3af7d68",
+      "render_sha256": "4ff8351a47ef271e4e9ee082e479c83b0270068eab71840b44976467769297e5"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "bcda30b330946cb1c1b0bccb55301cf1fbd0a3c6516cb052572c4070bb88471a",
+      "render_sha256": "749fa0087b4d5898f862a52eb6603fae2de054061119fc20b0f9d89f290a8a1f"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "18009a87e251a74800dc9a840fafaa108705017277230536a3242413e6891496",
+      "render_sha256": "425253d6dff520d1388ebc5729db242d1588ec5ada80d3576ebfd8462d5388e4"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "44d8a80134753a067662c1da12ffb7800a95241de634d9f5dfaeb6ccd0e3927f",
+      "render_sha256": "7176adc9896f13af83bc4a412438f2f54601399fc5790540d292fbe900cadfd5"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "baff74ba05caf49b3f890cc6fc24a4237697098668275a23a8d49efb37ce71ba",
+      "render_sha256": "2b32028995c8b22da14ded2bc06cbd7817494913460f6aec98bf30fa9d3e5b70"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "8a22a385a100cb83ffc6ca1497d467e99fd9dde8b927d19d0321fcf41c3c2e02",
+      "render_sha256": "35204c5f686bb725a3b69d2342ee0f1dea079ab2fd1b83df4511cbb717fce473"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "076cb29eaa93cbf146cd4f5bf5beca6c8783e7c5acaa99891477814f11dbf846",
+      "render_sha256": "6460a7df18dea121ddbd1fda0bba7fcac85fe8677d2d36db5108a351473e33a4"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "66cfc9340dbd929a94e63321ae76a126acb6d818b8f8b2db464aa80be8e71d7c",
+      "render_sha256": "7260d8f221383db063b4b0a2a412c73d82de076904786eb0766b7712b3c44603"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "bde9f59084ae59674776ff004d5bbf326a8c42b8893af884bba054af855c419f",
+      "render_sha256": "00e4cb4585ec6df3b11f42b72e18a26c7fa903d7bcf3baa5032c5fa49e8bb425"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "124effb2a64e183d9a6994e114bcc78cd6a3383e25b491ba25a805d6ed8f2246",
+      "render_sha256": "b4b7653a1a8f52091e9544d73fe18943475d8a6f6e250cec0cd6c97aa19bdeee"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "d6c354bcf55255f8da64e20cbea1a1b866711c2e9bf6d50a4173b043d1a1556e",
+      "raw_block_sha256": "933cac9998e79732dbc464df2a18d92ee46cedfd8ab113904bcf0fce572d2e74",
+      "operative_body": "That Council: 1. Give Bylaw 1692 First Reading as presented to amend the zoning designation of the property located at 3130 Jacklin Road from R2 (One and Two family dwelling) to RM7A (Medium Density Apartment A) subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per unit, which may be reduced by 75% if rental tenure is secured for a term of no less than 10 years, prior to subdivision approval or building permit issuance whichever is first: i. $640.50 towards the General Amenity Reserve Fund; ii. $152.50 towards the Affordable Housing Reserve Fund; b) That the applicant provides, prior to Public Hearing of the bylaw, the following: i. A Traffic Study to the satisfaction of the Director of Engineering; c) That the applicant undertakes public consultation prior to Public Hearing; d) That the applicant registers a road dedication plan, to the satisfaction of the Director of Engineering, prior to Bylaw Adoption. e) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That prior to building permit issuance the applicant agrees to implement the recommendations within Geotechnical Report to the satisfaction of the Director of Engineering; ii. That prior to building permit issuance the applicant will implement the recommendations within the Traffic Study to the satisfaction of the Director of Engineering; iii. That prior to building permit issuance, the applicant provides full frontage improvements to the standards of the Subdivision and Development Servicing Bylaw No. 1000, to the satisfaction of the Director of Engineering and the Ministry of Transportation; iv. That any necessary underground or above ground servicing upgrades, extensions or other required servicing requirements be fulfilled at the applicant's expense; v. That prior to the issuance of a building permit, the applicant provides a stormwater management plan to the satisfaction of the Director of Engineering and that the applicant will incur all costs relating to infrastructure upgrades, including off-site works, required to manage the subject property's drainage concern, as a condition for rezoning the land; and vi. That prior to the issuance of a building permit the applicant agrees to secure tenure of the apartment units to rental only for a period of no less than 10 years. 2. Authorize the Director of Planning to issue the following variances through a Development Variance Permit application: a) a variance to Section 4.01.01 to reduce the amount of off street parking required for an apartment building outside the City Centre to a ratio of 1 parking stall per unit; and b) a variance to Section 6.36A.03(6) to reduce the amount of required underground parking in order to obtain an FAR of 1.15. c) a variance to Section 6.36.06(1) to reduce the required building setback from the front lot line from the required 7.5 m to 6 m. 3. Direct staff to prepare the necessary bylaw to designate the property at 3130 Jacklin Rd as a Revitalization Area and to provide a 5-year tax holiday for improvements only, subject to a covenant being registered on title that the proposed residential units will be rental housing rental units for at least 5 years.",
+      "operative_body_sha256": "1167686f06821d2cc0399bc980219706de620cd3645a7831d9b782347961d032",
+      "result": "CARRIED",
+      "pages": [
+        10,
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "bcda30b330946cb1c1b0bccb55301cf1fbd0a3c6516cb052572c4070bb88471a",
+          "render_sha256": "749fa0087b4d5898f862a52eb6603fae2de054061119fc20b0f9d89f290a8a1f"
+        },
+        {
+          "page": 11,
+          "native_text_sha256": "18009a87e251a74800dc9a840fafaa108705017277230536a3242413e6891496",
+          "render_sha256": "425253d6dff520d1388ebc5729db242d1588ec5ada80d3576ebfd8462d5388e4"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council: 1. Give Bylaw 1692 First Reading as presented to amend the zoning designation of the property located at 3130 Jacklin Road from R2 (One and Two family dwelling) to RM7A (Medium Density Apartment A) subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per unit, which may be reduced by 75% if rental tenure is secured for a term of no less than 10 years, prior to subdivision approval or building permit issuance whichever is first: i. $640.50 towards the General Amenity Reserve Fund; ii. $152.50 towards the Affordable Housing Reserve Fund; b) That the applicant provides, prior to Public Hearing of the bylaw, the following: i. A Traffic Study to the satisfaction of the Director of Engineering; c) That the applicant undertakes public consultation prior to Public Hearing; d) That the applicant registers a road dedication plan, to the satisfaction of the Director of Engineering, prior to Bylaw Adoption. e) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: May 15TH, 2017 Page 11 of 18 I. That prior to building permit issuance the applicant agrees to implement the recommendations within Geotechnical Report to the satisfaction of the Director of Engineering; ii. That prior to building permit issuance the applicant will implement the recommendations within the Traffic Study to the satisfaction of the Director of Engineering; iii. That prior to building permit issuance, the applicant provides full frontage improvements to the standards of the Subdivision and Development Servicing Bylaw No. 1000, to the satisfaction of the Director of Engineering and the Ministry of Transportation; iv. That any necessary underground or above ground servicing upgrades, extensions or other required servicing requirements be fulfilled at the applicant's expense; v. That prior to the issuance of a building permit, the applicant provides a stormwater management plan to the satisfaction of the Director of Engineering and that the applicant will incur all costs relating to infrastructure upgrades, including off-site works, required to manage the subject property's drainage concern, as a condition for rezoning the land; and vi. That prior to the issuance of a building permit the applicant agrees to secure tenure of the apartment units to rental only for a period of no less than 10 years. 2. Authorize the Director of Planning to issue the following variances through a Development Variance Permit application: a) a variance to Section 4.01.01 to reduce the amount of off street parking required for an apartment building outside the City Centre to a ratio of 1 parking stall per unit; and b) a variance to Section 6.36A.03(6) to reduce the amount of required underground parking in order to obtain an FAR of 1.15. c) a variance to Section 6.36.06(1) to reduce the required building setback from the front lot line from the required 7.5 m to 6 m. 3. Direct staff to prepare the necessary bylaw to designate the property at 3130 Jacklin Rd as a Revitalization Area and to provide a 5-year tax holiday for improvements only, subject to a covenant being registered on title that the proposed residential units will be rental housing rental units for at least 5 years.",
+          "printed": "That Council: 1. Give Bylaw 1692 First Reading as presented to amend the zoning designation of the property located at 3130 Jacklin Road from R2 (One and Two family dwelling) to RM7A (Medium Density Apartment A) subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per unit, which may be reduced by 75% if rental tenure is secured for a term of no less than 10 years, prior to subdivision approval or building permit issuance whichever is first: i. $640.50 towards the General Amenity Reserve Fund; ii. $152.50 towards the Affordable Housing Reserve Fund; b) That the applicant provides, prior to Public Hearing of the bylaw, the following: i. A Traffic Study to the satisfaction of the Director of Engineering; c) That the applicant undertakes public consultation prior to Public Hearing; d) That the applicant registers a road dedication plan, to the satisfaction of the Director of Engineering, prior to Bylaw Adoption. e) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: I. That prior to building permit issuance the applicant agrees to implement the recommendations within Geotechnical Report to the satisfaction of the Director of Engineering; ii. That prior to building permit issuance the applicant will implement the recommendations within the Traffic Study to the satisfaction of the Director of Engineering; iii. That prior to building permit issuance, the applicant provides full frontage improvements to the standards of the Subdivision and Development Servicing Bylaw No. 1000, to the satisfaction of the Director of Engineering and the Ministry of Transportation; iv. That any necessary underground or above ground servicing upgrades, extensions or other required servicing requirements be fulfilled at the applicant's expense; v. That prior to the issuance of a building permit, the applicant provides a stormwater management plan to the satisfaction of the Director of Engineering and that the applicant will incur all costs relating to infrastructure upgrades, including off-site works, required to manage the subject property's drainage concern, as a condition for rezoning the land; and vi. That prior to the issuance of a building permit the applicant agrees to secure tenure of the apartment units to rental only for a period of no less than 10 years. 2. Authorize the Director of Planning to issue the following variances through a Development Variance Permit application: a) a variance to Section 4.01.01 to reduce the amount of off street parking required for an apartment building outside the City Centre to a ratio of 1 parking stall per unit; and b) a variance to Section 6.36A.03(6) to reduce the amount of required underground parking in order to obtain an FAR of 1.15. c) a variance to Section 6.36.06(1) to reduce the required building setback from the front lot line from the required 7.5 m to 6 m. 3. Direct staff to prepare the necessary bylaw to designate the property at 3130 Jacklin Rd as a Revitalization Area and to provide a 5-year tax holiday for improvements only, subject to a covenant being registered on title that the proposed residential units will be rental housing rental units for at least 5 years.",
+          "reason": "Remove running date/page header only; full raw block retained."
+        },
+        {
+          "native": "I. That prior to building permit issuance",
+          "printed": "i. That prior to building permit issuance",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "7107660fd5233b61fd55b96e17eec040af1697365c7b6a99f944bf861871f2c3",
+      "raw_block_sha256": "d26189ea219bfe9840ea082b772678952f893d0d84f9ae43874441dd08853d8e",
+      "operative_body": "That Council approve the City of Langford disbursements from April, 2017 as outlined in the Accounts Payable Report dated May, 2017.",
+      "operative_body_sha256": "3be5c4aa859ff7b8089555c47b1c8549ee7b640a9afb5c32ed71c38542008183",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "18009a87e251a74800dc9a840fafaa108705017277230536a3242413e6891496",
+          "render_sha256": "425253d6dff520d1388ebc5729db242d1588ec5ada80d3576ebfd8462d5388e4"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7019a314a3cd2c70893125c79124afb9b6b6b7520084feac81f4389695ca8708",
+      "raw_block_sha256": "00d217f2ec3d6b9a9296d44e55be60679ecfa9cbda27c36941b7ab71bfcb26b1",
+      "operative_body": "That Council update POL-0031-FIN to include DIVISION FIVE —CREDIT CARD PURCHASES and direct staff to update the current credit card holders with the attached agreement.",
+      "operative_body_sha256": "fd7c84d607841e87fbc9c5e66534028cda2a6fb61c3c5e6421d6e6707eb17bf2",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "44d8a80134753a067662c1da12ffb7800a95241de634d9f5dfaeb6ccd0e3927f",
+          "render_sha256": "7176adc9896f13af83bc4a412438f2f54601399fc5790540d292fbe900cadfd5"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f4ddb5a593d986ff375b0129f0ffd4c77832f33836bf6a99571dc5420b849c25",
+      "raw_block_sha256": "9aa355917c85a29be5d9887e01d5ed87a72b14829bebfba8bf3459c52e8d7b73",
+      "operative_body": "That Council direct staff to install four Student Pick up and Drop off signs on Matson Road in the perpendicular parking area adjacent to Ruth King Elementary School at a cost of $400 paid for from the Sign Budget.",
+      "operative_body_sha256": "ed10f00af7bddd37343ca42a50c6dd4917db292ea1ebf5b4eedff76d0d4d73ed",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "44d8a80134753a067662c1da12ffb7800a95241de634d9f5dfaeb6ccd0e3927f",
+          "render_sha256": "7176adc9896f13af83bc4a412438f2f54601399fc5790540d292fbe900cadfd5"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5c29dfa72b6dc32f14ac9d13da5a8ec1e551d149ca41319c9032dd4e1ec934e6",
+      "raw_block_sha256": "055635eb22d7f8d9a42b7b3bd4814f614dc888f9cf149440bd8226ebabc46b4c",
+      "operative_body": "That Council direct staff to install a porkchop island and signage to restrict the left turn movements out of 2430 Millstream Road to McCallum Road and fund the improvements from the Small Road Improvements budget.",
+      "operative_body_sha256": "0e0947a88a499d7a00bb5bc8633ee0be0a63246c0d145d020277a715aec98823",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "44d8a80134753a067662c1da12ffb7800a95241de634d9f5dfaeb6ccd0e3927f",
+          "render_sha256": "7176adc9896f13af83bc4a412438f2f54601399fc5790540d292fbe900cadfd5"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e4a84fed9f845710f804474e5724a840a775aa0d91a8fe9b1cb0c7e581f88671",
+      "raw_block_sha256": "6ebc31e5a4377696b0f40edb7f4fe04cb6819340e92b26eb9c765bf22c277d6c",
+      "operative_body": "That Council direct Engineering Department staff to retain the current parking configuration; the Bylaw Enforcement Department to maintain the current enforcement practices; and to not install any further parking signs and revisit in September.",
+      "operative_body_sha256": "84f0bcc76694c832100bcd79d334393318d0b169a5610a21bf7ab8386c2a1a35",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "44d8a80134753a067662c1da12ffb7800a95241de634d9f5dfaeb6ccd0e3927f",
+          "render_sha256": "7176adc9896f13af83bc4a412438f2f54601399fc5790540d292fbe900cadfd5"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c0c9f143d77ebedbd958f49d12b91ce8a506e82b47e3e55c9023a6b24506d12b",
+      "raw_block_sha256": "a32898777d32b90119fa83059b7ab947cf237e070e968f43cfae7d41c8c378ab",
+      "operative_body": "That Council approve the lane closures (as shown on the attached map) on Goldstream Avenue on Sunday August 20th, 2017, between 7:00 a.m. and 4:00 p.m. for the 7th Annual Langford Show and Shine.",
+      "operative_body_sha256": "cb984c21b3894bfcb425a46f0385a0c2ec890951844646d665ce5fefd4fff7f7",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baff74ba05caf49b3f890cc6fc24a4237697098668275a23a8d49efb37ce71ba",
+          "render_sha256": "2b32028995c8b22da14ded2bc06cbd7817494913460f6aec98bf30fa9d3e5b70"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "71dcd1c44037ca4e62b215236d98c788bbef34bc685a2539b78db9f9f167aa9b",
+      "raw_block_sha256": "0d78f5103f2877fc3b5cd3500216c97ff03a0f51d11bd528d7ec45be34e10d00",
+      "operative_body": "That Council donate the Trolley for the 2017 Canadian Lawn Bowling Championship for $1100 funded from the Trolley budget.",
+      "operative_body_sha256": "08c9ec4dc3f5712fb226d0be1f22239b81dd179cc60632199ac5286f9981e75c",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baff74ba05caf49b3f890cc6fc24a4237697098668275a23a8d49efb37ce71ba",
+          "render_sha256": "2b32028995c8b22da14ded2bc06cbd7817494913460f6aec98bf30fa9d3e5b70"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a8a688fe0701b06a9d6263f20db1950da270974f8dbf0481c32ebefe1084a573",
+      "raw_block_sha256": "9d63e8a67405474c0c1ead3d83e841c425ed3e3aff9ef06137b4b0356e941d61",
+      "operative_body": "That Council give first, second and third reading to Bylaw No. 1693.",
+      "operative_body_sha256": "41711f94a059089c3d4bbd65e28a0040ae2affab2e976bc875de53bd8136a2cf",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baff74ba05caf49b3f890cc6fc24a4237697098668275a23a8d49efb37ce71ba",
+          "render_sha256": "2b32028995c8b22da14ded2bc06cbd7817494913460f6aec98bf30fa9d3e5b70"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "561e3c4f7355d47791d4d54aa69cf2de5ec433481166918fdda4f628ba40ec36",
+      "raw_block_sha256": "9acba70fa63b1b2a2a72166525632fba69d280e58120fa7969531cf893711b94",
+      "operative_body": "That Council give first, second and third reading to Bylaws No. 1706, 1707 and 1708.",
+      "operative_body_sha256": "a1f1f1f741c429e48dc48b6683d013e0fa76ed6b90698d9116021abb50e5949a",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "baff74ba05caf49b3f890cc6fc24a4237697098668275a23a8d49efb37ce71ba",
+          "render_sha256": "2b32028995c8b22da14ded2bc06cbd7817494913460f6aec98bf30fa9d3e5b70"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3e39173c38c41d9700409172a61b02f294f839e39a2916714919915d3703172c",
+      "raw_block_sha256": "030bf094cd3360070336d2294d68e8022c0a380757702630b3ae58f5b330fbfb",
+      "operative_body": "That Council Direct staff to award the topographical survey and detailed engineering design of the Salem Road sewer extension required for the West Shore Parkway project to Westbrook Consulting and fund this work from the West Shore Parkway New Building Canada Infrastructure Grant.",
+      "operative_body_sha256": "ac496f0d6f0979c2e80923531b4492858e1d15d4a72ca55983d9367034597769",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "8a22a385a100cb83ffc6ca1497d467e99fd9dde8b927d19d0321fcf41c3c2e02",
+          "render_sha256": "35204c5f686bb725a3b69d2342ee0f1dea079ab2fd1b83df4511cbb717fce473"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "4e7f0d1494b16c82ee33ab6c6d499e79746d08f1c407ed3bb644db5fd33076f7",
+      "raw_block_sha256": "af6fc07b849b8dbb0a4c5ad15209447e9d97697b883631bfa33f0b1aaf593ee9",
+      "operative_body": "That Council approve the Funding for the Arts Agreement as presented and authorize the Mayor and Corporate Officer to sign.",
+      "operative_body_sha256": "3d94c3a3b00681d886af37d310e36b52f98ccd51f208dcd68d57d36d62c4dd0a",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "8a22a385a100cb83ffc6ca1497d467e99fd9dde8b927d19d0321fcf41c3c2e02",
+          "render_sha256": "35204c5f686bb725a3b69d2342ee0f1dea079ab2fd1b83df4511cbb717fce473"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "28e6461973800e5567354ced9a4c00a3684d35f13ae8d07fa9e3d9a888e1e59c",
+      "raw_block_sha256": "149644f33ebdecdea7027a2deaa703e360272e678a0afc9eeac8fafc7a014ace",
+      "operative_body": "That Council receive the April 20th, 2017 letter from the Capital Regional District regarding Community and Energy Emissions Inventory.",
+      "operative_body_sha256": "e554548e348b7d67a230696963f90b97d4f34eb5e048fa569a5cb093327e5589",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "8a22a385a100cb83ffc6ca1497d467e99fd9dde8b927d19d0321fcf41c3c2e02",
+          "render_sha256": "35204c5f686bb725a3b69d2342ee0f1dea079ab2fd1b83df4511cbb717fce473"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "673f51d81a461841f8d4739e4695472cdd4d9f82543256864e1c5f81a7ea90ae",
+      "raw_block_sha256": "023f20e6a114cc20a68545b92113bd2e07edb9d8e107a81befedec58051031ab",
+      "operative_body": "That Council adopt Bylaw No. 1674.",
+      "operative_body_sha256": "8783648f0fc056901459b3bcde51a259fd9bd1c2bc198d926ede0d0069d4c46d",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "8a22a385a100cb83ffc6ca1497d467e99fd9dde8b927d19d0321fcf41c3c2e02",
+          "render_sha256": "35204c5f686bb725a3b69d2342ee0f1dea079ab2fd1b83df4511cbb717fce473"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a10bc7f65811156ac7604316abc915858ce7af6fd6fcceb26aac06e297a64cdc",
+      "raw_block_sha256": "a81ce3ae05c0d879760ec03840c39352fe993f1e2ae8a566d147c00bc903acbc",
+      "operative_body": "That Council adopt Bylaw No. 1675.",
+      "operative_body_sha256": "346e8cead4f677a39d3c6fc5372ec05f439187bacad415cf9676f884d8477606",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "076cb29eaa93cbf146cd4f5bf5beca6c8783e7c5acaa99891477814f11dbf846",
+          "render_sha256": "6460a7df18dea121ddbd1fda0bba7fcac85fe8677d2d36db5108a351473e33a4"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "772ee2258a8cd4c416525011d13b0b546f9bdb925d9c5884df137cea257cd890",
+      "raw_block_sha256": "72a9b4bad7c9220d89e86e43d260510bbef1cba70edac357cf8060584fd1cbf0",
+      "operative_body": "That Council give Bylaw No. 1681 Second and Third Reading.",
+      "operative_body_sha256": "365c72991c6d14a1f0473e4950ca6b96960ba541fe5b894cca267c6fcaaa410a",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "076cb29eaa93cbf146cd4f5bf5beca6c8783e7c5acaa99891477814f11dbf846",
+          "render_sha256": "6460a7df18dea121ddbd1fda0bba7fcac85fe8677d2d36db5108a351473e33a4"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d03c8a07da3484e80df766a8c23985898cc73947402a7bb5d476b0be14a20783",
+      "raw_block_sha256": "48540f85f860c8abd878bf66a8c458fc0777a92d3ca6f0702da64d989a6d19f2",
+      "operative_body": "That Council give Bylaw No. 1684 Second and Third Reading.",
+      "operative_body_sha256": "b41c058e741fd88af771436b2d290416e421244282fee293e3b4217f413ea493",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "076cb29eaa93cbf146cd4f5bf5beca6c8783e7c5acaa99891477814f11dbf846",
+          "render_sha256": "6460a7df18dea121ddbd1fda0bba7fcac85fe8677d2d36db5108a351473e33a4"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e63963cfec20da39ec7cb5d2de344d40d9a07f88fea45ce3dcee8a634c7a63b9",
+      "raw_block_sha256": "b67b1225e6686c2ca172c5a0441686b134ceea2893a6829a3192f6a56a8a3b5a",
+      "operative_body": "That Council give Bylaw No. 1691 Second and Third Reading.",
+      "operative_body_sha256": "fe21d570e22a5b65691229a8c2a40d8055c7ab100761a6996008e4259ea4b79f",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "076cb29eaa93cbf146cd4f5bf5beca6c8783e7c5acaa99891477814f11dbf846",
+          "render_sha256": "6460a7df18dea121ddbd1fda0bba7fcac85fe8677d2d36db5108a351473e33a4"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "cdb9a080a09b5b26d5ef0f8c29027a3fddef5be9260dffb2d7ed3a2fa7efb518",
+      "raw_block_sha256": "a45618d6161bb6b26c400f4138981fd70c459275db8be88a1cf63c2c09e5b859",
+      "operative_body": "That Council give Bylaw No. 1692 First Reading.",
+      "operative_body_sha256": "72890db1a23352060ad499c2559f9909c6b5972589cce182af319a1594776413",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "66cfc9340dbd929a94e63321ae76a126acb6d818b8f8b2db464aa80be8e71d7c",
+          "render_sha256": "7260d8f221383db063b4b0a2a412c73d82de076904786eb0766b7712b3c44603"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e9585a7c17d080755d48240ba2c1a50bc9f6b5b35f3131d3479eacd296e1a23f",
+      "raw_block_sha256": "8d20fb192ac8e33e29de0ea7420342c3a2380ef13deacb9a180d1df330d53a32",
+      "operative_body": "That Council give Bylaw No. 1693 First, Second and Third Reading.",
+      "operative_body_sha256": "6627693d9c943234f31c6688cfd29f4f09f426b083e7be85900a83d1c72ec0b6",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "66cfc9340dbd929a94e63321ae76a126acb6d818b8f8b2db464aa80be8e71d7c",
+          "render_sha256": "7260d8f221383db063b4b0a2a412c73d82de076904786eb0766b7712b3c44603"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f8bf25252f4ecdc5137ac0fd9f555788d3b02c3e419f3b9cc4c41cb10695ffeb",
+      "raw_block_sha256": "7c3e54a7bc48bb6707cc9af73e364082ab186c35efef02c64dc6f5bcda6eed16",
+      "operative_body": "That Council give Bylaw No. 1694 First Reading.",
+      "operative_body_sha256": "682c5fd5f3829b0c67ad32504b6efc1cde56ac6dd576ffd69d611bb44faaac1f",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "66cfc9340dbd929a94e63321ae76a126acb6d818b8f8b2db464aa80be8e71d7c",
+          "render_sha256": "7260d8f221383db063b4b0a2a412c73d82de076904786eb0766b7712b3c44603"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "61ee164b0cd121adc4ae62b979c0e9c91309bac6c07bc45a22731f625eaa0de0",
+      "raw_block_sha256": "71ad77f9aa4011010b547f83c3e3a663bbe7b995327b94a314c880e92273884c",
+      "operative_body": "That Council give Bylaw No. 1702 First Reading.",
+      "operative_body_sha256": "0c88e0c5de65705533dd72686244a39a64c910045d294fed948cfd8effd833c1",
+      "result": "CARRIED",
+      "pages": [
+        16
+      ],
+      "page_evidence": [
+        {
+          "page": 16,
+          "native_text_sha256": "66cfc9340dbd929a94e63321ae76a126acb6d818b8f8b2db464aa80be8e71d7c",
+          "render_sha256": "7260d8f221383db063b4b0a2a412c73d82de076904786eb0766b7712b3c44603"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "3a92a052b9411c046a3e64df5ac6ea3cb525f296bcaafc6a2a9d4b8b5f68fb1d",
+      "raw_block_sha256": "aa662f08e98474e6646eaf4f042c5b885d995f9d3c0a1a87073b7f31019ddfba",
+      "operative_body": "That Council give Bylaw No. 1703 First Reading.",
+      "operative_body_sha256": "79727ca281a25a16fd95f76d96d0344be5e6db130bb6ae9c0a4a66c0c69fa68d",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "bde9f59084ae59674776ff004d5bbf326a8c42b8893af884bba054af855c419f",
+          "render_sha256": "00e4cb4585ec6df3b11f42b72e18a26c7fa903d7bcf3baa5032c5fa49e8bb425"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b379975109e7decbad59e3725b6ced5591abea776ab207fd68876690185ea06e",
+      "raw_block_sha256": "121144411795a36d5ce538df2231c974bb3a3bc1c457516122457c3a1565121d",
+      "operative_body": "That Council give Bylaw No. 1704 First, Second and Third Reading.",
+      "operative_body_sha256": "ec15ff8e1891f909247eb00a376f6431ad4f25bb15f173d4d03a7966a6c19dda",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "bde9f59084ae59674776ff004d5bbf326a8c42b8893af884bba054af855c419f",
+          "render_sha256": "00e4cb4585ec6df3b11f42b72e18a26c7fa903d7bcf3baa5032c5fa49e8bb425"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "67e01f941df0ce0573abdc363d388a2bc14408aebab3577ef6f98d03e50ea46b",
+      "raw_block_sha256": "a0e1c3f50b480461afb2490266f0166986f9e6e7e26d807715f0ce86b6ec16c8",
+      "operative_body": "That Council give Bylaw No. 1706 First, Second and Third Reading.",
+      "operative_body_sha256": "c59d3ed3c81117d267e50db67332e7b178bdf98418f9c526f23cb1566e42f3f9",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "bde9f59084ae59674776ff004d5bbf326a8c42b8893af884bba054af855c419f",
+          "render_sha256": "00e4cb4585ec6df3b11f42b72e18a26c7fa903d7bcf3baa5032c5fa49e8bb425"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "02a2f51db4e65902e7168ef34363e890d5f7b9ebd37f111c0f8f489235938905",
+      "raw_block_sha256": "c9b2666095cb3f60783c4632e722d05e98bcea4a1ece66c31cd5bd3fe37e3c7d",
+      "operative_body": "That Council give Bylaw No. 1707 First, Second and Third Reading.",
+      "operative_body_sha256": "9436ee6e3a05a25ce5a75f557a3c94203b2ae39490b8a4c10a2c8d6aa5649ad0",
+      "result": "CARRIED",
+      "pages": [
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "bde9f59084ae59674776ff004d5bbf326a8c42b8893af884bba054af855c419f",
+          "render_sha256": "00e4cb4585ec6df3b11f42b72e18a26c7fa903d7bcf3baa5032c5fa49e8bb425"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c3503efaea93e16496c4da343ed73c301bc900e5ab6d21b21bb28d11d08c60f0",
+      "raw_block_sha256": "720fcc43eb6be6294782b4f46684e83d13cb2cb46a028daa7a64b9bef36320c6",
+      "operative_body": "That Council give Bylaw No. 1708 First, Second and Third Reading.",
+      "operative_body_sha256": "b1d4aa943f78da24f693a2efbc1272fa21eae806db2511993d98d070f4676f35",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "124effb2a64e183d9a6994e114bcc78cd6a3383e25b491ba25a805d6ed8f2246",
+          "render_sha256": "b4b7653a1a8f52091e9544d73fe18943475d8a6f6e250cec0cd6c97aa19bdeee"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "760574ced7884bdd3bc7d86332a3c0d45509d98f6265415d00d3822de4549dc8",
+      "raw_block_sha256": "09e4180e309a2c2924ecc18b8c1d15cf4c8d39a2f784f4ccae9fab2862828895",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding personal information about an identifiable individual and land acquisition under Section 90(1) (a) and (e) of the Community Charter. b) That Council continues the meeting in closed session.",
+      "operative_body_sha256": "00410278edbe47e2a4f65e1c073e661206686f9eca8d40b16af81caac2c5cc35",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "124effb2a64e183d9a6994e114bcc78cd6a3383e25b491ba25a805d6ed8f2246",
+          "render_sha256": "b4b7653a1a8f52091e9544d73fe18943475d8a6f6e250cec0cd6c97aa19bdeee"
+        }
+      ],
+      "independent_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "edb302d408d66feb8de7b0e6652086e79735b4501c744d7aba85a44886eac802",
+  "independent_original_image_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+  "second_independent_original_image_review_sha256": "5c15301432efaee94c3dee2f16891dbdc585b0f3911100237e046daf90ee35f2"
+}

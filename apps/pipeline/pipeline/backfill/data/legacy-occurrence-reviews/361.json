@@ -1,0 +1,272 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 361,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+  "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+  "source_date": "2017-05-15",
+  "source_text_sha256": "ead518cea91f1b30dddbcc495df088689c15b4f9d8259ad8fc682863580bfc27",
+  "formal_inventory_sha256": "455012ab30fe6b1e2e051e756eb44bd6920e738ce91453354022f29a35c73414",
+  "claim_inventory_sha256": "33b7220d3f176366351ef4ee62fbebd2a03de83dfd11d06e431115d5421bde9d",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "edb302d408d66feb8de7b0e6652086e79735b4501c744d7aba85a44886eac802"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "1cdf4b920063cc6bd8a5f9f3049fe2c2da0647cbfb7855cae4fdce06e2c6cf63"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "b1c864308fbb85449d4bf23edd4293a2ede4137fb0dfc2f5e71fa3b5970db1f1"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "a2743dd8f09db80ac0a5a5ced0b6ba22ccecbd6bc36282d69579e1a92e887f5b"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "02318e5765b46b09692a3cdb00ff62ba125a38c7d6bf5c7af5f41e2e1e581baa"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "1cde000c1110c8583478624995186314c1f47ab8bd48855c67a663c8a267ab3d"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "fa874521802d5ebf9722fce3ebea2de79a7cb25ef6c05dd023a9382f723d3548"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "64469a47b00f21d6458e48c055e43b139d7d8ca266784ab8c64d75006bdf3ad8"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "ef340c28935571f28180902916addb74f3ab097d1ec11b1740431fe5a3af7d68"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "bcda30b330946cb1c1b0bccb55301cf1fbd0a3c6516cb052572c4070bb88471a"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "18009a87e251a74800dc9a840fafaa108705017277230536a3242413e6891496"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "44d8a80134753a067662c1da12ffb7800a95241de634d9f5dfaeb6ccd0e3927f"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "baff74ba05caf49b3f890cc6fc24a4237697098668275a23a8d49efb37ce71ba"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "8a22a385a100cb83ffc6ca1497d467e99fd9dde8b927d19d0321fcf41c3c2e02"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "076cb29eaa93cbf146cd4f5bf5beca6c8783e7c5acaa99891477814f11dbf846"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "66cfc9340dbd929a94e63321ae76a126acb6d818b8f8b2db464aa80be8e71d7c"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "bde9f59084ae59674776ff004d5bbf326a8c42b8893af884bba054af855c419f"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "124effb2a64e183d9a6994e114bcc78cd6a3383e25b491ba25a805d6ed8f2246"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 3600,
+      "claim_sha256": "dbcef8b8d1613fc317f1c7a17049029c82710a66cf0215fb333a398973e2a483",
+      "legacy_text": "That Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 361,
+        "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+        "source_offset": 800,
+        "source_order": 0,
+        "key": "956e55539865aee5780d9c69bd3c42c81870a11612ba161d53741443a6e1448c",
+        "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR SEATON\nSECONDED:       COUNCILLOR SIFERT\n\n       That Council approve the agenda as presented.\n                                                                                                CARRIED.\n\n3.      PUBLIC HEARINGS\n\n       a) BYLAW NO. 1681\n           \"Langford Zoning Bylaw, Amendment No. 477, (2762 and 2768 Claude Rd), 2017\".\n\nThe Mayor opened the Public Hearing for Bylaw No. 1681 at 5:32 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\n                                                                                                   May 15TH, 2017\n                                                                                                     Page 2 of 18\n\n\n\n\nThe City Planner advised that Matthew McKay, DB Services of Victoria Inc., has applied on behalf of\nMatthew and Margaret McKay and Danny Lahnsteiner to amend the zoning of the properties at 2762 and\n2768 Claude Rd from the R1 (One-Family Residential) Zone to the MU2 (Mixed-Use Residential\nCommercial) Zone.\n\nThis is being proposed in order to allow for the construction of an eleven (11) storey residential building\nconsisting of approximately 117 residential dwelling units.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nIn support of these/this application, the applicant has agreed to provide the following:\n         • $1,525 per dwelling unit towards the General Amenity Reserve Fund, which may be reduced\n               to $381.25 per unit if the project is secured as rental housing;\n         • $610 per dwelling unit towards the Affordable Housing Reserve Fund, which may be reduced\n               to $152.50 per unit if the project is secured as rental housing;\n         • A Section 219 covenant, prior to Bylaw adoption, which secures the following conditions:\n                   o That the owner will pay for and construct all works to restrict left turn movements\n                       southbound on Claude Road to Goldstream Avenue prior to issuance of Occupancy\n                       Permit;\n                   o That the owner will provide a traffic and public safety plan and construction parking\n                       management plan, prior to any onsite works and/or clearing, to the satisfaction of\n                       the Director of Engineering;\n                   o That the owner shall construct frontage improvements, works and services to the\n                       standards of Subdivision and Development Servicing Bylaw No. 1000 and to the\n                       satisfaction of the Director of Engineering; and\n                   o   That  the owner will register on title a Section 219 covenant for stormwater\n                       maintenance prior to the request for Occupancy Permit as a condition of rezoning.\n\nCouncil also requested that the applicant provide a road dedication plan prior to Public Hearing, however\nthe applicant requests that the City accept a statutory right-of-way over the frontage of the property,\nrather than dedication, to accommodate sidewalk, boulevard and street trees.\n\nThis proposal is consistent with the Official Community Plan designation.\n\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1681 closed at 5:34 p.m.\n\n                                                                                                      May 15TH, 2017\n                                                                                                        Page 3 of 18\n\n\n        b) BYLAW NO. 1684\n            \"Langford Zoning Bylaw, Amendment No. 479, (Omnibus No. 45 — Care Facilities), 2017\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1684 at 5:34 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that the City of Langford has applied to amend the text of the Zoning Bylaw 300\nin regards to permit the inclusion of Community Care Facilities to the list of uses allowed in the M1 (Light\nIndustrial) Zone.\n\nBylaw 1684 will amend the text within the Zoning Bylaw so that 'Care Facilities' will be permitted in the\nM1 (Light Industrial) Zone.\n\nAs a light industrial zone, industrial businesses that operate within the M1 zone do not produce noxious\nodours, dust, smoke or noise that would negatively impact the surrounding non-industrial uses. The\nmajority of parcels currently zoned M1 in Langford are found along Dunford Avenue, and act as a\ntransitionary industrial space separating heavier industrial uses and residential zones.\n\nAs many care facilities require expansive areas in order to congregate and assist to their clients, industrial\nspace within the Ml, light industrial, zone would be appropriate for adult patrons to receive care.\n\nThe bylaw being proposed would restrict care to adults and would not permit patrons or those providing\ncare to reside on parcels within the M1 zone as part of the care facility.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nThis proposal is consistent with the Neighbourhood Official Community Plan designations.\n\nAdvertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1684 closed at 5:35 p.m.\n\n                                                                                                   May 151H, 2017\n                                                                                                     Page 4 of 18\n\n\n        c) BYLAW NO. 1691\n             \"Langford Zoning Bylaw, Amendment No. 482, (903 Tayberry Terrace), 2017\".\n\n\nThe Mayor opened the Public Hearing for Bylaw No. 1691 at 5:36 p.m.\n\nMayor Young advised members of the audience that any person present who believes that his or her\ninterest is affected by the proposed bylaws shall be given an opportunity to be heard on the matters\ncontained in the proposed bylaw. Those who wish to speak concerning this proposed bylaw should give\ntheir name, address and views concerning the proposed bylaw. Mayor Young advised that after everyone\nhas expressed their views, he shall state three times \"Is there anyone else who wishes to be heard\", and\nif no further views are forthcoming, the Public Hearing shall be declared closed.\n\nThe City Planner advised that Paul King of Boulder Ridge Developments has applied to amend the CD10\n(Boulder Ridge — Comprehensive Development) zone to nullify a requirement negotiated under a previous\namenity policy which requires the applicant to construct 4 one-family dwellings within the CD10 Zone and\nenter into a 25 year contract with the City of Langford to maintain these homes as rental houses at market\nrate.\n\nAs part of this application, a public hearing is required in accordance with the regulations of the Local\nGovernment Act.\n\nThis proposal is consistent with the Official Community Plan designation.\n\nNotifications and advertisements have been placed as required by Council policy.\n\nThe Mayor called a first time for presentations.\n\nMayor Young called a second time for presentations.\n\nThe Mayor called a third and final time for presentation, there being none, the Mayor officially declared\nthe Public Hearing for Bylaw No. 1691 closed at 5:37 p.m.\n\n4.      ADOPTION OF MINUTES\n\n        a)   Minutes of the Regular Meeting of Council — May 1st, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "bd296b41316f7ebc17cb2461ed13c881be781e796353726b523c0c437aac1693",
+      "pages": [
+        1
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3601,
+      "claim_sha256": "62a6d05620b4b1ed47610836c62e05d169ca82e4ad74a188a0c4a45ab0dca33f",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on May 1st, 2017.",
+      "source_identity": {
+        "meeting_id": 361,
+        "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+        "source_offset": 9682,
+        "source_order": 1,
+        "key": "fd86439bc4492f55ddfa7088496d9c04d3369dc39f1260449eb20baad80d5ee6",
+        "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the Regular Meeting of Council held on May 1st, 2017.",
+        "source_block": "MOVED BY:       COUNCILLOR SEATON\nSECONDED:       COUNCILLOR SIFERT\n\n       That Council approve the minutes of the Regular Meeting of Council held on May 1st, 2017.\n\n                                                                                                    CARRIED.\n\n                                                                                                      May 15TH, 2017\n                                                                                                        Page 5 of 18\n\n\n5.       PUBLIC PARTICIPATION\n\n          i. A citizen residing on Sooke Lake Road addressed Council with concerns regarding 2702\n             Sooke Lake Road. She is not in support of the 3m setback and is concerned about the park\n             clearing, noise and decreased setback.\n\n         ii. Laura Davis, President of West Shore Arts Council provided an overview of the West Shore\n             Arts Council work and thanked Council and staff for their ongoing support.\n\n6.       DEVELOPMENT VARIANCE PERMIT\n\n         a)   DVP17-0010 - 2840 Sooke Lake Rd",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "fcd1ed7e2d8272218b6ed698f628ed882d082f7b580aa9c00705aa31b43040c6",
+      "pages": [
+        4
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3602,
+      "claim_sha256": "6635f77ecb8199f8e9eee61bd82c4e5264a065b1e2091295b4f8685b1e6607ca",
+      "legacy_text": "That Development Variance Permit No. DVP17-0010 be issued by the Council for the City of Langford to Casey Moore to reduce the required off-street parking (for one lot of a proposed three lot subdivision) from the required 2 parking spaces to 0 parking spaces at 2840 Sooke Lake Rd subject to the following terms and conditions: [site plan and variances and covenant conditions as listed in the minutes].",
+      "source_identity": {
+        "meeting_id": 361,
+        "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+        "source_offset": 10756,
+        "source_order": 2,
+        "key": "40ff8f20961b8cc43fc41cf1ac8dca094bd4a85f644f415e8ac0380579bb0c5d",
+        "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Development Variance Permit No. DVP17-0010 be issued by the Council for the City of Langford\nto Casey Moore to reduce the required off-street parking (for one lot of a proposed three lot\nsubdivision) from the required 2 parking spaces to 0 parking spaces at 2840 Sooke Lake Rd subject to the\nfollowing terms and conditions:\n\n1.   Appendix\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Variances\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied from two (2) spaces per dwelling unit to\n        zero (0) spaces per dwelling unit for proposed lot 1, subject to the following condition:\n        i. An easement being registered on proposed lot 2 that permits the additional two (2) parking\n          space from lot 1 onto this lot\n\n     b) That Section 6.21.06(a) of Zoning Bylaw No. 300 be varied from 6.0m to 3.0m for the rear lot line\n        of proposed lots 2 and 3, subject to the applicant registering, prior to issuance of a Building Permit,\n        a Sec. 219 covenant registered in priority over all other charges on title that includes the following:\n        I. That the City's standard interface fire hazard requirements for homes within the Interface\n             Fire Hazard Development Permit Area will be met, as a condition of building permit;\n        II. That the applicant will construct a non-combustible fence of at least 1.2m in height along the\n             rear property boundaries;\n        III. That the applicant accepts personally all liability stemming from works undertaken in\n             Goldstream Park to date and that this liability is not transferred to future property owners.",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\nThat Development Variance Permit No. DVP17-0010 be issued by the Council for the City of Langford\nto Casey Moore to reduce the required off-street parking (for one lot of a proposed three lot\nsubdivision) from the required 2 parking spaces to 0 parking spaces at 2840 Sooke Lake Rd subject to the\nfollowing terms and conditions:\n\n1.   Appendix\n\n     The site shall be developed in accordance with the site plan attached (Appendix A).\n\n2.   Variances\n\n     The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local\n     Government Act:\n\n     a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied from two (2) spaces per dwelling unit to\n        zero (0) spaces per dwelling unit for proposed lot 1, subject to the following condition:\n        i. An easement being registered on proposed lot 2 that permits the additional two (2) parking\n          space from lot 1 onto this lot\n\n     b) That Section 6.21.06(a) of Zoning Bylaw No. 300 be varied from 6.0m to 3.0m for the rear lot line\n        of proposed lots 2 and 3, subject to the applicant registering, prior to issuance of a Building Permit,\n        a Sec. 219 covenant registered in priority over all other charges on title that includes the following:\n        I. That the City's standard interface fire hazard requirements for homes within the Interface\n             Fire Hazard Development Permit Area will be met, as a condition of building permit;\n        II. That the applicant will construct a non-combustible fence of at least 1.2m in height along the\n             rear property boundaries;\n        III. That the applicant accepts personally all liability stemming from works undertaken in\n             Goldstream Park to date and that this liability is not transferred to future property owners.\n\n                                                                                                     CARRIED.\n\n                                                                                                   May 15TH, 2017\n                                                                                                     Page 6 of 18\n\n\n7.    COMMITTEE RESOLUTIONS\n\n      a) Planning, Zoning and Affordable Housing — May 8th, 2017\n            1. Application to amend the text in the RR4 (Rural Residential 4) Zone to (Residential\n                One and two Family) zone to permit a three lot subdivision at 1319 & 1323\n                Ravensview Drive.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "2e39fbeaeaa0f012ffbe403a7285d351718ddefdff2b1583aea244bfd504c5e8",
+      "pages": [
+        5
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3603,
+      "claim_sha256": "033e908f0ad56195b4e9454bda87deeb1c08e359f32df365c187cdcdacba052d",
+      "legacy_text": "That Council proceed with the amendment to the text of the RR4 zone for the properties on 1323 and 1319 Ravensview Drive, subject to terms and conditions including covenants restricting development until servicing is complete, no secondary suites, one dwelling per lot, and other conditions as listed.",
+      "source_identity": {
+        "meeting_id": 361,
+        "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+        "source_offset": 13285,
+        "source_order": 3,
+        "key": "606fbf6c6e2936f17599bb2666b8b6b97c0d00235ab45559ff51254e67c5125f",
+        "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n      1.    Proceed with the amendment to the text of the RR4 zone for the properties on 1323 and 1319\n            Ravensview Drive, subject to the following terms and conditions:\n\n            a)    That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                  in priority of all other charges on title, that agrees to the following:\n\n                   i. That no construction of building or subdivision or alteration of land may occur on\n                      those lands contained on the eastern border of the property, and identified as the\n                      common property with 1319 and 1323 Ravensview Drive and as shown in Figure 2 as\n                      Lot 3 until all works and services required by Bylaw 1000 have been completed, to the\n                      satisfaction of the Director of Engineering;\n                  ii. That new and existing houses are required to connect to sanitary sewers when they\n                      become available to the site, and that all costs associated with connecting to sewers\n                      are the responsibility of the owners;\n                 iii. That secondary suites are not be permitted; and\n                 iv. That there may only be one residential dwelling per lot.\n\n      2. Direct staff to proceed with consideration of the following variances for the proposed 3 lot\n          subdivision of 1319 and 1323 Ravensview Drive subject to the applicant applying for the\n          necessary development variance permit:\n\n            a) Section 6.1.1 of the Subdivision and Development Servicing Bylaw No. 1000 be varied to\n               allow for the creation of three lots that are not serviced by the municipal sanitary sewer\n               system;\n\n            b) Section 8.15.5 of the Subdivision and Development Servicing Bylaw No.1000 be varied to\n               allow for the creation of three lots that require a reduction in fire flow but that do not\n               contain residential fire sprinklers;\n\n            c) Section 8.1.5 of the Subdivision and Development Servicing Bylaw No. 1000 be varied to\n               allow for the creation of three lots that do not comply with the requirements of the BC\n               Building Code in regards to sufficient water pressure;\n\n\n            d) That Section 2.1.1 of the Subdivision and Development Servicing Bylaw No. 1000 be varied\n               to allow the creation of three lots without the provision of frontage improvements.\n\n                                                                                                      May 15m, 2017\n                                                                                                        Page 7 of 18",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n      That Council:\n\n      1.    Proceed with the amendment to the text of the RR4 zone for the properties on 1323 and 1319\n            Ravensview Drive, subject to the following terms and conditions:\n\n            a)    That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                  in priority of all other charges on title, that agrees to the following:\n\n                   i. That no construction of building or subdivision or alteration of land may occur on\n                      those lands contained on the eastern border of the property, and identified as the\n                      common property with 1319 and 1323 Ravensview Drive and as shown in Figure 2 as\n                      Lot 3 until all works and services required by Bylaw 1000 have been completed, to the\n                      satisfaction of the Director of Engineering;\n                  ii. That new and existing houses are required to connect to sanitary sewers when they\n                      become available to the site, and that all costs associated with connecting to sewers\n                      are the responsibility of the owners;\n                 iii. That secondary suites are not be permitted; and\n                 iv. That there may only be one residential dwelling per lot.\n\n      2. Direct staff to proceed with consideration of the following variances for the proposed 3 lot\n          subdivision of 1319 and 1323 Ravensview Drive subject to the applicant applying for the\n          necessary development variance permit:\n\n            a) Section 6.1.1 of the Subdivision and Development Servicing Bylaw No. 1000 be varied to\n               allow for the creation of three lots that are not serviced by the municipal sanitary sewer\n               system;\n\n            b) Section 8.15.5 of the Subdivision and Development Servicing Bylaw No.1000 be varied to\n               allow for the creation of three lots that require a reduction in fire flow but that do not\n               contain residential fire sprinklers;\n\n            c) Section 8.1.5 of the Subdivision and Development Servicing Bylaw No. 1000 be varied to\n               allow for the creation of three lots that do not comply with the requirements of the BC\n               Building Code in regards to sufficient water pressure;\n\n\n            d) That Section 2.1.1 of the Subdivision and Development Servicing Bylaw No. 1000 be varied\n               to allow the creation of three lots without the provision of frontage improvements.\n\n                                                                                                      May 15m, 2017\n                                                                                                        Page 7 of 18\n\n\n\n\n                                                                                                       CARRIED.\n\n                 2. Application to Rezone 3690 and 3694 Happy Valley Road from RR2 (Rural Residential\n                    2) to RS4 (Residential Small Lot 4) zone to permit One-Family dwellings and\n                    townhouse residential units.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f3af83d20c984a92cdf07d946561681d7c77ac04446a149efa22f5b03852e259",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3604,
+      "claim_sha256": "3aefc85fcaa3810ceace47df99323b0b7dcb8c59f27c37c22e41ceea907de6eb",
+      "legacy_text": "That Council give first reading to Bylaw Nos. 1694 and 1703 as presented to amend the zoning designation of the properties located at 3690 and 3694 Happy Valley Road from RR2 to RS4, subject to terms and conditions including bonus contributions per lot, traffic study and road dedication prior to adoption.",
+      "source_identity": {
+        "meeting_id": 361,
+        "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+        "source_offset": 16488,
+        "source_order": 4,
+        "key": "6a97f8483ce58da6c20ee024732399cefd6050796447687d54e61e31a061f26c",
+        "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n      1. Give first reading to Bylaw Nos. 1694 and 1703 as presented to amend the zoning designation\n          of the properties located at 3690 and 3694 Happy Valley Road from RR2 (Rural Residential 2)\n          zone to R54 (Rural Small Lot 4) zone, subject to the following terms and conditions:\n\n            b) That the owner agrees to provide, as a bonus for increased density, the following\n                contributions per lot, prior to subdivision approval:\n\n                   i.   $3960 per new one family lot towards the General Amenity Reserve Fund;\n                  ii.   $3660 per townhouse unit towards the General Amenity Reserve Fund;\n                 iii.   $660 per new one family lot towards the Affordable Housing Reserve Fund;\n                 iv.    $610 per townhouse unit towards the Affordable Housing Reserve Fund;\n\n            c)   That the applicant, prior to Bylaw Adoption of either Bylaw Nos. 1694 and 1703, provides\n                 a Traffic Study and registers a road dedication plan with respect to the Happy Valley Rd\n                 frontage to the satisfaction of the Director of Engineering.\n\n            d) That the applicant provides, prior to Adoption of Bylaw No 1703, a Section 219 covenant,\n               registered in priority of all other charges on title, that agrees to the following:\n\n                   i. That the applicant will complete full frontage improvements to Subdivision and\n                      Development Servicing Bylaw No. 1000 standards to the satisfaction of the Director\n                      of Engineering prior to subdivision approval; and\n                  ii. That the applicant will install a signalized intersection at Happy Valley Road to the\n                      satisfaction of the Director of Engineering at the time recommended by the Traffic\n                      Study.\n                 iii. That the applicant will provide a storm water management plan, and complete any\n                      required improvements or upgrades to infrastructure to the satisfaction of the\n                      Director of Engineering, prior to subdivision approval;\n\n                 iv. That the applicant must submit and receive approval of the FUS calculations for the\n                     site prior to subdivision approval;\n                  v. That the applicant will incur all costs relating to infrastructure upgrades, including off\n                     site works, required to manage the subject property's drainage concern, as a\n                     condition of rezoning of the lands.\n\n                                                                                                  May 15m, 2017\n                                                                                                    Page 8 of 18\n\n\n       2. That Council support in principle a variance to Bylaw No. 1000 requirements for the lands\n           that are the subject of Bylaw No. 1694 with respect to frontage improvements (Happy Valley\n           Road only) and connection to municipal sanitary sewers to allow for the creation of two new\n           lots, subject to the applicant applying for the necessary DVP and subject to the applicant\n           registering a covenant restricting the construction of any new dwellings or further\n           subdivision of the lands without the provision of full frontage improvements and sewer\n           connections;",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n      That Council:\n\n      1. Give first reading to Bylaw Nos. 1694 and 1703 as presented to amend the zoning designation\n          of the properties located at 3690 and 3694 Happy Valley Road from RR2 (Rural Residential 2)\n          zone to R54 (Rural Small Lot 4) zone, subject to the following terms and conditions:\n\n            b) That the owner agrees to provide, as a bonus for increased density, the following\n                contributions per lot, prior to subdivision approval:\n\n                   i.   $3960 per new one family lot towards the General Amenity Reserve Fund;\n                  ii.   $3660 per townhouse unit towards the General Amenity Reserve Fund;\n                 iii.   $660 per new one family lot towards the Affordable Housing Reserve Fund;\n                 iv.    $610 per townhouse unit towards the Affordable Housing Reserve Fund;\n\n            c)   That the applicant, prior to Bylaw Adoption of either Bylaw Nos. 1694 and 1703, provides\n                 a Traffic Study and registers a road dedication plan with respect to the Happy Valley Rd\n                 frontage to the satisfaction of the Director of Engineering.\n\n            d) That the applicant provides, prior to Adoption of Bylaw No 1703, a Section 219 covenant,\n               registered in priority of all other charges on title, that agrees to the following:\n\n                   i. That the applicant will complete full frontage improvements to Subdivision and\n                      Development Servicing Bylaw No. 1000 standards to the satisfaction of the Director\n                      of Engineering prior to subdivision approval; and\n                  ii. That the applicant will install a signalized intersection at Happy Valley Road to the\n                      satisfaction of the Director of Engineering at the time recommended by the Traffic\n                      Study.\n                 iii. That the applicant will provide a storm water management plan, and complete any\n                      required improvements or upgrades to infrastructure to the satisfaction of the\n                      Director of Engineering, prior to subdivision approval;\n\n                 iv. That the applicant must submit and receive approval of the FUS calculations for the\n                     site prior to subdivision approval;\n                  v. That the applicant will incur all costs relating to infrastructure upgrades, including off\n                     site works, required to manage the subject property's drainage concern, as a\n                     condition of rezoning of the lands.\n\n                                                                                                  May 15m, 2017\n                                                                                                    Page 8 of 18\n\n\n       2. That Council support in principle a variance to Bylaw No. 1000 requirements for the lands\n           that are the subject of Bylaw No. 1694 with respect to frontage improvements (Happy Valley\n           Road only) and connection to municipal sanitary sewers to allow for the creation of two new\n           lots, subject to the applicant applying for the necessary DVP and subject to the applicant\n           registering a covenant restricting the construction of any new dwellings or further\n           subdivision of the lands without the provision of full frontage improvements and sewer\n           connections;\n\n                                                                                                   CARRIED.\n\n               3. Application to Rezone 656 Frederic Road and 765 Willing Drive from Rural Residential\n                  2 (RR2) to Rural Residential 6A (RR6A) to facilitate the subdivision of approximately\n                  53 lots with minimum lot areas of 550 m2 (5,920 ft2).",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "c5881f584583e045ba15be2ea0075cce55c107bb8b10582c750fc2e03401e54d",
+      "pages": [
+        7,
+        8
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3605,
+      "claim_sha256": "715d90d99723b1aaab522aff4707753769f008b4bf6f9a7ab2b4a2b357c3de2e",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the properties located at 656 Frederic Road and 765 Willing Drive from RR2 to RR6A, subject to terms and conditions including amenity contributions, stormwater management, neighbour consultation and covenants.",
+      "source_identity": {
+        "meeting_id": 361,
+        "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+        "source_offset": 20393,
+        "source_order": 5,
+        "key": "db4fe0bbd81b22607daed1f3f62d9ca443eb356d1870a0b4abb5ac807b522f09",
+        "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n      1.    Direct staff to prepare a bylaw to amend the zoning designation of the properties located at\n            656 Frederic Road and 765 Willing Drive from Rural Residential 2 (RR2) to Rural Residential\n            6A (RR6A), subject to the following terms and conditions:\n\n            a) That the owner agrees to provide, as a bonus for increased density, the following\n                contributions per lot, prior to subdivision approval:\n\n                 i. $6,000 towards the General Amenity Reserve Fund;\n                ii. $1,000 towards the Affordable Housing Reserve Fund;\n\n\n            b) That the applicant provides, prior to Public Hearing, a stormwater management plan to\n                the satisfaction of the Director of Engineering;\n\n            c) That the applicant undertake neighbourhood consultation prior to Public Hearing;\n\n            d) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                in priority of all other charges on title, that agrees to the following:\n\n                i. That all frontage improvements, to the satisfaction of the Director of Engineering, be\n                   constructed to Bylaw No. 1000 standards prior to subdivision approval;\n\n                ii. That any on- or off-site improvements required by the stormwater management plan\n                    be implemented prior to subdivision approval, to the satisfaction of the Director of\n                    Engineering;\n               iii. That a trail connecting the proposed cul-de-sac on 656 Willing Drive to Willing Park,\n                    constructed to the satisfaction of the Parks Manager, be provided prior to subdivision\n                    approval; and\n\n                                                                                                   May 15m, 2017\n                                                                                                     Page 9 of 18\n\n\n                 iv. That advisory notes be written to provide future owners with the understanding that\n                      lands with the Agricultural Land Reserve (ALR) are located in close proximity to the\n                      development, and that the South Vancouver Island Rangers gun range is located\n                      within approximately 700 m (2,297 ft) of the development, and that both may\n                      generate general nuisances;\n\n            e)    Direct staff to proceed with consideration of the requested lot width variances through a\n                  Development Variance Permit application, to be submitted by the applicant.",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR WADE\n\n      That Council:\n\n      1.    Direct staff to prepare a bylaw to amend the zoning designation of the properties located at\n            656 Frederic Road and 765 Willing Drive from Rural Residential 2 (RR2) to Rural Residential\n            6A (RR6A), subject to the following terms and conditions:\n\n            a) That the owner agrees to provide, as a bonus for increased density, the following\n                contributions per lot, prior to subdivision approval:\n\n                 i. $6,000 towards the General Amenity Reserve Fund;\n                ii. $1,000 towards the Affordable Housing Reserve Fund;\n\n\n            b) That the applicant provides, prior to Public Hearing, a stormwater management plan to\n                the satisfaction of the Director of Engineering;\n\n            c) That the applicant undertake neighbourhood consultation prior to Public Hearing;\n\n            d) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                in priority of all other charges on title, that agrees to the following:\n\n                i. That all frontage improvements, to the satisfaction of the Director of Engineering, be\n                   constructed to Bylaw No. 1000 standards prior to subdivision approval;\n\n                ii. That any on- or off-site improvements required by the stormwater management plan\n                    be implemented prior to subdivision approval, to the satisfaction of the Director of\n                    Engineering;\n               iii. That a trail connecting the proposed cul-de-sac on 656 Willing Drive to Willing Park,\n                    constructed to the satisfaction of the Parks Manager, be provided prior to subdivision\n                    approval; and\n\n                                                                                                   May 15m, 2017\n                                                                                                     Page 9 of 18\n\n\n                 iv. That advisory notes be written to provide future owners with the understanding that\n                      lands with the Agricultural Land Reserve (ALR) are located in close proximity to the\n                      development, and that the South Vancouver Island Rangers gun range is located\n                      within approximately 700 m (2,297 ft) of the development, and that both may\n                      generate general nuisances;\n\n            e)    Direct staff to proceed with consideration of the requested lot width variances through a\n                  Development Variance Permit application, to be submitted by the applicant.\n\n                                                                                                    CARRIED.\n\n                 4. Application to rezone 731 Station Avenue from RM3 (Apartment) to MU1A (Mixed-\n                     Use Residential Commercial) to allow a 55-unit, non-profit housing development\n                     with 600m2 of commercial office space.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "f0dada11d00fb3a5db7fece30ed66d315508e9ccec3fc85e766f97a601669694",
+      "pages": [
+        8,
+        9
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 3606,
+      "claim_sha256": "51a19532cfe4d83c64f1cfd36ec7cfeb7a41e0b2fd8a7156278259506332a58c",
+      "legacy_text": "That Council give Bylaw No. 1702 First Reading as presented to amend the zoning designation of the property located at 731 Station Avenue from RM3 to MU1A, subject to terms including frontage improvements and potential road dedication.",
+      "source_identity": {
+        "meeting_id": 361,
+        "source_sha256": "76a948f30b1f27bce4d9b9326a7ebd0e7acd4c707fe89ff23e7bb6463696d40b",
+        "source_offset": 23478,
+        "source_order": 6,
+        "key": "c100a41b982b250d20084b11dd99a555f13571f472b3fa4c037eafbbdb06c95d",
+        "source_file": "archive/langford/Council/2017/05/2017-05-15 Regular Council [legacy]/Minutes/20170515-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170515-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n      1. Give Bylaw No. 1702 First Reading as presented to amend the zoning designation of the\n          property located at 731 Station Avenue from the RM3 (Apartment) zone to the MU1A (Mixed-\n          Use Residential Commercial) zone subject to the following terms and conditions:\n\n            a) That the applicant provides, prior to Public Hearing, a plan demonstrating full frontage\n               improvements in accordance with Bylaw No. 1000 and to the satisfaction of the Director\n               of Engineering to determine if any road dedication is required and if any further frontage\n               works will be required as a condition of rezoning.\n\n            b) That the applicant provides, prior to bylaw adoption, road dedication (if determined to\n               be required);\n\n            c) That the applicant provides, prior to bylaw adoption, a Section 219 covenant, registered\n               in priority of all other charges on title, that agrees to the following:\n\n                  i. That a stormwater maintenance covenant be registered on title prior to the request\n                     for Occupancy Permit as a condition of rezoning;\n                 ii. That the owner provide a construction parking management plan to the satisfaction\n                     of the Director of Engineering prior to the commencement of any works on-site; and\n\n\n                 iii. • That any frontage improvements required in accordance with Bylaw No. 1000 be\n                        provided to the satisfaction of the Director of Engineering prior to issuance of a\n                        Building Permit.\n\n      2.    Remove the minimum lot coverage requirements of the MU1A zone for the subject property;\n\n                                                                                                     May 15TH, 2017\n                                                                                                      Page 10 of 18\n\n\n      3.    Waive all required amenity contributions and application fees charged by the City of Langford\n            to allow the 55 unit subsidized affordable housing rental development proposed in this\n            application subject to the owner registering a Section 219 Covenant requiring the new\n            residential units will be subsidized non-profit affordable housing rental units for at least 10\n            years; and\n\n      4.    Provide a permissive tax exemption, on land and improvements, subject to a covenant being\n            registered on title that the proposed residential units will be non-profit affordable housing\n            rental units for at least 10 years and subject to the commercial space being continuously\n            leased to a not-for-profit organization.",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n      That Council:\n\n      1. Give Bylaw No. 1702 First Reading as presented to amend the zoning designation of the\n          property located at 731 Station Avenue from the RM3 (Apartment) zone to the MU1A (Mixed-\n          Use Residential Commercial) zone subject to the following terms and conditions:\n\n            a) That the applicant provides, prior to Public Hearing, a plan demonstrating full frontage\n               improvements in accordance with Bylaw No. 1000 and to the satisfaction of the Director\n               of Engineering to determine if any road dedication is required and if any further frontage\n               works will be required as a condition of rezoning.\n\n            b) That the applicant provides, prior to bylaw adoption, road dedication (if determined to\n               be required);\n\n            c) That the applicant provides, prior to bylaw adoption, a Section 219 covenant, registered\n               in priority of all other charges on title, that agrees to the following:\n\n                  i. That a stormwater maintenance covenant be registered on title prior to the request\n                     for Occupancy Permit as a condition of rezoning;\n                 ii. That the owner provide a construction parking management plan to the satisfaction\n                     of the Director of Engineering prior to the commencement of any works on-site; and\n\n\n                 iii. • That any frontage improvements required in accordance with Bylaw No. 1000 be\n                        provided to the satisfaction of the Director of Engineering prior to issuance of a\n                        Building Permit.\n\n      2.    Remove the minimum lot coverage requirements of the MU1A zone for the subject property;\n\n                                                                                                     May 15TH, 2017\n                                                                                                      Page 10 of 18\n\n\n      3.    Waive all required amenity contributions and application fees charged by the City of Langford\n            to allow the 55 unit subsidized affordable housing rental development proposed in this\n            application subject to the owner registering a Section 219 Covenant requiring the new\n            residential units will be subsidized non-profit affordable housing rental units for at least 10\n            years; and\n\n      4.    Provide a permissive tax exemption, on land and improvements, subject to a covenant being\n            registered on title that the proposed residential units will be non-profit affordable housing\n            rental units for at least 10 years and subject to the commercial space being continuously\n            leased to a not-for-profit organization.\n\n                                                                                                      CARRIED.\n\n               5.   Application to Rezone 3130 Jacklin Road from R2 (Residential One and Two Family)\n                    zone to RM7A (Medium Density Apartment A) zone.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ea5abb4255a6a6ca5a1bdcca32bf2633a51ef8f6355f38e952f9bc9acc9d6445",
+      "pages": [
+        9,
+        10
+      ],
+      "reason": "Unique complete source occurrence identified using property/bylaw/permit/stage. Existing shortened wording and any ballot/manual evidence preserved; no full-text certification or new individual votes.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "2bda32db873ca19ce39398a62ecc01b6e1ab2d4e19501b2e93b172a9cc57dae2",
+  "second_independent_original_image_review_sha256": "5c15301432efaee94c3dee2f16891dbdc585b0f3911100237e046daf90ee35f2"
+}

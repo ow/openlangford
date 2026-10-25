@@ -1,0 +1,921 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 75,
+    "title": "Regular Council",
+    "meeting_date": "2020-11-02",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+      "sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2020/11/2020-11-02 Regular Council [legacy]/Minutes/20201102-SIGNED.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20201102-SIGNED.pdf",
+  "source_sha256": "dfcadd70342675c0ffa7c5611b473d5e9df97dbae0ae715286ff7ec277caf508",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "5f26ba31e8fd5ddb8e47fb0828f62448a0fcebf5865ca1ae373f1b42e6b86de1",
+  "corrected_text_sha256": "5f26ba31e8fd5ddb8e47fb0828f62448a0fcebf5865ca1ae373f1b42e6b86de1",
+  "parsed_blocks_sha256": "e8bddcd1590317a10f1fec92cd37c234efa19221c92fb8cd7e5364ac3d837df1",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "03eb6a5fd7feafe471025078ee80892285f190633b38a0d1548bbbc552148b3f",
+      "render_sha256": "bad1dfc2b2fda7df09b093e5556a7d2bd8e278284f7581cda62d60d1d1bd3c44"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "3c4577092ad4a9468f150e1ba7de229a58375461cda941a4924e76a5d03ff4d7",
+      "render_sha256": "92dcda4d818b974a1b927228ae36c4b0c7d9a00180fbf055dd4249eae3db8f4d"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "6b79bd8d330e0b8a1950378e978a7c7d9ff0bdcc6a6bcd1b65bf328d266e3ed7",
+      "render_sha256": "6053833f1ba1ec7c89beb4a1d2471329b3d9e7287b5355fb2b7f0cb3a1e77121"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "31c79849851509698eabf1fbd897cbaf10d254605e5b083b7406461664799815",
+      "render_sha256": "e11273a773864df5cf535cc207aad4103ad7fae48dbccdbbd0edd4df7e666992"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "09066d6a27731ddddb0d1503a812885bb17337e8a5c8e7912ebfcad51b24a52e",
+      "render_sha256": "b9bb3c1264ad2898eb88c1f1721bb698d69caee150d5858897f8379dd7a56a30"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "32786cbcad5c675cad852cc8ed203bbbcb01bf6bd8c255a59f1423d410d82786",
+      "render_sha256": "993bf8f8ee2564799d0ecda7317a306285b817a765e8a6f48a6a1e28774e5f53"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "2af3492abef00c37120f8bfe69e0421491ceb8a5ff915eb7e60f2b22483fc2b2",
+      "render_sha256": "4ef3e553f17a1442d134ae70561f87d8a0a8a21c84a149960460605f8805fefb"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "5b1a9aedbc5d79c64d91804bf2c46eb088a4e4ba25a2896e19f580de71c5936c",
+      "render_sha256": "b9a0cff852b99e800a4fe9f93e78dbbba5bc5cb4f3d69bf11ee3c5a0aaf68714"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "86db6b12ac86cff43d6bacd201c0b2b0c9cdb6e85a8ee7554efb9795226fbe90",
+      "render_sha256": "294f4da4037eaff9de0382af690cf7ff4b0cbe95fd24ae1406b4ff5247242c04"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "54c7c3e56a7da3264d8a809a8c1fb7d6a8c21959d384fa157c0f8e019dada91d",
+      "render_sha256": "27d26c957aaf8a8ddeed3167961c8057cea186b4ab00c24904189a41e5159c6e"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "36830ecdfddaeea361efe80c46c5e308186b6fe296c7e58e3145afc8b925462d",
+      "render_sha256": "2fdd41152dfadd9eccb68d53c345b0905c94b5319a57608abed0e2e8a0b9814f"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "d50a5a9d1c3354277372e2d098256496184715f6c0b04f85b74a960669a9bb6c",
+      "render_sha256": "2d658be898bdd5dcf9b6e2bec6667634ce70c6d427375e603f4f31b88e85caba"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "c3910c9a03841047eb42c4f3dcb71579be51861782f230407eb947ea7eaf3dc0",
+      "render_sha256": "797942c00abbb6ce4744f38400c146548143125460a49d2e3a0908081d554270"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "863c94e9382d405eb0227018020556a32c867861c746ebd71fa431e6bd65aa95",
+      "render_sha256": "c77bb9499b4fda0f62997d26c95f522669b21535cb3cd0798b6b99b6a7eb62d3"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "8365166d68a79754409f6adf6eb082faf2a065d8e0e5193458ef541f9790ece0",
+      "render_sha256": "5ac0fb1879a7915050f371529fe37e11b2da0bdda5336f97400774c5f49b8539"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "c29eb31b712e0442b8acf34e81648f6229b6a67be02fc7df68aad5b184d1f3f3",
+      "render_sha256": "bf3b7f6572fd0231382d3e175a862166242bb44d5b3d6be12fb098a7530bb1cb"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "e947c35929a568bf62f67ccfb78c307768d8907b10ba267f6a19e6c6e9af3405",
+      "render_sha256": "9ea73962096ecd0eb5ab12cee88f92150f7b2b8afd65e2df3196147d88a84dad"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "53a27a26a8e07494a96b31e31f0f2b989b588c241f224599c12f47aca2658516",
+      "render_sha256": "87bc40bbf8df9ad8f32039ea3cbf3ccc575ad260ad54f67738c6a9bdbb9fb9de"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "0b9b419c60bf5f5c16b4a69697e92e7d4424d1a63e64046e8c7511bf18e53958",
+      "render_sha256": "7a7d38c0bd77277712f4da91318a964c6fdb45c66f57678124a4e36d34362335"
+    },
+    {
+      "page": 20,
+      "native_text_sha256": "8e6a3853f52eba636284c6d244fd9f279f7edafd8c0bf0ec1e8e862dc44a63d8",
+      "render_sha256": "16dc0f17110ad6f9017a14cbb2f5597e772eb3cebc52a0a843d0abb6f7660886"
+    },
+    {
+      "page": 21,
+      "native_text_sha256": "fd0e60a7c265979dfe6c8d2e76ece9110c376baf88619fa2028eec73e7dfed99",
+      "render_sha256": "ba35de5b583f99ee143605b7ccf191fe3e94ed32fbcfd516bc8f199915b41680"
+    },
+    {
+      "page": 22,
+      "native_text_sha256": "5ea2e2e43bd369cba495a37a4261531a77a09bf0dcfeaf34fa98903b81e3d285",
+      "render_sha256": "a34f8b0e46e675bad86f16780d9911328d02c2a1bdc6e90f38027cda4540a5ae"
+    },
+    {
+      "page": 23,
+      "native_text_sha256": "5044a66229dd696a3b8f22ff9ec6717a8cd6c24661de76174ce60af4de657c3e",
+      "render_sha256": "a7338fbbbcb5d34dbaa049a5dd0173fa4107cb1522df9e60154fbac05bb24d69"
+    },
+    {
+      "page": 24,
+      "native_text_sha256": "1013c253a3454dbb075d02eeac081c67120ed5b431a41ecff99d50a670b840d5",
+      "render_sha256": "9f27ad9e05b3637441c7652935a2dee6b92c6520e34326aa91de9c7e8e5b3565"
+    },
+    {
+      "page": 25,
+      "native_text_sha256": "376a1e5bc483b1f271b043bef3c6bca8df73eeed48e475e3eb6a5c6e91f745b3",
+      "render_sha256": "c97438c084fda49688033464a8fb9882961009d7f06a5d05e4e950475e36dbbb"
+    },
+    {
+      "page": 26,
+      "native_text_sha256": "da209d743d1d977fdcf9f6645e93c42a43f475f1553820bea45b62d6cf79f130",
+      "render_sha256": "a9b60141320e360ecb894aba7b538d98d4dad73f634df2f43adb5794c5ce3aa4"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "bc6fdc23aaec782a40df67b8d4a76f38386a9014eb99559baaff6621b618a402",
+      "raw_block_sha256": "073fcef1df554651efb827d653ace3467015003e57e2af86f433b77a4641441b",
+      "operative_body": "That Council: 1. Receive this report for information acknowledging that the new through lane on the Trans-Canada Highway will open in the Fall of 2020 and allow an estimated 300 more vehicles at a time to travel north on the Trans-Canada Highway from the Leigh Road Interchange north to approximately 500m north of the West Shore Parkway; and 2. Direct staff to bring back an update report in March of 2021 with respect to traffic operations in the area of the West Shore Parkway/Amy Road roundabout and area north to the Trans-Canada Highway; and 3. That staff include the review of a gate as part of the March 2021 West Shore Parkway, Amy Rd, and Trans-Canada Highway traffic operations to the Committee.",
+      "operative_body_sha256": "6583df31002a852cce6153369a7f7061ed57a7cb2e69727ee283a4c94b776197",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "86db6b12ac86cff43d6bacd201c0b2b0c9cdb6e85a8ee7554efb9795226fbe90",
+          "render_sha256": "294f4da4037eaff9de0382af690cf7ff4b0cbe95fd24ae1406b4ff5247242c04"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "97c0c7b9e4cfb7ad9347f598431c02c96f609830ab490deb19667b2b94dbb2ac",
+      "raw_block_sha256": "bc09514c17a8fdd8a0e37b06c8ba64773dc8acdb86739f5fcfa83a4add5f110c",
+      "operative_body": "That Council instruct staff to create a crosswalk at the intersection of Leigh Road and Kiwi Place at a cost of $30,000 to be funded through the 2021 Traffic Signal Upgrade budget and to contact ICBC for a cost- share of $17,600.",
+      "operative_body_sha256": "57fb3c0738c2446558b8e769863c4109f61e7021d9cc41ee328726c0007cd22d",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "86db6b12ac86cff43d6bacd201c0b2b0c9cdb6e85a8ee7554efb9795226fbe90",
+          "render_sha256": "294f4da4037eaff9de0382af690cf7ff4b0cbe95fd24ae1406b4ff5247242c04"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c9923e81f653c50d8af7fffa056f9d85f29d2caf238c28b6587f44daf74744a8",
+      "raw_block_sha256": "64e54db6180ef2e20d4aa49a2ef210fecfdc27924ec5ec9449e49c5c03a2beda",
+      "operative_body": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held on October 26, 2020.",
+      "operative_body_sha256": "cac9307edcf5c7e0989c6dad6099c70f1780c52e676d4590f131909223dc448e",
+      "result": "CARRIED",
+      "pages": [
+        9,
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "86db6b12ac86cff43d6bacd201c0b2b0c9cdb6e85a8ee7554efb9795226fbe90",
+          "render_sha256": "294f4da4037eaff9de0382af690cf7ff4b0cbe95fd24ae1406b4ff5247242c04"
+        },
+        {
+          "page": 10,
+          "native_text_sha256": "54c7c3e56a7da3264d8a809a8c1fb7d6a8c21959d384fa157c0f8e019dada91d",
+          "render_sha256": "27d26c957aaf8a8ddeed3167961c8057cea186b4ab00c24904189a41e5159c6e"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held on October 26, 2020. November 2, 2020 Page 10 of 26",
+          "printed": "That Council receive the minutes of the Planning Zoning and Affordable Housing Committee held on October 26, 2020.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        }
+      ]
+    },
+    {
+      "source_key": "3d95f83d55dece508990b43913de5fd9bc2154abee326489907440ffbd0352c0",
+      "raw_block_sha256": "0dd7868b08cb8608e3d12f332fce53cb498724ca1f6b3f72df4d644b9700eebb",
+      "operative_body": "That Council proceed with consideration of Bylaw No. 1874 to amend the zoning designation of the property located at 2929 Sooke Road, 2995 Sooke Road, 3201 Loledo Place, 3211 Loledo Place, and 1297 Glenshire Drive from Rural Residential 2 (RR2) Zone and General Industrial (M2) Zone to Business Park 2A — Sooke Rd West (BP2A) zone subject to the following terms and conditions: a) That the applicant provides, prior to Public Hearing, the following: i. A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed development, to the satisfaction of the Director of Engineering; ii. A Traffic Impact Assessment, completed by a Professional Traffic Engineer who is licensed to practice in the Province of BC, that investigates the impact of the ultimate development, according to the Terms of Reference and the format of the Ministry of Transportation and Infrastructure \"Planning and Designing Access to Developments\" Manual, all to the satisfaction of the Ministry and the Director of Engineering. b) That the applicant provides, prior to Bylaw Adoption, the following: i. A legal survey plan that consolidates the five subject properties and includes required road dedication, to the satisfaction of the Ministry and the Director of Engineering. c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That all municipal frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the Director of Engineering prior to issuance of a building permit or subdivision approval, whichever is first; ii. That the recommendations from the Traffic Impact Assessment be implemented as part of the required frontage improvements for Sooke Road, to the satisfaction of the Ministry and the Director of Engineering; iii. That a storm water management plan be provided prior to issuance of a building permit or subdivision approval, whichever is first, and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; and iv. That a construction parking management plan be provide prior to the issuance of a building permit, to the satisfaction of the Director of Engineering.",
+      "operative_body_sha256": "4de7c48d554e04f6c8e79b0acad615915876fc7bd13981abe7d74bd06e89c9e0",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "54c7c3e56a7da3264d8a809a8c1fb7d6a8c21959d384fa157c0f8e019dada91d",
+          "render_sha256": "27d26c957aaf8a8ddeed3167961c8057cea186b4ab00c24904189a41e5159c6e"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "304de826f668ab0eb6d8d3637630ffddf2c33f66f1b2356d480dfb368fc02e3f",
+      "raw_block_sha256": "ad86ab7b8332936d2ca8a98b7dd301e19cf6edaea114d63479f9161d0b81c3eb",
+      "operative_body": "That Council proceed with consideration of First Reading of Bylaw No. 1912 to amend the zoning designation of the properties located at 929, 925, 921, 917 and 913 Bray from the R2 (One- and Two-Family Residential Zone) to the CC1 (City Centre) Zone subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions, per unit, prior to the issuance of a building permit to develop the property: i. $2,850 per unit towards the General Amenity Reserve Fund; ii. $750 per unit towards the Affordable Housing Fund; and 1. that the total amount of amenity contributions may be reduced by 50% for units on the 5th and 6th storey and by 75% for units above the 7th storey; and iii. $10.75 per m2 commercial GFA towards the General Amenity Reserve Fund. b. That the applicant provides, prior to Public Hearing, the following: i. A frontage drawing to the satisfaction of the Director of Engineering to confirm if road dedication is required to complete all required frontage improvements; and ii. A traffic impact assessment, prepared by a professional engineer and approved by the Director of Engineering, to assess whether a left-turn lane into the site is required; iii. A technical stormwater management memo approved by the Director of Engineering; c. That prior to Bylaw Adoption, the developer registers a road dedication plan, if required, in accordance with the frontage drawings provided and to the satisfaction of the Director of Engineering; d. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That the developer agrees to install, or bond for, all required frontage improvements to Bylaw No. 1000 standards along the Bray Avenue frontage including but not limited to the installation of sidewalks, road edge parking and boulevard landscaping to the satisfaction of the Director of Engineering, prior to issuance of a building permit; ii. That the developer agrees to install and implement recommendations from the prepared Traffic Impact Assessment report to the satisfaction of the Director of Engineering, prior to the issuance of a building permit; iii. That the developer acknowledges their obligation to cover any costs associated with upgrades, installation and/or connections to new and existing infrastructure needed to service the site for the proposed development; iv. That the developer agrees to provide a detailed stormwater management plan and install all recommended infrastructure prior to issuance of a building permit, in accordance with Bylaw No. 1000, and to the satisfaction of the Director of Engineering; v. That a construction parking management plan be provided prior to the issuance of a building permit, to the satisfaction of the Director of Engineering. vi. That the driveway access to the building will align with Knotty Pine Rd and Bray Ave intersection, and must be explicit on drawings submitted with the Development Permit application for form and character; vii. That the required parking stalls for this development are allocated for the use by individuals in each unit and visitors, as required by Bylaw No. 300; and that parking is not separated from individual units nor provided in exchange for compensation separate than that of a residential unit; viii. That the developer will submit Fire Underwriters Survey (FUS) calculations prior to the issuance of a development permit to develop the site, and acknowledges that these calculations may determine setbacks other than what is prescribed in the zone, ix. That the developer agrees to submit a Fire Safety Plan, approved by the Langford Fire Chief, prior to the issuance of a building permit to construct on the site; and x. That the developer registers a strata plan, prior to the issuance of an occupancy permit, that creates individual strata titles for each resident unit; and xi. That the five subject properties must be consolidated, prior to issuance of a Development Permit.",
+      "operative_body_sha256": "e984161a783e202d3bfaff0dc1f5569b6e0409d47e5e6c48f44d41625d521b94",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "36830ecdfddaeea361efe80c46c5e308186b6fe296c7e58e3145afc8b925462d",
+          "render_sha256": "2fdd41152dfadd9eccb68d53c345b0905c94b5319a57608abed0e2e8a0b9814f"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "d50a5a9d1c3354277372e2d098256496184715f6c0b04f85b74a960669a9bb6c",
+          "render_sha256": "2d658be898bdd5dcf9b6e2bec6667634ce70c6d427375e603f4f31b88e85caba"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council proceed with consideration of First Reading of Bylaw No. 1912 to amend the zoning designation of the properties located at 929, 925, 921, 917 and 913 Bray from the R2 (One- and Two-Family Residential Zone) to the CC1 (City Centre) Zone subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions, per unit, prior to the issuance of a building permit to develop the property: i. $2,850 per unit towards the General Amenity Reserve Fund; ii. $750 per unit towards the Affordable Housing Fund; and 1. that the total amount of amenity contributions may be reduced by 50% for units on the 55\" and 65\" storey and by 75% for units above the 75\" storey; and iii. $10.75 per m2 commercial GFA towards the General Amenity Reserve Fund. b. That the applicant provides, prior to Public Hearing, the following: i. A frontage drawing to the satisfaction of the Director of Engineering to confirm if road dedication is required to complete all required frontage improvements; and ii. A traffic impact assessment, prepared by a professional engineer and approved by the Director of Engineering, to assess whether a left-turn lane into the site is required; iii. A technical stormwater management memo approved by the Director of Engineering; c. That prior to Bylaw Adoption, the developer registers a road dedication plan, if required, in accordance with the frontage drawings provided and to the satisfaction of the Director of Engineering; d. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That the developer agrees to install, or bond for, all required frontage improvements to Bylaw No. 1000 standards along the Bray Avenue frontage including but not limited to the installation of sidewalks, road edge parking and boulevard landscaping to the satisfaction of the Director of Engineering, prior to issuance of a building permit; ii. That the developer agrees to install and implement recommendations from the prepared Traffic Impact Assessment report to the satisfaction of the Director of Engineering, prior to the issuance of a building permit; November 2, 2020 Page 12 of 26 iii. That the developer acknowledges their obligation to cover any costs associated with upgrades, installation and/or connections to new and existing infrastructure needed to service the site for the proposed development; iv. That the developer agrees to provide a detailed storniwater management plan and install all recommended infrastructure prior to issuance of a building permit, in accordance with Bylaw No. 1000, and to the satisfaction of the Director of Engineering; That a construction parking management plan be provided prior to the issuance of a building permit, to the satisfaction of the Director of Engineering. vi. That the driveway access to the building will align with Knotty Pine Rd and Bray Ave intersection, and must be explicit on drawings submitted with the Development Permit application for form and character; vii. That the required parking stalls for this development are allocated for the use by individuals in each unit and visitors, as required by Bylaw No. 300; and that parking is not separated from individual units nor provided in exchange for compensation separate than that of a residential unit; viii. That the developer will submit Fire Underwriters Survey (FUS) calculations prior to the issuance of a development permit to develop the site, and acknowledges that these calculations may determine setbacks other than what is prescribed in the zone, ix. That the developer agrees to submit a Fire Safety Plan, approved by the Langford Fire Chief, prior to the issuance of a building permit to construct on the site; and x. That the developer registers a strata plan, prior to the issuance of an occupancy permit, that creates individual strata titles for each resident unit; and xi. That the five subject properties must be consolidated, prior to issuance of a Development Permit.",
+          "printed": "That Council proceed with consideration of First Reading of Bylaw No. 1912 to amend the zoning designation of the properties located at 929, 925, 921, 917 and 913 Bray from the R2 (One- and Two-Family Residential Zone) to the CC1 (City Centre) Zone subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions, per unit, prior to the issuance of a building permit to develop the property: i. $2,850 per unit towards the General Amenity Reserve Fund; ii. $750 per unit towards the Affordable Housing Fund; and 1. that the total amount of amenity contributions may be reduced by 50% for units on the 55\" and 65\" storey and by 75% for units above the 75\" storey; and iii. $10.75 per m2 commercial GFA towards the General Amenity Reserve Fund. b. That the applicant provides, prior to Public Hearing, the following: i. A frontage drawing to the satisfaction of the Director of Engineering to confirm if road dedication is required to complete all required frontage improvements; and ii. A traffic impact assessment, prepared by a professional engineer and approved by the Director of Engineering, to assess whether a left-turn lane into the site is required; iii. A technical stormwater management memo approved by the Director of Engineering; c. That prior to Bylaw Adoption, the developer registers a road dedication plan, if required, in accordance with the frontage drawings provided and to the satisfaction of the Director of Engineering; d. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That the developer agrees to install, or bond for, all required frontage improvements to Bylaw No. 1000 standards along the Bray Avenue frontage including but not limited to the installation of sidewalks, road edge parking and boulevard landscaping to the satisfaction of the Director of Engineering, prior to issuance of a building permit; ii. That the developer agrees to install and implement recommendations from the prepared Traffic Impact Assessment report to the satisfaction of the Director of Engineering, prior to the issuance of a building permit; iii. That the developer acknowledges their obligation to cover any costs associated with upgrades, installation and/or connections to new and existing infrastructure needed to service the site for the proposed development; iv. That the developer agrees to provide a detailed storniwater management plan and install all recommended infrastructure prior to issuance of a building permit, in accordance with Bylaw No. 1000, and to the satisfaction of the Director of Engineering; That a construction parking management plan be provided prior to the issuance of a building permit, to the satisfaction of the Director of Engineering. vi. That the driveway access to the building will align with Knotty Pine Rd and Bray Ave intersection, and must be explicit on drawings submitted with the Development Permit application for form and character; vii. That the required parking stalls for this development are allocated for the use by individuals in each unit and visitors, as required by Bylaw No. 300; and that parking is not separated from individual units nor provided in exchange for compensation separate than that of a residential unit; viii. That the developer will submit Fire Underwriters Survey (FUS) calculations prior to the issuance of a development permit to develop the site, and acknowledges that these calculations may determine setbacks other than what is prescribed in the zone, ix. That the developer agrees to submit a Fire Safety Plan, approved by the Langford Fire Chief, prior to the issuance of a building permit to construct on the site; and x. That the developer registers a strata plan, prior to the issuance of an occupancy permit, that creates individual strata titles for each resident unit; and xi. That the five subject properties must be consolidated, prior to issuance of a Development Permit.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        },
+        {
+          "native": "55\" and 65\"",
+          "printed": "5th and 6th",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "75\" storey",
+          "printed": "7th storey",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "storniwater",
+          "printed": "stormwater",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "Engineering; That a construction",
+          "printed": "Engineering; v. That a construction",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "d42fa4960536b516ea6c0671c2e05b0061547e6f826be25b9d628db77a70459f",
+      "raw_block_sha256": "fcf4ab8df46b296fb59d1e966dff5fb3107766aacc0d4947ac14387ce3a49dc0",
+      "operative_body": "That Council consider proceeding with first reading of Bylaw No. 1918 to amend the zoning designation of the properties located at 840, 844, and 848 Orono Avenue from R1 (One-Family Residential) to CC1 (City Centre) subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to the issuance of a building permit: i. $750 towards the Affordable Housing Reserve Fund; and ii. $2,850 towards the General Amenity Reserve Fund. Subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy. b. That the applicant provides, prior to Second Reading, the following: i. A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering; and ii. A frontage drawing to the satisfaction of the Director of Engineering to confirm if road dedication is required to complete all required frontage improvements; and c. That the applicant registers, prior to Bylaw Adoption, a road dedication plan, if required, to the satisfaction of the Director of Engineering; d. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That all frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the Director of Engineering prior to issuance of a building permit; ii. That a storm water management plan be provided prior to issuance of a building permit and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; iii. That a construction parking and traffic management plan be provided prior to the issuance of a building permit, to the satisfaction of the Director of Engineering; iv. That the building be strata titled into individual residential units prior to the issuance of an occupancy permit; v. That the required parking stalls for this development are allocated for the use by individuals in each unit, as required by Bylaw 300 and designed accordingly, and that parking stalls are not sold or rented out individually; and vi. That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space; and 1. Energized outlets shall be labelled for the use of electric vehicle charging; 2. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum performance standard to ensure a sufficient rate of electric vehicle charging; and 3. The owner is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council may not prevent an owner, occupant, or tenant from installing the EV charging equipment. e. Authorize the Director of Planning to issue the following variances within the development permit: i. Section 6.57.06(1)(a) be varied to permit ground floor patios within 0.32 m of the front lot line, and to permit the ornamental bump outs to be located within 1.24 m of the front lot line; ii. Section 6.57.06(2)(a) be varied to permit the building face within 2 m of the front lot line on the third storey or above, and to permit the ornamental bump outs to be located within 1.24 m of the front lot line on the third storey or above; iii. Section 6.57.08(1) be varied to permit the location of unenclosed parking spaces to be located within 1.7 m of the front lot line; iv. Section 6.57.08(2) be varied to permit the location of parking stalls that are adjacent to a highway to be screened by fencing and landscaping; and v. Section 6.57.08(3) be varied to permit the location of parking stalls adjacent to an interior side or rear lot line when the landscaping strip is as narrow as 0.94 m.",
+      "operative_body_sha256": "6a22d58a06bae10aab3c90d9d4fe558c75eb4d7d6cdb4749777893c97442e324",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13,
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "d50a5a9d1c3354277372e2d098256496184715f6c0b04f85b74a960669a9bb6c",
+          "render_sha256": "2d658be898bdd5dcf9b6e2bec6667634ce70c6d427375e603f4f31b88e85caba"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "c3910c9a03841047eb42c4f3dcb71579be51861782f230407eb947ea7eaf3dc0",
+          "render_sha256": "797942c00abbb6ce4744f38400c146548143125460a49d2e3a0908081d554270"
+        },
+        {
+          "page": 14,
+          "native_text_sha256": "863c94e9382d405eb0227018020556a32c867861c746ebd71fa431e6bd65aa95",
+          "render_sha256": "c77bb9499b4fda0f62997d26c95f522669b21535cb3cd0798b6b99b6a7eb62d3"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council consider proceeding with first reading of Bylaw No. 1918 to amend the zoning designation of the properties located at 840, 844, and 848 Orono Avenue from R1 (One-Family Residential) to CC1 (City Centre) subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to the issuance of a building permit: i. $750 towards the Affordable Housing Reserve Fund; and ii. $2,850 towards the General Amenity Reserve Fund. Subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy. November 2, 2020 Page 13 of 26 b. That the applicant provides, prior to Second Reading, the following: i. A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering; and ii. A frontage drawing to the satisfaction of the Director of Engineering to confirm if road dedication is required to complete all required frontage improvements; and c. That the applicant registers, prior to Bylaw Adoption, a road dedication plan, if required, to the satisfaction of the Director of Engineering; d. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That all frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the Director of Engineering prior to issuance of a building permit; ii. That a storm water management plan be provided prior to issuance of a building permit and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; iii. That a construction parking and traffic management plan be provided prior to the issuance of a building permit, to the satisfaction of the Director of Engineering; iv. That the building be strata titled into individual residential units prior to the issuance of an occupancy permit; v. That the required parking stalls for this development are allocated for the use by individuals in each unit, as required by Bylaw 300 and designed accordingly, and that parking stalls are not sold or rented out individually; and vi. That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space; and 1. Energized outlets shall be labelled for the use of electric vehicle charging; 2. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum performance standard to ensure a sufficient rate of electric vehicle charging; and 3. The owner is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council may not prevent an owner, occupant, or tenant from installing the EV charging equipment. e. Authorize the Director of Planning to issue the following variances within the development permit: i. Section 6.57.06(1)(a) be varied to permit ground floor patios within 0.32 m of the front lot line, and to permit the ornamental bump outs to be located within 1.24 m of the front lot line; ii. Section 6.57.06(2)(a) be varied to permit the building face within 2 m of the front lot line on the third storey or above, and to permit the ornamental bump outs to be located within 1.24 m of the front lot line on the third storey or above; November 2, 2020 Page 14 of 26 iii. Section 6.57.08(1) be varied to permit the location of unenclosed parking spaces to be located within 1.7 m of the front lot line; iv. Section 6.57.08(2) be varied to permit the location of parking stalls that are adjacent to a highway to be screened by fencing and landscaping; and v. Section 6.57.08(3) be varied to permit the location of parking stalls adjacent to an interior side or rear lot line when the landscaping strip is as narrow as 0.94 m.",
+          "printed": "That Council consider proceeding with first reading of Bylaw No. 1918 to amend the zoning designation of the properties located at 840, 844, and 848 Orono Avenue from R1 (One-Family Residential) to CC1 (City Centre) subject to the following terms and conditions: a. That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to the issuance of a building permit: i. $750 towards the Affordable Housing Reserve Fund; and ii. $2,850 towards the General Amenity Reserve Fund. Subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy. b. That the applicant provides, prior to Second Reading, the following: i. A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering; and ii. A frontage drawing to the satisfaction of the Director of Engineering to confirm if road dedication is required to complete all required frontage improvements; and c. That the applicant registers, prior to Bylaw Adoption, a road dedication plan, if required, to the satisfaction of the Director of Engineering; d. That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That all frontage improvements to Bylaw 1000 standards are provided to the satisfaction of the Director of Engineering prior to issuance of a building permit; ii. That a storm water management plan be provided prior to issuance of a building permit and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; iii. That a construction parking and traffic management plan be provided prior to the issuance of a building permit, to the satisfaction of the Director of Engineering; iv. That the building be strata titled into individual residential units prior to the issuance of an occupancy permit; v. That the required parking stalls for this development are allocated for the use by individuals in each unit, as required by Bylaw 300 and designed accordingly, and that parking stalls are not sold or rented out individually; and vi. That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space; and 1. Energized outlets shall be labelled for the use of electric vehicle charging; 2. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum performance standard to ensure a sufficient rate of electric vehicle charging; and 3. The owner is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council may not prevent an owner, occupant, or tenant from installing the EV charging equipment. e. Authorize the Director of Planning to issue the following variances within the development permit: i. Section 6.57.06(1)(a) be varied to permit ground floor patios within 0.32 m of the front lot line, and to permit the ornamental bump outs to be located within 1.24 m of the front lot line; ii. Section 6.57.06(2)(a) be varied to permit the building face within 2 m of the front lot line on the third storey or above, and to permit the ornamental bump outs to be located within 1.24 m of the front lot line on the third storey or above; iii. Section 6.57.08(1) be varied to permit the location of unenclosed parking spaces to be located within 1.7 m of the front lot line; iv. Section 6.57.08(2) be varied to permit the location of parking stalls that are adjacent to a highway to be screened by fencing and landscaping; and v. Section 6.57.08(3) be varied to permit the location of parking stalls adjacent to an interior side or rear lot line when the landscaping strip is as narrow as 0.94 m.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        }
+      ]
+    },
+    {
+      "source_key": "95c7e9ebc03e535a4b3131d968a77dce588a2bdde735a96efc6f8238fbaa30d5",
+      "raw_block_sha256": "33452cf79069014f4f5bb081749b75c1771650b2d88818e9940326ed68d2b57b",
+      "operative_body": "That Council authorize staff to prepare a bylaw to amend the zoning designation of a portion of the property located at 738 and 742 Walfred Road from Rural Residential 5 (RR5) to One-and Two Family Residential (R2) and to amend the text within the R2 Zone such that the minimum lot size for duplex lots is decreased to 500 m2 when the lot width is at least 17m on the subject properties only, subject to the following terms and conditions: a) That the the applicant provides, as a bonus for increased density, the following contributions per one-family lot or 1/2 duplex unit, prior to subdivision approval: i. $660 towards the Affordable Housing Fund; and ii. $3,960 towards the General Amenity Reserve Fund. b) That the applicant provides, prior to Public Hearing, the following: i. A technical storm water management memo from a qualified engineer that verifies storm water can be adequately managed on-site and downstream, to the satisfaction of the Director of Engineering. ii. An approved alternative to providing secondary access within 305 m of the development site for emergency vehicles, to the satisfaction of the Fire Chief, c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That a storm water management plan be provided and implemented to the satisfaction of the Director of Engineering prior to subdivision approval or building permit issuance, whichever is first; ii. That a statutory right of way for a temporary turnaround of a size and location to the satisfaction of the Director of Engineering and Fire Chief be registered prior to subdivision approval; iii. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering; iv. That, prior to subdivision approval or building permit issuance, which ever is first, full frontage improvements including, but not limited to, the installation of sidewalks, boulevard landscaping, scallop parking stall(s), and light standards in accordance with Bylaw No.1000 and to the satisfaction of the Director of Engineering. These improvements shall include that portion of new road extending between Myles Mansell Rd and Proposed Lot C to be dedicated from the adjoining parcel, Lot 3, Plan 21075 to provide access to Lot C; v. That further subdivision or rezoning for proposed Lots A and B is prohibited until sewer servicing is installed and frontage improvements are secured; i. That the applicant registers a section 219 covenant on title of proposed Lot C agreeing to construct, to Bylaw No. 1000 standards, the public road extension from Myles Mansell Rd to the subject property; vi. That the applicant provides a non-disturbance covenant over 51% of the subject properties, at the time of subdivision to the satisfaction of the Director of Planning. AND Defer further consideration of a Development Variance Permit for sewer servicing and secondary emergency access until the applicant has explored all alternatives related to secondary access for emergency vehicles, to the satisfaction of the Fire Chief, prior to Public Hearing.",
+      "operative_body_sha256": "1bcdfc84212cc8c454078cea9b3f1ea0399694d734373a51955376b936f20255",
+      "result": "CARRIED",
+      "pages": [
+        14,
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "863c94e9382d405eb0227018020556a32c867861c746ebd71fa431e6bd65aa95",
+          "render_sha256": "c77bb9499b4fda0f62997d26c95f522669b21535cb3cd0798b6b99b6a7eb62d3"
+        },
+        {
+          "page": 15,
+          "native_text_sha256": "8365166d68a79754409f6adf6eb082faf2a065d8e0e5193458ef541f9790ece0",
+          "render_sha256": "5ac0fb1879a7915050f371529fe37e11b2da0bdda5336f97400774c5f49b8539"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council authorize staff to prepare a bylaw to amend the zoning designation of a portion of the property located at 738 and 742 Walfred Road from Rural Residential 5 (RR5) to One-and Two Family Residential (R2) and to amend the text within the R2 Zone such that the minimum lot size for duplex lots is decreased to 500 m2 when the lot width is at least 17m on the subject properties only, subject to the following terms and conditions: a) That the the applicant provides, as a bonus for increased density, the following contributions per one-family lot or 1/2 duplex unit, prior to subdivision approval: i. $660 towards the Affordable Housing Fund; and ii. $3,960 towards the General Amenity Reserve Fund. b) That the applicant provides, prior to Public Hearing, the following: i. A technical storm water management memo from a qualified engineer that verifies storm water can be adequately managed on-site and downstream, to the satisfaction of the Director of Engineering. ii. An approved alternative to providing secondary access within 305 m of the development site for emergency vehicles, to the satisfaction of the Fire Chief, c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That a storm water management plan be provided and implemented to the satisfaction of the Director of Engineering prior to subdivision approval or building permit issuance, whichever is first; ii. That a statutory right of way for a temporary turnaround of a size and location to the satisfaction of the Director of Engineering and Fire Chief be registered prior to subdivision approval; November 2, 2020 Page 15 of 26 iii. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering; iv. That, prior to subdivision approval or building permit issuance, which ever is first, full frontage improvements including, but not limited to, the installation of sidewalks, boulevard landscaping, scallop parking stall(s), and light standards in accordance with Bylaw No.1000 and to the satisfaction of the Director of Engineering. These improvements shall include that portion of new road extending between Myles Mansell Rd and Proposed Lot C to be dedicated from the adjoining parcel, Lot 3, Plan 21075 to provide access to Lot C; v. That further subdivision or rezoning for proposed Lots A and B is prohibited until sewer servicing is installed and frontage improvements are secured; That the applicant registers a section 219 covenant on title of proposed Lot C agreeing to construct, to Bylaw No. 1000 standards, the public road extension from Myles Mansell Rd to the subject property; vi. That the applicant provides a non-disturbance covenant over 51% of the subject properties, at the time of subdivision to the satisfaction of the Director of Planning. AND Defer further consideration of a Development Variance Permit for sewer servicing and secondary emergency access until the applicant has explored all alternatives related to secondary access for emergency vehicles, to the satisfaction of the Fire Chief, prior to Public Hearing.",
+          "printed": "That Council authorize staff to prepare a bylaw to amend the zoning designation of a portion of the property located at 738 and 742 Walfred Road from Rural Residential 5 (RR5) to One-and Two Family Residential (R2) and to amend the text within the R2 Zone such that the minimum lot size for duplex lots is decreased to 500 m2 when the lot width is at least 17m on the subject properties only, subject to the following terms and conditions: a) That the the applicant provides, as a bonus for increased density, the following contributions per one-family lot or 1/2 duplex unit, prior to subdivision approval: i. $660 towards the Affordable Housing Fund; and ii. $3,960 towards the General Amenity Reserve Fund. b) That the applicant provides, prior to Public Hearing, the following: i. A technical storm water management memo from a qualified engineer that verifies storm water can be adequately managed on-site and downstream, to the satisfaction of the Director of Engineering. ii. An approved alternative to providing secondary access within 305 m of the development site for emergency vehicles, to the satisfaction of the Fire Chief, c) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That a storm water management plan be provided and implemented to the satisfaction of the Director of Engineering prior to subdivision approval or building permit issuance, whichever is first; ii. That a statutory right of way for a temporary turnaround of a size and location to the satisfaction of the Director of Engineering and Fire Chief be registered prior to subdivision approval; iii. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering; iv. That, prior to subdivision approval or building permit issuance, which ever is first, full frontage improvements including, but not limited to, the installation of sidewalks, boulevard landscaping, scallop parking stall(s), and light standards in accordance with Bylaw No.1000 and to the satisfaction of the Director of Engineering. These improvements shall include that portion of new road extending between Myles Mansell Rd and Proposed Lot C to be dedicated from the adjoining parcel, Lot 3, Plan 21075 to provide access to Lot C; v. That further subdivision or rezoning for proposed Lots A and B is prohibited until sewer servicing is installed and frontage improvements are secured; That the applicant registers a section 219 covenant on title of proposed Lot C agreeing to construct, to Bylaw No. 1000 standards, the public road extension from Myles Mansell Rd to the subject property; vi. That the applicant provides a non-disturbance covenant over 51% of the subject properties, at the time of subdivision to the satisfaction of the Director of Planning. AND Defer further consideration of a Development Variance Permit for sewer servicing and secondary emergency access until the applicant has explored all alternatives related to secondary access for emergency vehicles, to the satisfaction of the Fire Chief, prior to Public Hearing.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        },
+        {
+          "native": "secured; That the applicant registers",
+          "printed": "secured; i. That the applicant registers",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "ec4f5f7a3b630b17cb18aeef31e4bd14446dca0ed86465dc835faad63799771b",
+      "raw_block_sha256": "feb08043f5d13bff1231fb425bce25a8d5f01e6861f573ace7c8f82696a631bf",
+      "operative_body": "That Council consider proceeding with First Reading of Bylaw No. 1933 to amend the zoning designation of a portion of the property located at 3235 Happy Valley Road from the R2 (Residential One and Two Family Dwelling) Zone to RS1 (Residential Small Lot 1), subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per dwelling unit, prior to issuance of a building permit: i. $3,960 per small lot one family dwelling towards the General Amenity Reserve Fund; ii. $660 per small lot one family dwelling towards the Affordable Housing Reserve Fund; b) That the developer provides, prior to Public Hearing the following: i. A technical Stormwater Management Memo to the satisfaction of the Director of Engineering; ii. A frontage drawing for each road frontage (Happy Valley Road, Isabell Avenue and the new road) that specifies road dedication required to contain frontage improvements, to the satisfaction of the Director of Engineering and in accordance with Bylaw No. 1000; c) That the applicant registers, prior to Bylaw Adoption, a SRW over that portion of the subject property required to accommodate the new road, to the approval of the Director of Engineering and in accordance with the standards of Bylaw No.1000; d) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other financial charges on title that agrees to the following: i. That the developer agrees to complete any required improvements and/or upgrades to on-site and off-site infrastructure necessary to facilitate proper drainage on the subject property at the developer's expense; ii. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering, and that costs incurred will be the responsibility of the developer; iii. That, prior to subdivision approval or building permit issuance, which ever is first, full frontage improvements including, but not limited to, the installation of sidewalks, boulevard landscaping, scallop parking stall(s), and light standards in accordance with Bylaw No.1000 and to the satisfaction of the Director of Engineering; iv. That the new road is dedicated at the time of subdivision; v. That, prior to subdivision approval or building permit issuance, which ever is first, the developer submits and agrees to implement, a formal stormwater management plan to the standards of the Bylaw No.1000 and to the approval of the Director of Engineering; vi. That, prior to subdivision approval or building permit issuance, which ever is first, the developer submits design drawings, for all three dwellings that shows how the designs are complementary to one another. Design drawings shall be to the approval of the Director of Planning; vii. That the owner acknowledges the property's proximity to the South Island Rangers shooting range and the potential noise nuisance this establishment may cause; viii. That a secondary suite is not permitted on Proposed Lots B and C and that individual Building Permit plans shall be reviewed by the Director of Planning, prior to the issuance of a building permit, and shall have the authority to request alternate building drawings if there is reasonable cause to believe the dwelling may be constructed with a secondary suite; ix. That, prior to subdivision approval, a fire safety plan, reviewed and approved by a Fire Prevention Officer, must be submitted; x. That, prior to subdivision approval, the developer will submit fire underwriters survey (FUS) calculations to determine the waterflow at the site and that the developer shall be aware and acknowledge that the FUS will determine the appropriate spatial distance between buildings, regardless of zoning regulations or granted variances to property lines, in order to maintain adequate waterflow; xi. That, prior to building permit issuance, the applicant will submit a construction parking management plan, to the satisfaction of the Director of Engineering; AND e) Direct staff to provide notice that Council will consider issuing a Development Variance Permit with the following variances for the property at 3235 Happy Valley Road: a. That Section 6.22.07(1)(a) be varied to reduce the building setback from a front lot line from the required 3.0 m to 1.64 m to accommodate the existing house, subject to the following condition: i. The developer agrees to modify the design of the front façade of the existing house, facing Happy Valley Road, so as to align with the Design Guidelines for Intensive Residential Developments on corner properties, and that fencing is installed along this property line, in accordance with Section 3.21 of the Zoning Bylaw; b. That Section 6.20.06(1)(c) be varied to reduce the building setback from an exterior side lot line from the required 3.5 m to 1.5 m to accommodate the proposed dwelling, subject to the following condition: i. The developer agrees to install fencing along this property line in accordance with Section 3.21 of the Zoning Bylaw.",
+      "operative_body_sha256": "4df75ac10c36198d0884af7f40955710fa3b89ebae8941ad982c8d943dfe00a5",
+      "result": "CARRIED",
+      "pages": [
+        15,
+        16,
+        17
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "8365166d68a79754409f6adf6eb082faf2a065d8e0e5193458ef541f9790ece0",
+          "render_sha256": "5ac0fb1879a7915050f371529fe37e11b2da0bdda5336f97400774c5f49b8539"
+        },
+        {
+          "page": 16,
+          "native_text_sha256": "c29eb31b712e0442b8acf34e81648f6229b6a67be02fc7df68aad5b184d1f3f3",
+          "render_sha256": "bf3b7f6572fd0231382d3e175a862166242bb44d5b3d6be12fb098a7530bb1cb"
+        },
+        {
+          "page": 17,
+          "native_text_sha256": "e947c35929a568bf62f67ccfb78c307768d8907b10ba267f6a19e6c6e9af3405",
+          "render_sha256": "9ea73962096ecd0eb5ab12cee88f92150f7b2b8afd65e2df3196147d88a84dad"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council consider proceeding with First Reading of Bylaw No. 1933 to amend the zoning designation of a portion of the property located at 3235 Happy Valley Road from the R2 (Residential One and Two Family Dwelling) Zone to RS1 (Residential Small Lot 1), subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per dwelling unit, prior to issuance of a building permit: i. $3,960 per small lot one family dwelling towards the General Amenity Reserve Fund; $660 per small lot one family dwelling towards the Affordable Housing Reserve Fund; b) That the developer provides, prior to Public Hearing the following: November 2, 2020 Page 16 of 26 A technical Stormwater Management Memo to the satisfaction of the Director of Engineering; A frontage drawing for each road frontage (Happy Valley Road, lsabell Avenue and the new road) that specifies road dedication required to contain frontage improvements, to the satisfaction of the Director of Engineering and in accordance with Bylaw No. 1000; c) That the applicant registers, prior to Bylaw Adoption, a SRW over that portion of the subject property required to accommodate the new road, to the approval of the Director of Engineering and in accordance with the standards of Bylaw No.1000; d) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other financial charges on title that agrees to the following: i. That the developer agrees to complete any required improvements and/or upgrades to on-site and off-site infrastructure necessary to facilitate proper drainage on the subject property at the developer's expense; ii. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering, and that costs incurred will be the responsibility of the developer; iii. That, prior to subdivision approval or building permit issuance, which ever is first, full frontage improvements including, but not limited to, the installation of sidewalks, boulevard landscaping, scallop parking stall(s), and light standards in accordance with Bylaw No.1000 and to the satisfaction of the Director of Engineering; iv. That the new road is dedicated at the time of subdivision; v. That, prior to subdivision approval or building permit issuance, which ever is first, the developer submits and agrees to implement, a formal stormwater management plan to the standards of the Bylaw No.1000 and to the approval of the Director of Engineering; vi. That, prior to subdivision approval or building permit issuance, which ever is first, the developer submits design drawings, for all three dwellings that shows how the designs are complementary to one another. Design drawings shall be to the approval of the Director of Planning; vii. That the owner acknowledges the property's proximity to the South Island Rangers shooting range and the potential noise nuisance this establishment may cause; viii. That a secondary suite is not permitted on Proposed Lots B and C and that individual Building Permit plans shall be reviewed by the Director of Planning, prior to the issuance of a building permit, and shall have the authority to request alternate building drawings if there is reasonable cause to believe the dwelling may be constructed with a secondary suite; ix. That, prior to subdivision approval, a fire safety plan, reviewed and approved by a Fire Prevention Officer, must be submitted; x. That, prior to subdivision approval, the developer will submit fire underwriters survey (FUS) calculations to determine the waterflow at the site and that the developer shall be aware and acknowledge that the FUS will determine the November 2, 2020 Page 17 of 26 appropriate spatial distance between buildings, regardless of zoning regulations or granted variances to property lines, in order to maintain adequate waterflow; xi. That, prior to building permit issuance, the applicant will submit a construction parking management plan, to the satisfaction of the Director of Engineering; AND e) Direct staff to provide notice that Council will consider issuing a Development Variance Permit with the following variances for the property at 3235 Happy Valley Road: a. That Section 6.22.07(1)(a) be varied to reduce the building setback from a front lot line from the required 3.0 m to 1.64 m to accommodate the existing house, subject to the following condition: i. The developer agrees to modify the design of the front façade of the existing house, facing Happy Valley Road, so as to align with the Design Guidelines for Intensive Residential Developments on corner properties, and that fencing is installed along this property line, in accordance with Section 3.21 of the Zoning Bylaw; b. That Section 6.20.06(1)(c) be varied to reduce the building setback from an exterior side lot line from the required 3.5 m to 1.5 m to accommodate the proposed dwelling, subject to the following condition: i. The developer agrees to install fencing along this property line in accordance with Section 3.21 of the Zoning Bylaw.",
+          "printed": "That Council consider proceeding with First Reading of Bylaw No. 1933 to amend the zoning designation of a portion of the property located at 3235 Happy Valley Road from the R2 (Residential One and Two Family Dwelling) Zone to RS1 (Residential Small Lot 1), subject to the following terms and conditions: a) That the owner agrees to provide, as a bonus for increased density, the following contributions per dwelling unit, prior to issuance of a building permit: i. $3,960 per small lot one family dwelling towards the General Amenity Reserve Fund; $660 per small lot one family dwelling towards the Affordable Housing Reserve Fund; b) That the developer provides, prior to Public Hearing the following: A technical Stormwater Management Memo to the satisfaction of the Director of Engineering; A frontage drawing for each road frontage (Happy Valley Road, lsabell Avenue and the new road) that specifies road dedication required to contain frontage improvements, to the satisfaction of the Director of Engineering and in accordance with Bylaw No. 1000; c) That the applicant registers, prior to Bylaw Adoption, a SRW over that portion of the subject property required to accommodate the new road, to the approval of the Director of Engineering and in accordance with the standards of Bylaw No.1000; d) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered in priority of all other financial charges on title that agrees to the following: i. That the developer agrees to complete any required improvements and/or upgrades to on-site and off-site infrastructure necessary to facilitate proper drainage on the subject property at the developer's expense; ii. That any necessary above or underground infrastructure or servicing upgrades, extensions or other required servicing requirements are to be fulfilled to the standards of Bylaw No. 1000 and the Director of Engineering, and that costs incurred will be the responsibility of the developer; iii. That, prior to subdivision approval or building permit issuance, which ever is first, full frontage improvements including, but not limited to, the installation of sidewalks, boulevard landscaping, scallop parking stall(s), and light standards in accordance with Bylaw No.1000 and to the satisfaction of the Director of Engineering; iv. That the new road is dedicated at the time of subdivision; v. That, prior to subdivision approval or building permit issuance, which ever is first, the developer submits and agrees to implement, a formal stormwater management plan to the standards of the Bylaw No.1000 and to the approval of the Director of Engineering; vi. That, prior to subdivision approval or building permit issuance, which ever is first, the developer submits design drawings, for all three dwellings that shows how the designs are complementary to one another. Design drawings shall be to the approval of the Director of Planning; vii. That the owner acknowledges the property's proximity to the South Island Rangers shooting range and the potential noise nuisance this establishment may cause; viii. That a secondary suite is not permitted on Proposed Lots B and C and that individual Building Permit plans shall be reviewed by the Director of Planning, prior to the issuance of a building permit, and shall have the authority to request alternate building drawings if there is reasonable cause to believe the dwelling may be constructed with a secondary suite; ix. That, prior to subdivision approval, a fire safety plan, reviewed and approved by a Fire Prevention Officer, must be submitted; x. That, prior to subdivision approval, the developer will submit fire underwriters survey (FUS) calculations to determine the waterflow at the site and that the developer shall be aware and acknowledge that the FUS will determine the appropriate spatial distance between buildings, regardless of zoning regulations or granted variances to property lines, in order to maintain adequate waterflow; xi. That, prior to building permit issuance, the applicant will submit a construction parking management plan, to the satisfaction of the Director of Engineering; AND e) Direct staff to provide notice that Council will consider issuing a Development Variance Permit with the following variances for the property at 3235 Happy Valley Road: a. That Section 6.22.07(1)(a) be varied to reduce the building setback from a front lot line from the required 3.0 m to 1.64 m to accommodate the existing house, subject to the following condition: i. The developer agrees to modify the design of the front façade of the existing house, facing Happy Valley Road, so as to align with the Design Guidelines for Intensive Residential Developments on corner properties, and that fencing is installed along this property line, in accordance with Section 3.21 of the Zoning Bylaw; b. That Section 6.20.06(1)(c) be varied to reduce the building setback from an exterior side lot line from the required 3.5 m to 1.5 m to accommodate the proposed dwelling, subject to the following condition: i. The developer agrees to install fencing along this property line in accordance with Section 3.21 of the Zoning Bylaw.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        },
+        {
+          "native": "Fund; $660",
+          "printed": "Fund; ii. $660",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "following: A technical",
+          "printed": "following: i. A technical",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "Engineering; A frontage",
+          "printed": "Engineering; ii. A frontage",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "lsabell Avenue",
+          "printed": "Isabell Avenue",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "6f130451e36bda068290b36f4100b559b93ee4a7cd18dc113f484ddb4c85a53f",
+      "raw_block_sha256": "19deba3405dc894d01d0667f82ce7cb891fadefe8125dedc70d594fa361a981d",
+      "operative_body": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit for 2716 and 2720 Strathmore Rd with the following variances: a. That Section 6.36A.06(3) of Zoning Bylaw No.300 be varied to reduce the required the interior side setback from the required 3.0 m to 0.60 m to accommodate a garbage enclosure; Subject to the following conditions: 1. That the developer provides updated elevation drawings more in keeping with the drawings presented in the rezoning process prior to issuance of the Development Variance Permit; and 2. That the developer installs decorative fencing with a minimum height of 1.8m around the interior side and rear lot lines; and AND Reject the applicant's request for a variance to reduce the width of landscaping required along an interior side property line for buildings within a multi-family residential zone from 1 m to 0 m.",
+      "operative_body_sha256": "f4daf895cf042ad743bc9a2a4e344af804f404c76078672b2e5e13214bba1104",
+      "result": "CARRIED",
+      "pages": [
+        17,
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 17,
+          "native_text_sha256": "e947c35929a568bf62f67ccfb78c307768d8907b10ba267f6a19e6c6e9af3405",
+          "render_sha256": "9ea73962096ecd0eb5ab12cee88f92150f7b2b8afd65e2df3196147d88a84dad"
+        },
+        {
+          "page": 18,
+          "native_text_sha256": "53a27a26a8e07494a96b31e31f0f2b989b588c241f224599c12f47aca2658516",
+          "render_sha256": "87bc40bbf8df9ad8f32039ea3cbf3ccc575ad260ad54f67738c6a9bdbb9fb9de"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit for 2716 and 2720 Strathmore Rd with the following variances: a. That Section 6.36A.06(3) of Zoning Bylaw No.300 be varied to reduce the required the interior aide setback from the required 3.0 m to 0.60 m to accommodate a garbage enclosure; Subject to the following conditions: November 2, 2020 Page 18 of 26 1. That the developer provides updated elevation drawings more in keeping with the drawings presented in the rezoning process prior to issuance of the Development Variance Permit; and 2. That the developer installs decorative fencing with a minimum height of 1.8m around the interior side and rear lot lines; and AND Reject the applicant's request for a variance to reduce the width of landscaping required along an interior side property line for buildings within a multi-family residential zone from 1 m to 0 m.",
+          "printed": "That Council direct staff to provide notice that Council will consider issuing a Development Variance Permit for 2716 and 2720 Strathmore Rd with the following variances: a. That Section 6.36A.06(3) of Zoning Bylaw No.300 be varied to reduce the required the interior aide setback from the required 3.0 m to 0.60 m to accommodate a garbage enclosure; Subject to the following conditions: 1. That the developer provides updated elevation drawings more in keeping with the drawings presented in the rezoning process prior to issuance of the Development Variance Permit; and 2. That the developer installs decorative fencing with a minimum height of 1.8m around the interior side and rear lot lines; and AND Reject the applicant's request for a variance to reduce the width of landscaping required along an interior side property line for buildings within a multi-family residential zone from 1 m to 0 m.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        },
+        {
+          "native": "interior aide setback",
+          "printed": "interior side setback",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "5ea5889fe48bbd684ac565bfc9c49c5bba31da609f7c5c2c3f8543f1fc41846d",
+      "raw_block_sha256": "6cebef723e838248082c7ed20514e86c1120f9d4a678ae94c08ac7e98e65da51",
+      "operative_body": "That Development Variance Permit No. DVP20-0005 be issued by the Council for the City of Langford to Chris McFarland to reduce the rear yard setback from the required 6.0 m to 3.0 m in order to facilitate the construction of a deck attached to an existing single-family dwelling at 628 Kestrel Ridge subject to the following terms and conditions: 1. Appendix The following requirements are imposed under Section 498 of the Local Government Act: a) The site shall be developed in accordance with the site plan attached (Appendix A). b) The deck shall be constructed in accordance with the recommendations of the report provided by Strathcona Consulting, dated June 2020 attached (Appendix B). 2. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: a) That Section 6.21.06(1)(a) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0 m.",
+      "operative_body_sha256": "ce700f2abb24687687b77b3892242fb6ea58cc1dbefdc9cfd1687cf2bc8ef0a5",
+      "result": "CARRIED",
+      "pages": [
+        18,
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "53a27a26a8e07494a96b31e31f0f2b989b588c241f224599c12f47aca2658516",
+          "render_sha256": "87bc40bbf8df9ad8f32039ea3cbf3ccc575ad260ad54f67738c6a9bdbb9fb9de"
+        },
+        {
+          "page": 19,
+          "native_text_sha256": "0b9b419c60bf5f5c16b4a69697e92e7d4424d1a63e64046e8c7511bf18e53958",
+          "render_sha256": "7a7d38c0bd77277712f4da91318a964c6fdb45c66f57678124a4e36d34362335"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Development Variance Permit No. DVP20-0005 be issued by the Council for the City of Langford to Chris McFarland to reduce the rear yard setback from the required 6.0 m to 3.0 m in order to facilitate the construction of a deck attached to an existing single-family dwelling at 628 Kestrel Ridge subject to the following terms and conditions: November 2, 2020 Page 19 of 26 1. Appendix The following requirements are imposed under Section 498 of the Local Government Act: a) The site shall be developed in accordance with the site plan attached (Appendix A). b) The deck shall be constructed in accordance with the recommendations of the report provided by Strathcona Consulting, dated June 2020 attached (Appendix B). 2. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: a) That Section 6.21.06(1)(a) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0 m.",
+          "printed": "That Development Variance Permit No. DVP20-0005 be issued by the Council for the City of Langford to Chris McFarland to reduce the rear yard setback from the required 6.0 m to 3.0 m in order to facilitate the construction of a deck attached to an existing single-family dwelling at 628 Kestrel Ridge subject to the following terms and conditions: 1. Appendix The following requirements are imposed under Section 498 of the Local Government Act: a) The site shall be developed in accordance with the site plan attached (Appendix A). b) The deck shall be constructed in accordance with the recommendations of the report provided by Strathcona Consulting, dated June 2020 attached (Appendix B). 2. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: a) That Section 6.21.06(1)(a) of Zoning Bylaw No. 300 be varied from the required 6.0 m to 3.0 m.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        }
+      ]
+    },
+    {
+      "source_key": "3c1254fe01c0785d74cf82e319cf3c9edaf0fe3d357b52103b4e98f7e835908f",
+      "raw_block_sha256": "4cedae7bb8f5367c88c71420ebb02ff73457012b886ca37040a79fd5c6cf251f",
+      "operative_body": "That Development Variance Permit No. DVP20-0009 be issued by the Council for the City of Langford to Keycorp Developments Ltd in partnership with Tri-Way Development Ltd to reduce the onsite parking requirements for the 58-unit multi-family residential building at 2780 Spencer Rd that will be run by the Capital Regional District, subject to the following terms and conditions: 1. Appendix The site shall be developed in accordance with the site plan attached as Appendix A to Development Permit No. DP20-0034. 2. Variances The following regulations of Zoning Bylaw No. 300 are varied under Section 498 of the Local Government Act: b) That Table 1 in Section 4.01 of Zoning Bylaw No. 0300 be varied to reduce the number of required onsite parking spaces from 1.25 unit to 1.00 per unit.",
+      "operative_body_sha256": "3ddaa6786e3c910aab89906479082324664b4ae3949d87089ba5362648155827",
+      "result": "CARRIED",
+      "pages": [
+        19
+      ],
+      "page_evidence": [
+        {
+          "page": 19,
+          "native_text_sha256": "0b9b419c60bf5f5c16b4a69697e92e7d4424d1a63e64046e8c7511bf18e53958",
+          "render_sha256": "7a7d38c0bd77277712f4da91318a964c6fdb45c66f57678124a4e36d34362335"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "Tr-Way Development",
+          "printed": "Tri-Way Development",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "f855f402f3cf2843af40e32c237e53c6a515647486ba44da6317bac6febdd31b",
+      "raw_block_sha256": "ff622b230aad56de02cb612b589ae319377434c9896020b190360320cbd35903",
+      "operative_body": "That Council: 1. Direct staff to amend the Bylaw No 1883 to delete provision c) from Table 1 of Schedule AD and renumber the remaining sections accordingly; AND 2. Rescind the original resolution c) iv, which required the following: a) That an SRW for emergency use is registered on title prior to the issuance of a Building Permit AND 3. Requires that the applicant provide, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following: a) That a separate covenant be registered prior to issuance of a building permit that requires all residential vehicle traffic to enter and exit the site from Sooke Road and not Southglen Drive; b) That no occupancy permit be issued for the proposed building until a strata plan for the building has been registered, to the satisfaction of the Approving Officer; and c) That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space, and that i. Energized outlets shall be labelled for the use of electric vehicle charging; ii. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum performance standard to ensure a sufficient rate of electric vehicle charging; and iii. The owner/tenant is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council/landlord may not prevent an owner, occupant, or tenant from installing the EV charging equipment. in addition to the original resolution from February 18, 2020 regarding Bylaw No. 1883 which stated: 1. Give 1st reading to Bylaw No. 1883 to amend the zoning designation of the property located at 2627 Sooke Road from R2 (One- and Two-Family Residential) to C9 (Community Town Centre Pedestrian 9) subject to the following terms and conditions: a) That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to issuance of a building permit: i. $610 towards the Affordable Housing Fund; and ii. $2,074 toward the General Amenity Fund. subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy. b) That the applicant provides, prior to Public Hearing, the following: i. A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering. c) That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following: i. That all frontage improvements along Sooke Road are provided as per the Sooke Road Corridor Concept Plan, to the satisfaction of the Director of Engineering and the Ministry of Transportation and Infrastructure, and that any road dedication required to contain these frontage improvements within the road right of way is provided prior to the issuance of a Building Permit; ii. That a storm water management plan be provided prior to issuance of a building permit and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; iii. That a construction parking and traffic management plan be provide prior to the issuance of a building permit, to the satisfaction of the Director of Engineering; iv. That an SRW for emergency use is registered on title prior to the issuance of a Building Permit; v. That a separate covenant be registered prior to issuance of a building permit for the proposed residential building that ensures parking is assigned and tied to each unit created in accordance with the minimum required parking stalls as per the zoning bylaw. d) Authorize the Director of Planning to issue the following variance in the Form and Character Development Permit for 2627 Sooke Road: i. That Table 1 of Section 4.01.01 be varied to reduce the minimum parking requirement from the required 2.75 spaces per dwelling unit with two bedrooms or less and 3.75 spaces per dwelling unit with more than two bedrooms to 1.25 spaces per dwelling unit with two bedrooms or less and 2.75 spaces per dwelling unit with more than two bedrooms.",
+      "operative_body_sha256": "f1f1482926d0a4218496d4513b8e992997f1db8b4e3f39f0003efc95eddf3eac",
+      "result": "CARRIED",
+      "pages": [
+        20,
+        21
+      ],
+      "page_evidence": [
+        {
+          "page": 20,
+          "native_text_sha256": "8e6a3853f52eba636284c6d244fd9f279f7edafd8c0bf0ec1e8e862dc44a63d8",
+          "render_sha256": "16dc0f17110ad6f9017a14cbb2f5597e772eb3cebc52a0a843d0abb6f7660886"
+        },
+        {
+          "page": 21,
+          "native_text_sha256": "fd0e60a7c265979dfe6c8d2e76ece9110c376baf88619fa2028eec73e7dfed99",
+          "render_sha256": "ba35de5b583f99ee143605b7ccf191fe3e94ed32fbcfd516bc8f199915b41680"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council: 1. Direct staff to amend the Bylaw No 1883 to delete provision c) from Table 1 of Schedule AD and renumber the remaining sections accordingly; AND 2. Rescind the original resolution c) iv, which required the following: a) That an SRW for emergency use is registered on title prior to the issuance of a Building Permit AND 3. Requires that the applicant provide, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following: a) That a separate covenant be registered prior to issuance of a building permit that • requires all residential vehicle traffic to enter and exit the site from Sooke Road and not Southglen Drive; b) That no occupancy permit be issued for the proposed building until a strata plan for the building has been registered, to the satisfaction of the Approving Officer; and c) That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space, and that i. Energized outlets shall be labelled for the use of electric vehicle charging; ii. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum performance standard to ensure a sufficient rate of electric vehicle charging; and iii. The owner/tenant is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council/landlord may not prevent an owner, occupant, or tenant from installing the EV charging equipment. in addition to the original resolution from February 18, 2020 regarding Bylaw No. 1883 which stated: 1. Give 1st reading to Bylaw No. 1883 to amend the zoning designation of the property located at 2627 Sooke Road from R2 (One- and Two-Family Residential) to C9 (Community Town Centre Pedestrian 9) subject to the following terms and conditions: a) That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to issuance of a building permit: $610 towards the Affordable Housing Fund; and November 2, 2020 Page 21 of 26 ii. $2,074 toward the General Amenity Fund. subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy. b) That the applicant provides, prior to Public Hearing, the following: A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering. c) That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following: I. That all frontage improvements along Sooke Road are provided as per the Sooke Road Corridor Concept Plan, to the satisfaction of the Director of Engineering and the Ministry of Transportation and Infrastructure, and that any road dedication required to contain these frontage improvements within the road right of way is provided prior to the issuance of a Building Permit; ii. That a storm water management plan be provided prior to issuance of a building permit and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; iii. That a construction parking and traffic management plan be provide prior to the issuance of a building permit, to the satisfaction of the Director of Engineering; iv. That an SRW for emergency use is registered on title prior to the issuance of a Building Permit; v. That a separate covenant be registered prior to issuance of a building permit for the proposed residential building that ensures parking is assigned and tied to each unit created in accordance with the minimum required parking stalls as per the zoning bylaw. d) Authorize the Director of Planning to issue the following variance in the Form and Character Development Permit for 2627 Sooke Road: i. That Table 1 of Section 4.01.01 be varied to reduce the minimum parking requirement from the required 2.75 spaces per dwelling unit with two bedrooms or less and 3.75 spaces per dwelling unit with more than two bedrooms to 1.25 spaces per dwelling unit with twdbedrooms or less and 2.75 spaces per dwelling unit with more than two bedrooms.",
+          "printed": "That Council: 1. Direct staff to amend the Bylaw No 1883 to delete provision c) from Table 1 of Schedule AD and renumber the remaining sections accordingly; AND 2. Rescind the original resolution c) iv, which required the following: a) That an SRW for emergency use is registered on title prior to the issuance of a Building Permit AND 3. Requires that the applicant provide, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following: a) That a separate covenant be registered prior to issuance of a building permit that • requires all residential vehicle traffic to enter and exit the site from Sooke Road and not Southglen Drive; b) That no occupancy permit be issued for the proposed building until a strata plan for the building has been registered, to the satisfaction of the Approving Officer; and c) That 100% of residential parking spaces, excluding visitor parking spaces, shall feature an energized outlet capable of providing Level 2 charging or higher to the parking space, and that i. Energized outlets shall be labelled for the use of electric vehicle charging; ii. Where an electric vehicle energy management system is implemented (load sharing), the Director of Engineering may specify a minimum performance standard to ensure a sufficient rate of electric vehicle charging; and iii. The owner/tenant is required to keep the Electric Vehicle Servicing Equipment (EVSE) in operation and the Strata Council/landlord may not prevent an owner, occupant, or tenant from installing the EV charging equipment. in addition to the original resolution from February 18, 2020 regarding Bylaw No. 1883 which stated: 1. Give 1st reading to Bylaw No. 1883 to amend the zoning designation of the property located at 2627 Sooke Road from R2 (One- and Two-Family Residential) to C9 (Community Town Centre Pedestrian 9) subject to the following terms and conditions: a) That the applicant provides, as a bonus for increased density, the following contributions per residential unit, prior to issuance of a building permit: $610 towards the Affordable Housing Fund; and ii. $2,074 toward the General Amenity Fund. subject to reductions depending on the use and height in accordance with the Affordable Housing and Amenity Contribution Policy. b) That the applicant provides, prior to Public Hearing, the following: A technical memo from an engineer that verifies storm water can be adequately managed on-site for the proposed developments, to the satisfaction of the Director of Engineering. c) That the applicant provides, prior to Bylaw Adoption, a section 219 covenant, registered in priority of all other charges on title, that agrees to the following: I. That all frontage improvements along Sooke Road are provided as per the Sooke Road Corridor Concept Plan, to the satisfaction of the Director of Engineering and the Ministry of Transportation and Infrastructure, and that any road dedication required to contain these frontage improvements within the road right of way is provided prior to the issuance of a Building Permit; ii. That a storm water management plan be provided prior to issuance of a building permit and implemented, as per Bylaw 1000, all to the satisfaction of the Director of Engineering; iii. That a construction parking and traffic management plan be provide prior to the issuance of a building permit, to the satisfaction of the Director of Engineering; iv. That an SRW for emergency use is registered on title prior to the issuance of a Building Permit; v. That a separate covenant be registered prior to issuance of a building permit for the proposed residential building that ensures parking is assigned and tied to each unit created in accordance with the minimum required parking stalls as per the zoning bylaw. d) Authorize the Director of Planning to issue the following variance in the Form and Character Development Permit for 2627 Sooke Road: i. That Table 1 of Section 4.01.01 be varied to reduce the minimum parking requirement from the required 2.75 spaces per dwelling unit with two bedrooms or less and 3.75 spaces per dwelling unit with more than two bedrooms to 1.25 spaces per dwelling unit with twdbedrooms or less and 2.75 spaces per dwelling unit with more than two bedrooms.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        },
+        {
+          "native": "• requires",
+          "printed": "requires",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "permit: $610",
+          "printed": "permit: i. $610",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "following: A technical",
+          "printed": "following: i. A technical",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "I. That all frontage",
+          "printed": "i. That all frontage",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "twdbedrooms",
+          "printed": "two bedrooms",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "47ffd4e4a00671ba95c3c787744496b8930cf22bd0e05702f2b285df02647b38",
+      "raw_block_sha256": "f91c2de13030f2d2b693c6bf8039ecc95bc823ab4b33c7185882ef3b38cf3383",
+      "operative_body": "That Council: 1. Proceed with consideration of Bylaw No. 1937 to amend the text of Zoning Bylaw 300 to allow the maximum capacity of a daycare on the subject property within the CD12 zone outlined in this report to be 225 children subject to the following terms and conditions: i. That 54 onsite parking stalls be provided on the subject property, and secured as part of the required Form and Character Development Permit. AND 2. Direct staff to provide an updated Bylaw 1937 prior to public hearing that includes the final legal description, property identification number, and subject property map. AND 3. Proceed with consideration of Bylaw No. 1943 to amend the text of the Zoning Bylaw 300 to remove the height restriction within Area II of the CD12 zone.",
+      "operative_body_sha256": "ad1c03d4201b6b652e40300528925bd8ea69d030aacea892fe2bd0e53facbee0",
+      "result": "CARRIED",
+      "pages": [
+        21,
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 21,
+          "native_text_sha256": "fd0e60a7c265979dfe6c8d2e76ece9110c376baf88619fa2028eec73e7dfed99",
+          "render_sha256": "ba35de5b583f99ee143605b7ccf191fe3e94ed32fbcfd516bc8f199915b41680"
+        },
+        {
+          "page": 22,
+          "native_text_sha256": "5ea2e2e43bd369cba495a37a4261531a77a09bf0dcfeaf34fa98903b81e3d285",
+          "render_sha256": "a34f8b0e46e675bad86f16780d9911328d02c2a1bdc6e90f38027cda4540a5ae"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b28c936bb11db105b191226b4ca561ebfc4652c44821e2623efb63130e0726b5",
+      "raw_block_sha256": "4aa9cdb69f0c17e6929c85ae881c6651e6f9ce4de1ae0daf11dfd224d2aef7af",
+      "operative_body": "That Council give Bylaw No. 1883 second and third readings.",
+      "operative_body_sha256": "4a9f2ad006b4315d3a70e075cd4c4141bd8ac060ff41b83343a6b8164b28981e",
+      "result": "CARRIED",
+      "pages": [
+        22
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "5ea2e2e43bd369cba495a37a4261531a77a09bf0dcfeaf34fa98903b81e3d285",
+          "render_sha256": "a34f8b0e46e675bad86f16780d9911328d02c2a1bdc6e90f38027cda4540a5ae"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b18ffc817811a0e34da5fb79e81bf1b05f61ccec81636ae563302a22661f0900",
+      "raw_block_sha256": "4d1917ad7b5fe2ddd3d52f6b2a10810f5ba75296f3b2fcf51fb367fcb68f7662",
+      "operative_body": "That Council give Bylaw No. 1918 first reading.",
+      "operative_body_sha256": "751b9edc793bb59684411aeec3dc15335fa2ad1764fe0cc78d2fdacf8f6a9a95",
+      "result": "CARRIED",
+      "pages": [
+        22,
+        23
+      ],
+      "page_evidence": [
+        {
+          "page": 22,
+          "native_text_sha256": "5ea2e2e43bd369cba495a37a4261531a77a09bf0dcfeaf34fa98903b81e3d285",
+          "render_sha256": "a34f8b0e46e675bad86f16780d9911328d02c2a1bdc6e90f38027cda4540a5ae"
+        },
+        {
+          "page": 23,
+          "native_text_sha256": "5044a66229dd696a3b8f22ff9ec6717a8cd6c24661de76174ce60af4de657c3e",
+          "render_sha256": "a7338fbbbcb5d34dbaa049a5dd0173fa4107cb1522df9e60154fbac05bb24d69"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5fbfc1f148f9761f2e2ee58f009d03893ddade954cf3cf0d0d1e868211e8b9a8",
+      "raw_block_sha256": "30c6005c7bb8060a3c8b6af195a000dd2881bd7fe3d9a2609f4c9679ebbd2aba",
+      "operative_body": "That Council adopt Bylaw No. 1930; AND Authorize the Mayor and Chief Administrative Officer to execute a Purchase and Sale Agreement with the applicant to sell the portions of closed road shown in road Closure Plan EPP105327 for a purchase price of $11.37 per square foot.",
+      "operative_body_sha256": "546ef0dd2e6fa30127ffb05e6620f2790a537d9162f770d48937e1496674c062",
+      "result": "CARRIED",
+      "pages": [
+        23
+      ],
+      "page_evidence": [
+        {
+          "page": 23,
+          "native_text_sha256": "5044a66229dd696a3b8f22ff9ec6717a8cd6c24661de76174ce60af4de657c3e",
+          "render_sha256": "a7338fbbbcb5d34dbaa049a5dd0173fa4107cb1522df9e60154fbac05bb24d69"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5c1e2a89f4e3b2605b4acdab36cb0abf8842eb43babbc0d4590946e7d72bf97a",
+      "raw_block_sha256": "8a6f3005901eeedfbab01cebd35083ff25cab2dca9dec87e2d86df25df42046e",
+      "operative_body": "That Council give Bylaw No. 1931 second and third readings.",
+      "operative_body_sha256": "351dbd112aa3a03108280d6183a44dee62d6f49e37b2ce2d13ccc00d13b28894",
+      "result": "CARRIED",
+      "pages": [
+        23
+      ],
+      "page_evidence": [
+        {
+          "page": 23,
+          "native_text_sha256": "5044a66229dd696a3b8f22ff9ec6717a8cd6c24661de76174ce60af4de657c3e",
+          "render_sha256": "a7338fbbbcb5d34dbaa049a5dd0173fa4107cb1522df9e60154fbac05bb24d69"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c106670c4e085bd7bfbad3adfa66fb9a2faef771854239e93936847db7f5d206",
+      "raw_block_sha256": "ba711d9d31c5928989411dde1e9e9d9343d83a068840ba359f35c26ca66e582a",
+      "operative_body": "That Council adopt Bylaw No. 1889.",
+      "operative_body_sha256": "be4dec42118680e0bdb8778c5467e56e7da8301b68c5741928dddf3be0d095f8",
+      "result": "CARRIED",
+      "pages": [
+        23
+      ],
+      "page_evidence": [
+        {
+          "page": 23,
+          "native_text_sha256": "5044a66229dd696a3b8f22ff9ec6717a8cd6c24661de76174ce60af4de657c3e",
+          "render_sha256": "a7338fbbbcb5d34dbaa049a5dd0173fa4107cb1522df9e60154fbac05bb24d69"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "82e9eced8e52899de4c6054594e29eb70a36b076550c46c1c9dd33fdd0214b2f",
+      "raw_block_sha256": "ffdbc4212e4b5c2647ae9b1d4cb72c0c0f4f55dc59b3895ac97b828d08b71d73",
+      "operative_body": "That Council adopt Bylaw No. 1890.",
+      "operative_body_sha256": "0ac1705d1172fa3f6fd94aed33f12be4c9ba2dac6949cffd7d39e023eaaa229c",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "1013c253a3454dbb075d02eeac081c67120ed5b431a41ecff99d50a670b840d5",
+          "render_sha256": "9f27ad9e05b3637441c7652935a2dee6b92c6520e34326aa91de9c7e8e5b3565"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "d2436156cbc2aa62b2ef36a11a701456e2adf95bec71b8c46cf9157f34dba5e2",
+      "raw_block_sha256": "63bc1f0512811ba8e3b5992c01287a3e3fa991b3fa7ffddfc651f6752874ccb0",
+      "operative_body": "That Council give Bylaw No. 1933 first reading.",
+      "operative_body_sha256": "578fcebc30455d1dcf08ce2a411541f7b7e1c55e599dc33a2453e6f7493b3734",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "1013c253a3454dbb075d02eeac081c67120ed5b431a41ecff99d50a670b840d5",
+          "render_sha256": "9f27ad9e05b3637441c7652935a2dee6b92c6520e34326aa91de9c7e8e5b3565"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "1858947c8735a8b82fbade66d81dd3f8526cdf7360cba2854221c3da30928efc",
+      "raw_block_sha256": "3558b2daaef7f639cd7ea81fe341ed077d3e947478cb7f8d5e2a29fc851aee98",
+      "operative_body": "That Council adopt Bylaw No. 1934.",
+      "operative_body_sha256": "469b00fead4037cddae1990be5383c343d999b0fe5e5631c1586aa2f314524ce",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "1013c253a3454dbb075d02eeac081c67120ed5b431a41ecff99d50a670b840d5",
+          "render_sha256": "9f27ad9e05b3637441c7652935a2dee6b92c6520e34326aa91de9c7e8e5b3565"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "1a8e1a19caa8e5099e9b1bc0d93a72901b6c912f2a3109be85344110439b3452",
+      "raw_block_sha256": "75de83ccfc4807a5ecb8195da748679421c3568c751d63fe974141d9d2005f12",
+      "operative_body": "That Council adopt Bylaw No. 1935.",
+      "operative_body_sha256": "023f9f38c91b2818e77345c0b3cbdfc03d9a9345086c257879118cc4f1d8a1d0",
+      "result": "CARRIED",
+      "pages": [
+        24
+      ],
+      "page_evidence": [
+        {
+          "page": 24,
+          "native_text_sha256": "1013c253a3454dbb075d02eeac081c67120ed5b431a41ecff99d50a670b840d5",
+          "render_sha256": "9f27ad9e05b3637441c7652935a2dee6b92c6520e34326aa91de9c7e8e5b3565"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f6b0bfad66723a0221bdd0387a9b3d2a296ec1f239ae3d80886979b71309c349",
+      "raw_block_sha256": "18faea16b9c268a57aca82a5e207672afbc82ce1dab19b5cb58a6604bc71ae7c",
+      "operative_body": "That Council give Bylaw No. 1937 first reading.",
+      "operative_body_sha256": "6e737f3528c789e7aa8c1bcea2737a2137ec0701c5c6b9873fb571aff3ecbefa",
+      "result": "CARRIED",
+      "pages": [
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "376a1e5bc483b1f271b043bef3c6bca8df73eeed48e475e3eb6a5c6e91f745b3",
+          "render_sha256": "c97438c084fda49688033464a8fb9882961009d7f06a5d05e4e950475e36dbbb"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b081b318b6057ae8754b51765cfbe2466d08db9d950d49f60224fbc8114e4827",
+      "raw_block_sha256": "975ddfa320bf5234d26c5b1089929273b1ec7ff0124ccbb01ecc3ea8833dcc9c",
+      "operative_body": "That Council give Bylaw No. 1938 first reading.",
+      "operative_body_sha256": "95d17d04a989ff154d76d3cb5c6cc49944340b2eb36ee40b33b9d3f0cbfbe64f",
+      "result": "CARRIED",
+      "pages": [
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "376a1e5bc483b1f271b043bef3c6bca8df73eeed48e475e3eb6a5c6e91f745b3",
+          "render_sha256": "c97438c084fda49688033464a8fb9882961009d7f06a5d05e4e950475e36dbbb"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6baf361c2e95828d2e0a46710d20845c1d9cfab963fb371fcc5b36e7931e0272",
+      "raw_block_sha256": "48dacd566a3d1019d2d873bb067ea90aa8088b9ba04418f343cc5d6a4247ab06",
+      "operative_body": "That Council give Bylaw No. 1942 first, second and third readings.",
+      "operative_body_sha256": "062795b2800f4a86bd9e5081e07c73ca350e6eadc36edc6cf7d063358da6b121",
+      "result": "CARRIED",
+      "pages": [
+        25
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "376a1e5bc483b1f271b043bef3c6bca8df73eeed48e475e3eb6a5c6e91f745b3",
+          "render_sha256": "c97438c084fda49688033464a8fb9882961009d7f06a5d05e4e950475e36dbbb"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "10fff2ade6ba86c8aa1fc56605134f52d6b216fbe2e8017581359127a5dbeb56",
+      "raw_block_sha256": "cd5c4e05f7dfcb01a9ac43979ef07509c7653741474bad785c74a6068701ac4a",
+      "operative_body": "That Council give Bylaw No. 1943 first reading.",
+      "operative_body_sha256": "84050f4f3f6bf28514ac4f881566eb2d3f95f8efdce952e9861d607bf3aa8c22",
+      "result": "CARRIED",
+      "pages": [
+        25,
+        26
+      ],
+      "page_evidence": [
+        {
+          "page": 25,
+          "native_text_sha256": "376a1e5bc483b1f271b043bef3c6bca8df73eeed48e475e3eb6a5c6e91f745b3",
+          "render_sha256": "c97438c084fda49688033464a8fb9882961009d7f06a5d05e4e950475e36dbbb"
+        },
+        {
+          "page": 26,
+          "native_text_sha256": "da209d743d1d977fdcf9f6645e93c42a43f475f1553820bea45b62d6cf79f130",
+          "render_sha256": "a9b60141320e360ecb894aba7b538d98d4dad73f634df2f43adb5794c5ce3aa4"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "That Council give Bylaw No. 1943 first reading. November 2, 2020 Page 26 of 26",
+          "printed": "That Council give Bylaw No. 1943 first reading.",
+          "reason": "Remove running date/page headers only; raw block retained."
+        }
+      ]
+    },
+    {
+      "source_key": "76072693c373ea392ce2f41903f7753bb358b3ba8b5549d0e574ede2a19e32e7",
+      "raw_block_sha256": "67fb4efbfeffdfffc4c13a52aa48e72d940547b33e79e8cb888e7cdcad0b252b",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding personal information about an identifiable individual who holds or is being considered for a position as an officer, employee or agent of the municipality or another position appointed by the municipality; the acquisition, disposition or expropriation of land or improvements, if the council considers that disclosure could reasonably be expected to harm the interests of the municipality; and negotiations and related discussions respecting the proposed provision of a municipal service that are at their preliminary stages and that, in the view of the council, could reasonably be expected to harm the interests of the municipality if they were held in public; under Section 90 (1) (a) (e) and (k) of the Community Charter. b) That Council continue the meeting in closed session.",
+      "operative_body_sha256": "01323fdb7a8c6d1527642a491fac0ae075ff8a2e5a0e9e020dcc05fe8cd277e0",
+      "result": "CARRIED",
+      "pages": [
+        26
+      ],
+      "page_evidence": [
+        {
+          "page": 26,
+          "native_text_sha256": "da209d743d1d977fdcf9f6645e93c42a43f475f1553820bea45b62d6cf79f130",
+          "render_sha256": "a9b60141320e360ecb894aba7b538d98d4dad73f634df2f43adb5794c5ce3aa4"
+        }
+      ],
+      "independent_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "03eb6a5fd7feafe471025078ee80892285f190633b38a0d1548bbbc552148b3f",
+  "independent_original_image_review_sha256": "2811a59689040b1a3aefb9f113ea23d03fe1b47c8d31e1b2ec3486c272f1496d",
+  "second_independent_original_image_review_sha256": "75eda4a6e5b2a586f67692c84d793832f787bdb71b775b1a87a71aa980c148c5"
+}
