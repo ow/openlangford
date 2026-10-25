@@ -180,9 +180,12 @@ NARRATION_CASE = {'legacy':'That the meeting be adjourned.',
     'printed':'The Chair adjourned the meeting at 8:37pm.',
     'native':'The Chair adjourn ed the meeting at 8:37pm.',
     'type':'reviewed_adjournment_narration_preservation'}
+MAYOR_CASE = {**NARRATION_CASE,'legacy':'THAT the meeting be adjourned.',
+    'printed':'Mayor Young adjourned the meeting at 8:50 pm.',
+    'native':'Mayor Young adjourned the meeting at 8:50 pm.'}
 
 
-@pytest.mark.parametrize('case',[NARRATION_CASE],indirect=True)
+@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE],indirect=True)
 def test_explicit_reviewed_adjournment_narration_preserves_generic_claim_without_certifying_transcription(case):
     context,rows,review=case;before=deepcopy(rows)
     motions,report=plan(context,rows)
@@ -199,29 +202,42 @@ def test_explicit_reviewed_adjournment_narration_preserves_generic_claim_without
     assert motions==[] and report['status']=='reviewed_legacy_occurrence_review_stale'
 
 
-@pytest.mark.parametrize('case',[NARRATION_CASE],indirect=True)
-@pytest.mark.parametrize('change',['other_proposal','conditional','negated','other_actor','no_time','two_events','competing_generic','unknown_type'])
+@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE],indirect=True)
+@pytest.mark.parametrize('change',['other_proposal','conditional','negated','other_actor','proposed_event','multiple_surname','no_time','two_events','native_second_event','competing_generic','unknown_type'])
 def test_typed_adjournment_review_does_not_admit_arbitrary_paraphrase_or_ambiguous_event(case,change):
     context,rows,review=case;entry=review['documentary_preservations'][0]
     if change=='other_proposal':
         rows[0]['text_content']='That Council approve the budget.';refresh_claim_proof(context,rows,review)
-    elif change=='conditional':entry['printed_body']='If the Chair adjourned the meeting at 8:37pm.'
-    elif change=='negated':entry['printed_body']='The Chair did not adjourn the meeting at 8:37pm.'
-    elif change=='other_actor':entry['printed_body']='The applicant adjourned the meeting at 8:37pm.'
-    elif change=='no_time':entry['printed_body']='The Chair adjourned the meeting.'
+    elif change=='conditional':entry['printed_body']='If '+entry['printed_body']
+    elif change=='negated':entry['printed_body']=entry['printed_body'].replace(' adjourned ',' did not adjourn ')
+    elif change=='other_actor':entry['printed_body']='The applicant adjourned the meeting at 8:50 pm.'
+    elif change=='proposed_event':entry['printed_body']=entry['printed_body'].replace(' adjourned ',' proposed adjourning ')
+    elif change=='multiple_surname':entry['printed_body']='Mayor Mary Young adjourned the meeting at 8:50 pm.'
+    elif change=='no_time':entry['printed_body']=entry['printed_body'].split(' at ')[0]+'.'
     elif change=='two_events':
-        context['source']['text']+='\nThe Chair adjourned the meeting at 9:00pm.'
+        other_role='Mayor Young' if entry['printed_body'].startswith('The Chair') else 'The Chair'
+        context['source']['text']+='\n'+other_role+' adjourned the meeting at 9:00pm.'
         context['source']['formal_occurrence_inventory']['text_sha256']=hashlib.sha256(context['source']['text'].encode()).hexdigest()
         review['source_text_sha256']=hashlib.sha256(context['source']['text'].encode()).hexdigest()
         review['formal_inventory_sha256']=digest(context['source']['formal_occurrence_inventory'])
+    elif change=='native_second_event':
+        other_role='Mayor Young' if entry['printed_body'].startswith('The Chair') else 'The Chair'
+        path=context['archive_root']/context['source']['source_file']
+        with fitz.open(path) as pdf:
+            page=pdf.new_page();page.insert_text((30,40),other_role+' adjourned the meeting at 9:00pm.');pdf.saveIncr()
+        context['source']['source_sha256']=hashlib.sha256(path.read_bytes()).hexdigest()
+        review['source_sha256']=context['source']['source_sha256']
     elif change=='competing_generic':
         rows.append({**deepcopy(rows[0]),'id':310,'text_content':'That meeting be adjourned.'});refresh_claim_proof(context,rows,review)
     else:entry['type']='arbitrary_paraphrase_preservation'
     motions,report=plan(context,rows)
     assert motions==[] and report['status']=='reviewed_legacy_occurrence_review_stale'
+    if change=='native_second_event':
+        assert 'Native documentary narration is not unique' in report['held'][0]['detail']
 
 
-@pytest.mark.parametrize('case',[{**NARRATION_CASE,'formal':'That the meeting be adjourned.'}],indirect=True)
+@pytest.mark.parametrize('case',[{**NARRATION_CASE,'formal':'That the meeting be adjourned.'},
+    {**MAYOR_CASE,'formal':'THAT the meeting be adjourned.'}],indirect=True)
 def test_formal_adjournment_owner_cannot_be_reclassified_as_documentary_narration(case):
     context,rows,review=case;before=deepcopy(rows)
     motions,report=plan(context,rows)

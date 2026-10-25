@@ -10,6 +10,8 @@ turns that claim into a formal decision nor rewrites its unknown outcome.
 | 300, February 7, 2022 | 29 | 3041, agenda body with no recorded vote | 35: 34 carried, one defeated | One nine-page TUP has a clear carried outcome but an uncertain operative/context boundary; excluded. Two other unvoted minutes bodies and documentary closing are not invented motions. |
 | 65, March 7, 2016 | 15 | 596, existing formal agenda; 597, documentary adjournment paraphrase | 24 carried | BikeBC's preceding wording has no separate outcome; only final Dunford-first wording has CARRIED AS AMENDED. |
 | 117, August 14, 2017 | 23 | 1118, existing formal agenda; 1119, documentary adjournment paraphrase | 33 carried | Keep separate report, rescission and later reading votes; no inferred individual ballots. |
+| 337, August 15, 2022 | 18 | 3315, full existing agenda ballot metadata; 3316, documentary Mayor closing | 29: 28 carried, one defeated | Preserve the printed 2022 tax-bylaw year; exclude in-camera clerk narration from the operative body. |
+| 253, August 21, 2023 | 20 | 2643, agenda; 2644, formal closing with existing NULL result | 23 carried | One nested main motion remains held; its explicit clerk-result lead prevents a false complete report. |
 
 Originals and SHA256:
 
@@ -30,8 +32,8 @@ independently reviewed documentary correction. This does not authorize generic
 OCR cleanup or arbitrary paraphrase matching. The originals are unchanged.
 
 Fresh production **read-only** audit digest:
-`0868877edff1d6c6c92d10d85b606970605edd3fd57423236f4399862ed358c8`.
-It proposes 92 additions, with documentary rows 3041/597/1119 preserved as NULL
+`107931952d4ee19f0a41b9e66be99cb9b6189aa793444817a8126a5c4fbf3772`.
+It proposes 144 additions across five meetings and 105 twice-reviewed pages, with documentary rows 3041/597/1119/3316 preserved as NULL
 outcomes and no formal source keys. Apply only after reviewed code is merged and
 a renewed audit still matches the reviewed manifest/current full rows. Then
 verify atomic receipts, exact inserted fields and every prior row. Any drift
@@ -41,3 +43,5 @@ after a successful apply; receipts distinguish that state from unprocessed work.
 This is one bounded batch within an incomplete site-wide historical reconciliation.
 No production writes, model calls, schema changes or credential changes are part
 of preparing these admissions.
+
+Meeting337 first/second independent review digests: `e51c61eec3e3fa0c13074efd4f3ad5cca36d04e2e339714f53201c15553ce594` / `69e802a2f8aab889ac37b29a2a8f18d19bee57c5d1555f4c85e41a74c675c53b`. Typed Mayor narration uses the same NULL-only, independently reviewed preservation path; it assigns no actor identity. Chair and Mayor occurrences are counted together so multiple closing events remain held. Meeting253 details and review digests are in [the August2023 source review](august-2023-source-review.md). Both held formal bodies—the meeting300 permit boundary and meeting253 amended main motion—remain excluded.

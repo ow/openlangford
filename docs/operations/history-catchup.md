@@ -8,6 +8,16 @@ The source URL/date and exact original file must be bound before additions.
 Run from `apps/pipeline` using the normal configured interpreter. Credentials stay
 in the existing environment file; never copy them into manifests or receipts.
 
+An explicit standalone clerk sentence such as “The vote was taken on the Main
+Motion as amended and declared CARRIED.” is a coverage lead when no parsed
+outcome accounts for that exact result span. It remains
+`explicit_clerk_main_motion_result_lead` with `coverage_diagnostic_only`
+authority in `unparsed_formal_occurrence_leads`; the report stays partial and
+requires review. A preceding amendment's post-result context cannot account for
+it. This diagnostic adds no resumed header, amended body, motion, outcome row or
+votes and changes no existing source identities. Only separate source review can
+resolve the missing main-motion body/outcome association.
+
 ```sh
 python -m pipeline.backfill.history_coverage audit \
   --env-file /existing/config/.env --project-ref PROJECT_REF \
@@ -127,8 +137,11 @@ source/inventory drift checks still apply; a successful batch stales the review.
 
 The separate `type=reviewed_adjournment_narration_preservation` accepts only a
 generic legacy “That [the] meeting be adjourned.” claim and a complete reviewed
-“The Chair adjourned the meeting at H:MMam/pm.” narrative (also explicit
-“a.m.”/“p.m.” spelling). This is explicit
+“The Chair adjourned the meeting at H:MMam/pm.” or “Mayor Young adjourned the
+meeting at H:MMam/pm.” narrative (also explicit “a.m.”/“p.m.” spelling). Mayor
+narration permits only “Mayor” followed by one proper surname, with no actor ID
+assignment. Chair and Mayor narrations are counted together: multiple closing
+events or different times remain held, even when each wording is unique. This is explicit
 reviewed documentary correspondence, never literal transcription equivalence or
 a formal motion/result. It retains the original/page/render/full-row guards,
 rejects actual formal adjournment owners, other generic adjournment claims,

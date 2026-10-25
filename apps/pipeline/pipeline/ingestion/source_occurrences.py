@@ -13,6 +13,15 @@ _RESUMED = re.compile(r'(?im)^[ \t]*\*{0,2}(?:On[ \t]+(?:the[ \t]+)?(?:Main[ \t]
 _OUTCOME = re.compile(r'(?im)^[ \t]*\*{0,2}(?:Motion[ \t]+)?(?:CARRIED(?:[ \t]+UNANIMOUSLY)?|NOT CARRIED|DEFEATED|WITHDRAWN|TABLED)\b[^\n]*')
 
 
+# This clerk formula records a result but supplies no complete resumed body.
+# It is a diagnostic only, never a formal envelope or source identity.
+_CLERK_MAIN_RESULT = re.compile(
+    r'(?im)^[ \t]*(?P<quote>The[ \t\r\n]+vote[ \t\r\n]+was[ \t\r\n]+taken[ \t\r\n]+on[ \t\r\n]+'
+    r'the[ \t\r\n]+Main[ \t\r\n]+Motion[ \t\r\n]+as[ \t\r\n]+amended[ \t\r\n]+'
+    r'and[ \t\r\n]+declared[ \t\r\n]+(?P<outcome>NOT[ \t]+CARRIED|CARRIED|DEFEATED|WITHDRAWN|TABLED)\.)[ \t]*(?=\n|$)'
+)
+
+
 def _compact(text):
     return re.sub(r'[^a-z0-9]', '', text.casefold())
 
@@ -91,11 +100,49 @@ def envelope_proof(source, envelope):
         'source_sha256': source.get('source_sha256'), 'source_text_sha256': formal_inventory(source)['text_sha256']}
 
 
+def _unaccounted_clerk_main_results(source):
+    """Retain explicit main-result prose excluded by the formal body parser.
+
+    A parsed amendment's source_block includes its post-result context. Only an
+    actual parsed outcome span can account another result in that context.
+    """
+    text = source.get('text', '')
+    accounted = []
+    for block in source.get('blocks', []):
+        quote = block.get('outcome_quote')
+        raw = block.get('source_block', '')
+        if not quote or not raw:
+            continue
+        offset = block.get('source_offset')
+        if not isinstance(offset, int) or offset < 0:
+            continue
+        start = text.find(raw, offset)
+        if start < 0 or text[offset:start].strip():
+            continue
+        outcome = text.find(quote, start, start+len(raw))
+        if outcome >= 0:
+            accounted.append((outcome, outcome+len(quote)))
+    leads = []
+    for match in _CLERK_MAIN_RESULT.finditer(text):
+        if any(start <= match.start('outcome') and match.end('outcome') <= stop for start, stop in accounted):
+            continue
+        leads.append({'kind': 'explicit_clerk_main_motion_result_lead',
+            'authority': 'coverage_diagnostic_only',
+            'reason': 'explicit_main_motion_result_without_bound_body',
+            'source_start': match.start('quote'), 'source_quote': match['quote'],
+            'outcome_offset': match.start('outcome'), 'outcome_end': match.end('quote'),
+            'outcome_quote': text[match.start('outcome'):match.end('quote')],
+            'source_sha256': source.get('source_sha256'),
+            'source_text_sha256': hashlib.sha256(text.encode()).hexdigest(),
+            'source_file': source.get('source_file'), 'source_url': source.get('source_url')})
+    return leads
+
+
 def unparsed_formal_envelopes(source):
     owned = {(envelope['anchor_offset'], envelope['outcome_offset'])
              for block in source.get('blocks', []) for envelope in own_formal_envelopes(source, block)}
     return [envelope_proof(source, envelope) for envelope in formal_inventory(source)['envelopes']
-            if (envelope['anchor_offset'], envelope['outcome_offset']) not in owned]
+            if (envelope['anchor_offset'], envelope['outcome_offset']) not in owned] + _unaccounted_clerk_main_results(source)
 
 
 def matching_envelopes_all_parsed(source, block):

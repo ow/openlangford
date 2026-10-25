@@ -20,6 +20,8 @@ ENROLLED = {
     300: 'd68ab82dbe37bba53ffc0e492d6fa4d2427018c0b3a9b59ce1d9bacb77fbde01',
     65: 'e6bccf818dfc6f7b9b84e9af57c3bdac9de243b079705f1cfb3dda02a86c9b41',
     117: '5d9fd893e2f11293b6850acfff6aef3f04485f07e7ebd0226ceb9bc163541dcd',
+    253: 'c733a6c568c7be9519fe23babbb8191ab4edceba2cf7e86e0e6de36c673ac64b',
+    337: 'a61e8b0f655698108c3a72e4f14b6bc918f2480705ef42bb2fb80c7033642228',
 }
 
 
@@ -109,8 +111,8 @@ def _literal_spans(text, body):
 
 
 _ADJOURNMENT_LEGACY = re.compile(r'That (?:the )?meeting be adjourned\.', re.I)
-_ADJOURNMENT_NARRATION = re.compile(r'The Chair adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
-_ADJOURNMENT_COMPACT = re.compile(r'TheChairadjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
+_ADJOURNMENT_NARRATION = re.compile(r'(?:The Chair|Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
+_ADJOURNMENT_COMPACT = re.compile(r'(?:TheChair|Mayor[A-Z][a-z]+)adjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
 
 
 def _reviewed_native_correction(entry, source, meeting, archive_root, project_ref, municipality_id):
