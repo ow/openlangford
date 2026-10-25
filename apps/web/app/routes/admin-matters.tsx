@@ -1,27 +1,22 @@
+import { Fragment, type ReactNode } from "react";
 import { Form, Link, useNavigation } from "react-router";
 import { matterPath } from "../lib/paths";
 import type { Route } from "./+types/admin-matters";
 import { requireAdmin } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
-import { PageHeader } from "../components/ui/page-header";
-import { Badge } from "../components/ui/badge";
-import { matterTitle } from "../lib/display-text";
-import { formatDate } from "../lib/utils";
-import { currentMatterIds, planMerge, type MatterMergeRow } from "../lib/matter-merge";
-
-type Decision = {
-  a: number;
-  b: number;
-  verdict: "same_matter" | "same_project" | "different";
-  confidence: number;
-  probabilities?: Record<string, number>;
-};
-
-const VERDICT_LABEL: Record<string, string> = {
-  same_matter: "Same matter",
-  same_project: "Same project",
-  different: "Different",
-};
+import { Button } from "../components/ui/button";
+import { DetailHeader } from "../components/ui/detail-header";
+import { displayTitle, matterTitle } from "../lib/display-text";
+import { cn, formatDate } from "../lib/utils";
+import {
+  canonicalMatterId,
+  currentMatterIds,
+  openPairDecisions,
+  planMerge,
+  signalLabels,
+  type MatterMergeRow,
+  type MergeDecision,
+} from "../lib/matter-merge";
 
 export const meta: Route.MetaFunction = () => [{ title: "Matter merge review" }];
 
@@ -72,26 +67,98 @@ export async function loadMergeQueue(supabase: ReturnType<typeof getSupabaseAdmi
     .filter((p) => p.current_ids.length >= 2);
 
   const ids = [...new Set(open.flatMap((p) => p.current_ids))];
-  const { data: matters } = ids.length
-    ? await supabase
-        .from("matters")
-        .select(
-          "id, slug, title, identifier, first_seen, last_seen, meta, plain_english_summary, agenda_items(id, title, meetings(slug, meeting_date))",
-        )
-        .in("id", ids)
-    : { data: [] as any[] };
+  // History includes agenda items filed under matters already merged into these.
+  const historyIds = [
+    ...new Set([...ids, ...ids.flatMap((id) => (byId.get(id)?.meta?.merged_matter_ids as number[]) || [])]),
+  ];
+  const [{ data: matters, error: mattersError }, { data: items, error: itemsError }] = ids.length
+    ? await Promise.all([
+        supabase
+          .from("matters")
+          .select("id, slug, title, identifier, category, first_seen, last_seen, meta, plain_english_summary")
+          .in("id", ids),
+        supabase
+          .from("agenda_items")
+          .select("id, matter_id, title, related_address, meetings(meeting_date)")
+          .in("matter_id", historyIds),
+      ])
+    : [{ data: [] as any[], error: null }, { data: [] as any[], error: null }];
+  if (mattersError) throw mattersError;
+  if (itemsError) throw itemsError;
+
   const display = new Map((matters || []).map((m: any) => [m.id, m]));
+  const historyByMatter = new Map<number, any[]>();
+  for (const item of items || []) {
+    const owner = canonicalMatterId(item.matter_id, byId);
+    const matter = display.get(owner);
+    const date = (item as any).meetings?.meeting_date;
+    if (!matter || !date) continue;
+    const addresses = parseAddresses(item.related_address);
+    historyByMatter.set(owner, [
+      ...(historyByMatter.get(owner) || []),
+      {
+        id: item.id,
+        date,
+        text: matter.meta?.timeline_headlines?.[String(item.id)] || displayTitle(item.title),
+        addresses,
+      },
+    ]);
+  }
 
   return {
     decided: decided || 0,
-    proposals: open.map((p) => ({
-      ...p,
-      matters: p.current_ids
+    proposals: open.map((p) => {
+      const pairs = openPairDecisions(p.decisions as MergeDecision[], p.current_ids, byId);
+      const proposalMatters = p.current_ids
         .map((id: number) => display.get(id))
         .filter(Boolean)
-        .sort((x: any, y: any) => String(x.first_seen).localeCompare(String(y.first_seen))),
-    })),
+        .sort(
+          (x: any, y: any) =>
+            String(x.first_seen || "9999").localeCompare(String(y.first_seen || "9999")) || x.id - y.id,
+        )
+        .map((m: any) => ({
+          id: m.id,
+          slug: m.slug,
+          title: matterTitle(m),
+          identifier: m.identifier,
+          category: m.category,
+          first_seen: m.first_seen,
+          last_seen: m.last_seen,
+          status_line: m.meta?.status_line ?? null,
+          summary: m.plain_english_summary,
+          history: (historyByMatter.get(m.id) || []).sort(
+            (x, y) => x.date.localeCompare(y.date) || x.id - y.id,
+          ),
+        }));
+      return {
+        id: p.id,
+        pairs,
+        reasons: signalLabels(pairs),
+        sharedAddresses: sharedAddresses(proposalMatters.map((m: any) => m.history)),
+        matters: proposalMatters,
+      };
+    }),
   };
+}
+
+/** related_address is stored as an array, a JSON-encoded array, or a plain string. */
+function parseAddresses(value: unknown): string[] {
+  if (Array.isArray(value)) return value.filter((a): a is string => typeof a === "string" && a.trim() !== "");
+  if (typeof value !== "string" || !value.trim()) return [];
+  try {
+    return parseAddresses(JSON.parse(value));
+  } catch {
+    return [value];
+  }
+}
+
+/** Addresses every matter in the proposal mentions, as written in the first one. */
+function sharedAddresses(histories: { addresses: string[] }[][]) {
+  const normalize = (a: string) =>
+    a.toLowerCase().replace(/\broad\b/g, "rd").replace(/\bstreet\b/g, "st").replace(/\s+/g, " ").trim();
+  const sets = histories.map((h) => new Map(h.flatMap((i) => i.addresses).map((a) => [normalize(a), a])));
+  if (sets.length === 0) return [];
+  return [...sets[0].entries()].filter(([key]) => sets.every((s) => s.has(key))).map(([, label]) => label);
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -171,9 +238,247 @@ export async function action({ request }: Route.ActionArgs) {
   return error ? { error: error.message } : { ok: intent === "merge" ? "Merged." : "Kept separate." };
 }
 
-function bestDecision(decisions: Decision[]): Decision | null {
-  const same = decisions.filter((d) => d.verdict !== "different");
-  return (same.length ? same : decisions).sort((a, b) => b.confidence - a.confidence)[0] || null;
+const VERDICTS = [
+  ["same_matter", "Same matter", "One application, permit or bylaw at different stages."],
+  ["same_project", "Same project", "Separate approvals residents see as one application, e.g. an OCP amendment and its rezoning."],
+  ["different", "Different", "Separate applications, even for the same property."],
+] as const;
+
+const LETTERS = ["A", "B", "C", "D", "E"];
+const LETTER_TONES = [
+  "bg-brand-50 text-brand-800 ring-brand-200",
+  "bg-amber-50 text-amber-800 ring-amber-200",
+  "bg-violet-50 text-violet-800 ring-violet-200",
+  "bg-sky-50 text-sky-800 ring-sky-200",
+  "bg-rose-50 text-rose-800 ring-rose-200",
+];
+
+function Letter({ index }: { index: number }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ring-1",
+        LETTER_TONES[index % LETTER_TONES.length],
+      )}
+      aria-hidden="true"
+    >
+      {LETTERS[index] ?? index + 1}
+    </span>
+  );
+}
+
+const shortDate = { month: "short", day: "numeric", year: "numeric" } as const;
+const monthYear = { month: "short", year: "numeric" } as const;
+
+function activeSpan(m: any) {
+  const count = m.history.length;
+  const first = m.history[0]?.date ?? m.first_seen;
+  const last = m.history.at(-1)?.date ?? m.last_seen;
+  const span =
+    first && last && first.slice(0, 7) !== last.slice(0, 7)
+      ? `${formatDate(first, monthYear)} – ${formatDate(last, monthYear)}`
+      : first
+        ? formatDate(first, monthYear)
+        : "No dates";
+  return `${span} · ${count} ${count === 1 ? "item" : "items"}`;
+}
+
+function gapLabel(from: string, to: string) {
+  const months =
+    (Number(to.slice(0, 4)) - Number(from.slice(0, 4))) * 12 +
+    (Number(to.slice(5, 7)) - Number(from.slice(5, 7)));
+  if (months < 12) return null;
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  return `${years} year${years === 1 ? "" : "s"}${rest ? ` ${rest} month${rest === 1 ? "" : "s"}` : ""} later`;
+}
+
+function VerdictSplit({ pair }: { pair: MergeDecision }) {
+  const probabilities = pair.probabilities;
+  if (!probabilities) {
+    const label = VERDICTS.find(([key]) => key === pair.verdict)?.[1] ?? pair.verdict;
+    return (
+      <span>
+        <span className="font-medium text-zinc-900">{label}</span>
+        <span className="tabular-nums"> {Math.round(pair.confidence * 100)}%</span>
+      </span>
+    );
+  }
+  const leading = VERDICTS.reduce((best, [key]) =>
+    (probabilities[key] ?? 0) > (probabilities[best] ?? 0) ? key : best,
+  VERDICTS[0][0] as string);
+  return (
+    <span className="tabular-nums">
+      {VERDICTS.map(([key, label], i) => (
+        <span key={key}>
+          {i > 0 && <span className="text-zinc-300"> · </span>}
+          <span className={key === leading ? "font-medium text-zinc-900" : undefined}>
+            {label} {Math.round((probabilities[key] ?? 0) * 100)}%
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function CompareRow({
+  label,
+  columns,
+  children,
+}: {
+  label: string;
+  columns: number;
+  children: ReactNode[];
+}) {
+  return (
+    <div
+      className="grid gap-x-6 border-t border-zinc-100 px-5 py-2.5 text-sm"
+      style={{ gridTemplateColumns: `96px repeat(${columns}, minmax(0, 1fr))` }}
+    >
+      <div className="text-zinc-500">{label}</div>
+      {children}
+    </div>
+  );
+}
+
+function ProposalCard({ proposal, busy }: { proposal: any; busy: boolean }) {
+  const matters = proposal.matters as any[];
+  const indexById = new Map(matters.map((m, i) => [m.id, i]));
+  const columns = matters.length;
+  const timeline = matters
+    .flatMap((m, i) => m.history.map((item: any) => ({ ...item, index: i })))
+    .sort((x: any, y: any) => x.date.localeCompare(y.date) || x.index - y.index);
+  const reasons = (proposal.reasons as string[]).map((reason) =>
+    reason === "Same address" && proposal.sharedAddresses.length
+      ? `Same address: ${proposal.sharedAddresses.join(", ")}`
+      : reason,
+  );
+  const [canonical, ...absorbed] = matters;
+
+  return (
+    <li className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 bg-zinc-50/70 px-5 py-3 text-sm">
+        <p className="text-zinc-700">
+          <span className="text-zinc-500">Proposed because </span>
+          {reasons.length ? reasons.join(" · ") : "the model linked them"}
+        </p>
+        <div className="space-y-0.5 text-right text-zinc-500">
+          {(proposal.pairs as MergeDecision[]).map((pair) => (
+            <p key={`${pair.a}-${pair.b}`} className="flex items-center justify-end gap-1.5">
+              {columns > 2 &&
+                [indexById.get(pair.a) ?? 0, indexById.get(pair.b) ?? 1]
+                  .sort((x, y) => x - y)
+                  .map((index) => <Letter key={index} index={index} />)}
+              <span>Model:</span>
+              <VerdictSplit pair={pair} />
+            </p>
+          ))}
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <div className="min-w-[640px]">
+          <div
+            className="grid gap-x-6 px-5 pb-2 pt-4"
+            style={{ gridTemplateColumns: `96px repeat(${columns}, minmax(0, 1fr))` }}
+          >
+            <div />
+            {matters.map((m, i) => (
+              <div key={m.id} className="flex items-start gap-2">
+                <Letter index={i} />
+                <Link
+                  to={matterPath(m)}
+                  target="_blank"
+                  className="font-semibold leading-snug text-zinc-900 hover:text-brand-700 hover:underline"
+                >
+                  {m.title}
+                </Link>
+              </div>
+            ))}
+          </div>
+          <CompareRow label="Identifier" columns={columns}>
+            {matters.map((m) => (
+              <div key={m.id} className={m.identifier ? "text-zinc-900" : "text-zinc-400"}>
+                {m.identifier || "None"}
+              </div>
+            ))}
+          </CompareRow>
+          <CompareRow label="Type" columns={columns}>
+            {matters.map((m) => (
+              <div key={m.id} className="text-zinc-700">
+                {m.category || "—"}
+              </div>
+            ))}
+          </CompareRow>
+          <CompareRow label="Active" columns={columns}>
+            {matters.map((m) => (
+              <div key={m.id} className="tabular-nums text-zinc-700">
+                {activeSpan(m)}
+              </div>
+            ))}
+          </CompareRow>
+          <CompareRow label="Status" columns={columns}>
+            {matters.map((m) => (
+              <div key={m.id} className={m.status_line ? "text-zinc-700" : "text-zinc-400"}>
+                {m.status_line || "Not recorded"}
+              </div>
+            ))}
+          </CompareRow>
+          <CompareRow label="Summary" columns={columns}>
+            {matters.map((m) => (
+              <p key={m.id} className="leading-relaxed text-zinc-600">
+                {m.summary || <span className="text-zinc-400">No summary</span>}
+              </p>
+            ))}
+          </CompareRow>
+        </div>
+      </div>
+
+      <div className="border-t border-zinc-100 px-5 py-4">
+        <h3 className="mb-2 text-sm font-medium text-zinc-500">Combined timeline</h3>
+        {timeline.length === 0 ? (
+          <p className="text-sm text-zinc-400">No dated agenda items.</p>
+        ) : (
+          <ol className="space-y-1.5 text-sm">
+            {timeline.map((item: any, i: number) => {
+              const gap = i > 0 ? gapLabel(timeline[i - 1].date, item.date) : null;
+              return (
+                <Fragment key={item.id}>
+                  {gap && (
+                    <li className="py-1 pl-[124px] text-xs italic text-zinc-400" aria-label={gap}>
+                      {gap}
+                    </li>
+                  )}
+                  <li className="grid grid-cols-[20px_96px_minmax(0,1fr)] items-baseline gap-x-2">
+                    <Letter index={item.index} />
+                    <span className="tabular-nums text-zinc-500">{formatDate(item.date, shortDate)}</span>
+                    <span className="text-zinc-800">{item.text}</span>
+                  </li>
+                </Fragment>
+              );
+            })}
+          </ol>
+        )}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-100 px-5 py-3">
+        <p className="text-sm text-zinc-500">
+          Merging keeps <span className="font-medium text-zinc-800">{canonical.title}</span> as the main
+          record; {absorbed.map((m) => m.title).join(" and ")} {absorbed.length === 1 ? "becomes" : "become"}{" "}
+          part of its history.
+        </p>
+        <Form method="post" className="flex gap-2">
+          <input type="hidden" name="proposal_id" value={proposal.id} />
+          <Button type="submit" name="intent" value="reject" variant="outline" disabled={busy}>
+            Keep separate
+          </Button>
+          <Button type="submit" name="intent" value="merge" disabled={busy}>
+            Merge
+          </Button>
+        </Form>
+      </div>
+    </li>
+  );
 }
 
 export default function AdminMatters({ loaderData, actionData }: Route.ComponentProps) {
@@ -183,104 +488,45 @@ export default function AdminMatters({ loaderData, actionData }: Route.Component
   return (
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-6xl px-4 py-12">
-        <PageHeader
+        <DetailHeader
+          back={{ to: "/admin", label: "Admin" }}
+          meta={[
+            <span key="count" className="tabular-nums">
+              {proposals.length} awaiting review
+              {decided > 0 ? ` · ${decided} decided` : ""}
+            </span>,
+          ]}
           title="Matter merge review"
-          description="Possible duplicates the resolver wasn't sure about. Merging keeps every record: the later matters become aliases of the earliest one and their history shows on its page."
+          description="Possible duplicates the resolver wasn't sure about. Merging is reversible: the later matters become aliases of the earliest, and their history shows on its page."
         />
 
+        <dl className="mb-8 grid gap-x-6 gap-y-2 rounded-2xl border border-zinc-200 bg-white px-5 py-4 text-sm sm:grid-cols-3">
+          {VERDICTS.map(([key, label, meaning]) => (
+            <div key={key}>
+              <dt className="font-medium text-zinc-900">{label}</dt>
+              <dd className="text-zinc-500">{meaning}</dd>
+            </div>
+          ))}
+        </dl>
+
         {actionData && "error" in actionData && actionData.error && (
-          <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{actionData.error}</p>
+          <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {actionData.error}
+          </p>
         )}
         {actionData && "ok" in actionData && actionData.ok && (
-          <p className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{actionData.ok}</p>
+          <p role="status" className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            {actionData.ok}
+          </p>
         )}
 
-        <p className="mb-4 text-sm text-zinc-500">
-          <span className="font-semibold text-zinc-900">{proposals.length}</span> awaiting review
-          {decided > 0 && <> · {decided} decided</>}
-        </p>
-
         {proposals.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
-            Nothing to review.
-          </div>
+          <p className="text-sm text-zinc-500">Nothing to review.</p>
         ) : (
-          <ul className="space-y-4">
-            {proposals.map((p: any) => {
-              const top = bestDecision(p.decisions as Decision[]);
-              return (
-                <li key={p.id} className="rounded-2xl border border-zinc-200 bg-white shadow-sm">
-                  <div className="grid gap-px overflow-hidden rounded-t-2xl bg-zinc-100 md:grid-cols-2 lg:grid-flow-col lg:auto-cols-fr lg:grid-cols-none">
-                    {p.matters.map((m: any) => {
-                      const items = [...(m.agenda_items || [])]
-                        .sort((x: any, y: any) =>
-                          String(x.meetings?.meeting_date).localeCompare(String(y.meetings?.meeting_date)),
-                        )
-                        .slice(-3);
-                      return (
-                        <div key={m.id} className="bg-white p-4">
-                          <Link
-                            to={matterPath(m)}
-                            target="_blank"
-                            className="text-sm font-semibold leading-snug text-zinc-900 hover:text-brand-700"
-                          >
-                            {matterTitle(m)}
-                          </Link>
-                          <p className="mt-1 text-xs text-zinc-500 tabular-nums">
-                            {[m.identifier, m.first_seen && formatDate(m.first_seen), m.last_seen !== m.first_seen && m.last_seen && formatDate(m.last_seen)]
-                              .filter(Boolean)
-                              .join(" · ")}
-                          </p>
-                          {m.plain_english_summary && (
-                            <p className="mt-2 text-sm leading-relaxed text-zinc-600 line-clamp-3">{m.plain_english_summary}</p>
-                          )}
-                          {items.length > 0 && (
-                            <ul className="mt-3 space-y-1 border-t border-zinc-100 pt-2">
-                              {items.map((it: any) => (
-                                <li key={it.id} className="text-xs leading-snug text-zinc-500">
-                                  <span className="tabular-nums text-zinc-400">{it.meetings?.meeting_date}</span> {it.title}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-100 px-4 py-3">
-                    <p className="text-xs text-zinc-500">
-                      {top ? (
-                        <>
-                          Model says <Badge variant={top.verdict === "different" ? "muted" : "brand"}>{VERDICT_LABEL[top.verdict]}</Badge>{" "}
-                          <span className="tabular-nums">{Math.round(top.confidence * 100)}%</span>
-                        </>
-                      ) : (
-                        "No model verdict"
-                      )}
-                    </p>
-                    <Form method="post" className="flex gap-2">
-                      <input type="hidden" name="proposal_id" value={p.id} />
-                      <button
-                        name="intent"
-                        value="reject"
-                        disabled={busy}
-                        className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
-                      >
-                        Keep separate
-                      </button>
-                      <button
-                        name="intent"
-                        value="merge"
-                        disabled={busy}
-                        className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
-                      >
-                        Merge
-                      </button>
-                    </Form>
-                  </div>
-                </li>
-              );
-            })}
+          <ul className="space-y-6">
+            {proposals.map((p: any) => (
+              <ProposalCard key={p.id} proposal={p} busy={busy} />
+            ))}
           </ul>
         )}
       </div>

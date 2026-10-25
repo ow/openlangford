@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { currentMatterIds, planMerge, type MatterMergeRow } from "../matter-merge";
+import { currentMatterIds, openPairDecisions, planMerge, signalLabels, type MatterMergeRow } from "../matter-merge";
 
 const row = (id: number, first_seen: string | null, meta: Record<string, unknown> = {}): MatterMergeRow => ({
   id,
@@ -87,5 +87,41 @@ describe("planMerge", () => {
       { id: 2, first_seen: "2021-01-01", last_seen: "2023-05-01", meta: {} },
     ]);
     expect(plan.lastSeen).toBe("2023-05-01");
+  });
+});
+
+describe("signalLabels", () => {
+  it("translates resolver codes", () => {
+    expect(
+      signalLabels([
+        { signals: ["address"] },
+        { signals: ["street:glen lake,title:0.80"] },
+        { signals: ["key:BYLAW 2041"] },
+        { reason: "same identifier" },
+      ]),
+    ).toEqual(["Same address", "Same street: Glen Lake", "Similar titles", "Same number: Bylaw 2041", "Same identifier"]);
+  });
+
+  it("deduplicates across pairs", () => {
+    expect(signalLabels([{ signals: ["address"] }, { signals: ["address"] }])).toEqual(["Same address"]);
+  });
+});
+
+describe("openPairDecisions", () => {
+  it("drops pairs that were already merged and maps aliases to canonicals", () => {
+    // Proposal #1: the 412-738 pair is done; 412-1108 and 738-1108 both now mean 738-1108.
+    const byId = new Map([
+      [412, row(412, "2016-01-01", { canonical_matter_id: 738 })],
+      [738, row(738, "2016-01-01")],
+      [1108, row(1108, "2021-01-01")],
+    ]);
+    const decisions = [
+      { a: 412, b: 738, verdict: "same_matter" as const, confidence: 1, reason: "same identifier" },
+      { a: 412, b: 1108, verdict: "same_matter" as const, confidence: 0.81, probabilities: { same_matter: 0.51 } },
+      { a: 738, b: 1108, verdict: "same_matter" as const, confidence: 0.8, probabilities: { same_matter: 0.47 } },
+    ];
+    const open = openPairDecisions(decisions, [738, 1108], byId);
+    expect(open).toHaveLength(1);
+    expect(open[0]).toMatchObject({ a: 738, b: 1108, confidence: 0.81 });
   });
 });
