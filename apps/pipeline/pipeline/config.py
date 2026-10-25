@@ -13,6 +13,11 @@ VIMEO_PROFILE_URL = "https://vimeo.com/viewroyal"
 VIMEO_ACCESS_TOKEN = os.environ.get("VIMEO_TOKEN")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 ALERT_WORKER_KEY = os.environ.get("ALERT_WORKER_KEY")
+ALERT_OUTBOX_PATH = os.environ.get(
+    "ALERT_OUTBOX_PATH",
+    os.path.join(os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state")),
+                 "openlangford", "email-enqueue.sqlite3"),
+)
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")

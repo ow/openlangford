@@ -85,3 +85,6 @@ src/
 
 GEMINI.md
 TASKLIST.md
+
+# Durable local alert enqueue intent (no credentials or email content)
+.email-alert-outbox.sqlite3*
