@@ -16,7 +16,7 @@ class TestRegistry:
     def test_every_required_stage_is_registered(self):
         expected = {
             "agenda-alignment", "escribe-attachments", "document-relink", "matter-summaries",
-            "participation-summaries", "matter-images", "matter-links", "matter-resolver-audit",
+            "participation-summaries", "participation-names", "matter-images", "matter-links", "matter-resolver-audit",
             "embeddings", "profile-refresh",
         }
         assert expected <= set(stages.STAGES_BY_NAME)
@@ -30,7 +30,7 @@ class TestRegistry:
     def test_post_ingest_order_matches_the_previous_hardcoded_sequence(self):
         assert _names(stages.post_ingest_stages(exclude=("embeddings", "profile-refresh"))) == [
             "escribe-attachments", "document-relink", "matter-history", "matter-summaries", "agenda-alignment",
-            "participation-summaries", "motion-headlines", "matter-images", "matter-links",
+            "participation-summaries", "participation-names", "motion-headlines", "matter-images", "matter-links",
         ]
         assert _names(stages.post_ingest_stages())[0] == "embeddings"
         assert _names(stages.post_ingest_stages())[-1] == "profile-refresh"

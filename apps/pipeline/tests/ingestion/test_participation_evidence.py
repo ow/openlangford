@@ -24,14 +24,12 @@ def test_complete_source_proposal_preserves_order_and_requires_own_intro_for_nam
 @pytest.mark.parametrize('change,reason',[
  ('borrow_quote','support_quote_not_literal_in_own_source'),
  ('reverse','speaker_order_not_source_order'),
- ('mixed_row','mixed_source_segment_requires_measured_speaker_boundaries'),
- ('invent_intro','introduction_not_literal_in_own_source')])
+ ('mixed_row','mixed_source_segment_requires_measured_speaker_boundaries')])
 def test_source_admission_rejects_wrong_witness_for_specific_reason(change,reason):
  p=proposal()
  if change=='borrow_quote':p['speakers'][0]['support_quote']='I ask for a crossing.'
  if change=='reverse':p['speakers'].reverse()
  if change=='mixed_row':p['speakers'][1]['source_segment_ids']=[3]
- if change=='invent_intro':p['speakers'][0]['introduction_quote']='My name is Invented Person.'
  with pytest.raises(ValueError,match=reason):prepare(p)
 
 def test_boundary_public_speech_is_held_but_short_procedural_context_stays_auditable():
@@ -62,8 +60,9 @@ def test_ingestion_entrypoint_reviews_before_publishing_and_preserves_other_meta
  item={**ITEM,'meta':{'foreign_link':17}}
  rows={'agenda_items':[item],'transcript_segments':ROWS,
        'people':[{'id':9,'name':'Chris Foxall'}], 'key_statements':[],
-       'memberships':[], 'meetings':[{'meeting_date':'2024-01-01','meta':{}}]}
- updates=[];calls=[]
+       'memberships':[], 'meetings':[{'meeting_date':'2024-01-01','meta':{}}],
+       'documents':[], 'public_speaker_names':[]}
+ updates=[];calls=[];named=[]
  if chunked:
   rows['transcript_segments']=[{**ROWS[0],'id':i,'start_time':10.+i,'end_time':11.+i,
    'text_content':'My name is Alex. I ask for a crossing. '+'Public discussion. '*1000}for i in range(4)]
@@ -77,6 +76,9 @@ def test_ingestion_entrypoint_reviews_before_publishing_and_preserves_other_meta
   def range(self,a,b):self.bounds=(a,b);return self
   def single(self):self.one=True;return self
   def update(self,p):self.payload=p;return self
+  def in_(self,*a):return self
+  def delete(self):return self
+  def upsert(self,p,**k):named.extend(p);return self
   def execute(self):
    if self.payload:updates.append(self.payload)
    values=rows[self.table]
@@ -117,7 +119,9 @@ def test_ingestion_entrypoint_reviews_before_publishing_and_preserves_other_meta
   assert len(updates[0]['meta']['participation_review_hold']['details_sha256'])==64
  else:
   assert [s['who']for s in result['speakers']]==(['A resident']*4 if chunked else['Chris Foxall','A resident'])
-  assert updates[0]['meta']['participation_version']=='2'
+  assert updates[0]['meta']['participation_version']=='3'
+  # Single-word "Alex" is not publishable; the registry match is recorded for the admin trail.
+  assert [(n['name_key'],n['status'],n['basis'])for n in named]==([]if chunked else[('chris foxhall','published','registry')])
   rows['agenda_items'][0]={**item,'meta':updates[0]['meta']}
   assert ps.summarize_participation(db,1)==result
   assert calls==['Proposal','Review']*(4 if chunked else 1)  # Identical source/registry gets no new paid calls.
@@ -143,3 +147,52 @@ def test_chunk_merge_requires_every_review_and_rejects_cross_chunk_source():
  with pytest.raises(ValueError,match='unreviewed_or_wrong_source_chunk'):pe.merge_reviewed_chunks(p,[{'candidate':c,'review':{**r,'approved':False}}])
  c['validation']['speaker_proofs'][0]['source_segment_ids']=[999]
  with pytest.raises(ValueError,match='chunk_evidence_overlap_or_wrong_source'):pe.merge_reviewed_chunks(p,[{'candidate':c,'review':r}])
+
+
+def prepare_with_names(p, *, minutes=(), published=(), people=()):
+ return pe.prepare_candidate(p,window=pe.source_window(ITEM,ROWS),people=list(people),statement_names=[],streets={'streets':[]},
+  excluded_names=[],names={'minutes':list(minutes),'published':list(published),'decisions':{}})
+
+def test_first_time_self_introduction_is_published_and_recorded():
+ r=prepare_with_names(proposal())
+ assert [s['who']for s in r['speakers']]==['Chris Foxhall','A resident']
+ assert r['speakers'][0]['name_ref']=='chris foxhall' and 'name_ref' not in r['speakers'][1]
+ rec=r['validation']['name_records'][0]
+ assert (rec['status'],rec['basis'],rec['source_segment_ids'],rec['start_time'])==('published','introduction',[3],10.)
+
+def test_minutes_spelling_is_used_when_minutes_list_the_speaker():
+ r=prepare_with_names(proposal(),minutes=[{'name':'C. Foxall'}])
+ assert r['speakers'][0]['who']=='A resident'  # Foxall vs Foxhall is a near miss: review, don't guess
+ assert r['validation']['name_records'][0]['status']=='review'
+ r=prepare_with_names(proposal(),minutes=[{'name':'C. Foxhall'}])
+ assert r['validation']['name_records'][0]['basis']=='minutes'
+
+def test_near_miss_is_held_as_a_resident_until_reviewed():
+ r=prepare_with_names(proposal(),published=['Chris Foxall'])
+ assert r['speakers'][0]['who']=='A resident' and r['speakers'][0]['name_ref']=='chris foxhall'
+ assert r['validation']['name_records'][0]['status']=='review'
+
+
+def test_misquoted_introduction_leaves_only_that_speaker_anonymous():
+ p=proposal();p['speakers'][0]['introduction_quote']='My name is Invented Person.'
+ r=prepare(p)
+ assert [s['who']for s in r['speakers']]==['A resident','A resident']
+ assert r['validation']['speaker_proofs'][0]['introduction_quote_sha256']==pe.digest('')
+
+
+def test_quotes_tolerate_case_and_punctuation_but_not_different_words():
+ assert pe.quoted('i OPPOSE this road',[ROWS[0]]) and pe.quoted('Name is Chris, Foxhall',[ROWS[0]])
+ assert not pe.quoted('I oppose that road',[ROWS[0]]) and not pe.quoted('crossing',[ROWS[0]]) and not pe.quoted('',[ROWS[0]])
+
+
+def test_quote_from_an_uncited_row_inside_the_speakers_span_joins_its_evidence():
+ rows=[{'id':3,'meeting_id':2,'start_time':10.,'end_time':11.,'text_content':'My name is Chris Foxhall.'},
+       {'id':5,'meeting_id':2,'start_time':11.,'end_time':12.,'text_content':'I oppose this road.'},
+       {'id':6,'meeting_id':2,'start_time':12.,'end_time':13.,'text_content':'Thank you.'},
+       {'id':4,'meeting_id':2,'start_time':15.,'end_time':20.,'text_content':'I ask for a crossing.'}]
+ p=proposal();p['speakers'][0]['source_segment_ids']=[3,6]
+ r=pe.prepare_candidate(p,window=pe.source_window(ITEM,rows),people=[],statement_names=[],streets={'streets':[]},excluded_names=[])
+ assert r['validation']['speaker_proofs'][0]['source_segment_ids']==[3,5,6]
+ p['speakers'][1]['source_segment_ids']=[5,4]  # another speaker already cites row 5: no borrowing
+ with pytest.raises(ValueError,match='support_quote_not_literal'):
+  pe.prepare_candidate(p,window=pe.source_window(ITEM,rows),people=[],statement_names=[],streets={'streets':[]},excluded_names=[])
