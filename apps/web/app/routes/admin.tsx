@@ -24,6 +24,8 @@ export default function Admin() {
         <PageHeader title="Admin area" description="Review council records and manage processing." />
         <ul className="grid gap-4 sm:grid-cols-2">
           {[
+            ["/admin/users", "Users", "Inspect registered accounts and saved subscriptions."],
+            ["/admin/emails", "Email activity", "Review recorded application alert attempts and delivery events."],
             ["/admin/matters", "Matter merge review", "Review proposed matches between matters."],
             ["/admin/pipeline", "Pipeline operations", "Inspect processing status and queued jobs."],
             ["/admin/profiles", "Profile review", "Review generated councillor profile drafts."],
