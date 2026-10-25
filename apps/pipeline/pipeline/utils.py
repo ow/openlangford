@@ -78,12 +78,22 @@ def infer_meeting_type(text):
         
     if "advisory committee" in lower or "commission" in lower:
         return "Advisory Committee"
+
+    # Langford's standing committees before 2023 ("Planning, Zoning & Affordable Housing Committee").
+    if "committee" in lower:
+        return "Standing Committee"
         
     if "council" in lower:
         # Default to Regular Council if 'Council' is mentioned but not 'Special'
         return "Regular Council"
         
     return None
+
+
+def committee_name(title):
+    """'Planning, Zoning & Affordable Housing Committee – Special' -> 'Planning, Zoning & Affordable Housing Committee'."""
+    match = re.search(r"^(.*?\bCommittee)\b", title or "", re.IGNORECASE)
+    return match.group(1).strip() if match else None
 
 
 def normalize_top_level(name):

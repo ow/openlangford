@@ -552,8 +552,12 @@ class MeetingIngester:
                 return val
         return None
 
-    def map_type_to_org(self, m_type):
+    def map_type_to_org(self, m_type, title=None):
         """Maps a meeting_type enum value to the official Organization name."""
+        if m_type == "Standing Committee":
+            # Each standing committee is its own organization, named in the meeting title.
+            return utils.committee_name(title) or "Standing Committee", "Committee"
+
         if m_type in [
             "Inauguration",
             "Regular Council",
@@ -1302,7 +1306,7 @@ class MeetingIngester:
         # 1. Organization & Meeting Upsert
         # Initial guess from filename metadata
         m_type_guess = utils.infer_meeting_type(meta["meeting_type"] or meta["title"])
-        org_name, classification = self.map_type_to_org(m_type_guess or "Council")
+        org_name, classification = self.map_type_to_org(m_type_guess or "Council", meta["title"])
 
         if canonical_cached_refresh:
             # Corrected live catalog facts are authoritative over legacy folder names.
@@ -1321,6 +1325,9 @@ class MeetingIngester:
             "type": m_type_guess,
             "municipality_id": self.municipality_id,
         }
+        if m_type_guess == "Standing Committee" and utils.committee_name(meta["title"]):
+            # The default slug is "<date>-<type>"; name the committee instead.
+            meeting_data["slug"] = f"{meta['meeting_date']}-{self._slugify(utils.committee_name(meta['title']))}"
 
         # Look for agenda_url from companion .url file
         agenda_folder = os.path.join(folder_path, "Agenda")
@@ -1739,14 +1746,16 @@ class MeetingIngester:
                 print("  [+] AI Refinement Success!")
 
                 # Update meeting type and organization based on AI
-                ai_type = calendar_meeting_type or refined.get("meeting_type")
+                # A standing committee's folder is authoritative: the model tends to call them advisory.
+                ai_type = (calendar_meeting_type or ("Standing Committee" if m_type_guess == "Standing Committee" else None)
+                           or refined.get("meeting_type"))
                 ai_status = refined.get("status")
                 ai_summary = normalize_meeting_summary(refined["summary"]) if refined.get("summary") else None
 
                 update_fields = {}
                 if ai_type:
                     # Map the AI-identified type to a canonical Organization
-                    target_org_name, target_org_class = self.map_type_to_org(ai_type)
+                    target_org_name, target_org_class = self.map_type_to_org(ai_type, meeting_data["title"])
 
                     if ai_type == "Advisory Committee":
                         for candidate_org in [
@@ -2132,9 +2141,19 @@ class MeetingIngester:
         initial_claim_inventory = ballot_context.get("meeting_claim_inventory")
         ballot_outcomes = Counter()
         canonical_report = {"status": "not_enabled_for_source"}
-        canonical_enabled = not is_planned_meeting and (
+        # Standing committees (pre-2023 Langford, backfilled from Glyphdex) have no validated membership
+        # or minutes rules yet. Their motions are recommendations that Council's own minutes decide on,
+        # so ingest the items and documents and hold every AI motion reading as unverified.
+        committee_hold = (not is_planned_meeting and classification == "Committee"
+                          and ballot_context.get("status") == "committee_membership_rules_need_validation")
+        canonical_enabled = not is_planned_meeting and not committee_hold and (
             ballot_context.get("status") == "available" or "archive/langford/" in normalized_path.replace("\\", "/")
         )
+        if committee_hold:
+            for item in refined.get("items", []):
+                item["_unverified_motion_proposals"] = item.pop("motions", None) or []
+                item["motions"] = []
+            print("  [i] Standing committee: motions held as unverified recommendations (no official ballot rules yet)")
         if canonical_enabled:
             if not valid_inventory(initial_claim_inventory, meeting_id):
                 raise RuntimeError("Complete current motion claims required before source writes")
@@ -2267,7 +2286,7 @@ class MeetingIngester:
                 "financial_cost": item.get("financial_cost"),
                 "funding_source": item.get("funding_source"),
                 "keywords": tags,
-                "meta": {"key_quotes": item.get("key_quotes"), **({"unverified_motion_proposals": item.get("_unverified_motion_proposals", [])} if canonical_enabled else {})},
+                "meta": {"key_quotes": item.get("key_quotes"), **({"unverified_motion_proposals": item.get("_unverified_motion_proposals", [])} if canonical_enabled or committee_hold else {})},
             }
 
             agenda_item_id = 200  # Placeholder for dry run
