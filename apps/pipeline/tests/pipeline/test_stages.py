@@ -29,7 +29,7 @@ class TestRegistry:
 
     def test_post_ingest_order_matches_the_previous_hardcoded_sequence(self):
         assert _names(stages.post_ingest_stages(exclude=("embeddings", "profile-refresh"))) == [
-            "escribe-attachments", "document-relink", "matter-history", "matter-summaries", "agenda-alignment",
+            "escribe-attachments", "document-relink", "written-submissions", "matter-history", "matter-summaries", "agenda-alignment",
             "participation-summaries", "participation-names", "motion-headlines", "matter-images", "matter-links",
         ]
         assert _names(stages.post_ingest_stages())[0] == "embeddings"

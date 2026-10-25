@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { displayTitle } from "../../lib/display-text";
 import { formatDate, cn } from "../../lib/utils";
 import { ParticipationList, WrittenSubmissions } from "../meeting/participation-list";
+import { writtenLetters } from "../../lib/written";
 import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
 
 /** Plain-language meaning of a bylaw stage, for residents who don't know what "second reading" means. */
@@ -97,7 +98,8 @@ export function TimelineStep({
   written?: any;
 }) {
   const motions: Motion[] = item.motions || [];
-  const hasParticipation = Boolean(participation?.speakers?.length || written?.letters?.length);
+  const letterCount = writtenLetters(written).length;
+  const hasParticipation = Boolean(participation?.speakers?.length || letterCount);
   const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline });
   const stage = stageExplanation(headline, item.title, ...motions.map((m) => m.text_content));
   const title = headline || displayTitle(item.title);
@@ -171,10 +173,13 @@ export function TimelineStep({
         </div>
       )}
 
-      {written?.letters?.length > 0 && (
+      {letterCount > 0 && (
         <div className="mt-4">
-          <p className="mb-2 text-xs font-semibold text-zinc-500">Written submissions ({written.letters.length})</p>
-          <WrittenSubmissions written={written} />
+          <p className="mb-2 text-xs font-semibold text-zinc-500">Written submissions ({letterCount})</p>
+          <WrittenSubmissions
+            written={written}
+            documentHref={(documentId) => documentPath({ id: item.meeting_id, slug: item.meetings?.slug }, documentId)}
+          />
         </div>
       )}
 

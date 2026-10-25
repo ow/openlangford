@@ -1,4 +1,6 @@
 import { ParticipationList, WrittenSubmissions } from "./participation-list";
+import { writtenLetters } from "../../lib/written";
+import { documentPath } from "../../lib/paths";
 import { useState } from "react";
 import {
   ChevronRight,
@@ -386,10 +388,10 @@ function AgendaItemRow({
                   {linkedExtractedDocs.length} {linkedExtractedDocs.length === 1 ? "document" : "documents"}
                 </span>
               )}
-              {item.meta?.written_participation?.letters?.length > 0 && (
+              {writtenLetters(item.meta?.written_participation).length > 0 && (
                 <span className="tabular-nums">
-                  {item.meta.written_participation.letters.length}{" "}
-                  {item.meta.written_participation.letters.length === 1 ? "letter" : "letters"}
+                  {writtenLetters(item.meta?.written_participation).length}{" "}
+                  {writtenLetters(item.meta?.written_participation).length === 1 ? "letter" : "letters"}
                 </span>
               )}
             </div>
@@ -449,12 +451,16 @@ function AgendaItemRow({
               )}
 
               {/* Letters and emails sent in before the meeting */}
-              {item.meta?.written_participation?.letters?.length > 0 && (
+              {writtenLetters(item.meta?.written_participation).length > 0 && (
                 <div className="space-y-2">
                   <h4 className="text-xs font-semibold text-zinc-500">
-                    Written submissions ({item.meta.written_participation.letters.length})
+                    Written submissions ({writtenLetters(item.meta?.written_participation).length})
                   </h4>
-                  <WrittenSubmissions written={item.meta.written_participation} className="pl-0.5" />
+                  <WrittenSubmissions
+                    written={item.meta?.written_participation}
+                    documentHref={(documentId) => documentPath({ id: meetingId, slug: meetingSlug }, documentId)}
+                    className="pl-0.5"
+                  />
                 </div>
               )}
 

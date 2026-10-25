@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { cn } from "../../lib/utils";
+import { writtenLetters, writtenSources, type WrittenParticipation } from "../../lib/written";
 
 export type ParticipationSpeaker = { who: string; position: string; point: string; topic: string };
 export type Participation = { overview?: string; speakers?: ParticipationSpeaker[] };
@@ -60,11 +61,6 @@ export function ParticipationList({
   );
 }
 
-export type WrittenParticipation = {
-  letters?: (ParticipationSpeaker & { sent?: string })[];
-  source?: { title?: string; href?: string };
-};
-
 const TALLY_LABEL: Record<string, string> = {
   opposes: "opposed",
   supports: "in support",
@@ -87,21 +83,24 @@ export function positionTally(list: { position: string }[]) {
 /** Letters and emails residents sent in, from the agenda package. */
 export function WrittenSubmissions({
   written,
+  documentHref,
   limit = 4,
   className,
 }: {
   written?: WrittenParticipation;
+  documentHref?: (documentId: number) => string;
   limit?: number;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const letters = written?.letters ?? [];
+  const letters = writtenLetters(written);
   if (!letters.length) return null;
   const shown = open ? letters : letters.slice(0, limit);
+  const sources = documentHref ? writtenSources(written) : [];
   return (
     <div className={cn("space-y-2", className)}>
       <p className="text-xs tabular-nums text-zinc-500">{positionTally(letters)}</p>
-      <ParticipationList speakers={shown} />
+      <ParticipationList speakers={shown as ParticipationSpeaker[]} />
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
         {letters.length > limit && (
           <button
@@ -112,11 +111,16 @@ export function WrittenSubmissions({
             {open ? "Show fewer" : `Show all ${letters.length} letters`}
           </button>
         )}
-        {written?.source?.href && (
-          <Link to={written.source.href} className="font-medium text-zinc-500 hover:text-brand-700 hover:underline">
-            Read the letters
+        {sources.map((source, i) => (
+          <Link
+            key={source.documentId}
+            to={documentHref!(source.documentId)}
+            title={source.title}
+            className="font-medium text-zinc-500 hover:text-brand-700 hover:underline"
+          >
+            {sources.length === 1 ? "Read the letters" : `Read the letters (${i + 1})`}
           </Link>
-        )}
+        ))}
       </div>
     </div>
   );

@@ -45,6 +45,7 @@ import { cn, formatDate } from "../lib/utils";
 import { displayTitle, matterTitle } from "../lib/display-text";
 import { bylawLead, bylawStatus } from "../lib/bylaw-summary";
 import { ParticipationList, speakersAbout } from "../components/meeting/participation-list";
+import { writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
@@ -730,7 +731,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                   const procedural = isProceduralStep(item, {
                     hasParticipation: Boolean(
                       (item as any).meta?.participation?.speakers?.length ||
-                        (item as any).meta?.written_participation?.letters?.length,
+                        writtenLetters((item as any).meta?.written_participation).length,
                     ),
                     hasImage: Boolean(layout),
                     headline,

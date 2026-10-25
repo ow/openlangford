@@ -489,6 +489,35 @@ def run_motion_headlines(ctx: StageContext):
     return {"meetings": len(ids), "headlines": done}
 
 
+def run_written_submissions(ctx: StageContext):
+    from pipeline.ingestion.participation_validation import load_streets
+    from pipeline.ingestion.written_submissions import correspondence_documents, summarize_document
+
+    if ctx.post_ingest:
+        docs = correspondence_documents(ctx.supabase, meeting_ids=list(ctx.meeting_ids or []))
+    elif ctx.target_id() is not None:
+        docs = correspondence_documents(ctx.supabase, meeting_ids=[ctx.target_id()])
+    else:
+        docs = correspondence_documents(ctx.supabase, since=ctx.since)
+    streets = load_streets()
+    totals = {"documents": len(docs), "letters": 0, "placed": 0, "held": 0, "unchanged": 0, "skipped": 0}
+    for doc in docs:
+        try:
+            result = summarize_document(ctx.supabase, doc, streets=streets, dry_run=ctx.dry_run)
+        except Exception as e:
+            print(f"  [!] Written submissions for document {doc['id']} failed: {e}")
+            continue
+        if result["status"] in ("unchanged", "skipped"):
+            totals[result["status"]] += 1
+            continue
+        for key in ("letters", "placed", "held"):
+            totals[key] += result.get(key, 0)
+    verb = "would place" if ctx.dry_run else "placed"
+    print(f"  [Written] {totals['documents']} correspondence document(s): {totals['letters']} letter(s), {verb} "
+          f"{totals['placed']}, {totals['held']} held for review, {totals['unchanged']} unchanged, {totals['skipped']} skipped")
+    return totals
+
+
 def run_matter_images(ctx: StageContext):
     from pipeline.ingestion.matter_images import pick_matter_images
 
@@ -649,6 +678,12 @@ STAGES: list[Stage] = [
         description="Link extracted documents with no agenda item to one via the Decisions API (post-ingest: those meetings only).",
         run=run_document_relink, when="post_ingest", scope="meeting", version="1",
         depends_on=("escribe-attachments",),
+    ),
+    Stage(
+        name="written-submissions",
+        description="Residents' letters in agenda packages as written participation; unsure placements wait in /admin/letters. --target is a meeting id; --since DATE.",
+        run=run_written_submissions, when="post_ingest", scope="meeting", version="1",
+        depends_on=("document-relink",),
     ),
     Stage(
         name="matter-history",
