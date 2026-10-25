@@ -47,6 +47,7 @@ export default [
   route("admin/profiles", "routes/admin-profiles.tsx"),
   route("admin/matters", "routes/admin-matters.tsx"),
   route("admin/pipeline", "routes/admin-pipeline.tsx"),
+  route("admin/names", "routes/admin-names.tsx"),
   route("admin/pipeline/jobs/:id", "routes/admin-pipeline-job.tsx"),
 
   route("onboarding", "routes/onboarding.tsx"),

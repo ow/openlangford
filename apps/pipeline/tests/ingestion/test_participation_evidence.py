@@ -62,8 +62,9 @@ def test_ingestion_entrypoint_reviews_before_publishing_and_preserves_other_meta
  item={**ITEM,'meta':{'foreign_link':17}}
  rows={'agenda_items':[item],'transcript_segments':ROWS,
        'people':[{'id':9,'name':'Chris Foxall'}], 'key_statements':[],
-       'memberships':[], 'meetings':[{'meeting_date':'2024-01-01','meta':{}}]}
- updates=[];calls=[]
+       'memberships':[], 'meetings':[{'meeting_date':'2024-01-01','meta':{}}],
+       'documents':[], 'public_speaker_names':[]}
+ updates=[];calls=[];named=[]
  if chunked:
   rows['transcript_segments']=[{**ROWS[0],'id':i,'start_time':10.+i,'end_time':11.+i,
    'text_content':'My name is Alex. I ask for a crossing. '+'Public discussion. '*1000}for i in range(4)]
@@ -77,6 +78,9 @@ def test_ingestion_entrypoint_reviews_before_publishing_and_preserves_other_meta
   def range(self,a,b):self.bounds=(a,b);return self
   def single(self):self.one=True;return self
   def update(self,p):self.payload=p;return self
+  def in_(self,*a):return self
+  def delete(self):return self
+  def upsert(self,p,**k):named.extend(p);return self
   def execute(self):
    if self.payload:updates.append(self.payload)
    values=rows[self.table]
@@ -117,7 +121,9 @@ def test_ingestion_entrypoint_reviews_before_publishing_and_preserves_other_meta
   assert len(updates[0]['meta']['participation_review_hold']['details_sha256'])==64
  else:
   assert [s['who']for s in result['speakers']]==(['A resident']*4 if chunked else['Chris Foxall','A resident'])
-  assert updates[0]['meta']['participation_version']=='2'
+  assert updates[0]['meta']['participation_version']=='3'
+  # Single-word "Alex" is not publishable; the registry match is recorded for the admin trail.
+  assert [(n['name_key'],n['status'],n['basis'])for n in named]==([]if chunked else[('chris foxhall','published','registry')])
   rows['agenda_items'][0]={**item,'meta':updates[0]['meta']}
   assert ps.summarize_participation(db,1)==result
   assert calls==['Proposal','Review']*(4 if chunked else 1)  # Identical source/registry gets no new paid calls.
@@ -143,3 +149,27 @@ def test_chunk_merge_requires_every_review_and_rejects_cross_chunk_source():
  with pytest.raises(ValueError,match='unreviewed_or_wrong_source_chunk'):pe.merge_reviewed_chunks(p,[{'candidate':c,'review':{**r,'approved':False}}])
  c['validation']['speaker_proofs'][0]['source_segment_ids']=[999]
  with pytest.raises(ValueError,match='chunk_evidence_overlap_or_wrong_source'):pe.merge_reviewed_chunks(p,[{'candidate':c,'review':r}])
+
+
+def prepare_with_names(p, *, minutes=(), published=(), people=()):
+ return pe.prepare_candidate(p,window=pe.source_window(ITEM,ROWS),people=list(people),statement_names=[],streets={'streets':[]},
+  excluded_names=[],names={'minutes':list(minutes),'published':list(published),'decisions':{}})
+
+def test_first_time_self_introduction_is_published_and_recorded():
+ r=prepare_with_names(proposal())
+ assert [s['who']for s in r['speakers']]==['Chris Foxhall','A resident']
+ assert r['speakers'][0]['name_ref']=='chris foxhall' and 'name_ref' not in r['speakers'][1]
+ rec=r['validation']['name_records'][0]
+ assert (rec['status'],rec['basis'],rec['source_segment_ids'],rec['start_time'])==('published','introduction',[3],10.)
+
+def test_minutes_spelling_is_used_when_minutes_list_the_speaker():
+ r=prepare_with_names(proposal(),minutes=[{'name':'C. Foxall'}])
+ assert r['speakers'][0]['who']=='A resident'  # Foxall vs Foxhall is a near miss: review, don't guess
+ assert r['validation']['name_records'][0]['status']=='review'
+ r=prepare_with_names(proposal(),minutes=[{'name':'C. Foxhall'}])
+ assert r['validation']['name_records'][0]['basis']=='minutes'
+
+def test_near_miss_is_held_as_a_resident_until_reviewed():
+ r=prepare_with_names(proposal(),published=['Chris Foxall'])
+ assert r['speakers'][0]['who']=='A resident' and r['speakers'][0]['name_ref']=='chris foxhall'
+ assert r['validation']['name_records'][0]['status']=='review'

@@ -11,6 +11,7 @@ from typing import Literal
 from pydantic import BaseModel
 from pipeline import ai
 from .participation_validation import canonicalize_participation, folded, name_score, StreetCheck
+from .participation_names import VERSION as NAMES_VERSION, resolve_public_name
 
 VERSION = 'participation-source-bound-v2'
 
@@ -85,7 +86,7 @@ def merge_reviewed_chunks(plan, parts):
     """All-or-nothing source conservation and disjoint contribution evidence."""
     if plan['status'] != 'ready' or len(parts) != len(plan['chunks']):
         raise ValueError('complete_reviewed_chunk_set_required')
-    speakers, proofs, used = [], [], set()
+    speakers, proofs, name_records, used = [], [], [], set()
     for chunk, part in zip(plan['chunks'], parts):
         candidate, review = part['candidate'], part['review']
         if not review_passed(review, candidate) or candidate['validation']['source_window_sha256'] != chunk['fingerprint']:
@@ -98,9 +99,10 @@ def merge_reviewed_chunks(plan, parts):
             used.update(cited)
         speakers.extend(candidate['speakers'])
         proofs.extend(candidate['validation']['speaker_proofs'])
+        name_records.extend(candidate['validation'].get('name_records', []))
     return {'overview': f'{len(speakers)} public contributions addressed this agenda item.', 'speakers': speakers,
-            'validation': {'version': VERSION, 'names': 'source_intro_registry_spelling_only_not_voice_identity',
-                           'speaker_proofs': proofs, 'source_window_sha256': plan['window']['fingerprint'],
+            'validation': {'version': VERSION, 'names': parts[0]['candidate']['validation']['names'] if parts else NAMES_VERSION,
+                           'name_records': name_records, 'speaker_proofs': proofs, 'source_window_sha256': plan['window']['fingerprint'],
                            'excluded_boundary_segments': plan['window']['excluded_boundary_segments'],
                            'chunking_version': plan['version'], 'chunk_count': len(parts),
                            'chunk_reviews': [{'source_window_sha256': p['candidate']['validation']['source_window_sha256'], 'review': p['review']} for p in parts]}}
@@ -137,10 +139,10 @@ REVIEW_SYSTEM = """Independently audit the proposed public-participation summary
 def source_prompt(item, window, excluded_names):
     return json.dumps({'agenda_title': item['title'], 'window': [item['discussion_start_time'], item['discussion_end_time']], 'chunk': window.get('chunk'), 'chunk_instruction': 'When chunk is present, summarize and review ONLY its source_rows; other chunks cover the rest of the section. Every chunk starts at the section beginning or a literal new self-introduction.', 'meeting_officials_not_public_speakers': sorted(excluded_names), 'boundary_context_excluded_from_speaker_evidence_but_audit_for_omissions': [{'id': s['id'], 'text': s.get('text_content') or ''} for s in window.get('boundary_context', [])], 'source_rows': [{'id': s['id'], 'start': s['start_time'], 'end': s['end_time'], 'unvalidated_label': s.get('speaker_name'), 'text': s.get('text_content') or ''} for s in window['segments']]}, ensure_ascii=False)
 
-def prepare_candidate(proposal, *, window, people, statement_names, streets, excluded_names):
+def prepare_candidate(proposal, *, window, people, statement_names, streets, excluded_names, names=None):
     """Deterministic speaker-specific evidence, order, name and privacy gates."""
     rows = {s['id']: s for s in window['segments']}
-    entries, proofs, previous, used_ids = [], [], float('-inf'), set()
+    entries, proofs, name_records, previous, used_ids = [], [], [], float('-inf'), set()
     for speaker in proposal['speakers']:
         ids = speaker['source_segment_ids']
         if not ids or len(ids) != len(set(ids)) or any(i not in rows for i in ids):
@@ -162,7 +164,9 @@ def prepare_candidate(proposal, *, window, people, statement_names, streets, exc
             raise ValueError('point_exceeds_word_limit')
         # Canonical spelling uses only this speaker's cited material.
         label = speaker['who']
-        if not intro or not re.search(r"\b(?:my name is|i am|i['’]m)\s+", intro, re.I):
+        introduced = bool(intro) and bool(re.search(r"\b(?:my name is|i am|i['’]m)\s+", intro, re.I))
+        spoken = re.sub(r'\s*\([^()]*\)\s*$', '', label).strip()
+        if not introduced:
             location = re.search(r'\([^()]*\)\s*$', label)
             label = 'A resident' + (' ' + location[0] if location else '')
         data = canonicalize_participation({'overview': '', 'speakers': [{k: speaker[k] for k in ['who', 'position', 'point', 'topic']} | {'who': label}]}, people=people, statement_names=statement_names, street_evidence=streets, source_text=intro)
@@ -174,6 +178,16 @@ def prepare_candidate(proposal, *, window, people, statement_names, streets, exc
             clean_source = StreetCheck(streets).clean_text(' '.join(s.get('text_content') or '' for s in source))
             if ' '.join(folded(location[1])) not in ' '.join(folded(clean_source)):
                 entry['who'] = entry['who'][:location.start()].strip()
+        if names is not None and introduced:
+            decided = resolve_public_name(spoken, intro, people=people, statement_names=statement_names, **names)
+            if decided:
+                if any(name_score(decided['transcribed'], official) for official in excluded_names):
+                    raise ValueError('meeting_official_not_public_speaker')
+                suffix = re.search(r'\s*\([^()]*\)\s*$', entry['who'])
+                shown = decided['display'] if decided['status'] == 'published' and decided['display'] else 'A resident'
+                entry['who'] = shown + (suffix[0] if suffix else '')
+                entry['name_ref'] = decided['key']
+                name_records.append({**decided, 'source_segment_ids': ids, 'start_time': first})
         name = entry['who'].split(' (')[0]
         if any(name_score(name, official) for official in excluded_names):
             raise ValueError('meeting_official_not_public_speaker')
@@ -182,7 +196,8 @@ def prepare_candidate(proposal, *, window, people, statement_names, streets, exc
     if not entries and not proposal['no_public_speech_reason'].strip():
         raise ValueError('empty_summary_without_source_reason')
     clean = StreetCheck(streets)
-    result = {'overview': clean.clean_text(proposal['overview']), 'speakers': entries, 'validation': {'version': VERSION, 'names': 'source_intro_registry_spelling_only_not_voice_identity', 'speaker_proofs': proofs, 'source_window_sha256': window['fingerprint'], 'excluded_boundary_segments': window['excluded_boundary_segments']}}
+    names_basis = NAMES_VERSION if names is not None else 'source_intro_registry_spelling_only_not_voice_identity'
+    result = {'overview': clean.clean_text(proposal['overview']), 'speakers': entries, 'validation': {'version': VERSION, 'names': names_basis, 'name_records': name_records, 'speaker_proofs': proofs, 'source_window_sha256': window['fingerprint'], 'excluded_boundary_segments': window['excluded_boundary_segments']}}
     if re.search(r'\b(?:he|she|his|her|hers|him)\b', json.dumps(result['speakers']), re.I):
         raise ValueError('gendered_pronoun_requires_review')
     return result

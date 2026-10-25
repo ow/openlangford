@@ -28,6 +28,7 @@ export default function Admin() {
             ["/admin/emails", "Email activity", "Review recorded application alert attempts and delivery events."],
             ["/admin/matters", "Matter merge review", "Review proposed matches between matters."],
             ["/admin/pipeline", "Pipeline operations", "Inspect processing status and queued jobs."],
+            ["/admin/names", "Speaker names", "Confirm spellings of residents who introduced themselves."],
             ["/admin/profiles", "Profile review", "Review generated councillor profile drafts."],
             ["/admin/people", "People and memberships", "Manage council and staff records."],
             ["/speaker-alias", "Speaker aliases", "Review and correct speaker identities."],

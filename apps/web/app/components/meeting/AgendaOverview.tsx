@@ -438,7 +438,7 @@ function AgendaItemRow({
                     Who spoke ({item.meta.participation.speakers.length})
                   </h4>
                   <ParticipationList participation={item.meta.participation} className="pl-0.5" />
-                  <p className="text-xs text-zinc-400">Summarized from the meeting video. Names use checked registry spellings; unconfirmed names appear as “A resident”.</p>
+                  <p className="text-xs text-zinc-400">Summarized from the meeting video. Names are shown when speakers introduce themselves, spelled as in the minutes where listed; others appear as “A resident”.</p>
                 </div>
               )}
 
