@@ -12,6 +12,7 @@ VIMEO_PROFILE_URL = "https://vimeo.com/viewroyal"
 # API Credentials
 VIMEO_ACCESS_TOKEN = os.environ.get("VIMEO_TOKEN")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
+ALERT_WORKER_KEY = os.environ.get("ALERT_WORKER_KEY")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")

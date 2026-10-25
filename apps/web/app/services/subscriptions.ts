@@ -39,6 +39,7 @@ export async function upsertUserProfile(
       | "notification_email"
       | "digest_frequency"
       | "digest_enabled"
+      | "onboarding_completed"
     >
   >,
 ): Promise<UserProfile> {

@@ -880,35 +880,22 @@ class Archiver:
         Triggers digest email alerts for subscribers. Failures are logged
         but never crash the pipeline.
         """
-        supabase_key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
-        if not config.SUPABASE_URL or not supabase_key:
-            print(f"  [!] Alert trigger skipped for meeting {meeting_id}: SUPABASE_URL or key not set")
+        if not config.SUPABASE_URL or not config.ALERT_WORKER_KEY:
+            print("  [i] Email alert enqueue not configured; skipped")
             return
-
         url = f"{config.SUPABASE_URL}/functions/v1/send-alerts"
-        headers = {
-            "Authorization": f"Bearer {supabase_key}",
-            "Content-Type": "application/json",
-        }
-        payload = {"meeting_id": meeting_id, "mode": "digest"}
+        headers = {"X-Alert-Worker-Key": config.ALERT_WORKER_KEY, "Content-Type": "application/json"}
+        payload = {"action": "enqueue", "meeting_id": meeting_id}
 
         try:
             resp = requests.post(url, json=payload, headers=headers, timeout=30)
             if resp.ok:
                 data = resp.json()
-                sent = data.get("sent", 0)
-                errors = data.get("errors", 0)
-                skipped = data.get("skipped", False)
-                if skipped:
-                    print(f"  [i] Alert skipped for meeting {meeting_id}: {data.get('reason', 'no digest content')}")
-                elif errors > 0:
-                    print(f"  [!] Alert partially failed for meeting {meeting_id}: sent={sent}, errors={errors}")
-                else:
-                    print(f"  [+] Triggered alerts for meeting {meeting_id}: sent={sent}")
+                print(f"  [i] Email queue: {data.get('queued', 0)} new messages; skipped={bool(data.get('skipped', False))}")
             else:
-                print(f"  [!] Alert trigger failed for meeting {meeting_id}: {resp.status_code} {resp.text[:200]}")
-        except Exception as e:
-            print(f"  [!] Alert trigger failed for meeting {meeting_id}: {e}")
+                print(f"  [!] Alert enqueue failed: HTTP {resp.status_code}")
+        except Exception:
+            print("  [!] Alert enqueue failed; no response details logged")
 
     def _embed_new_content(self, force=False, tables=None):
         """The registry's `embeddings` stage: embed rows missing a vector."""

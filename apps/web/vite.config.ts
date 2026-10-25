@@ -76,6 +76,7 @@ export default defineConfig(({ mode }) => {
     // on Cloudflare Workers (where process.env doesn't exist).
     // Locally, Vite dev server already has these via Object.assign above.
     define: {
+      "process.env.EMAIL_ALERTS_AVAILABLE": JSON.stringify(env.EMAIL_ALERTS_AVAILABLE ?? "false"),
       "process.env.PUBLIC_SIGNUP_LINKS": JSON.stringify(env.PUBLIC_SIGNUP_LINKS ?? "true"),
       "process.env.ENABLE_SIGNUPS": JSON.stringify(env.ENABLE_SIGNUPS ?? "true"),
       "process.env.SUPABASE_URL": JSON.stringify(env.SUPABASE_URL || ""),

@@ -348,6 +348,7 @@ export interface UserProfile {
   neighborhood?: string;
   notification_email?: string;
   email_verified: boolean;
+  email_alerts_enabled?: boolean;
   digest_frequency: DigestFrequency;
   digest_enabled: boolean;
   onboarding_completed?: boolean;
