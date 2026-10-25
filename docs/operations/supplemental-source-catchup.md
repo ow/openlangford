@@ -67,7 +67,7 @@ incomplete site-wide reconciliation.
 
 ## Additional reviewed closing cases
 
-The prepared draft now includes 599 additions across 33 meetings. The preceding
+The prepared draft now includes 603 additions across 34 meetings. The preceding
 42 are meeting55 (10),62 (10),98 (7) and227 (15), independently reviewed from
 original pages and matched exactly by a current read-only production audit:
 `ea59050a41a5a04f20db74a0e5803f5f67902d4870bc8bda4ac53ee9ab01b997`.
@@ -114,3 +114,15 @@ These are source/snapshot checks, not new canonical production receipts or a
 site-wide completeness certificate. The census still contains208 other source
 flags, including active reviews; flags are not counts of missing decisions.
 Prepared additions remain772 across PR50/51/53, with355 previously applied.
+
+## Four additional disjoint decisions in meeting30
+
+The exact legacy wording “That the Council adjourn the meeting.” follows the
+same disputed-closing safeguards as the form without the article. The actual
+source ends with Chair5:51 narration, not a formal closing result. Existing225
+remains CARRIED and unresolved, without a new source key or fact certification.
+Four independently reviewed decisions now pass the strict native-body, source,
+ownership and full-row checks; all20 oldmotions and28agendas remain unchanged.
+Current read-only audit:
+`924c5a73656a3695171c9c884faec6bf4921d645ecfc9c242bc960ecfc47712c`.
+The prior held packet is retained. This is draft preparation, not application.

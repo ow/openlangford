@@ -1,0 +1,655 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 30,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+  "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+  "source_date": "2017-03-06",
+  "source_text_sha256": "07ca69e945c9109e9b7ea8516671d0d37e9c2388a2ccf882af8ee67fd228ca4d",
+  "formal_inventory_sha256": "fb54a98851447fa7b97c560bdf684f3496b3043353fdbbfb250073f18a0ae611",
+  "claim_inventory_sha256": "ebc15cea86dd0d33f84aeeb17ce914b88133c5aa84f7df980269472c9b6b9249",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "e5b7e086e628406cee9366d93d03a7f006c80d06fafe7bf28a5e72bdd3bd9504"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "12018ee251006f1e536f2f520f05fb2d34928ecb71b24082438c1c7882c59ce7"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "69c674387001207bcdbd4fe8324e13a6a34cf9aa5b6eb48e3440f98d0b2d6373"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "9f338ebb19080db4875bb15a110ab76b6ea67d65633d0331d0edc56e60f49de6"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "209f6f982f787fa345a352250d960dfca599bf1c4d2ea598cc797ff52df5b1c6"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "84242d56187bbda19aebea7b9e24a867a3a041871b9f2add12cd3edaaef2536c"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "1756575af3e913aaca26bd34c88178b8f4ad20d2fbd2a70bfa82c04e02ed83c2"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "b77b9d800f92e3458225257edaacb6feea9bbaf3019b432548a3756ef6b1f65a"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "9bdf3019ed87a0d2c8a9dbd5ea3ca8bd532a81e8b1e79fd5642f9d91d0820e53"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "38204c6b2c1cf246998bf5370bd60f246c3f9c9c198a6431474534927db5e8c6"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "e3b301df4f2e97b89ebf86cc1f5da365a4f2b69617b64cb07afb7494af735d7c"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 206,
+      "claim_sha256": "39322f9eb16eb0ba264082756459ff713ee9d5e2891068884eaa6ecd0a5cfc56",
+      "legacy_text": "That Council approve the agenda as presented.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 759,
+        "source_order": 0,
+        "key": "236f1280b5134abf16cf3aa0ac556d01a2abcce130b005633fb04a24026bb5a4",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the agenda as presented.",
+        "source_block": "MOVED BY:       COUNCILLOR WADE\nSECONDED:       COUNCILLOR BLACKWELL\n\n      That Council approve the agenda as presented.\n\n                                                                                               CARRIED.\n\n3.     ADOPTION OF MINUTES\n\n\n       a) Minutes of the Regular Meeting of Council \u2014 February 20th, 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "d86db8af8bac7ddb100a0ad7105b617d88e11ab0392abe1b11e3e1f094714483",
+      "pages": [
+        1
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 207,
+      "claim_sha256": "28b4e006a488b6c3179847172f98366eced7c9c587d1d665a316a842f8b35f32",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on February 20th, 2017.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 1091,
+        "source_order": 1,
+        "key": "0e6c38cc89a6dc9f4c1319ddb6ae4dca550530aa556683d15b59f1d4fd36bb75",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the minutes of the Regular Meeting of Council held on February 20th, 2017.",
+        "source_block": "MOVED BY:      COUNCILLOR SZPAK\nSECONDED:      COUNCILLOR WADE\n\n       That Council approve the minutes of the Regular Meeting of Council held on February 20th, 2017.\n\n                                                                                               CARRIED.\n\n4.     PUBLIC PARTICIPATION\n\n5.     COMMITTEE RESOLUTIONS\n\n\n       a) Planning, Zoning and Affordable Housing Committee \u2014 February 27 th, 2017\n\n                                                                         Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                    Page 2 of 12\n\n\n\n             1. Application to rezone 592 Phelps Avenue from R2 (One- and Two-Family Residential) to\n                 RS1 (Residential Small Lot 1) to allow a future subdivision of four new single-family\n                 residential lots. (Planning Z16-0010)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "96d289e126372de3f982975c6474511b5e4c0e9217a57fb9f090867e0ddadcff",
+      "pages": [
+        1
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 208,
+      "claim_sha256": "9179d230fe1fa255702cbe6ca6b022b4df4b62e63b85292c8a611e7517a67a09",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the property located at 592 Phelps Avenue from R2 (One\u2011 and Two\u2011Family Residential) to RS1 (Residential Small Lot 1), subject to the terms and conditions outlined in the staff report (including amenity contributions and covenants).",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 1998,
+        "source_order": 2,
+        "key": "4f914f9fe94e885a41ef16e3d1ba57425272ec5b6d83d8d9bdeb37c6a7d3fd23",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 592\n       Phelps Avenue from R2 (One- and Two-Family Residential) to RS1 (Residential Small Lot 1), subject\n       to the following terms and conditions:\n\n            a)   That the owner agrees to provide, as a bonus for increased density, the following\n                 contributions per new lot created, prior to subdivision approval:\n                   i.    $3,960 towards the General Amenity Reserve Fund;\n                         $660 towards the Affordable Housing Reserve Fund;\n\n            b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n               in priority of all other charges on title, that agrees to the following:\n                   i.   That an advisory note be written to provide future owners with the\n                        understanding and that Western Speedway is located within a kilometer and may\n                        generate a noise nuisance;\n                  ii    That full frontage improvements be completed as per the Subdivision and\n                        Development Servicing Bylaw No. 1000 as a condition of subdivision approval, to\n                        the satisfaction of the Director of Engineering; and\n                 iii.   That all required measures recommended by the Stormwater Management Plan,\n                        which may include the registration of a statutory right of way, shall be\n                        implemented by the owner as a condition of Subdivision approval, to the\n                        satisfaction of the Director of Engineering.",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR SZPAK\n\n        That Council:\n\n   1. Direct staff to prepare a bylaw to amend the zoning designation of the property located at 592\n       Phelps Avenue from R2 (One- and Two-Family Residential) to RS1 (Residential Small Lot 1), subject\n       to the following terms and conditions:\n\n            a)   That the owner agrees to provide, as a bonus for increased density, the following\n                 contributions per new lot created, prior to subdivision approval:\n                   i.    $3,960 towards the General Amenity Reserve Fund;\n                         $660 towards the Affordable Housing Reserve Fund;\n\n            b) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n               in priority of all other charges on title, that agrees to the following:\n                   i.   That an advisory note be written to provide future owners with the\n                        understanding and that Western Speedway is located within a kilometer and may\n                        generate a noise nuisance;\n                  ii    That full frontage improvements be completed as per the Subdivision and\n                        Development Servicing Bylaw No. 1000 as a condition of subdivision approval, to\n                        the satisfaction of the Director of Engineering; and\n                 iii.   That all required measures recommended by the Stormwater Management Plan,\n                        which may include the registration of a statutory right of way, shall be\n                        implemented by the owner as a condition of Subdivision approval, to the\n                        satisfaction of the Director of Engineering.\n\n                                                                                                   CARRIED.\n\n             2. Application to amend the zoning designation of the property at 2762 and 2768 Claude\n                 Road from R2 (One-Family Residential) to a new MU2 (Mixed-Use Residential\n                 Commercial Zone) to allow for the construction of a (10) storey residential building\n                 consisting of approximately 117 dwelling units. (Planning Z16-0017)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "19febb535d506e990757c5eb0bc3c38dc27539e83de078ba980f99e4932eb504",
+      "pages": [
+        2
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 209,
+      "claim_sha256": "6954b0b6696b16e0e0105fcb7bab86938566090484d11943fc6270ea724438b9",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the property located at 2768 and 2762 Claude Rd from R1/R2 to MU2 subject to specified amenity contributions, conditions prior to public hearing and bylaw adoption (road dedication, covenants for traffic/stormwater), application of tall building design guidelines, and related variances and parking conditions as outlined in the report.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 4241,
+        "source_order": 3,
+        "key": "76ebbe39b0a58fff82f526021de472c6ea16968ea2c6299484d6d3262acb7872",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 2768\n        and 2762 Claude Rd from R1 (One-Family Residential) to MU2 (Mixed-Use Residential\n        Commercial) subject to the following terms and conditions:\n\n                                                                          Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                      Page 3 of 12\n\n\n\n              a.   That the following contributions are included in the bylaw as an amenity for increased\n                   density, to be payable at the time of building permit:\n                      i.   $1,525 per unit towards the General Amenity Reserve Fund; and\n                     ii.   $610 per unit towards the Affordable Housing Reserve Fund.\n\n\n              b. Notwithstanding 1. a, if the project is secured as rental housing, the following\n                  contributions are included in the bylaw as an amenity for increased density, to be\n                  payable at the time of building permit:\n                     i.  $381.25 per unit towards the General Amenity Reserve Fund; and\n                    ii.  $152.50 per unit towards the Affordable Housing Reserve Fund.\n\n             c.    That the applicant provide the following items prior to Public Hearing:\n                     i.    A road dedication plan;\n\n\n             d. That the applicant provide the road dedication to the City prior to bylaw adoption.\n\n\n             e. That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                 includes the following:\n                     i.  The owner pay for and construct all works to restrict left turn movements\n                         southbound on Claude Road to Goldstream Avenue prior to issuance of\n                         Occupancy Permit;\n                    ii.  The owner provide a traffic and public safety plan and construction parking\n                         management plan, prior to any onsite works and/or clearing, to the\n                         satisfaction of the Director of Engineering;\n                   iii.  The applicant shall construct frontage improvements, works and services to\n                         the standards of Subdivision and Development Servicing Bylaw No. 1000 and\n                         to the satisfaction of the Director of Engineering; and\n                   iv.   The owner will register on title a Section 219 covenant for stormwater\n                         maintenance prior to the request for Occupancy Permit as a condition of\n                         rezoning.\n\n2.   Direct the Director of Planning to apply the Bear Mountain and Westhills design guidelines for tall\n     buildings to the subject development.\n\n3.   Direct staff to amend the Multi-Family Design Guidelines to include design guidelines for tall\n     buildings.\n\n\n4.   Direct staff to amend the M U2 zone to increase the Floor Space Ration from 4 to 5.\n\n\n5.   Direct the Director of Planning to issue the variance to reduce the front yard setback from 1.2m\n     to Om in the time of Development Permit, for a portion of the building and generally in accordance\n     with the plans attached.\n\n\n6.   Direct the Director of Planning to issue the parking variance in the Development Permit subject\n     to the applicant paying the City $5,000 for the one deficient stall prior to issuance of a building\n     permit.\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                       Page 4 of 12",
+        "source_block": "MOVED BY:        COUNCILLOR BLACKWELL\nSECONDED:        COUNCILLOR WADE\n\n        That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the property located at 2768\n        and 2762 Claude Rd from R1 (One-Family Residential) to MU2 (Mixed-Use Residential\n        Commercial) subject to the following terms and conditions:\n\n                                                                          Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                      Page 3 of 12\n\n\n\n              a.   That the following contributions are included in the bylaw as an amenity for increased\n                   density, to be payable at the time of building permit:\n                      i.   $1,525 per unit towards the General Amenity Reserve Fund; and\n                     ii.   $610 per unit towards the Affordable Housing Reserve Fund.\n\n\n              b. Notwithstanding 1. a, if the project is secured as rental housing, the following\n                  contributions are included in the bylaw as an amenity for increased density, to be\n                  payable at the time of building permit:\n                     i.  $381.25 per unit towards the General Amenity Reserve Fund; and\n                    ii.  $152.50 per unit towards the Affordable Housing Reserve Fund.\n\n             c.    That the applicant provide the following items prior to Public Hearing:\n                     i.    A road dedication plan;\n\n\n             d. That the applicant provide the road dedication to the City prior to bylaw adoption.\n\n\n             e. That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                 includes the following:\n                     i.  The owner pay for and construct all works to restrict left turn movements\n                         southbound on Claude Road to Goldstream Avenue prior to issuance of\n                         Occupancy Permit;\n                    ii.  The owner provide a traffic and public safety plan and construction parking\n                         management plan, prior to any onsite works and/or clearing, to the\n                         satisfaction of the Director of Engineering;\n                   iii.  The applicant shall construct frontage improvements, works and services to\n                         the standards of Subdivision and Development Servicing Bylaw No. 1000 and\n                         to the satisfaction of the Director of Engineering; and\n                   iv.   The owner will register on title a Section 219 covenant for stormwater\n                         maintenance prior to the request for Occupancy Permit as a condition of\n                         rezoning.\n\n2.   Direct the Director of Planning to apply the Bear Mountain and Westhills design guidelines for tall\n     buildings to the subject development.\n\n3.   Direct staff to amend the Multi-Family Design Guidelines to include design guidelines for tall\n     buildings.\n\n\n4.   Direct staff to amend the M U2 zone to increase the Floor Space Ration from 4 to 5.\n\n\n5.   Direct the Director of Planning to issue the variance to reduce the front yard setback from 1.2m\n     to Om in the time of Development Permit, for a portion of the building and generally in accordance\n     with the plans attached.\n\n\n6.   Direct the Director of Planning to issue the parking variance in the Development Permit subject\n     to the applicant paying the City $5,000 for the one deficient stall prior to issuance of a building\n     permit.\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                       Page 4 of 12\n\n\n\n                                                                                                       CARRIED.\n\n             3. Application to amend the zoning designation of the properties located at 2845, 2847\n                 and 2850 Bryn Maur Road from R1 (One-Family Residential) to MU2 (Mixed-Use\n                 Residential Commercial) and to rezone a portion of 737 Goldstream Avenue from C8\n                 (Community Town Centre Pedestrian) to MU2 (Mixed-Use Residential Commercial) to\n                 allow for the construction of a six (6) storey residential building consisting of\n                 approximately 93 dwelling units. (Planning 216-0019)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "7bee3f60c6e11bb873611922f5cfbe44e9206afa9a8c0f285d6517a678bd2841",
+      "pages": [
+        2,
+        3,
+        4
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 210,
+      "claim_sha256": "3cfbee81566bc659cc5eb81686e44d5d9e700ef3cab06536b2791cdc1f6b5c01",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning designation of the properties at 2845, 2847, 2850 Bryn Maur Rd (and amend zone of 737 Goldstream Ave) to MU2 subject to amenity contributions, land exchange/road dedication, covenants, variances, frontage improvements and other conditions set out in the report.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 8735,
+        "source_order": 4,
+        "key": "e1a6fd6ad5d1754aec34e68c7e134855071865c22b5fdfab5d435b83240db67a",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the properties located at 2845,\n        2847, 2850 Bryn Maur Rd from R1 (One-Family Residential) to MU2 (Mixed-Use Residential\n        Commercial) and to amend the zone of 737 Goldstream Avenue from C8 (Community Town\n        Centre Pedestrian) to MU2 (Mixed-Use Residential Commercial)subject to the following terms and\n        conditions:\n\n                a.   That the following contributions are included in the bylaw as an amenity for increased\n                     density, to be payable at the time of building permit:\n                             i.   $1,525 per unit towards the General Amenity Reserve Fund; and\n                            ii.   $610 per unit towards the Affordable Housing Reserve Fund.\n\n\n                b. Notwithstanding 1. a, if the project is secured as rental housing, the following\n                    contributions are included in the bylaw as an amenity for increased density, to be\n                    payable at the time of building permit:\n                           i.   $381.25 per unit towards the General Amenity Reserve Fund; and\n                          ii.   $152.50 per unit towards the Affordable Housing Reserve Fund.\n\n                c. That staff prepare a bylaw for the land exchange and that the applicant provide the\n                    following items prior to First Reading:\n                        i.  A plan for the land swap which would include the deposition of approximately\n                            95m2 of road on Bryn Maur Road in exchange for the acquisition of\n                            approximately 95m2 of road along the western edge of 2850 Bryn Maur Road,\n                            to the satisfaction of the Director of Engineering and that the applicant pay\n                            for all associated costs of the process; and\n                            A detailed design drawing showing the road dedication required by Bylaw No.\n                            1000, and demonstrating there are no utilities located in the proposed road\n                            closure area and a detailed frontage design plans to ensure appropriate\n                            pedestrian connectivity from the Rail Trail to the Goldstream Station\n                            development; and\n                      iii.  A redesign of the building if any of the above necessitates an alteration of the\n                            building plans.\n\n                                                                                  Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                              Page 5 of 12\n\n\n\n                     d.    That the applicant complete both the road dedication and the land exchange prior to\n                           bylaw adoption.\n\n                     e.    That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                           includes the following:\n                                 i. The owner provide a traffic and public safety plan and construction parking\n                                    plan, prior to any onsite works and/or clearing, to the satisfaction of the\n                                    Director of Engineering;\n                               ii.   Frontage improvements, works and services shall be completed to the\n                                    standards of Subdivision and Development Servicing Bylaw No. 1000;\n                              iii.  The owner will register on title a Section 219 covenant for stormwater\n                                     maintenance prior to the request for Occupancy Permit as a condition of\n                                     rezoning; and\n                             iv.    That the applicant provide a wayfinding sign at the trail junction to the\n                                    satisfaction of the Parks Manager.\n\n     2.   Direct the Director of Planning to issue the variance to reduce the exterior side yard setback from\n          1.2m to 0.6m at the time of Development Permit.\n\n\n     3.   Direct the Director of Planning to issue the parking variance in the Development Permit.",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR WADE\n\n        That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the properties located at 2845,\n        2847, 2850 Bryn Maur Rd from R1 (One-Family Residential) to MU2 (Mixed-Use Residential\n        Commercial) and to amend the zone of 737 Goldstream Avenue from C8 (Community Town\n        Centre Pedestrian) to MU2 (Mixed-Use Residential Commercial)subject to the following terms and\n        conditions:\n\n                a.   That the following contributions are included in the bylaw as an amenity for increased\n                     density, to be payable at the time of building permit:\n                             i.   $1,525 per unit towards the General Amenity Reserve Fund; and\n                            ii.   $610 per unit towards the Affordable Housing Reserve Fund.\n\n\n                b. Notwithstanding 1. a, if the project is secured as rental housing, the following\n                    contributions are included in the bylaw as an amenity for increased density, to be\n                    payable at the time of building permit:\n                           i.   $381.25 per unit towards the General Amenity Reserve Fund; and\n                          ii.   $152.50 per unit towards the Affordable Housing Reserve Fund.\n\n                c. That staff prepare a bylaw for the land exchange and that the applicant provide the\n                    following items prior to First Reading:\n                        i.  A plan for the land swap which would include the deposition of approximately\n                            95m2 of road on Bryn Maur Road in exchange for the acquisition of\n                            approximately 95m2 of road along the western edge of 2850 Bryn Maur Road,\n                            to the satisfaction of the Director of Engineering and that the applicant pay\n                            for all associated costs of the process; and\n                            A detailed design drawing showing the road dedication required by Bylaw No.\n                            1000, and demonstrating there are no utilities located in the proposed road\n                            closure area and a detailed frontage design plans to ensure appropriate\n                            pedestrian connectivity from the Rail Trail to the Goldstream Station\n                            development; and\n                      iii.  A redesign of the building if any of the above necessitates an alteration of the\n                            building plans.\n\n                                                                                  Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                              Page 5 of 12\n\n\n\n                     d.    That the applicant complete both the road dedication and the land exchange prior to\n                           bylaw adoption.\n\n                     e.    That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                           includes the following:\n                                 i. The owner provide a traffic and public safety plan and construction parking\n                                    plan, prior to any onsite works and/or clearing, to the satisfaction of the\n                                    Director of Engineering;\n                               ii.   Frontage improvements, works and services shall be completed to the\n                                    standards of Subdivision and Development Servicing Bylaw No. 1000;\n                              iii.  The owner will register on title a Section 219 covenant for stormwater\n                                     maintenance prior to the request for Occupancy Permit as a condition of\n                                     rezoning; and\n                             iv.    That the applicant provide a wayfinding sign at the trail junction to the\n                                    satisfaction of the Parks Manager.\n\n     2.   Direct the Director of Planning to issue the variance to reduce the exterior side yard setback from\n          1.2m to 0.6m at the time of Development Permit.\n\n\n     3.   Direct the Director of Planning to issue the parking variance in the Development Permit.\n\n                                                                                                             CARRIED.\n\n               4.     Application to Rezone 616 Goldstream Ave from RM2 (Attached Housing) to RM7A\n                      (Medium Density Apartment A) to allow a 160-unit non-profit housing development.\n                      (Planning Z16-0028)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5bfeba1f7d9720d27050942590287ba418d8cc37ed78e78c6fdcfb9de948f6e1",
+      "pages": [
+        4,
+        5
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 211,
+      "claim_sha256": "a65f52e4c5f21ce346513bb46d0cf65f364446fb32ee91b65ca076ac5748c70b",
+      "legacy_text": "That Council give First Reading to Bylaw No. 1673 to amend the zoning designation of 616 Goldstream Ave from RM2 to RM7A and approve the related conditions (covenants, parking variance, permissive tax exemption and waiving of amenity contributions and fees) as outlined in the staff report.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 13461,
+        "source_order": 5,
+        "key": "19492164bb851c80f1c39d11311c7aca7ead4d8a7466e129c82e4a0b16e039d0",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n1.   Give First Reading to Bylaw No. 1673 to amend the zoning designation of the property located at 616\n     Goldstream Ave from RM2 to RM7A, subject to the following terms and conditions:\n\n             a) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                 in priority of all other charges on title, that agrees to the following:\n\n                     i.     That a stormwater maintenance covenant be registered on title prior to the request\n                            for Occupancy Permit as a condition of rezoning;\n                    ii.     That the owner provide a construction parking management plan to the satisfaction\n                            of the Director of Engineering prior to the commencement of any works on-site;\n                    iii.    That the owner will provide a new queue length assessment from a traffic engineer\n                            to the satisfaction of the Director of Engineering prior to the issuance of a Building\n                            Permit for Building 2;\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                       Page 6 of 12\n\n\n\n   2.   Provide a permissive tax exemption, on land and improvements, subject to a covenant being\n        registered on title that the proposed residential units will be non-profit affordable housing rental\n        units for at least 10 years;\n\n   3.   Authorize the Director of Planning to issue a variance to the required off-street parking for\n        Building 1 with a condition that the amount of parking provided for Building 1 be reassessed prior\n        to the commencement of Phase 2, and that additional parking spaces be allocated to users of\n        Building 1 if the amount of parking is deemed insufficient at that time;\n\n\n   4.   Direct staff to proceed with the proposed design of Building 1 through the development permit\n        process.\n\n   5.   Waive all required amenity contributions and application fees charged by the City of Langford to\n        allow the 160-unit subsidized affordable housing rental development proposed in this application\n        subject to the owner registering a Section 219 Covenant requiring the new residential units will\n        be subsidized non-profit affordable housing rental units for at least 10 years AND direct staff to\n        amend the Amenity Contribution Policy and any necessary development application fee bylaws\n        to waive the required amenity contributions and application fees for any subsequent subsidized\n        affordable housing rental development.",
+        "source_block": "MOVED BY:           COUNCILLOR BLACKWELL\nSECONDED:           COUNCILLOR WADE\n\n          That Council:\n\n1.   Give First Reading to Bylaw No. 1673 to amend the zoning designation of the property located at 616\n     Goldstream Ave from RM2 to RM7A, subject to the following terms and conditions:\n\n             a) That the applicant provides, prior to Bylaw Adoption, a Section 219 covenant, registered\n                 in priority of all other charges on title, that agrees to the following:\n\n                     i.     That a stormwater maintenance covenant be registered on title prior to the request\n                            for Occupancy Permit as a condition of rezoning;\n                    ii.     That the owner provide a construction parking management plan to the satisfaction\n                            of the Director of Engineering prior to the commencement of any works on-site;\n                    iii.    That the owner will provide a new queue length assessment from a traffic engineer\n                            to the satisfaction of the Director of Engineering prior to the issuance of a Building\n                            Permit for Building 2;\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                       Page 6 of 12\n\n\n\n   2.   Provide a permissive tax exemption, on land and improvements, subject to a covenant being\n        registered on title that the proposed residential units will be non-profit affordable housing rental\n        units for at least 10 years;\n\n   3.   Authorize the Director of Planning to issue a variance to the required off-street parking for\n        Building 1 with a condition that the amount of parking provided for Building 1 be reassessed prior\n        to the commencement of Phase 2, and that additional parking spaces be allocated to users of\n        Building 1 if the amount of parking is deemed insufficient at that time;\n\n\n   4.   Direct staff to proceed with the proposed design of Building 1 through the development permit\n        process.\n\n   5.   Waive all required amenity contributions and application fees charged by the City of Langford to\n        allow the 160-unit subsidized affordable housing rental development proposed in this application\n        subject to the owner registering a Section 219 Covenant requiring the new residential units will\n        be subsidized non-profit affordable housing rental units for at least 10 years AND direct staff to\n        amend the Amenity Contribution Policy and any necessary development application fee bylaws\n        to waive the required amenity contributions and application fees for any subsequent subsidized\n        affordable housing rental development.\n\n                                                                                                       CARRIED.\n\n             5. Application to amend the zoning designation of the properties located at 767, 769 and\n                 771 Hockley Avenue from R1 (One-Family Residential) to MU2 (Mixed-Use Residential\n                 Commercial to allow for the construction of a six (6) storey residential building\n                 consisting of approximately 64 dwelling units. (Z17-0002)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "76fe6c24378c94965641cb35a2f862ee523dfb097c514bdc4b7b3f65dcc46412",
+      "pages": [
+        5,
+        6
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 212,
+      "claim_sha256": "b492aed12f8186519168aa93beb211ddf667714d7d05533616d5058ee7176f83",
+      "legacy_text": "That Council direct staff to prepare a bylaw to amend the zoning of 771, 769 and 767 Hockley Avenue from R1 to MU2 subject to amenity contributions, covenants, road dedication and variances as outlined in the report.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 16787,
+        "source_order": 6,
+        "key": "3bb0be463ff5e65ad5852c771f9893a58ecaa2181a4a65a7cbac43c3979570c2",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the properties located at 771,\n        769 and 767 Hockley Avenue from R1 (One-Family Residential) to MU2 (Mixed-Use Residential\n        Commercial) subject to the following terms and conditions:\n\n                a.   That the following contributions are included in the bylaw as an amenity for increased\n                     density, to be payable at the time of building permit:\n                      i. $1,525 per unit towards the General Amenity Reserve Fund; and\n                     ii. $610 per unit towards the Affordable Housing Reserve Fund.\n\n\n                b. Notwithstanding 1. a, if the project is secured as rental housing, the following\n                    contributions are included in the bylaw as an amenity for increased density, to be\n                    payable at the time of building permit:\n                     i. $381.25 per unit towards the General Amenity Reserve Fund; and\n                    ii. $152.50 per unit towards the Affordable Housing Reserve Fund.\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                       Page 7 of 12\n\n\n\n                  c.   That the applicant provide the following items prior to First Reading:\n                         i.    A plan demonstrating road dedication to the satisfaction of the Director of\n                               Engineering and revised buildings plans if necessary;\n\n\n                  d.   That the applicant provide the road dedication prior to bylaw adoption.\n\n                  e.   That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                       includes the following:\n                          i.   The owner provide a traffic and public safety plan and construction parking\n                               plan, prior to any onsite works and/or clearing, to the satisfaction of the\n                               Director of Engineering;\n                          ii.  Frontage improvements, works and services shall be completed to the\n                               standards of Subdivision and Development Servicing Bylaw No. 1000; and\n                         iii.  The owner will register on title a Section 219 covenant for stormwater\n                               maintenance prior to the request for Occupancy Permit as a condition of\n                               rezoning; and\n\n   2.   Direct the Director of Planning to issue the variance to reduce the exterior side yard setback from\n        1.2m to 0.6m at the time of Development Permit.\n\n\n   3.   Direct the Director of Planning to issue the parking variance in the Development Permit.",
+        "source_block": "MOVED BY:       COUNCILLOR BLACKWELL\nSECONDED:       COUNCILLOR WADE\n\n        That Council:\n\n   1.   Direct staff to prepare a bylaw to amend the zoning designation of the properties located at 771,\n        769 and 767 Hockley Avenue from R1 (One-Family Residential) to MU2 (Mixed-Use Residential\n        Commercial) subject to the following terms and conditions:\n\n                a.   That the following contributions are included in the bylaw as an amenity for increased\n                     density, to be payable at the time of building permit:\n                      i. $1,525 per unit towards the General Amenity Reserve Fund; and\n                     ii. $610 per unit towards the Affordable Housing Reserve Fund.\n\n\n                b. Notwithstanding 1. a, if the project is secured as rental housing, the following\n                    contributions are included in the bylaw as an amenity for increased density, to be\n                    payable at the time of building permit:\n                     i. $381.25 per unit towards the General Amenity Reserve Fund; and\n                    ii. $152.50 per unit towards the Affordable Housing Reserve Fund.\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                       Page 7 of 12\n\n\n\n                  c.   That the applicant provide the following items prior to First Reading:\n                         i.    A plan demonstrating road dedication to the satisfaction of the Director of\n                               Engineering and revised buildings plans if necessary;\n\n\n                  d.   That the applicant provide the road dedication prior to bylaw adoption.\n\n                  e.   That the applicant register a Section 219 covenant, prior to bylaw adoption, that\n                       includes the following:\n                          i.   The owner provide a traffic and public safety plan and construction parking\n                               plan, prior to any onsite works and/or clearing, to the satisfaction of the\n                               Director of Engineering;\n                          ii.  Frontage improvements, works and services shall be completed to the\n                               standards of Subdivision and Development Servicing Bylaw No. 1000; and\n                         iii.  The owner will register on title a Section 219 covenant for stormwater\n                               maintenance prior to the request for Occupancy Permit as a condition of\n                               rezoning; and\n\n   2.   Direct the Director of Planning to issue the variance to reduce the exterior side yard setback from\n        1.2m to 0.6m at the time of Development Permit.\n\n\n   3.   Direct the Director of Planning to issue the parking variance in the Development Permit.\n\n                                                                                                       CARRIED.\n\n             6. Application for Development Variance Permit to vary the front, side and exterior side\n                  setbacks for Lot 12 as part of a 12 lot subdivision of 881 Klahanie Drive. (DVP17-0001)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "aa82c7e7005a88dc1df910187e884ac82f2acd45135cf09acf8becae61666d45",
+      "pages": [
+        6,
+        7
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 213,
+      "claim_sha256": "af0a3f656f218c31b2aa6357c3b82a1173a893f62c1229d785e7273c127db8d7",
+      "legacy_text": "That Council direct staff to proceed with consideration of the listed variances for 881 Klahanie Drive, Lot 12 (deck projection increase, reduced interior and exterior side yard setbacks).",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 20027,
+        "source_order": 7,
+        "key": "cdd950e0e0539e0859b796b58d59e065b3f25d03f7ca86557ce8393b854dd61a",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to proceed with consideration of the following variances for 881 Klahanie Drive, Lot\n        12:\n\n             a) That Section 3.18.01 of Zoning Bylaw No. 300 be varied by increasing the projection limits\n                of a deck on a lot 380 m2 or larger from 1 m to 2 m, as shown on Appendix A (attached);\n             b) That Section 6.17.06(2) of Zoning Bylaw No. 300 be varied from the required 3 m to 2 m\n                for the distance a building or structure may be located to an interior side property line;\n                and\n             c) That Section 6.17.06(3) of Zoning Bylaw No. 300 be varied from the required 4 m to 3 m\n                for the distance a building or structure may be located to an exterior side property line.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\n        That Council:\n\n   1.   Direct staff to proceed with consideration of the following variances for 881 Klahanie Drive, Lot\n        12:\n\n             a) That Section 3.18.01 of Zoning Bylaw No. 300 be varied by increasing the projection limits\n                of a deck on a lot 380 m2 or larger from 1 m to 2 m, as shown on Appendix A (attached);\n             b) That Section 6.17.06(2) of Zoning Bylaw No. 300 be varied from the required 3 m to 2 m\n                for the distance a building or structure may be located to an interior side property line;\n                and\n             c) That Section 6.17.06(3) of Zoning Bylaw No. 300 be varied from the required 4 m to 3 m\n                for the distance a building or structure may be located to an exterior side property line.\n\n                                                                                                      CARRIED.\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                       Page 8 of 12\n\n\n\n             7. Application for Development Variance Permit to reduce the required off-street parking\n                   for a 209-unit Apartment at 2000 Hannington Rd. (DVP17-0002)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b1c6171017a03df8b5c5926161798dd81c7123f3494009e05852d9c53e5cbefa",
+      "pages": [
+        7
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 214,
+      "claim_sha256": "7908ea9fd303a62674ad31c12a26cc7c702c6eb4cf85eb2e1e596cf81ca4c8b7",
+      "legacy_text": "That Council direct staff to proceed with consideration of the variance to reduce the off\u2011street parking for the 209\u2011unit apartment at 2000 Hannington Rd from 366 to 289 spaces subject to conditions (including a minimum of 18 visitor spaces and development per the attached plan).",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 21427,
+        "source_order": 8,
+        "key": "5d396149df701525add3316af0ba20ccb6907f47b34e7d112eae9bc2140bbacb",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council:\n\n   1.   Direct staff to proceed with consideration of the following variances for 2000 Hannington Rd:\n\n        a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off-street parking for a\n           209-unit apartment from the required 366 spaces to 289 spaces;\n\n        Subject to the following terms and conditions:\n\n        i)  That a minimum of 18 spaces are allocated for the exclusive use of visitors to subject\n            apartment building;\n        ii) That the site is developed in accordance with the plan attached to this report as Appendix A.",
+        "source_block": "MOVED BY:         COUNCILLOR BLACKWELL\nSECONDED:         COUNCILLOR WADE\n\n        That Council:\n\n   1.   Direct staff to proceed with consideration of the following variances for 2000 Hannington Rd:\n\n        a) That Section 4.01.01 of Zoning Bylaw No. 300 be varied to reduce the off-street parking for a\n           209-unit apartment from the required 366 spaces to 289 spaces;\n\n        Subject to the following terms and conditions:\n\n        i)  That a minimum of 18 spaces are allocated for the exclusive use of visitors to subject\n            apartment building;\n        ii) That the site is developed in accordance with the plan attached to this report as Appendix A.\n\n                                                                                                       CARRIED.\n\n        b) Protective Services Committee \u2014 February 28th, 2017\n\n\n             1.    Building Department Five-Year Financial Plan for 2017-2021",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "ffe97d38333778076c84a43758f7529835dc31fccba07d95a278e22176531f05",
+      "pages": [
+        8
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 215,
+      "claim_sha256": "d687eda205ca4005503f0ed41d23f122e9cdce4459fa5325cf8215acfabe76c4",
+      "legacy_text": "That Council approve in principle the Building Department Five Year Financial Plan for 2017\u20112021 as presented and refer it to the Treasurer for inclusion in the consolidated Financial Plan.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 22359,
+        "source_order": 9,
+        "key": "3c8964215aff6fe7b6fd52677597e70217dc0e693d0403a70003854529500473",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve in principle the Building Department Five Year Financial Plan for 2017-\n        2021 as presented in the staff report dated February 23rd, 2017 and refer it to the Treasurer for\n        inclusion in the consolidated Financial Plan.",
+        "source_block": "MOVED BY:         COUNCILLOR SZPAK\nSECONDED:         COUNCILLOR SEATON\n\n        That Council approve in principle the Building Department Five Year Financial Plan for 2017-\n        2021 as presented in the staff report dated February 23rd, 2017 and refer it to the Treasurer for\n        inclusion in the consolidated Financial Plan.\n\n                                                                                                      CARRIED.\n\n             2.   Community Safety and Municipal Bylaw Enforcement Department Five-Year Financial\n                  Plan for 2017-2021",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "6a5dac8c2dbc81e2649b7b0839ec7f626a750503f5dab5791f196165bd554044",
+      "pages": [
+        8
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 216,
+      "claim_sha256": "5d3fca776a14827245d8a62f658d17791d51515e10ff8985a2ce5106010a2ad8",
+      "legacy_text": "That Council approve in principle the 2017\u20112021 Community Safety and Municipal Bylaw Enforcement Department Five Year Financial Plan and refer it to the Director of Finance for inclusion in the budget.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 22942,
+        "source_order": 10,
+        "key": "b92da5a8ab0691035386cfa66777c959df594e8f75cab5d8c66a3373a326496d",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve in principle the 2017-2021 Community Safety and Municipal Bylaw\n        Enforcement Department Five Year Financial Plan and refer it to the Director of Finance for\n        inclusion in the budget.",
+        "source_block": "MOVED BY:         COUNCILLOR SZPAK\nSECONDED:         COUNCILLOR SEATON\n\n        That Council approve in principle the 2017-2021 Community Safety and Municipal Bylaw\n        Enforcement Department Five Year Financial Plan and refer it to the Director of Finance for\n        inclusion in the budget.\n\n                                                                                                      CARRIED.\n\n                                                                         Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                     Page 9 of 12\n\n\n\n\n             3. (a) Fire Department Five Year Financial Plan for 2017",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "64eeccee9b7c2c114f5eaea91fa785a01aa7348ab07d86d3967b478cb574b05d",
+      "pages": [
+        8
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 217,
+      "claim_sha256": "90170d5b4fab2de6aacbbcebc832f365027f7e14e01c4581d0b77c5535fea827",
+      "legacy_text": "That Council approve in principle the Fire Services Five Year Financial Plan for 2017\u20112021 as presented and refer it to the Treasurer for inclusion in the budget.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 23656,
+        "source_order": 11,
+        "key": "48915e36cce33eb201611f16880d8f263a3a18da0031e39948f359f10347e536",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve, in principle, the Fire Services Five Year Financial Plan for 2017 \u2014 2021 as\n      presented in the Staff Report dated February 20, 2017 and refer it to the Treasurer for inclusion\n      in the budget.",
+        "source_block": "MOVED BY:      COUNCILLOR SZPAK\nSECONDED:      COUNCILLOR SEATON\n\n      That Council approve, in principle, the Fire Services Five Year Financial Plan for 2017 \u2014 2021 as\n      presented in the Staff Report dated February 20, 2017 and refer it to the Treasurer for inclusion\n      in the budget.\n\n                                                                                                    CARRIED.\n\n           3. (b) Approve purchase of a new apparatus as per February 23rd on table report.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "89a2a02c830addf6cef6e8d060a244edabc7c6ec88d6f3764822e3e2044e73c4",
+      "pages": [
+        9
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 218,
+      "claim_sha256": "c5c8723d233fc2f01022a7fe98040544c34baff092817d4540e678ae20cb17c3",
+      "legacy_text": "That Council approve the purchase of a new equipment apparatus as per the February 23rd on\u2011table report.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 24155,
+        "source_order": 12,
+        "key": "0481ceb7e40f08c5838071249fb48c67ba90f52c2254afb56d32522fa70a8121",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council approve the purchase of a new equipment apparatus as per the February 23rd on\n      table report.",
+        "source_block": "MOVED BY:      COUNCILLOR SZPAK\nSECONDED:      COUNCILLOR SEATON\n\n      That Council approve the purchase of a new equipment apparatus as per the February 23rd on\n      table report.\n\n                                                                                                    CARRIED.\n\n6.    REPORTS\n\n\n      a)       Corporate Officer and Signing Authority Appointments\n               - Staff Report (Administration)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "aef2b6cfceaece77930a3e47d93b0ac9ac0db6fd81c0927668240e9c1a0b21de",
+      "pages": [
+        9
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 219,
+      "claim_sha256": "87ff2cf84054f642071f8539421fb3382a00a6714e1be12d2fec52cc852dd396",
+      "legacy_text": "That Director of Corporate Services Hutchins be appointed as Corporate Officer / authorized staff signatory for all contracts, agreements and other municipal documents; that Deputy CAO Kiedyk be appointed as Deputy Corporate Officer / authorized staff signatory; and that CAO Bowden, Director of Finance Ternent, Director of Engineering Mahovlich and Director of Planning Baldwin remain as alternate staff signatories.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 24581,
+        "source_order": 13,
+        "key": "0a9610ac42b52de6496eed7956f818d814290be5edc38d05ff7e7cbe7892fa8f",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Director of Corporate Services Hutchins be appointed as Corporate Officer / authorized staff\n      signatory for all contracts, agreements and other municipal documents, that Deputy CAO Kiedyk\n      be appointed as Deputy Corporate Officer / authorized staff signatory and that CAO Bowden,\n      Director of Finance Ternent, Director of Engineering Mahovlich and Director of Planning Baldwin\n      remain as alternate staff signatories.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n      That Director of Corporate Services Hutchins be appointed as Corporate Officer / authorized staff\n      signatory for all contracts, agreements and other municipal documents, that Deputy CAO Kiedyk\n      be appointed as Deputy Corporate Officer / authorized staff signatory and that CAO Bowden,\n      Director of Finance Ternent, Director of Engineering Mahovlich and Director of Planning Baldwin\n      remain as alternate staff signatories.\n                                                                                            CARRIED.\n\n      b)       Nature Trail Society \u2014 Tourism\n                  Staff Report (Parks)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "8bdfb2f0868ec7ef624cfb6354b402f401e982af17db98616df0e9e0da215957",
+      "pages": [
+        9
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 220,
+      "claim_sha256": "76eeb1e7c9aa2104df5a2e86c4518f88c5f00503fe908836890341aa72383ea2",
+      "legacy_text": "That Council direct staff to proceed with the opening of the new trail in Stage 13 (Nicklaus Park) Nature Trail improvements as a pilot project during which time the Nature Trail Society will monitor and maintain the trail.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 25286,
+        "source_order": 14,
+        "key": "03af85d44d1491e9c5eedde75ca067349814d8d6ffa8f8874e2f26af2b851a7d",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council direct staff to proceed with the opening of the new trail in Stage 13 (Nicklaus Park)\n      Nature Trail improvements as a pilot project during which time the Natures Trail Society with\n      monitor and maintain the trail.",
+        "source_block": "MOVED BY:      COUNCILLOR SEATON\nSECONDED:      COUNCILLOR SAHLSTROM\n\n      That Council direct staff to proceed with the opening of the new trail in Stage 13 (Nicklaus Park)\n      Nature Trail improvements as a pilot project during which time the Natures Trail Society with\n      monitor and maintain the trail.\n                                                                                               CARRIED.\n\n                                                                           Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                     Page 10 of 12\n\n\n\n       d)      Changes to Liquor Licensing Procedures from the Liquor Control and licensing Branch\n               (LCLB)\n               - Staff Report (Planning)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "74b05d611f400f4da4392bfe7689c1eed6bb139dfbaa9d77033e44a0b7897499",
+      "pages": [
+        9
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 221,
+      "claim_sha256": "2a6ccfc690133d7c8b7c1782819a8ef0bfeba419b09c55906534269287a5c0a0",
+      "legacy_text": "That Council provides resolutions in accordance to Section 40 of the Liquor Control and Licensing Act.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 26101,
+        "source_order": 15,
+        "key": "5f99673ec16feb3a0404f8fa01317101efbc2fd44c71c237c625c7320ef3e835",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council provides resolutions in accordance to Section 40 of the Liquor Control and Licensing\n      Act.",
+        "source_block": "MOVED BY:      COUNCILLOR SZPAK\nSECONDED:      COUNCILLOR WADE\n\n      That Council provides resolutions in accordance to Section 40 of the Liquor Control and Licensing\n      Act.\n                                                                                              CARRIED.\n\n7.    CORRESPONDENCE\n\n\n      a) Salish Sea Trust\n            Re: An application to Recognize the Salish Sea as a UNESCO World Heritage Site",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "407b3ebbee2f71e1022af78ad15b5bcea9b298318d03e0fbd4831b98e6324f15",
+      "pages": [
+        10
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 222,
+      "claim_sha256": "f20e92a5038134f3783726cb0049209fc747f749afce910a3eb553e9bf3fdfc9",
+      "legacy_text": "That Council receives the letter from Laurie Gourlay, Executive Director of Salish Sea Trust, and Kait\n     Burgan, SeaLegacy Society, and directs staff to write a letter of support for the Salish Sea to be\n     classified as a UNESCO World Heritage Site.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 26526,
+        "source_order": 16,
+        "key": "a076e9ba49bc92842c33ae22a811dbb73b77931f1255331c6968892825c662c6",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council receives the letter from Laurie Gourlay, Executive Director of Salish Sea Trust, and Kait\n     Burgan, SeaLegacy Society, and directs staff to write a letter of support for the Salish Sea to be\n     classified as a UNESCO World Heritage Site.",
+        "source_block": "MOVED BY:      COUNCILLOR SZPAK\nSECONDED:      COUNCILLOR SAHLSTROM\n\n     That Council receives the letter from Laurie Gourlay, Executive Director of Salish Sea Trust, and Kait\n     Burgan, SeaLegacy Society, and directs staff to write a letter of support for the Salish Sea to be\n     classified as a UNESCO World Heritage Site.\n                                                                                                 CARRIED.\n\n8.    BYLAWS\n\n\n      a)       BYLAW NO. 1664\n               \"Langford Zoning Bylaw, Amendment No. 467, (694 Hoylake Ave), 2016\".\n               (ADOPTION)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9f6ec658d529d9b70260e4b5002721df99253d604f72e33fb3ef82eb28ba1f9f",
+      "pages": [
+        10
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 223,
+      "claim_sha256": "3bd54a023f69e34a233b8370ddbaa8439112d3feddff20c72ff5540012b188af",
+      "legacy_text": "That Council adopt Bylaw No. 1664.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 27119,
+        "source_order": 17,
+        "key": "32703cbba73454d03df85d61f9e54bf222e20a0c1c9d2d65329af6cff37e54ce",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council adopt Bylaw No. 1664.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR WADE\n\n       That Council adopt Bylaw No. 1664.\n                                                                                                     CARRIED.\n\n      b)       BYLAW NO. 1673\n               \"Langford Zoning Bylaw, Amendment No. 470, (616 Goldstream Ave), 2017\".\n               (FIRST READING)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "5238940506b09169c68a97d0a1b5fc739bbedc15a670314ce807a96520ca729c",
+      "pages": [
+        10
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    },
+    {
+      "motion_id": 224,
+      "claim_sha256": "bebab718c4b4d1d79b1b1ab2dbc4dec66afb02ce13ede11ff8bd3d81c793e0a6",
+      "legacy_text": "That Council give First Reading to Bylaw No. 1673 to amend the zoning designation of 616 Goldstream Ave from RM2 to RM7A.",
+      "source_identity": {
+        "meeting_id": 30,
+        "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+        "source_offset": 27489,
+        "source_order": 18,
+        "key": "a44097a4aabf9be306ebb1f3bea70257c857307975c01302f1cc4c1045c2fe2c",
+        "source_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "That Council give Bylaw No. 1673 First Reading.",
+        "source_block": "MOVED BY:      COUNCILLOR SAHLSTROM\nSECONDED:      COUNCILLOR SZPAK\n\n       That Council give Bylaw No. 1673 First Reading.\n                                                                                                     CARRIED.\n\n      c)       BYLAW NO. 1676\n               \"Langford Zoning Bylaw, Amendment No. 472, (2401 Millstream Rd), 2017\".\n\n                                                                            Regular Council Agenda \u2014 March 6th, 2017\n                                                                                                      Page 11 of 12\n\n\n\n                 (FIRST READING)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "8f629ea78114fe25f64951ab85f6169c64f9fd972bdaed968007c4f5bfb81eba",
+      "pages": [
+        10
+      ],
+      "reason": "Complete original property/bylaw/stage/subject uniquely identifies this old summarized occurrence. Preserve all old text, actors, results and metadata; ownership only not full-transcription/ballot certification.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "independent_original_image_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+  "second_independent_original_image_review_sha256": "a9718a39747fc1e8e409393e17d8fdebbc1235ac2c6d2b02047ba918c58324cc",
+  "closing_conflict_quarantines": [
+    {
+      "source_review_sha256": "8c6c8f41a6cf8d2ed2a42d7cd101157a7de9205449dc93bb85472abd432d941e",
+      "capability": {
+        "type": "reviewed_unresolved_closing_conflict",
+        "authority": "duplicate_screening_only_no_fact_certification",
+        "motion_id": 225,
+        "legacy_text": "That the Council adjourn the meeting.",
+        "expected_stored_result": "CARRIED",
+        "claim_sha256": "8fc822ae5278c030e902551c07317568a29e2c8a96f62923a59a8242f0932f59",
+        "claim_row_sha256": "ecf54f8a2fff203ac310f72b6629f065e5a0921428b10df35198bddfe92e2b97",
+        "printed_body": "The Chair adjourned the meeting at 5:51 pm.",
+        "page": 12,
+        "native_text_sha256": "e3b301df4f2e97b89ebf86cc1f5da365a4f2b69617b64cb07afb7494af735d7c",
+        "render_sha256": "70caa07bf42ffb57432fb9504a02bf17aa28fe5fc1317d2eb26bf6e7b690f6d2",
+        "source_passage": "The Chair adjourned the meeting at 5:51 pm.",
+        "source_passage_start": 29949,
+        "native_passage": "The Chair adjourned the meeting at 5:51 pm.",
+        "native_passage_start": 75,
+        "allowed_new_decisions": [
+          {
+            "source_key": "aad76d253e5ded785282aee8ac408a31d282dd04aeee68c1017d4bca4f6c4bdb",
+            "raw_block_sha256": "22b5c1cede4c2bc663626ca147e1233c55df2bda244ef5acd135b2df7392bf86",
+            "operative_body": "That Council give Bylaw No. 1676 First Reading.",
+            "operative_body_sha256": "840ba0312eb470fa8e2880349fb151aa8c461d965394d89d8dd0fae9b1e4a15d",
+            "result": "CARRIED",
+            "pages": [
+              11
+            ],
+            "page_evidence": [
+              {
+                "page": 11,
+                "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+                "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+              }
+            ],
+            "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "12f806951de3e6685aeee6daad2520f4537f462a9191a7e442883a7ba13faae7",
+            "raw_block_sha256": "e39f921e16327ca712ce07e1000ae67a8dc0e73e9f4e2caa63f0fe016b9d305a",
+            "operative_body": "That Council give Bylaw No. 1677 First Reading.",
+            "operative_body_sha256": "1dfc97c3615445792fe410e8e4249c29f3a9db1918dc0370f288f1751d648217",
+            "result": "CARRIED",
+            "pages": [
+              11
+            ],
+            "page_evidence": [
+              {
+                "page": 11,
+                "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+                "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+              }
+            ],
+            "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "de63152f032769a9e1ff68325948d5767f19764136fe2d20c1ce6d91820d1e7a",
+            "raw_block_sha256": "1fe52eca7d2b5e9fee4d34b021d005cae40a4bcf81436951a2cf9a3b4c1c6b83",
+            "operative_body": "That Council give Bylaw No. 1678 First Reading.",
+            "operative_body_sha256": "e017d24eb3c23d14a693d10ff88afe27d691be55a53b6ef7e49aace4ad677eec",
+            "result": "CARRIED",
+            "pages": [
+              11
+            ],
+            "page_evidence": [
+              {
+                "page": 11,
+                "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+                "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+              }
+            ],
+            "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          },
+          {
+            "source_key": "c2bcf47f1f1846fcb91a89f09c089d2cec738db246abc814b2cb47c7436ca0b7",
+            "raw_block_sha256": "9248745b11bf145e04d6605c3ec0e0aa212cb92a6666ef7769a2023640e1548c",
+            "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding litigation and land acquisition under Section 90 (1) (e) (f) and (g) of the Community Charter; and b) That Council continues the meeting in closed session.",
+            "operative_body_sha256": "d987a2f83f6b07ec63f67805078507440c8dd6572cd8d79b1627f87e94596599",
+            "result": "CARRIED",
+            "pages": [
+              11
+            ],
+            "page_evidence": [
+              {
+                "page": 11,
+                "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+                "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+              }
+            ],
+            "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+            "authority": "operative_body_and_result_only",
+            "corrections": []
+          }
+        ],
+        "first_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+        "independent_review_sha256": "a9718a39747fc1e8e409393e17d8fdebbc1235ac2c6d2b02047ba918c58324cc"
+      }
+    }
+  ]
+}

@@ -1,0 +1,288 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 30,
+    "title": "Regular Council",
+    "meeting_date": "2017-03-06",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+      "sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2017/03/2017-03-06 Regular Council [legacy]/Minutes/20170306-Signed-Minutes-Council.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170306-Signed-Minutes-Council.pdf",
+  "source_sha256": "5c3c62eba57f5c99452909da12530b8857ac245ad499da71d0ad32995fda0bd5",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "dbec301fd808ba55b598d3ebffc960757b8b3662eb3b377a49045fa5d94575f2",
+  "corrected_text_sha256": "dbec301fd808ba55b598d3ebffc960757b8b3662eb3b377a49045fa5d94575f2",
+  "parsed_blocks_sha256": "5c61f9eec450eeee82f626568ec354fb401be239cfdd4e5154d6250e00091473",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "e5b7e086e628406cee9366d93d03a7f006c80d06fafe7bf28a5e72bdd3bd9504",
+      "render_sha256": "750739f3654b29a9195abb7eaeedfec61ec53805b45941c7dfef1581c0c54fb1"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "12018ee251006f1e536f2f520f05fb2d34928ecb71b24082438c1c7882c59ce7",
+      "render_sha256": "718a3736ebdc8aff0eb8acd27f10d91b450de0c17e6596a3a1486f08cb2ad4ea"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "69c674387001207bcdbd4fe8324e13a6a34cf9aa5b6eb48e3440f98d0b2d6373",
+      "render_sha256": "1b5ced05ef7cbf2011b3040d71ccbad894e700427d71a82136fd2ac34817d8e3"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "9f338ebb19080db4875bb15a110ab76b6ea67d65633d0331d0edc56e60f49de6",
+      "render_sha256": "dd44b9a79a8ac546abd75a0b5ff167ef365a2099642e7325757a0697acd7c594"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "209f6f982f787fa345a352250d960dfca599bf1c4d2ea598cc797ff52df5b1c6",
+      "render_sha256": "6d7beb7ccb36e07c0c578ee2e48a351924344ebfe18a7075f1ddd4e467d751b8"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "84242d56187bbda19aebea7b9e24a867a3a041871b9f2add12cd3edaaef2536c",
+      "render_sha256": "edfdd815ed8485274db2ecbb993bede2fa30012b99bdc18d98e88af46bf6923f"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "1756575af3e913aaca26bd34c88178b8f4ad20d2fbd2a70bfa82c04e02ed83c2",
+      "render_sha256": "136166839870e782a15010b7c72e2f335a70f8811612d5ea25097e26705f6f4b"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "b77b9d800f92e3458225257edaacb6feea9bbaf3019b432548a3756ef6b1f65a",
+      "render_sha256": "c5d3424d90f28e7c8fa190e7d3bfa3d4cbb453e6122fa57adafa779b97fb1768"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "9bdf3019ed87a0d2c8a9dbd5ea3ca8bd532a81e8b1e79fd5642f9d91d0820e53",
+      "render_sha256": "e4e5ceb48fdd9629c96c63de96e391d0a531a79f126113b99f8f61500ccbea1f"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "38204c6b2c1cf246998bf5370bd60f246c3f9c9c198a6431474534927db5e8c6",
+      "render_sha256": "5db2c0c345bd46655b56043e37297eb3bc1f7b896249e6e1cadc5af5a95a8c1a"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+      "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "e3b301df4f2e97b89ebf86cc1f5da365a4f2b69617b64cb07afb7494af735d7c",
+      "render_sha256": "70caa07bf42ffb57432fb9504a02bf17aa28fe5fc1317d2eb26bf6e7b690f6d2"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "aad76d253e5ded785282aee8ac408a31d282dd04aeee68c1017d4bca4f6c4bdb",
+      "raw_block_sha256": "22b5c1cede4c2bc663626ca147e1233c55df2bda244ef5acd135b2df7392bf86",
+      "operative_body": "That Council give Bylaw No. 1676 First Reading.",
+      "operative_body_sha256": "840ba0312eb470fa8e2880349fb151aa8c461d965394d89d8dd0fae9b1e4a15d",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+          "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+        }
+      ],
+      "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "12f806951de3e6685aeee6daad2520f4537f462a9191a7e442883a7ba13faae7",
+      "raw_block_sha256": "e39f921e16327ca712ce07e1000ae67a8dc0e73e9f4e2caa63f0fe016b9d305a",
+      "operative_body": "That Council give Bylaw No. 1677 First Reading.",
+      "operative_body_sha256": "1dfc97c3615445792fe410e8e4249c29f3a9db1918dc0370f288f1751d648217",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+          "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+        }
+      ],
+      "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "de63152f032769a9e1ff68325948d5767f19764136fe2d20c1ce6d91820d1e7a",
+      "raw_block_sha256": "1fe52eca7d2b5e9fee4d34b021d005cae40a4bcf81436951a2cf9a3b4c1c6b83",
+      "operative_body": "That Council give Bylaw No. 1678 First Reading.",
+      "operative_body_sha256": "e017d24eb3c23d14a693d10ff88afe27d691be55a53b6ef7e49aace4ad677eec",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+          "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+        }
+      ],
+      "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c2bcf47f1f1846fcb91a89f09c089d2cec738db246abc814b2cb47c7436ca0b7",
+      "raw_block_sha256": "9248745b11bf145e04d6605c3ec0e0aa212cb92a6666ef7769a2023640e1548c",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding litigation and land acquisition under Section 90 (1) (e) (f) and (g) of the Community Charter; and b) That Council continues the meeting in closed session.",
+      "operative_body_sha256": "d987a2f83f6b07ec63f67805078507440c8dd6572cd8d79b1627f87e94596599",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+          "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+        }
+      ],
+      "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "e5b7e086e628406cee9366d93d03a7f006c80d06fafe7bf28a5e72bdd3bd9504",
+  "independent_original_image_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+  "second_independent_original_image_review_sha256": "a9718a39747fc1e8e409393e17d8fdebbc1235ac2c6d2b02047ba918c58324cc",
+  "remaining_holds": [
+    {
+      "reason": "Existing225 CARRIED procedural closing remains unsupported by a formal source envelope; preserve it unresolved without result/body/key rewrite.",
+      "motion_id": 225,
+      "authority": "coverage_diagnostic_only"
+    }
+  ],
+  "closing_conflict_capabilities": [
+    {
+      "type": "reviewed_unresolved_closing_conflict",
+      "authority": "duplicate_screening_only_no_fact_certification",
+      "motion_id": 225,
+      "legacy_text": "That the Council adjourn the meeting.",
+      "expected_stored_result": "CARRIED",
+      "claim_sha256": "8fc822ae5278c030e902551c07317568a29e2c8a96f62923a59a8242f0932f59",
+      "claim_row_sha256": "ecf54f8a2fff203ac310f72b6629f065e5a0921428b10df35198bddfe92e2b97",
+      "printed_body": "The Chair adjourned the meeting at 5:51 pm.",
+      "page": 12,
+      "native_text_sha256": "e3b301df4f2e97b89ebf86cc1f5da365a4f2b69617b64cb07afb7494af735d7c",
+      "render_sha256": "70caa07bf42ffb57432fb9504a02bf17aa28fe5fc1317d2eb26bf6e7b690f6d2",
+      "source_passage": "The Chair adjourned the meeting at 5:51 pm.",
+      "source_passage_start": 29949,
+      "native_passage": "The Chair adjourned the meeting at 5:51 pm.",
+      "native_passage_start": 75,
+      "allowed_new_decisions": [
+        {
+          "source_key": "aad76d253e5ded785282aee8ac408a31d282dd04aeee68c1017d4bca4f6c4bdb",
+          "raw_block_sha256": "22b5c1cede4c2bc663626ca147e1233c55df2bda244ef5acd135b2df7392bf86",
+          "operative_body": "That Council give Bylaw No. 1676 First Reading.",
+          "operative_body_sha256": "840ba0312eb470fa8e2880349fb151aa8c461d965394d89d8dd0fae9b1e4a15d",
+          "result": "CARRIED",
+          "pages": [
+            11
+          ],
+          "page_evidence": [
+            {
+              "page": 11,
+              "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+              "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+            }
+          ],
+          "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "12f806951de3e6685aeee6daad2520f4537f462a9191a7e442883a7ba13faae7",
+          "raw_block_sha256": "e39f921e16327ca712ce07e1000ae67a8dc0e73e9f4e2caa63f0fe016b9d305a",
+          "operative_body": "That Council give Bylaw No. 1677 First Reading.",
+          "operative_body_sha256": "1dfc97c3615445792fe410e8e4249c29f3a9db1918dc0370f288f1751d648217",
+          "result": "CARRIED",
+          "pages": [
+            11
+          ],
+          "page_evidence": [
+            {
+              "page": 11,
+              "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+              "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+            }
+          ],
+          "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "de63152f032769a9e1ff68325948d5767f19764136fe2d20c1ce6d91820d1e7a",
+          "raw_block_sha256": "1fe52eca7d2b5e9fee4d34b021d005cae40a4bcf81436951a2cf9a3b4c1c6b83",
+          "operative_body": "That Council give Bylaw No. 1678 First Reading.",
+          "operative_body_sha256": "e017d24eb3c23d14a693d10ff88afe27d691be55a53b6ef7e49aace4ad677eec",
+          "result": "CARRIED",
+          "pages": [
+            11
+          ],
+          "page_evidence": [
+            {
+              "page": 11,
+              "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+              "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+            }
+          ],
+          "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        },
+        {
+          "source_key": "c2bcf47f1f1846fcb91a89f09c089d2cec738db246abc814b2cb47c7436ca0b7",
+          "raw_block_sha256": "9248745b11bf145e04d6605c3ec0e0aa212cb92a6666ef7769a2023640e1548c",
+          "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding litigation and land acquisition under Section 90 (1) (e) (f) and (g) of the Community Charter; and b) That Council continues the meeting in closed session.",
+          "operative_body_sha256": "d987a2f83f6b07ec63f67805078507440c8dd6572cd8d79b1627f87e94596599",
+          "result": "CARRIED",
+          "pages": [
+            11
+          ],
+          "page_evidence": [
+            {
+              "page": 11,
+              "native_text_sha256": "d065ec2e51f859014647b8f780b982b7ececaf8176f82e325d6ba55915fbbbf2",
+              "render_sha256": "4d8b91f0f6726e22d0d9428606b2b353b2021bb9c11ff0e3b47db79eea1f82e2"
+            }
+          ],
+          "independent_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+          "authority": "operative_body_and_result_only",
+          "corrections": []
+        }
+      ],
+      "first_review_sha256": "96f33d5f9d06d57310c4fd04cd517c634a6b47e18e11555c3aa35fa01a827a8c",
+      "independent_review_sha256": "a9718a39747fc1e8e409393e17d8fdebbc1235ac2c6d2b02047ba918c58324cc"
+    }
+  ]
+}
