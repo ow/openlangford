@@ -156,3 +156,11 @@ def test_forwarded_copies_of_one_letter_are_kept_once():
     assert collapse_petitions([copy, dict(copy), dict(copy)]) == [copy]
     two = [{**copy, "who": "Jo Smith"}, {**copy, "who": "Sam Lee"}]
     assert collapse_petitions(two) == two
+
+
+def test_display_name_casing():
+    from pipeline.ingestion.written_submissions import display_name
+    assert display_name("ELIZABETH MARKUS") == "Elizabeth Markus"
+    assert display_name("Kirk And Stephanie Lewis, Langford Triathlon") == "Kirk and Stephanie Lewis, Langford Triathlon"
+    assert display_name("Constable Kyle Ross, West Shore RCMP") == "Constable Kyle Ross, West Shore RCMP"
+    assert display_name("BC Hydro") == "BC Hydro"

@@ -113,6 +113,21 @@ def extract_letters(sections: list[dict]) -> dict:
 PETITION_MIN = 3
 
 
+def display_name(who: str) -> str:
+    """Readable casing: "ELIZABETH MARKUS" -> "Elizabeth Markus", "Kirk And Stephanie" -> "Kirk and Stephanie".
+    Acronyms in normally written names ("West Shore RCMP") are left alone."""
+    name, comma, rest = who.partition(",")
+    letters = re.sub(r"[^A-Za-z]", "", name)
+    shouted = len(letters) > 3 and letters.isupper()
+    def word(w):
+        if w.lower() == "and":
+            return "and"
+        if shouted and w.isalpha():
+            return w.capitalize()
+        return w
+    return " ".join(word(w) for w in name.split(" ")) + comma + rest
+
+
 def collapse_petitions(letters: list[dict]) -> list[dict]:
     """Letters sharing a point are either one petition (three or more different named signers:
     shown once with its signature count) or copies of one letter forwarded several times
@@ -153,7 +168,7 @@ def admit_letters(raw: list[dict], sections: list[dict], streets: dict) -> list[
         names = [_source_spelling(part, source_text) or part for part in clean_author(letter["author"]).split(" and ")]
         author = " and ".join(n for n in names if n and _source_spelling(n, source_text))
         street = check.resolve(letter["street"]) if letter["street"].strip() else None
-        author = _titled(author) if author else ""
+        author = display_name(_titled(author)) if author else ""
         who = author or (letter["organization"].strip() or "A resident")
         if author and letter["organization"].strip():
             who = f"{author}, {letter['organization'].strip()}"
