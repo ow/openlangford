@@ -1,3 +1,4 @@
+import { writtenLetters } from "../lib/written";
 import { PUBLIC_MEETING_FILTER } from "~/lib/public-meetings";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
@@ -16,6 +17,7 @@ export interface MeetingStats {
   motion_defeated_count: number;
   motion_other_count: number;
   topics: string[];
+  letter_count?: number;
 }
 
 export interface GetMeetingsOptions {
@@ -181,6 +183,30 @@ export async function getMeetings(
     // Stats are supplementary -- don't fail the whole request
     statsComplete = false;
     console.error("Error fetching meeting stats:", e);
+  }
+
+  // Residents' letters per meeting (only items that have any return data).
+  try {
+    const ids = meetings.map((meeting) => meeting.id);
+    for (let start = 0; start < ids.length; start += 100) {
+      const { data, error } = await supabase
+        .from("agenda_items")
+        .select("meeting_id, written:meta->written_participation")
+        .in("meeting_id", ids.slice(start, start + 100))
+        .not("meta->written_participation", "is", null);
+      if (error) throw error;
+      for (const row of data || []) {
+        const count = writtenLetters(row.written as any).length;
+        if (!count) continue;
+        statsMap[row.meeting_id] = {
+          ...(statsMap[row.meeting_id] || { motion_carried_count: 0, motion_defeated_count: 0, motion_other_count: 0, topics: [] }),
+          letter_count: (statsMap[row.meeting_id]?.letter_count || 0) + count,
+        };
+      }
+    }
+  } catch (e) {
+    statsComplete = false;
+    console.error("Error fetching meeting letter counts:", e);
   }
 
   return { meetings, statsMap, statsComplete };

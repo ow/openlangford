@@ -205,6 +205,11 @@ def extract_and_store_documents(
                     "token_count": int(len(summary.split()) * 1.3),
                 }]
 
+        # Residents' personal email addresses never enter the public tables.
+        from pipeline.ingestion.letter_privacy import scrub_emails
+        for section in sections:
+            section["section_text"] = scrub_emails(section["section_text"])
+
         # Track inserted sections with their IDs for image matching
         inserted_sections = []
         for section in sections:

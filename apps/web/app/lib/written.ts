@@ -74,3 +74,31 @@ export function placeHeldLetter(
   }
   return { meetingMeta: meeting, itemMeta: item };
 }
+
+function nameWords(who: string) {
+  // "Mary Wagner (Deville Road)", "Courtney Frechette, Honeycomb Cannabis", "M. Wagner"
+  const name = who.replace(/\s*\([^()]*\)\s*$/, "").split(",")[0];
+  return name
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .match(/[a-z]+(?:['’-][a-z]+)*/g) ?? [];
+}
+
+/** Same person by name: same surname and a compatible first name or initial. Anonymous labels never match. */
+export function samePerson(a: string, b: string) {
+  if (/^a resident\b/i.test(a) || /^a resident\b/i.test(b)) return false;
+  const x = nameWords(a);
+  const y = nameWords(b);
+  if (x.length < 2 || y.length < 2 || x.at(-1) !== y.at(-1)) return false;
+  const [p, q] = [x[0]!, y[0]!];
+  return p.length === 1 || q.length === 1 ? p[0] === q[0] : p === q;
+}
+
+/** Marks people who both spoke and wrote in, for "also spoke" / "also wrote in" notes. */
+export function crossNotes(speakers: { who: string }[], letters: { who: string }[]) {
+  return {
+    speaker: (who: string) => (letters.some((l) => samePerson(who, l.who)) ? "also wrote in" : null),
+    letter: (who: string) => (speakers.some((s) => samePerson(who, s.who)) ? "also spoke" : null),
+  };
+}

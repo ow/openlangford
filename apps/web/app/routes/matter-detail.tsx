@@ -45,7 +45,7 @@ import { cn, formatDate } from "../lib/utils";
 import { displayTitle, matterTitle } from "../lib/display-text";
 import { bylawLead, bylawStatus } from "../lib/bylaw-summary";
 import { ParticipationList, speakersAbout } from "../components/meeting/participation-list";
-import { writtenLetters } from "../lib/written";
+import { crossNotes, writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
@@ -448,6 +448,17 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime(),
   );
 
+  // People who both spoke and wrote in about this matter get a note on each side.
+  const aboutMatter = `${matterTitle(matter)} ${matter.plain_english_summary || ""}`;
+  const notes = crossNotes(
+    timelineEntries.flatMap((entry: any) =>
+      entry.kind === "mention"
+        ? speakersAbout(entry.item.meta?.participation, aboutMatter)
+        : entry.item.meta?.participation?.speakers || [],
+    ),
+    timelineEntries.flatMap((entry: any) => writtenLetters(entry.item.meta?.written_participation)),
+  );
+
   // Build document lookup by agenda item ID
   const docsByItem = new Map<number, typeof matterDocuments>();
   for (const doc of matterDocuments || []) {
@@ -674,7 +685,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                           {(() => {
                             const about = speakersAbout(item.meta?.participation, `${matterTitle(matter)} ${matter.plain_english_summary || ""}`);
                             return about.length > 0 ? (
-                              <ParticipationList speakers={about} className="mt-1" />
+                              <ParticipationList speakers={about} note={notes.speaker} className="mt-1" />
                             ) : (
                               item.plain_english_summary && (
                                 <p className="text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>
@@ -751,6 +762,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                         layoutImage={layout}
                         participation={(item as any).meta?.participation}
                         written={(item as any).meta?.written_participation}
+                        notes={notes}
                       />
                     </li>
                   );

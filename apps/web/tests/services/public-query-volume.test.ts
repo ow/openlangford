@@ -35,6 +35,9 @@ beforeEach(() => {
       expect(limit).toBe(20); // Only the evidence page actually displayed, never all history.
       rows = Array.from({ length: Math.min(limit, 41 - offset) }, (_, i) => ({ id: offset + i + 1, person_id: 1, meeting_id: offset + i + 1,
         attendance_mode: "In Person", notes: "", meetings: { meeting_date: "2026-01-01", title: `Meeting ${offset + i + 1}` } }));
+    } else if (table === "agenda_items") {
+      // Letter counts: only items with written participation come back.
+      rows = [{ meeting_id: 2, written: { documents: [{ extracted_document_id: 1, document_id: 1, letters: [{ who: "A", position: "supports", topic: "t", point: "p" }] }] } }];
     } else if (["votes", "motions", "transcript_segments", "candidacies", "memberships"].includes(table!)) rows = [];
     else throw new Error(`Unexpected table ${table}`);
     transferred += JSON.stringify(rows).length; return Response.json(rows, { headers: { "Content-Range": table === "attendance" ? "0-19/41" : "*/0" } });
@@ -44,6 +47,7 @@ afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 it("transfers only selected meeting stats rather than all municipal history", async () => {
   const result = await getMeetings(client(), { id: 1 } as Municipality, { startDate: "2026-01-01", endDate: "2026-12-31" });
   expect(Object.keys(result.statsMap)).toEqual(["1", "2", "3"]); expect(result.statsMap[1].motion_carried_count).toBe(1);
+  expect(result.statsMap[2].letter_count).toBe(1); expect(result.statsMap[1].letter_count).toBeUndefined();
   expect(transferred).toBeLessThan(2000); expect(result.statsComplete).toBe(true);
 });
 it("loads compact SQL attendance summaries without fetching meeting or attendance history", async () => {

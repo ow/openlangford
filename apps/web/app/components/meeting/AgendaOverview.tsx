@@ -1,5 +1,5 @@
 import { ParticipationList, WrittenSubmissions } from "./participation-list";
-import { writtenLetters } from "../../lib/written";
+import { crossNotes, writtenLetters } from "../../lib/written";
 import { documentPath } from "../../lib/paths";
 import { useState } from "react";
 import {
@@ -55,6 +55,11 @@ export function AgendaOverview({
   meetingSlug,
 }: AgendaOverviewProps) {
   const groups = groupAgendaItems(items);
+  // People who both spoke and wrote in at this meeting get a note on each side.
+  const notes = crossNotes(
+    items.flatMap((it: any) => it.meta?.participation?.speakers || []),
+    items.flatMap((it: any) => writtenLetters(it.meta?.written_participation)),
+  );
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
@@ -84,6 +89,7 @@ export function AgendaOverview({
                   hasChildren={group.children.length > 0}
                   meetingId={meetingId}
                   meetingSlug={meetingSlug}
+                  notes={notes}
                 />
               ) : group.key !== "other" && group.children.length > 0 ? (
                 /* Virtual Parent Header for orphaned items */
@@ -133,6 +139,7 @@ export function AgendaOverview({
                       isLastChild={isLast}
                       meetingId={meetingId}
                       meetingSlug={meetingSlug}
+                      notes={notes}
                     />
                   );
                 })}
@@ -257,6 +264,7 @@ function normalizeRelatedAddresses(value: unknown): string[] {
 // --- Components ---
 
 interface AgendaItemRowProps {
+  notes?: ReturnType<typeof crossNotes>;
   item: AgendaItem;
   documentSections?: DocumentSection[];
   extractedDocuments?: ExtractedDocument[];
@@ -286,6 +294,7 @@ function AgendaItemRow({
   isLastChild,
   meetingId,
   meetingSlug,
+  notes,
 }: AgendaItemRowProps) {
   const linkedSections = (documentSections || []).filter(
     (s) => s.agenda_item_id === item.id,
@@ -445,7 +454,7 @@ function AgendaItemRow({
                   <h4 className="text-xs font-semibold text-zinc-500">
                     Who spoke ({item.meta.participation.speakers.length})
                   </h4>
-                  <ParticipationList participation={item.meta.participation} className="pl-0.5" />
+                  <ParticipationList participation={item.meta.participation} note={notes?.speaker} className="pl-0.5" />
                   <p className="text-xs text-zinc-400">Summarized from the meeting video. Names are shown when speakers introduce themselves, spelled as in the minutes where listed; others appear as “A resident”.</p>
                 </div>
               )}
@@ -459,6 +468,7 @@ function AgendaItemRow({
                   <WrittenSubmissions
                     written={item.meta?.written_participation}
                     documentHref={(documentId) => documentPath({ id: meetingId, slug: meetingSlug }, documentId)}
+                    note={notes?.letter}
                     className="pl-0.5"
                   />
                 </div>

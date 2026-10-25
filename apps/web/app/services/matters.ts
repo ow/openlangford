@@ -1,3 +1,4 @@
+import { writtenLetters } from "../lib/written";
 import { parseRelatedAddresses } from "../lib/addresses";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Matter, Municipality, AgendaItem } from "../lib/types";
@@ -57,7 +58,7 @@ export async function getMatters(
         lead_image_key:meta->images->lead->>r2_key,
         merged_matter_ids:meta->merged_matter_ids,
         bylaw:bylaws(slug, title, bylaw_number),
-        agenda_items(related_address, geo_location)
+        agenda_items(related_address, geo_location, written:meta->written_participation)
       `,
       )
       .eq("municipality_id", municipality.id)
@@ -86,7 +87,7 @@ export async function getMatters(
   ))];
   for (let start = 0; start < aliasIds.length; start += 100) {
     const { data: aliases, error } = await supabase.from("matters")
-      .select("id, canonical_matter_id:meta->>canonical_matter_id, geo_location, agenda_items(related_address, geo_location)")
+      .select("id, canonical_matter_id:meta->>canonical_matter_id, geo_location, agenda_items(related_address, geo_location, written:meta->written_participation)")
       .eq("municipality_id", municipality.id).in("id", aliasIds.slice(start, start + 100));
     if (error) throw error;
     for (const alias of aliases || []) {
@@ -131,6 +132,10 @@ export async function getMatters(
       meta: display_title ? { display_title } : null,
       addresses: Array.from(addresses),
       locations: Array.from(locationsMap.values()),
+      letter_count: (matter.agenda_items || []).reduce(
+        (sum: number, item: any) => sum + writtenLetters(item.written).length,
+        0,
+      ),
     };
   });
 }

@@ -49,3 +49,29 @@ describe("placeHeldLetter", () => {
     expect(placeHeldLetter(meetingMeta, null, "409", "zzz", 1)).toBeNull();
   });
 });
+
+import { crossNotes, samePerson } from "../written";
+
+describe("samePerson", () => {
+  it("matches initials, streets and organisations to full names", () => {
+    expect(samePerson("M. Wagner", "Mary Wagner (Deville Road)")).toBe(true);
+    expect(samePerson("Courtney Frechette, Honeycomb Cannabis", "Courtney Frechette")).toBe(true);
+    expect(samePerson("Tara Cadeau", "T. Cadeau (Glen Willow Place)")).toBe(true);
+  });
+
+  it("does not match different people or anonymous labels", () => {
+    expect(samePerson("Mary Wagner", "Mark Wagner")).toBe(false);
+    expect(samePerson("M. Wagner", "Mary Wagoner")).toBe(false);
+    expect(samePerson("A resident (Dunford Avenue)", "A resident (Dunford Avenue)")).toBe(false);
+    expect(samePerson("Wagner", "Mary Wagner")).toBe(false);
+  });
+});
+
+describe("crossNotes", () => {
+  it("notes both sides", () => {
+    const notes = crossNotes([{ who: "M. Wagner" }, { who: "A resident" }], [{ who: "Mary Wagner (Deville Road)" }]);
+    expect(notes.speaker("M. Wagner")).toBe("also wrote in");
+    expect(notes.speaker("A resident")).toBeNull();
+    expect(notes.letter("Mary Wagner (Deville Road)")).toBe("also spoke");
+  });
+});
