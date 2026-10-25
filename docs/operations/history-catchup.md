@@ -18,6 +18,27 @@ it. This diagnostic adds no resumed header, amended body, motion, outcome row or
 votes and changes no existing source identities. Only separate source review can
 resolve the missing main-motion body/outcome association.
 
+A structurally anchored SECONDED or explicit resumed-main introduction with
+further text but no own printed outcome before the next formal anchor is retained
+as `unresulted_formal_introduction_lead` with `coverage_diagnostic_only` authority
+and reason `no_separately_recorded_outcome`. Its exact interval/source hashes are
+review evidence, not a newly reconstructed operative body or decision. The next
+separately moved or resumed motion keeps its own outcome; it cannot lend that
+outcome to earlier wording. Existing result-bearing envelope proofs remain on
+their original path without duplicate leads, and original formal inventories,
+parsed blocks, text, ordinals and source keys stay unchanged.
+
+A lead count is **not a missing-decision count**. Superseded or unvoted wording
+(such as a base proposal later amended) can legitimately have no separate result.
+Multiple lead fragments can describe the same proceeding: an earlier unresulted
+main introduction and a later explicit clerk-result sentence do not establish
+two missing decisions or authorize joining the body/result. Review may resolve a
+lead as expected source wording. These diagnostics create no motion/result row,
+actor/vote inference or source key, and never fill an existing unknown outcome.
+For meeting99, the page24WestShoreappointment remains uncertain even though the
+next Library appointment has CARRIED onpage25; the 35 reviewed insertions stay
+unchanged.
+
 ```sh
 python -m pipeline.backfill.history_coverage audit \
   --env-file /existing/config/.env --project-ref PROJECT_REF \
