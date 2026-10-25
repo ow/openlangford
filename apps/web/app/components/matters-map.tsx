@@ -26,11 +26,17 @@ export function MattersMap({
   mapCenter,
   hrefFor = matterPath,
   linkLabel = "View matter",
+  compact = false,
+  fitToMarkers = false,
 }: {
   matters: Matter[];
   /** Where a pin's links go; the property pages pin addresses rather than matters. */
   hrefFor?: (matter: Matter) => string;
   linkLabel?: string;
+  /** One place (a property page): a shorter map without the counts and location list. */
+  compact?: boolean;
+  /** Frame every pin on load (a street page) instead of the default town view. */
+  fitToMarkers?: boolean;
   onMarkerClick?: (matter: Matter, address?: string) => void;
   activeLocation?: { lat: number; lng: number };
   selectedAddress?: string | null;
@@ -38,8 +44,8 @@ export function MattersMap({
 }) {
   const container = useRef<HTMLDivElement>(null);
   const markers = useMemo(() => matterMapMarkers(matters), [matters]);
-  const latest = useRef({ markers, onMarkerClick, activeLocation, mapCenter });
-  latest.current = { markers, onMarkerClick, activeLocation, mapCenter };
+  const latest = useRef({ markers, onMarkerClick, activeLocation, mapCenter, fitToMarkers });
+  latest.current = { markers, onMarkerClick, activeLocation, mapCenter, fitToMarkers };
   const [map, setMap] = useState<LibreMap | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -122,6 +128,15 @@ export function MattersMap({
         current.on("load", () => {
           if (disposed) return;
           clearTimeout(timeout);
+          const { fitToMarkers: fit, markers: pins } = latest.current;
+          if (fit && !isMapLocation(focus) && pins.length > 1) {
+            const lngs = pins.map((p) => p.lng);
+            const lats = pins.map((p) => p.lat);
+            current.fitBounds(
+              [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+              { padding: 48, maxZoom: 16, duration: 0 },
+            );
+          }
           current.addSource("matters", {
             type: "geojson",
             data: markerGeoJSON(latest.current.markers),
@@ -347,7 +362,7 @@ export function MattersMap({
   return (
     <div className="space-y-2">
       <div
-        className="relative z-0 h-[360px] w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm sm:h-[560px]"
+        className={`relative z-0 w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm ${compact ? "h-[240px] sm:h-[300px]" : "h-[360px] sm:h-[560px]"}`}
         role="region"
         aria-label="Map of council matters"
         aria-busy={loading}
@@ -385,24 +400,24 @@ export function MattersMap({
           </div>
         )}
       </div>
-      <p className="px-1 text-xs text-zinc-500">
+      {!compact && <p className="px-1 text-xs text-zinc-500">
         {markers.length.toLocaleString()} mapped{" "}
         {markers.length === 1 ? "location" : "locations"} across{" "}
         {matters.length.toLocaleString()}{" "}
         {matters.length === 1 ? "matter" : "matters"}
-      </p>
+      </p>}
       {markers.length === 0 && (
         <p className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
           None of these addresses have been geocoded yet, so there's nothing to
           plot on the map.
         </p>
       )}
-      {!loading && !failed && (
+      {!compact && !loading && !failed && (
         <p className="px-1 text-xs text-zinc-500">
           Numbered circles group nearby locations. Zoom in to explore.
         </p>
       )}
-      <details
+      {!compact && <details
         className="rounded-lg border border-zinc-200 bg-white p-3 text-sm"
         open={failed || undefined}
       >
@@ -434,7 +449,7 @@ export function MattersMap({
             </li>
           ))}
         </ul>
-      </details>
+      </details>}
       {popupHost &&
         selected &&
         createPortal(

@@ -123,10 +123,12 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
         <div className="space-y-12">
           {pins.length > 0 && (
             <section>
-              <div className="overflow-hidden rounded-2xl border border-zinc-200 shadow-sm">
+              <div>
                 <MattersMap
+                  compact
+                  fitToMarkers={isStreet}
                   matters={pins as any}
-                  activeLocation={geo || pins[0]?.locations[0]}
+                  activeLocation={isStreet ? undefined : geo || undefined}
                   {...(isStreet ? { hrefFor: (lot: any) => propertyPath(lot), linkLabel: "View address" } : {})}
                 />
               </div>
