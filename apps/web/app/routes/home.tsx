@@ -53,6 +53,7 @@ export async function loader({ request }: { request: Request }) {
 
     return {
       upcomingMeeting: data.upcomingMeeting,
+      laterMeetings: data.laterMeetings,
       recentMeeting: data.recentMeeting,
       recentMeetingStats: data.recentMeetingStats,
       activeMatters: data.activeMatters,
@@ -70,6 +71,7 @@ export async function loader({ request }: { request: Request }) {
 export default function Home({ loaderData }: any) {
   const {
     upcomingMeeting,
+    laterMeetings,
     recentMeeting,
     recentMeetingStats,
     activeMatters,
@@ -93,6 +95,7 @@ export default function Home({ loaderData }: any) {
         user={user}
         recentMeeting={{ meeting: recentMeeting, stats: recentMeetingStats }}
         upcomingMeeting={upcomingMeeting}
+        laterMeetings={laterMeetings}
       />
       <IncomingCouncilSection council={incomingCouncil} />
 
