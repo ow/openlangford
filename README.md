@@ -299,6 +299,12 @@ uv run python -m pipeline.ingestion.glyphdex_import --body "Committee" --from 20
   recommendations to Council and there are no validated committee ballot rules,
   so motions are held as unverified (`agenda_items.meta.unverified_motion_proposals`)
   rather than published.
+- **Duplicates:** a Glyphdex meeting counts as one we have when its body maps to
+  ours (Committee of the Whole is the Council organization with type `Committee
+  of the Whole`; the Community Advisory Committee is our `Advisory Committee`)
+  within ±1 day: eSCRIBE and Glyphdex dates differ by a day for ~20% of
+  meetings. Analysis: `research/glyphdex/2023-2026-overlap.md`. `--body` can be
+  given more than once.
 - **Email alerts** are not triggered by backfills: the parallel workers skip the
   post-ingest alert hook, and the server only enqueues meetings on or after the
   alerts start date (see issue #58).
