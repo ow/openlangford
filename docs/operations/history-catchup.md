@@ -122,3 +122,13 @@ Changed source inventories (including an additional candidate original), review
 artifacts, renderers, catalog scope or parser outputs require a new audit/review.
 Apply rechecks the original inventory under locks. Keep the OCR review artifacts
 and receipts so a future correction can be traced to the exact original image.
+
+A native PDF can also omit visible outcome words from its embedded text. The
+catch-up-only `reviewed_native_image_corrections` mode binds complete original
+page renders, native/layout hashes and unique page-specific reviewed corrections.
+Its corrected text and parsed occurrences are pinned. This source view supports
+existing legacy-occurrence accounting only: it cannot add motions or certify
+stored results, actors, attendance or individual votes, including after a reviewed
+header date is applied. Documentary adjournments remain held separately. An audit
+with no proposed additions is not a missing import; do not insert duplicates or
+manufacture an apply receipt to make its count match the existing motion table.

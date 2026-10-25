@@ -1,0 +1,201 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "meeting_id": 125,
+  "source_sha256": "c8f665dcabefb21dc385e2e5fb21c63dfad59b78b2745b40439a0acc4942483e",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20190521-Signed-Minutes-Council.pdf",
+  "source_file": "archive/langford/Council/2019/05/2019-05-21 Regular Council [legacy]/Minutes/20190521-Signed-Minutes-Council.pdf",
+  "source_date": "2019-05-21",
+  "source_text_sha256": "5e86085bede1936bef267e32ad8ca505a4d32efbefc0d24d05085089ecdfa9e0",
+  "formal_inventory_sha256": "804fb3dcdfa207030bd419303f7e0e73828ef7c241a3ad613b923578c5741a6b",
+  "claim_inventory_sha256": "98016ae4229f045eaf59b8ac560179da6a801dfa72b133a9ff8a134e7f3b0f01",
+  "native_pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "5758ba9156053f85188a2e41a421f926297ec5203199ac814884f298da677f76"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "866fc601d9ecc6138da66586ad8a7fefddf7f0cfa539644e79f9814055385462"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "ecb9a40089ff861e7d81e32bb0ea1c7cc4c6ea9e4dcc931c34d7a0ffcb74dcde"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "7fcc0703c417bfd13a96feb4fef16379f44f67ab55af6b581eabc6d7e2118b80"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "93222305aea6aa818f4850d82c4f1a2c5ed25e5affced956ee7e719da449e558"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "ea831465235d1257d626314a82fe6ccbe102967dd842425966d731290ce59799"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 1222,
+      "claim_sha256": "1f11ff7a8121decea85817fecce90d37ad60d1f8692ea2f8fef6780b1ae6a803",
+      "legacy_text": "That Council approve the minutes of the Regular Meeting of Council held on May 6th, 2019.",
+      "source_identity": {
+        "meeting_id": 125,
+        "source_sha256": "c8f665dcabefb21dc385e2e5fb21c63dfad59b78b2745b40439a0acc4942483e",
+        "source_offset": 1112,
+        "source_order": 1,
+        "key": "275cb4cf761cb368800ea676ca79de2f0d159f2f638fe0dfa44f2cbd6d3d4fca",
+        "source_file": "archive/langford/Council/2019/05/2019-05-21 Regular Council [legacy]/Minutes/20190521-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20190521-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_layout",
+        "raw_motion_text": "That Council approvethe minutesof the Regular Meeting of Council held on May 6'^ 2019.",
+        "source_block": "MOVED BY;          COUNCILLOR WADE\nSECONDED:          COUNCILLOR SAHLSTROM\n\n\n        That Council approvethe minutesof the Regular Meeting of Council held on May 6'^ 2019.\n\n                                                                                                   CARRIED.\n\n                                                                                                     May 2rS 2019\n                                                                                                        Page 2 of 6\n\n\n\n4.        OTHER BOARD AND COMMISSION MINUTES\n\n          a) West Shore Parks and Recreation - April        2019",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "af16adb2960b389029b755a7c1aa4c0379a03cc6378da0e60ce3c34cca36cb7b",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        1
+      ],
+      "mapping_evidence": "Native approvethe/minutesof word joins and damaged ordinal; original clearly prints May 6th, 2019."
+    },
+    {
+      "motion_id": 1223,
+      "claim_sha256": "b88b100b00082a57db9dffaf686b0b2927f878d56421d705865cb1fa55d7f19a",
+      "legacy_text": "That Council receive the minutes of the West Shore Parks and Recreation Meeting held on April 11th, 2019.",
+      "source_identity": {
+        "meeting_id": 125,
+        "source_sha256": "c8f665dcabefb21dc385e2e5fb21c63dfad59b78b2745b40439a0acc4942483e",
+        "source_offset": 1739,
+        "source_order": 2,
+        "key": "99d27f173b82341b564c215d6762e3f9345bfafea837e790730c646c10ae4505",
+        "source_file": "archive/langford/Council/2019/05/2019-05-21 Regular Council [legacy]/Minutes/20190521-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20190521-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_layout",
+        "raw_motion_text": "ThatCouncil receive the minutes of the WestShoreParks and Recreation Meeting heldon April\n          2019.",
+        "source_block": "MOVED BY:         COUNCILLOR SEATON\nSECONDED;         COUNCILLOR SAHLSTROM\n\n          ThatCouncil receive the minutes of the WestShoreParks and Recreation Meeting heldon April\n          2019.\n\n\n                                                                                                    CARRIED.\n\n\n\n5.        PUBUC PARTICIPATION\n\n\n          Resident addressed Council in support of the proposed CRD Foodlands Access Program.\n\n6.        REPORTS\n\n\n     a) 2018 Statement of Financial Information\n               Staff Report (Finance)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "9e8bb5a9b2835f2717428278a36123b7e2573973f7368264ae9504f62030d0ad",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        2
+      ],
+      "mapping_evidence": "Native text omits April 11th; original prints April 11th, 2019 in heading and full motion."
+    },
+    {
+      "motion_id": 1226,
+      "claim_sha256": "fc57294498667e95c876fef816a455406752df58161f6f8aa9bb72b73f4264c9",
+      "legacy_text": "That Council direct staff to provide the following feedback to the CRD Board: That the City of Langford is not willing to participate in funding the CRD operation of a foodlands trust and does not have municipal lands to add to a CRD-operated foodlands trust.",
+      "source_identity": {
+        "meeting_id": 125,
+        "source_sha256": "c8f665dcabefb21dc385e2e5fb21c63dfad59b78b2745b40439a0acc4942483e",
+        "source_offset": 2993,
+        "source_order": 5,
+        "key": "488f46427f8221bff36335f386ac215143bc8d625abc0259bc9631b8413653f1",
+        "source_file": "archive/langford/Council/2019/05/2019-05-21 Regular Council [legacy]/Minutes/20190521-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20190521-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_layout",
+        "raw_motion_text": "That Council direct staff to provide the following feedback to the CRD Board:\n\n                                                                                                    May      2019\n                                                                                                       Page 3 of 6\n\n\n      That the City of Langford is not willing to participate in funding the CRD operation of a foodlands\n      trust and does not have municipal lands to add to a CRD-operated foodlands trust.",
+        "source_block": "MOVED BY:        COUNCILLOR WADE\n SECONDED:        COUNCILLOR SEATON\n\n\n          That Council direct staff to provide the following feedback to the CRD Board:\n\n                                                                                                    May      2019\n                                                                                                       Page 3 of 6\n\n\n      That the City of Langford is not willing to participate in funding the CRD operation of a foodlands\n      trust and does not have municipal lands to add to a CRD-operated foodlands trust.\n\n                                                                                                     CARRIED.",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "b4ee6586b64c6fd98ac54e40d07f0e4e37d4271f32284cabd3782dfd7bf5d500",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        2,
+        3
+      ],
+      "mapping_evidence": "Formal header and first sentence page 2; continuation and explicit CARRIED page 3. Native page date/footer interrupts body; full stored claim matches image."
+    },
+    {
+      "motion_id": 1230,
+      "claim_sha256": "ed0ef62c9782c096a744acc7ff5b9d54e20982ca8fc2253b46708c9601fe72d7",
+      "legacy_text": "That Council give Bylaw No. 1828 first reading.",
+      "source_identity": {
+        "meeting_id": 125,
+        "source_sha256": "c8f665dcabefb21dc385e2e5fb21c63dfad59b78b2745b40439a0acc4942483e",
+        "source_offset": 5321,
+        "source_order": 9,
+        "key": "47975b6fb3112a3f8d652abb3393960b2e008b22f3ef71551feed8a53a2ce3e6",
+        "source_file": "archive/langford/Council/2019/05/2019-05-21 Regular Council [legacy]/Minutes/20190521-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20190521-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_layout",
+        "raw_motion_text": "May21^ 2019\n                                                                                                     Page 4 of 6\n\n\n            That Council give Bylaw No. 1828 first reading.",
+        "source_block": "MOVED BY:       COUNCILLOR SAHLSTROM\nSECONDED:       COUNCILLOR SEATON\n\n                                                                                                 May21^ 2019\n                                                                                                     Page 4 of 6\n\n\n            That Council give Bylaw No. 1828 first reading.\n\n                                                                                                   CARRIED.\n\n\n      d)    BYLAW NO. 1829\n            \"Langford Zoning Bylaw, Amendment No. 557, 2019\".\n            (FIRST READING)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "1130ff49e4b342a439247ff16bffd9070446b5f04fa3dc0cb8c1fc93b759ccc5",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        3,
+        4
+      ],
+      "mapping_evidence": "Bylaw 1828 formal Sahlstrom/Seaton header page 3; exact 1828 body/result page 4. Do NOT bind to 1829 order 10."
+    },
+    {
+      "motion_id": 1234,
+      "claim_sha256": "d46a4e5b588257aee06770536f3c316052bdf4d7d8e8abb37c9cefec3270c30f",
+      "legacy_text": "That Council give Bylaw No. 1850 first, second and third readings.",
+      "source_identity": {
+        "meeting_id": 125,
+        "source_sha256": "c8f665dcabefb21dc385e2e5fb21c63dfad59b78b2745b40439a0acc4942483e",
+        "source_offset": 7161,
+        "source_order": 13,
+        "key": "cf9f8332c0991071f1624c90db2950acac0d0e321f8e46ceeae8523381f3c117",
+        "source_file": "archive/langford/Council/2019/05/2019-05-21 Regular Council [legacy]/Minutes/20190521-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20190521-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_layout",
+        "raw_motion_text": "May21^ 2019\n                                                                                                          Page 5 of 6\n\n\n             That Council give Bylaw No. 1850 first, second and third readings.",
+        "source_block": "MOVED BY:       COUNCILLOR SZPAK\nSECONDED:       COUNCILLOR WADE\n\n                                                                                                      May21^ 2019\n                                                                                                          Page 5 of 6\n\n\n             That Council give Bylaw No. 1850 first, second and third readings.\n\n                                                                                                        CARRIED.\n\n\n        h)   BYLAW NO. 1851\n             \"Langford Zoning Bylaw, Amendment No. 565, 2019, Bylaw No 1851\n             (939 Walfred Rd)\".\n             (FIRST READING)",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "dbb4433a8b6e64ee5a8d1df378ed0e5b764bbb987142192e1195c1b6befc573f",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        4,
+        5
+      ],
+      "mapping_evidence": "Bylaw 1850 formal Szpak/Wade header page 4; exact 1850 body/result page 5. Do NOT bind to 1848 order 11 or 1849 order 12."
+    },
+    {
+      "motion_id": 1236,
+      "claim_sha256": "26961e24891108e6ac23ca3c7ef6c7557ab86df3cb8ca7c96c2a0d2610f239f6",
+      "legacy_text": "That it is the opinion of Council that the public interest require that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding the acquisition, disposition or expropriation of land or improvements; and that Council continue the meeting in closed session.",
+      "source_identity": {
+        "meeting_id": 125,
+        "source_sha256": "c8f665dcabefb21dc385e2e5fb21c63dfad59b78b2745b40439a0acc4942483e",
+        "source_offset": 8609,
+        "source_order": 16,
+        "key": "cf1a18544cfbd314bd6e2fea6dd08d802c5957336393c0fcedd9b65eb67606f4",
+        "source_file": "archive/langford/Council/2019/05/2019-05-21 Regular Council [legacy]/Minutes/20190521-Signed-Minutes-Council.pdf",
+        "source_url": "https://langford.ca/wp-content/uploads/2021/05/20190521-Signed-Minutes-Council.pdf",
+        "source_format": "original_pdf_layout",
+        "raw_motion_text": "a) That it is the opinion of Council that the public interest require that persons other than\n             members of Council and Officers be excluded from the meeting to consider confidential\n             information regarding:\n\n               •    The acquisition, disposition or expropriation of land or improvements, if the Council\n                    considers that disclosure could reasonably be expected to harm the interests of the\n                    municipality under section 90 (1) (e)\n\n         b) That Council continue the meeting in closed session.",
+        "source_block": "MOVED BY:          COUNCILLOR BLACKWELL\nSECONDED:          COUNCILLOR WADE\n\n\n        a) That it is the opinion of Council that the public interest require that persons other than\n             members of Council and Officers be excluded from the meeting to consider confidential\n             information regarding:\n\n               •    The acquisition, disposition or expropriation of land or improvements, if the Council\n                    considers that disclosure could reasonably be expected to harm the interests of the\n                    municipality under section 90 (1) (e)\n\n         b) That Council continue the meeting in closed session.\n\n                                                                                                        CARRIED.\n\n                                                                                   May 2V\\ 2019\n                                                                                      Page 6 of 6\n\n\n\n10.    ADJOURNMENT\n\n\n\nMayor Youngadjourned the meeting at 6:40 pm.\n\n\n\n\nPRESIDING CQUNCIL MEMBER:                      CERTIFI\n                                               Corporate Officer",
+        "outcome_quote": "CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "d01a9e89a92d27f4f534d30caceae2679b6481ab5825e271fa4bf7e3d6cfc41b",
+      "authority": "occurrence_reservation_only",
+      "pages": [
+        5
+      ],
+      "mapping_evidence": "Stored wording omits conditional harm-to-municipality clause and statute; combines a/b. Preserve legacy row and reserve this occurrence only; NOT a full transcription certificate or authorization to rewrite."
+    }
+  ],
+  "independent_original_image_review_sha256": "c4cb2854360584f7bffc33a29ac5024d251876c08186d09f0aae43b1e6bdf550",
+  "remaining_holds": [
+    {
+      "motion_id": 1237,
+      "reason": "documentary_adjournment_not_formal_resolution; preserve legacy result unchanged, source does not verify it"
+    }
+  ]
+}
