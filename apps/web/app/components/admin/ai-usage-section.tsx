@@ -145,33 +145,33 @@ export function AiUsageSection({ usage }: { usage: AiUsageDashboard }) {
         <>
           {window && <UsageTable window={window} />}
 
-          <h3 className="mb-3 mt-8 text-base font-semibold text-zinc-900">Recent failures</h3>
           {usage.failures.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
-              No failed model calls recorded.
-            </div>
+            <p className="mt-3 text-sm text-zinc-500">No failed model calls recorded.</p>
           ) : (
-            <ul className={cn(card, "divide-y divide-zinc-100")}>
-              {usage.failures.map((f) => (
-                <li key={f.id} className="px-4 py-2.5 text-sm">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className="font-medium text-zinc-900">{f.stage}</span>
-                    <Badge variant={f.source === "web" ? "brand" : "muted"}>{f.source}</Badge>
-                    {f.job && <span className="text-xs text-zinc-500">{f.job}</span>}
-                    {f.meeting_id != null && (
-                      <span className="text-xs tabular-nums text-zinc-500">meeting {f.meeting_id}</span>
-                    )}
-                    <span className="ml-auto text-xs text-zinc-500">
-                      {formatRelativeTime(f.created_at)}
-                    </span>
-                  </div>
-                  <p className="mt-1 line-clamp-3 break-words font-mono text-xs text-red-700">
-                    {f.error || "Unknown error"}
-                  </p>
-                  <div className="mt-0.5 text-xs text-zinc-400">{f.model}</div>
-                </li>
-              ))}
-            </ul>
+            <>
+              <h3 className="mb-3 mt-8 text-base font-semibold text-zinc-900">Recent failures</h3>
+              <ul className={cn(card, "divide-y divide-zinc-100")}>
+                {usage.failures.map((f) => (
+                  <li key={f.id} className="px-4 py-2.5 text-sm">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="font-medium text-zinc-900">{f.stage}</span>
+                      <Badge variant={f.source === "web" ? "brand" : "muted"}>{f.source}</Badge>
+                      {f.job && <span className="text-xs text-zinc-500">{f.job}</span>}
+                      {f.meeting_id != null && (
+                        <span className="text-xs tabular-nums text-zinc-500">meeting {f.meeting_id}</span>
+                      )}
+                      <span className="ml-auto text-xs text-zinc-500">
+                        {formatRelativeTime(f.created_at)}
+                      </span>
+                    </div>
+                    <p className="mt-1 line-clamp-3 break-words font-mono text-xs text-red-700">
+                      {f.error || "Unknown error"}
+                    </p>
+                    <div className="mt-0.5 text-xs text-zinc-400">{f.model}</div>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </>
       )}

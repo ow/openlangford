@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Form,
   Link,
@@ -20,9 +20,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { FilterBar } from "../components/ui/filter-bar";
 import { Input } from "../components/ui/input";
-import { PageHeader } from "../components/ui/page-header";
+import { DetailHeader } from "../components/ui/detail-header";
 import { SearchField } from "../components/ui/search-field";
 import { cn, formatDate, formatRelativeTime } from "../lib/utils";
 import {
@@ -159,22 +158,69 @@ function StatMetric({
   label,
   value,
   detail,
+  tone = "default",
 }: {
   label: string;
   value: number;
   detail: string;
+  tone?: "default" | "danger" | "quiet";
 }) {
   return (
-    <div className="min-w-0 bg-white px-4 py-3">
-      <div className="text-sm text-zinc-500">{label}</div>
-      <div className="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-zinc-950">
+    <div className="min-w-0 bg-white px-5 py-4">
+      <div className="text-sm font-medium text-zinc-600">{label}</div>
+      <div
+        className={cn(
+          "mt-1 text-3xl font-semibold tabular-nums tracking-tight",
+          tone === "danger" && "text-red-700",
+          tone === "quiet" && "text-zinc-400",
+          tone === "default" && "text-zinc-950",
+        )}
+      >
         {value.toLocaleString()}
       </div>
-      <p className="mt-0.5 truncate text-xs tabular-nums text-zinc-500">
+      <p className="mt-1 truncate text-xs tabular-nums text-zinc-500">
         {detail}
       </p>
     </div>
   );
+}
+
+function SectionHeader({
+  id,
+  title,
+  meta,
+  action,
+}: {
+  id: string;
+  title: string;
+  meta?: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="mb-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+      <div className="flex min-w-0 items-baseline gap-3">
+        <h2 id={id} className="text-lg font-semibold text-zinc-900">
+          {title}
+        </h2>
+        {meta && (
+          <span className="text-sm tabular-nums text-zinc-500">{meta}</span>
+        )}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+/**
+ * Worker errors arrive as raw Python reprs and absolute archive paths. Keep
+ * the human-readable part for list views; the job page shows the full text.
+ */
+function shortError(error: string) {
+  const message = error.match(/['"]message['"]:\s*['"]([^'"]+)['"]/)?.[1];
+  return (message ?? error)
+    .replace(/\/\S*?\/archive\/[^/\s]+\//g, "archive/")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function QueueJobMenu({ isSubmitting }: { isSubmitting: boolean }) {
@@ -290,17 +336,205 @@ function jobLifecycleSummary(job: any) {
   return "Unknown time";
 }
 
-const levelTones: Record<string, BadgeTone> = {
-  error: "danger",
-  warning: "warning",
-  info: "muted",
-};
-
 const card = "rounded-2xl border border-zinc-200 bg-white shadow-sm";
+
+function workerSummary(counts: any, jobs: any[]) {
+  if (counts.jobRunning > 0 || counts.jobQueued > 0) {
+    return `${counts.jobRunning.toLocaleString()} running · ${counts.jobQueued.toLocaleString()} queued`;
+  }
+  const lastFinished = jobs
+    .map((job) => job.finished_at)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+  return lastFinished
+    ? `Worker idle · last job finished ${formatRelativeTime(lastFinished)}`
+    : "Worker idle";
+}
+
+function JobRow({ job, isSubmitting }: { job: any; isSubmitting: boolean }) {
+  return (
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-1 px-4 py-3 sm:grid-cols-[88px_minmax(0,200px)_minmax(0,1fr)_auto] sm:items-baseline">
+      <div className="order-2 sm:order-none">
+        <StatusBadge status={job.status} />
+      </div>
+      <div className="order-1 min-w-0 sm:order-none">
+        <Link
+          to={`/admin/pipeline/jobs/${job.id}`}
+          className="text-sm font-medium text-zinc-900 hover:text-brand-700 hover:underline"
+        >
+          {formatStatus(job.job_type)}
+        </Link>
+        <div className="text-xs tabular-nums text-zinc-500">
+          #{job.id} · {jobLifecycleSummary(job)}
+          {job.status === "running" && job.locked_at
+            ? ` · heartbeat ${formatRelativeTime(job.locked_at)}`
+            : ""}
+        </div>
+      </div>
+      <div className="order-3 col-span-2 min-w-0 sm:order-none sm:col-span-1">
+        {job.last_error && (
+          <p
+            className="line-clamp-2 text-sm text-zinc-600 sm:line-clamp-1"
+            title={job.last_error}
+          >
+            {shortError(job.last_error)}
+          </p>
+        )}
+      </div>
+      <div className="order-4 hidden sm:order-none sm:block">
+        {job.status === "queued" && (
+          <Form method="post">
+            <input type="hidden" name="intent" value="cancel_job" />
+            <input type="hidden" name="job_id" value={job.id} />
+            <Button
+              type="submit"
+              variant="ghost"
+              size="sm"
+              className="h-7 text-zinc-600"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+          </Form>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function LatestJob({ job }: { job: any }) {
+  if (!job) return <span className="text-zinc-300">—</span>;
+  const failed = job.status === "failed";
+  return (
+    <div className="min-w-0">
+      <Link
+        to={`/admin/pipeline/jobs/${job.id}`}
+        title={job.last_error ? shortError(job.last_error) : undefined}
+        className={cn(
+          "text-sm hover:underline",
+          failed ? "font-medium text-red-700" : "text-zinc-700 hover:text-brand-700",
+        )}
+      >
+        {formatStatus(job.status)}
+        <span className="tabular-nums text-zinc-400"> #{job.id}</span>
+      </Link>
+      <div className="text-xs text-zinc-500">
+        {formatJobType(job.job_type)}
+        {job.requested_at ? ` · ${formatRelativeTime(job.requested_at)}` : ""}
+      </div>
+    </div>
+  );
+}
+
+function MeetingActions({
+  meeting,
+  isSubmitting,
+}: {
+  meeting: any;
+  isSubmitting: boolean;
+}) {
+  const ingested = Boolean(meeting.ingested_meeting_id);
+  const menuItems = [
+    !ingested && meeting.video_url && { value: "sync_media", label: "Cache media" },
+    ingested && { value: "regenerate_summary", label: "Regenerate summary" },
+    ingested && { value: "extract_documents", label: "Rerun documents" },
+    ingested && meeting.video_url && { value: "diarize_meeting", label: "Rerun audio" },
+  ].filter(Boolean) as { value: string; label: string }[];
+
+  return (
+    <div className="flex justify-end">
+      <ButtonGroup>
+        {ingested ? (
+          <Button asChild variant="outline" size="sm">
+            <Link to={`/meetings/${meeting.ingested_meeting_id}`}>View</Link>
+          </Button>
+        ) : (
+          <Form method="post">
+            <input type="hidden" name="source_meeting_id" value={meeting.id} />
+            <Button
+              type="submit"
+              name="job_type"
+              value="ingest_meeting"
+              variant={meeting.status === "cancelled" ? "outline" : "default"}
+              size="sm"
+              disabled={isSubmitting}
+            >
+              Ingest
+            </Button>
+          </Form>
+        )}
+        {menuItems.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon-sm"
+                disabled={isSubmitting}
+                aria-label={`More actions for ${meeting.title}`}
+              >
+                <Ellipsis />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                {menuItems.map((item) => (
+                  <Form method="post" key={item.value}>
+                    <input
+                      type="hidden"
+                      name="source_meeting_id"
+                      value={meeting.id}
+                    />
+                    <DropdownMenuItem asChild>
+                      <button
+                        type="submit"
+                        name="job_type"
+                        value={item.value}
+                        disabled={isSubmitting}
+                        className="w-full"
+                      >
+                        {item.label}
+                      </button>
+                    </DropdownMenuItem>
+                  </Form>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </ButtonGroup>
+    </div>
+  );
+}
+
+function meetingSubtitle(meeting: any) {
+  const date = formatDate(meeting.meeting_date, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  return meeting.meeting_type && meeting.meeting_type !== meeting.title
+    ? `${date} · ${meeting.meeting_type}`
+    : date;
+}
+
+function MeetingOutput({ meeting }: { meeting: any }) {
+  if (!meeting.ingested_meeting_id) {
+    return <span className="text-zinc-400">Not ingested</span>;
+  }
+  if (meeting.document_count > 0) {
+    return (
+      <span className="text-zinc-700">
+        {meeting.document_count} docs · {meeting.section_count} sections
+      </span>
+    );
+  }
+  return <span className="text-zinc-400">No documents yet</span>;
+}
 
 export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
   const {
-    municipality,
     counts,
     jobs,
     sourceMeetings,
@@ -318,6 +552,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
   );
   const hasActiveWork =
     counts.jobRunning > 0 || counts.jobQueued > 0 || hasActiveVisibleJob;
+  const activeJobs = counts.jobRunning + counts.jobQueued;
   const page = sourceMeetingsPage.page;
   const totalPages = sourceMeetingsPage.totalPages;
   const searchParams = new URLSearchParams();
@@ -343,16 +578,28 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
   return (
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-6xl px-4 py-12">
-        <PageHeader
-          title={`${municipality.short_name} pipeline`}
-          description="Queue health, active workers and meeting ingestion."
+        <DetailHeader
+          back={{ to: "/admin", label: "Admin" }}
+          meta={[
+            <span key="worker" className="inline-flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  activeJobs > 0 ? "animate-pulse bg-amber-500" : "bg-zinc-300",
+                )}
+              />
+              {workerSummary(counts, jobs)}
+            </span>,
+          ]}
+          title="Pipeline"
           actions={<QueueJobMenu isSubmitting={isSubmitting} />}
         />
 
         {actionData?.success && (
           <p
             role="status"
-            className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800"
+            className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800"
           >
             {actionData.success}
           </p>
@@ -360,7 +607,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
         {actionData?.error && (
           <p
             role="alert"
-            className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-800"
+            className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-800"
           >
             {actionData.error}
           </p>
@@ -369,458 +616,220 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
         <div
           className={cn(
             card,
-            "grid grid-cols-2 gap-px overflow-hidden bg-zinc-100 lg:grid-cols-4",
+            "grid grid-cols-2 gap-px overflow-hidden bg-zinc-200 lg:grid-cols-4",
           )}
         >
           <StatMetric
-            label="Running jobs"
-            value={counts.jobRunning}
-            detail={`${counts.jobQueued.toLocaleString()} queued · ${counts.jobFailed.toLocaleString()} failed`}
+            label="Active jobs"
+            value={activeJobs}
+            tone={activeJobs > 0 ? "default" : "quiet"}
+            detail={`${counts.jobRunning.toLocaleString()} running · ${counts.jobQueued.toLocaleString()} queued`}
           />
           <StatMetric
-            label="Source meetings"
-            value={counts.sourceTotal}
-            detail={`${counts.sourcePendingIngest.toLocaleString()} not ingested`}
+            label="Failed jobs"
+            value={counts.jobFailed}
+            tone={counts.jobFailed > 0 ? "danger" : "quiet"}
+            detail={`${counts.jobSucceeded.toLocaleString()} succeeded`}
           />
           <StatMetric
-            label="App meetings"
-            value={counts.appMeetings}
-            detail={`${counts.appDocuments.toLocaleString()} source PDFs`}
+            label="Awaiting ingest"
+            value={counts.sourcePendingIngest}
+            tone={counts.sourcePendingIngest > 0 ? "default" : "quiet"}
+            detail={`of ${counts.sourceTotal.toLocaleString()} source meetings`}
           />
           <StatMetric
-            label="Searchable docs"
+            label="Searchable documents"
             value={counts.appExtractedDocuments}
-            detail={`${counts.appSections.toLocaleString()} sections`}
+            detail={`${counts.appMeetings.toLocaleString()} meetings · ${counts.appSections.toLocaleString()} sections`}
           />
         </div>
 
-        <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <section aria-labelledby="inventory-heading" className="min-w-0">
-            <div className="mb-3 flex items-baseline justify-between gap-3">
-              <h2
-                id="inventory-heading"
-                className="text-lg font-semibold text-zinc-900"
-              >
-                Meeting inventory
-              </h2>
-              <span className="text-sm tabular-nums text-zinc-500">
-                {sourceMeetingsPage.total.toLocaleString()} upstream meetings
-              </span>
+        <section aria-labelledby="jobs-heading" className="mt-10">
+          <SectionHeader id="jobs-heading" title="Recent jobs" />
+          {jobs.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+              No jobs queued yet.
             </div>
+          ) : (
+            <ul className={cn(card, "divide-y divide-zinc-100")}>
+              {jobs.map((job: any) => (
+                <JobRow key={job.id} job={job} isSubmitting={isSubmitting} />
+              ))}
+            </ul>
+          )}
 
-            <Form method="get">
-              <FilterBar
-                sticky={false}
-                className="mb-3"
-                search={
-                  <SearchField
-                    name="q"
-                    value={search}
-                    onValueChange={setSearch}
-                    placeholder="Search title, type or source ID"
-                    aria-label="Search source meetings"
-                  />
-                }
-                controls={
-                  <Button type="submit" variant="outline" className="h-10">
-                    Search
-                  </Button>
-                }
-              />
-            </Form>
-
-            {sourceMeetings.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
-                {sourceMeetingsPage.search
-                  ? `No source meetings match "${sourceMeetingsPage.search}".`
-                  : "No source meetings recorded yet. Queue discovery to populate this list."}
-              </div>
-            ) : (
-              <div className={cn(card, "overflow-hidden")}>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="border-b border-zinc-100 bg-zinc-50/60 text-left text-xs text-zinc-500">
-                      <tr>
-                        <th scope="col" className="px-4 py-2 font-medium">
-                          Date
-                        </th>
-                        <th scope="col" className="px-4 py-2 font-medium">
-                          Meeting
-                        </th>
-                        <th scope="col" className="px-4 py-2 font-medium">
-                          Latest job
-                        </th>
-                        <th scope="col" className="px-4 py-2 font-medium">
-                          Output
-                        </th>
-                        <th scope="col" className="px-4 py-2 text-right font-medium">
-                          <span className="sr-only">Actions</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-100">
-                      {sourceMeetings.map((meeting: any) => (
-                        <tr key={meeting.id} className="align-top">
-                          <td className="whitespace-nowrap px-4 py-3 tabular-nums text-zinc-600">
-                            {formatDate(meeting.meeting_date, {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </td>
-                          <td className="min-w-[200px] px-4 py-3">
-                            <div className="font-medium text-zinc-900">
-                              {meeting.title}
-                            </div>
-                            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
-                              <span>
-                                {meeting.meeting_type || meeting.source_id}
-                              </span>
-                              <StatusBadge status={meeting.status} />
-                            </div>
-                          </td>
-                          <td className="min-w-[160px] px-4 py-3">
-                            {meeting.latest_job ? (
-                              <div className="space-y-1">
-                                <Link
-                                  to={`/admin/pipeline/jobs/${meeting.latest_job.id}`}
-                                  className="inline-flex items-center gap-2 text-zinc-900 hover:text-brand-700"
-                                >
-                                  <StatusBadge
-                                    status={meeting.latest_job.status}
-                                  />
-                                  <span className="tabular-nums hover:underline">
-                                    #{meeting.latest_job.id}
-                                  </span>
-                                </Link>
-                                <div className="text-xs text-zinc-500">
-                                  {formatJobType(meeting.latest_job.job_type)}
-                                  {meeting.latest_job.locked_at
-                                    ? ` · heartbeat ${formatRelativeTime(meeting.latest_job.locked_at)}`
-                                    : meeting.latest_job.requested_at
-                                      ? ` · queued ${formatRelativeTime(meeting.latest_job.requested_at)}`
-                                      : ""}
-                                </div>
-                                {meeting.latest_job.last_error && (
-                                  <div
-                                    className="max-w-[220px] truncate text-xs text-red-700"
-                                    title={meeting.latest_job.last_error}
-                                  >
-                                    {meeting.latest_job.last_error}
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-zinc-400">No job</span>
-                            )}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3">
-                            {meeting.ingested_meeting_id ? (
-                              <div className="space-y-1">
-                                <span className="tabular-nums text-emerald-700">
-                                  Meeting #{meeting.ingested_meeting_id}
-                                </span>
-                                <div className="text-xs tabular-nums text-zinc-500">
-                                  {meeting.document_count} docs ·{" "}
-                                  {meeting.section_count} sections
-                                </div>
-                              </div>
-                            ) : (
-                              <span className="text-zinc-400">Not yet</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex justify-end">
-                              <ButtonGroup>
-                                {!meeting.ingested_meeting_id && (
-                                  <Form method="post">
-                                    <input
-                                      type="hidden"
-                                      name="source_meeting_id"
-                                      value={meeting.id}
-                                    />
-                                    <Button
-                                      type="submit"
-                                      name="job_type"
-                                      value="ingest_meeting"
-                                      variant="outline"
-                                      size="sm"
-                                      disabled={isSubmitting}
-                                    >
-                                      Ingest
-                                    </Button>
-                                  </Form>
-                                )}
-                                {meeting.ingested_meeting_id && (
-                                  <Button asChild variant="outline" size="sm">
-                                    <Link
-                                      to={`/meetings/${meeting.ingested_meeting_id}`}
-                                    >
-                                      View
-                                    </Link>
-                                  </Button>
-                                )}
-                                {(meeting.ingested_meeting_id ||
-                                  (!meeting.ingested_meeting_id &&
-                                    meeting.video_url)) && (
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon-sm"
-                                        disabled={isSubmitting}
-                                        aria-label="More pipeline actions"
-                                      >
-                                        <Ellipsis />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuGroup>
-                                        {!meeting.ingested_meeting_id &&
-                                          meeting.video_url && (
-                                            <Form method="post">
-                                              <input
-                                                type="hidden"
-                                                name="source_meeting_id"
-                                                value={meeting.id}
-                                              />
-                                              <DropdownMenuItem asChild>
-                                                <button
-                                                  type="submit"
-                                                  name="job_type"
-                                                  value="sync_media"
-                                                  disabled={isSubmitting}
-                                                  className="w-full"
-                                                >
-                                                  Cache media
-                                                </button>
-                                              </DropdownMenuItem>
-                                            </Form>
-                                          )}
-                                        {meeting.ingested_meeting_id && (
-                                          <Form method="post">
-                                            <input
-                                              type="hidden"
-                                              name="source_meeting_id"
-                                              value={meeting.id}
-                                            />
-                                            <DropdownMenuItem asChild>
-                                              <button
-                                                type="submit"
-                                                name="job_type"
-                                                value="regenerate_summary"
-                                                disabled={isSubmitting}
-                                                className="w-full"
-                                              >
-                                                Regenerate summary
-                                              </button>
-                                            </DropdownMenuItem>
-                                          </Form>
-                                        )}
-                                        {meeting.ingested_meeting_id && (
-                                          <Form method="post">
-                                            <input
-                                              type="hidden"
-                                              name="source_meeting_id"
-                                              value={meeting.id}
-                                            />
-                                            <DropdownMenuItem asChild>
-                                              <button
-                                                type="submit"
-                                                name="job_type"
-                                                value="extract_documents"
-                                                disabled={isSubmitting}
-                                                className="w-full"
-                                              >
-                                                Rerun documents
-                                              </button>
-                                            </DropdownMenuItem>
-                                          </Form>
-                                        )}
-                                        {meeting.ingested_meeting_id &&
-                                          meeting.video_url && (
-                                            <Form method="post">
-                                              <input
-                                                type="hidden"
-                                                name="source_meeting_id"
-                                                value={meeting.id}
-                                              />
-                                              <DropdownMenuItem asChild>
-                                                <button
-                                                  type="submit"
-                                                  name="job_type"
-                                                  value="diarize_meeting"
-                                                  disabled={isSubmitting}
-                                                  className="w-full"
-                                                >
-                                                  Rerun audio
-                                                </button>
-                                              </DropdownMenuItem>
-                                            </Form>
-                                          )}
-                                      </DropdownMenuGroup>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                )}
-                              </ButtonGroup>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="flex items-center justify-between gap-3 border-t border-zinc-100 px-4 py-3 text-sm text-zinc-500">
-                  <div className="tabular-nums">
-                    Page {page} of {totalPages}
-                    {sourceMeetingsPage.search
-                      ? ` for "${sourceMeetingsPage.search}"`
-                      : ""}
-                  </div>
-                  <div className="flex gap-2">
-                    {page <= 1 ? (
-                      <Button variant="outline" size="sm" disabled>
-                        Previous
-                      </Button>
-                    ) : (
-                      <Button asChild variant="outline" size="sm">
-                        <Link to={pageHref(Math.max(page - 1, 1))}>
-                          Previous
-                        </Link>
-                      </Button>
-                    )}
-                    {page >= totalPages ? (
-                      <Button variant="outline" size="sm" disabled>
-                        Next
-                      </Button>
-                    ) : (
-                      <Button asChild variant="outline" size="sm">
-                        <Link to={pageHref(Math.min(page + 1, totalPages))}>
-                          Next
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </section>
-
-          <aside className="min-w-0 space-y-8">
-            <section aria-labelledby="jobs-heading">
-              <div className="mb-3">
-                <h2
-                  id="jobs-heading"
-                  className="text-lg font-semibold text-zinc-900"
-                >
-                  Jobs
-                </h2>
-                <p className="text-sm tabular-nums text-zinc-500">
-                  {counts.jobRunning.toLocaleString()} running ·{" "}
-                  {counts.jobQueued.toLocaleString()} queued ·{" "}
-                  {counts.jobSucceeded.toLocaleString()} done
-                </p>
-              </div>
-              {jobs.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
-                  No jobs queued yet.
-                </div>
-              ) : (
-                <ul className={cn(card, "divide-y divide-zinc-100")}>
-                  {jobs.map((job: any) => (
-                    <li key={job.id} className="px-4 py-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <Link
-                          to={`/admin/pipeline/jobs/${job.id}`}
-                          className="min-w-0 text-sm font-medium text-zinc-900 hover:text-brand-700 hover:underline"
-                        >
-                          <span className="tabular-nums text-zinc-500">
-                            #{job.id}
-                          </span>{" "}
-                          {formatJobType(job.job_type)}
-                        </Link>
-                        <StatusBadge status={job.status} />
-                      </div>
-                      <div className="mt-0.5 text-xs text-zinc-500">
-                        {jobLifecycleSummary(job)}
-                        {job.requested_by ? ` by ${job.requested_by}` : ""}
-                        {job.status === "running" && job.locked_at
-                          ? ` · heartbeat ${formatRelativeTime(job.locked_at)}`
-                          : ""}
-                      </div>
-                      {job.last_error && (
-                        <p className="mt-1 line-clamp-2 text-xs text-red-700">
-                          {job.last_error}
-                        </p>
+          {events.length > 0 && (
+            <details className="group mt-3">
+              <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-zinc-500 hover:text-brand-700 [&::-webkit-details-marker]:hidden">
+                <ChevronDown
+                  className="h-4 w-4 -rotate-90 transition-transform group-open:rotate-0"
+                  aria-hidden="true"
+                />
+                Worker output
+              </summary>
+              <ol className="mt-2 max-h-80 overflow-auto rounded-xl border border-zinc-200 bg-zinc-50 p-3 font-mono text-xs leading-relaxed text-zinc-700">
+                {events.map((event: any) => (
+                  <li key={event.id} className="flex gap-3">
+                    <Link
+                      to={`/admin/pipeline/jobs/${event.job_id}`}
+                      className="shrink-0 tabular-nums text-zinc-400 hover:text-brand-700"
+                    >
+                      #{event.job_id}
+                    </Link>
+                    <span
+                      className={cn(
+                        "min-w-0 break-words",
+                        event.level === "error" && "text-red-700",
+                        event.level === "warning" && "text-amber-800",
                       )}
-                      {job.status === "queued" && (
-                        <Form method="post" className="mt-2">
-                          <input type="hidden" name="intent" value="cancel_job" />
-                          <input type="hidden" name="job_id" value={job.id} />
-                          <Button
-                            type="submit"
-                            variant="outline"
-                            size="sm"
-                            className="h-7"
-                            disabled={isSubmitting}
+                    >
+                      {event.message}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </details>
+          )}
+        </section>
+
+        <section aria-labelledby="inventory-heading" className="mt-10">
+          <SectionHeader
+            id="inventory-heading"
+            title="Meeting inventory"
+            meta={`${sourceMeetingsPage.total.toLocaleString()} upstream`}
+            action={
+              <Form method="get" className="w-full sm:w-72" role="search">
+                <SearchField
+                  name="q"
+                  value={search}
+                  onValueChange={setSearch}
+                  placeholder="Search title, type or source ID"
+                  aria-label="Search source meetings"
+                />
+              </Form>
+            }
+          />
+
+          {sourceMeetings.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+              {sourceMeetingsPage.search
+                ? `No source meetings match "${sourceMeetingsPage.search}".`
+                : "No source meetings recorded yet. Queue discovery to populate this list."}
+            </div>
+          ) : (
+            <div className={cn(card, "overflow-hidden")}>
+              <ul className="divide-y divide-zinc-100 md:hidden">
+                {sourceMeetings.map((meeting: any) => (
+                  <li key={meeting.id} className="flex items-start gap-3 px-4 py-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-zinc-900">
+                        {meeting.title}
+                      </div>
+                      <div className="text-xs tabular-nums text-zinc-500">
+                        {meetingSubtitle(meeting)}
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums">
+                        <StatusBadge status={meeting.status} />
+                        <MeetingOutput meeting={meeting} />
+                        {meeting.latest_job?.status === "failed" && (
+                          <Link
+                            to={`/admin/pipeline/jobs/${meeting.latest_job.id}`}
+                            className="font-medium text-red-700 hover:underline"
                           >
-                            Cancel
-                          </Button>
-                        </Form>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-
-            <section aria-labelledby="events-heading">
-              <div className="mb-3">
-                <h2
-                  id="events-heading"
-                  className="text-lg font-semibold text-zinc-900"
-                >
-                  Worker events
-                </h2>
-                <p className="text-sm text-zinc-500">
-                  Latest events for the visible jobs.
-                </p>
-              </div>
-              {events.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
-                  No worker events yet.
-                </div>
-              ) : (
-                <ul className={cn(card, "divide-y divide-zinc-100")}>
-                  {events.slice(0, 10).map((event: any) => (
-                    <li key={event.id} className="px-4 py-2.5 text-sm">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="line-clamp-2 text-zinc-800">
-                          {event.message}
-                        </div>
-                        {event.level && event.level !== "info" && (
-                          <Badge variant={levelTones[event.level] ?? "muted"}>
-                            {formatStatus(event.level)}
-                          </Badge>
+                            Job failed
+                          </Link>
                         )}
                       </div>
-                      <div className="mt-0.5 text-xs text-zinc-500">
-                        <Link
-                          to={`/admin/pipeline/jobs/${event.job_id}`}
-                          className="tabular-nums hover:text-brand-700 hover:underline"
-                        >
-                          Job #{event.job_id}
-                        </Link>{" "}
-                        · {formatRelativeTime(event.created_at)}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          </aside>
-        </div>
+                    </div>
+                    <MeetingActions meeting={meeting} isSubmitting={isSubmitting} />
+                  </li>
+                ))}
+              </ul>
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full text-sm">
+                  <thead className="border-b border-zinc-200 text-left text-xs text-zinc-500">
+                    <tr>
+                      <th scope="col" className="px-4 py-2.5 font-medium">
+                        Meeting
+                      </th>
+                      <th scope="col" className="px-4 py-2.5 font-medium">
+                        Stage
+                      </th>
+                      <th scope="col" className="px-4 py-2.5 font-medium">
+                        Output
+                      </th>
+                      <th scope="col" className="px-4 py-2.5 font-medium">
+                        Latest job
+                      </th>
+                      <th scope="col" className="px-4 py-2.5">
+                        <span className="sr-only">Actions</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100">
+                    {sourceMeetings.map((meeting: any) => (
+                      <tr key={meeting.id} className="align-middle">
+                        <td className="min-w-[240px] px-4 py-3">
+                          <div className="font-medium text-zinc-900">
+                            {meeting.title}
+                          </div>
+                          <div className="text-xs tabular-nums text-zinc-500">
+                            {meetingSubtitle(meeting)}
+                          </div>
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3">
+                          <StatusBadge status={meeting.status} />
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-xs tabular-nums">
+                          <MeetingOutput meeting={meeting} />
+                        </td>
+                        <td className="min-w-[150px] px-4 py-3">
+                          <LatestJob job={meeting.latest_job} />
+                        </td>
+                        <td className="px-4 py-3">
+                          <MeetingActions
+                            meeting={meeting}
+                            isSubmitting={isSubmitting}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex items-center justify-between gap-3 border-t border-zinc-100 px-4 py-3 text-sm text-zinc-500">
+                <div className="tabular-nums">
+                  Page {page} of {totalPages}
+                  {sourceMeetingsPage.search
+                    ? ` for "${sourceMeetingsPage.search}"`
+                    : ""}
+                </div>
+                <div className="flex gap-2">
+                  {page <= 1 ? (
+                    <Button variant="outline" size="sm" disabled>
+                      Previous
+                    </Button>
+                  ) : (
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={pageHref(Math.max(page - 1, 1))}>Previous</Link>
+                    </Button>
+                  )}
+                  {page >= totalPages ? (
+                    <Button variant="outline" size="sm" disabled>
+                      Next
+                    </Button>
+                  ) : (
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={pageHref(Math.min(page + 1, totalPages))}>
+                        Next
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
 
         <AiUsageSection usage={aiUsage} />
       </div>
