@@ -1,0 +1,45 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 117,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "a79279926e3bf907e2ac76be203d8d44ba6b371d7ecbc2d48bdd3c5b096e9a07",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20170814-Signed-Minutes-Council.pdf",
+  "source_file": "archive/langford/Council/2017/08/2017-08-14 Regular Council [legacy]/Minutes/20170814-Signed-Minutes-Council.pdf",
+  "source_date": "2017-08-14",
+  "source_text_sha256": "f217c8408a455e107f8dc2baaf247534c82c4e0363681ea7b978a8aec335a384",
+  "formal_inventory_sha256": "992e7b9b8ad940f98ed2d617ec577f3db4c39319216540fa768eb10692d33ddf",
+  "claim_inventory_sha256": "51fea3ba05998090ea6a17cffbf6591fa3ff11b12807fb5d283adc3c08a003e2",
+  "native_pages": [],
+  "reservations": [],
+  "documentary_preservations": [
+    {
+      "page": 23,
+      "native_text_sha256": "c6a6fd9592d07d5f67fad08156c9c8f5056db5647aff4ab3cbe1615574bf1b26",
+      "render_sha256": "a7210e4a9a4aec1190f6435957eb9fa768ec2c6278c175f8c4da625ecfd66568",
+      "motion_id": 1119,
+      "type": "reviewed_adjournment_narration_preservation",
+      "claim_sha256": "92dc7a7da3ee86a9a3bcc368529b0d209f47bf833f614275c339e9a49639a787",
+      "claim_row_sha256": "655675fe7a2bac3c22d0eead9c435c860fa542a77c6b42b5b8b1a982f20b1c00",
+      "legacy_text": "That the meeting be adjourned.",
+      "printed_body": "The Chair adjourned the meeting at 7:03 p.m.",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "native_passage": "The Chair adjourned th \neting at 7:03 p.m.",
+      "native_passage_start": 987,
+      "source_passage": "The Chair adjourned the meeting at 7:03 p.m.",
+      "source_passage_start": 56762,
+      "native_correction": {
+        "page": 23,
+        "native_text_sha256": "c6a6fd9592d07d5f67fad08156c9c8f5056db5647aff4ab3cbe1615574bf1b26",
+        "render_sha256": "a7210e4a9a4aec1190f6435957eb9fa768ec2c6278c175f8c4da625ecfd66568",
+        "native_quote": "The Chair adjourned th \neting at 7:03 p.m.",
+        "printed_quote": "The Chair adjourned the meeting at 7:03 p.m.",
+        "independent_review_sha256": "bac797b3d0e6a8cc21a3dc19a562a7c423384ef530f7371ecac3bdaac32b48ed",
+        "authority": "reviewed_documentary_native_witness_correction_only"
+      }
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3"
+}

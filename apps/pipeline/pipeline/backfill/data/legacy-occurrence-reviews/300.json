@@ -1,0 +1,35 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 300,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "8ea77bd64b8d86c0975f905b4cc7cc599c0dbb26cf2410db6b502f2c07a194af",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=13819",
+  "source_file": "archive/langford/Council/2022/02/2022-02-07 530pm Regular Council [27353380]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2022-02-07",
+  "source_text_sha256": "dcdf98a40ae4045d7067fd01f49b810d0eb94b868a53885fa48422cdc479a34c",
+  "formal_inventory_sha256": "7f549142337f4f2d7c4cb5a13f8e62cc449e78297a61632c863ca751677f5f82",
+  "claim_inventory_sha256": "ef7f802d0656e424a0a1ee6948c832620695c6050a2fd13594550bfb23d77e94",
+  "native_pages": [],
+  "reservations": [],
+  "documentary_preservations": [
+    {
+      "motion_id": 3041,
+      "claim_sha256": "384067e90d1599df1b36b0bc5b06d5e57a5509c77465b694f70da526e5e34cb1",
+      "claim_row_sha256": "2ecb655b6ce6a8d2d7db55cecce1599d69cb664587ae5cedc94fa733b3ea8f76",
+      "legacy_text": "THAT Council approve the agenda as presented.",
+      "printed_body": "THAT Council approve the agenda as presented.",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "page": 1,
+      "native_text_sha256": "ab3f50c5d82435091c8e2798ed41205fa32256dd0ec1264d4124deda5c16bf1c",
+      "render_sha256": "2a6bbb9670dca1006e8e06a22e81098b958d3a92de5a345902a48e6545cd341f",
+      "native_passage": "THATCouncil approve the agenda as presented.",
+      "native_passage_start": 972,
+      "source_passage": "THAT Council approve the agenda as presented.",
+      "source_passage_start": 1510
+    }
+  ],
+  "render_scale": 1.5,
+  "pymupdf_version": "1.27.2.3"
+}

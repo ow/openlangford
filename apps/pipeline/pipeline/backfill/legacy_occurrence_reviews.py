@@ -6,13 +6,21 @@ must never treat these reservations as full transcriptions or verified outcomes.
 import hashlib
 import json
 from pathlib import Path
+import re
 
 import fitz
 
-from pipeline.ingestion.source_claims import digest, project_claim, valid_inventory
+from pipeline.ingestion.source_claims import build_claim_inventory, digest, project_claim, valid_inventory
 
 STORE = Path(__file__).parent / 'data' / 'legacy-occurrence-reviews'
-ENROLLED = {144: 'd89cbb8546ec9133c6cf54fc032b9c361404c012a26479ac17531b8eb5eac25b', 125: 'ed381022fe20cb28bd165b12b38b791b08c388b09743cd6a57cbad86e47ff7c3', 215: 'b9256db3cfd9a3f794d27072f9b15231237984d867768f93f72a3aec6b67cee4'}
+ENROLLED = {
+    144: 'd89cbb8546ec9133c6cf54fc032b9c361404c012a26479ac17531b8eb5eac25b',
+    125: 'ed381022fe20cb28bd165b12b38b791b08c388b09743cd6a57cbad86e47ff7c3',
+    215: 'b9256db3cfd9a3f794d27072f9b15231237984d867768f93f72a3aec6b67cee4',
+    300: 'd68ab82dbe37bba53ffc0e492d6fa4d2427018c0b3a9b59ce1d9bacb77fbde01',
+    65: 'e6bccf818dfc6f7b9b84e9af57c3bdac9de243b079705f1cfb3dda02a86c9b41',
+    117: '5d9fd893e2f11293b6850acfff6aef3f04485f07e7ebd0226ceb9bc163541dcd',
+}
 
 
 def load_review(meeting_id):
@@ -27,9 +35,8 @@ def load_review(meeting_id):
     return json.loads(raw)
 
 
-def validate_review(review, *, source, inventory, meeting_id, project_ref, municipality_id, archive_root):
+def _validate_scope(review, *, source, inventory, meeting_id, project_ref, municipality_id, archive_root):
     """All claim/source changes invalidate the entire one-time reviewed batch."""
-    from pipeline.ingestion.canonical_motions import source_identity, source_motion_candidates, bound_source_motion
     if not valid_inventory(inventory, meeting_id):
         raise ValueError('Complete current claims required for legacy review')
     expected = {'schema': 'reviewed-legacy-occurrence-reservations-v1', 'meeting_id': meeting_id,
@@ -49,6 +56,13 @@ def validate_review(review, *, source, inventory, meeting_id, project_ref, munic
             for page in review['native_pages']:
                 if hashlib.sha256(document[page['page']-1].get_text().encode()).hexdigest() != page['native_text_sha256']:
                     raise ValueError('Reviewed native page evidence changed')
+    return original
+
+
+def validate_review(review, *, source, inventory, meeting_id, project_ref, municipality_id, archive_root):
+    from pipeline.ingestion.canonical_motions import source_identity, source_motion_candidates, bound_source_motion
+    _validate_scope(review, source=source, inventory=inventory, meeting_id=meeting_id,
+        project_ref=project_ref, municipality_id=municipality_id, archive_root=archive_root)
     claims = {row['id']: row for row in inventory['claims']}
     reserved, seen = {}, set()
     for entry in review['reservations']:
@@ -72,3 +86,191 @@ def validate_review(review, *, source, inventory, meeting_id, project_ref, munic
                               'review_sha256': digest(review), 'inventory_sha256': inventory['fingerprint']}
         seen.add(key)
     return reserved
+
+
+def full_row_fingerprint(row):
+    """Bind every field, including native DB timestamps/decimals and manual meta.
+
+    Snapshot JSON uses the same default=str representation as the guarded
+    operator; semantic claim fingerprints intentionally remain unchanged.
+    """
+    return hashlib.sha256(json.dumps(row, sort_keys=True, separators=(',', ':'),
+        ensure_ascii=False, default=str).encode()).hexdigest()
+
+
+def _literal_spans(text, body):
+    # Only whitespace may differ from the complete reviewed printed body.
+    # Case, punctuation and every non-whitespace character remain literal.
+    letters = ''.join(body.split())
+    if not letters:
+        return []
+    pattern = r'\s*'.join(re.escape(char) for char in letters)
+    return [(match.start(), match.end()) for match in re.finditer(pattern, text)]
+
+
+_ADJOURNMENT_LEGACY = re.compile(r'That (?:the )?meeting be adjourned\.', re.I)
+_ADJOURNMENT_NARRATION = re.compile(r'The Chair adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
+_ADJOURNMENT_COMPACT = re.compile(r'TheChairadjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
+
+
+def _reviewed_native_correction(entry, source, meeting, archive_root, project_ref, municipality_id):
+    """A typed event correction must live in the separately enrolled source review."""
+    from pipeline.backfill import reviewed_sources
+    path = reviewed_sources.STORE / f"{meeting['id']}.json"
+    expected = reviewed_sources.ENROLLED.get(meeting['id'])
+    if (not expected or reviewed_sources.STORE.is_symlink() or path.is_symlink()
+            or not path.resolve().is_relative_to(reviewed_sources.STORE.resolve())):
+        raise ValueError('Native documentary correction source review not enrolled')
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected:
+        raise ValueError('Enrolled native documentary correction review changed')
+    admission = json.loads(raw)
+    reviewed_sources.validate_source_review(admission, meeting=meeting, root=archive_root,
+        project_ref=project_ref, municipality_id=municipality_id)
+    proof = source.get('source_review_evidence', {})
+    correction = entry['native_correction']
+    independent = correction.get('independent_review_sha256', '')
+    if (admission.get('mode') != 'reviewed_native_image_decisions'
+            or source.get('source_format') != 'original_pdf_reviewed_image_decisions'
+            or any(admission.get(k) != source.get(v) for k,v in (('source_sha256','source_sha256'),
+                ('selected_file','source_file'),('source_url','source_url')))
+            or proof.get('review_sha256') != digest(admission)
+            or proof.get('mode') != admission['mode']
+            or not re.fullmatch(r'[a-f0-9]{64}', independent)
+            or independent != admission.get('independent_original_image_review_sha256')
+            or [c for c in admission.get('documentary_native_corrections', [])
+                if c.get('page') == entry['page'] and c.get('native_quote') == entry['native_passage']] != [correction]
+            or correction.get('authority') != 'reviewed_documentary_native_witness_correction_only'
+            or correction.get('page') != entry['page']
+            or correction.get('native_quote') != entry['native_passage']
+            or correction.get('printed_quote') != entry['printed_body']
+            or any(correction.get(k) != entry[k] for k in ('native_text_sha256', 'render_sha256'))
+            or not any(p == {k: entry[k] for k in ('page', 'native_text_sha256', 'render_sha256')}
+                       for p in admission.get('pages', []))):
+        raise ValueError('Native documentary correction lacks enrolled independent image proof')
+    return correction
+
+
+def validate_documentary_preservations(review, *, source, inventory, current_rows, meeting,
+                                      project_ref, municipality_id, archive_root):
+    """Account reviewed nonformal legacy rows without motion or ballot authority.
+
+    These records never reserve a formal source key, never become a write, and
+    remain explicit documentary holds. Unknown outcomes must stay unknown.
+    The separate full-row fingerprint includes manual metadata omitted by the
+    ordinary semantic inventory. Any successful addition requires re-review.
+    """
+    entries = review.get('documentary_preservations', [])
+    if not entries:
+        return {}
+    original = _validate_scope(review, source=source, inventory=inventory, meeting_id=meeting['id'],
+        project_ref=project_ref, municipality_id=municipality_id, archive_root=archive_root)
+    if (source.get('local_date') != meeting['meeting_date'] or not project_ref or municipality_id is None
+            or original.suffix.lower() != '.pdf' or fitz.VersionBind != review.get('pymupdf_version')
+            or review.get('render_scale') not in (1.5, 2, 3, 4)):
+        raise ValueError('Documentary original/date/render scope changed')
+    rows = {row['id']: row for row in current_rows}
+    if len(rows) != len(current_rows) or build_claim_inventory(current_rows, meeting_id=meeting['id'], expected_count=len(current_rows)) != inventory:
+        raise ValueError('Complete current documentary rows required')
+    from pipeline.ingestion.canonical_motions import bound_source_motion, source_motion_candidates
+    from pipeline.ingestion.source_occurrences import formal_inventory
+    from pipeline.ingestion.vote_evidence import normalize_text
+    formal = formal_inventory(source)['envelopes']
+    preserved = {}
+    with fitz.open(original) as document:
+        native_pages = [page.get_text() for page in document]
+        native_text = '\f'.join(native_pages)
+        for entry in entries:
+            row = rows.get(entry['motion_id'])
+            if (not row or digest(project_claim(row)) != entry['claim_sha256']
+                    or full_row_fingerprint(row) != entry['claim_row_sha256']
+                    or row['text_content'] != entry['legacy_text']):
+                raise ValueError('Reviewed documentary row changed')
+            kind = entry.get('type', 'reviewed_literal_documentary_preservation')
+            if kind == 'reviewed_literal_documentary_preservation':
+                if entry['printed_body'] != row['text_content']:
+                    raise ValueError('Literal documentary body differs from legacy claim')
+            elif kind == 'reviewed_adjournment_narration_preservation':
+                if (not _ADJOURNMENT_LEGACY.fullmatch(row['text_content'])
+                        or not _ADJOURNMENT_NARRATION.fullmatch(entry['printed_body'])
+                        or len(_ADJOURNMENT_COMPACT.findall(''.join(source['text'].split()))) != 1
+                        or any(other['id'] != row['id'] and _ADJOURNMENT_LEGACY.fullmatch(other['text_content'])
+                               for other in current_rows)):
+                    raise ValueError('Reviewed adjournment narration is not a unique bounded documentary correspondence')
+            else:
+                raise ValueError('Unsupported documentary preservation type')
+            if (bound_source_motion(row, source, meeting['id'], inventory) is not None
+                    or source_motion_candidates(source, row['text_content'])
+                    or any(normalize_text(e.get('body_view', e.get('body', ''))) == normalize_text(row['text_content']) for e in formal)):
+                raise ValueError('Documentary legacy row owns a formal occurrence')
+            if (entry['authority'] != 'documentary_preservation_only' or entry['result_policy'] != 'preserve_unknown'
+                    or row.get('result') is not None or row.get('mover_id') is not None or row.get('seconder_id') is not None
+                    or row['id'] in preserved
+                    or any(key in entry for key in ('source_identity', 'source_key', 'raw_block_sha256'))
+                    or any((row.get('meta') or {}).get(key) for key in (
+                        'canonical_source_motion', 'source_motion', 'operative_motion_body', 'full_transcription_validation',
+                        'ballot_reconstruction', 'vote_record', 'prior_vote_record', 'prior_ballot_proof', 'pending_ballot_proof',
+                        'source_legacy_binding', 'source_motion_correction', 'canonical_text_restoration', 'canonical_text_restoration_history'))
+                    or any(other['id'] != row['id'] and normalize_text(other['text_content']) == normalize_text(row['text_content'])
+                           for other in current_rows)):
+                raise ValueError('Documentary claim has competing or formal authority')
+            page_number = entry['page']
+            if not isinstance(page_number, int) or not 1 <= page_number <= len(document):
+                raise ValueError('Reviewed documentary page missing')
+            page = document[page_number-1]
+            native = native_pages[page_number-1]
+            scale = review['render_scale']
+            if (hashlib.sha256(native.encode()).hexdigest() != entry['native_text_sha256']
+                    or hashlib.sha256(page.get_pixmap(matrix=fitz.Matrix(scale, scale)).tobytes('png')).hexdigest() != entry['render_sha256']):
+                raise ValueError('Reviewed documentary page evidence changed')
+            body = entry['printed_body']
+            if re.search(r'(?im)^\s*(?:MOVE(?:D)?(?:\s+BY)?\s*:|SECONDED(?:\s+BY)?\s*:|(?:Motion\s+)?(?:CARRIED|DEFEATED|WITHDRAWN|TABLED)\b)', body):
+                raise ValueError('Documentary body contains formal or outcome labels')
+            spans = _literal_spans(source['text'], body)
+            correction = None
+            if 'native_correction' in entry:
+                if kind != 'reviewed_adjournment_narration_preservation':
+                    raise ValueError('Literal documentary preservation cannot use native corrections')
+                correction = _reviewed_native_correction(entry, source, meeting, archive_root, project_ref, municipality_id)
+            native_body = correction['native_quote'] if correction else body
+            native_spans = _literal_spans(native, native_body)
+            if len(spans) != 1 or len(native_spans) != 1 or len(_literal_spans(native_text, native_body)) != 1:
+                raise ValueError('Documentary full body is absent or not unique')
+            if correction:
+                before = correction['native_quote']
+                if native_text.count(before) != 1 or native.count(before) != 1:
+                    raise ValueError('Native documentary correction before quote is not unique')
+                after_native = native_text.replace(before, correction['printed_quote'], 1)
+                if len(_ADJOURNMENT_COMPACT.findall(''.join(after_native.split()))) != 1:
+                    raise ValueError('Corrected documentary narration is not unique')
+            elif kind == 'reviewed_adjournment_narration_preservation' and len(_ADJOURNMENT_COMPACT.findall(''.join(native_text.split()))) != 1:
+                raise ValueError('Native documentary narration is not unique')
+            for text, passage, start, span, complete_body in (
+                    (source['text'], entry['source_passage'], entry['source_passage_start'], spans[0], body),
+                    (native, entry['native_passage'], entry['native_passage_start'], native_spans[0], native_body)):
+                if (not isinstance(start, int) or span != (start, start+len(passage))
+                        or text[start:start+len(passage)] != passage
+                        or ''.join(passage.split()) != ''.join(complete_body.split())):
+                    raise ValueError('Reviewed documentary complete passage changed')
+                line_start = text.rfind('\n', 0, start)+1
+                line_end = text.find('\n', start+len(passage))
+                if line_end < 0:
+                    line_end = len(text)
+                if text[line_start:start].strip() or text[start+len(passage):line_end].strip():
+                    raise ValueError('Documentary passage is not a complete printed line body')
+            start, stop = spans[0]
+            if any(start < envelope['outcome_end'] and envelope['source_start'] < stop for envelope in formal):
+                raise ValueError('Documentary passage overlaps formal authority')
+            # A corrupt/missing formal inventory must not let an actual parsed
+            # motion be relabelled documentary. Ignore post-outcome discussion.
+            for block in source.get('blocks', []):
+                block_start = source['text'].find(block['source_block'], block['source_offset'])
+                outcome = source['text'].find(block['outcome_quote'], block_start,
+                    block_start+len(block['source_block'])) if block_start >= 0 else -1
+                if block_start < 0 or outcome < 0:
+                    raise ValueError('Formal source boundaries unavailable for documentary review')
+                if start < outcome+len(block['outcome_quote']) and block_start < stop:
+                    raise ValueError('Documentary passage overlaps parsed formal motion')
+            preserved[row['id']] = {'type': kind, 'review': entry, 'review_sha256': digest(review),
+                'inventory_sha256': inventory['fingerprint']}
+    return preserved
