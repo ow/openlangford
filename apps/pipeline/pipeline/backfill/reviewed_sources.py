@@ -30,7 +30,7 @@ ENROLLED = {
     86: '433959b2389fecf540475f4713bdd369486c5aee3fea501d99c730f967cae035',
     125: 'f0c2cc7b09696130b1b8f65115d2c2291580301f3f1cd6faf823a5fd5e6e599f',
     282: '201f37a3898585f87d5151e89c9ca646d43932e0424d66b8db4b968ea99942b6',
-    144: '7b46190e4bd93effc9d0292d5d3c80a65dfae7aa25856796442e9c687873aab8',
+    144: '1b89118050d37b2e548acefbe88a295c581d3d9b1e1711fbc27412efa7ca4240',
 }
 
 
@@ -107,6 +107,29 @@ def source_from_review(review, *, meeting, root, people, cache_dir, project_ref,
                 raise ValueError('Reviewed native header changed')
         text=subprocess.run(['pdftotext','-layout',str(path),'-'],check=True,capture_output=True,text=True,timeout=40).stdout
         source_format='original_pdf_layout'
+        if review['mode']=='reviewed_native_image_corrections':
+            if fitz.VersionBind!=review['pymupdf_version'] or sha(text.encode())!=review['native_layout_sha256']:
+                raise ValueError('Reviewed native extraction changed')
+            native_pages=text.split('\f')
+            with fitz.open(path) as document:
+                if [p['page'] for p in review['pages']]!=list(range(1,len(document)+1)):
+                    raise ValueError('Reviewed native image pages incomplete')
+                for page in review['pages']:
+                    original=document[page['page']-1]
+                    render=original.get_pixmap(matrix=fitz.Matrix(review['render_scale'],review['render_scale']))
+                    if (sha(original.get_text().encode())!=page['native_text_sha256']
+                            or sha(render.tobytes('png'))!=page['render_sha256']):
+                        raise ValueError('Reviewed native image evidence changed')
+            for correction in review['text_corrections']:
+                page=correction['page'];before=correction['native_quote']
+                if (correction['authority']!='original_image_text_correction_only'
+                        or type(page) is not int or page<1 or page>len(review['pages'])
+                        or not before or native_pages[page-1].count(before)!=1 or text.count(before)!=1):
+                    raise ValueError('Reviewed native correction is not uniquely page-bound')
+                text=text.replace(before,correction['reviewed_quote'],1)
+            if sha(text.encode())!=review['corrected_text_sha256']:
+                raise ValueError('Reviewed image-corrected text changed')
+            source_format='original_pdf_reviewed_image_corrections'
     source=minutes_text_source(meeting,root=root,people=people,cache_dir=cache_dir,path=path,text=text,
                                source_format=source_format,source_sha256=review['source_sha256'])
     if source.get('error'):
@@ -123,6 +146,15 @@ def source_from_review(review, *, meeting, root, people, cache_dir, project_ref,
     if review.get('committee_scope'):
         source.update(reviewed_committee_scope=review['committee_scope'],present=[],header_attendance=None,
                       roster_unknown=['committee_scope_review_does_not_certify_roster'])
+    if review['mode']=='reviewed_native_image_corrections':
+        if digest(source['blocks'])!=review['parsed_blocks_sha256']:
+            raise ValueError('Reviewed image-corrected occurrences changed')
+        # Apply after any header-derived views. This view accounts for existing
+        # legacy occurrences only; it cannot certify new text, results, actors,
+        # attendance or individual ballots.
+        source.update(operative_views={},present=[],header_attendance=None,
+                      roster_unknown=['image_corrections_not_new_fact_or_ballot_authority'])
+        proof['authority']='legacy_occurrence_accounting_only'
     if review['mode']=='reviewed_scan':
         if digest(source['blocks'])!=review['parsed_blocks_sha256'] or sha(source['text'].encode())!=review['source_text_sha256']:
             raise ValueError('Reviewed scan parsing changed')

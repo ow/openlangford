@@ -12,11 +12,10 @@ import { civicToday } from "../lib/council-terms";
 import { getSupabasePublicClient, createSupabaseServerClient } from "../lib/supabase.server";
 import { getMunicipality } from "../services/municipality";
 import type { Municipality } from "../lib/types";
-import { HeroSection } from "../components/home/hero-section";
 import { IncomingCouncilSection } from "../components/home/incoming-council-section";
 import { getIncomingCouncil } from "../services/incoming-council";
-import { UpcomingMeetingSection } from "../components/home/upcoming-meeting-section";
-import { RecentMeetingSection } from "../components/home/recent-meeting-section";
+import { AskSection } from "../components/home/ask-section";
+import { HeroDecisions } from "../components/home/hero-decisions";
 import { ActiveMattersSection } from "../components/home/active-matters-section";
 import { DecisionsFeedSection } from "../components/home/decisions-feed-section";
 import { PublicNoticesSection } from "../components/home/public-notices-section";
@@ -63,9 +62,7 @@ export async function loader({ request }: { request: Request }) {
     return routeData({
       onboardingComplete,
       upcomingMeeting: data.upcomingMeeting,
-      recentMeeting: data.recentMeeting,
-      recentMeetingStats: data.recentMeetingStats,
-      recentMeetingDecisions: data.recentMeetingDecisions,
+      laterMeetings: data.laterMeetings,
       activeMatters: data.activeMatters,
       recentDecisions: data.recentDecisions,
       publicNotices,
@@ -81,9 +78,7 @@ export async function loader({ request }: { request: Request }) {
 export default function Home({ loaderData }: any) {
   const {
     upcomingMeeting,
-    recentMeeting,
-    recentMeetingStats,
-    recentMeetingDecisions,
+    laterMeetings,
     activeMatters,
     recentDecisions,
     publicNotices,
@@ -102,21 +97,19 @@ export default function Home({ loaderData }: any) {
   return (
     <div className="min-h-screen bg-zinc-50">
       {user && loaderData.onboardingComplete && <OnboardingCompleteNotice alertsAvailable={alertsAvailable} />}
-      <HeroSection shortName={shortName} user={user} />
+      <HeroDecisions
+        shortName={shortName}
+        decisions={recentDecisions}
+        upcoming={[upcomingMeeting, ...laterMeetings].filter(Boolean)}
+      />
       <IncomingCouncilSection council={incomingCouncil} />
 
       <div className="container mx-auto max-w-6xl px-4 py-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-3">
-          <div className="space-y-12 lg:col-span-2">
-            <RecentMeetingSection
-              meeting={recentMeeting}
-              stats={recentMeetingStats}
-              decisions={recentMeetingDecisions}
-            />
+          <div className="lg:col-span-2">
             <DecisionsFeedSection decisions={recentDecisions} />
           </div>
           <aside className="space-y-12">
-            <UpcomingMeetingSection meeting={upcomingMeeting} />
             <ActiveMattersSection matters={activeMatters} />
             <Suspense fallback={null}>
               <Await resolve={publicNotices} errorElement={null}>
@@ -126,6 +119,9 @@ export default function Home({ loaderData }: any) {
           </aside>
         </div>
       </div>
+
+      <AskSection shortName={shortName} />
     </div>
   );
 }
+
