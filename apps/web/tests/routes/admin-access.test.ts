@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createStaticHandler } from "react-router";
 import routes from "../../app/routes";
+import * as users from "~/routes/admin-users";
+import * as user from "~/routes/admin-user";
+import * as emails from "~/routes/admin-emails";
+import * as email from "~/routes/admin-email";
 import * as hub from "~/routes/admin";
 import * as legacy from "~/routes/admin-legacy";
 import * as people from "~/routes/admin-people";
@@ -16,6 +20,8 @@ vi.mock("~/lib/supabase.server", () => ({
   getSupabaseAdminClient: mocks.adminClient,
 }));
 const modules: Record<string, any> = {
+  "routes/admin-users.tsx": users, "routes/admin-user.tsx": user,
+  "routes/admin-emails.tsx": emails, "routes/admin-email.tsx": email,
   "routes/admin.tsx": hub, "routes/admin-legacy.ts": legacy,
   "routes/admin-people.tsx": people, "routes/admin-profiles.tsx": profiles,
   "routes/admin-matters.tsx": matters, "routes/admin-pipeline.tsx": pipeline,
@@ -25,7 +31,7 @@ const handler = createStaticHandler(routes.map(route => ({
   id: route.id ?? route.file, path: route.path ?? undefined, index: route.index,
   loader: modules[route.file]?.loader, action: modules[route.file]?.action,
 })));
-const paths = ["/admin", "/admin/pipeline", "/admin/pipeline/jobs/123", "/admin/matters", "/admin/profiles", "/admin/people", "/speaker-alias", "/admin-pipeline", "/admin-matters"];
+const paths = ["/admin/users", "/admin/users/11111111-1111-4111-8111-111111111111", "/admin/emails", "/admin/emails/22222222-2222-4222-8222-222222222222", "/admin", "/admin/pipeline", "/admin/pipeline/jobs/123", "/admin/matters", "/admin/profiles", "/admin/people", "/speaker-alias", "/admin-pipeline", "/admin-matters"];
 
 beforeEach(() => {
   vi.clearAllMocks();
