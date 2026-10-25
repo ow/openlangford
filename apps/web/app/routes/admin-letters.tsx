@@ -1,27 +1,44 @@
-import { useState } from "react";
-import { Form, Link, useNavigation } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useFetcher } from "react-router";
 import type { Route } from "./+types/admin-letters";
 import { requireAdmin } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Button } from "../components/ui/button";
 import { DetailHeader } from "../components/ui/detail-header";
 import { NativeSelect } from "../components/ui/native-select";
-import { displayTitle } from "../lib/display-text";
+import { displayTitle, matterTitle } from "../lib/display-text";
 import { documentPath, meetingPath } from "../lib/paths";
-import { formatDate } from "../lib/utils";
-import { placeHeldLetter, type UnplacedDocument } from "../lib/written";
+import { cn, formatDate } from "../lib/utils";
+import { addToItem, shortItemLabel, takeHeld, type UnplacedDocument, type WrittenLetter } from "../lib/written";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Letter placement | Open Langford" },
   { name: "robots", content: "noindex, nofollow" },
 ];
 
+type Supabase = ReturnType<typeof getSupabaseAdminClient>;
+
 export async function loader({ request }: Route.LoaderArgs) {
   await requireAdmin(request);
   return loadLetterQueue(getSupabaseAdminClient());
 }
 
-export async function loadLetterQueue(supabase: ReturnType<typeof getSupabaseAdminClient>) {
+/** The letter itself: from its own header line ("Submission: Name", "From: Name") when we can find it. */
+function excerptFor(text: string, who: string) {
+  const name = who.replace(/\s*\([^()]*\)\s*$/, "").split(",")[0].trim();
+  const surname = /^(A resident|Petition)/i.test(name) ? "" : name.split(/\s+/).at(-1) || "";
+  let start = 0;
+  if (surname.length > 2) {
+    const escaped = surname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const header = new RegExp(`^.*(?:submission|from|sender|name)\\s*:?[^\\n]*${escaped}.*$`, "im").exec(text);
+    const anyLine = new RegExp(`^.*${escaped}.*$`, "im").exec(text);
+    start = header?.index ?? anyLine?.index ?? 0;
+  }
+  const slice = text.slice(start, start + 1200).replace(/^#+\s*/gm, "").replace(/\*\*/g, "").replace(/\n{3,}/g, "\n\n").trim();
+  return slice + (start + 1200 < text.length ? "…" : "");
+}
+
+export async function loadLetterQueue(supabase: Supabase) {
   const { data: meetings, error } = await supabase
     .from("meetings")
     .select("id, slug, title, meeting_date, meta")
@@ -30,28 +47,106 @@ export async function loadLetterQueue(supabase: ReturnType<typeof getSupabaseAdm
   if (error) throw error;
 
   const meetingIds = (meetings || []).map((m) => m.id);
-  const { data: items, error: itemsError } = meetingIds.length
-    ? await supabase.from("agenda_items").select("id, meeting_id, item_order, title").in("meeting_id", meetingIds).order("item_order")
-    : { data: [] as any[], error: null };
+  const extractedIds = (meetings || []).flatMap((m) => Object.keys(m.meta?.written_unplaced || {}).map(Number));
+  const [{ data: items, error: itemsError }, sections] = await Promise.all([
+    meetingIds.length
+      ? supabase
+          .from("agenda_items")
+          .select("id, meeting_id, item_order, title, plain_english_summary, written:meta->written_participation, matters(id, slug, title, meta)")
+          .in("meeting_id", meetingIds)
+          .order("item_order")
+      : Promise.resolve({ data: [] as any[], error: null }),
+    (async () => {
+      const rows: any[] = [];
+      for (let i = 0; i < extractedIds.length; i += 100) {
+        const { data, error: sectionsError } = await supabase
+          .from("document_sections")
+          .select("extracted_document_id, section_text, section_order")
+          .in("extracted_document_id", extractedIds.slice(i, i + 100))
+          .order("section_order");
+        if (sectionsError) throw sectionsError;
+        rows.push(...(data || []));
+      }
+      return rows;
+    })(),
+  ]);
   if (itemsError) throw itemsError;
 
-  const letters = (meetings || []).flatMap((meeting) =>
-    Object.entries((meeting.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap(([extractedId, doc]) =>
-      doc.letters.map((letter) => ({
-        meeting: { id: meeting.id, slug: meeting.slug, title: meeting.title, meeting_date: meeting.meeting_date },
-        extractedId,
-        documentId: doc.document_id,
-        documentTitle: doc.title,
-        letter,
-        items: (items || [])
-          .filter((it) => it.meeting_id === meeting.id)
-          .map((it) => ({ id: it.id, label: `${it.item_order ? `${it.item_order} ` : ""}${displayTitle(it.title)}` })),
-      })),
-    ),
-  );
-  // Every suggestion under 15%: the model is effectively saying "none of these".
-  const likelyNone = (entry: (typeof letters)[number]) => (entry.letter.candidates[0]?.probability ?? 0) < 0.15;
-  return { letters: letters.filter((e) => !likelyNone(e)), unrelated: letters.filter(likelyNone) };
+  const textByDoc = new Map<number, string>();
+  for (const s of sections) textByDoc.set(s.extracted_document_id, `${textByDoc.get(s.extracted_document_id) || ""}\n\n${s.section_text || ""}`);
+
+  return {
+    meetings: (meetings || [])
+      .map((meeting) => {
+        const meetingItems = (items || []).filter((it: any) => it.meeting_id === meeting.id);
+        const entries = Object.entries((meeting.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap(
+          ([extractedId, doc]) =>
+            doc.letters.map((held) => {
+              const { key, candidates, ...letter } = held;
+              const top = candidates[0]?.probability ?? 0;
+              return {
+                id: `${extractedId}::${key}`,
+                documentId: doc.document_id,
+                documentTitle: doc.title || "Letters",
+                letter: letter as WrittenLetter,
+                candidates: candidates.map((c) => ({ itemId: c.item_id, probability: c.probability })),
+                likelyNone: top < 0.15,
+                excerpt: excerptFor(textByDoc.get(Number(extractedId)) || "", letter.who),
+              };
+            }),
+        );
+        const candidateIds = [...new Set(entries.flatMap((e) => e.candidates.map((c) => c.itemId)))];
+        const itemInfo = candidateIds
+          .map((id) => meetingItems.find((it: any) => it.id === id))
+          .filter(Boolean)
+          .map((it: any) => ({
+            id: it.id as number,
+            label: shortItemLabel(it.item_order, displayTitle(it.title)),
+            title: displayTitle(it.title),
+            summary: (it.plain_english_summary as string | null) || null,
+            matter: it.matters ? { slug: it.matters.slug as string | null, id: it.matters.id as number, title: matterTitle(it.matters) } : null,
+            placed: (it.written?.documents || []).reduce((n: number, d: any) => n + (d.letters?.length || 0), 0) as number,
+            suggested: entries.filter((e) => !e.likelyNone && e.candidates[0]?.itemId === it.id).map((e) => e.id),
+          }))
+          .sort((a, b) => b.suggested.length - a.suggested.length);
+        return {
+          id: meeting.id as number,
+          slug: meeting.slug as string | null,
+          title: meeting.title as string,
+          meeting_date: meeting.meeting_date as string,
+          entries,
+          items: itemInfo,
+          allItems: meetingItems.map((it: any) => ({ id: it.id as number, label: shortItemLabel(it.item_order, displayTitle(it.title), 70) })),
+        };
+      })
+      .filter((m) => m.entries.length > 0)
+      .sort((a, b) => b.entries.length - a.entries.length),
+  };
+}
+
+/**
+ * Read-modify-write guarded by a revision number in meta, so fast clicks on
+ * letters from the same meeting can't overwrite each other.
+ */
+async function guardedUpdate(
+  supabase: Supabase,
+  table: "meetings" | "agenda_items",
+  id: number,
+  mutate: (meta: Record<string, any>) => Record<string, any> | null,
+) {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const { data, error } = await supabase.from(table).select("id, meta").eq("id", id).single();
+    if (error) throw error;
+    const next = mutate(data.meta || {});
+    if (!next) return null;
+    const rev = Number(data.meta?.written_rev || 0);
+    let query = supabase.from(table).update({ meta: { ...next, written_rev: rev + 1 } }).eq("id", id);
+    query = rev ? query.eq("meta->>written_rev", String(rev)) : query.is("meta->>written_rev", null);
+    const { data: rows, error: updateError } = await query.select("id");
+    if (updateError) throw updateError;
+    if (rows?.length) return next;
+  }
+  throw new Error("Someone else is editing this meeting; try again.");
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -59,179 +154,280 @@ export async function action({ request }: Route.ActionArgs) {
   const supabase = getSupabaseAdminClient();
   const form = await request.formData();
   const meetingId = Number(form.get("meeting_id"));
-  const extractedId = String(form.get("extracted_id") || "");
-  const key = String(form.get("key") || "");
   const intent = String(form.get("intent") || "");
-  if (intent === "dismiss_group") {
-    const keys = form.getAll("keys").map(String);
-    const { data: meeting, error } = await supabase.from("meetings").select("id, meta").eq("id", meetingId).single();
-    if (error) return { error: error.message };
-    let meta = meeting.meta;
-    for (const groupKey of keys) {
-      const placed = placeHeldLetter(meta, null, extractedId, groupKey, null);
-      if (placed) meta = placed.meetingMeta;
+  const entries = form.getAll("entry").map(String);
+  const itemId = intent === "dismiss" ? null : Number(form.get("item")) || null;
+  if (!meetingId || !entries.length) return { error: "Missing letter.", entries };
+  if (intent !== "dismiss" && intent !== "place") return { error: "Unknown action.", entries };
+  if (intent === "place" && !itemId) return { error: "Choose an agenda item.", entries };
+
+  try {
+    if (itemId) {
+      const { data: item, error } = await supabase.from("agenda_items").select("meeting_id").eq("id", itemId).single();
+      if (error) throw error;
+      if (item.meeting_id !== meetingId) return { error: "That item belongs to another meeting.", entries };
     }
-    const { error: saveError } = await supabase.from("meetings").update({ meta }).eq("id", meetingId);
-    if (saveError) return { error: saveError.message };
-    return { ok: `${keys.length} ${keys.length === 1 ? "letter" : "letters"} left off the meeting page.` };
+
+    // 1. Take the letters off the meeting's queue (and remember the decision).
+    const taken = new Map<string, { source: UnplacedDocument; letters: WrittenLetter[] }>();
+    const updated = await guardedUpdate(supabase, "meetings", meetingId, (meta) => {
+      taken.clear();
+      let next: Record<string, any> = meta;
+      for (const entry of entries) {
+        const [extractedId, key] = entry.split("::");
+        const result = takeHeld(next, extractedId, key, itemId);
+        if (!result) continue;
+        next = result.meetingMeta;
+        const group = taken.get(extractedId) || { source: result.source, letters: [] };
+        group.letters.push(result.letter);
+        taken.set(extractedId, group);
+      }
+      return taken.size ? next : null;
+    });
+    // Already decided (e.g. a double click): nothing to undo on the page.
+    if (!updated) return { ok: true, count: 0, entries };
+
+    // 2. Put them on the item.
+    if (itemId) {
+      await guardedUpdate(supabase, "agenda_items", itemId, (meta) =>
+        [...taken.entries()].reduce((acc, [extractedId, group]) => addToItem(acc, extractedId, group.source, group.letters), meta),
+      );
+    }
+    const count = [...taken.values()].reduce((n, g) => n + g.letters.length, 0);
+    return { ok: true, count, entries };
+  } catch (error: any) {
+    return { error: error?.message || "Couldn't save.", entries };
   }
-  const choice = String(form.get("item") || "");
-  const other = String(form.get("other_item") || "");
-  const itemId = intent === "dismiss" ? null : Number(choice === "__other" ? other : choice);
-  if (!meetingId || !extractedId || !key) return { error: "Missing letter." };
-  if (intent !== "dismiss" && !itemId) return { error: "Choose an agenda item, or mark it as not about any item." };
-
-  const [{ data: meeting, error: meetingError }, { data: item, error: itemError }] = await Promise.all([
-    supabase.from("meetings").select("id, meta").eq("id", meetingId).single(),
-    itemId
-      ? supabase.from("agenda_items").select("id, meeting_id, meta").eq("id", itemId).single()
-      : Promise.resolve({ data: null, error: null }),
-  ]);
-  if (meetingError) return { error: meetingError.message };
-  if (itemError) return { error: itemError.message };
-  if (item && item.meeting_id !== meetingId) return { error: "That item belongs to another meeting." };
-
-  const placed = placeHeldLetter(meeting.meta, item?.meta ?? null, extractedId, key, itemId);
-  if (!placed) return { error: "That letter was already placed." };
-
-  if (item && placed.itemMeta) {
-    const { error } = await supabase.from("agenda_items").update({ meta: placed.itemMeta }).eq("id", item.id);
-    if (error) return { error: error.message };
-  }
-  const { error } = await supabase.from("meetings").update({ meta: placed.meetingMeta }).eq("id", meetingId);
-  if (error) return { error: error.message };
-  return { ok: itemId ? "Letter placed." : "Letter left off the meeting page." };
 }
 
-function LetterCard({ entry, busy }: { entry: any; busy: boolean }) {
-  const { letter, meeting } = entry;
-  const [choice, setChoice] = useState<string>(letter.candidates[0] ? String(letter.candidates[0].item_id) : "__other");
+/** Decisions update the page optimistically; don't reload the whole queue after each one. */
+export function shouldRevalidate({ formMethod, defaultShouldRevalidate }: { formMethod?: string; defaultShouldRevalidate: boolean }) {
+  return formMethod ? false : defaultShouldRevalidate;
+}
+
+type Queue = Awaited<ReturnType<typeof loadLetterQueue>>;
+type MeetingGroup = Queue["meetings"][number];
+type Entry = MeetingGroup["entries"][number];
+type Handlers = { hide: (ids: string[]) => void; restore: (ids: string[], error: string) => void };
+
+const POSITION: Record<string, { label: string; tone: string }> = {
+  supports: { label: "Supports", tone: "text-emerald-700" },
+  opposes: { label: "Opposes", tone: "text-red-700" },
+  concerned: { label: "Concerned", tone: "text-amber-700" },
+  asks: { label: "Asks", tone: "text-zinc-600" },
+  mixed: { label: "Mixed", tone: "text-zinc-600" },
+};
+
+/** Submits in the background; rows hide immediately and come back if the save fails. */
+function useDecision(meetingId: number, ids: string[], handlers: Handlers) {
+  const fetcher = useFetcher<typeof action>();
+  useEffect(() => {
+    const data = fetcher.data as { error?: string; entries?: string[] } | undefined;
+    if (fetcher.state === "idle" && data?.error) handlers.restore(data.entries || ids, data.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.state, fetcher.data]);
+  return (intent: "place" | "dismiss", item?: number) => {
+    if (!ids.length) return;
+    handlers.hide(ids);
+    const data = new FormData();
+    data.set("intent", intent);
+    data.set("meeting_id", String(meetingId));
+    if (item) data.set("item", String(item));
+    ids.forEach((id) => data.append("entry", id));
+    fetcher.submit(data, { method: "post" });
+  };
+}
+
+function SuggestedItem({ meeting, item, hidden, handlers }: { meeting: MeetingGroup; item: MeetingGroup["items"][number]; hidden: Set<string>; handlers: Handlers }) {
+  const remaining = item.suggested.filter((id) => !hidden.has(id));
+  const decide = useDecision(meeting.id, remaining, handlers);
   return (
-    <li className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-      <div className="px-5 pt-4">
-        <p className="text-sm text-zinc-500">
-          <Link to={meetingPath(meeting)} className="hover:text-brand-700 hover:underline">
-            {meeting.title} · {formatDate(meeting.meeting_date, { month: "short", day: "numeric", year: "numeric" })}
-          </Link>
-          {" · "}
-          <Link to={documentPath(meeting, entry.documentId)} target="_blank" className="hover:text-brand-700 hover:underline">
-            {entry.documentTitle || "Letters"}
-          </Link>
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-700">
-          <span className="font-medium text-zinc-900">{letter.who}</span>
-          <span className="text-zinc-400"> · {letter.topic}</span>
-          {letter.sent && <span className="text-zinc-400"> · {letter.sent}</span>}
-          <br />
-          {letter.point}
+    <li className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-4 py-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium text-zinc-900" title={item.title}>{item.label}</p>
+        {item.summary && <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-zinc-500">{item.summary}</p>}
+        <p className="mt-1 text-xs text-zinc-500">
+          {item.matter && (
+            <>
+              Matter:{" "}
+              <Link to={`/matters/${item.matter.slug || item.matter.id}`} target="_blank" className="text-brand-700 hover:underline">
+                {item.matter.title}
+              </Link>
+              {" · "}
+            </>
+          )}
+          <span className="tabular-nums">{item.placed} {item.placed === 1 ? "letter" : "letters"} already here</span>
         </p>
       </div>
-
-      <Form method="post" className="mt-3 border-t border-zinc-100 px-5 py-4">
-        <input type="hidden" name="meeting_id" value={meeting.id} />
-        <input type="hidden" name="extracted_id" value={entry.extractedId} />
-        <input type="hidden" name="key" value={letter.key} />
-        <fieldset>
-          <legend className="mb-2 text-sm font-medium text-zinc-700">Which agenda item is this letter about?</legend>
-          <div className="space-y-1.5 text-sm">
-            {letter.candidates.map((c: any) => (
-              <label key={c.item_id} className="flex items-baseline gap-2">
-                <input
-                  type="radio"
-                  name="item"
-                  value={c.item_id}
-                  checked={choice === String(c.item_id)}
-                  onChange={() => setChoice(String(c.item_id))}
-                  className="accent-brand-600"
-                />
-                <span className="min-w-0 text-zinc-800">{displayTitle(c.title)}</span>
-                <span className="shrink-0 tabular-nums text-xs text-zinc-400">{Math.round(c.probability * 100)}%</span>
-              </label>
-            ))}
-            <label className="flex flex-wrap items-center gap-2">
-              <input
-                type="radio"
-                name="item"
-                value="__other"
-                checked={choice === "__other"}
-                onChange={() => setChoice("__other")}
-                className="accent-brand-600"
-              />
-              <span className="text-zinc-800">Another item</span>
-              {choice === "__other" && (
-                <NativeSelect name="other_item" className="h-8 max-w-md" defaultValue="">
-                  <option value="" disabled>
-                    Choose an item
-                  </option>
-                  {entry.items.map((it: any) => (
-                    <option key={it.id} value={it.id}>
-                      {it.label}
-                    </option>
-                  ))}
-                </NativeSelect>
-              )}
-            </label>
-          </div>
-        </fieldset>
-        <div className="mt-4 flex flex-wrap justify-end gap-2">
-          <Button type="submit" name="intent" value="dismiss" variant="outline" disabled={busy}>
-            Not about any item
-          </Button>
-          <Button type="submit" name="intent" value="place" disabled={busy}>
-            Place letter
-          </Button>
-        </div>
-      </Form>
+      {remaining.length > 0 && (
+        <Button type="button" size="sm" variant="outline" onClick={() => decide("place", item.id)}>
+          Place {remaining.length} suggested here
+        </Button>
+      )}
     </li>
   );
 }
 
-function UnrelatedGroup({ group, busy }: { group: any; busy: boolean }) {
-  const { meeting } = group.entries[0];
+function LetterRow({ meeting, entry, hidden, handlers }: { meeting: MeetingGroup; entry: Entry; hidden: boolean; handlers: Handlers }) {
+  const decide = useDecision(meeting.id, [entry.id], handlers);
+  const [other, setOther] = useState(false);
+  const [otherItem, setOtherItem] = useState("");
+  const labels = new Map(meeting.allItems.map((it) => [it.id, it.label]));
+  const position = POSITION[entry.letter.position];
   return (
-    <li className="rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
-      <p className="text-sm text-zinc-500">
-        <Link to={meetingPath(meeting)} className="hover:text-brand-700 hover:underline">
-          {meeting.title} · {formatDate(meeting.meeting_date, { month: "short", day: "numeric", year: "numeric" })}
-        </Link>
-        {" · "}
-        <Link to={documentPath(meeting, group.entries[0].documentId)} target="_blank" className="hover:text-brand-700 hover:underline">
-          {group.entries[0].documentTitle || "Letters"}
-        </Link>
-      </p>
-      <ul className="mt-2 space-y-1 text-sm text-zinc-700">
-        {group.entries.map((entry: any) => (
-          <li key={entry.letter.key}>
-            <span className="font-medium text-zinc-900">{entry.letter.who}</span>
-            <span className="text-zinc-500"> · {entry.letter.point}</span>
+    <li hidden={hidden} className="px-4 py-3">
+      <div className="flex flex-wrap items-baseline gap-x-2 text-sm">
+        <span className="font-medium text-zinc-900">{entry.letter.who}</span>
+        {position && <span className={cn("text-xs font-medium", position.tone)}>{position.label}</span>}
+        <span className="text-xs text-zinc-400">· {entry.letter.topic}</span>
+      </div>
+      <p className="mt-0.5 text-sm leading-relaxed text-zinc-700">{entry.letter.point}</p>
+      {entry.excerpt && (
+        <details className="group mt-1">
+          <summary className="cursor-pointer text-xs font-medium text-zinc-500 hover:text-brand-700">
+            <span className="group-open:hidden">Read the letter</span>
+            <span className="hidden group-open:inline">Hide the letter</span>
+          </summary>
+          <div className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded-lg bg-zinc-50 p-3 text-xs leading-relaxed text-zinc-700">
+            {entry.excerpt}
+            <div className="mt-2">
+              <Link to={documentPath(meeting, entry.documentId)} target="_blank" className="font-medium text-brand-700 hover:underline">
+                Open {entry.documentTitle}
+              </Link>
+            </div>
+          </div>
+        </details>
+      )}
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        {entry.candidates.slice(0, 2).map((c) => {
+          const label = labels.get(c.itemId);
+          if (!label) return null;
+          return (
+            <Button key={c.itemId} type="button" size="sm" variant="outline" onClick={() => decide("place", c.itemId)} title={label}>
+              {label}
+              <span className="ml-1.5 tabular-nums text-zinc-400">{Math.round(c.probability * 100)}%</span>
+            </Button>
+          );
+        })}
+        {other ? (
+          <span className="inline-flex items-center gap-2">
+            <NativeSelect className="h-8 max-w-xs" value={otherItem} onChange={(e) => setOtherItem(e.target.value)}>
+              <option value="" disabled>
+                Choose an item
+              </option>
+              {meeting.allItems.map((it) => (
+                <option key={it.id} value={it.id}>
+                  {it.label}
+                </option>
+              ))}
+            </NativeSelect>
+            <Button type="button" size="sm" disabled={!otherItem} onClick={() => decide("place", Number(otherItem))}>
+              Place
+            </Button>
+          </span>
+        ) : (
+          <Button type="button" size="sm" variant="ghost" onClick={() => setOther(true)}>
+            Other item…
+          </Button>
+        )}
+        <Button type="button" size="sm" variant="ghost" className="text-zinc-500" onClick={() => decide("dismiss")}>
+          Not about an item
+        </Button>
+      </div>
+    </li>
+  );
+}
+
+function NoItemGroup({ meeting, entries, handlers }: { meeting: MeetingGroup; entries: Entry[]; handlers: Handlers }) {
+  const decide = useDecision(meeting.id, entries.map((e) => e.id), handlers);
+  if (!entries.length) return null;
+  return (
+    <div className="border-t border-zinc-100 bg-zinc-50/60 px-4 py-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-xs font-medium text-zinc-500">Probably not about any agenda item ({entries.length})</p>
+        <Button type="button" size="sm" variant="outline" onClick={() => decide("dismiss")}>
+          Leave {entries.length === 1 ? "it" : `all ${entries.length}`} off
+        </Button>
+      </div>
+      <ul className="mt-1 space-y-0.5 text-xs text-zinc-600">
+        {entries.map((e) => (
+          <li key={e.id}>
+            <span className="font-medium text-zinc-800">{e.letter.who}</span> · {e.letter.point}
           </li>
         ))}
       </ul>
-      <Form method="post" className="mt-3 flex justify-end">
-        <input type="hidden" name="meeting_id" value={meeting.id} />
-        <input type="hidden" name="extracted_id" value={group.entries[0].extractedId} />
-        <input type="hidden" name="key" value="group" />
-        {group.entries.map((entry: any) => (
-          <input key={entry.letter.key} type="hidden" name="keys" value={entry.letter.key} />
-        ))}
-        <Button type="submit" name="intent" value="dismiss_group" variant="outline" size="sm" disabled={busy}>
-          Leave {group.entries.length === 1 ? "it" : `all ${group.entries.length}`} off
-        </Button>
-      </Form>
-    </li>
+    </div>
   );
 }
 
-export default function AdminLetters({ loaderData, actionData }: Route.ComponentProps) {
-  const { letters, unrelated } = loaderData;
-  const groups = Object.values(
-    unrelated.reduce((acc: Record<string, any>, entry: any) => {
-      const key = `${entry.meeting.id}-${entry.extractedId}`;
-      (acc[key] ||= { key, entries: [] }).entries.push(entry);
-      return acc;
-    }, {}),
+function MeetingQueue({ meeting, hidden, handlers }: { meeting: MeetingGroup; hidden: Set<string>; handlers: Handlers }) {
+  const visible = meeting.entries.filter((e) => !hidden.has(e.id));
+  if (!visible.length) return null;
+  const toDecide = meeting.entries.filter((e) => !e.likelyNone);
+  const noItem = visible.filter((e) => e.likelyNone);
+  const decideCount = toDecide.filter((e) => !hidden.has(e.id)).length;
+  return (
+    <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-zinc-100 px-4 py-3">
+        <h2 className="text-base font-semibold text-zinc-900">
+          <Link to={meetingPath(meeting)} target="_blank" className="hover:text-brand-700 hover:underline">
+            {meeting.title} · {formatDate(meeting.meeting_date, { month: "short", day: "numeric", year: "numeric" })}
+          </Link>
+        </h2>
+        <span className="text-sm tabular-nums text-zinc-500">
+          {visible.length} {visible.length === 1 ? "letter" : "letters"}
+        </span>
+      </div>
+
+      {decideCount > 0 && meeting.items.length > 0 && (
+        <div className="border-b border-zinc-100 bg-zinc-50/60">
+          <p className="px-4 pt-3 text-xs font-medium text-zinc-500">Suggested items</p>
+          <ul className="divide-y divide-zinc-100">
+            {meeting.items
+              .filter((item) => item.suggested.some((id) => !hidden.has(id)))
+              .map((item) => (
+                <SuggestedItem key={item.id} meeting={meeting} item={item} hidden={hidden} handlers={handlers} />
+              ))}
+          </ul>
+          {meeting.items.some((item) => !item.suggested.some((id) => !hidden.has(id))) && (
+            <details className="px-4 pb-3">
+              <summary className="cursor-pointer text-xs font-medium text-zinc-500 hover:text-brand-700">Other candidate items</summary>
+              <ul className="mt-1 divide-y divide-zinc-100">
+                {meeting.items
+                  .filter((item) => !item.suggested.some((id) => !hidden.has(id)))
+                  .map((item) => (
+                    <SuggestedItem key={item.id} meeting={meeting} item={item} hidden={hidden} handlers={handlers} />
+                  ))}
+              </ul>
+            </details>
+          )}
+        </div>
+      )}
+
+      <ul className="divide-y divide-zinc-100">
+        {toDecide.map((entry) => (
+          <LetterRow key={entry.id} meeting={meeting} entry={entry} hidden={hidden.has(entry.id)} handlers={handlers} />
+        ))}
+      </ul>
+      <NoItemGroup meeting={meeting} entries={noItem} handlers={handlers} />
+    </section>
   );
-  const busy = useNavigation().state !== "idle";
+}
+
+export default function AdminLetters({ loaderData }: Route.ComponentProps) {
+  const { meetings } = loaderData;
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [errors, setErrors] = useState<string[]>([]);
+  const handlers: Handlers = {
+    hide: (ids) => setHidden((prev) => new Set([...prev, ...ids])),
+    restore: (ids, error) => {
+      setHidden((prev) => new Set([...prev].filter((id) => !ids.includes(id))));
+      setErrors((prev) => [...prev.slice(-2), error]);
+    },
+  };
+  const all = meetings.flatMap((m) => m.entries);
+  const remaining = all.filter((e) => !hidden.has(e.id));
+  const toDecide = remaining.filter((e) => !e.likelyNone).length;
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -240,46 +436,28 @@ export default function AdminLetters({ loaderData, actionData }: Route.Component
           back={{ to: "/admin", label: "Admin" }}
           meta={[
             <span key="count" className="tabular-nums">
-              {letters.length} to place{unrelated.length > 0 ? ` · ${unrelated.length} probably not about an item` : ""}
+              {toDecide} to place · {remaining.length - toDecide} probably not about an item
+              {hidden.size > 0 ? ` · ${hidden.size} done this session` : ""}
             </span>,
           ]}
           title="Letter placement"
-          description="Residents' letters from agenda packages that the pipeline couldn't confidently match to an agenda item. Placed letters show under Written submissions on that item and its matter."
+          description="Residents' letters the pipeline couldn't confidently match to an agenda item, grouped by meeting. Decisions save in the background."
         />
 
-        {actionData && "error" in actionData && actionData.error && (
-          <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-            {actionData.error}
-          </p>
-        )}
-        {actionData && "ok" in actionData && actionData.ok && (
-          <p role="status" className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            {actionData.ok}
-          </p>
+        {errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {errors.at(-1)} The letter is back in the list.
+          </div>
         )}
 
-        {letters.length === 0 ? (
+        {remaining.length === 0 ? (
           <p className="text-sm text-zinc-500">Nothing to place.</p>
         ) : (
-          <ul className="space-y-6">
-            {letters.map((entry: any) => (
-              <LetterCard key={`${entry.meeting.id}-${entry.extractedId}-${entry.letter.key}`} entry={entry} busy={busy} />
+          <div className="space-y-6">
+            {meetings.map((meeting) => (
+              <MeetingQueue key={meeting.id} meeting={meeting} hidden={hidden} handlers={handlers} />
             ))}
-          </ul>
-        )}
-
-        {groups.length > 0 && (
-          <section className="mt-12">
-            <h2 className="text-lg font-semibold text-zinc-900">Probably not about any agenda item</h2>
-            <p className="mb-4 mt-1 text-sm text-zinc-500">
-              The model found no likely agenda item for these letters, often petitions or general requests to Council.
-            </p>
-            <ul className="space-y-4">
-              {(groups as any[]).map((group) => (
-                <UnrelatedGroup key={group.key} group={group} busy={busy} />
-              ))}
-            </ul>
-          </section>
+          </div>
         )}
       </div>
     </div>

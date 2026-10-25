@@ -28,13 +28,9 @@ export function writtenSources(written: WrittenParticipation | null | undefined)
   return (written?.documents || []).map((d) => ({ documentId: d.document_id, title: d.title }));
 }
 
-/**
- * Admin decision on a held letter: move it onto the chosen item (or drop it),
- * remember the decision so reruns respect it, and clear it from the queue.
- */
-export function placeHeldLetter(
+/** Remove a held letter from the meeting's queue and remember the decision. */
+export function takeHeld(
   meetingMeta: Record<string, any> | null | undefined,
-  itemMeta: Record<string, any> | null | undefined,
   extractedId: string,
   key: string,
   itemId: number | null,
@@ -54,25 +50,68 @@ export function placeHeldLetter(
     ...(meeting.written_placements || {}),
     [extractedId]: { ...(meeting.written_placements?.[extractedId] || {}), [key]: itemId },
   };
+  const { key: _key, candidates: _candidates, ...letter } = held;
+  return { meetingMeta: meeting, letter: letter as WrittenLetter, source };
+}
 
-  let item = itemMeta ? { ...itemMeta } : null;
-  if (itemId != null && item) {
-    const { key: _key, candidates: _candidates, ...letter } = held;
-    const written: WrittenParticipation = { ...(item.written_participation || {}) };
-    const documents = [...(written.documents || [])];
-    const index = documents.findIndex((d) => String(d.extracted_document_id) === extractedId);
-    if (index >= 0) documents[index] = { ...documents[index], letters: [...documents[index].letters, letter] };
-    else
-      documents.push({
-        extracted_document_id: Number(extractedId),
-        document_id: source.document_id,
-        title: source.title,
-        fingerprint: source.fingerprint,
-        letters: [letter],
-      });
-    item = { ...item, written_participation: { ...written, documents } };
+/** Add letters from one source document to an item's written participation. */
+export function addToItem(
+  itemMeta: Record<string, any> | null | undefined,
+  extractedId: string,
+  source: Pick<UnplacedDocument, "document_id" | "title" | "fingerprint">,
+  letters: WrittenLetter[],
+) {
+  const item = { ...(itemMeta || {}) };
+  const written: WrittenParticipation = { ...(item.written_participation || {}) };
+  const documents = [...(written.documents || [])];
+  const index = documents.findIndex((d) => String(d.extracted_document_id) === extractedId);
+  if (index >= 0) documents[index] = { ...documents[index], letters: [...documents[index].letters, ...letters] };
+  else
+    documents.push({
+      extracted_document_id: Number(extractedId),
+      document_id: source.document_id,
+      title: source.title,
+      fingerprint: source.fingerprint,
+      letters,
+    });
+  return { ...item, written_participation: { ...written, documents } };
+}
+
+/**
+ * Admin decision on a held letter: move it onto the chosen item (or drop it),
+ * remember the decision so reruns respect it, and clear it from the queue.
+ */
+export function placeHeldLetter(
+  meetingMeta: Record<string, any> | null | undefined,
+  itemMeta: Record<string, any> | null | undefined,
+  extractedId: string,
+  key: string,
+  itemId: number | null,
+) {
+  const taken = takeHeld(meetingMeta, extractedId, key, itemId);
+  if (!taken) return null;
+  const item = itemId != null && itemMeta ? addToItem(itemMeta, extractedId, taken.source, [taken.letter]) : itemMeta ? { ...itemMeta } : null;
+  return { meetingMeta: taken.meetingMeta, itemMeta: item };
+}
+
+/**
+ * A short label that keeps what tells similar items apart:
+ * BYLAW NO. 2008 "Langford Zoning Bylaw, Amendment No. 641, (808, 812 Arncote Avenue …)" -> "Bylaw 2008 · 808, 812 Arncote Avenue …".
+ */
+export function shortItemLabel(order: string | null | undefined, title: string, max = 60) {
+  let clean = title.replace(/\s+/g, " ").trim();
+  const bylaw = clean.match(/\bbylaw\s*(?:no\.?)?\s*(\d{3,5})\b/i);
+  const brackets = [...clean.matchAll(/\(([^()]{6,})\)/g)].map((m) => m[1]);
+  const stage = brackets.find((b) => /readings?|adoption|public hearing/i.test(b));
+  const subject = brackets.find((b) => b !== stage);
+  const quoted = clean.match(/["“]([^"”]+)["”]/)?.[1];
+  if (bylaw) {
+    const what = subject || quoted?.replace(/,?\s*Bylaw No\.?\s*\d+,?\s*\d{4}$/i, "") || "";
+    const parts = [`Bylaw ${bylaw[1]}`, stage?.toLowerCase(), what].filter(Boolean);
+    clean = parts.join(" · ");
   }
-  return { meetingMeta: meeting, itemMeta: item };
+  const text = clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
+  return order ? `${order} ${text}` : text;
 }
 
 function nameWords(who: string) {
