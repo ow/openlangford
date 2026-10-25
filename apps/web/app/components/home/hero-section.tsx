@@ -1,46 +1,46 @@
 import { useSiteFlags } from "../../lib/use-site-flags";
 import { Link } from "react-router";
-import { AskQuestion } from "../ask-question";
+import type { ComponentProps } from "react";
+import { RecentMeetingSection } from "./recent-meeting-section";
+import { UpcomingMeetingSection } from "./upcoming-meeting-section";
 
 interface HeroSectionProps {
   shortName: string;
   user: any;
+  recentMeeting: ComponentProps<typeof RecentMeetingSection>;
+  upcomingMeeting: ComponentProps<typeof UpcomingMeetingSection>["meeting"];
 }
 
-export function HeroSection({ shortName, user }: HeroSectionProps) {
+export function HeroSection({ shortName, user, recentMeeting, upcomingMeeting }: HeroSectionProps) {
   const { signupsEnabled } = useSiteFlags();
   return (
     <div className="relative bg-gradient-to-b from-brand-600 to-brand-700 text-white overflow-hidden">
-      {/* Map background with Ken Burns animation — subtle texture hint */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-brand-600/90 via-brand-700/80 to-brand-800/95" />
         <div className="absolute inset-0 bg-gradient-to-r from-brand-700/60 via-transparent to-brand-700/60" />
       </div>
 
-      <div className="relative container mx-auto px-4 py-12 md:py-16 max-w-5xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
+      <div className="relative container mx-auto max-w-6xl px-4 py-10 md:py-12">
+        <div className="mb-8 max-w-2xl">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">
             What's happening in {shortName}?
           </h1>
-          <p className="text-brand-100 text-base md:text-lg max-w-2xl mx-auto">
-            Explore council meetings, decisions, and debates. Get instant
-            answers analyzed from official records and transcripts.
+          <p className="text-brand-100 text-base md:text-lg">
+            The latest from council, from official records and transcripts.
           </p>
         </div>
 
-        {/* Prominent Ask Interface */}
-        <div className="max-w-5xl mx-auto">
-          <AskQuestion
-            title=""
-            placeholder={`Ask anything about ${shortName} council decisions...`}
-            className="bg-white text-zinc-900 shadow-2xl border-0"
-          />
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <RecentMeetingSection {...recentMeeting} inverse />
+          </div>
+          <UpcomingMeetingSection meeting={upcomingMeeting} inverse />
         </div>
 
         {/* Account CTA for logged-out users */}
         {!user && signupsEnabled && (
-          <div className="text-center mt-6">
+          <div className="mt-8">
             <Link
               to="/signup"
               className="inline-flex items-center text-sm text-brand-200 hover:text-white transition-colors underline underline-offset-2"

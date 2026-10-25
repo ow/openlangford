@@ -12,8 +12,7 @@ import type { Municipality } from "../lib/types";
 import { HeroSection } from "../components/home/hero-section";
 import { IncomingCouncilSection } from "../components/home/incoming-council-section";
 import { getIncomingCouncil } from "../services/incoming-council";
-import { UpcomingMeetingSection } from "../components/home/upcoming-meeting-section";
-import { RecentMeetingSection } from "../components/home/recent-meeting-section";
+import { AskSection } from "../components/home/ask-section";
 import { ActiveMattersSection } from "../components/home/active-matters-section";
 import { DecisionsFeedSection } from "../components/home/decisions-feed-section";
 import { PublicNoticesSection } from "../components/home/public-notices-section";
@@ -91,21 +90,24 @@ export default function Home({ loaderData }: any) {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <HeroSection shortName={shortName} user={user} />
+      <HeroSection
+        shortName={shortName}
+        user={user}
+        recentMeeting={{
+          meeting: recentMeeting,
+          stats: recentMeetingStats,
+          decisions: recentMeetingDecisions,
+        }}
+        upcomingMeeting={upcomingMeeting}
+      />
       <IncomingCouncilSection council={incomingCouncil} />
 
       <div className="container mx-auto max-w-6xl px-4 py-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-3">
-          <div className="space-y-12 lg:col-span-2">
-            <RecentMeetingSection
-              meeting={recentMeeting}
-              stats={recentMeetingStats}
-              decisions={recentMeetingDecisions}
-            />
+          <div className="lg:col-span-2">
             <DecisionsFeedSection decisions={recentDecisions} />
           </div>
           <aside className="space-y-12">
-            <UpcomingMeetingSection meeting={upcomingMeeting} />
             <ActiveMattersSection matters={activeMatters} />
             <Suspense fallback={null}>
               <Await resolve={publicNotices} errorElement={null}>
@@ -115,6 +117,8 @@ export default function Home({ loaderData }: any) {
           </aside>
         </div>
       </div>
+
+      <AskSection shortName={shortName} />
     </div>
   );
 }
