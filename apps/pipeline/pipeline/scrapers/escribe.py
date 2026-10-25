@@ -7,6 +7,7 @@ import hashlib
 import re
 import time
 from datetime import date, datetime, timezone
+from zoneinfo import ZoneInfo
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -14,6 +15,14 @@ from bs4 import BeautifulSoup
 
 from pipeline import config, utils
 from pipeline.scrapers.base import BaseScraper, MunicipalityConfig, ScrapedDocument, ScrapedMeeting
+
+
+# eSCRIBE's `Start` epoch is NOT a real UTC instant: the portal serialises the
+# Pacific wall-clock start time as if it were US Eastern (verified on all 258
+# Langford meetings: epoch - wall clock = +4h in PDT, +5h in PST). Reading the
+# epoch as UTC therefore rolls any meeting starting at/after 19:00 PST onto the
+# next calendar day. Reading it back in Eastern recovers the wall clock exactly.
+ESCRIBE_EPOCH_TZ = ZoneInfo("America/Toronto")
 
 
 class EscribeScraper(BaseScraper):
@@ -289,11 +298,12 @@ class EscribeScraper(BaseScraper):
         if official_date is not None:
             return official_date
 
-        # Preserve the legacy epoch fallback only when display dates are absent.
+        # Epoch fallback only when display dates are absent. See ESCRIBE_EPOCH_TZ:
+        # the epoch is Pacific wall-clock mislabelled as Eastern, not UTC.
         start = raw.get("Start") or ""
         match = re.search(r"/Date\((-?\d+)\)/", start)
         if match:
-            return datetime.fromtimestamp(int(match.group(1)) / 1000, tz=timezone.utc).date()
+            return datetime.fromtimestamp(int(match.group(1)) / 1000, tz=ESCRIBE_EPOCH_TZ).date()
         return None
 
     @staticmethod
