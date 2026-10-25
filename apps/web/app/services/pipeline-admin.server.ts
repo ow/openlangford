@@ -180,37 +180,23 @@ export async function getPipelineDashboard(
   >();
 
   if (ingestedMeetingIds.length > 0) {
-    const { data: docs, error: docsError } = await supabase
-      .from("documents")
-      .select("id, meeting_id")
-      .in("meeting_id", ingestedMeetingIds);
-    if (docsError) throw docsError;
+    // Count sections in the database: fetching section rows hit PostgREST's
+    // 1,000-row cap and silently undercounted busy pages.
+    const { data: meetings, error: readinessError } = await supabase
+      .from("meetings")
+      .select("id, documents(id, document_sections(count))")
+      .in("id", ingestedMeetingIds);
+    if (readinessError) throw readinessError;
 
-    const documentIds = (docs || []).map((doc: any) => doc.id);
-    const sectionCountsByDocumentId = new Map<number, number>();
-    if (documentIds.length > 0) {
-      const { data: sections, error: sectionsError } = await supabase
-        .from("document_sections")
-        .select("id, document_id")
-        .in("document_id", documentIds);
-      if (sectionsError) throw sectionsError;
-
-      for (const section of sections || []) {
-        sectionCountsByDocumentId.set(
-          section.document_id,
-          (sectionCountsByDocumentId.get(section.document_id) || 0) + 1,
-        );
-      }
-    }
-
-    for (const doc of docs || []) {
-      const current = readinessByMeetingId.get(doc.meeting_id) || {
-        documentCount: 0,
-        sectionCount: 0,
-      };
-      current.documentCount += 1;
-      current.sectionCount += sectionCountsByDocumentId.get(doc.id) || 0;
-      readinessByMeetingId.set(doc.meeting_id, current);
+    for (const meeting of meetings || []) {
+      const docs = (meeting as any).documents || [];
+      readinessByMeetingId.set(meeting.id, {
+        documentCount: docs.length,
+        sectionCount: docs.reduce(
+          (sum: number, doc: any) => sum + (doc.document_sections?.[0]?.count || 0),
+          0,
+        ),
+      });
     }
   }
 
