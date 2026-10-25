@@ -18,8 +18,13 @@ export type PipelineDashboardOptions = {
   pageSize?: number;
 };
 
+/**
+ * PostgREST counts the selected row value, so `select("*")` detoasts wide
+ * columns (documents.full_text, section embeddings) just to count rows. On a
+ * cold cache that exceeded the 8s statement timeout and 500'd the dashboard.
+ */
 async function exactCount(query: any, applyFilters?: (query: any) => any) {
-  let countQuery = query.select("*", {
+  let countQuery = query.select("id", {
     count: "exact",
     head: true,
   });
@@ -27,22 +32,6 @@ async function exactCount(query: any, applyFilters?: (query: any) => any) {
     countQuery = applyFilters(countQuery);
   }
   const { count, error } = await countQuery;
-  if (error) throw error;
-  return count || 0;
-}
-
-async function transcriptSegmentCount(
-  supabase: SupabaseClient,
-  municipalityId: number,
-) {
-  const { count, error } = await supabase
-    .from("transcript_segments")
-    .select("id, meetings!inner(slug, municipality_id)", {
-      count: "exact",
-      head: true,
-    })
-    .eq("meetings.municipality_id", municipalityId);
-
   if (error) throw error;
   return count || 0;
 }
@@ -72,14 +61,10 @@ export async function getPipelineDashboard(
 
   const [
     sourceTotal,
-    sourceDiscovered,
-    sourceDownloaded,
     sourceIngested,
     appMeetings,
-    appDocuments,
     appExtractedDocuments,
     appSections,
-    appTranscripts,
     jobQueued,
     jobRunning,
     jobSucceeded,
@@ -95,26 +80,11 @@ export async function getPipelineDashboard(
     exactCount(
       supabase.from("source_meetings"),
       (query) =>
-        query.eq("municipality_id", municipalityId).eq("status", "discovered"),
-    ),
-    exactCount(
-      supabase.from("source_meetings"),
-      (query) =>
-        query
-          .eq("municipality_id", municipalityId)
-          .eq("status", "documents_downloaded"),
-    ),
-    exactCount(
-      supabase.from("source_meetings"),
-      (query) =>
         query
           .eq("municipality_id", municipalityId)
           .not("ingested_meeting_id", "is", null),
     ),
     exactCount(supabase.from("meetings"), (query) =>
-      query.eq("municipality_id", municipalityId),
-    ),
-    exactCount(supabase.from("documents"), (query) =>
       query.eq("municipality_id", municipalityId),
     ),
     exactCount(supabase.from("extracted_documents"), (query) =>
@@ -124,7 +94,6 @@ export async function getPipelineDashboard(
       supabase.from("document_sections"),
       (query) => query.eq("municipality_id", municipalityId),
     ),
-    transcriptSegmentCount(supabase, municipalityId),
     exactCount(supabase.from("pipeline_jobs"), (query) =>
       query.eq("municipality_id", municipalityId).eq("status", "queued"),
     ),
@@ -281,15 +250,11 @@ export async function getPipelineDashboard(
     municipality,
     counts: {
       sourceTotal,
-      sourceDiscovered,
-      sourceDownloaded,
       sourceIngested,
       sourcePendingIngest: Math.max(sourceTotal - sourceIngested, 0),
       appMeetings,
-      appDocuments,
       appExtractedDocuments,
       appSections,
-      appTranscripts,
       jobQueued,
       jobRunning,
       jobSucceeded,
