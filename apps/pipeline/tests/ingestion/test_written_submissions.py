@@ -208,3 +208,37 @@ def test_letters_already_placed_describe_an_item():
     item = {"item_order": "3.c", "title": "Bylaw 1955 OCP amendment 2207 Millstream Rd",
             "context_letters": ["Western Speedway Rezoning", "Goldie Road connections"]}
     assert "Letters already placed here are about: Western Speedway Rezoning; Goldie Road connections" in _item_description(item)
+
+
+def test_decision_records_old_and_new():
+    from pipeline.ingestion.written_submissions import decision_record
+    assert decision_record(365) == {"item": 365, "by": "unknown"}
+    assert decision_record(None) == {"item": None, "by": "admin"}  # only admins ever dismissed
+    assert decision_record({"item": 5, "by": "admin"})["by"] == "admin"
+
+
+def test_old_and_new_decisions_are_both_honoured():
+    items = [{"id": 2, "title": "Bylaw 2037"}, {"id": 3, "title": "Bylaw 2040"}]
+    a = {"who": "A", "topic": "t", "point": "p"}
+    b = {"who": "B", "topic": "u", "point": "q"}
+    from pipeline.ingestion.written_submissions import letter_key
+    decisions = {letter_key(a): 3, letter_key(b): {"item": 2, "by": "admin"}}
+    placed, held = place_letters([a, b], items, linked_item_id=None, decide=lambda c, o: 1 / 0, decisions=decisions)
+    assert placed == {3: [a], 2: [b]} and held == []
+
+
+def test_similar_admin_decisions_are_shown_as_examples():
+    from pipeline.ingestion.written_submissions import similar_examples
+    examples = [
+        {"meeting_id": 1, "extracted_id": "9", "key": "k1", "item": 7, "item_title": "Bylaw 1951 hearing",
+         "letter": {"topic": "Western Speedway rezoning", "point": "Opposes the speedway towers."}},
+        {"meeting_id": 1, "extracted_id": "9", "key": "k2", "item": None,
+         "letter": {"topic": "Tennis courts", "point": "Wants more tennis courts."}},
+    ]
+    letter = {"who": "X", "topic": "Speedway traffic", "point": "Worried about speedway rezoning traffic."}
+    assert [e["key"] for e in similar_examples(letter, examples)] == ["k1"]
+    assert similar_examples(letter, examples, exclude=("1", "9", "k1")) == []
+    seen = []
+    place_letters([letter], [{"id": 7, "title": "Bylaw 1951"}], linked_item_id=None,
+                  decide=lambda c, o: seen.append(c) or [(0, 0.9)], examples=examples)
+    assert 'How a reviewer placed similar letters' in seen[0] and "-> Bylaw 1951 hearing" in seen[0]

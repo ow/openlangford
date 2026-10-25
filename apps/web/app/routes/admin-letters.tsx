@@ -203,11 +203,13 @@ export async function action({ request }: Route.ActionArgs) {
   if (intent !== "dismiss" && intent !== "place") return { error: "Unknown action.", entries };
   if (intent === "place" && !itemId) return { error: "Choose an agenda item.", entries };
 
+  let itemTitle: string | null = null;
   try {
     if (itemId) {
-      const { data: item, error } = await supabase.from("agenda_items").select("meeting_id").eq("id", itemId).single();
+      const { data: item, error } = await supabase.from("agenda_items").select("meeting_id, title").eq("id", itemId).single();
       if (error) throw error;
       if (item.meeting_id !== meetingId) return { error: "That item belongs to another meeting.", entries };
+      itemTitle = item.title;
     }
 
     // 1. Take the letters off the meeting's queue (and remember the decision).
@@ -217,7 +219,7 @@ export async function action({ request }: Route.ActionArgs) {
       let next: Record<string, any> = meta;
       for (const entry of entries) {
         const [extractedId, key] = entry.split("::");
-        const result = takeHeld(next, extractedId, key, itemId);
+        const result = takeHeld(next, extractedId, key, itemId, itemTitle);
         if (!result) continue;
         next = result.meetingMeta;
         const group = taken.get(extractedId) || { source: result.source, letters: [] };

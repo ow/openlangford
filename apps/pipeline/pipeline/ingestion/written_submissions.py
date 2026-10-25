@@ -9,6 +9,7 @@ must appear in the letter.
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 from typing import Literal
 
 from pydantic import BaseModel
@@ -241,7 +242,7 @@ def guarded_update(supabase, table: str, row_id: int, mutate, attempts: int = 6)
     raise RuntimeError(f"{table} {row_id} kept changing; try again")
 
 
-def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = False) -> dict:
+def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = False, examples: list[dict] | None = None) -> dict:
     """Re-run placement for a meeting's held letters (no re-extraction); move confident ones onto items.
     Letters leave the queue first (guarded), then join their items (guarded)."""
     meeting = supabase.table("meetings").select("id,meta").eq("id", meeting_id).single().execute().data
@@ -264,7 +265,7 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
             letter = {k: v for k, v in entry.items() if k not in ("key", "candidates")}
             letter_for_model = {**letter, "excerpt": letter_excerpt(texts[extracted_id], letter["who"])}
             placed, still = place_letters([letter_for_model], items, linked_item_id=None, decide=decide or _item_decider(),
-                                          document_title=source.get("title") or "")
+                                          document_title=source.get("title") or "", examples=examples)
             if placed:
                 plan.append((extracted_id, entry["key"], next(iter(placed)), letter))
             elif still:
@@ -283,7 +284,9 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
             if not source or not any(l.get("key") == key for l in source["letters"]):
                 continue  # decided meanwhile (e.g. by an admin)
             source["letters"] = [l for l in source["letters"] if l.get("key") != key]
-            placements.setdefault(extracted_id, {})[key] = item_id
+            placements.setdefault(extracted_id, {})[key] = {
+                "item": item_id, "by": "model", "at": datetime.now(timezone.utc).isoformat(),
+                "letter": {k: letter.get(k) for k in ("who", "position", "topic", "point")}}
             taken.append((extracted_id, item_id, letter, source))
         # Letters that stay held get today's suggestions, not the ones from when they were first held.
         changed = bool(taken)
@@ -329,8 +332,74 @@ def letter_key(letter: dict) -> str:
     return " ".join(folded(f"{letter['who']} {letter.get('sent') or ''} {letter['topic']}"))[:160]
 
 
+def decision_record(value) -> dict:
+    """Placement decisions, old and new. Old entries were a bare item id (admin or model, unknowable)
+    or None (only ever an admin dismissal); new ones say who decided and keep a copy of the letter."""
+    if isinstance(value, dict):
+        return value
+    return {"item": value, "by": "admin" if value is None else "unknown"}
+
+
+def _words(text: str) -> set[str]:
+    stop = {"the", "and", "for", "with", "that", "this", "from", "about", "council", "langford", "city", "letter",
+            "opposes", "supports", "raises", "concerns", "urges", "asks", "requests", "proposed", "development"}
+    return {w for w in folded(text or "") if len(w) > 3 and w not in stop}
+
+
+def load_examples(supabase) -> list[dict]:
+    """Admin decisions with a copy of the letter, from every meeting: worked examples for placement."""
+    rows, last = [], 0
+    while True:
+        page = (supabase.table("meetings").select("id,meta->written_placements").gt("id", last)
+                .not_.is_("meta->written_placements", "null").order("id").limit(200).execute().data or [])
+        rows += page
+        if len(page) < 200:
+            break
+        last = page[-1]["id"]
+    examples = []
+    for row in rows:
+        for extracted_id, decisions in (row.get("written_placements") or {}).items():
+            for key, value in decisions.items():
+                record = decision_record(value)
+                if record.get("by") == "admin" and record.get("letter"):
+                    examples.append({**record, "meeting_id": row["id"], "extracted_id": extracted_id, "key": key})
+    ids = sorted({e["item"] for e in examples if e.get("item") and not e.get("item_title")})
+    titles = {}
+    for start in range(0, len(ids), 200):
+        for row in supabase.table("agenda_items").select("id,title").in_("id", ids[start:start + 200]).execute().data or []:
+            titles[row["id"]] = row["title"]
+    for e in examples:
+        if e.get("item") and not e.get("item_title"):
+            e["item_title"] = (titles.get(e["item"]) or "")[:160]
+    return examples
+
+
+def similar_examples(letter: dict, examples: list[dict], k: int = 5, exclude: tuple | None = None) -> list[dict]:
+    """The admin decisions about the most similar letters (shared distinctive words), excluding one letter."""
+    words = _words(f"{letter.get('topic')} {letter.get('point')}")
+    scored = []
+    for example in examples:
+        if exclude and (str(example["meeting_id"]), str(example["extracted_id"]), example["key"]) == exclude:
+            continue
+        other = _words(f"{example['letter'].get('topic')} {example['letter'].get('point')}")
+        overlap = len(words & other) / (len(words | other) or 1)
+        if overlap > 0:
+            scored.append((overlap, example))
+    scored.sort(key=lambda pair: -pair[0])
+    return [example for _, example in scored[:k]]
+
+
+def _examples_text(examples: list[dict]) -> str:
+    lines = []
+    for e in examples:
+        target = e.get("item_title") or ("not about any agenda item" if e.get("item") is None else "an agenda item")
+        lines.append(f"- \"{e['letter'].get('topic')}: {e['letter'].get('point')}\" -> {target}")
+    return "\nHow a reviewer placed similar letters at other meetings:\n" + "\n".join(lines) if lines else ""
+
+
 def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int | None, decide,
-                  decisions: dict | None = None, document_title: str = "") -> tuple[dict[int, list[dict]], list[dict]]:
+                  decisions: dict | None = None, document_title: str = "",
+                  examples: list[dict] | None = None) -> tuple[dict[int, list[dict]], list[dict]]:
     """Group letters by agenda item; return (placed, held for review).
 
     A linked document keeps all its letters on that item. Otherwise each letter
@@ -349,13 +418,14 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
     for letter in letters:
         key = letter_key(letter)
         if key in decisions:
-            target = decisions[key]
+            target = decision_record(decisions[key]).get("item")
             if target in by_id:
                 placed.setdefault(target, []).append(letter)
             continue
         excerpt = (letter.get("excerpt") or "")[:1200]
         context = (f"Letter to council from the package \"{document_title}\". "
-                   f"Topic: {letter['topic']}. Point: {letter['point']}" + (f"\nLetter text: {excerpt}" if excerpt else ""))
+                   f"Topic: {letter['topic']}. Point: {letter['point']}" + (f"\nLetter text: {excerpt}" if excerpt else "")
+                   + _examples_text(similar_examples(letter, examples or [], exclude=letter.get("_exclude"))))
         terms = specific_terms(f"{document_title} {letter['topic']} {letter['point']} {excerpt}")
         offered = [{**it, "shared_terms": sorted(terms & specific_terms(_item_text(it)))} for it in choices]
         ranked = [(i, p) for i, p in decide(context, offered) if 0 <= i < len(choices)]
@@ -445,7 +515,7 @@ def _item_description(item: dict) -> str:
     return " — ".join(parts)
 
 
-def with_item_context(supabase, items: list[dict]) -> list[dict]:
+def with_item_context(supabase, items: list[dict], exclude: tuple | None = None) -> list[dict]:
     """Attach the titles of documents filed under each item and its decisions."""
     ids = [it["id"] for it in items]
     if not ids:
@@ -464,7 +534,10 @@ def with_item_context(supabase, items: list[dict]) -> list[dict]:
         placed = ((item.get("meta") or {}).get("written_participation") or {}).get("documents") or []
         about = []
         for group in placed:
-            for value in [group.get("title"), *(l.get("topic") for l in group.get("letters") or [])]:
+            letters = [l for l in group.get("letters") or [] if not exclude or (l.get("who"), l.get("point")) != exclude]
+            if not letters:
+                continue  # the excluded letter was this document's only one
+            for value in [group.get("title"), *(l.get("topic") for l in letters)]:
                 if value and value not in about:
                     about.append(value)
         out.append({**item, "context_documents": titles[:8], "context_summaries": summaries[:5],
@@ -489,7 +562,8 @@ def _item_decider():
     return decide
 
 
-def summarize_document(supabase, extracted: dict, *, streets: dict, dry_run: bool = False, decide=None) -> dict:
+def summarize_document(supabase, extracted: dict, *, streets: dict, dry_run: bool = False, decide=None,
+                       examples: list[dict] | None = None) -> dict:
     """Extract, place and store one correspondence document's letters. Returns counts."""
     if not dry_run:
         from .letter_privacy import scrub_correspondence
@@ -515,7 +589,7 @@ def summarize_document(supabase, extracted: dict, *, streets: dict, dry_run: boo
         letter["excerpt"] = letter_excerpt(source_text, letter["who"])
     placed, held = place_letters(letters, items, linked_item_id=extracted.get("agenda_item_id"),
                                  decide=decide or _item_decider(), decisions=decisions,
-                                 document_title=extracted.get("title") or "")
+                                 document_title=extracted.get("title") or "", examples=examples)
     # Excerpts help placement only; stored letters keep the summary, never raw letter text.
     for group in [*placed.values(), held]:
         for letter in group:
@@ -589,3 +663,50 @@ def correspondence_documents(supabase, meeting_ids: list[int] | None = None, sin
     return [r for r in rows
             if not NOT_RESIDENTS.search(r.get("title") or "")
             and (TITLE.search(r.get("title") or "") or r.get("document_type") == "correspondence" or r["id"] in shaped)]
+
+
+def evaluate_placement(supabase, *, decide=None, limit: int | None = None) -> dict:
+    """Replay admin decisions. Each letter is re-placed without its own decision (not as evidence, not as an
+    example) and compared with what the admin chose.
+
+    Reports: how often automatic placements match the admin; for letters the model would hold, how often its
+    top pick was still the admin's choice; and top-pick agreement by confidence band (for threshold tuning)."""
+    examples = load_examples(supabase)
+    decide = decide or _item_decider()
+    report = {"decisions": 0, "auto_placed": 0, "auto_correct": 0, "held": 0, "held_top_correct": 0,
+              "admin_dismissed": 0, "by_confidence": {}, "results": []}
+    for example in examples[:limit] if limit else examples:
+        letter = dict(example["letter"])
+        exclude = (letter.get("who"), letter.get("point"))
+        items = with_item_context(supabase, supabase.table("agenda_items")
+                                  .select("id,meeting_id,matter_id,item_order,title,plain_english_summary,meta")
+                                  .eq("meeting_id", example["meeting_id"]).order("item_order").execute().data or [],
+                                  exclude=exclude)
+        letter["_exclude"] = (str(example["meeting_id"]), str(example["extracted_id"]), example["key"])
+        ranked = []
+
+        def capture(context, choices):
+            result = decide(context, choices)
+            ranked.extend((choices[i]["id"], p) for i, p in result if 0 <= i < len(choices))
+            return result
+
+        placed, _ = place_letters([letter], items, linked_item_id=None, decide=capture, examples=examples)
+        predicted = next(iter(placed), None)
+        admin = example.get("item")
+        top_item, top_p = (ranked[0] if ranked else (None, 0.0))
+        report["decisions"] += 1
+        report["admin_dismissed"] += int(admin is None)
+        if predicted is not None:
+            report["auto_placed"] += 1
+            report["auto_correct"] += int(predicted == admin)
+        else:
+            report["held"] += 1
+            report["held_top_correct"] += int(admin is not None and top_item == admin)
+        band = ">=70%" if top_p >= PLACE_MIN else "40-70%" if top_p >= 0.4 else "15-40%" if top_p >= 0.15 else "<15%"
+        stats = report["by_confidence"].setdefault(band, {"n": 0, "top_matches_admin": 0, "admin_said_none": 0})
+        stats["n"] += 1
+        stats["top_matches_admin"] += int(admin is not None and top_item == admin)
+        stats["admin_said_none"] += int(admin is None)
+        report["results"].append({"meeting_id": example["meeting_id"], "letter": letter.get("topic"), "admin": admin,
+                                  "model": predicted, "top": top_item, "confidence": round(top_p, 2)})
+    return report

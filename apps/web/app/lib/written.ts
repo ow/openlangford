@@ -34,6 +34,7 @@ export function takeHeld(
   extractedId: string,
   key: string,
   itemId: number | null,
+  itemTitle?: string | null,
 ) {
   const meeting = { ...(meetingMeta || {}) };
   const unplaced: Record<string, UnplacedDocument> = { ...(meeting.written_unplaced || {}) };
@@ -46,11 +47,21 @@ export function takeHeld(
   else delete unplaced[extractedId];
   if (Object.keys(unplaced).length) meeting.written_unplaced = unplaced;
   else delete meeting.written_unplaced;
+  const { key: _key, candidates: _candidates, ...letter } = held;
+  // Who decided, and a copy of the letter: the pipeline learns from admin decisions (worked examples, evaluation).
   meeting.written_placements = {
     ...(meeting.written_placements || {}),
-    [extractedId]: { ...(meeting.written_placements?.[extractedId] || {}), [key]: itemId },
+    [extractedId]: {
+      ...(meeting.written_placements?.[extractedId] || {}),
+      [key]: {
+        item: itemId,
+        by: "admin",
+        at: new Date().toISOString(),
+        ...(itemTitle ? { item_title: itemTitle.slice(0, 160) } : {}),
+        letter: { who: letter.who, position: letter.position, topic: letter.topic, point: letter.point },
+      },
+    },
   };
-  const { key: _key, candidates: _candidates, ...letter } = held;
   return { meetingMeta: meeting, letter: letter as WrittenLetter, source };
 }
 

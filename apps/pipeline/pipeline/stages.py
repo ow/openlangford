@@ -519,7 +519,7 @@ def run_other_documents(ctx: StageContext):
 
 def run_written_submissions(ctx: StageContext):
     from pipeline.ingestion.participation_validation import load_streets
-    from pipeline.ingestion.written_submissions import correspondence_documents, summarize_document
+    from pipeline.ingestion.written_submissions import correspondence_documents, load_examples, summarize_document
 
     if ctx.post_ingest:
         docs = correspondence_documents(ctx.supabase, meeting_ids=list(ctx.meeting_ids or []))
@@ -528,10 +528,11 @@ def run_written_submissions(ctx: StageContext):
     else:
         docs = correspondence_documents(ctx.supabase, since=ctx.since)
     streets = load_streets()
+    examples = load_examples(ctx.supabase)  # admin decisions, shown to the model as worked examples
     totals = {"documents": len(docs), "letters": 0, "placed": 0, "held": 0, "unchanged": 0, "skipped": 0}
     for doc in docs:
         try:
-            result = summarize_document(ctx.supabase, doc, streets=streets, dry_run=ctx.dry_run)
+            result = summarize_document(ctx.supabase, doc, streets=streets, dry_run=ctx.dry_run, examples=examples)
         except Exception as e:
             print(f"  [!] Written submissions for document {doc['id']} failed: {e}")
             continue
@@ -544,6 +545,29 @@ def run_written_submissions(ctx: StageContext):
     print(f"  [Written] {totals['documents']} correspondence document(s): {totals['letters']} letter(s), {verb} "
           f"{totals['placed']}, {totals['held']} held for review, {totals['unchanged']} unchanged, {totals['skipped']} skipped")
     return totals
+
+
+def run_letter_placement_eval(ctx: StageContext):
+    import json
+    from pipeline.ingestion.written_submissions import evaluate_placement
+
+    report = evaluate_placement(ctx.supabase, limit=ctx.limit if hasattr(ctx, "limit") else None)
+    n = report["decisions"]
+    if not n:
+        print("  [Eval] No admin decisions with letter copies yet. Make some in /admin/letters first.")
+        return report
+    pct = lambda a, b: f"{a}/{b} ({round(100 * a / b)}%)" if b else "0/0"
+    print(f"  [Eval] {n} admin decision(s) replayed ({report['admin_dismissed']} were 'not about an item')")
+    print(f"  [Eval] Model would auto-place: {pct(report['auto_correct'], report['auto_placed'])} match the admin")
+    print(f"  [Eval] Model would hold: {report['held']}; its top pick was still the admin's for {pct(report['held_top_correct'], report['held'])}")
+    for band, stats in sorted(report["by_confidence"].items()):
+        print(f"  [Eval]   top confidence {band:>7}: top pick = admin {pct(stats['top_matches_admin'], stats['n'])}, "
+              f"admin said none {stats['admin_said_none']}")
+    out = "/tmp/letter-placement-eval.json"
+    with open(out, "w") as handle:
+        json.dump(report, handle, indent=1)
+    print(f"  [Eval] Full results: {out}")
+    return {k: v for k, v in report.items() if k != "results"}
 
 
 def run_matter_images(ctx: StageContext):
@@ -776,6 +800,11 @@ STAGES: list[Stage] = [
         description="Langford bylaws: download, summarize and embed every directory + media-library bylaw, then link "
                     "matters. --all [--source directory|media] or --target NUMBER; --force re-ingests unchanged PDFs.",
         run=run_bylaws, when="backfill_only", scope="global", version="1",
+    ),
+    Stage(
+        name="letter-placement-eval",
+        description="Replay admin letter placements: how often the model agrees with them, by confidence. Read-only.",
+        run=run_letter_placement_eval, when="backfill_only", scope="global", version="1",
     ),
     Stage(
         name="matter-resolver-audit",

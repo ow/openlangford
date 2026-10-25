@@ -30,7 +30,11 @@ describe("placeHeldLetter", () => {
     const out = placeHeldLetter(meetingMeta, { foo: true }, "409", "a", 365)!;
     expect(out.meetingMeta.other).toBe(1);
     expect(out.meetingMeta.written_unplaced["409"].letters.map((l: any) => l.key)).toEqual(["b"]);
-    expect(out.meetingMeta.written_placements).toEqual({ "409": { a: 365 } });
+    expect(out.meetingMeta.written_placements["409"].a).toMatchObject({
+      item: 365,
+      by: "admin",
+      letter: { who: "Writer a", position: "opposes", topic: "t", point: "p" },
+    });
     const doc = out.itemMeta!.written_participation.documents[0];
     expect(doc).toMatchObject({ extracted_document_id: 409, document_id: 136, fingerprint: "f" });
     expect(doc.letters).toEqual([{ who: "Writer a", position: "opposes", topic: "t", point: "p" }]);
@@ -41,7 +45,8 @@ describe("placeHeldLetter", () => {
     const once = placeHeldLetter(meetingMeta, null, "409", "a", null)!;
     const twice = placeHeldLetter(once.meetingMeta, null, "409", "b", null)!;
     expect(twice.meetingMeta.written_unplaced).toBeUndefined();
-    expect(twice.meetingMeta.written_placements).toEqual({ "409": { a: null, b: null } });
+    expect(twice.meetingMeta.written_placements["409"].a).toMatchObject({ item: null, by: "admin" });
+    expect(twice.meetingMeta.written_placements["409"].b).toMatchObject({ item: null, by: "admin" });
     expect(twice.itemMeta).toBeNull();
   });
 
