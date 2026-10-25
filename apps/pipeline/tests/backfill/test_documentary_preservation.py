@@ -30,10 +30,12 @@ def case(tmp_path, monkeypatch, request):
     printed=config.get('printed',DOC);native_body=config.get('native',NATIVE_DOC);legacy_body=config.get('legacy',DOC)
     formal_body=config.get('formal',TEXT)
     context = official_context(tmp_path)
+    if config.get('meeting_type'):
+        context['meeting']['type'] = config['meeting_type']
     path = tmp_path/'archive/meeting/Minutes/Minutes - SIGNED.pdf'
     with fitz.open() as pdf:
         page = pdf.new_page()
-        page.insert_text((30,40), 'City of Langford\nCouncil Minutes\nJanuary 8, 2026\nPRESENT:\nMayor S. Goodmanson\nCouncillor C. Harder\nCouncillor K. Guiry\nATTENDING:\nStaff\n3. APPROVAL OF THE AGENDA\n'+native_body+'\n4. PUBLIC HEARINGS', fontsize=11)
+        page.insert_text((30,40), 'City of Langford\n'+config.get('source_label','Council Minutes')+'\nJanuary 8, 2026\nPRESENT:\nMayor S. Goodmanson\nCouncillor C. Harder\nCouncillor K. Guiry\nATTENDING:\nStaff\n3. APPROVAL OF THE AGENDA\n'+native_body+'\n4. PUBLIC HEARINGS', fontsize=11)
         page = pdf.new_page()
         page.insert_text((30,40), 'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+formal_body+'\nMotion CARRIED.', fontsize=10)
         pdf.save(path)
@@ -187,9 +189,16 @@ MAYOR_CASE = {**NARRATION_CASE,'legacy':'THAT the meeting be adjourned.',
 MOTION_CASE = {**NARRATION_CASE, 'legacy':'Motion to adjourn the meeting.'}
 MOTION_MAYOR_CASE = {**MAYOR_CASE, 'legacy':'MOTION TO ADJOURN THE MEETING.'}
 ADJOURNMENT_CASE = {**NARRATION_CASE, 'legacy':'Adjournment of the meeting.'}
+ACTING_MAYOR_CASE = {**MAYOR_CASE,
+    'printed':'Acting Mayor Wade adjourned the meeting at 9:36 pm.',
+    'native':'Acting Mayor Wade adjourned the meeting at 9:36 pm.'}
+SPECIAL_COUNCIL_CASE = {**NARRATION_CASE,
+    'legacy':'THAT the Special Council meeting be adjourned.',
+    'meeting_type':'Special Council','source_label':'Special Council Minutes'}
 
 
-@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE,MOTION_CASE,MOTION_MAYOR_CASE,ADJOURNMENT_CASE],indirect=True)
+@pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE,MOTION_CASE,MOTION_MAYOR_CASE,ADJOURNMENT_CASE,
+    ACTING_MAYOR_CASE,SPECIAL_COUNCIL_CASE],indirect=True)
 def test_explicit_reviewed_adjournment_narration_preserves_generic_claim_without_certifying_transcription(case):
     context,rows,review=case;before=deepcopy(rows)
     motions,report=plan(context,rows)
@@ -204,6 +213,16 @@ def test_explicit_reviewed_adjournment_narration_preserves_generic_claim_without
     review['documentary_preservations'][0].pop('type')
     motions,report=plan(context,rows)
     assert motions==[] and report['status']=='reviewed_legacy_occurrence_review_stale'
+
+
+@pytest.mark.parametrize('case',[
+    {**SPECIAL_COUNCIL_CASE,'meeting_type':'Regular Council'},
+    {**SPECIAL_COUNCIL_CASE,'source_label':'Council Minutes'}],indirect=True)
+def test_special_council_closing_needs_matching_catalog_and_original_header(case):
+    context,rows,review=case;before=deepcopy(rows)
+    motions,report=plan(context,rows)
+    assert motions==[] and report['status']=='reviewed_legacy_occurrence_review_stale'
+    assert rows==before
 
 
 @pytest.mark.parametrize('case',[NARRATION_CASE,MAYOR_CASE,MOTION_CASE,MOTION_MAYOR_CASE,ADJOURNMENT_CASE],indirect=True)
@@ -249,6 +268,8 @@ def test_typed_adjournment_review_does_not_admit_arbitrary_paraphrase_or_ambiguo
     {**MOTION_CASE,'formal':'That the meeting be adjourned.'},
     {**MOTION_MAYOR_CASE,'formal':'Motion to adjourn the meeting.'},
     {**ADJOURNMENT_CASE,'formal':'Adjournment of the meeting.'},
+    {**ACTING_MAYOR_CASE,'formal':'That the meeting be adjourned.'},
+    {**SPECIAL_COUNCIL_CASE,'formal':'THAT the Special Council meeting be adjourned.'},
     {**MOTION_CASE,'formal':'Thatthemeetingbeadjourned.'},
     {**MOTION_CASE,'formal':'Thatthemeetingbeadjourned'}],indirect=True)
 @pytest.mark.parametrize('missing_envelopes',[False,True])

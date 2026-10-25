@@ -160,8 +160,15 @@ The separate `type=reviewed_adjournment_narration_preservation` accepts only a
 generic legacy “That [the] meeting be adjourned.” claim and a complete reviewed
 “The Chair adjourned the meeting at H:MMam/pm.” or “Mayor Young adjourned the
 meeting at H:MMam/pm.” narrative (also explicit “a.m.”/“p.m.” spelling). Mayor
-narration permits only “Mayor” followed by one proper surname, with no actor ID
-assignment. Chair and Mayor narrations are counted together: multiple closing
+narration permits only “Mayor” or “Acting Mayor” followed by one proper surname,
+with no actor ID assignment. The qualified legacy phrase “That the Special
+Council meeting be adjourned.” is supported only in this timed correspondence
+when the catalog type is Special Council, both classifications are Council,
+and the original header explicitly says Special Council Minutes. It is not a
+new generic alias in the blank-clock or disputed-outcome modes. All forms still
+participate in conservative competing-owner screening.
+
+Chair and Mayor narrations are counted together: multiple closing
 events or different times remain held, even when each wording is unique. This is explicit
 reviewed documentary correspondence, never literal transcription equivalence or
 a formal motion/result. It retains the original/page/render/full-row guards,

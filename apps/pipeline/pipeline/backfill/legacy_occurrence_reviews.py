@@ -133,12 +133,25 @@ def _literal_spans(text, body):
 
 
 _ADJOURNMENT_LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting|Adjournment of the meeting)\.', re.I)
+_SPECIAL_COUNCIL_ADJOURNMENT_LEGACY = re.compile(r'That the Special Council meeting be adjourned\.', re.I)
 _ADJOURNMENT_LEGACY_COMPACT = frozenset(
     re.sub(r'[^a-z0-9]', '', body.casefold()) for body in (
         'That the meeting be adjourned.', 'That meeting be adjourned.',
-        'Motion to adjourn the meeting.', 'Adjournment of the meeting.'))
-_ADJOURNMENT_NARRATION = re.compile(r'(?:The Chair|Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
-_ADJOURNMENT_COMPACT = re.compile(r'(?:TheChair|Mayor[A-Z][a-z]+)adjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
+        'Motion to adjourn the meeting.', 'Adjournment of the meeting.',
+        'That the Special Council meeting be adjourned.'))
+_ADJOURNMENT_NARRATION = re.compile(r'(?:The Chair|(?:Acting )?Mayor [A-Z][a-z]+) adjourned the meeting at (?:1[0-2]|[1-9]):[0-5][0-9] ?(?:(?:am|pm)\.|[ap]\.m\.)')
+_ADJOURNMENT_COMPACT = re.compile(r'(?:TheChair|(?:Acting)?Mayor[A-Z][a-z]+)adjournedthemeetingat(?:1[0-2]|[1-9]):[0-5][0-9](?:(?:am|pm)\.|[ap]\.m\.)')
+
+
+def _adjournment_legacy_eligible(text, meeting, source):
+    if _ADJOURNMENT_LEGACY.fullmatch(text):
+        return True
+    # A named meeting is not a generic alias for another meeting type. This
+    # correspondence is limited to the catalog and original header agreeing.
+    return bool(_SPECIAL_COUNCIL_ADJOURNMENT_LEGACY.fullmatch(text)
+        and meeting.get('type') == 'Special Council'
+        and meeting.get('classification') == source.get('source_classification') == 'Council'
+        and re.search(r'(?im)^\s*Special\s+Council\s+Minutes\b', source['text'][:1500]))
 
 
 def _reviewed_native_correction(entry, source, meeting, archive_root, project_ref, municipality_id):
@@ -219,10 +232,11 @@ def validate_documentary_preservations(review, *, source, inventory, current_row
                 if entry['printed_body'] != row['text_content']:
                     raise ValueError('Literal documentary body differs from legacy claim')
             elif kind == 'reviewed_adjournment_narration_preservation':
-                if (not _ADJOURNMENT_LEGACY.fullmatch(row['text_content'])
+                if (not _adjournment_legacy_eligible(row['text_content'], meeting, source)
                         or not _ADJOURNMENT_NARRATION.fullmatch(entry['printed_body'])
                         or len(_ADJOURNMENT_COMPACT.findall(''.join(source['text'].split()))) != 1
-                        or any(other['id'] != row['id'] and _ADJOURNMENT_LEGACY.fullmatch(other['text_content'])
+                        or any(other['id'] != row['id'] and (_ADJOURNMENT_LEGACY.fullmatch(other['text_content'])
+                                   or _SPECIAL_COUNCIL_ADJOURNMENT_LEGACY.fullmatch(other['text_content']))
                                for other in current_rows)):
                     raise ValueError('Reviewed adjournment narration is not a unique bounded documentary correspondence')
             else:
