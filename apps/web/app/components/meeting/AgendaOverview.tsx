@@ -1,4 +1,4 @@
-import { ParticipationList } from "./participation-list";
+import { ParticipationList, WrittenSubmissions } from "./participation-list";
 import { useState } from "react";
 import {
   ChevronRight,
@@ -386,6 +386,12 @@ function AgendaItemRow({
                   {linkedExtractedDocs.length} {linkedExtractedDocs.length === 1 ? "document" : "documents"}
                 </span>
               )}
+              {item.meta?.written_participation?.letters?.length > 0 && (
+                <span className="tabular-nums">
+                  {item.meta.written_participation.letters.length}{" "}
+                  {item.meta.written_participation.letters.length === 1 ? "letter" : "letters"}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -439,6 +445,17 @@ function AgendaItemRow({
                   </h4>
                   <ParticipationList participation={item.meta.participation} className="pl-0.5" />
                   <p className="text-xs text-zinc-400">Summarized from the meeting video. Names are shown when speakers introduce themselves, spelled as in the minutes where listed; others appear as “A resident”.</p>
+                </div>
+              )}
+
+              {/* Letters and emails sent in before the meeting */}
+              {item.meta?.written_participation?.letters?.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-zinc-500">
+                    Written submissions ({item.meta.written_participation.letters.length})
+                  </h4>
+                  <WrittenSubmissions written={item.meta.written_participation} className="pl-0.5" />
+                  <p className="text-xs text-zinc-400">Summarized from letters in the agenda package. Contact details and house numbers are left out.</p>
                 </div>
               )}
 

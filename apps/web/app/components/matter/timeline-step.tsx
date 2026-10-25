@@ -4,7 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { displayTitle } from "../../lib/display-text";
 import { formatDate, cn } from "../../lib/utils";
-import { ParticipationList } from "../meeting/participation-list";
+import { ParticipationList, WrittenSubmissions } from "../meeting/participation-list";
 import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
 
 /** Plain-language meaning of a bylaw stage, for residents who don't know what "second reading" means. */
@@ -87,15 +87,17 @@ export function TimelineStep({
   docs,
   layoutImage,
   participation,
+  written,
 }: {
   item: any;
   headline?: string;
   docs: any[];
   layoutImage?: { url: string; width?: number; height?: number } | null;
   participation?: any;
+  written?: any;
 }) {
   const motions: Motion[] = item.motions || [];
-  const hasParticipation = Boolean(participation?.speakers?.length);
+  const hasParticipation = Boolean(participation?.speakers?.length || written?.letters?.length);
   const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline });
   const stage = stageExplanation(headline, item.title, ...motions.map((m) => m.text_content));
   const title = headline || displayTitle(item.title);
@@ -162,10 +164,17 @@ export function TimelineStep({
         </div>
       )}
 
-      {hasParticipation && (
+      {participation?.speakers?.length > 0 && (
         <div className="mt-4">
           <p className="mb-2 text-xs font-semibold text-zinc-500">Who spoke</p>
           <ParticipationList participation={participation} />
+        </div>
+      )}
+
+      {written?.letters?.length > 0 && (
+        <div className="mt-4">
+          <p className="mb-2 text-xs font-semibold text-zinc-500">Written submissions ({written.letters.length})</p>
+          <WrittenSubmissions written={written} />
         </div>
       )}
 

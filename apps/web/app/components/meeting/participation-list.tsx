@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Link } from "react-router";
 import { cn } from "../../lib/utils";
 
 export type ParticipationSpeaker = { who: string; position: string; point: string; topic: string };
@@ -55,5 +57,67 @@ export function ParticipationList({
         </li>
       ))}
     </ul>
+  );
+}
+
+export type WrittenParticipation = {
+  letters?: (ParticipationSpeaker & { sent?: string })[];
+  source?: { title?: string; href?: string };
+};
+
+const TALLY_LABEL: Record<string, string> = {
+  opposes: "opposed",
+  supports: "in support",
+  concerned: "concerned",
+  mixed: "mixed",
+  asks: "questions",
+  other: "other",
+};
+
+/** "8 opposed · 3 mixed · 1 in support", largest first. */
+export function positionTally(list: { position: string }[]) {
+  const counts = new Map<string, number>();
+  for (const { position } of list) counts.set(position, (counts.get(position) || 0) + 1);
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([position, n]) => `${n} ${TALLY_LABEL[position] ?? position}`)
+    .join(" · ");
+}
+
+/** Letters and emails residents sent in, from the agenda package. */
+export function WrittenSubmissions({
+  written,
+  limit = 4,
+  className,
+}: {
+  written?: WrittenParticipation;
+  limit?: number;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const letters = written?.letters ?? [];
+  if (!letters.length) return null;
+  const shown = open ? letters : letters.slice(0, limit);
+  return (
+    <div className={cn("space-y-2", className)}>
+      <p className="text-xs tabular-nums text-zinc-500">{positionTally(letters)}</p>
+      <ParticipationList speakers={shown} />
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+        {letters.length > limit && (
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="font-medium text-brand-700 hover:underline"
+          >
+            {open ? "Show fewer" : `Show all ${letters.length} letters`}
+          </button>
+        )}
+        {written?.source?.href && (
+          <Link to={written.source.href} className="font-medium text-zinc-500 hover:text-brand-700 hover:underline">
+            Read the letters
+          </Link>
+        )}
+      </div>
+    </div>
   );
 }

@@ -12,7 +12,7 @@ import re
 import unicodedata
 
 VERSION = 'public-comment-spelling-v1'
-VERBS = set('supports opposes raises warns calls requests urges asks questions seeks recommends suggests notes argues reports describes explains objects commends thanks highlights advocates expresses shares speaks discusses stresses proposes encourages wants states cautions favours favors says indicates mentions clarifies identifies presents believes challenges disputes welcomes endorses criticizes emphasises emphasizes'.split())
+VERBS = set('supports opposes raises warns calls requests urges asks questions seeks recommends suggests notes argues reports describes explains objects commends thanks highlights advocates expresses shares speaks discusses stresses proposes encourages wants states cautions accepts considers acknowledges agrees praises doubts fears worries favours favors says indicates mentions clarifies identifies presents believes challenges disputes welcomes endorses criticizes emphasises emphasizes'.split())
 TYPES = {'rd': 'road', 'st': 'street', 'ave': 'avenue', 'cres': 'crescent',
          'dr': 'drive', 'ct': 'court', 'ln': 'lane', 'hwy': 'highway',
          'pl': 'place', 'blvd': 'boulevard', 'terr': 'terrace', 'pkwy': 'parkway'}

@@ -728,7 +728,10 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                   const headline: string | undefined = matter.meta?.timeline_headlines?.[String(item.id)];
                   const layout = images.layout && images.layout.agenda_item_id === item.id ? images.layout : null;
                   const procedural = isProceduralStep(item, {
-                    hasParticipation: Boolean((item as any).meta?.participation?.speakers?.length),
+                    hasParticipation: Boolean(
+                      (item as any).meta?.participation?.speakers?.length ||
+                        (item as any).meta?.written_participation?.letters?.length,
+                    ),
                     hasImage: Boolean(layout),
                     headline,
                   });
@@ -746,6 +749,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                         docs={itemDocs}
                         layoutImage={layout}
                         participation={(item as any).meta?.participation}
+                        written={(item as any).meta?.written_participation}
                       />
                     </li>
                   );
