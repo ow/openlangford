@@ -69,12 +69,28 @@ export function PersonCard({ person, role, showStats = true }: PersonCardProps) 
       </div>
 
       {/* Stats Section */}
-      {!showStats ? <p className="text-sm text-muted-foreground">Term has not started</p> : person.stats.total === 0 ? <p className="text-sm text-muted-foreground">No recorded meetings</p> : <div className="w-full sm:w-48 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-zinc-100 sm:pl-6">
-        <p className="text-xs text-zinc-500">Attendance</p>
-        <p className="text-sm font-semibold text-zinc-700">
-          {attendanceRateText(person.stats)}
+      {!showStats ? <p className="text-sm text-muted-foreground">Term has not started</p> : person.stats.total === 0 ? <p className="text-sm text-muted-foreground">No recorded meetings</p> : <div className="w-full sm:w-56 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-zinc-100 sm:pl-6">
+        <div className="mb-1.5 flex items-end justify-between gap-2">
+          <span className="text-xs text-zinc-500">Attendance</span>
+          <span className="text-xs font-bold tabular-nums text-zinc-700" title={attendanceRateText(person.stats)}>
+            {person.stats.rate === null ? "Incomplete" : `${person.stats.rate}%`}
+          </span>
+        </div>
+        {/* Present, absent, and (grey) unknown: missing records are never counted as absences. */}
+        <div
+          className="flex h-2 w-full overflow-hidden rounded-full bg-zinc-100"
+          role="img"
+          aria-label={attendanceCoverageText(person.stats)}
+          title={attendanceCoverageText(person.stats)}
+        >
+          <div className="h-full bg-brand-500" style={{ width: `${(person.stats.attended / person.stats.total) * 100}%` }} />
+          <div className="h-full bg-amber-400" style={{ width: `${(person.stats.absent / person.stats.total) * 100}%` }} />
+        </div>
+        <p className="mt-1 text-right text-[11px] tabular-nums text-zinc-400">
+          <span className="whitespace-nowrap">{person.stats.attended}/{person.stats.total} meetings</span>
+          {person.stats.absent ? <span className="whitespace-nowrap"> · {person.stats.absent} absent</span> : null}
+          {person.stats.unknown ? <span className="whitespace-nowrap"> · {person.stats.unknown} unknown</span> : null}
         </p>
-        <p className="mt-1 text-xs leading-relaxed text-zinc-500">{attendanceCoverageText(person.stats)}</p>
       </div>}
       
       {/* Chevron */}
