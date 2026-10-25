@@ -1,4 +1,30 @@
-"""Operational bookkeeping for pipeline discovery and worker jobs."""
+"""Operational bookkeeping for pipeline discovery and worker jobs.
+
+source_meetings.status lifecycle
+================================
+Written by the scrapers/orchestrator (discovery, document sync), the job
+worker (worker.py) and the one-off scheduling of future meetings. The admin
+page (/admin/pipeline) maps these to plain-language labels
+(apps/web/app/lib/pipeline-status.ts); keep the two in sync.
+
+  status               written by                         meaning
+  -------------------  ---------------------------------  ------------------------------------------
+  discovered           upsert_source_meetings (scrape)    Listed by the source; documents not fetched yet
+  documents_downloaded orchestrator._sync_documents,      Agenda/minutes files are in the local archive
+                       worker sync_documents/sync_media
+  media_downloaded     worker sync_media                  Audio downloaded too
+  diarized             worker diarize_meeting             Transcribed/diarized, ingest may follow
+  ingested             mark_source_meeting_ingested       TERMINAL SUCCESS: a public meeting row exists
+                       (worker + orchestrator)            and has agenda items / minutes / transcript
+  extracted            legacy (worker, pre-helper)        Same as ingested; backfilled to ingested
+  scheduled            calendar sync (future meetings)    Future meeting known, nothing to ingest yet
+  cancelled            source_document_status             Source lists only a cancellation notice
+  postponed            source_document_status             Source lists only a postponement notice
+  (job failures are not stored here; they surface via pipeline_jobs.status)
+
+Rules: upsert_source_meetings never regresses ingested/extracted rows, and
+mark_source_meeting_ingested never touches cancelled/postponed rows.
+"""
 
 from __future__ import annotations
 
@@ -138,3 +164,74 @@ def record_job_event(
             "data": data or {},
         }
     ).execute()
+
+
+# Statuses the ingest helper must never overwrite: the source itself says
+# the meeting did not happen as listed.
+_NOT_HELD_STATUSES = {"cancelled", "postponed"}
+
+
+def mark_source_meeting_ingested(
+    supabase: Client,
+    meeting_id: int,
+    source_meeting_id: int | None = None,
+) -> bool:
+    """Mark the source_meetings row for a public meeting as 'ingested'.
+
+    The single place that records a successful ingest, used by both the job
+    worker and the CLI/orchestrator path. Links ingested_meeting_id too.
+    Only acts if the meeting actually has content (agenda items, minutes or
+    a transcript), so a bare scheduled placeholder stays as it is. Returns
+    True if a source row now says 'ingested'.
+    """
+    meeting_rows = (
+        supabase.table("meetings")
+        .select("id, municipality_id, archive_path, has_minutes, has_transcript")
+        .eq("id", meeting_id)
+        .execute()
+        .data
+        or []
+    )
+    if not meeting_rows:
+        return False
+    meeting = meeting_rows[0]
+
+    has_content = bool(meeting.get("has_minutes") or meeting.get("has_transcript"))
+    if not has_content:
+        items = (
+            supabase.table("agenda_items")
+            .select("id", count="exact")
+            .eq("meeting_id", meeting_id)
+            .limit(1)
+            .execute()
+        )
+        has_content = bool(items.count)
+    if not has_content:
+        return False
+
+    def find(**filters):
+        query = supabase.table("source_meetings").select("id, status, ingested_meeting_id")
+        for column, value in filters.items():
+            query = query.eq(column, value)
+        return query.execute().data or []
+
+    if source_meeting_id:
+        sources = find(id=source_meeting_id)
+    else:
+        sources = find(ingested_meeting_id=meeting_id)
+        if not sources and meeting.get("archive_path"):
+            sources = find(
+                municipality_id=meeting["municipality_id"],
+                archive_path=meeting["archive_path"],
+            )
+
+    marked = False
+    for source in sources:
+        if source["status"] in _NOT_HELD_STATUSES:
+            continue
+        if source["status"] != "ingested" or source.get("ingested_meeting_id") != meeting_id:
+            supabase.table("source_meetings").update(
+                {"status": "ingested", "ingested_meeting_id": meeting_id}
+            ).eq("id", source["id"]).execute()
+        marked = True
+    return marked

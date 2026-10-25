@@ -32,6 +32,12 @@ import {
   type PipelineJobType,
 } from "../services/pipeline-admin.server";
 import { formatCost, formatTokens } from "../lib/job-usage";
+import {
+  SOURCE_STATE_LABELS,
+  SOURCE_STATE_TONES,
+  rawStatusLabel,
+  sourceMeetingState,
+} from "../lib/pipeline-status";
 import { getAiUsageDashboard } from "../services/ai-usage-admin.server";
 import { AiUsageSection } from "../components/admin/ai-usage-section";
 
@@ -117,7 +123,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 type BadgeTone = "success" | "danger" | "warning" | "muted" | "brand";
 
-/** Job statuses use semantic tones; source-meeting stages are neutral/brand. */
+/** Job status tones. Source meetings use SOURCE_STATE_TONES (lib/pipeline-status). */
 const statusTones: Record<string, BadgeTone> = {
   succeeded: "success",
   completed: "success",
@@ -125,12 +131,6 @@ const statusTones: Record<string, BadgeTone> = {
   running: "warning",
   queued: "warning",
   cancelled: "muted",
-  discovered: "muted",
-  documents_downloaded: "muted",
-  media_downloaded: "muted",
-  ingested: "brand",
-  extracted: "brand",
-  diarized: "brand",
 };
 
 function formatStatus(status: string) {
@@ -148,6 +148,25 @@ function StatusBadge({
   return (
     <Badge variant={statusTones[status] ?? "muted"} className={className}>
       {formatStatus(status)}
+    </Badge>
+  );
+}
+
+function SourceStatusBadge({
+  meeting,
+  className,
+}: {
+  meeting: any;
+  className?: string;
+}) {
+  const state = sourceMeetingState(meeting);
+  return (
+    <Badge
+      variant={SOURCE_STATE_TONES[state]}
+      className={className}
+      title={`Internal status: ${rawStatusLabel(meeting.status)}`}
+    >
+      {SOURCE_STATE_LABELS[state]}
     </Badge>
   );
 }
@@ -725,7 +744,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
                         {meetingSubtitle(meeting)}
                       </div>
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums">
-                        <StatusBadge status={meeting.status} />
+                        <SourceStatusBadge meeting={meeting} />
                         <MeetingOutput meeting={meeting} />
                         {meeting.latest_job?.status === "failed" && (
                           <Link
@@ -749,7 +768,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
                         Meeting
                       </th>
                       <th scope="col" className="px-4 py-2.5 font-medium">
-                        Stage
+                        Status
                       </th>
                       <th scope="col" className="px-4 py-2.5 font-medium">
                         Output
@@ -774,7 +793,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-4 py-3">
-                          <StatusBadge status={meeting.status} />
+                          <SourceStatusBadge meeting={meeting} />
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 text-xs tabular-nums">
                           <MeetingOutput meeting={meeting} />
