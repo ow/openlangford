@@ -265,8 +265,8 @@ from manual reviews; old text, unknown outcomes and ballots remain unchanged.
 ### Draft: unresolved closing conflicts
 
 `closing_conflict_quarantines` is a separate deterministic catch-up capability,
-not an extension of the NULL-only documentary validator. It is not enrolled for
-any real meeting. A disputed generic CARRIED closing can remain unchanged and
+not an extension of the NULL-only documentary validator. Only explicitly
+enrolled source/legacy artifact pairs may use it. A disputed generic CARRIED closing can remain unchanged and
 explicitly unresolved while an exact allowlist of independently reviewed,
 strictly unique and disjoint formal decisions proceeds. The closing receives no
 formal source key, verified outcome, ballot authority or actor attribution.
@@ -280,6 +280,14 @@ or claim drift, and nonliteral/full-body stage changes all fail closed. This
 first draft requires whitespace-only equality between the full native motion
 body and reviewed new body; any OCR correction must already be independently
 reviewed and pinned in the source admission.
+
+A damaged native closing verb may use the existing separately enrolled image
+witness correction. Its raw complete-line passage remains preserved. The actor
+prefix, event wording and clock suffix must match exactly; only the reviewed
+verb-glyph span may differ. Formal/outcome labels, event or clock changes,
+missing/duplicate correction proofs and nonunique events reject it. This does
+not relax the full-body rule for new decisions, certify the old CARRIED result,
+assign a formal key or remove the scoped zero-vote and locked recheck gates.
 
 Disputed IDs stay in `unmapped_legacy_ids` and the separate
 `unresolved_closing_conflict_ids`; they never enter `bound_ids` or make the

@@ -6,7 +6,7 @@ import fitz
 
 from pipeline.ingestion.source_claims import build_claim_inventory, digest, project_claim
 from pipeline.ingestion.source_occurrences import original_formal_inventory, text_occurrence_unique
-from .legacy_occurrence_reviews import _validate_scope, _literal_spans, full_row_fingerprint
+from .legacy_occurrence_reviews import _validate_scope, _literal_spans, full_row_fingerprint, _reviewed_native_correction
 from .supplemental_preservation import _source_admission
 
 _LEGACY = re.compile(r'(?:That (?:the )?meeting be adjourned|Motion to adjourn the meeting|That Council adjourn the meeting)\.',re.I)
@@ -98,8 +98,24 @@ def validate_closing_conflicts(review, *, source, inventory, current_rows, meeti
         if (page_proof not in admission['pages'] or _sha(native.encode())!=cap['native_text_sha256']
                 or _sha(page.get_pixmap(matrix=fitz.Matrix(scale,scale)).tobytes('png'))!=cap['render_sha256']):
             raise ValueError('Closing conflict native/render witness changed')
-        _complete_passage(native,body,cap['native_passage'],cap['native_passage_start'])
+        native_body=body
+        correction=None
+        if 'native_correction' in cap:
+            correction=_reviewed_native_correction(cap,source,meeting,archive_root,project_ref,municipality_id)
+            native_body=correction['native_quote']
+            prefix,suffix=body.split('adjourned',1)
+            # Only a reviewed, damaged verb witness is supported. Actor, clock
+            # and surrounding event words are literal, not editable aliases.
+            if (not native_body.startswith(prefix) or not native_body.endswith(suffix)
+                    or not re.fullmatch(r'a[adjourned\s]{0,24}ed',native_body[len(prefix):-len(suffix)])
+                    or re.search(r'\b(?:MOVE(?:D)?|SECONDED|CARRIED|DEFEATED|WITHDRAWN|TABLED)\b',native_body,re.I)):
+                raise ValueError('Closing conflict native correction may repair only the verb glyph witness')
+        _complete_passage(native,native_body,cap['native_passage'],cap['native_passage_start'])
         native_all='\f'.join(p.get_text() for p in pdf)
+        if correction:
+            if native_all.count(native_body)!=1:
+                raise ValueError('Closing conflict native correction witness is not unique')
+            native_all=native_all.replace(native_body,body,1)
         if len(_literal_spans(native_all,body))!=1 or len(_COMPACT_EVENT.findall(''.join(native_all.split())))!=1:
             raise ValueError('Closing conflict native event absent or not unique')
     from pipeline.ingestion.canonical_motions import source_identity, source_motion_candidates, bound_source_motion, operative_view

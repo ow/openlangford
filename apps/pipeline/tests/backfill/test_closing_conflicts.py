@@ -13,7 +13,7 @@ from ingestion.ballot_fixture import official_context, PEOPLE, TEXT
 from pipeline.backfill import legacy_occurrence_reviews as legacy, reviewed_sources
 from pipeline.backfill.history_coverage import plan_meeting, remaining_coverage
 from pipeline.ingestion.canonical_motions import source_identity
-from pipeline.ingestion.official_ballots import load_official_minutes
+from pipeline.ingestion.official_ballots import load_official_minutes, minutes_text_source
 from pipeline.ingestion.source_claims import build_claim_inventory, digest, project_claim
 
 AGENDA = 'That Council approve the agenda as presented.'
@@ -37,12 +37,22 @@ def case(tmp_path, monkeypatch, request):
     context['meeting']=config.get('meeting',context['meeting'])
     path=tmp_path/'archive/meeting/Minutes/Minutes - SIGNED.pdf'
     extra=config.get('extra','')
+    native_narration=config.get('native_narration',NARRATION)
     with fitz.open() as pdf:
         page=pdf.new_page()
         text=('City of Langford\nCouncil Minutes\nJanuary 8, 2026\nPRESENT:\nMayor S. Goodmanson\nCouncillor C. Harder\nCouncillor K. Guiry\nATTENDING:\nStaff\n'
             'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+AGENDA+'\nCARRIED.\n'+extra+
-            'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+TEXT+'\nCARRIED.\nADJOURNMENT\n'+NARRATION)
-        page.insert_text((30,40),'\n'.join(textwrap.fill(line,85) for line in text.splitlines()),fontsize=10)
+            'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+TEXT+'\nCARRIED.\nADJOURNMENT\n'+native_narration)
+        page.insert_text((30,40),'\n'.join(textwrap.fill(line,85) for line in text.splitlines()),fontsize=10,
+            render_mode=3 if config.get('native_correction') else 0)
+        if config.get('native_correction'):
+            # A correct visible page with a corrupt invisible OCR layer models
+            # the actual signature/glyph problem, not a mocked proof validator.
+            with fitz.open() as visible:
+                image_page=visible.new_page()
+                printed=text.replace(native_narration,NARRATION,1)
+                image_page.insert_text((30,40),'\n'.join(textwrap.fill(line,85) for line in printed.splitlines()),fontsize=10)
+                page.insert_image(page.rect,stream=image_page.get_pixmap(matrix=fitz.Matrix(2,2)).tobytes('png'))
         pdf.save(path)
     url='https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=77'
     path.with_suffix('.pdf.url').write_text(url)
@@ -51,6 +61,12 @@ def case(tmp_path, monkeypatch, request):
         native=pdf[0].get_text();page={'page':1,'native_text_sha256':sha(native.encode()),
             'render_sha256':sha(pdf[0].get_pixmap(matrix=fitz.Matrix(2,2)).tobytes('png'))}
     layout=subprocess.run(['pdftotext','-layout',str(path),'-'],check=True,capture_output=True,text=True).stdout
+    corrected=layout
+    if config.get('native_correction'):
+        assert layout.count(native_narration)==1
+        corrected=layout.replace(native_narration,NARRATION,1)
+        source=minutes_text_source(context['meeting'],root=tmp_path,people=PEOPLE,cache_dir=tmp_path/'cache',
+            path=path,text=corrected,source_format=source['source_format'],source_sha256=source['source_sha256'])
     rows=[{'id':100,'meeting_id':77,'agenda_item_id':99,'text_content':AGENDA,'result':'CARRIED','mover_id':21,'seconder_id':23,'meta':{}},
           {'id':309,'meeting_id':77,'agenda_item_id':100,'text_content':CLOSING,'result':'CARRIED','mover_id':None,'seconder_id':None,
            'meta':{},'created_at':datetime(2026,1,8,tzinfo=timezone.utc)}]
@@ -63,16 +79,23 @@ def case(tmp_path, monkeypatch, request):
         'motion_id':309,'legacy_text':CLOSING,'expected_stored_result':'CARRIED','claim_sha256':digest(project_claim(rows[1])),
         'claim_row_sha256':row_sha(rows[1]),'printed_body':NARRATION,**page,
         'source_passage':NARRATION,'source_passage_start':source['text'].index(NARRATION),
-        'native_passage':NARRATION,'native_passage_start':native.index(NARRATION),
+        'native_passage':native_narration,'native_passage_start':native.index(native_narration),
         'allowed_new_decisions':[deepcopy(accepted)],'first_review_sha256':FIRST,'independent_review_sha256':SECOND}
     admission={'schema':'reviewed-original-minutes-v1','project_ref':'test-project','municipality_id':1,'catalog':context['meeting'],
         'file_inventory':reviewed_sources.source_inventory(tmp_path,context['meeting']),'selected_file':source['source_file'],
         'source_sha256':source['source_sha256'],'source_url':url,'mode':'reviewed_native_image_decisions',
         'review_status':'independently_reviewed_original_source','render_scale':2,'pymupdf_version':fitz.VersionBind,
         'native_layout_sha256':sha(layout.encode()),'native_first_page_sha256':sha(native.encode()),'pages':[page],
-        'text_corrections':[],'corrected_text_sha256':sha(layout.encode()),'parsed_blocks_sha256':digest(source['blocks']),
+        'text_corrections':[],'corrected_text_sha256':sha(corrected.encode()),'parsed_blocks_sha256':digest(source['blocks']),
         'independent_original_image_review_sha256':FIRST,'second_independent_original_image_review_sha256':SECOND,
         'accepted_decisions':[accepted],'closing_conflict_capabilities':[cap]}
+    if config.get('native_correction'):
+        correction={**page,'native_quote':native_narration,'printed_quote':NARRATION,
+            'independent_review_sha256':FIRST,'authority':'reviewed_documentary_native_witness_correction_only'}
+        cap['native_correction']=deepcopy(correction)
+        admission['documentary_native_corrections']=[correction]
+        admission['text_corrections']=[{'page':1,'native_quote':native_narration,'reviewed_quote':NARRATION,
+            'authority':'original_image_text_correction_only'}]
     source=reviewed_sources.source_from_review(admission,meeting=context['meeting'],root=tmp_path,people=PEOPLE,
         cache_dir=tmp_path/'cache',project_ref='test-project',municipality_id=1)
     review={'schema':'reviewed-legacy-occurrence-reservations-v1','meeting_id':77,'project_ref':'test-project','municipality_id':1,
@@ -97,6 +120,9 @@ def plan(case):
         ('allow_reviewed_legacy_reservations','project_ref','municipality_id','archive_root','closing_linked_vote_counts') if k in context})
 
 
+@pytest.mark.parametrize('case',[{},
+    {'native_narration':'Acting Mayor Stewart adjou ed the meeting at 6:42 pm.','native_correction':True},
+    {'native_narration':'Acting Mayor Stewart a\nurned the meeting at 6:42 pm.','native_correction':True}],indirect=True)
 def test_only_disjoint_reviewed_fact_can_proceed_while_closing_stays_unresolved(case):
     context,rows,*_=case;before=deepcopy(rows);source_before=deepcopy(context['source'])
     result=plan(case)
@@ -139,6 +165,37 @@ def repin(case, *, source=False, rows=False):
         review['closing_conflict_quarantines'][0]['source_review_sha256']=digest(admission)
     stores['legacy'].write_text(json.dumps(review,sort_keys=True))
     legacy.ENROLLED[77]=sha(stores['legacy'].read_bytes())
+
+
+CORRECTED_NATIVE = {'native_narration':'Acting Mayor Stewart adjou ed the meeting at 6:42 pm.',
+    'native_correction':True}
+
+
+@pytest.mark.parametrize('case,change,detail',[
+    (CORRECTED_NATIVE,'missing_native_capability','passage'),
+    (CORRECTED_NATIVE,'source_witness_not_enrolled','independent image proof'),
+    (CORRECTED_NATIVE,'duplicate_source_witness','independent image proof'),
+    (CORRECTED_NATIVE,'native_page_drift','independent image proof'),
+    (CORRECTED_NATIVE,'independent_pin_drift','independent image proof'),
+    ({**CORRECTED_NATIVE,'native_narration':'Acting Mayor Stewart adjou ed the meeting at 6:43 pm.'},'none','only the verb'),
+    ({**CORRECTED_NATIVE,'native_narration':'Mayor Young adjou ed the meeting at 6:42 pm.'},'none','only the verb'),
+    ({**CORRECTED_NATIVE,'native_narration':'Acting Mayor Stewart reopened the meeting at 6:42 pm.'},'none','only the verb'),
+    ({**CORRECTED_NATIVE,'native_narration':'Acting Mayor Stewart adjou\nCARRIED.\ned the meeting at 6:42 pm.'},'none','only the verb'),
+    ({**CORRECTED_NATIVE,'native_narration':'Acting Mayor Stewart adjou\nMOVED BY: Colby Harder\ned the meeting at 6:42 pm.'},'none','only the verb'),
+    ({**CORRECTED_NATIVE,'extra':NARRATION+'\n'},'none','one complete documentary')],indirect=['case'])
+def test_native_witness_correction_cannot_remove_authority_or_change_event_or_escape_enrolled_proof(case,change,detail):
+    context,rows,review,admission,_=case
+    cap=review['closing_conflict_quarantines'][0]['capability']
+    if change=='missing_native_capability':cap.pop('native_correction')
+    elif change=='source_witness_not_enrolled':admission['documentary_native_corrections']=[]
+    elif change=='duplicate_source_witness':admission['documentary_native_corrections']*=2
+    elif change=='native_page_drift':cap['native_correction']['native_text_sha256']='bad'
+    elif change=='independent_pin_drift':cap['native_correction']['independent_review_sha256']=SECOND
+    repin(case,source=True)
+    before=deepcopy(rows);result=plan(case)
+    assert result['new_motions']==[] and rows==before
+    assert result['source_report']['status']=='reviewed_legacy_occurrence_review_stale'
+    assert detail in result['source_report']['held'][0]['detail']
 
 
 @pytest.mark.parametrize('change,expected',[
