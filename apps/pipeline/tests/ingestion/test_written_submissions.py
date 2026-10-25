@@ -201,3 +201,10 @@ def test_letter_excerpt_starts_at_the_writers_header():
     from pipeline.ingestion.written_submissions import letter_excerpt
     text = "From: Ben Moreau\nI oppose.\n\nSubmission: Chris Burdge\nFrom: Chris Burdge\nTraffic is bad."
     assert letter_excerpt(text, "Chris Burdge").startswith("Submission: Chris Burdge")
+
+
+def test_letters_already_placed_describe_an_item():
+    from pipeline.ingestion.written_submissions import _item_description
+    item = {"item_order": "3.c", "title": "Bylaw 1955 OCP amendment 2207 Millstream Rd",
+            "context_letters": ["Western Speedway Rezoning", "Goldie Road connections"]}
+    assert "Letters already placed here are about: Western Speedway Rezoning; Goldie Road connections" in _item_description(item)

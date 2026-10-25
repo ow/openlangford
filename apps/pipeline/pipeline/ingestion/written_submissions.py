@@ -248,10 +248,11 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
     unplaced = dict((meeting.get("meta") or {}).get("written_unplaced") or {})
     if not unplaced:
         return {"placed": 0, "held": 0, "preview": []}
-    items = with_item_context(supabase, supabase.table("agenda_items").select("id,meeting_id,matter_id,item_order,title,plain_english_summary")
+    items = with_item_context(supabase, supabase.table("agenda_items").select("id,meeting_id,matter_id,item_order,title,plain_english_summary,meta")
                               .eq("meeting_id", meeting_id).order("item_order").execute().data or [])
     by_id = {it["id"]: it for it in items}
     plan = []  # (extracted_id, key, item_id, letter)
+    refreshed = {}  # (extracted_id, key) -> fresh candidates for letters that stay held
     held = 0
     texts = {}
     for extracted_id in unplaced:
@@ -266,8 +267,10 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
                                           document_title=source.get("title") or "")
             if placed:
                 plan.append((extracted_id, entry["key"], next(iter(placed)), letter))
+            elif still:
+                refreshed[(extracted_id, entry["key"])] = still[0]["candidates"]
             held += len(still)
-    if dry_run or not plan:
+    if dry_run:
         return {"placed": len(plan), "held": held, "preview": [(l, by_id[i]) for _, _, i, l in plan]}
 
     taken = []
@@ -282,7 +285,15 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
             source["letters"] = [l for l in source["letters"] if l.get("key") != key]
             placements.setdefault(extracted_id, {})[key] = item_id
             taken.append((extracted_id, item_id, letter, source))
-        if not taken:
+        # Letters that stay held get today's suggestions, not the ones from when they were first held.
+        changed = bool(taken)
+        for extracted_id, source in queue.items():
+            for letter in source["letters"]:
+                fresh = refreshed.get((extracted_id, letter.get("key")))
+                if fresh is not None and fresh != letter.get("candidates"):
+                    letter["candidates"] = fresh
+                    changed = True
+        if not changed:
             return None
         queue = {k: v for k, v in queue.items() if v["letters"]}
         meta["written_placements"] = placements
@@ -425,6 +436,8 @@ def _item_description(item: dict) -> str:
         parts.append("Documents: " + "; ".join(item["context_documents"])[:400])
     if item.get("context_summaries"):
         parts.append("Document summaries: " + " ".join(item["context_summaries"])[:500])
+    if item.get("context_letters"):
+        parts.append("Letters already placed here are about: " + "; ".join(item["context_letters"])[:400])
     if item.get("shared_terms"):
         parts.append("Shares with this letter: " + ", ".join(item["shared_terms"]))
     if item.get("context_decisions"):
@@ -446,8 +459,16 @@ def with_item_context(supabase, items: list[dict]) -> list[dict]:
         decided = [(m.get("plain_english_summary") or m.get("text_content") or "")[:160]
                    for m in motions if m["agenda_item_id"] == item["id"]]
         summaries = [d["summary"][:220] for d in docs if d["agenda_item_id"] == item["id"] and d.get("summary")]
+        # Letters already here (admin decisions and confident placements) show what people call this item:
+        # "Western Speedway" for an item that only says "2207 Millstream Rd".
+        placed = ((item.get("meta") or {}).get("written_participation") or {}).get("documents") or []
+        about = []
+        for group in placed:
+            for value in [group.get("title"), *(l.get("topic") for l in group.get("letters") or [])]:
+                if value and value not in about:
+                    about.append(value)
         out.append({**item, "context_documents": titles[:8], "context_summaries": summaries[:5],
-                    "context_decisions": [d for d in decided if d][:5]})
+                    "context_decisions": [d for d in decided if d][:5], "context_letters": about[:10]})
     return out
 
 
