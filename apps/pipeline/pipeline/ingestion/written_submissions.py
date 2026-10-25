@@ -206,11 +206,26 @@ NOT_RESIDENTS = _re.compile(r"staff report|grant|\bGIA\b|funding request|budget|
                             r"province of|regional district|library|school district|union of bc", _re.I)
 MAX_CHARS = 700000  # read in chunks of CHUNK_CHARS
 PLACE_MIN = 0.7
+NONE = -1  # decider index for "not about any single agenda item"
 PROCEDURAL = ("adoption of", "approval of the agenda", "call to order", "adjournment", "in camera", "minutes of")
 
 
 def is_correspondence(title: str) -> bool:
     return bool(TITLE.search(title or "")) and not NOT_RESIDENTS.search(title or "")
+
+
+GENERAL_TITLES = (re.compile(r"^(?:[\d.]+\s*)?correspondence\.?$", re.I),
+                  re.compile(r"^(?:[\d.]+\s*)?public participation\.?$", re.I))
+
+
+def general_item(items: list[dict]) -> dict | None:
+    """Where letters not about any single agenda item go: the meeting's Correspondence section,
+    else its Public Participation section. None if the agenda has neither."""
+    for title in GENERAL_TITLES:
+        for item in sorted(items, key=lambda it: _order_key(it.get("item_order"))):
+            if title.match((item.get("title") or "").strip()):
+                return item
+    return None
 
 
 def _order_key(order) -> tuple:
@@ -253,7 +268,7 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
                               .eq("meeting_id", meeting_id).order("item_order").execute().data or [])
     by_id = {it["id"]: it for it in items}
     plan = []  # (extracted_id, key, item_id, letter)
-    refreshed = {}  # (extracted_id, key) -> fresh candidates for letters that stay held
+    refreshed = {}  # (extracted_id, key) -> fresh candidates and general score for letters that stay held
     held = 0
     texts = {}
     for extracted_id in unplaced:
@@ -269,7 +284,7 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
             if placed:
                 plan.append((extracted_id, entry["key"], next(iter(placed)), letter))
             elif still:
-                refreshed[(extracted_id, entry["key"])] = still[0]["candidates"]
+                refreshed[(extracted_id, entry["key"])] = {"candidates": still[0]["candidates"], "general": still[0]["general"]}
             held += len(still)
     if dry_run:
         return {"placed": len(plan), "held": held, "preview": [(l, by_id[i]) for _, _, i, l in plan]}
@@ -293,8 +308,8 @@ def replace_held(supabase, meeting_id: int, *, decide=None, dry_run: bool = Fals
         for extracted_id, source in queue.items():
             for letter in source["letters"]:
                 fresh = refreshed.get((extracted_id, letter.get("key")))
-                if fresh is not None and fresh != letter.get("candidates"):
-                    letter["candidates"] = fresh
+                if fresh is not None and any(letter.get(k) != v for k, v in fresh.items()):
+                    letter.update(fresh)
                     changed = True
         if not changed:
             return None
@@ -405,13 +420,16 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
     A linked document keeps all its letters on that item. Otherwise each letter
     goes where an admin put it, or where ``decide(context, choices)`` -> ranked
     [(index, probability), ...] is confident; the rest are held with the top
-    candidates. Letters an admin marked as not about any item are dropped.
+    candidates. Letters not about any single item (the model's "none", or an admin's
+    decision) go to the meeting's general item (Correspondence / Public Participation)
+    when it has one; otherwise they are held (model) or dropped (admin).
     """
     if linked_item_id:
         return ({linked_item_id: letters} if letters else {}), []
     decisions = decisions or {}
+    general = general_item(items)
     choices = [it for it in items if not any(p in (it.get("title") or "").lower() for p in PROCEDURAL)
-               and not _is_heading(it, items)]
+               and not _is_heading(it, items) and it is not general]
     by_id = {it["id"]: it for it in items}
     placed: dict[int, list[dict]] = {}
     held: list[dict] = []
@@ -419,6 +437,8 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
         key = letter_key(letter)
         if key in decisions:
             target = decision_record(decisions[key]).get("item")
+            if target is None and general:
+                target = general["id"]
             if target in by_id:
                 placed.setdefault(target, []).append(letter)
             continue
@@ -428,7 +448,12 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
                    + _examples_text(similar_examples(letter, examples or [], exclude=letter.get("_exclude"))))
         terms = specific_terms(f"{document_title} {letter['topic']} {letter['point']} {excerpt}")
         offered = [{**it, "shared_terms": sorted(terms & specific_terms(_item_text(it)))} for it in choices]
-        ranked = [(i, p) for i, p in decide(context, offered) if 0 <= i < len(choices)]
+        answers = decide(context, offered)
+        ranked = [(i, p) for i, p in answers if 0 <= i < len(choices)]
+        none = sum(p for i, p in answers if i == NONE)
+        if general and none >= PLACE_MIN:
+            placed.setdefault(general["id"], []).append(letter)
+            continue
         # The same matter often appears as several items (hearing, readings): judge the matter's
         # combined probability, and keep all its letters on its first item in the meeting.
         by_matter: dict = {}
@@ -443,7 +468,7 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
             first = min(members, key=lambda i: (_order_key(choices[i].get("item_order")), i))
             placed.setdefault(choices[first]["id"], []).append(letter)
         else:
-            held.append({**letter, "key": key, "candidates": [
+            held.append({**letter, "key": key, "general": round(none, 3), "candidates": [
                 {"item_id": choices[i]["id"], "title": choices[i].get("title"), "probability": round(p, 3)}
                 for i, p in ranked[:3]]})
     return placed, held
@@ -560,9 +585,8 @@ def _item_decider():
         answer = ai.decide(context, [question]).get("item")
         if answer is None or answer.type != "choice":
             return []
-        ranked = sorted(((p.value, p.probability) for p in answer.probabilities if p.value != "none"),
-                        key=lambda vp: -vp[1])
-        return [(int(value[1:]), probability) for value, probability in ranked]
+        ranked = sorted(((p.value, p.probability) for p in answer.probabilities), key=lambda vp: -vp[1])
+        return [(NONE if value == "none" else int(value[1:]), probability) for value, probability in ranked]
     return decide
 
 

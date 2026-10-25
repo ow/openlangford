@@ -121,7 +121,27 @@ def test_section_headings_are_not_offered():
     seen = []
     place_letters([{"who": "A", "topic": "t", "point": "p"}], items, linked_item_id=None,
                   decide=lambda c, choices: seen.append([x["id"] for x in choices]) or [])
-    assert seen == [[2, 3]]
+    assert seen == [[2]]  # Correspondence is where general letters go, not a choice
+
+
+def test_general_letters_go_to_correspondence_then_public_participation():
+    from pipeline.ingestion.written_submissions import NONE, general_item, letter_key
+    items = [{"id": 1, "item_order": "5", "title": "5. PUBLIC PARTICIPATION"},
+             {"id": 2, "item_order": "6.1", "title": "Rezoning 904 Dunford"},
+             {"id": 3, "item_order": "11", "title": "CORRESPONDENCE"},
+             {"id": 4, "item_order": "11.a", "title": "CORRESPONDENCE - Rugby Canada"}]
+    assert general_item(items)["id"] == 3
+    assert general_item(items[:2])["id"] == 1
+    assert general_item(items[1:2]) is None
+    letter = {"who": "A", "topic": "Crime", "point": "Raises concerns about crime"}
+    placed, held = place_letters([letter], items, linked_item_id=None, decide=lambda c, choices: [(NONE, 0.9), (0, 0.1)])
+    assert placed == {3: [letter]} and held == []
+    # Without a general item, a confident "none" still waits for review.
+    placed, held = place_letters([letter], items[1:2], linked_item_id=None, decide=lambda c, choices: [(NONE, 0.9)])
+    assert placed == {} and held[0]["general"] == 0.9
+    # An admin's "not about an item" also lands there.
+    placed, _ = place_letters([letter], items, linked_item_id=None, decide=None, decisions={letter_key(letter): None})
+    assert placed == {3: [letter]}
 
 
 def test_author_titles_and_credentials_are_dropped():

@@ -15,6 +15,8 @@ export type WrittenDocument = {
 export type WrittenParticipation = { version?: string; documents?: WrittenDocument[]; letters?: WrittenLetter[] };
 export type HeldLetter = WrittenLetter & {
   key: string;
+  /** The model's probability that the letter is about no single agenda item. */
+  general?: number;
   candidates: { item_id: number; title?: string; probability: number }[];
 };
 export type UnplacedDocument = { document_id: number; title?: string; fingerprint?: string; letters: HeldLetter[] };
@@ -48,7 +50,7 @@ export function takeHeld(
   else delete unplaced[extractedId];
   if (Object.keys(unplaced).length) meeting.written_unplaced = unplaced;
   else delete meeting.written_unplaced;
-  const { key: _key, candidates: _candidates, ...letter } = held;
+  const { key: _key, candidates: _candidates, general: _general, ...letter } = held;
   // Who decided, and a copy of the letter: the pipeline learns from admin decisions (worked examples, evaluation).
   meeting.written_placements = {
     ...(meeting.written_placements || {}),
@@ -64,6 +66,24 @@ export function takeHeld(
     },
   };
   return { meetingMeta: meeting, letter: letter as WrittenLetter, source };
+}
+
+/**
+ * Where letters not about any single agenda item go: the meeting's Correspondence section,
+ * else its Public Participation section (mirrors the pipeline's general_item).
+ */
+export function generalItem<T extends { title: string | null; item_order?: string | null }>(items: T[]): T | null {
+  const order = (o?: string | null) => (o || "").match(/\d+/g)?.map(Number) ?? [Infinity];
+  const sorted = [...items].sort((a, b) => {
+    const [x, y] = [order(a.item_order), order(b.item_order)];
+    for (let i = 0; i < Math.max(x.length, y.length); i++) if ((x[i] ?? -1) !== (y[i] ?? -1)) return (x[i] ?? -1) - (y[i] ?? -1);
+    return 0;
+  });
+  for (const pattern of [/^(?:[\d.]+\s*)?correspondence\.?$/i, /^(?:[\d.]+\s*)?public participation\.?$/i]) {
+    const found = sorted.find((it) => pattern.test((it.title || "").trim()));
+    if (found) return found;
+  }
+  return null;
 }
 
 /** Add letters from one source document to an item's written participation. */

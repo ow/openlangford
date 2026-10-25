@@ -9,7 +9,7 @@ import { NativeSelect } from "../components/ui/native-select";
 import { displayTitle, matterTitle } from "../lib/display-text";
 import { documentPath, meetingPath } from "../lib/paths";
 import { cn, formatDate } from "../lib/utils";
-import { addToItem, shortItemLabel, specificTerms, takeHeld, type UnplacedDocument, type WrittenLetter } from "../lib/written";
+import { addToItem, generalItem, shortItemLabel, specificTerms, takeHeld, type UnplacedDocument, type WrittenLetter } from "../lib/written";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Letter placement | Open Langford" },
@@ -116,7 +116,7 @@ export async function loadLetterQueue(supabase: Supabase) {
         const entries = Object.entries((meeting.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap(
           ([extractedId, doc]) =>
             doc.letters.map((held) => {
-              const { key, candidates, ...letter } = held;
+              const { key, candidates, general, ...letter } = held;
               const top = candidates[0]?.probability ?? 0;
               const excerpt = excerptFor(textByDoc.get(Number(extractedId)) || "", letter.who);
               const letterTerms = specificTerms(`${doc.title || ""} ${letter.topic} ${letter.point} ${excerpt}`);
@@ -131,7 +131,7 @@ export async function loadLetterQueue(supabase: Supabase) {
                   probability: c.probability,
                   shared: [...letterTerms].filter((t) => itemTerms.get(c.item_id)?.has(t)).sort(),
                 })),
-                likelyNone: top < 0.15,
+                likelyNone: general != null ? general >= 0.5 : top < 0.15,
                 excerpt,
               };
             }),
@@ -152,9 +152,11 @@ export async function loadLetterQueue(supabase: Supabase) {
             suggested: entries.filter((e) => !e.likelyNone && e.candidates[0]?.itemId === it.id).map((e) => e.id),
           }))
           .sort((a, b) => b.suggested.length - a.suggested.length);
+        const general = generalItem(meetingItems as { id: number; title: string; item_order: string | null }[]);
         return {
           id: meeting.id as number,
           slug: meeting.slug as string | null,
+          general: general ? { id: general.id, label: shortItemLabel(general.item_order, displayTitle(general.title)) } : null,
           title: meeting.title as string,
           meeting_date: meeting.meeting_date as string,
           entries,
@@ -206,6 +208,14 @@ export async function action({ request }: Route.ActionArgs) {
 
   let itemTitle: string | null = null;
   try {
+    // "Not about an item": the letter goes under the meeting's Correspondence / Public Participation
+    // section; the decision itself stays "no item", which is what the pipeline learns from.
+    let target = itemId;
+    if (intent === "dismiss") {
+      const { data: meetingItems, error } = await supabase.from("agenda_items").select("id, title, item_order").eq("meeting_id", meetingId);
+      if (error) throw error;
+      target = generalItem(meetingItems || [])?.id ?? null;
+    }
     if (itemId) {
       const { data: item, error } = await supabase.from("agenda_items").select("meeting_id, title").eq("id", itemId).single();
       if (error) throw error;
@@ -233,8 +243,8 @@ export async function action({ request }: Route.ActionArgs) {
     if (!updated) return { ok: true, count: 0, entries };
 
     // 2. Put them on the item.
-    if (itemId) {
-      await guardedUpdate(supabase, "agenda_items", itemId, (meta) =>
+    if (target) {
+      await guardedUpdate(supabase, "agenda_items", target, (meta) =>
         [...taken.entries()].reduce((acc, [extractedId, group]) => addToItem(acc, extractedId, group.source, group.letters), meta),
       );
     }
@@ -409,8 +419,13 @@ function LetterRow({ meeting, entry, hidden, handlers }: { meeting: MeetingGroup
           </button>
         )}
         {!other && (
-          <button type="button" onClick={() => decide("dismiss")} className="font-medium text-zinc-500 hover:text-zinc-800 hover:underline">
-            Not about an item
+          <button
+            type="button"
+            onClick={() => decide("dismiss")}
+            title={meeting.general ? `Goes under ${meeting.general.label}` : "Not shown on the meeting"}
+            className="font-medium text-zinc-500 hover:text-zinc-800 hover:underline"
+          >
+            {meeting.general ? "General letter to council" : "Not about an item"}
           </button>
         )}
       </div>
@@ -424,9 +439,14 @@ function NoItemGroup({ meeting, entries, handlers }: { meeting: MeetingGroup; en
   return (
     <div className="border-t border-zinc-100 bg-zinc-50/60 px-4 py-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-xs font-medium text-zinc-500">Probably not about any agenda item ({entries.length})</p>
+        <div>
+          <p className="text-xs font-medium text-zinc-500">Probably general letters to council ({entries.length})</p>
+          <p className="text-xs text-zinc-400">
+            {meeting.general ? `They'll go under ${meeting.general.label}.` : "This agenda has no Correspondence or Public Participation section, so they won't be shown."}
+          </p>
+        </div>
         <Button type="button" size="sm" variant="outline" onClick={() => decide("dismiss")}>
-          Leave {entries.length === 1 ? "it" : `all ${entries.length}`} off
+          {meeting.general ? `Put ${entries.length === 1 ? "it" : `all ${entries.length}`} there` : `Leave ${entries.length === 1 ? "it" : `all ${entries.length}`} off`}
         </Button>
       </div>
       <ul className="mt-1 space-y-0.5 text-xs text-zinc-600">
@@ -502,7 +522,7 @@ export default function AdminLetters({ loaderData }: Route.ComponentProps) {
           back={{ to: "/admin", label: "Admin" }}
           meta={[
             <span key="count" className="tabular-nums">
-              {toDecide} to place · {remaining.length - toDecide} probably not about an item
+              {toDecide} to place · {remaining.length - toDecide} probably general
               {hidden.size > 0 ? ` · ${hidden.size} done this session` : ""}
             </span>,
           ]}
