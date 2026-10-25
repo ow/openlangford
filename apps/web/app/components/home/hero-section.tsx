@@ -36,6 +36,14 @@ interface HeroSectionProps {
   user: any;
   recentMeeting: RecentMeeting;
   upcomingMeeting: UpcomingMeeting | null;
+  laterMeetings?: LaterMeeting[];
+}
+
+interface LaterMeeting {
+  id: number;
+  slug?: string | null;
+  title: string;
+  meeting_date: string;
 }
 
 /**
@@ -56,7 +64,7 @@ function plural(n: number, word: string) {
   return `${n} ${word}${n === 1 ? "" : "s"}`;
 }
 
-export function HeroSection({ shortName, user, recentMeeting, upcomingMeeting }: HeroSectionProps) {
+export function HeroSection({ shortName, user, recentMeeting, upcomingMeeting, laterMeetings = [] }: HeroSectionProps) {
   const { signupsEnabled } = useSiteFlags();
   return (
     <div className="relative bg-gradient-to-b from-brand-600 to-brand-700 text-white overflow-hidden">
@@ -71,7 +79,7 @@ export function HeroSection({ shortName, user, recentMeeting, upcomingMeeting }:
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-16">
           <LatestMeeting {...recentMeeting} />
-          <ComingUp meeting={upcomingMeeting} />
+          <ComingUp meeting={upcomingMeeting} later={laterMeetings} />
         </div>
 
         {!user && signupsEnabled && (
@@ -131,10 +139,10 @@ function LatestMeeting({ meeting, stats }: RecentMeeting) {
   );
 }
 
-export function ComingUp({ meeting }: { meeting: UpcomingMeeting | null }) {
+export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | null; later?: LaterMeeting[] }) {
   return (
     <article className="rounded-2xl bg-white/10 p-6 ring-1 ring-white/15 backdrop-blur-sm">
-      <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Next event</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Coming up</p>
 
       {!meeting ? (
         <p className="mt-3 text-sm text-brand-100">
@@ -200,9 +208,33 @@ export function ComingUp({ meeting }: { meeting: UpcomingMeeting | null }) {
 
           <Link
             to={meetingPath(meeting)}
-            className="mt-5 inline-block text-sm font-semibold text-white underline-offset-4 hover:underline"
+            className="mt-4 inline-block text-sm font-semibold text-white underline-offset-4 hover:underline"
           >
             View event
+          </Link>
+
+          {later.length > 0 && (
+            <ul className="mt-5 space-y-1 border-t border-white/15 pt-3">
+              {later.map((m) => (
+                <li key={m.id}>
+                  <Link to={meetingPath(m)} className="group flex items-baseline gap-4 py-1.5 text-sm">
+                    <span className="w-14 shrink-0 font-semibold tabular-nums text-brand-200">
+                      {formatDate(m.meeting_date, { month: "short", day: "numeric" })}
+                    </span>
+                    <span className="min-w-0 text-white/90 group-hover:text-white group-hover:underline underline-offset-4">
+                      {m.title}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <Link
+            to="/meetings"
+            className="mt-2 inline-block text-sm font-semibold text-brand-100 underline-offset-4 hover:text-white hover:underline"
+          >
+            Full calendar
           </Link>
         </>
       )}

@@ -17,7 +17,7 @@ it("presents inauguration as the next event without implying a regular council m
       meeting_date: "2026-11-02", agendaPreview: [],
     } }),
   ));
-  expect(html).toContain("Next event");
+  expect(html).toContain("Coming up");
   expect(html).toContain("Inauguration");
   expect(html).toContain("November 2, 2026");
   expect(html).toContain("View event");

@@ -134,6 +134,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
 
   let recentMeeting: any = null;
   let upcomingMeeting: any = null;
+  let laterMeetings: any[] = [];
   let activeMattersRaw: any[] = [];
   let recentMotionsRaw: any[] = [];
 
@@ -158,7 +159,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         .limit(1)
         .maybeSingle(),
 
-      // 2. Next upcoming meeting (singular)
+      // 2. Next few upcoming meetings; the first is featured
       supabase
         .from("meetings")
         .select(
@@ -168,8 +169,8 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         .gte("meeting_date", today)
         .neq("status", "Cancelled")
         .order("meeting_date", { ascending: true })
-        .limit(1)
-        .maybeSingle(),
+        .order("id", { ascending: true })
+        .limit(4),
 
       // 3. Active matters (6, ordered by last_seen)
       // NOTE: Do NOT select plain_english_summary from matters (always null)
@@ -205,7 +206,8 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
     }
 
     recentMeeting = recentMeetingRes.data;
-    upcomingMeeting = upcomingMeetingRes.data;
+    upcomingMeeting = upcomingMeetingRes.data?.[0] ?? null;
+    laterMeetings = (upcomingMeetingRes.data ?? []).slice(1);
     activeMattersRaw = activeMattersRes.data || [];
     recentMotionsRaw = recentMotionsRes.data || [];
   } catch (error) {
@@ -411,6 +413,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
     upcomingMeeting: upcomingMeeting
       ? { ...upcomingMeeting, agendaPreview, attendanceInfo }
       : null,
+    laterMeetings: laterMeetings.map(({ id, slug, title, meeting_date }) => ({ id, slug, title, meeting_date })),
     recentMeeting,
     recentMeetingStats,
     recentMeetingDecisions,
