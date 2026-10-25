@@ -278,3 +278,88 @@ def test_committee_header_review_does_not_certify_roster_or_affect_ordinary_plan
     context['allow_reviewed_source_header']=True
     _,report=canonical_motion_plan([],context,[])
     assert report['status']=='source_authoritative'
+
+
+IMAGE_NEW_BODIES=(
+    'THAT Council give Bylaw No. 2270 first reading.',
+    'THAT Council adopt Bylaw No. 2271.',
+)
+UNREVIEWED_BODY='THAT Council adopt Bylaw No. 2272.'
+
+
+def native_image_decisions_case(case):
+    meeting,review,root=case;path=root/review['selected_file'];path.unlink()
+    suffix=lambda body:'MOVED BY: Colby Harder\nSECONDED: Kimberley Guiry\n'+body+'\nCARRIED.\n'
+    visible=TEXT+''.join(suffix(body) for body in (*IMAGE_NEW_BODIES,UNREVIEWED_BODY))
+    native=visible.replace('SECONDED: Kimberley Guiry\n'+IMAGE_NEW_BODIES[0],
+                           'SEGONDED: Kimberley Guiry\n'+IMAGE_NEW_BODIES[0].replace('THAT Council','THATCouncif'))
+    # Preserve the correct printed image and an independently corrupt hidden OCR layer.
+    make_pdf(path,visible,True)
+    with fitz.open(path) as document:
+        document[0].insert_text((30,40),native,fontsize=12,render_mode=3)
+        document.save(root/'native-image-decisions.pdf')
+    path.write_bytes((root/'native-image-decisions.pdf').read_bytes())
+    raw=reviews.subprocess.run(['pdftotext','-layout',str(path),'-'],check=True,capture_output=True,text=True).stdout
+    corrections=[{'page':1,'native_quote':before,'reviewed_quote':after,
+                  'authority':'original_image_text_correction_only','image_quote':after}
+                 for before,after in [('SEGONDED: Kimberley Guiry','SECONDED: Kimberley Guiry'),
+                                      ('THATCouncif','THAT Council')]]
+    corrected=raw
+    for correction in corrections:
+        assert corrected.count(correction['native_quote'])==1
+        corrected=corrected.replace(correction['native_quote'],correction['reviewed_quote'])
+    source_sha=reviews.sha(path.read_bytes())
+    source=minutes_text_source(meeting,root=root,people=[],cache_dir=root/'cache',path=path,
+        text=corrected,source_format='original_pdf_reviewed_image_decisions',source_sha256=source_sha)
+    assert len(source['blocks'])==4
+    with fitz.open(path) as document:
+        page=document[0];native_sha=reviews.sha(page.get_text().encode())
+        render_sha=reviews.sha(page.get_pixmap(matrix=fitz.Matrix(3,3)).tobytes('png'))
+    proof={'page':1,'native_text_sha256':native_sha,'render_sha256':render_sha}
+    review.update(mode='reviewed_native_image_decisions',source_sha256=source_sha,
+        file_inventory=reviews.source_inventory(root,meeting),native_first_page_sha256=native_sha,
+        native_layout_sha256=reviews.sha(raw.encode()),corrected_text_sha256=reviews.sha(corrected.encode()),
+        parsed_blocks_sha256=digest(source['blocks']),pymupdf_version=fitz.VersionBind,
+        pages=[proof],text_corrections=corrections,accepted_decisions=[])
+    for body in IMAGE_NEW_BODIES:
+        block=next(b for b in source['blocks'] if b['motion_text']==body)
+        review['accepted_decisions'].append({'source_key':source_identity(77,source,block)['key'],
+            'raw_block_sha256':digest(block),'operative_body':body,'operative_body_sha256':reviews.sha(body.encode()),
+            'result':'CARRIED','pages':[1],'page_evidence':[deepcopy(proof)],
+            'independent_review_sha256':'a'*64,'authority':'operative_body_and_result_only'})
+    review.pop('remaining_holds',None)
+    return case
+
+
+@pytest.mark.parametrize('with_date_review',[False,True])
+def test_native_image_admission_whitelists_two_new_decisions_and_preserves_existing_unknown(scan_review,with_date_review):
+    meeting,review,root=native_image_decisions_case(scan_review)
+    if with_date_review:review['header_date']={'date':meeting['meeting_date'],'authority':'reviewed_original_header'}
+    source=reviews.source_from_review(review,meeting=meeting,root=root,
+        people=[{'id':1,'name':'Colby Harder'},{'id':2,'name':'Kimberley Guiry'}],cache_dir=root/'cache',
+        project_ref='test-project',municipality_id=1)
+    old={'id':10,'meeting_id':77,'agenda_item_id':99,'text_content':BODY,'result':None,
+         'mover_id':9,'seconder_id':8,'meta':{'manual_evidence':'preserve'}}
+    before=deepcopy(old);plan=plan_meeting(meeting,[old],[],source)
+    assert [(m['text_content'],m['result']) for m in plan['new_motions']]==[(body,'CARRIED') for body in IMAGE_NEW_BODIES]
+    assert any(h['reason']=='new_fact_not_explicitly_image_enrolled' for h in plan['held'])
+    assert old==before and plan['stored_outcome_unknown_ids']==[10]
+    assert source['present']==[] and source['header_attendance'] is None
+    assert all(all(m[k] is None for k in ('mover','seconder','mover_id','seconder_id')) for m in plan['new_motions'])
+    assert all(m['meta']['individual_vote_coverage']=='not_recorded' for m in plan['new_motions'])
+    persisted=[old]+[{**m,'id':i+11,'meeting_id':77,'agenda_item_id':99} for i,m in enumerate(plan['new_motions'])]
+    assert plan_meeting(meeting,persisted,[],source)['new_motions']==[]
+
+
+@pytest.mark.parametrize('change',['body','result','page','page_evidence','review','authority','scope','parsing'])
+def test_native_image_new_decision_changes_fail_closed(scan_review,change):
+    native_image_decisions_case(scan_review);review=scan_review[1];entry=review['accepted_decisions'][0]
+    if change=='body':entry['operative_body']=entry['operative_body'].replace('2270','9999')
+    elif change=='result':entry['result']='DEFEATED'
+    elif change=='page':entry['pages']=[2]
+    elif change=='page_evidence':entry['page_evidence'][0]['render_sha256']='changed'
+    elif change=='review':entry['independent_review_sha256']='not-a-review-digest'
+    elif change=='authority':entry['authority']='ballot_inference'
+    elif change=='scope':review['project_ref']='other-project'
+    else:review['parsed_blocks_sha256']='changed'
+    with pytest.raises(ValueError):read(scan_review)

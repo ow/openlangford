@@ -173,6 +173,8 @@ def canonical_motion_plan(items, context, existing_motions):
             return items, {'status': 'reviewed_legacy_occurrence_review_stale',
                            'held': [{'reason': 'reviewed_legacy_occurrence_review_stale', 'detail': str(error)}],
                            'source_motions': len(blocks)}
+        from pipeline.backfill.scaffold_coverage import exact_scaffold_reservations
+        reservations.update(exact_scaffold_reservations(source,claim_inventory,meeting,reservations))
     bound_ids = {choices[0]['id'] for block, identity, choices in bindings if len(choices) == 1} | set(reservations)
     unresolved = [row['id'] for row in existing_motions if row['id'] not in bound_ids]
     all_current_bound = all(row['id'] in reservations or bound_source_motion(row, source, meeting['id'], claim_inventory) is not None for row in existing_motions)
@@ -180,8 +182,11 @@ def canonical_motion_plan(items, context, existing_motions):
     for block, identity, choices in bindings:
         reservation = next((entry for entry in reservations.values() if entry['block'] is block), None)
         if reservation:
-            held.append({'source_key': identity['key'], 'reason': 'reviewed_legacy_occurrence_reserved_no_rewrite',
-                         'legacy_ids': [reservation['review']['motion_id']], 'review_sha256': reservation['review_sha256']})
+            derived='evidence_sha256' in reservation
+            held.append({'source_key': identity['key'],
+                         'reason': 'exact_scaffold_occurrence_reserved_no_rewrite' if derived else 'reviewed_legacy_occurrence_reserved_no_rewrite',
+                         'legacy_ids': [reservation['review']['motion_id']],
+                         **({'evidence_sha256':reservation['evidence_sha256']} if derived else {'review_sha256': reservation['review_sha256']})})
             continue
         key = normalize_text(block['motion_text'])
         view = operative_view(source, block)

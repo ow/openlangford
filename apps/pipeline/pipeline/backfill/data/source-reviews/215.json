@@ -1,0 +1,223 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 215,
+    "title": "Regular Council",
+    "meeting_date": "2022-06-20",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2022/06/2022-06-20 530pm Regular Council [e5b25897]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2022/06/2022-06-20 530pm Regular Council [e5b25897]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "563075462e759d49fbc153f6adde2c4a9122c4fb92b3706d97ffe2f73aabf6a2",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=3364"
+    },
+    {
+      "file": "archive/langford/Council/2022/06/2022-06-20 530pm Regular Council [e5b25897]/Minutes/Minutes.pdf",
+      "sha256": "a26fe63166a6063506164527afa44ebebd89410ae5f042bd1ba97aeab4eb1d0a",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=3035"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2022/06/2022-06-20 530pm Regular Council [e5b25897]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=3364",
+  "source_sha256": "563075462e759d49fbc153f6adde2c4a9122c4fb92b3706d97ffe2f73aabf6a2",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "976cffc6054339f73c198be031f9b29ff29305c475c44b12fef8c07bf73a809d",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "186c1ddb084206e0dbf5f1bec40db4443dfdc135333331737b2055109d14b2da",
+      "render_sha256": "9424c4b53e24895414c91060c83194575b89dfcd156fc5f8893ee3ee9dc2040e"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "ad57ecbed82ccfdd5f37fa3570e1fc45d2d426613a2959f02c59ee0acfbef687",
+      "render_sha256": "6941c574a68ae84e93116219eedddbec1aaafdddda6c80261cc2f29fd3f9a330"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "703e102a43aea192f4ee770898c7f0956967382f1a1fc477edea4d9f9b056e5e",
+      "render_sha256": "27d83c1cc2b2bb9dc4e30880596312557ce0d0096aac5ae8715053b957013f69"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "3d21a350412d8aaa006117e94728e880a45e4f09c8ac293155e18919b89ecd8f",
+      "render_sha256": "c4f134b6027866db08909132f8bb4e0944f58a8b564e363e8eb943fa593fbbdd"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "0120733f8e6f768340fde1c2a97bc1add0c2b96d3e22ef8d1e110272f51a960d",
+      "render_sha256": "cb868e240d24a2e0e98c9d7f1d0265a0c08c9260bc83829e96f5a6ce2fdaf91d"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "32e694693db465baea069d56dd4e0a2db427c7b0bcbe0573c443d74c0357f01b",
+      "render_sha256": "e85d7d445bc985bc308a5d8124a96d0fd493af8c59b607d61ef56743bb510b90"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "ff80476f6c68d2a711caf6200a0396756feae2d5540a9ceb9e7a55af7f2033d5",
+      "render_sha256": "6b645f9531de7d0da1036909bd417fe4f337b920e1d7a8e94f4d6f712237b54b"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "1740c94074886c2f75843312a90e15622242c88d6401469540379ed284a3d981",
+      "render_sha256": "5016aef78df2297d80e71133b8cece3f1584cc3f1a8a791d6a15e926763159bb"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "94b566472d8748008d51e528d3b9df83f1be8d2f648505f11f7281ab01d9789a",
+      "render_sha256": "05153ef5179424925690dae73b0a07c1cd4735e1491bb4293cbbed63ab22c30c"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "02964664bf9b5bdbee41e15035445d4854d7b93fb5a8a8805e284034b6cb4bca",
+      "render_sha256": "dac2187524e4c33c02a8cc433b87fba396d0c5d4e1ab8e565bfb187776077ca5"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "6f2b539416f02f413fb3b39ee056748d142cd75e68f56fc920e3af303092b0f5",
+      "render_sha256": "3e4280391b0111506d2a4cdcf393611c363597ca6450446bd9db82f56c59ca42"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "c9faded67a9c187edc38460d6d80491a4fa7b0af16ab5551004d065c384d53f1",
+      "render_sha256": "8f917c1ff2b1ac274c115a9a2b9cf9e099b94e03e6df58f418f7b4e0867efff4"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "3a65956517572ec521c897d9c2419dd1b8ae1560730c9fa3e2674390a87eada7",
+      "render_sha256": "815f46710819dd5948a88699730a5c8a764fc28e0cd5f66a251407de83bae5c6"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "89cc7f5b23b5a13362daa731d477d3801870e5fe2d4d2030aa51b6176c5aac6f",
+      "render_sha256": "30b9e97fb188806b3b8c629f407bf2f5fe5a438fcbb318369c6b6ae1119da550"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "0f4f1ea10f52c1bb0df33bd9e896b7bf8fdf27c88ac724a4f9ea326feb321a33",
+      "render_sha256": "abceb525402bd1a1c2f52c461a7554ddc873b9a31ca851334ce24e908255b51e"
+    },
+    {
+      "page": 16,
+      "native_text_sha256": "48cfea2daf2e1537748414f25ecb4ee00a8d4d978435e3c2b1dda832ff206647",
+      "render_sha256": "81658da86b295da8d610fe6955021bf6d2e2ece28befe3fe2d4e84d3b74035a9"
+    },
+    {
+      "page": 17,
+      "native_text_sha256": "ed7e6b75e5357b397ed07a7e70f3948669573ba914280ce22a74f2236bec8c76",
+      "render_sha256": "02c5bd61caf4a51eacf0135308ddc1534d06a29f08573669526d69d7bc260df7"
+    },
+    {
+      "page": 18,
+      "native_text_sha256": "55e8768e49203eeeb64bc1fb5210d415ea221ccc074c4350f09fc59ebba136e0",
+      "render_sha256": "36373bc886cf91a6eb433fb40f2d2f52ff35e369d3cc7693829947adf9327889"
+    },
+    {
+      "page": 19,
+      "native_text_sha256": "379086825f367b0b898a7f48e8fe3db0e27e63ad63fd27c36bc12e5ca5b55fd2",
+      "render_sha256": "8ac121927e63323e67e5b11ab774e0137b803300d00a295c8d680a56b3551da6"
+    }
+  ],
+  "text_corrections": [
+    {
+      "page": 14,
+      "native_quote": "SEGONDED: SiflSHLSTROM",
+      "reviewed_quote": "SECONDED: SAHLSTROM",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "SECONDED: SAHLSTROM",
+      "reason": "Printed formal header only; no actor or ballot assignment."
+    },
+    {
+      "page": 14,
+      "native_quote": "anfiouht",
+      "reviewed_quote": "amount",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "amount",
+      "reason": "Printed operative word restored; amount remains $930,691.48."
+    },
+    {
+      "page": 18,
+      "native_quote": "THATCouncif",
+      "reviewed_quote": "THAT Council",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "THAT Council",
+      "reason": "Printed operative opening restored."
+    }
+  ],
+  "accepted_decisions": [
+    {
+      "source_key": "6567b02467a4af30a2b001004a1272251f1cc182fd8c1f8a5c09c74278cc6f72",
+      "raw_block_sha256": "15f06b050d2e488bebcb2d3978846f226eaed6ff07369cc91dd70283c7977804",
+      "operative_body": "THAT Council approve the sale of 1103 Goldstream and 2814 Leigh Road to Leigh Road Developments Ltd. In the amount of $930,691.48 and authorize the Mayor and CAO or Corporate Officer to execute the documents necessary to complete the sale and to make such minor amendments as may be required.",
+      "operative_body_sha256": "9674978bc3d01da75afde82458605510dc4cd3b2d41750b841160553757f4f1e",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "89cc7f5b23b5a13362daa731d477d3801870e5fe2d4d2030aa51b6176c5aac6f",
+          "render_sha256": "30b9e97fb188806b3b8c629f407bf2f5fe5a438fcbb318369c6b6ae1119da550"
+        }
+      ],
+      "independent_review_sha256": "8bd4daec8aabd4b0f93ccd0f70c365402c7548b9e2e8c7b22d796665db87b8a0",
+      "authority": "operative_body_and_result_only",
+      "source_heading": "11.6",
+      "prior_native_source_key": "6567b02467a4af30a2b001004a1272251f1cc182fd8c1f8a5c09c74278cc6f72",
+      "corrections": [
+        {
+          "native": "SEGONDED: SiflSHLSTROM",
+          "image": "SECONDED: SAHLSTROM",
+          "scope": "formal_header_only_no_actor_assignment"
+        },
+        {
+          "native": "anfiouht",
+          "image": "amount",
+          "scope": "operative_word"
+        }
+      ]
+    },
+    {
+      "source_key": "283c9f63ecaec04d7aba6c793b762c6442e2a49d1ba375951b2c0dd13190cabe",
+      "raw_block_sha256": "236aab82489dd1c3270c1d4675778b60cdb9b61aaa0fdfe38f49caaae5c7c2fc",
+      "operative_body": "THAT Council give Bylaw No. 2087 first reading.",
+      "operative_body_sha256": "f4aafe85dab2019aea173af084e1a4ad345044594a59ff314b3af765b99f2baa",
+      "result": "CARRIED",
+      "pages": [
+        18
+      ],
+      "page_evidence": [
+        {
+          "page": 18,
+          "native_text_sha256": "55e8768e49203eeeb64bc1fb5210d415ea221ccc074c4350f09fc59ebba136e0",
+          "render_sha256": "36373bc886cf91a6eb433fb40f2d2f52ff35e369d3cc7693829947adf9327889"
+        }
+      ],
+      "independent_review_sha256": "8bd4daec8aabd4b0f93ccd0f70c365402c7548b9e2e8c7b22d796665db87b8a0",
+      "authority": "operative_body_and_result_only",
+      "source_heading": "13.16",
+      "prior_native_source_key": "ea197f605a0ad6319bba595c65c6bf0f8120455655ed0472f4af8051ae027f8b",
+      "corrections": [
+        {
+          "native": "THATCouncif",
+          "image": "THAT Council",
+          "scope": "operative_opening_words"
+        }
+      ]
+    }
+  ],
+  "independent_original_image_review_sha256": "8bd4daec8aabd4b0f93ccd0f70c365402c7548b9e2e8c7b22d796665db87b8a0",
+  "native_first_page_sha256": "186c1ddb084206e0dbf5f1bec40db4443dfdc135333331737b2055109d14b2da",
+  "corrected_text_sha256": "604b02c9360d8134069bbc16d9b1fe712652709811470a31cdacea40080b2c2d",
+  "parsed_blocks_sha256": "2bd72e719a101bfa81c1a95b6901d8fe0d8e6cb4a5edc5cdda8c0577268a5326"
+}

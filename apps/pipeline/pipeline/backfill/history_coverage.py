@@ -78,17 +78,22 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
             identity = motion['_canonical_source_motion']
             block = motion['_source_motion']
             proof = motion.get('_operative_motion_body') or {}
+            reviewed_native = source.get('source_format') == 'original_pdf_reviewed_image_decisions'
+            if reviewed_native and identity['key'] not in source.get('reviewed_new_decision_keys', []):
+                base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_not_explicitly_image_enrolled'})
+                continue
             explicit = proof.get('status') == 'explicit_operative' or source.get('source_format') == 'official_html_structural'
             if not text_occurrence_unique(source, block) or not explicit:
                 base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_requires_unique_explicit_operative_body'})
                 continue
             actors = motion['_canonical_actor_ids']
+            actors_unreviewed = reviewed_native or source['source_format']=='original_pdf_reviewed_local_ocr'
             base['new_motions'].append({'parent_agenda_id': parent['id'] if parent else None,
                 'text_content': motion.get('_operative_motion_text') or motion['motion_text'], 'result': motion['result'],
-                'mover': motion.get('mover') if source['source_format']!='original_pdf_reviewed_local_ocr' else None,
-                'seconder': motion.get('seconder') if source['source_format']!='original_pdf_reviewed_local_ocr' else None,
-                'mover_id': actors['mover'] if source['source_format']!='original_pdf_reviewed_local_ocr' else None,
-                'seconder_id': actors['seconder'] if source['source_format']!='original_pdf_reviewed_local_ocr' else None,
+                'mover': motion.get('mover') if not actors_unreviewed else None,
+                'seconder': motion.get('seconder') if not actors_unreviewed else None,
+                'mover_id': actors['mover'] if not actors_unreviewed else None,
+                'seconder_id': actors['seconder'] if not actors_unreviewed else None,
                 'meta': {'canonical_source_motion': identity, 'operative_motion_body': proof,
                          'individual_vote_coverage': 'not_recorded',
                          'vote_record': {'coverage': 'not_recorded', 'source': 'bounded_official_minutes',

@@ -16,6 +16,7 @@ from pipeline.ingestion.canonical_motions import source_identity
 
 STORE = Path(__file__).parent / 'data' / 'source-reviews'
 ENROLLED = {
+    215: '4807df122679fa0dcdd0552485cfea243f0fba210dfa1bf448222a8e08ed9f7c',
     42: 'd7670a977e457a0a7af2e3908bb3983d60ffa1d9556eff7ccf461b1d0eba910d',
     223: 'fdbfb0bbe762ca77e9ec466765df0b4ab8fa3a9e806e6768b644a502cd63df1b',
     142: '1308caf3740b882b31070c148aa28bc25099c3ee6b162fdd0134f532231c4e31',
@@ -107,7 +108,7 @@ def source_from_review(review, *, meeting, root, people, cache_dir, project_ref,
                 raise ValueError('Reviewed native header changed')
         text=subprocess.run(['pdftotext','-layout',str(path),'-'],check=True,capture_output=True,text=True,timeout=40).stdout
         source_format='original_pdf_layout'
-        if review['mode']=='reviewed_native_image_corrections':
+        if review['mode'] in ('reviewed_native_image_corrections','reviewed_native_image_decisions'):
             if fitz.VersionBind!=review['pymupdf_version'] or sha(text.encode())!=review['native_layout_sha256']:
                 raise ValueError('Reviewed native extraction changed')
             native_pages=text.split('\f')
@@ -129,7 +130,8 @@ def source_from_review(review, *, meeting, root, people, cache_dir, project_ref,
                 text=text.replace(before,correction['reviewed_quote'],1)
             if sha(text.encode())!=review['corrected_text_sha256']:
                 raise ValueError('Reviewed image-corrected text changed')
-            source_format='original_pdf_reviewed_image_corrections'
+            source_format=('original_pdf_reviewed_image_decisions' if review['mode']=='reviewed_native_image_decisions'
+                           else 'original_pdf_reviewed_image_corrections')
     source=minutes_text_source(meeting,root=root,people=people,cache_dir=cache_dir,path=path,text=text,
                                source_format=source_format,source_sha256=review['source_sha256'])
     if source.get('error'):
@@ -146,15 +148,49 @@ def source_from_review(review, *, meeting, root, people, cache_dir, project_ref,
     if review.get('committee_scope'):
         source.update(reviewed_committee_scope=review['committee_scope'],present=[],header_attendance=None,
                       roster_unknown=['committee_scope_review_does_not_certify_roster'])
-    if review['mode']=='reviewed_native_image_corrections':
+    if review['mode'] in ('reviewed_native_image_corrections','reviewed_native_image_decisions'):
         if digest(source['blocks'])!=review['parsed_blocks_sha256']:
             raise ValueError('Reviewed image-corrected occurrences changed')
-        # Apply after any header-derived views. This view accounts for existing
-        # legacy occurrences only; it cannot certify new text, results, actors,
-        # attendance or individual ballots.
-        source.update(operative_views={},present=[],header_attendance=None,
+        source.update(present=[],header_attendance=None,
                       roster_unknown=['image_corrections_not_new_fact_or_ballot_authority'])
-        proof['authority']='legacy_occurrence_accounting_only'
+        if review['mode']=='reviewed_native_image_corrections':
+            # Apply after any header-derived views. Correction-only reviews
+            # cannot certify new text, results, actors or individual ballots.
+            source['operative_views']={}
+            proof['authority']='legacy_occurrence_accounting_only'
+        else:
+            accepted={entry['source_key']:entry for entry in review['accepted_decisions']}
+            if len(accepted)!=len(review['accepted_decisions']):
+                raise ValueError('Duplicate reviewed native decision')
+            found=set()
+            for block in source['blocks']:
+                identity=source_identity(meeting['id'],source,block);entry=accepted.get(identity['key'])
+                if not entry:
+                    continue  # Keep ordinary views for matching old claims only.
+                pages=entry['pages'];reviewer=entry['independent_review_sha256']
+                if (digest(block)!=entry['raw_block_sha256'] or entry['result']!=block['result']
+                        or entry['authority']!='operative_body_and_result_only'
+                        or not pages or any(type(p) is not int for p in pages)
+                        or pages!=list(range(pages[0],pages[-1]+1))
+                        or pages[0]<1 or pages[-1]>len(review['pages'])
+                        or not isinstance(reviewer,str) or len(reviewer)!=64
+                        or any(c not in '0123456789abcdef' for c in reviewer)
+                        or sha(entry['operative_body'].encode())!=entry['operative_body_sha256']
+                        or entry['page_evidence']!=[review['pages'][p-1] for p in pages]):
+                    raise ValueError('Reviewed native decision evidence changed')
+                source['operative_views'][f"{block['source_offset']}:{block['source_order']}"]={
+                    'source_sha256':source['source_sha256'],'raw_block':block,
+                    'status':'explicit_operative','version':'reviewed-native-original-image-body-v1',
+                    'operative_body':entry['operative_body'],'match_aliases':[],'excluded_spans':[],
+                    'original_image_review':{'review_sha256':digest(review),'independent_review_sha256':reviewer,
+                        'pages':pages,'page_evidence':entry['page_evidence'],'authority':'operative_body_and_result_only'}}
+                found.add(identity['key'])
+            if found!=set(accepted):
+                raise ValueError('Reviewed native decision occurrence not found')
+            # The catch-up writer must enforce this allowlist even when an
+            # unreviewed block has an ordinary explicit native operative view.
+            source['reviewed_new_decision_keys']=sorted(found)
+            proof['authority']='explicit_image_reviewed_new_decisions_only'
     if review['mode']=='reviewed_scan':
         if digest(source['blocks'])!=review['parsed_blocks_sha256'] or sha(source['text'].encode())!=review['source_text_sha256']:
             raise ValueError('Reviewed scan parsing changed')

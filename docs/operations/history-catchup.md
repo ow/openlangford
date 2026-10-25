@@ -132,3 +132,22 @@ stored results, actors, attendance or individual votes, including after a review
 header date is applied. Documentary adjournments remain held separately. An audit
 with no proposed additions is not a missing import; do not insert duplicates or
 manufacture an apply receipt to make its count match the existing motion table.
+
+`reviewed_native_image_decisions` is a separate, explicit admission mode when
+original images establish a complete operative body/result that damaged native
+text cannot supply. It keeps the same exact correction and image/hash guards,
+and enrolls each accepted occurrence with its raw-block hash, full body digest,
+ordered page evidence and independent-review digest. Ordinary native views may
+still match existing claims, but the catch-up writer rejects every new occurrence
+outside the explicit image-reviewed key list. New actor names/IDs and individual
+votes remain unrecorded. The correction-only mode above remains unable to add
+facts. Neither mode is loaded by ordinary ingestion or ballot reconstruction.
+
+Catch-up may also account for an existing claim when its complete operative
+body differs only by leading `That Council`/`That Committee` framing or a first
+list marker. This is exact full-remainder equality, never a substring or fuzzy
+match. It requires a complete current claim inventory, matching source date,
+one formal source occurrence and no competing claim, including a raw body that
+still contains excluded page headers. Different explicit roles, missing clauses,
+identifiers or quantities remain held. Derived evidence is labelled separately
+from manual reviews; old text, unknown outcomes and ballots remain unchanged.
