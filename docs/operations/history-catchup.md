@@ -291,3 +291,32 @@ receipts and ordinary-manifest isolation); the selected non-DB suite passed 325
 tests. Independent review is still required before publication. No real meeting
 is enrolled in this closing-conflict capability; separately reviewed NULL-only
 documentary phrase eligibility does not opt into it.
+
+### Draft: explicitly reviewed blank adjournment clock fields
+
+`reviewed_blank_time_adjournment_presence` is a separate catch-up-only
+capability. The existing literal and clock-required narration validators stay
+unchanged. An original image must explicitly show an unfilled clock field and
+`pm.` suffix, while both native and layout witnesses contain only the exact
+whole-line `The Chair adjourned the meeting at` prefix. The image observation is
+separate from those raw passages; the operator neither inserts a suffix into
+source text nor invents a time. Two distinct independent review hashes must be
+bound in both byte-pinned source and legacy artifacts.
+
+The existing row must remain NULL-result, unnamed and free of manual, unknown
+metadata or formal authority. Full-row and complete-inventory fingerprints,
+source/date/tenant/page/render pins, one final adjournment passage across timed
+and untimed events, and parsed/unparsed formal ownership checks all fail closed
+on drift or competition. No source key, actor identity, ballot or closing
+outcome is certified. A successful presence proof remains an explicit
+`reviewed_blank_time_adjournment_preserved_time_unknown_no_rewrite` diagnostic,
+with its ID in `blank_time_documentary_preserved_legacy_ids`; receipts remain
+partial even after disjoint reviewed decisions are inserted.
+
+This capability uses the same bounded authoritative zero-linked-vote audit,
+conditional votes-table write lock, closing-row lock and READ COMMITTED recheck
+as the separate non-NULL closing-conflict capability above. Ordinary manifests
+still acquire neither a new vote count nor votes-table lock. A cached NULL row
+or an out-of-band assertion of no votes is insufficient. This draft does not
+enroll meeting111 or make its cached source claims applicable; fresh full-row,
+agenda, source and vote-count audit plus independent review remain required.

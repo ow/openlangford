@@ -175,6 +175,14 @@ def canonical_motion_plan(items, context, existing_motions):
                 documentary_preservations = validate_documentary_preservations(review, source=source, inventory=claim_inventory,
                     current_rows=existing_motions, meeting=meeting, project_ref=context.get('project_ref'),
                     municipality_id=context.get('municipality_id'), archive_root=context['archive_root'])
+                from pipeline.backfill.blank_time_preservation import validate_blank_time_preservations
+                blank_time = validate_blank_time_preservations(review,source=source,inventory=claim_inventory,
+                    current_rows=existing_motions,meeting=meeting,project_ref=context.get('project_ref'),
+                    municipality_id=context.get('municipality_id'),archive_root=context['archive_root'],
+                    linked_vote_counts=context.get('closing_linked_vote_counts'))
+                if set(blank_time) & set(documentary_preservations):
+                    raise ValueError('Legacy row has competing documentary preservation types')
+                documentary_preservations.update(blank_time)
                 if set(reservations) & set(documentary_preservations):
                     raise ValueError('Legacy row cannot own both formal and documentary reservations')
                 from pipeline.backfill.supplemental_preservation import validate_supplemental_preservations
@@ -202,7 +210,9 @@ def canonical_motion_plan(items, context, existing_motions):
     bound_ids = {choices[0]['id'] for block, identity, choices in bindings if len(choices) == 1} | set(reservations) | set(documentary_preservations) | set(supplemental_preservations)
     unresolved = [row['id'] for row in existing_motions if row['id'] not in bound_ids]
     all_current_bound = all(row['id'] in reservations or row['id'] in documentary_preservations or row['id'] in supplemental_preservations or bound_source_motion(row, source, meeting['id'], claim_inventory) is not None for row in existing_motions)
-    held = [{'reason': ('reviewed_adjournment_narration_preserved_no_rewrite'
+    held = [{'reason': ('reviewed_blank_time_adjournment_preserved_time_unknown_no_rewrite'
+                       if entry['type']=='reviewed_blank_time_adjournment_presence'
+                       else 'reviewed_adjournment_narration_preserved_no_rewrite'
                        if entry['type']=='reviewed_adjournment_narration_preservation'
                        else 'reviewed_documentary_claim_preserved_no_rewrite'), 'legacy_ids': [claim_id],
              'authority': 'documentary_preservation_only', 'review_sha256': entry['review_sha256']}
@@ -323,6 +333,8 @@ def canonical_motion_plan(items, context, existing_motions):
                    'unbound_outcome_leads': unbound_outcomes,
                    'unresolved_closing_conflict_ids': sorted(closing_conflicts),
                    'documentary_preserved_legacy_ids': sorted(documentary_preservations),
+                   'blank_time_documentary_preserved_legacy_ids': sorted(claim_id for claim_id,entry in documentary_preservations.items()
+                       if entry['type']=='reviewed_blank_time_adjournment_presence'),
                    'supplemental_preserved_legacy_ids': sorted(supplemental_preservations),
                    'adjournment_narration_preserved_legacy_ids': sorted(claim_id for claim_id, entry in documentary_preservations.items()
                        if entry['type']=='reviewed_adjournment_narration_preservation'),

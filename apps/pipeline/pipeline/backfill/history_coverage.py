@@ -147,7 +147,8 @@ def audit(connection, meeting_ids, municipality_id, archive_root, cache_dir, pro
             review=load_review(meeting_id)
         except (ValueError,OSError,KeyError):
             review=None  # Existing planner reports stale reviews without widening scope.
-        entries=review.get('closing_conflict_quarantines',[]) if review else []
+        entries=([*review.get('closing_conflict_quarantines',[]),
+                  *review.get('blank_time_documentary_preservations',[])] if review else [])
         if entries:
             ids=[e['capability']['motion_id'] for e in entries]
             if not set(ids)<={m['id'] for m in motions}:
@@ -204,7 +205,8 @@ def apply_manifest(connection, manifest, regenerate, archive_root):
         ids=[c['motion_id'] for c in counts]
         if (proof.get('authority')!='operator_scoped_linked_vote_count_v1'
                 or proof.get('meeting_id')!=plan['meeting_id'] or len(ids)!=1
-                or ids!=plan.get('source_report',{}).get('unresolved_closing_conflict_ids')
+                or ids!=sorted(set(plan.get('source_report',{}).get('unresolved_closing_conflict_ids',[])
+                                   +plan.get('source_report',{}).get('blank_time_documentary_preserved_legacy_ids',[])))
                 or counts!=[{'motion_id':ids[0],'linked_votes':0}]):
             raise ValueError('Closing linked-vote manifest scope is not exactly reviewed zero')
         # The vote table lock excludes all vote DML, including installations
@@ -260,6 +262,8 @@ def apply_manifest(connection, manifest, regenerate, archive_root):
                  'stored_outcome_unknown_ids': plan.get('stored_outcome_unknown_ids', [])}
         if 'closing_linked_vote_counts' in plan:
             entry['unresolved_closing_conflict_ids']=plan['source_report']['unresolved_closing_conflict_ids']
+            if plan['source_report'].get('blank_time_documentary_preserved_legacy_ids'):
+                entry['blank_time_documentary_preserved_legacy_ids']=plan['source_report']['blank_time_documentary_preserved_legacy_ids']
             entry['closing_linked_vote_counts']=plan['closing_linked_vote_counts']
         query(connection, "UPDATE meetings SET meta=jsonb_set(COALESCE(meta,'{}'::jsonb),'{history_catchup_receipts}',COALESCE(meta->'history_catchup_receipts','{}'::jsonb)||jsonb_build_object(%s,%s::jsonb)) WHERE id=%s", (manifest_sha, Json(entry), meeting_id))
         receipt['meetings'].append({'meeting_id': meeting_id, 'inserted_ids': [r['id'] for r in inserted], 'coverage': remaining_coverage(plan)})

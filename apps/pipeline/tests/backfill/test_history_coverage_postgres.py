@@ -103,14 +103,16 @@ def test_changed_original_and_late_failure_leave_no_partial_batch(database,tmp_p
     assert verify_manifest(database,manifest) is None
 
 
-def closing_case(connection,tmp_path,monkeypatch):
+def closing_case(connection,tmp_path,monkeypatch,kind="conflict"):
     from psycopg2.extras import Json
     from test_closing_conflicts import case, AGENDA, CLOSING
+    if kind=="blank":
+        from test_blank_time_preservation import case
     from pipeline.backfill.history_coverage import audit
     query(connection,"INSERT INTO agenda_items(id,meeting_id,item_order,title) VALUES(99,77,'1','Agenda'),(100,77,'15','Adjournment')")
     for mid,aid,body in [(100,99,AGENDA),(309,100,CLOSING)]:
         query(connection,'INSERT INTO motions(id,meeting_id,agenda_item_id,text_content,result,meta) VALUES(%s,77,%s,%s,%s,%s)',
-            (mid,aid,body,'CARRIED',Json({})))
+            (mid,aid,body,None if kind=='blank' and mid==309 else 'CARRIED',Json({})))
     meeting,rows,_=read_meeting(connection,77,1)
     class Request:param={'meeting':meeting,'rows':rows}
     fixture=case.__wrapped__(tmp_path,monkeypatch,Request())
@@ -120,9 +122,10 @@ def closing_case(connection,tmp_path,monkeypatch):
     return fixture,manifest,regenerate
 
 
-def test_authoritative_scoped_vote_counts_block_preexisting_votes_and_persist_partial_receipt(database,tmp_path,monkeypatch):
+@pytest.mark.parametrize('kind',['conflict','blank'])
+def test_authoritative_scoped_vote_counts_block_preexisting_votes_and_persist_partial_receipt(database,tmp_path,monkeypatch,kind):
     from pipeline.backfill.history_coverage import audit
-    fixture,manifest,regenerate=closing_case(database,tmp_path,monkeypatch)
+    fixture,manifest,regenerate=closing_case(database,tmp_path,monkeypatch,kind)
     plan=manifest['meetings'][0]
     assert plan['closing_linked_vote_counts']['counts']==[{'motion_id':309,'linked_votes':0}]
     old_before=query(database,'SELECT * FROM motions ORDER BY id')
@@ -135,14 +138,15 @@ def test_authoritative_scoped_vote_counts_block_preexisting_votes_and_persist_pa
     assert result['meetings'][0]['coverage']=='review_required'
     assert query(database,'SELECT * FROM motions WHERE id=ANY(%s) ORDER BY id',([100,309],))==old_before
     stored=query(database,"SELECT value FROM meetings,jsonb_each(meta->'history_catchup_receipts') WHERE id=77")[0]['value']
-    assert stored['remaining_coverage']=='review_required' and stored['unresolved_closing_conflict_ids']==[309]
+    assert stored['remaining_coverage']=='review_required' and stored['blank_time_documentary_preserved_legacy_ids' if kind=='blank' else 'unresolved_closing_conflict_ids']==[309]
     assert stored['closing_linked_vote_counts']['counts']==[{'motion_id':309,'linked_votes':0}]
-    assert any(h['reason']=='existing_closing_outcome_unresolved_no_rewrite' and h['legacy_ids']==[309] for h in stored['held'])
+    assert any(h['reason']==('reviewed_blank_time_adjournment_preserved_time_unknown_no_rewrite' if kind=='blank' else 'existing_closing_outcome_unresolved_no_rewrite') and h['legacy_ids']==[309] for h in stored['held'])
     assert verify_manifest(database,manifest)['inserted_motions']==1
 
 
-def test_vote_arriving_after_regeneration_rejects_before_any_insert(database,tmp_path,monkeypatch):
-    _,manifest,_=closing_case(database,tmp_path,monkeypatch)
+@pytest.mark.parametrize('kind',['conflict','blank'])
+def test_vote_arriving_after_regeneration_rejects_before_any_insert(database,tmp_path,monkeypatch,kind):
+    _,manifest,_=closing_case(database,tmp_path,monkeypatch,kind)
     def reviewed_before_late_vote():
         query(database,"INSERT INTO votes(motion_id,vote) VALUES(309,'Yes')")
         return deepcopy(manifest)
@@ -153,8 +157,9 @@ def test_vote_arriving_after_regeneration_rejects_before_any_insert(database,tmp
 
 
 @pytest.mark.parametrize('order',['operator_first','uncommitted_vote_first','committed_vote_during_regeneration'])
-def test_actual_vote_writes_without_any_foreign_key_are_serialized_or_rejected_before_insertion(database,tmp_path,monkeypatch,order):
-    _,manifest,_=closing_case(database,tmp_path,monkeypatch)
+@pytest.mark.parametrize('kind',['conflict','blank'])
+def test_actual_vote_writes_without_any_foreign_key_are_serialized_or_rejected_before_insertion(database,tmp_path,monkeypatch,order,kind):
+    _,manifest,_=closing_case(database,tmp_path,monkeypatch,kind)
     query(database,'ALTER TABLE votes DROP CONSTRAINT votes_motion_id_fkey')
     schema=query(database,'SHOW search_path')[0]['search_path']
     database.commit()  # Publish ONLY this unique disposable fixture to the other connection.
@@ -175,7 +180,7 @@ def test_actual_vote_writes_without_any_foreign_key_are_serialized_or_rejected_b
             writer.rollback()
             assert query(database,'SELECT * FROM votes')==[]
             stored=query(database,"SELECT value FROM meetings,jsonb_each(meta->'history_catchup_receipts') WHERE id=77")[0]['value']
-            assert stored['remaining_coverage']=='review_required' and stored['unresolved_closing_conflict_ids']==[309]
+            assert stored['remaining_coverage']=='review_required' and stored['blank_time_documentary_preserved_legacy_ids' if kind=='blank' else 'unresolved_closing_conflict_ids']==[309]
         elif order=='uncommitted_vote_first':
             query(writer,"INSERT INTO votes(motion_id,vote) VALUES(309,'Yes')")
             with pytest.raises(psycopg2.errors.LockNotAvailable):
@@ -197,8 +202,9 @@ def test_actual_vote_writes_without_any_foreign_key_are_serialized_or_rejected_b
         writer.rollback();writer.close()
 
 
-def test_repeatable_read_cannot_reuse_a_stale_zero_vote_snapshot(database,tmp_path,monkeypatch):
-    _,manifest,_=closing_case(database,tmp_path,monkeypatch)
+@pytest.mark.parametrize('kind',['conflict','blank'])
+def test_repeatable_read_cannot_reuse_a_stale_zero_vote_snapshot(database,tmp_path,monkeypatch,kind):
+    _,manifest,_=closing_case(database,tmp_path,monkeypatch,kind)
     schema=query(database,'SHOW search_path')[0]['search_path']
     database.commit()
     query(database,'SET TRANSACTION ISOLATION LEVEL REPEATABLE READ')
