@@ -1,0 +1,36 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 337,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "2416547317c8b7d7b0f26708ee8ced7112583dc1f7d0b635ad8c8d373b83b91b",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=3789",
+  "source_file": "archive/langford/Council/2022/08/2022-08-15 530pm Regular Council [4a3ccdf5]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2022-08-15",
+  "source_text_sha256": "69f9e40a095f51435aad1d01fe453e2bd029d5a02d33583932189052f590da5a",
+  "formal_inventory_sha256": "a95f207b1c23169b56fca38ffcad2062fbb438fb14442dec2e550e7b49461fac",
+  "claim_inventory_sha256": "a8d8ce71f0e1539d8c1d257b71aa8f081633ba2b6921b69f8b877af58f3080df",
+  "native_pages": [],
+  "reservations": [],
+  "documentary_preservations": [
+    {
+      "motion_id": 3316,
+      "type": "reviewed_adjournment_narration_preservation",
+      "claim_sha256": "8381ca3020dbae62925646ac1230e3db75187218901060ce4dd32053f23ca762",
+      "claim_row_sha256": "c620f096b10c05a66299186ef4a6abb14ff530d2ce2e0b9882996cd83646cdfd",
+      "legacy_text": "THAT the meeting be adjourned.",
+      "printed_body": "Mayor Young adjourned the meeting at 8:50 pm.",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "page": 18,
+      "native_text_sha256": "837c6bea1de90dfd439027dc31690a81da2b49af9fe4565a0143875dbb0aadc6",
+      "render_sha256": "36b2a433bca5fd5f4b793ece98ea5f60aaa19146bcaaa90f98968fa145b77e17",
+      "native_passage": "Mayor Young adjourned the meeting at 8:50 pm.",
+      "native_passage_start": 779,
+      "source_passage": "Mayor Young adjourned the meeting at 8:50 pm.",
+      "source_passage_start": 40595
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3"
+}

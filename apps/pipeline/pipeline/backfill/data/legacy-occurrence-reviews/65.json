@@ -1,0 +1,45 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "meeting_id": 65,
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "source_sha256": "c6ea7526d71c3934f88c7b7c5ad8d8eea77ac020f35a81e24cd9409b83447863",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160307-Minutes-Signed-Council.pdf",
+  "source_file": "archive/langford/Council/2016/03/2016-03-07 Regular Council [legacy]/Minutes/20160307-Minutes-Signed-Council.pdf",
+  "source_date": "2016-03-07",
+  "source_text_sha256": "419fdd225daa3ab703d0d127643c60d0f5a2aae91d21233f492c1f5742610a46",
+  "formal_inventory_sha256": "d6f2bcaa4c15e141dbcbee78110af026fc5b15fa5e926f5f795949eb9f203406",
+  "claim_inventory_sha256": "734673cc81501a331252f634bc43d932c746cff36485bbccd94fbc191b189ded",
+  "native_pages": [],
+  "reservations": [],
+  "documentary_preservations": [
+    {
+      "page": 15,
+      "native_text_sha256": "2b77ea16ac0e1e6fa538f20db09b375906fb62afc00af3dd1dd43e53810cc441",
+      "render_sha256": "1592137315c94cc9eafdbbc53dd148c656bd34ff7498eb685e0a9d137b1440e0",
+      "motion_id": 597,
+      "type": "reviewed_adjournment_narration_preservation",
+      "claim_sha256": "850481166dc364eda2cff47a75af2a4d396be3eb7b6328929940db3860995a1a",
+      "claim_row_sha256": "f654d3bb0ad2d0f4d4e18ffd653ff50e47f76ce5319c9cf4ac1c89c947a478d8",
+      "legacy_text": "That the meeting be adjourned.",
+      "printed_body": "The Chair adjourned the meeting at 8:37pm.",
+      "authority": "documentary_preservation_only",
+      "result_policy": "preserve_unknown",
+      "native_passage": "The Chair adjourn V\ned the meeting at 8:37pm.",
+      "native_passage_start": 1010,
+      "source_passage": "The Chair adjourned the meeting at 8:37pm.",
+      "source_passage_start": 40908,
+      "native_correction": {
+        "page": 15,
+        "native_text_sha256": "2b77ea16ac0e1e6fa538f20db09b375906fb62afc00af3dd1dd43e53810cc441",
+        "render_sha256": "1592137315c94cc9eafdbbc53dd148c656bd34ff7498eb685e0a9d137b1440e0",
+        "native_quote": "The Chair adjourn V\ned the meeting at 8:37pm.",
+        "printed_quote": "The Chair adjourned the meeting at 8:37pm.",
+        "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+        "authority": "reviewed_documentary_native_witness_correction_only"
+      }
+    }
+  ],
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3"
+}

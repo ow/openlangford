@@ -8,6 +8,16 @@ The source URL/date and exact original file must be bound before additions.
 Run from `apps/pipeline` using the normal configured interpreter. Credentials stay
 in the existing environment file; never copy them into manifests or receipts.
 
+An explicit standalone clerk sentence such as “The vote was taken on the Main
+Motion as amended and declared CARRIED.” is a coverage lead when no parsed
+outcome accounts for that exact result span. It remains
+`explicit_clerk_main_motion_result_lead` with `coverage_diagnostic_only`
+authority in `unparsed_formal_occurrence_leads`; the report stays partial and
+requires review. A preceding amendment's post-result context cannot account for
+it. This diagnostic adds no resumed header, amended body, motion, outcome row or
+votes and changes no existing source identities. Only separate source review can
+resolve the missing main-motion body/outcome association.
+
 ```sh
 python -m pipeline.backfill.history_coverage audit \
   --env-file /existing/config/.env --project-ref PROJECT_REF \
@@ -93,6 +103,67 @@ that one-time review stale and holds the batch; reenrollment requires a new
 source review. This includes changes from a successful catch-up batch. Read its
 atomic receipt to verify completed work; do not interpret a stale prior review
 as grounds to replay it or mark a meeting complete.
+
+### Reviewed documentary preservation
+
+A legacy row may instead quote a printed documentary passage with no formal
+motion envelope or outcome. The same enrolled review can contain a separate
+`documentary_preservations` list. Each entry requires `authority` equal to
+`documentary_preservation_only` and `result_policy` equal to `preserve_unknown`.
+Its `motion_id`, `legacy_text`, `claim_sha256` (semantic projection) and
+`claim_row_sha256` (`full_row_fingerprint` of the complete current row, including manual metadata and native DB timestamp/decimal values) must
+match exactly. Build the latter from the command's full current row, not a census
+projection. `printed_body` must equal the complete legacy body; only whitespace
+may differ in the source/native text, with case and punctuation preserved.
+
+The entry pins `page`, `native_text_sha256`, `render_sha256`, `native_passage`
+and its exact `native_passage_start`, plus `source_passage` and its exact
+`source_passage_start` in the reviewed source text. The review also pins
+`render_scale` and `pymupdf_version`. Execution reopens the original PDF and
+reproduces page text and pixels. The complete body must occur once across the
+original PDF and once across the source text, occupy complete printed lines,
+and overlap neither an original formal envelope nor a parsed motion through its
+outcome. Competing claims, source keys, existing formal/ballot proof, non-NULL
+outcomes or actor IDs reject preservation. A paraphrase is unsupported and must
+remain held for separate review; this path cannot certify it as literal text.
+
+Accepted IDs remain in `documentary_preserved_legacy_ids` and the explicit
+`reviewed_documentary_claim_preserved_no_rewrite` held category, without a formal
+source key. They are accounted only to remove a false duplicate-owner blocker
+for other independently verified formal additions. Their text, NULL result,
+metadata and all other fields are untouched; they do not count as formal motions
+or gain ballot authority. Ordinary ingestion does not opt in. All existing
+source/inventory drift checks still apply; a successful batch stales the review.
+
+The separate `type=reviewed_adjournment_narration_preservation` accepts only a
+generic legacy “That [the] meeting be adjourned.” claim and a complete reviewed
+“The Chair adjourned the meeting at H:MMam/pm.” or “Mayor Young adjourned the
+meeting at H:MMam/pm.” narrative (also explicit “a.m.”/“p.m.” spelling). Mayor
+narration permits only “Mayor” followed by one proper surname, with no actor ID
+assignment. Chair and Mayor narrations are counted together: multiple closing
+events or different times remain held, even when each wording is unique. This is explicit
+reviewed documentary correspondence, never literal transcription equivalence or
+a formal motion/result. It retains the original/page/render/full-row guards,
+rejects actual formal adjournment owners, other generic adjournment claims,
+conditionals, negation and multiple adjournment events. Accepted IDs remain in
+`adjournment_narration_preserved_legacy_ids` and
+`reviewed_adjournment_narration_preserved_no_rewrite` holds. Unknown types and
+other paraphrases fail closed; the literal type's equality rule is unchanged.
+
+Signature glyphs can interrupt the raw native narration even when its complete
+printed words are image-verified. Only this typed adjournment path may use an
+explicit `native_correction`. That correction must also be enrolled in the
+separately byte-pinned source review's `documentary_native_corrections`, with the
+same page, exact `native_quote`, `printed_quote`, page text/render hashes and
+`independent_review_sha256`. Its authority must be
+`reviewed_documentary_native_witness_correction_only`. Execution checks the real
+source-review STORE/ENROLLED file gate, scope and current source proof digest;
+the correction's independent hash must equal that source image review's hash.
+Exactly one original before quote is replaced for uniqueness validation only.
+It must yield the complete whitelisted printed narration. Raw bytes, source
+text, other text counts and legacy rows are never modified by this validation.
+Unchecked, duplicated, drifting or mismatched corrections fail closed; literal
+preservation cannot use this capability.
 
 ## Scanned originals, source selection and notices
 

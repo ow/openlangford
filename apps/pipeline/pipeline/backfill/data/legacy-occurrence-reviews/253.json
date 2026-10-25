@@ -1,0 +1,47 @@
+{
+  "schema": "reviewed-legacy-occurrence-reservations-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "meeting_id": 253,
+  "source_sha256": "4be504695427fc15250b719ba3dc47cf506e3b87a3318b9ef9b2e5a644fef52b",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7406",
+  "source_file": "archive/langford/Council/2023/08/2023-08-21 700pm Regular Council [b223f111]/Minutes/Minutes - SIGNED.pdf",
+  "source_date": "2023-08-21",
+  "source_text_sha256": "12d4c8931d783b1fd34e7fe230363b2a37988a9f3ba68aaf8f4ef055a9b8a1a7",
+  "formal_inventory_sha256": "5ab214e003cbe74950d20599a750b85b61bd92bc84ba7fc1e49eeaa293ecb5e9",
+  "claim_inventory_sha256": "01f6f42852b74fcf7e7c42bebb19480d4113ecdaa428fa9cafd69d546bce8405",
+  "native_pages": [
+    {
+      "page": 20,
+      "native_text_sha256": "65af2bec59fb5a6f4f59e4c4043ee74d4461cf03e260ba3371d23c92813d5f8b"
+    }
+  ],
+  "reservations": [
+    {
+      "motion_id": 2644,
+      "claim_sha256": "da3b6ea88e2cd4138615f4dbe3696aa30a3ee199d8c1d5100398b33e9d8b15c0",
+      "legacy_text": "That the meeting be adjourned.",
+      "source_identity": {
+        "meeting_id": 253,
+        "source_sha256": "4be504695427fc15250b719ba3dc47cf506e3b87a3318b9ef9b2e5a644fef52b",
+        "source_offset": 46900,
+        "source_order": 25,
+        "key": "0b417943b5435c6402183b50fea724847f3d0006ec5ec7e04d52d3d6a36133be",
+        "source_file": "archive/langford/Council/2023/08/2023-08-21 700pm Regular Council [b223f111]/Minutes/Minutes - SIGNED.pdf",
+        "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=7406",
+        "source_format": "original_pdf_reviewed_image_decisions",
+        "raw_motion_text": "THAT Council adjourn the meeting.\n\n      Mayor Goodmanson adjourned the meeting at 10:55 p.m.",
+        "source_block": "MOVED BY: GUIRY\n      SECONDED: YACUCHA\n\n      THAT Council adjourn the meeting.\n\n      Mayor Goodmanson adjourned the meeting at 10:55 p.m.\n\n                                                                                          Motion CARRIED.\n\n\n\n\n Pre-siding COUncil Member                                  Certified Correct - Corporate ifficer\n\n\n\n             SCOTT GOODIAANSON\n                   MAYOR                                                Marie Watrnough\n                                                                        Corporate Officer",
+        "outcome_quote": "Motion CARRIED.",
+        "formal_source_kind": "moved_motion"
+      },
+      "raw_block_sha256": "dbdaf76926695e9479901276f1075402bb179cadbb6e72d08231269060253397",
+      "pages": [
+        20
+      ],
+      "reason": "Thisclosinghasa realprintedMOVED/SECONDED/body/explicitcarriedresult. Existing2644isaparaphraseofthatuniqueclosingoccurrence, withNULLstoredresult. Reserveonly; preserveNULL/actors/meta, do notcertifyorupdateoutcome, do notaddduplicateclosing.",
+      "authority": "occurrence_reservation_only"
+    }
+  ],
+  "independent_original_image_review_sha256": "4114049d4e76e9bfb9b22e04e4120d7e10e57cbeed1f800951286fd38ccf7658"
+}

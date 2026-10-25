@@ -1,0 +1,642 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 65,
+    "title": "Regular Council",
+    "meeting_date": "2016-03-07",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2016/03/2016-03-07 Regular Council [legacy]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2016/03/2016-03-07 Regular Council [legacy]/Minutes/20160307-Minutes-Signed-Council.pdf",
+      "sha256": "c6ea7526d71c3934f88c7b7c5ad8d8eea77ac020f35a81e24cd9409b83447863",
+      "url": "https://langford.ca/wp-content/uploads/2021/05/20160307-Minutes-Signed-Council.pdf"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2016/03/2016-03-07 Regular Council [legacy]/Minutes/20160307-Minutes-Signed-Council.pdf",
+  "source_url": "https://langford.ca/wp-content/uploads/2021/05/20160307-Minutes-Signed-Council.pdf",
+  "source_sha256": "c6ea7526d71c3934f88c7b7c5ad8d8eea77ac020f35a81e24cd9409b83447863",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "d9cc60b91c18d34d671289e811b9f077e62ddfb9caf0f812fb1c073d7b24d2e1",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "b80e04a5c2166c3813802aff64eb090cae0ae5fa5f63748cba2e61b2390f1715",
+      "render_sha256": "21a82988f6c6cc20e13fdaa19a94081efbdd5ac417c06a6e8aa3b35e226aa0b4"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "305dab931cf104a7e48cd8b1b2ab2240177bdf961eee60248fe9c8d83676b628",
+      "render_sha256": "72456bfa9ffdbd9e151617191bae07095a32cc7011be4a52db7e93d74f024b1a"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "e7a58f7515eb2febd525b41fbad943857c9181b89cb715f92c57aa8ea9bc2d21",
+      "render_sha256": "f1aeb99341e7d1cc423f31dfca1cf5a534485c507c897abf56b77f36243ff536"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "74a8555275b841c7baf4df3f2fb8b40a12abcf470bddcbe578e75bbf2d35a52e",
+      "render_sha256": "57a1b3b306f41ac8b1170847f177274e0a2c4bb3b6efde16422a21f9ad28d4c1"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "3d130ea51f8ac9b5f7a71eca8f4c402bbe8b374770a0b945994a1de1b311f4cf",
+      "render_sha256": "0878a1d333036bda800cb865a19ecadc0e33a476d692fd023b5f15e28d7f6f76"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "19b5593b91cb0a126d2b04f7a52f145482b95bd85e5cb062a1e70569c199d266",
+      "render_sha256": "ee1382a5cc5c234b20aafa3b16a7ba710471e38fdb98563d247debd053bcf319"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "cadc1b2524f18cb2587c76375ffed27b1d510c796acd4edeaa949af5183bcd32",
+      "render_sha256": "c1f6741aec5e87a8e8b30702200b49609e91d565bc5c3f3f6e0d53ec16579096"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "da9c74684a2e2624dbbf7be1a27aa4219025979514c2215fe5b70aafb366ac1b",
+      "render_sha256": "36c6a1f56a1a8decc8adad403f9f8c350136c3caf4dd575101f3e1c22b12ad06"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "f80d07fc49db9bee8c7d0c70f2e71587f6e4406f71dcd4ef566fdf1be5328cd6",
+      "render_sha256": "1feecda0c76f278f4976e93619ddcd343ee20333f796ac62e904d4b54e973300"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "295c57d2620512d7211ead7a8a7c8d145ad658bc372c67f9e668b60306cc5f32",
+      "render_sha256": "a9727cb24255ffaa2cabf906af54f8598f5bf3b394d1ef92378a1cb5109826bc"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "85ea9f42e946c147643421cc5e803fabff0a9ecc1907485ff8438a354da36e1f",
+      "render_sha256": "432e35e124fd4647a3b494fe1cada576098febd99a94d875ce260cb6bbcc9f4a"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "14497b4e2edb89556adaee0cfafaaeb260d081451ad1a986fcd017ee976de4d5",
+      "render_sha256": "4231e715c9ce4bac9e8f2140da3e6bdaedec94dab6d142f405791fa256f16f3a"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "6557638f292c735fe78c6cbe65a3e7f74cc805968968e778455d452c6bf3c442",
+      "render_sha256": "2b7374c3c66ad4889f417719510cc49c04965586f970de207a8db663d417bfe8"
+    },
+    {
+      "page": 14,
+      "native_text_sha256": "45e3c349a38f51726bc42e804a8f5e82a50cb74c05919892ec63ee3bbff0a404",
+      "render_sha256": "3469d47b56b33d6a0ea7fde4cef8bacc46266850698feb18bfc54b0963528495"
+    },
+    {
+      "page": 15,
+      "native_text_sha256": "2b77ea16ac0e1e6fa538f20db09b375906fb62afc00af3dd1dd43e53810cc441",
+      "render_sha256": "1592137315c94cc9eafdbbc53dd148c656bd34ff7498eb685e0a9d137b1440e0"
+    }
+  ],
+  "text_corrections": [
+    {
+      "page": 15,
+      "native_quote": "The Chair adjourn ed the meeting at 8:37pm.",
+      "reviewed_quote": "The Chair adjourned the meeting at 8:37pm.",
+      "authority": "original_image_text_correction_only",
+      "image_quote": "The Chair adjourned the meeting at 8:37pm.",
+      "reason": "Printed image has adjourned as one word. Documentary passage only; no formal header, outcome or actors added."
+    }
+  ],
+  "accepted_decisions": [
+    {
+      "source_key": "699d9de4f1eaa48665c323015a36c8a1bff43a731692f02d9eed87959286ad75",
+      "raw_block_sha256": "dc65e0ed4a84747889ec9e1b7bc173cad3002e6d96ddf9a2c0337baaf3e60bb9",
+      "operative_body": "That Council approve the Minutes of the Regular Meeting of Council held on February 15th, 2016.",
+      "operative_body_sha256": "e8c0b4e142d657ecb50dbc760d89f03dd91dd3d352f9f092bf6dce724e11ee9e",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "f80d07fc49db9bee8c7d0c70f2e71587f6e4406f71dcd4ef566fdf1be5328cd6",
+          "render_sha256": "1feecda0c76f278f4976e93619ddcd343ee20333f796ac62e904d4b54e973300"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "15t h",
+          "printed": "15th",
+          "reason": "Printed ordinal; native separates superscript."
+        }
+      ]
+    },
+    {
+      "source_key": "38b80ff5658566e6cc7204da4e7904cd1cae88e638a3381dfa12d542d17145fb",
+      "raw_block_sha256": "2abe1d1beded897b7475b76c95a942607f0ddbe4f501b31ddc3379839205d923",
+      "operative_body": "That Council approve in principle the Building Department Five Year Financial Plan for 2016-2020 as outlined in the staff report dated February 23rd, 2016 and refer it to the Treasurer for inclusion in the budget.",
+      "operative_body_sha256": "788c8a9339b228768026010603142bfb6a294a2bb2878e8434dfbcb30563a099",
+      "result": "CARRIED",
+      "pages": [
+        9
+      ],
+      "page_evidence": [
+        {
+          "page": 9,
+          "native_text_sha256": "f80d07fc49db9bee8c7d0c70f2e71587f6e4406f71dcd4ef566fdf1be5328cd6",
+          "render_sha256": "1feecda0c76f278f4976e93619ddcd343ee20333f796ac62e904d4b54e973300"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "23r 1",
+          "printed": "23rd",
+          "reason": "Printed ordinal; native superscript glyph confusion."
+        }
+      ]
+    },
+    {
+      "source_key": "c057ee81eed696315e55def3446006cc207ec2688b87041764a1dc1d79c23f65",
+      "raw_block_sha256": "616612d40ec1955bc846edffdd3905986de0ac79c2356336be118d040c3b3399",
+      "operative_body": "That Council approve, in principle, the Fire Services Five Year Financial Plan for 2016 — 2020 as outlined in the Staff Report dated February 23rd, 2016 and refer it to the Treasurer for inclusion in the budget.",
+      "operative_body_sha256": "dc78f49b24e7726dfdda22a6510edc6784acf71d9d3b4a5ae6b77a0a3fb5d6ee",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "295c57d2620512d7211ead7a8a7c8d145ad658bc372c67f9e668b60306cc5f32",
+          "render_sha256": "a9727cb24255ffaa2cabf906af54f8598f5bf3b394d1ef92378a1cb5109826bc"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "February 23, 2016",
+          "printed": "February 23rd, 2016",
+          "reason": "Second independent image reviewer confirmed printed superscript ordinal rd on originalpage10."
+        }
+      ]
+    },
+    {
+      "source_key": "7f11f711fdb12035a9f89f98776da32ee27298a4512f17737e5f519bf996b9de",
+      "raw_block_sha256": "bffddced88b021769e7be3168f98efd6d05c4f513332156bb202579ae1cc1689",
+      "operative_body": "That Council approve in principle the Police Services Five Year Financial Plan for 2016-2020 as outlined in the staff report dated February 23rd, 2016 and refer it to the Treasurer for inclusion in the budget.",
+      "operative_body_sha256": "e48edc67d442b64171766363b0778817f47dda1c832b707c9da163e3ba3fe996",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "295c57d2620512d7211ead7a8a7c8d145ad658bc372c67f9e668b60306cc5f32",
+          "render_sha256": "a9727cb24255ffaa2cabf906af54f8598f5bf3b394d1ef92378a1cb5109826bc"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "February 23, 2016",
+          "printed": "February 23rd, 2016",
+          "reason": "Second independent image reviewer confirmed printed superscript ordinal rd on originalpage10."
+        }
+      ]
+    },
+    {
+      "source_key": "96409c133bea9406d54d7eed8730d4b4151c44cf1033d96caef84a6c961a8e80",
+      "raw_block_sha256": "fe909b89395cd894f52817ee11e348431afa597e75779de1cd466729c832efff",
+      "operative_body": "That Council: 1. Approve the changes to the open burning schedule effective Spring 2017 for a Spring burning period from March 15 to April 15 and that no burning be allowed on the Easter weekend or any long weekend during the two burning periods; and 2. Direct the Fire Chief and Councillor Szpak to invite residents of ALR properties to a meeting to discuss viable burning alternatives to the existing burning bylaw for land within the ALR.",
+      "operative_body_sha256": "3e851c3a47896aa27c115914fae5ac514e5a593308b1480fa3f1f95c44cef7b5",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "295c57d2620512d7211ead7a8a7c8d145ad658bc372c67f9e668b60306cc5f32",
+          "render_sha256": "a9727cb24255ffaa2cabf906af54f8598f5bf3b394d1ef92378a1cb5109826bc"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "7cef51613251b40e8399b8bef17cb9c428f1522f28850581c985ac7d3d083b0a",
+      "raw_block_sha256": "6fafdf418ac768681c395355759dfe4cee8b1f8e4f846ee632986fc4c245c37c",
+      "operative_body": "That Council receive the West Shore RCMP Detachment Mayor's Report for January 2016.",
+      "operative_body_sha256": "b574a289927666835d8f4e8a18727b828ffd7bdd63c51f836a4b5e36939ac06d",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "295c57d2620512d7211ead7a8a7c8d145ad658bc372c67f9e668b60306cc5f32",
+          "render_sha256": "a9727cb24255ffaa2cabf906af54f8598f5bf3b394d1ef92378a1cb5109826bc"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "f38856ee6f92d915a4f19633291e5683a4e8a3e6891bada3076a75a8bba270a0",
+      "raw_block_sha256": "4c28fbfca4b6181e5b2ce1e7bde282d9ebd992c02e45745da05c74b25e41159a",
+      "operative_body": "That Council direct staff to deliver notice of intent to consider the following variance for 2781 Strathmore Road: a) That Section 6.51A.07 (1)c of Zoning Bylaw No. 300 be varied to reduce the rear yard setback from the required 7.5m to 2.7m for the building and to 2m for the balconies, subject to the following condition: i) That the owner be responsible for providing interior sprinkler systems in the fourth floor (in addition to the three floors already secured to be sprinklered through rezoning) to the satisfaction of the Chief Building Inspector.",
+      "operative_body_sha256": "49327e6fee158644ec8e347773f274e57486ac07be22d15caf10912b16fa154f",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "85ea9f42e946c147643421cc5e803fabff0a9ecc1907485ff8438a354da36e1f",
+          "render_sha256": "432e35e124fd4647a3b494fe1cada576098febd99a94d875ce260cb6bbcc9f4a"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "926f1c302314640ec01cf99fd071cf76eb48211faa0acc594a2acfdc4eb917f2",
+      "raw_block_sha256": "796c3c789e64e24c1647be228e61b12e911f5706534f439dc52afb7df69b23b3",
+      "operative_body": "That Council Inform the Liquor Control and Licensing Branch that the City of Langford will not be conducting their own notification and has no objection to the granting of a Brewery Lounge Endorsement for Axe & Barrel Brewing Company at 2323 Millstream Road.",
+      "operative_body_sha256": "4d669c18568abf7fdf3a86b092fa3d56ee8a5f6dfc9cbb86f8183ef58ca0a370",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "85ea9f42e946c147643421cc5e803fabff0a9ecc1907485ff8438a354da36e1f",
+          "render_sha256": "432e35e124fd4647a3b494fe1cada576098febd99a94d875ce260cb6bbcc9f4a"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b8abc00a36528e7dee2c06b52e546ff2c13f6b72739a8379a864f6621534308d",
+      "raw_block_sha256": "e0fecb32d68682698886d31c10ed3c0b180d3e88c961736d3e493df240488a57",
+      "operative_body": "That Council; 1. Direct Staff to review the proposed road closure area for municipal infrastructure and register applicable statutory right of ways prior to, or concurrently with, the road closure and transfer; and 2. Consider giving Leigh Road Closure Bylaw No. 1621 1st, 2nd, and 3rd reading;",
+      "operative_body_sha256": "0e3a9dc9965d2546631eb0fbd54850ffbddfef9bbb627dff112faebb1bc9d789",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "85ea9f42e946c147643421cc5e803fabff0a9ecc1907485ff8438a354da36e1f",
+          "render_sha256": "432e35e124fd4647a3b494fe1cada576098febd99a94d875ce260cb6bbcc9f4a"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "1621 1, 2nd",
+          "printed": "1621 1st, 2nd",
+          "reason": "Printed first ordinal; native superscript omitted."
+        }
+      ]
+    },
+    {
+      "source_key": "b5c5389f6bcf66c50fb1490fc2cbce620e1d6d9c39fff292135b4303f2ff3f4b",
+      "raw_block_sha256": "7fef21fa43b87b737fe807aadf6bf58523f52c0f2b72334f7e84071ea9624086",
+      "operative_body": "That Council direct staff to apply for the Bike BC Grant following priority: Dunford (Leigh to Jacklin) for $406,100, Bellamy (Phelps to Hansen) for $209,300, Bellamy (Hansen to Bellamy Link) for $167,100 and provide the city's matching 50% funding from Gas Tax funds.",
+      "operative_body_sha256": "25dff280bb67da472745fc8eed5b334e52b7c1bc802209042fd6bd81416235c2",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "14497b4e2edb89556adaee0cfafaaeb260d081451ad1a986fcd017ee976de4d5",
+          "render_sha256": "4231e715c9ce4bac9e8f2140da3e6bdaedec94dab6d142f405791fa256f16f3a"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "2a06e205c1318c41d1c01a452df049381f7df4792a07c946cf2d0eb56092f1c3",
+      "raw_block_sha256": "1b9bc9e42e2fe2fd3edbbb0fa1193a615b2527afe2221c39af3b6257d9114f6a",
+      "operative_body": "That Council direct staff to award the construction contract for the Goldstream Ave and Leigh Rd intersection, funded from the City's Development Cost Charge Program, to the lowest bidder who is in compliance with the tender documents.",
+      "operative_body_sha256": "9606ad6a035887fe824461797527fb1662859e908fca359f8e8134165d61f6f9",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "14497b4e2edb89556adaee0cfafaaeb260d081451ad1a986fcd017ee976de4d5",
+          "render_sha256": "4231e715c9ce4bac9e8f2140da3e6bdaedec94dab6d142f405791fa256f16f3a"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9524cc2a9ff5ebd04027b073f5e700f00daeebbe778ceb727e57afeb11f9ff29",
+      "raw_block_sha256": "de7d1729af7322b215316de5a6f8ead508c7706ba391c5ba906c53afef029418",
+      "operative_body": "That Council approve the Greater Victoria Public Library 2016 Operating Budget.",
+      "operative_body_sha256": "44dd09e9b3a6ff9edec1c3675b2c786d9e169ffe3b4d2d563c90a76c36ca1f6c",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "14497b4e2edb89556adaee0cfafaaeb260d081451ad1a986fcd017ee976de4d5",
+          "render_sha256": "4231e715c9ce4bac9e8f2140da3e6bdaedec94dab6d142f405791fa256f16f3a"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b2a9fe293fe0f9f300c17751960072a4ccc84665655b00b8a5fa7b9cbdd30e46",
+      "raw_block_sha256": "6d880e29e9656f14dbc6267c42b1ab9b9fdb2ab6cb2f0c88211baa21144933a4",
+      "operative_body": "That Council approve the street name \"Randall Place\" for the Setchfield Avenue subdivision as requested by Mr. Don Thome.",
+      "operative_body_sha256": "889952587193ece432e5ba24f049d67b40cf71e79434a1884ae2ed780080cf29",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "14497b4e2edb89556adaee0cfafaaeb260d081451ad1a986fcd017ee976de4d5",
+          "render_sha256": "4231e715c9ce4bac9e8f2140da3e6bdaedec94dab6d142f405791fa256f16f3a"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b5338d161a2b42a5d871896036fc9c485083a5101b7ecde89b6b4712323aaac1",
+      "raw_block_sha256": "9abe0f7df7d5ccc787ac7d237ad28f995b4f9ca3ee4ffbca9d1d7552555e40a5",
+      "operative_body": "That Council give Bylaw No. 1602 First, Second and Third Reading.",
+      "operative_body_sha256": "43eeecd226dacf421c8f5e39705eba4fafff4881faa5a964fda1ad8558688cba",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "6557638f292c735fe78c6cbe65a3e7f74cc805968968e778455d452c6bf3c442",
+          "render_sha256": "2b7374c3c66ad4889f417719510cc49c04965586f970de207a8db663d417bfe8"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "c7a4d12173bb11592bc54e81bd22386b8ff433d9a5ebc52a079dcb40ec3a8bfc",
+      "raw_block_sha256": "c0171fe63bea675c177d7d17a4a83a4373e8a41ee95c50f38a4f07fbb3fd87b2",
+      "operative_body": "That Council give Bylaw No. 1612 Second and Third Reading.",
+      "operative_body_sha256": "e883274985ed2536b4b0315722b1430f689b9f1753a29e6f4c305e60300de50a",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "6557638f292c735fe78c6cbe65a3e7f74cc805968968e778455d452c6bf3c442",
+          "render_sha256": "2b7374c3c66ad4889f417719510cc49c04965586f970de207a8db663d417bfe8"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "63666ca3ca58788fe394de85a9675f510f9944c49eb1045ec41164f99f868f4f",
+      "raw_block_sha256": "99afe62e0285e761762b2f0af7d2d9aca90725110e6e0c50e028b5ba52b52d2c",
+      "operative_body": "That Council give Bylaw No. 1613 Second and Third Reading.",
+      "operative_body_sha256": "b950b130a3e864e29360a34c3554eb977c4f9385f066b9e8ef532145a249d524",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "6557638f292c735fe78c6cbe65a3e7f74cc805968968e778455d452c6bf3c442",
+          "render_sha256": "2b7374c3c66ad4889f417719510cc49c04965586f970de207a8db663d417bfe8"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "1e78cfcf35d65a04add0b304e631dd382b472dfa662bdbdcfd78fb7ba7329ee9",
+      "raw_block_sha256": "454e97e0f21ea35d9f504a171a0c20beba9a71d2b1bbd84bb5d26f9d4a9e64d0",
+      "operative_body": "That Council give Bylaw No. 1614 Second and Third Reading.",
+      "operative_body_sha256": "1f9f677fdfeedd38908aa806153ee7c285d24854d66b9153dd74b69cabbf1abe",
+      "result": "CARRIED",
+      "pages": [
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 13,
+          "native_text_sha256": "6557638f292c735fe78c6cbe65a3e7f74cc805968968e778455d452c6bf3c442",
+          "render_sha256": "2b7374c3c66ad4889f417719510cc49c04965586f970de207a8db663d417bfe8"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5e0bd50e04442778c8c61744614f44b0f2bda1b2036c01ac6f2507eb5e3b5658",
+      "raw_block_sha256": "10c4939d30f663be7d1dd36bffe4e08fc608a0e77924346b1050927d8260b94d",
+      "operative_body": "That Council give Bylaw No. 1615 Second and Third Reading.",
+      "operative_body_sha256": "49c236d414918035cd303d4c54242af6620405cc46ea02f96835bfad5967d719",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "45e3c349a38f51726bc42e804a8f5e82a50cb74c05919892ec63ee3bbff0a404",
+          "render_sha256": "3469d47b56b33d6a0ea7fde4cef8bacc46266850698feb18bfc54b0963528495"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e521911cd55565cafd89204ad16574902e0b0d5bedf54d963db814d259de1f29",
+      "raw_block_sha256": "56d7d947474bed2d02a43e1e6d1632f43f30ee6fd8e3fdc273ef3558711cdb5c",
+      "operative_body": "That Council give Bylaw No. 1552 Second and Third Reading.",
+      "operative_body_sha256": "6f68198377687e7d8d8f77d07f4d1f1bcda81229c93df9c325438319e789ec91",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "45e3c349a38f51726bc42e804a8f5e82a50cb74c05919892ec63ee3bbff0a404",
+          "render_sha256": "3469d47b56b33d6a0ea7fde4cef8bacc46266850698feb18bfc54b0963528495"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "5a78736a36806db69eda73a4799039d5c9983374a0fa498e5dd29b22f90ef8f0",
+      "raw_block_sha256": "7f5cead5de2bed6f30a1d9dd773b177de1483f0378e6443af53eb5204964f977",
+      "operative_body": "That Council give Bylaw No. 1616 Second and Third Reading.",
+      "operative_body_sha256": "3fc3d79859599e2e44eeba26a576c0dc1e2cc1c55a86df0dbc61e393c5f7ec5d",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "45e3c349a38f51726bc42e804a8f5e82a50cb74c05919892ec63ee3bbff0a404",
+          "render_sha256": "3469d47b56b33d6a0ea7fde4cef8bacc46266850698feb18bfc54b0963528495"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "b9f05eea81987a7d7d6bb74d773af903ed6d2f81b69d56f26de24ee61214a45e",
+      "raw_block_sha256": "0d0ecfd2a3bb78e7df0fbf628f779675a525e8d4efcc763213f05010216b4cfe",
+      "operative_body": "That Council adopt Bylaw No. 1617.",
+      "operative_body_sha256": "4f8e868b4a763d97c3cc18cb6d49ed9e985377c0f6aba7660e0e61f0e26edf4d",
+      "result": "CARRIED",
+      "pages": [
+        14
+      ],
+      "page_evidence": [
+        {
+          "page": 14,
+          "native_text_sha256": "45e3c349a38f51726bc42e804a8f5e82a50cb74c05919892ec63ee3bbff0a404",
+          "render_sha256": "3469d47b56b33d6a0ea7fde4cef8bacc46266850698feb18bfc54b0963528495"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "848181ebc78ef3b9db9947fb12ca9275515767acf6aff5d8eb0194cd7daaf8ea",
+      "raw_block_sha256": "8b8a1b323fe8e3c4c0247376702991957e45334e9a64d4cfd688b3483a5a3270",
+      "operative_body": "That Council give Bylaw No. 1619 Second and Third Reading.",
+      "operative_body_sha256": "39bf4b3e173b8e84635d247072874f59cd3404404fe290cc9ecc85a965fb8970",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "2b77ea16ac0e1e6fa538f20db09b375906fb62afc00af3dd1dd43e53810cc441",
+          "render_sha256": "1592137315c94cc9eafdbbc53dd148c656bd34ff7498eb685e0a9d137b1440e0"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "093d9b8905974bf59d52ea4ff7179c389f4b419ca846e17b728b0a6ec719b7a4",
+      "raw_block_sha256": "fc4c31ce7b9721685512ad3c2a73f0d01eeac724c24137b62c0717d254728afb",
+      "operative_body": "That Council give Bylaw No. 1621 First, Second and Third Reading.",
+      "operative_body_sha256": "da43000928fed26e5eb99512496f94374aab7d25dc88050e6f1b1eb7f74085aa",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "2b77ea16ac0e1e6fa538f20db09b375906fb62afc00af3dd1dd43e53810cc441",
+          "render_sha256": "1592137315c94cc9eafdbbc53dd148c656bd34ff7498eb685e0a9d137b1440e0"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "e8d1ab0beaa196b1335844e8e4f14bc7ca8dadbeb8cefeddc37a0c820a9c8e5c",
+      "raw_block_sha256": "5ec83bad957c8a2808a6e4cdfeff52bbdb7241d84dd6398823b53f2d26b8184a",
+      "operative_body": "a) That it is the opinion of Council that the public interest requires that persons other than members of Council and Officers be excluded from the meeting to consider confidential information regarding Property Matters and Municipal Service, under 90 (1) (e) and (k) of the Community Charter. b) That Council continues the meeting in closed session.",
+      "operative_body_sha256": "7b9dac46d1b40a0eb9f3c624e03335bb64e4904b6ea89dc5682214065105e3ec",
+      "result": "CARRIED",
+      "pages": [
+        15
+      ],
+      "page_evidence": [
+        {
+          "page": 15,
+          "native_text_sha256": "2b77ea16ac0e1e6fa538f20db09b375906fb62afc00af3dd1dd43e53810cc441",
+          "render_sha256": "1592137315c94cc9eafdbbc53dd148c656bd34ff7498eb685e0a9d137b1440e0"
+        }
+      ],
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    }
+  ],
+  "native_first_page_sha256": "b80e04a5c2166c3813802aff64eb090cae0ae5fa5f63748cba2e61b2390f1715",
+  "corrected_text_sha256": "3e385befd61370b74ca2394e85a48bf8c1de5614727d380a38ad27a42ad9d2f7",
+  "parsed_blocks_sha256": "ee13162450fabc67bdb99cb3b5c09e122d9a5ea12c69b0d52567122902d1ff66",
+  "independent_original_image_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+  "documentary_native_corrections": [
+    {
+      "page": 15,
+      "native_text_sha256": "2b77ea16ac0e1e6fa538f20db09b375906fb62afc00af3dd1dd43e53810cc441",
+      "render_sha256": "1592137315c94cc9eafdbbc53dd148c656bd34ff7498eb685e0a9d137b1440e0",
+      "native_quote": "The Chair adjourn V\ned the meeting at 8:37pm.",
+      "printed_quote": "The Chair adjourned the meeting at 8:37pm.",
+      "independent_review_sha256": "d91a3a65be0626a16a20aaff159e8bc211aa5cd9d9dce373626f2b0cb21ded3c",
+      "authority": "reviewed_documentary_native_witness_correction_only"
+    }
+  ]
+}
