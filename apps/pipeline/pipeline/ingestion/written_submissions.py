@@ -8,6 +8,7 @@ must appear in the letter.
 """
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from pydantic import BaseModel
@@ -58,6 +59,16 @@ def _chunks(sections: list[dict], limit: int = CHUNK_CHARS) -> list[str]:
     return chunks
 
 
+def _source_spelling(author: str, text: str) -> str:
+    """The author's name exactly as the letter spells it ("Debbie FitzGerald"), or "" if it isn't there."""
+    words = folded(author)
+    if not words:
+        return ""
+    pattern = r"\b" + r"[^\w]+".join(re.escape(w) for w in words) + r"\b"
+    match = re.search(pattern, text, re.I)
+    return " ".join(re.findall(r"[\w’'\-]+", match[0])) if match else ""
+
+
 def extract_letters(sections: list[dict]) -> dict:
     """sections: [{id, section_text}] of one extracted document, in order. Long documents are read in chunks."""
     raw = []
@@ -74,10 +85,7 @@ def admit_letters(raw: list[dict], sections: list[dict], streets: dict) -> list[
         quote = letter["support_quote"].strip()
         if not quote or not quoted(quote, [{"text_content": s.get("section_text") or ""} for s in sections]):
             continue
-        author = letter["author"].strip()
-        source_words = " ".join(folded(" ".join(s.get("section_text") or "" for s in sections)))
-        if author and " ".join(folded(author)) not in source_words:
-            author = ""
+        author = _source_spelling(letter["author"].strip(), " ".join(s.get("section_text") or "" for s in sections))
         street = check.resolve(letter["street"]) if letter["street"].strip() else None
         author = _titled(author) if author else ""
         who = author or (letter["organization"].strip() or "A resident")
