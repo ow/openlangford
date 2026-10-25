@@ -16,7 +16,7 @@ import {
 } from "react-router";
 import { createSupabaseServerClient } from "./lib/supabase.server";
 import { getMunicipality } from "./services/municipality";
-import { publicSignupsEnabled } from "./lib/features.server";
+import { emailAlertsAvailable, publicSignupsEnabled } from "./lib/features.server";
 import { getUserProfile } from "./services/subscriptions";
 import { getMunicipalityFromMatches } from "./lib/municipality-helpers";
 import { ogImageUrl } from "./lib/og";
@@ -87,7 +87,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     // Don't redirect if already on onboarding, login, logout, signup, admin,
     // speaker review, or API routes.
     const skipRedirectPaths = ["/onboarding", "/login", "/logout", "/signup"];
-    const isApiRoute = pathname.startsWith("/api/");
+    const isApiRoute = pathname.startsWith("/api/") || pathname.startsWith("/email/unsubscribe/");
     const isAdminRoute = pathname.startsWith("/admin") || pathname === "/speaker-alias";
     const shouldSkipRedirect =
       skipRedirectPaths.includes(pathname) || isApiRoute || isAdminRoute;
@@ -106,6 +106,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     municipality,
     isAdmin: !!user && isAdminEmail(user.email),
     signupsEnabled: publicSignupsEnabled(),
+    emailAlertsAvailable: emailAlertsAvailable(),
     aiSearchAvailable: searchBudget.available,
   };
 }
@@ -119,7 +120,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="canonical" href={`${SITE_ORIGIN}${pathname === "/" ? "/" : pathname.replace(/\/+$/, "")}`} />
+        {!pathname.startsWith("/email/unsubscribe/") && <link rel="canonical" href={`${SITE_ORIGIN}${pathname === "/" ? "/" : pathname.replace(/\/+$/, "")}`} />}
         <Meta />
         <Links />
         <link rel="help" type="text/markdown" href={`${SITE_ORIGIN}/agents.md`} title="Public Markdown records" />
@@ -128,7 +129,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
-        <PostHogProvider />
+        {!pathname.startsWith("/email/unsubscribe/") && <PostHogProvider />}
       </body>
     </html>
   );

@@ -26,6 +26,12 @@ export function PostHogProvider() {
       api_host: "https://us.i.posthog.com",
       ui_host: "https://us.posthog.com",
       person_profiles: "identified_only",
+      // Never send opt-out bearer URLs or admin account/email data to analytics.
+      before_send: (event) => {
+        const current = typeof window === "undefined" ? "" : window.location.pathname;
+        const eventUrl = String(event?.properties?.$current_url || "");
+        return [current, eventUrl].some(value => value.includes("/email/unsubscribe/") || value.includes("/admin")) ? null : event;
+      },
       capture_pageview: false, // We track route changes manually (SPA)
     });
   }, []);

@@ -3,9 +3,12 @@
  * Steps: pick topics -> set address/neighbourhood -> opt into digest.
  */
 
+import { emailAlertsAvailable } from "../lib/features.server";
+import { onboardingNotice } from "../lib/onboarding-notice.server";
+import { EmailAlertsNotice } from "../components/email-alerts-notice";
 import { NEIGHBORHOODS } from "../lib/site-config";
 import { useState } from "react";
-import { redirect } from "react-router";
+import { redirect, useNavigation, useSubmit } from "react-router";
 import type { Route } from "./+types/onboarding";
 import { createSupabaseServerClient } from "../lib/supabase.server";
 import { getTopics } from "../services/topics";
@@ -56,7 +59,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/", { headers });
   }
 
-  return { user, profile, topics };
+  return { user, profile, topics, emailAlertsAvailable: emailAlertsAvailable() };
 }
 
 // ── Action ──
@@ -71,6 +74,9 @@ export async function action({ request }: Route.ActionArgs) {
     throw redirect("/login", { headers });
   }
 
+  if (emailAlertsAvailable() && request.headers.get("Origin") !== new URL(request.url).origin) {
+    return { error: "Submit email preferences from this site." };
+  }
   const formData = await request.formData();
   const topicIds = formData.getAll("topic_id").map(Number).filter(Boolean);
   const keywords = formData.getAll("keyword").map(String).filter(Boolean);
@@ -79,7 +85,8 @@ export async function action({ request }: Route.ActionArgs) {
   const lng = formData.get("lng") ? parseFloat(formData.get("lng") as string) : null;
   const neighborhood = (formData.get("neighborhood") as string) || "";
   const proximityRadius = Number(formData.get("proximity_radius") || 1000);
-  const digestEnabled = formData.get("digest_enabled") === "true";
+  const alertsAvailable = emailAlertsAvailable();
+  const digestEnabled = alertsAvailable && formData.get("digest_enabled") === "true";
 
   try {
     // 1. Subscribe to selected topic categories
@@ -107,11 +114,12 @@ export async function action({ request }: Route.ActionArgs) {
 
     if (lat != null && lng != null) {
       // Use SECURITY DEFINER RPC for safe geography write
-      await supabase.rpc("update_user_location", {
+      const { error } = await supabase.rpc("update_user_location", {
         target_user_id: user.id,
         lng,
         lat,
       });
+      if (error) throw error;
 
       // Create neighbourhood subscription for proximity alerts
       await addSubscription(supabase, user.id, "neighborhood", {
@@ -138,16 +146,18 @@ export async function action({ request }: Route.ActionArgs) {
     // 5. ALWAYS set onboarding_completed = true (even if user skipped everything)
     await upsertUserProfile(supabase, user.id, {
       ...profileUpdate,
-      digest_enabled: digestEnabled,
-      digest_frequency: "each_meeting",
-    } as any);
+      // Disabled form controls are omitted. Do not erase an existing opt-in/frequency.
+      ...(alertsAvailable ? { digest_enabled: digestEnabled, ...(digestEnabled ? { digest_frequency: "each_meeting" as const } : {}) } : {}),
+      onboarding_completed: !alertsAvailable,
+    });
 
-    // Mark onboarding as complete via direct update
-    await supabase
-      .from("user_profiles")
-      .update({ onboarding_completed: true })
-      .eq("id", user.id);
-
+    if (alertsAvailable) {
+      const { error } = await supabase.rpc("set_email_alert_consent", { p_enabled: digestEnabled, p_complete_onboarding: true });
+      if (error) throw new Error("Unable to save email consent. Confirm your sign-in email and try again.");
+    }
+    headers.append("Set-Cookie", await onboardingNotice.serialize("complete", {
+      secure: new URL(request.url).protocol === "https:",
+    }));
     return redirect("/", { headers });
   } catch (err) {
     console.error("Onboarding action error:", err);
@@ -251,8 +261,7 @@ function TopicStep({
           What topics interest you?
         </h2>
         <p className="text-sm text-zinc-500">
-          Select categories to get notified when related items appear on council
-          agendas.
+          Save the council topics you care about. You can change these preferences later.
         </p>
       </div>
 
@@ -304,7 +313,7 @@ function TopicStep({
             Custom keywords
           </h3>
           <p className="text-xs text-zinc-500">
-            Add specific terms to get alerts when semantically similar topics are
+            Add specific terms to match when similar topics are
             discussed.
           </p>
         </div>
@@ -426,7 +435,7 @@ function LocationStep({
           Where in Langford?
         </h2>
         <p className="text-sm text-zinc-500">
-          Get alerts about decisions and developments near your home. Your
+          Save a location for decisions and developments near your home. Your
           address is only used to work out what's nearby.
         </p>
       </div>
@@ -543,7 +552,9 @@ function LocationStep({
 function DigestStep({
   digestEnabled,
   setDigestEnabled,
+  alertsAvailable,
 }: {
+  alertsAvailable: boolean;
   digestEnabled: boolean;
   setDigestEnabled: (e: boolean) => void;
 }) {
@@ -554,13 +565,15 @@ function DigestStep({
           Stay in the loop
         </h2>
         <p className="text-sm text-zinc-500">
-          A short email after each council meeting, so you can keep up without
-          watching hours of video.
+          {alertsAvailable
+            ? "A short email after each council meeting, so you can keep up without watching hours of video."
+            : "Email digests are not available yet. You can finish setup without turning them on."}
         </p>
       </div>
 
       <button
         type="button"
+        disabled={!alertsAvailable}
         onClick={() => setDigestEnabled(!digestEnabled)}
         aria-pressed={digestEnabled}
         className={cn(
@@ -584,9 +597,9 @@ function DigestStep({
         <div className="space-y-2">
           <div className="font-semibold text-zinc-900">Meeting digest</div>
           <p className="text-sm text-zinc-600 leading-relaxed">
-            Send me a summary after each council meeting: key decisions, votes
-            and what they mean for my neighbourhood. Only sent once minutes or
-            a transcript are available.
+            {alertsAvailable
+              ? "Email me a summary after each council meeting once minutes or a transcript are available. I can unsubscribe at any time."
+              : "Unavailable. Any existing digest preference is kept; email delivery is not active."}
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             {["Key decisions", "Vote results", "Your neighbourhood", "Divided votes"].map((tag) => (
@@ -604,7 +617,9 @@ function DigestStep({
 // ── Main Component ──
 
 export default function Onboarding({ loaderData, actionData }: Route.ComponentProps) {
-  const { topics } = loaderData;
+  const { topics, profile, emailAlertsAvailable: alertsAvailable } = loaderData;
+  const submit = useSubmit();
+  const submitting = useNavigation().state !== "idle";
 
   const [step, setStep] = useState(0);
   const [selectedTopics, setSelectedTopics] = useState<Set<number>>(new Set());
@@ -617,12 +632,9 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
   } | null>(null);
   const [neighborhood, setNeighborhood] = useState("");
   const [proximityRadius, setProximityRadius] = useState(1000);
-  const [digestEnabled, setDigestEnabled] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [digestEnabled, setDigestEnabled] = useState(profile?.digest_enabled ?? false);
 
-  async function handleSubmit() {
-    setSubmitting(true);
-
+  function handleSubmit() {
     const form = new FormData();
 
     // Topics
@@ -645,18 +657,7 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
     // Digest
     form.set("digest_enabled", digestEnabled ? "true" : "false");
 
-    // Submit as regular form POST
-    const response = await fetch("/onboarding", {
-      method: "POST",
-      body: form,
-    });
-
-    if (response.redirected) {
-      window.location.href = response.url;
-    } else {
-      // If there's an error, stay on the page
-      setSubmitting(false);
-    }
+    submit(form, { method: "post" });
   }
 
   return (
@@ -668,13 +669,15 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
             Welcome to {siteName()}
           </p>
           <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-zinc-900">
-            Set up your alerts
+            Save your preferences
           </h1>
           <p className="mt-2 text-sm text-zinc-600">
-            Choose what you'd like to hear about from council. It takes about a
+            Choose the council topics and places you care about. It takes about a
             minute, and you can change it later in Settings.
           </p>
         </div>
+
+        {!alertsAvailable && <div className="mb-6"><EmailAlertsNotice /></div>}
 
         {/* Step indicator */}
         <StepIndicator currentStep={step} />
@@ -708,6 +711,7 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
             <DigestStep
               digestEnabled={digestEnabled}
               setDigestEnabled={setDigestEnabled}
+              alertsAvailable={alertsAvailable}
             />
           )}
 
@@ -771,15 +775,9 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
           <button
             type="button"
             onClick={() => {
-              setSubmitting(true);
               const form = new FormData();
               form.set("digest_enabled", "false");
-              fetch("/onboarding", { method: "POST", body: form }).then(
-                (res) => {
-                  if (res.redirected) window.location.href = res.url;
-                  else setSubmitting(false);
-                },
-              );
+              submit(form, { method: "post" });
             }}
             className="text-sm text-zinc-500 underline-offset-4 transition-colors hover:text-zinc-700 hover:underline"
             disabled={submitting}
