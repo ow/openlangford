@@ -15,6 +15,8 @@ An open-source civic intelligence platform for the City of Langford, BC. Browse 
 - **Council Profiles** -- Attendance stats, voting history, speaking time metrics (trend sparkline, topic breakdown, peer ranking), and AI-generated stance summaries per topic with confidence scoring and evidence quotes
 - **Councillor Comparison** -- Side-by-side comparison of any two councillors: voting alignment percentage, per-topic stance agreement indicators, activity stats, and speaking time by topic
 - **Bylaw & Matter Tracking** -- Follow issues as they move through council across multiple meetings
+- **Property Pages** -- Every civic address and street council has dealt with (`/properties/2750-leigh-road`, `/properties/leigh-road`): all matters at the lot, mentions outside any matter, nearby matters by distance, and a map pin geocoded with BC's Address Geocoder
+- **Written Submissions** -- Residents' letters from agenda packages, summarized and placed on the agenda item they're about (general letters go under the meeting's Correspondence or Public Participation item); unsure placements wait in `/admin/letters`
 - **Election History** -- Past election results with candidate details
 - **Speaker Identification** -- Diarized transcripts with speaker aliases resolved to real names via AI matching
 
@@ -73,7 +75,8 @@ sql/
 | `people` | Council members, staff, public delegates |
 | `organizations` + `memberships` | Governance structure and roles |
 | `elections` + `candidacies` | Election history |
-| `attendance` + `meeting_events` | Meeting participation tracking |
+| `attendance` + `meeting_events` | Meeting participation tracking (source-evidenced rows carry `council-attendance/v1` notes) |
+| `properties` + `property_links` | Civic addresses and streets, linked to the matters and agenda items that name them |
 | `municipalities` | Municipality config: name, slug, website URL, RSS feed, map center, contact email |
 | `topics` | Controlled taxonomy for agenda item classification |
 | `councillor_stances` | AI-generated stance summaries per councillor per topic with position scores, confidence, and evidence |
@@ -259,6 +262,46 @@ pnpm dev:worker:once    # process at most one queued job
 
 Open `/admin/pipeline` after signing in to discover source meetings, queue
 document sync/ingest/extraction/embedding jobs, and inspect worker event logs.
+Each job shows its estimated AI cost (tokens × list prices); the worker tags
+every AI call with its job id (`ai_usage.pipeline_job_id`).
+
+### Backfilling history from Glyphdex
+
+The city's own archive only has Council meetings from 2016 and committees from
+2023. The [Goldstream Public Record archive](https://gspr.emc2.build) (Glyphdex)
+has Council back to 2008 and the standing committees (Planning, Zoning &
+Affordable Housing; Transportation & Public Works; ...) for 2016–2022.
+`pipeline/ingestion/glyphdex_import.py` downloads the original PDFs from its
+public document API (checksum-verified, no search quota used) into the usual
+archive layout and ingests them with our own pipeline:
+
+```bash
+cd apps/pipeline
+# list what would be imported (meetings we already have are skipped)
+uv run python -m pipeline.ingestion.glyphdex_import --body "Planning, Zoning" --from 2019-01-01 --to 2019-12-31 --dry-run
+# import one meeting at a time through main.py
+uv run python -m pipeline.ingestion.glyphdex_import --body "Committee" --from 2016-01-01 --to 2022-12-31 --ingest
+# parallel: N workers, whole years per worker, post-ingest stages once at the end
+uv run python -m pipeline.ingestion.glyphdex_import --body "Committee" --from 2016-01-01 --to 2022-12-31 --ingest --workers 4
+```
+
+- **Provenance:** each PDF gets a `.url` sidecar pointing at Glyphdex's archived
+  copy (stored as the document's `source_url`), and the meeting folder gets
+  `glyphdex.json` with Glyphdex ids, original filenames and SHA-256.
+- **Parallel mode** holds the pipeline lock for the whole run (scheduled runs
+  exit cleanly until it's done). Workers ingest meetings directly, record a
+  meeting only once its row and agenda items exist, and delete a meeting they
+  created if its ingest fails, so rerunning the same command picks up exactly
+  what's missing. Progress: `archive/langford/reports/glyphdex-shard-N.log` and
+  `.jsonl` (one line per meeting).
+- **Standing committees** become their own organizations (slug
+  `2019-07-08-planning-zoning-affordable-housing-committee`). Their motions are
+  recommendations to Council and there are no validated committee ballot rules,
+  so motions are held as unverified (`agenda_items.meta.unverified_motion_proposals`)
+  rather than published.
+- **Email alerts** are not triggered by backfills: the parallel workers skip the
+  post-ingest alert hook, and the server only enqueues meetings on or after the
+  alerts start date (see issue #58).
 
 ## RAG Q&A System
 
@@ -292,7 +335,7 @@ All model calls go through one client per app, so models, retries, timeouts, hou
 - **Embeddings** -- `text-embedding-3-small` at 384 dimensions everywhere; changing either means re-embedding.
 - **House rules** -- prepended to every system prompt: never infer anyone's gender or use gendered pronouns unless the source states them.
 - **Usage and failures** -- every call (success or failure) is recorded in the `ai_usage` table by both apps, without blocking the pipeline or delaying responses. `/admin/pipeline` shows the last 7/30 days by stage (calls, failures, tokens, estimated cost, p50/p95 latency) and the latest failures. Cost is estimated at read time from `apps/web/app/services/ai/pricing.ts`.
-- **Stages** -- post-ingest enrichment (eSCRIBE attachments, document relinking, matter summaries, agenda alignment, public-participation summaries, matter images and links, councillor profiles, embeddings) is declared in `apps/pipeline/pipeline/stages.py` and runs in order after ingestion. Run one with `uv run python main.py --stage <name> [--target ID] [--since DATE] [--stale] [--dry-run]`; list them with `--stages`. `--stale` re-runs only items written by an older stage version.
+- **Stages** -- post-ingest enrichment (eSCRIBE attachments, document relinking, late-submission letters, written submissions, matter summaries, agenda alignment, public-participation summaries and names, matter images and links, properties and geocoding, councillor profiles, embeddings) is declared in `apps/pipeline/pipeline/stages.py` and runs in order after ingestion. Run one with `uv run python main.py --stage <name> [--target ID] [--since DATE] [--stale] [--dry-run]`; list them with `--stages`. `--stale` re-runs only items written by an older stage version.
 
 ## Adapting for Another Municipality
 
