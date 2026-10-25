@@ -1,0 +1,396 @@
+{
+  "schema": "reviewed-original-minutes-v1",
+  "project_ref": "zxcvifwkaxtdfpanlwtl",
+  "municipality_id": 1,
+  "catalog": {
+    "id": 216,
+    "title": "Regular Council",
+    "meeting_date": "2023-04-17",
+    "type": "Regular Council",
+    "archive_path": "archive/langford/Council/2023/04/2023-04-17 700pm Regular Council [774dd3a7]",
+    "classification": "Council"
+  },
+  "file_inventory": [
+    {
+      "file": "archive/langford/Council/2023/04/2023-04-17 700pm Regular Council [774dd3a7]/Minutes/Minutes - SIGNED.pdf",
+      "sha256": "2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827"
+    },
+    {
+      "file": "archive/langford/Council/2023/04/2023-04-17 700pm Regular Council [774dd3a7]/Minutes/Minutes.pdf",
+      "sha256": "88e199ddf15111da329c376cc7eca24815019466c518300b5b0ab34dcb2934ec",
+      "url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5664"
+    }
+  ],
+  "selected_file": "archive/langford/Council/2023/04/2023-04-17 700pm Regular Council [774dd3a7]/Minutes/Minutes - SIGNED.pdf",
+  "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5827",
+  "source_sha256": "2b2245a730b7d4b2e2506f366c5c509769c2c7dc9ece35292866174cd97672ef",
+  "mode": "reviewed_native_image_decisions",
+  "review_status": "independently_reviewed_original_source",
+  "render_scale": 2,
+  "pymupdf_version": "1.27.2.3",
+  "native_layout_sha256": "0ff9df174d0905516cc6d7fe6db06c407086da97c887aafc73d085258f2ade9c",
+  "corrected_text_sha256": "0ff9df174d0905516cc6d7fe6db06c407086da97c887aafc73d085258f2ade9c",
+  "parsed_blocks_sha256": "785a6cdf069810a72e21e16ae71b13326288cc6cc97e3c5dc5bb191445d560d0",
+  "pages": [
+    {
+      "page": 1,
+      "native_text_sha256": "9f676c62e521418502fa78f6a263076397b795bd0df54bdb95743932f43e14b7",
+      "render_sha256": "ac3ae5045cf4ad24ec70dbd21f36205fae5a7bcab1511d7769d6df5787c638fd"
+    },
+    {
+      "page": 2,
+      "native_text_sha256": "53e77a6e7f9ce633f6e9b8934797e50d09befad7a0134f076acdb03f6c5d65ff",
+      "render_sha256": "cdd850cad395c8a3f0f162a4c71a2ab48895c44ef359fd289f8eb70bdcf0eb78"
+    },
+    {
+      "page": 3,
+      "native_text_sha256": "1e63707eab98555bbffd6f637d32a657e11b6b1617c5c5f4aaad956d5257e447",
+      "render_sha256": "40055da1e14315a40394c579351eb4308696a6f360fa771301125c52f594ec10"
+    },
+    {
+      "page": 4,
+      "native_text_sha256": "c99d98caab6b5ebbcc06ea5def4298fce12f4785d938c2ce0d01b6624ea225b7",
+      "render_sha256": "7be06c5724626ef44f5f07eb3e7083e1d26b452ccbf73879ab0cb4410cb7bad0"
+    },
+    {
+      "page": 5,
+      "native_text_sha256": "17453b06f22b97256acae5a646a1cbda87d1fc475f4d8c79fa761d600a6d74fe",
+      "render_sha256": "266d0ace0e892f728f12740b8e28873338b9c1dd0e62a7c137b156498f346a95"
+    },
+    {
+      "page": 6,
+      "native_text_sha256": "c36b5387ed89ad4866f797534f1cc7ab63d7c9d06e8c21a2b3ccbf2213addbab",
+      "render_sha256": "36fe1f0296117925b86b4304a0866d5222388961cb8bb4074a524dfceea85dfd"
+    },
+    {
+      "page": 7,
+      "native_text_sha256": "c5b73e67903e7d4abda5f9d65cd5296142711893e474cd656b30daf5f5bb1969",
+      "render_sha256": "769341ce10359953a0cd8de054c52b0e48896a6d217baeaa10bf7e4a5b66eb36"
+    },
+    {
+      "page": 8,
+      "native_text_sha256": "0dbaa36038a46f84c3018a2789a0bb067fbb2279993b591497766c222bb3db4a",
+      "render_sha256": "9e36a3fbf2299905311c64981189efb5e3cef9d8b3ddad692ac4b26e982818fb"
+    },
+    {
+      "page": 9,
+      "native_text_sha256": "af4f02558b3aa980f0f4b82eddaf60849dafc18500a18ca8146778f7d49b581a",
+      "render_sha256": "a1fae60254810b3434f1c61b90caaa64f93e413fed3f31c0a3b4cc6e5ca671dd"
+    },
+    {
+      "page": 10,
+      "native_text_sha256": "6ced2821d555e4e819e54b74634f1ddc1e3cf675fb4443dca85788e6f1356e34",
+      "render_sha256": "d721c33d79196016454e17a388524974f7d19d36b6f2d5d25394b69da275de61"
+    },
+    {
+      "page": 11,
+      "native_text_sha256": "4e90d5cc88f8272f4144b629d117ba1b97d537c353bd5b67391264492b254954",
+      "render_sha256": "67426783de7a5aab4e410359f494ada452b71bb22554acc11e6f3d20b788cf45"
+    },
+    {
+      "page": 12,
+      "native_text_sha256": "ac2dbea685e139c33ccd4d60a406d028f3bde7049c81055756242d9a4188506e",
+      "render_sha256": "214cda630b8ed2bc7875305c8bc0420663caafbfdbe2e90015c867cc0ceeadf8"
+    },
+    {
+      "page": 13,
+      "native_text_sha256": "77b24b42f0202eaf07c975bfce42802e6d64ad5e823586291404ff21fb37bb4a",
+      "render_sha256": "806f05b6890378898feb4bf212cbb7703b218250d16fe1fcadb72e63ea2196d9"
+    }
+  ],
+  "text_corrections": [],
+  "accepted_decisions": [
+    {
+      "source_key": "3528501961c8be841e7ee85041e1500929d070ba6d687a03d3f8e685044ca4ac",
+      "raw_block_sha256": "cce23db27a069563507340fa98c6f6cc2d2de05c9566fcda2c3413ba2f2e56a0",
+      "operative_body": "THAT Council at 10:04 p.m. extend the meeting to midnight or the end of business.",
+      "operative_body_sha256": "d19088a765c67dfbc1e7672a9c9ffd044cfc1c77f1d30c7d736df9532bc3fce6",
+      "result": "CARRIED UNANIMOUSLY",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "6ced2821d555e4e819e54b74634f1ddc1e3cf675fb4443dca85788e6f1356e34",
+          "render_sha256": "d721c33d79196016454e17a388524974f7d19d36b6f2d5d25394b69da275de61"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9646917e4600f8019dfca0d79f390027474b245f7c7e4c3f1f76ece601168e36",
+      "raw_block_sha256": "ff0e87734a44dc3f3e59a1225f66df81952233eadb9928d979a59c2808381e8b",
+      "operative_body": "THAT Council approve the minutes of the meeting of Special Council held on March 27, 2023.",
+      "operative_body_sha256": "13c97d7d5b51447ac3bf1eb598ae53748257b35b6303778cefe5aba712c565d7",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "6ced2821d555e4e819e54b74634f1ddc1e3cf675fb4443dca85788e6f1356e34",
+          "render_sha256": "d721c33d79196016454e17a388524974f7d19d36b6f2d5d25394b69da275de61"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "March 11,",
+          "printed": "March 27,",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "8df55d570417b5849df149b8181553fba06c858b399d67826b901fa057b21284",
+      "raw_block_sha256": "12708b25c6843a3ffd4bba170e009fc81ae723958494a04d8da42dbdf9b5d8da",
+      "operative_body": "THAT Council approve the minutes of the meeting of Council held on April 3, 2023.",
+      "operative_body_sha256": "2f1a17b3af4d0931b09535d428a802c579489e806080085ac54897bbd1dbd743",
+      "result": "CARRIED",
+      "pages": [
+        10
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "6ced2821d555e4e819e54b74634f1ddc1e3cf675fb4443dca85788e6f1356e34",
+          "render_sha256": "d721c33d79196016454e17a388524974f7d19d36b6f2d5d25394b69da275de61"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "dd5625bbf936ddc4cc13731a01b716dc77f3956abe1691e8fffec0dc0c30a535",
+      "raw_block_sha256": "322ece7a8cf3c1b40e9711b3fc4238352435459c500771655307a0cc9490da2c",
+      "operative_body": "THAT Council receive the minutes of the meeting of the Committee of the Whole held on March 27, 2023.",
+      "operative_body_sha256": "e68860dd84491f066edaa0cf5f73ba82e3c5cdd48bc98dae6c066a45c5617fe2",
+      "result": "CARRIED",
+      "pages": [
+        10,
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 10,
+          "native_text_sha256": "6ced2821d555e4e819e54b74634f1ddc1e3cf675fb4443dca85788e6f1356e34",
+          "render_sha256": "d721c33d79196016454e17a388524974f7d19d36b6f2d5d25394b69da275de61"
+        },
+        {
+          "page": 11,
+          "native_text_sha256": "4e90d5cc88f8272f4144b629d117ba1b97d537c353bd5b67391264492b254954",
+          "render_sha256": "67426783de7a5aab4e410359f494ada452b71bb22554acc11e6f3d20b788cf45"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "THATCouncil",
+          "printed": "THAT Council",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        },
+        {
+          "native": "iVIarch",
+          "printed": "March",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "376c08e9fd7fec76b1757f05cc2c316f75f05557e9d66928613259c60950a191",
+      "raw_block_sha256": "fa8dfcaa973bb81470dbf71a613b4b28b8564a07e6ef584bd35a30eba47d48bb",
+      "operative_body": "THAT Council receive the minutes of the meeting of the Committee of the Whole held on March 30, 2023.",
+      "operative_body_sha256": "2440adfca19de7f6c728880832b85018b605a68efb4e3c01c3322cc5b7085ed7",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "4e90d5cc88f8272f4144b629d117ba1b97d537c353bd5b67391264492b254954",
+          "render_sha256": "67426783de7a5aab4e410359f494ada452b71bb22554acc11e6f3d20b788cf45"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "4a9a9e7354c4eb7f242b333c051098c7b320b2dc36204dcd9ebb9b4b5fb63724",
+      "raw_block_sha256": "93809a293cf35bb8723238d79d58c980006f5663e41a7301e45536b2a05061e2",
+      "operative_body": "THAT Council receive the minutes of the meeting of the Committee of the Whole held on April 3, 2023.",
+      "operative_body_sha256": "29e63fd33a329d2483b5bfc7fa6c985bb614f68f67ab37bf09c7e8d75eceef86",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "4e90d5cc88f8272f4144b629d117ba1b97d537c353bd5b67391264492b254954",
+          "render_sha256": "67426783de7a5aab4e410359f494ada452b71bb22554acc11e6f3d20b788cf45"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "01f380fc327405b254cbad6dd6fee98bc6f3839ff9f0c7d56a730181bf9833f8",
+      "raw_block_sha256": "500f0a92b3ee97ed92f65b4107f553f35e5fc8e5545dfb72e4cd3d0e1dbfd00e",
+      "operative_body": "THAT Council give Bylaw No. 2093 second and third readings.",
+      "operative_body_sha256": "6a9c1dc845ee4a70318d8e1c5bb9e6548737c463ccaeaec8679422a2057cf28e",
+      "result": "CARRIED",
+      "pages": [
+        11
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "4e90d5cc88f8272f4144b629d117ba1b97d537c353bd5b67391264492b254954",
+          "render_sha256": "67426783de7a5aab4e410359f494ada452b71bb22554acc11e6f3d20b788cf45"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "45e06d3fa583fa656578a690c9bc56253ee620b0da8e7bbad464a2b6907da6ac",
+      "raw_block_sha256": "9e4a9b90bea5346e1eec3ba111bc8e6a48086464e3fac0154df0752de43a096b",
+      "operative_body": "THAT prior to adoption, the applicant will register a section 219 covenant agreeing that the garages are to be used for the parking of vehicles and not the storage of items preventing the parking of vehicles therein.",
+      "operative_body_sha256": "8162375c2e8036f2baef05315d2d9eea434e9ed13b9482ba6c857fc6c03b671e",
+      "result": "CARRIED",
+      "pages": [
+        11,
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 11,
+          "native_text_sha256": "4e90d5cc88f8272f4144b629d117ba1b97d537c353bd5b67391264492b254954",
+          "render_sha256": "67426783de7a5aab4e410359f494ada452b71bb22554acc11e6f3d20b788cf45"
+        },
+        {
+          "page": 12,
+          "native_text_sha256": "ac2dbea685e139c33ccd4d60a406d028f3bde7049c81055756242d9a4188506e",
+          "render_sha256": "214cda630b8ed2bc7875305c8bc0420663caafbfdbe2e90015c867cc0ceeadf8"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "9cea9d7332fb0e683a03797ffddc705ff8733dc954f1730498311b4bca9e4e71",
+      "raw_block_sha256": "d94737d594004c961bbc7c17ea29956ff2e615263f756deaaf10ff084997c53a",
+      "operative_body": "THAT Council direct staff to ensure that all trees that are within the area to be dedicated as park, are protected fully through the development process. AND THAT staff work with the developer and their landscape architect to ensure as many existing trees as possible, be incorporated into the landscape plan.",
+      "operative_body_sha256": "ab5f58eead764d2f405f65361a54bdb2280bbaf1f2fb8de0a2412d72cffb878c",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "ac2dbea685e139c33ccd4d60a406d028f3bde7049c81055756242d9a4188506e",
+          "render_sha256": "214cda630b8ed2bc7875305c8bc0420663caafbfdbe2e90015c867cc0ceeadf8"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "a80882f72f775a33f6ef3c26527ec2e3b8bdc23ef3c1661b67ccd35a1260500e",
+      "raw_block_sha256": "8715e8ccc6fa3cf6a31fb6c7526cd90968f02b55637d2251eae1dca85411b293",
+      "operative_body": "THAT Council adopt Bylaw No. 2098.",
+      "operative_body_sha256": "61aa966e81191fb2c484ab1651791c60ff862e1e0d50fdd0547d6a373650343b",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "ac2dbea685e139c33ccd4d60a406d028f3bde7049c81055756242d9a4188506e",
+          "render_sha256": "214cda630b8ed2bc7875305c8bc0420663caafbfdbe2e90015c867cc0ceeadf8"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "THATCouncil",
+          "printed": "THAT Council",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    },
+    {
+      "source_key": "a9802d284a3702589553bd20f92dad47307b0447e2806ee92ebaaf100255d3fe",
+      "raw_block_sha256": "23a5ec1fac9d9c54adb172dea4d99ecaca6ac558c231400af8a9a9fe3066dc43",
+      "operative_body": "THAT Council give Bylaw No. 2126 first reading.",
+      "operative_body_sha256": "8de9fbddaf580b0d3ee84ce1ab8b0443bdcaa3a0d12be7791f771423ee157bd0",
+      "result": "CARRIED",
+      "pages": [
+        12
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "ac2dbea685e139c33ccd4d60a406d028f3bde7049c81055756242d9a4188506e",
+          "render_sha256": "214cda630b8ed2bc7875305c8bc0420663caafbfdbe2e90015c867cc0ceeadf8"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": []
+    },
+    {
+      "source_key": "6c72defff54224a050d6021308ef572256e814ec6eb36d9973b8c012e7a25d5c",
+      "raw_block_sha256": "74a661cfa9d8696e18491911b7c548b9ecfd1076415596ce1e8afbe69b202b33",
+      "operative_body": "THAT Council give 1st, 2nd and 3rd reading to Bylaw No. 2128, City of Langford Alternative Municipal Tax Collection Scheme Bylaw, No. 2128, 2023.",
+      "operative_body_sha256": "09d4da722bb42f14742e2e83755d40a98e8c7a24d8bd48a48f477203cbda43e9",
+      "result": "CARRIED",
+      "pages": [
+        12,
+        13
+      ],
+      "page_evidence": [
+        {
+          "page": 12,
+          "native_text_sha256": "ac2dbea685e139c33ccd4d60a406d028f3bde7049c81055756242d9a4188506e",
+          "render_sha256": "214cda630b8ed2bc7875305c8bc0420663caafbfdbe2e90015c867cc0ceeadf8"
+        },
+        {
+          "page": 13,
+          "native_text_sha256": "77b24b42f0202eaf07c975bfce42802e6d64ad5e823586291404ff21fb37bb4a",
+          "render_sha256": "806f05b6890378898feb4bf212cbb7703b218250d16fe1fcadb72e63ea2196d9"
+        }
+      ],
+      "independent_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+      "authority": "operative_body_and_result_only",
+      "corrections": [
+        {
+          "native": "1^^ 2\"^ and 3\"\"^",
+          "printed": "1st, 2nd and 3rd",
+          "reason": "Original page image verifies printed glyph/word spacing; no additional facts or inferred votes."
+        }
+      ]
+    }
+  ],
+  "native_first_page_sha256": "9f676c62e521418502fa78f6a263076397b795bd0df54bdb95743932f43e14b7",
+  "independent_original_image_review_sha256": "e8759f5c70777122c859b12b525fbe6ad570c85fcfcf31ff0d10b4f3ddab8de3",
+  "second_independent_original_image_review_sha256": "cae8feb1640401885d4ff61c5b3a770e5f9e23fff97bf99ba390ee26fbde0ce0",
+  "remaining_holds": []
+}
