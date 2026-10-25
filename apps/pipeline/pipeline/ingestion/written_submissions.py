@@ -211,6 +211,9 @@ def _item_decider():
 
 def summarize_document(supabase, extracted: dict, *, streets: dict, dry_run: bool = False, decide=None) -> dict:
     """Extract, place and store one correspondence document's letters. Returns counts."""
+    if not dry_run:
+        from .letter_privacy import scrub_correspondence
+        scrub_correspondence(supabase, extracted["id"], extracted["document_id"])
     sections = (supabase.table("document_sections").select("id,section_text,section_order")
                 .eq("extracted_document_id", extracted["id"]).order("section_order").order("id").execute().data or [])
     chars = sum(len(s.get("section_text") or "") for s in sections)
