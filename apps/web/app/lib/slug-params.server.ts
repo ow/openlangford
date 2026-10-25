@@ -6,6 +6,26 @@ type SlugTable = "meetings" | "matters" | "bylaws" | "elections";
 export type ResolvedSlugRow = { id: number; slug: string };
 
 /**
+ * Current row for a meeting slug that was renamed (meeting_slug_history), or null.
+ * Meeting slugs embed the date, so a date correction renames the slug and records the old one.
+ */
+export async function findMeetingBySlugHistory(
+  supabase: SupabaseClient,
+  slug: string,
+): Promise<ResolvedSlugRow | null> {
+  const { data: hist } = await supabase
+    .from("meeting_slug_history")
+    .select("meeting_id")
+    .eq("old_slug", slug)
+    .limit(1)
+    .maybeSingle();
+  if (!hist) return null;
+  const { data } = await supabase.from("meetings").select("id, slug").eq("id", hist.meeting_id).maybeSingle();
+  const row = data as ResolvedSlugRow | null;
+  return row?.slug && row.slug !== slug ? row : null;
+}
+
+/**
  * Resolve a `:id` route param that should be a slug.
  *
  * - all-digit param (legacy id URL): look the row up by id and 301 to
@@ -49,6 +69,15 @@ export async function resolveSlugParam(
     const row = data as ResolvedSlugRow;
     if (param !== row.slug && redirectLegacy) throw redirect(buildPath(row) + search, 301);
     return row;
+  }
+
+  // Renamed meeting slug (date correction): 301 to the current slug, keeping sub-path and query.
+  if (table === "meetings") {
+    const row = await findMeetingBySlugHistory(supabase, slug);
+    if (row) {
+      if (!redirectLegacy) return row;
+      throw redirect(buildPath(row) + search, 301);
+    }
   }
 
   // Pre-47-10 matter/bylaw slugs were "{id}-{title}".

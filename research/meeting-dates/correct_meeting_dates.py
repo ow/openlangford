@@ -14,8 +14,10 @@ What it changes
 What it deliberately does NOT change
   * archive folders / meetings.archive_path / source_meetings.archive_path (see README: renaming is not
     needed, and Archiver._pin_known_archive_paths keeps scrapes from forking the folder)
-  * meetings.slug, unless `--rename-slugs` is passed AND the table `meeting_slug_history` exists
-    (the web app has no old-slug redirect for meetings; see README proposal + slug_history.sql)
+  * meetings.slug, unless `--rename-slugs` is passed. Then, in the same transaction, the old slug is recorded
+    in meeting_slug_history (migration 47-26; the web 301s old slugs) and the slug becomes `{date}-{type}`,
+    suffixed `-2` if another meeting holds it (e.g. 172). Renames run in two phases (tmp slug first) so chains
+    such as 38 -> 174 cannot trip the unique index.
 
 Guards (abort / hold)
   * any attendance evidence row (notes.local_date) for a target meeting equal to the OLD date: correcting
@@ -125,7 +127,10 @@ def build_plan(cur, archive_root: Path | None) -> dict:
     # Slug proposal (chain-aware: slugs vacated by this batch become available).
     cur.execute("SELECT id, slug, municipality_id FROM meetings WHERE slug IS NOT NULL")
     taken = {(r["municipality_id"], r["slug"]): r["id"] for r in cur.fetchall()}
-    muni = {e["meeting_id"]: None for e in plan["meetings"]}
+    cur.execute("SELECT to_regclass('public.meeting_slug_history') AS t")
+    if cur.fetchone()["t"]:  # an existing redirect must not be shadowed by a new live slug
+        cur.execute("SELECT municipality_id, old_slug, meeting_id FROM meeting_slug_history")
+        taken.update({(r["municipality_id"], r["old_slug"]): r["meeting_id"] for r in cur.fetchall()})
     cur.execute("SELECT id, municipality_id FROM meetings WHERE id = ANY(%s)", (ids,))
     muni = {r["id"]: r["municipality_id"] for r in cur.fetchall()}
     for e in plan["meetings"]:
@@ -182,11 +187,11 @@ def print_plan(plan: dict) -> None:
 def apply_plan(conn, cur, plan: dict, rename_slugs: bool) -> None:
     if plan["evidence_conflicts"]:
         raise SystemExit("refusing: attendance evidence local_date would diverge from meeting_date")
+    conn.set_session(isolation_level="SERIALIZABLE", readonly=False)  # must precede any statement
     if rename_slugs:
         cur.execute("SELECT to_regclass('public.meeting_slug_history') AS t")
         if not cur.fetchone()["t"]:
-            raise SystemExit("refusing --rename-slugs: table meeting_slug_history does not exist (no old-slug redirect support)")
-    conn.set_session(isolation_level="SERIALIZABLE", readonly=False)
+            raise SystemExit("refusing --rename-slugs: table meeting_slug_history does not exist (apply migration 47-26 first)")
     cur.execute("SET LOCAL lock_timeout = '5s'")
     cur.execute("SET LOCAL statement_timeout = '60s'")
     for e in plan["meetings"]:
@@ -204,9 +209,12 @@ def apply_plan(conn, cur, plan: dict, rename_slugs: bool) -> None:
             cur.execute("UPDATE meetings SET slug=%s WHERE id=%s AND slug=%s", (f"tmp-{e['meeting_id']}", e["meeting_id"], e["old_slug"]))
             assert cur.rowcount == 1
         for e in plan["meetings"]:
-            cur.execute("INSERT INTO meeting_slug_history (meeting_id, old_slug) SELECT id, %s FROM meetings WHERE id=%s",
+            # History row and new slug in the same transaction: the old URL never 404s.
+            cur.execute("INSERT INTO meeting_slug_history (meeting_id, municipality_id, old_slug) SELECT id, municipality_id, %s FROM meetings WHERE id=%s",
                         (e["old_slug"], e["meeting_id"]))
-            cur.execute("UPDATE meetings SET slug=%s WHERE id=%s", (e["proposed_slug"], e["meeting_id"]))
+            assert cur.rowcount == 1
+            cur.execute("UPDATE meetings SET slug=%s WHERE id=%s AND slug=%s", (e["proposed_slug"], e["meeting_id"], f"tmp-{e['meeting_id']}"))
+            assert cur.rowcount == 1
     # Post-conditions
     ids = [e["meeting_id"] for e in plan["meetings"]]
     cur.execute("SELECT count(*) AS n FROM meetings WHERE id = ANY(%s) AND meeting_date::text = ANY(%s)", (ids, [e["official_date"] for e in plan["meetings"]]))

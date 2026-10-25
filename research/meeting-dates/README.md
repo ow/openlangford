@@ -1,7 +1,7 @@
 # Meetings stored one day late (eSCRIBE epoch) - investigation and proposed fix
 
 Status: read-only investigation, no production writes. Nothing here has been applied.
-Run date 2026-10-25. Files: `correct_meeting_dates.py` (dry run by default), `plan.json` (the dry-run plan), `slug_history.sql` (proposal).
+Run date 2026-10-25. Files: `correct_meeting_dates.py` (dry run by default), `plan.json` (the dry-run plan). Owner decision: correct dates AND rename slugs, with old-slug redirects (migration `supabase/migrations/47-26-meeting-slug-history.sql`, applied to production; `resolveSlugParam`, the markdown routes and the meeting API fall back to `meeting_slug_history`).
 
 ## Root cause
 
@@ -72,7 +72,7 @@ Full list with old/new dates: `plan.json` / the table printed by `correct_meetin
 | Area | Effect | Handling |
 | --- | --- | --- |
 | `meetings.slug` | `YYYY-MM-DD-type`, set by an INSERT-only trigger, so a date update does **not** change it. Slug date will keep being one day off (already true for the 15 corrected earlier: slug date != meeting_date). | Default: leave slugs. Optional rename needs redirect support (below). |
-| Old-slug redirects | **None for meetings.** `resolveSlugParam` (`apps/web/app/lib/slug-params.server.ts`) redirects all-digit ids to the slug (301) and canonicalises case, and handles legacy `{id}-title` slugs for matters/bylaws only. No `slug_history`/alias table exists (only `meeting_speaker_aliases`). A renamed meeting slug would 404, including from the sitemap-indexed URLs and external links. | `slug_history.sql` + 8-line change in `resolveSlugParam` (in the file comments). `--rename-slugs` refuses to run without the table. |
+| Old-slug redirects | Originally none for meetings. Now: table `meeting_slug_history` (47-26) and a fallback in `resolveSlugParam` (detail, documents, document viewer, explorer), `publicMarkdown` (summary.md, content.md) and the meetings API endpoint; 301 keeps sub-path and query. | `--rename-slugs` records the old slug and sets the new slug in one transaction; refuses without the table. Note: 174's new slug is 38's old slug, so 38's history row is shadowed by the live slug (live slug wins). |
 | Slug collisions | Corrected date+type slug already held by another meeting: only **172** (2024-12-17 Special Council 7 PM -> 2024-12-16; slug `2024-12-16-special-council` belongs to meeting 329, the 12:30 PM Special Council the same day; trigger convention would give `-2`). 174 -> `2024-02-13-committee-of-the-whole` is held by 38, but 38 itself moves to 02-12 (chain; script handles it via a two-phase rename). No collisions on `(meeting_date, type)` (no such unique index; only `idx_meetings_slug_muni`). | Script computes chain-aware proposals; 172 gets `-2`. |
 | Archive folders / `archive_path` | Folder names contain the date (`2022-11-22 700pm Special Council [c145d400]`); `meetings.archive_path` (UNIQUE) equals `source_meetings.archive_path` in all 36; `documents.file_path` is relative to it; 218 meetings' `meta` embed archive paths (e.g. `cached_transcript_backfill.source_path`). | Not renamed (see below). |
 | `source_meetings` | 58 rows have the wrong `meeting_date`; the next scrape would rewrite them anyway (and, unpinned, also `archive_path` to a new folder). | Script updates `meeting_date` only. |
@@ -111,5 +111,5 @@ Data (not run)
   Dry run result: 36 meetings, 22 source-only rows, 0 held; minutes page-1 check True for 36/36; plan in `plan.json`.
 * Recommended order: (1) merge scraper/pin code so the next scrape cannot reintroduce or fork; (2) `--apply` date correction (date-only);
   (3) rerun the attendance plan for the 29 held council meetings; (4) next ingest refreshes ballot source validation once.
-* Slugs: recommend date-only now (matches the fifteen earlier corrections; zero broken links). If URLs should carry the right date, first land
-  `slug_history.sql` + the `resolveSlugParam` fallback, then run with `--rename-slugs` (also handles the 172 collision).
+* Slugs: dates and slugs are corrected together. The history table and redirect fallback are in place (47-26 + web), so run with
+  `--rename-slugs` (handles the 172 collision and the 38/174 chain).

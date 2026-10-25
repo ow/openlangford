@@ -3,6 +3,7 @@ import { getSupabasePublicClient } from "../lib/supabase.server";
 import { documentPath, meetingPath } from "../lib/paths";
 import { SITE_ORIGIN } from "../lib/og";
 import { recordDate } from "../lib/page-meta";
+import { findMeetingBySlugHistory } from "../lib/slug-params.server";
 
 // Deliberately smaller than an export API: one meeting overview or extracted
 // document per request, no transcript pagination, auth, private fields or AI.
@@ -40,11 +41,18 @@ export async function publicMarkdown(request: Request, meetingParam?: string, do
   try {
     // This client uses only the anonymous key and never consumes request cookies.
     const db = getSupabasePublicClient();
-    const { data: meeting, error } = await db.from("meetings")
+    const fetchMeeting = (column: "id" | "slug", value: string | number) => db.from("meetings")
       .select("id, slug, calendar_source_id, meta, status, title, meeting_date, summary, agenda_url, minutes_url, video_url, updated_at")
-      .eq(/^\d+$/.test(meetingParam) ? "id" : "slug", meetingParam)
+      .eq(column, value)
       .eq("municipality_id", 1).or(PUBLIC_MEETING_FILTER).maybeSingle();
+    let { data: meeting, error } = await fetchMeeting(/^\d+$/.test(meetingParam) ? "id" : "slug", meetingParam);
     if (error) throw error;
+    if (!meeting && !/^\d+$/.test(meetingParam)) {
+      // Renamed slug (date correction): the canonical-path check below 301s to the current URL.
+      const renamed = await findMeetingBySlugHistory(db, meetingParam);
+      if (renamed) ({ data: meeting, error } = await fetchMeeting("id", renamed.id));
+      if (error) throw error;
+    }
     if (!meeting) return response("Meeting not found\n", "", 404);
     const path = docId ? documentPath(meeting, docId) : meetingPath(meeting);
     const mdPath = path + (docId ? "/content.md" : "/summary.md");

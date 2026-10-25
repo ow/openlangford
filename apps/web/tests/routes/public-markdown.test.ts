@@ -94,3 +94,11 @@ it("bounds a long source-document list and explains the limit", async () => {
   expect(body).toContain("Source 199."); expect(body).not.toContain("Source 200.");
   expect(body).toContain("limited to 200 entries");
 });
+it.each([false, true])("301s a renamed meeting slug to the current markdown URL (doc=%s)", async doc => {
+  const old = "2026-05-20-regular-council";
+  state.rows.meeting_slug_history = [{ meeting_id: 1, old_slug: old }];
+  const request = new Request(`https://openlangford.ca/meetings/${old}${doc ? "/documents/8/content.md" : "/summary.md"}`);
+  const res = await (doc ? documentLoader : meetingLoader)({ request, params: { id: old, ...(doc ? { docId: "8" } : {}) } } as any);
+  expect(res.status).toBe(301);
+  expect(res.headers.get("Location")).toBe(`${base}${doc ? "/documents/8/content.md" : "/summary.md"}`);
+});

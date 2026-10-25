@@ -7,6 +7,7 @@ import { getSupabaseAdminClient } from "~/lib/supabase.server";
 import { detailResponse } from "../../lib/envelope";
 import { serializeMeetingDetail } from "../../serializers/meeting";
 import { ApiError } from "../../lib/api-errors";
+import { findMeetingBySlugHistory } from "~/lib/slug-params.server";
 
 export class GetMeeting extends OpenAPIRoute {
   schema = {
@@ -74,15 +75,21 @@ export class GetMeeting extends OpenAPIRoute {
     const supabase = getSupabaseAdminClient();
 
     // Fetch meeting by slug + municipality
-    const { data: meeting, error } = await supabase
+    const fetchMeeting = (column: "id" | "slug", value: string | number) => supabase
       .from("meetings")
       .select(
         "id, slug, calendar_source_id, calendar:meta->calendar, status, title, meeting_date, type, has_agenda, has_minutes, has_transcript, video_url, minutes_url, agenda_url, video_duration_seconds, summary, organization:organizations(name, slug), chair:people!meetings_chair_person_id_fkey(slug, name)",
       )
-      .eq("slug", slug)
+      .eq(column, value)
       .eq("municipality_id", muni.id)
       .or(PUBLIC_MEETING_FILTER)
       .maybeSingle();
+    let { data: meeting, error } = await fetchMeeting("slug", slug);
+    if (!meeting && !error) {
+      // Renamed slug (date correction): serve the meeting; its payload carries the current slug.
+      const renamed = await findMeetingBySlugHistory(supabase, slug);
+      if (renamed) ({ data: meeting, error } = await fetchMeeting("id", renamed.id));
+    }
 
     if (error) {
       console.error("[API] GetMeeting query error:", error);
