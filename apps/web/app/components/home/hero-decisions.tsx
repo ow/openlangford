@@ -2,7 +2,6 @@ import { Link } from "react-router";
 import { meetingPath } from "../../lib/paths";
 import { formatDate } from "../../lib/utils";
 import { normalizeMotionResult, OUTCOME_LABELS } from "../../lib/motion-utils";
-import type { LaterMeeting, UpcomingMeeting } from "./hero-section";
 
 export interface HeroDecision {
   id: number;
@@ -19,10 +18,17 @@ export interface HeroDecision {
   isDivided: boolean;
 }
 
+export interface HeroEvent {
+  id: number;
+  slug?: string | null;
+  title: string;
+  meeting_date: string;
+}
+
 interface HeroDecisionsProps {
   shortName: string;
   decisions: HeroDecision[];
-  upcoming: Array<UpcomingMeeting | LaterMeeting>;
+  upcoming: HeroEvent[];
 }
 
 function voteLabel(d: HeroDecision) {
