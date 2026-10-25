@@ -75,15 +75,17 @@ export function HeroSection({ shortName, user, recentMeeting, upcomingMeeting, l
       </div>
 
       <div className="relative container mx-auto max-w-6xl px-4 pt-10 pb-12 md:pt-14 md:pb-16">
-        <h1 className="sr-only">What's happening in {shortName}</h1>
+        <h1 className="mb-6 text-3xl md:text-4xl font-extrabold tracking-tight md:mb-8">
+          What's happening in {shortName}?
+        </h1>
 
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-16">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-6">
           <LatestMeeting {...recentMeeting} />
           <ComingUp meeting={upcomingMeeting} later={laterMeetings} />
         </div>
 
         {!user && signupsEnabled && (
-          <p className="mt-10 border-t border-white/15 pt-6 text-sm">
+          <p className="mt-6 text-sm">
             <Link to="/signup" className="text-brand-100 underline underline-offset-2 hover:text-white">
               Create an account to track what matters to you
             </Link>
@@ -96,7 +98,11 @@ export function HeroSection({ shortName, user, recentMeeting, upcomingMeeting, l
 
 function LatestMeeting({ meeting, stats }: RecentMeeting) {
   if (!meeting) {
-    return <p className="text-brand-100">No meetings recorded yet.</p>;
+    return (
+      <article className="rounded-2xl bg-white p-6 text-zinc-900 shadow-xl md:p-8">
+        <p className="text-sm text-zinc-500">No meetings recorded yet.</p>
+      </article>
+    );
   }
 
   const facts = [
@@ -107,31 +113,31 @@ function LatestMeeting({ meeting, stats }: RecentMeeting) {
   ].filter(Boolean);
 
   return (
-    <article>
-      <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Latest meeting</p>
-      <h2 className="mt-2 text-3xl md:text-5xl font-extrabold leading-[1.05] tracking-tight">
-        <Link to={meetingPath(meeting)} className="hover:underline decoration-2 underline-offset-[6px]">
+    <article className="flex flex-col rounded-2xl bg-white p-6 text-zinc-900 shadow-xl md:p-8">
+      <p className="text-sm font-semibold text-brand-700">Latest meeting</p>
+      <h2 className="mt-1 text-2xl md:text-3xl font-bold leading-tight tracking-tight">
+        <Link to={meetingPath(meeting)} className="hover:text-brand-700">
           {meeting.title}
         </Link>
       </h2>
-      <p className="mt-3 text-sm text-brand-100">{facts.join(" · ")}</p>
+      <p className="mt-2 text-sm text-zinc-500">{facts.join(" · ")}</p>
 
       {meeting.summary && (
         <MeetingSummary
           summary={meeting.summary}
           limit={3}
-          className="mt-6 max-w-2xl space-y-3 text-base text-white/90 [&_li>span:first-child]:bg-brand-300"
+          className="mt-5 max-w-2xl text-[15px]"
         />
       )}
 
-      <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold">
+      <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 text-sm font-semibold">
         <Link
           to={meetingPath(meeting)}
-          className="rounded-full bg-white px-4 py-2 text-brand-800 shadow-sm hover:bg-brand-50"
+          className="rounded-full bg-brand-600 px-4 py-2 text-white hover:bg-brand-700"
         >
           Open meeting
         </Link>
-        <Link to="/meetings" className="text-brand-100 hover:text-white hover:underline underline-offset-4">
+        <Link to="/meetings" className="text-brand-700 hover:underline underline-offset-4">
           All meetings
         </Link>
       </div>
@@ -141,18 +147,18 @@ function LatestMeeting({ meeting, stats }: RecentMeeting) {
 
 export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | null; later?: LaterMeeting[] }) {
   return (
-    <article className="rounded-2xl bg-white/10 p-6 ring-1 ring-white/15 backdrop-blur-sm">
-      <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Coming up</p>
+    <article className="flex flex-col rounded-2xl bg-white p-6 text-zinc-900 shadow-xl">
+      <p className="text-sm font-semibold text-brand-700">Coming up</p>
 
       {!meeting ? (
-        <p className="mt-3 text-sm text-brand-100">
+        <p className="mt-3 text-sm text-zinc-500">
           Nothing on the calendar yet. Upcoming events appear here once scheduled.
         </p>
       ) : (
         <>
           <div className="mt-4 flex items-center gap-4">
-            <div className="flex w-14 shrink-0 flex-col items-center overflow-hidden rounded-xl bg-white text-center shadow-sm">
-              <span className="w-full bg-brand-100 py-0.5 text-[11px] font-bold uppercase tracking-wide text-brand-800">
+            <div className="flex w-14 shrink-0 flex-col items-center overflow-hidden rounded-xl bg-white text-center ring-1 ring-zinc-200">
+              <span className="w-full bg-brand-600 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
                 {formatDate(meeting.meeting_date, { month: "short" })}
               </span>
               <span className="py-1 text-2xl font-bold tabular-nums text-zinc-900">
@@ -161,11 +167,11 @@ export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | n
             </div>
             <div className="min-w-0">
               <h2 className="text-lg font-bold leading-snug">
-                <Link to={meetingPath(meeting)} className="hover:underline underline-offset-4">
+                <Link to={meetingPath(meeting)} className="hover:text-brand-700">
                   {meeting.title}
                 </Link>
               </h2>
-              <p className="text-sm text-brand-100">
+              <p className="text-sm text-zinc-500">
                 {formatDate(meeting.meeting_date, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
                 {meeting.attendanceInfo?.startTime && ` · ${meeting.attendanceInfo.startTime}`}
               </p>
@@ -173,7 +179,7 @@ export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | n
           </div>
 
           {meeting.attendanceInfo?.venue && (
-            <p className="mt-4 text-sm text-brand-50">
+            <p className="mt-4 text-sm text-zinc-600">
               {meeting.attendanceInfo.venue}
               {meeting.attendanceInfo.watchLink && (
                 <>
@@ -182,7 +188,7 @@ export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | n
                     href={meeting.attendanceInfo.watchLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline underline-offset-2 hover:text-white"
+                    className="text-brand-700 hover:underline underline-offset-2"
                   >
                     {meeting.attendanceInfo.watchLabel || "Watch online"}
                   </a>
@@ -191,12 +197,12 @@ export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | n
             </p>
           )}
 
-          <CalendarProvenance meeting={meeting} compact className="mt-4 text-brand-100" />
+          <CalendarProvenance meeting={meeting} compact />
 
           {meeting.agendaPreview?.length > 0 && (
-            <div className="mt-5 border-t border-white/15 pt-4">
-              <p className="text-xs font-semibold text-brand-200">On the agenda</p>
-              <ul className="mt-2 space-y-2 text-sm text-white/90">
+            <div className="mt-5 border-t border-zinc-100 pt-4">
+              <p className="text-xs font-semibold text-zinc-500">On the agenda</p>
+              <ul className="mt-2 space-y-2 text-sm text-zinc-700">
                 {meeting.agendaPreview.slice(0, 3).map((item, i) => (
                   <li key={i} className="line-clamp-2">
                     {item.summary || cleanAgendaTitle(item.title) || item.title}
@@ -208,20 +214,20 @@ export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | n
 
           <Link
             to={meetingPath(meeting)}
-            className="mt-4 inline-block text-sm font-semibold text-white underline-offset-4 hover:underline"
+            className="mt-4 inline-block text-sm font-semibold text-brand-700 underline-offset-4 hover:underline"
           >
             View event
           </Link>
 
           {later.length > 0 && (
-            <ul className="mt-5 space-y-1 border-t border-white/15 pt-3">
+            <ul className="mt-5 space-y-1 border-t border-zinc-100 pt-3">
               {later.map((m) => (
                 <li key={m.id}>
                   <Link to={meetingPath(m)} className="group flex items-baseline gap-4 py-1.5 text-sm">
-                    <span className="w-14 shrink-0 font-semibold tabular-nums text-brand-200">
+                    <span className="w-14 shrink-0 font-semibold tabular-nums text-brand-700">
                       {formatDate(m.meeting_date, { month: "short", day: "numeric" })}
                     </span>
-                    <span className="min-w-0 text-white/90 group-hover:text-white group-hover:underline underline-offset-4">
+                    <span className="min-w-0 text-zinc-700 group-hover:text-brand-700">
                       {m.title}
                     </span>
                   </Link>
@@ -232,7 +238,7 @@ export function ComingUp({ meeting, later = [] }: { meeting: UpcomingMeeting | n
 
           <Link
             to="/meetings"
-            className="mt-2 inline-block text-sm font-semibold text-brand-100 underline-offset-4 hover:text-white hover:underline"
+            className="mt-auto inline-block pt-3 text-sm font-semibold text-brand-700 underline-offset-4 hover:underline"
           >
             Full calendar
           </Link>

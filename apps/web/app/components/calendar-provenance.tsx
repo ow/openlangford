@@ -1,6 +1,6 @@
-import { cn, formatDate } from "../lib/utils";
+import { formatDate } from "../lib/utils";
 
-export function CalendarProvenance({ meeting, compact = false, className }: { compact?: boolean; className?: string; meeting: { calendar_source_id?: number | null; calendar?: any; meeting_date: string; status?: string; has_agenda?: boolean; has_minutes?: boolean; has_transcript?: boolean; summary?: string; meta?: any } }) {
+export function CalendarProvenance({ meeting, compact = false }: { compact?: boolean; meeting: { calendar_source_id?: number | null; calendar?: any; meeting_date: string; status?: string; has_agenda?: boolean; has_minutes?: boolean; has_transcript?: boolean; summary?: string; meta?: any } }) {
   const calendar = meeting.calendar_source_id && (meeting.calendar ?? meeting.meta?.calendar);
   if (!calendar) return null;
   const checked = new Date(calendar.verified_at);
@@ -15,8 +15,8 @@ export function CalendarProvenance({ meeting, compact = false, className }: { co
     ? "Time and agenda not yet published"
     : !calendar.start_time ? "Time not yet published"
     : missingAgenda ? "Agenda not yet published" : null;
-  return <p className={cn("mt-2 text-xs leading-relaxed text-zinc-500", className)}>
-    <a href={source.href} target="_blank" rel="noopener noreferrer" aria-label={`${label} — official source (opens in new tab)`} className={cn("font-semibold underline underline-offset-2", className ? "hover:text-white" : "hover:text-brand-700")}>{label}</a>
+  return <p className="mt-2 text-xs leading-relaxed text-zinc-500">
+    <a href={source.href} target="_blank" rel="noopener noreferrer" aria-label={`${label} — official source (opens in new tab)`} className="font-semibold underline underline-offset-2 hover:text-brand-700">{label}</a>
     {!compact && Number.isFinite(checked.getTime()) && <> · Schedule checked {formatDate(checked.toISOString().slice(0, 10))}</>}
     {calendar.start_time && ` · ${calendar.start_time} (Langford time)`}
     {missingDetails && ` · ${missingDetails}`}
