@@ -12,6 +12,7 @@ import type { Municipality } from "../lib/types";
 import { IncomingCouncilSection } from "../components/home/incoming-council-section";
 import { getIncomingCouncil } from "../services/incoming-council";
 import { AskSection } from "../components/home/ask-section";
+import { RecentMeetingSection } from "../components/home/recent-meeting-section";
 import { HeroDecisions } from "../components/home/hero-decisions";
 import { ActiveMattersSection } from "../components/home/active-matters-section";
 import { DecisionsFeedSection } from "../components/home/decisions-feed-section";
@@ -54,6 +55,9 @@ export async function loader({ request }: { request: Request }) {
     return {
       upcomingMeeting: data.upcomingMeeting,
       laterMeetings: data.laterMeetings,
+      recentMeeting: data.recentMeeting,
+      recentMeetingStats: data.recentMeetingStats,
+      recentMeetingDecisions: data.recentMeetingDecisions,
       activeMatters: data.activeMatters,
       recentDecisions: data.recentDecisions,
       publicNotices,
@@ -70,6 +74,9 @@ export default function Home({ loaderData }: any) {
   const {
     upcomingMeeting,
     laterMeetings,
+    recentMeeting,
+    recentMeetingStats,
+    recentMeetingDecisions,
     activeMatters,
     recentDecisions,
     publicNotices,
@@ -91,7 +98,12 @@ export default function Home({ loaderData }: any) {
 
       <div className="container mx-auto max-w-6xl px-4 py-12">
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+          <div className="space-y-12 lg:col-span-2">
+            <RecentMeetingSection
+              meeting={recentMeeting}
+              stats={recentMeetingStats}
+              decisions={recentMeetingDecisions}
+            />
             <DecisionsFeedSection decisions={recentDecisions} />
           </div>
           <aside className="space-y-12">
