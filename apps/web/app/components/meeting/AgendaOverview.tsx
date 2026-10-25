@@ -2,6 +2,7 @@ import { ParticipationList, WrittenSubmissions } from "./participation-list";
 import { crossNotes, writtenLetters } from "../../lib/written";
 import { documentPath } from "../../lib/paths";
 import { useState } from "react";
+import { Link } from "react-router";
 import {
   ChevronRight,
   Clock,
@@ -33,6 +34,8 @@ import { DocumentSections } from "./DocumentSections";
 
 interface AgendaOverviewProps {
   items: AgendaItem[];
+  /** Agenda item id -> property pages for the addresses it names. */
+  itemProperties?: Record<number, { slug: string; address: string }[]>;
   documentSections?: DocumentSection[];
   extractedDocuments?: ExtractedDocument[];
   expandedItemId: number | null;
@@ -53,6 +56,7 @@ export function AgendaOverview({
   onMotionClick,
   meetingId,
   meetingSlug,
+  itemProperties,
 }: AgendaOverviewProps) {
   const groups = groupAgendaItems(items);
   // People who both spoke and wrote in at this meeting get a note on each side.
@@ -86,6 +90,7 @@ export function AgendaOverview({
                   }
                   onMotionClick={onMotionClick}
                   variant="parent"
+                  properties={itemProperties?.[group.parent.id]}
                   hasChildren={group.children.length > 0}
                   meetingId={meetingId}
                   meetingSlug={meetingSlug}
@@ -136,6 +141,7 @@ export function AgendaOverview({
                       }
                       onMotionClick={onMotionClick}
                       variant={group.key !== "other" ? "child" : "flat"}
+                      properties={itemProperties?.[child.id]}
                       isLastChild={isLast}
                       meetingId={meetingId}
                       meetingSlug={meetingSlug}
@@ -233,6 +239,12 @@ function formatDiscussionDuration(seconds: number): string {
   return "<1m";
 }
 
+/** Whether a raw address mentions the street of a linked property ("2207 Millstream Rd" ~ "2207 Millstream Road"). */
+function sameStreet(raw: string, address: string) {
+  const name = address.replace(/^\d+\w?\s+/, "").split(/\s+/).slice(0, -1).join(" ").toLowerCase();
+  return Boolean(name) && raw.toLowerCase().replace(/-/g, " ").includes(name.replace(/-/g, " "));
+}
+
 function normalizeRelatedAddresses(value: unknown): string[] {
   if (Array.isArray(value)) {
     return value.filter(
@@ -265,6 +277,7 @@ function normalizeRelatedAddresses(value: unknown): string[] {
 
 interface AgendaItemRowProps {
   notes?: ReturnType<typeof crossNotes>;
+  properties?: { slug: string; address: string }[];
   item: AgendaItem;
   documentSections?: DocumentSection[];
   extractedDocuments?: ExtractedDocument[];
@@ -295,6 +308,7 @@ function AgendaItemRow({
   meetingId,
   meetingSlug,
   notes,
+  properties = [],
 }: AgendaItemRowProps) {
   const linkedSections = (documentSections || []).filter(
     (s) => s.agenda_item_id === item.id,
@@ -509,18 +523,28 @@ function AgendaItemRow({
               )}
 
               {/* Location / Addresses */}
-              {relatedAddresses.length > 0 && (
+              {(relatedAddresses.length > 0 || properties.length > 0) && (
                 <div className="space-y-1">
                   <h4 className="flex items-center gap-2 text-xs font-semibold text-zinc-500">
                     <MapPin className="w-3 h-3 text-violet-600" />
                     Location
                   </h4>
                   <div className="text-sm text-zinc-800 space-y-0.5 pl-5">
-                    {relatedAddresses.map((addr, i) => (
-                      <p key={i} className="text-zinc-700">
-                        {addr}
+                    {/* Addresses with a property page link to everything else at that lot or street. */}
+                    {properties.map((p) => (
+                      <p key={p.slug}>
+                        <Link to={`/properties/${p.slug}`} className="text-brand-700 hover:underline">
+                          {p.address}
+                        </Link>
                       </p>
                     ))}
+                    {relatedAddresses
+                      .filter((addr) => !properties.some((p) => sameStreet(addr, p.address)))
+                      .map((addr, i) => (
+                        <p key={i} className="text-zinc-700">
+                          {addr}
+                        </p>
+                      ))}
                   </div>
                 </div>
               )}

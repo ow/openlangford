@@ -53,3 +53,31 @@ def test_legal_descriptions_and_run_ons_are_not_addresses():
     assert keys("Section 114 Esquimalt District Plan VIP1234") == []
     assert keys("PID 87674") == [] and keys("3275 Walfred PP") == []
     assert keys("1121 Bearspaw Plat") == [("1121", "Bearspaw", "Plateau")]
+
+
+def test_spellings_with_the_same_slug_are_one_property():
+    sources = [(a, {"id": i}) for i, text in enumerate(["2730 Trans-Canada Hwy", "2730 Trans Canada Highway", "2730 Trans-Canada Highway"])
+               for a in parse_addresses(text, need_type=False)]
+    assert list(resolve(sources)) == [("2730", "trans-canada", "Highway")]
+
+
+def test_street_only_mentions():
+    from pipeline.ingestion.properties import parse_street
+    assert parse_street("Leigh Road") == {"number": "", "name": "Leigh", "type": "Road"}
+    assert parse_street("Portion of McCallum Road")["name"] == "McCallum"
+    assert parse_street("Veterans Memorial Park") is None and parse_street("2750 Leigh Road") is None
+    assert display(("", "leigh", "Road")) == "Leigh Road" and slug_of(("", "leigh", "Road")) == "leigh-road"
+
+
+def test_geocode_reports_precision():
+    from pipeline.ingestion.properties import geocode
+
+    class Response:
+        def __init__(self, data): self.data = data
+        def raise_for_status(self): pass
+        def json(self): return self.data
+
+    house = geocode("2750 Leigh Road", get=lambda *a, **k: Response([{"lat": "48.45", "lon": "-123.5", "addresstype": "house"}]))
+    road = geocode("2751 Leigh Road", get=lambda *a, **k: Response([{"lat": "48.45", "lon": "-123.5", "addresstype": "road"}]))
+    assert house["precision"] == "address" and road["precision"] == "street"
+    assert geocode("nowhere", get=lambda *a, **k: Response([])) is None

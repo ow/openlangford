@@ -92,6 +92,25 @@ def parse_addresses(text: str, *, need_type: bool) -> list[dict]:
     return found
 
 
+STREET_ONLY = re.compile(r"^\s*(?:(?i:portion of|along|on)\s+)?(?P<name>" + _WORD + r"(?:\s+" + _WORD + r"){0,3})\s+" + _TYPE + r"\s*$")
+
+
+def parse_street(text: str) -> dict | None:
+    """A mention of a whole street ("Leigh Road", "Portion of McCallum Road"): number ""."""
+    m = STREET_ONLY.match(text or "")
+    if not m:
+        return None
+    raw = m.group("name").split()
+    name = " ".join(_case(w) for w in raw)
+    if NOT_NAMES.search(name):
+        return None
+    return {"number": "", "name": name, "type": TYPES[m.group("type").lower().rstrip(".")]}
+
+
+def is_street(key: tuple) -> bool:
+    return key[0] == ""
+
+
 def key_of(address: dict) -> tuple:
     return (address["number"], address["name"].lower(), address["type"])
 
@@ -139,7 +158,15 @@ def resolve(addresses_by_source: list[tuple[dict, dict]]) -> dict[tuple, list[di
                 continue
             kind = next(iter(options), None)
         out[(address["number"], address["name"].lower(), kind)].append(source)
-    return {k: v for k, v in out.items() if (k[0], k[1], k[2]) not in NOT_PROPERTIES}
+    # Spellings that differ only in punctuation ("Trans-Canada" / "Trans Canada") are one lot,
+    # shown with its most common spelling.
+    merged: dict[str, tuple] = {}
+    for key in sorted(out, key=lambda k: -len(out[k])):
+        merged.setdefault(slug_of(key), key)
+    result: dict[tuple, list[dict]] = defaultdict(list)
+    for key, sources in out.items():
+        result[merged[slug_of(key)]] += sources
+    return {k: v for k, v in result.items() if (k[0], k[1], k[2]) not in NOT_PROPERTIES}
 
 
 def _pages(build, size: int = 1000) -> list[dict]:
@@ -164,7 +191,7 @@ def _related(value) -> list[str]:
     return [text] if text else []
 
 
-def build_properties(supabase, *, dry_run: bool = False) -> dict:
+def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | None = None) -> dict:
     """Rebuild properties and their links from every agenda item and matter. Admin links and hidden
     (admin-rejected) links are kept as they are."""
     matters = _pages(lambda: supabase.table("matters").select("id,title,meta").order("id"))
@@ -183,7 +210,10 @@ def build_properties(supabase, *, dry_run: bool = False) -> dict:
     geo_parsed: list[tuple[dict, dict]] = []
     for item in items:
         source = {"agenda_item_id": item["id"], "matter_id": matter_of(item.get("matter_id"))}
-        from_address = [a for text in _related(item.get("related_address")) for a in parse_addresses(text, need_type=False)]
+        from_address = []
+        for text in _related(item.get("related_address")):
+            found = parse_addresses(text, need_type=False) or [street for street in [parse_street(text)] if street]
+            from_address += found
         parsed += [(a, {**source, "source": "item_address"}) for a in from_address]
         if not from_address:
             parsed += [(a, {**source, "source": "item_title"}) for a in parse_addresses(item.get("title") or "", need_type=True)]
@@ -197,6 +227,13 @@ def build_properties(supabase, *, dry_run: bool = False) -> dict:
                    for a in parse_addresses(m.get("title") or "", need_type=True)]
 
     groups = resolve(parsed)
+    # Every street with a lot on it gets a street page, even if nothing names the street alone.
+    taken = {slug_of(key) for key in groups}
+    for key in list(groups):
+        street = ("", key[1], key[2])
+        if not is_street(key) and key[2] and slug_of(street) not in taken:
+            groups[street] = []
+            taken.add(slug_of(street))
     points = defaultdict(list)
     for key, coords in resolve(geo_parsed + [(a, None) for a, _ in parsed if "number" in a]).items():
         points[key] += [c for c in coords if c]
@@ -223,13 +260,18 @@ def build_properties(supabase, *, dry_run: bool = False) -> dict:
     for key in groups:
         geo = None
         if points.get(key):
-            geo = {"lat": statistics.median(p["lat"] for p in points[key]), "lng": statistics.median(p["lng"] for p in points[key])}
-        rows.append({"slug": slug_of(key), "address": display(key), "civic_number": key[0],
-                     "street": display(("", key[1], key[2])).strip(), "geo": geo, "updated_at": now})
+            geo = {"lat": statistics.median(p["lat"] for p in points[key]), "lng": statistics.median(p["lng"] for p in points[key]),
+                   "precision": "address"}
+        row = {"slug": slug_of(key), "address": display(key), "civic_number": key[0],
+               "street": display(("", key[1], key[2])).strip(), "updated_at": now}
+        rows.append({**row, "geo": geo} if geo else row)
     ids = {}
-    for start in range(0, len(rows), 500):
-        for row in supabase.table("properties").upsert(rows[start:start + 500], on_conflict="slug").execute().data or []:
-            ids[row["slug"]] = row["id"]
+    # Rows without item coordinates leave geo alone (it may hold an earlier geocode). PostgREST bulk
+    # upserts need one column set per request, so the two kinds go separately.
+    for batch in ([r for r in rows if "geo" in r], [r for r in rows if "geo" not in r]):
+        for start in range(0, len(batch), 500):
+            for row in supabase.table("properties").upsert(batch[start:start + 500], on_conflict="slug").execute().data or []:
+                ids[row["slug"]] = row["id"]
     ids = {**{s: p["id"] for s, p in existing.items()}, **ids}
 
     links = _pages(lambda: supabase.table("property_links").select("id,property_id,agenda_item_id,matter_id,source,hidden").order("id"))
@@ -249,7 +291,60 @@ def build_properties(supabase, *, dry_run: bool = False) -> dict:
     for link_id, matter_id in updates:  # an item re-filed under another matter, or a matter merged
         supabase.table("property_links").update({"matter_id": matter_id}).eq("id", link_id).execute()
     linked = {pid for pid, _, _ in want} | {l["property_id"] for l in links if l["source"] == "admin" or l["hidden"]}
+    linked |= {ids[slug_of(key)] for key in groups if is_street(key)}
     orphans = [pid for slug, pid in ids.items() if pid not in linked]
     for start in range(0, len(orphans), 200):
         supabase.table("properties").delete().in_("id", orphans[start:start + 200]).execute()
-    return {**stats, "inserted": len(inserts), "removed": len(stale), "updated": len(updates), "orphans_removed": len(orphans)}
+    geocoded = geocode_missing(supabase, limit=geocode_limit)
+    return {**stats, "inserted": len(inserts), "removed": len(stale), "updated": len(updates),
+            "orphans_removed": len(orphans), "geocoded": geocoded}
+
+
+NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
+NOMINATIM_USER_AGENT = "civic-meeting-intelligence/1.0 (municipal records site)"
+LANGFORD_VIEWBOX = "-123.62,48.39,-123.45,48.50"  # same area the ingester's geocoder accepts
+RETRY_AFTER_DAYS = 30
+
+
+def geocode(address: str, *, get=None) -> dict | None:
+    """Nominatim, restricted to Langford. Returns {lat, lng, precision} ("address" when OpenStreetMap
+    knows the house, else "street": new builds are often missing, and the street is close enough for a pin)."""
+    import requests
+
+    get = get or requests.get
+    response = get(NOMINATIM_URL, params={"q": f"{address}, Langford, BC, Canada", "format": "json", "limit": 1,
+                                          "viewbox": LANGFORD_VIEWBOX, "bounded": 1, "countrycodes": "ca",
+                                          "addressdetails": 0},
+                   headers={"User-Agent": NOMINATIM_USER_AGENT}, timeout=10)
+    response.raise_for_status()
+    results = response.json()
+    if not results:
+        return None
+    top = results[0]
+    precise = top.get("addresstype") in ("house", "building") or top.get("class") in ("building", "place") and top.get("type") == "house"
+    return {"lat": float(top["lat"]), "lng": float(top["lon"]), "precision": "address" if precise else "street"}
+
+
+def geocode_missing(supabase, *, limit: int | None = None, sleep=None) -> int:
+    """Geocode properties and streets with no coordinates (1 request/second, Nominatim's policy)."""
+    import time
+    from datetime import timedelta
+
+    sleep = sleep or time.sleep
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=RETRY_AFTER_DAYS)).isoformat()
+    rows = _pages(lambda: supabase.table("properties").select("id,address,civic_number").is_("geo", "null")
+                  .or_(f"geocode_attempted_at.is.null,geocode_attempted_at.lt.{cutoff}").order("id"))
+    found = 0
+    for row in rows[:limit] if limit else rows:
+        try:
+            geo = geocode(row["address"])
+        except Exception as error:
+            print(f"    [!] Geocoding failed for {row['address']}: {error}")
+            geo = None
+        update = {"geocode_attempted_at": datetime.now(timezone.utc).isoformat()}
+        if geo and not (row["civic_number"] == "" and geo["precision"] == "address"):
+            update["geo"] = geo
+            found += 1
+        supabase.table("properties").update(update).eq("id", row["id"]).execute()
+        sleep(1.1)
+    return found

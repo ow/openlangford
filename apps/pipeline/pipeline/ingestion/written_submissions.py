@@ -521,7 +521,7 @@ def specific_terms(text: str) -> set[str]:
 
 
 def _item_text(item: dict) -> str:
-    return " ".join([item.get("title") or "", item.get("plain_english_summary") or "",
+    return " ".join([item.get("title") or "", item.get("plain_english_summary") or "", *item.get("context_properties", []),
                      *item.get("context_documents", []), *item.get("context_summaries", []), *item.get("context_decisions", [])])
 
 
@@ -531,6 +531,8 @@ def _item_description(item: dict) -> str:
     parts = [f"{item.get('item_order') or ''} {item.get('title') or ''}".strip()]
     if item.get("plain_english_summary"):
         parts.append(item["plain_english_summary"][:200])
+    if item.get("context_properties"):
+        parts.append("Properties: " + "; ".join(item["context_properties"])[:200])
     if item.get("context_documents"):
         parts.append("Documents: " + "; ".join(item["context_documents"])[:400])
     if item.get("context_summaries"):
@@ -552,6 +554,7 @@ def with_item_context(supabase, items: list[dict], exclude: tuple | None = None)
     docs = supabase.table("extracted_documents").select("agenda_item_id,title,summary").in_("agenda_item_id", ids).execute().data or []
     motions = (supabase.table("motions").select("agenda_item_id,plain_english_summary,text_content")
                .in_("agenda_item_id", ids).execute().data or [])
+    lots = _item_properties(supabase, items)
     out = []
     for item in items:
         titles = sorted({d["title"] for d in docs if d["agenda_item_id"] == item["id"] and d.get("title")})
@@ -570,7 +573,36 @@ def with_item_context(supabase, items: list[dict], exclude: tuple | None = None)
                 if value and value not in about:
                     about.append(value)
         out.append({**item, "context_documents": titles[:8], "context_summaries": summaries[:5],
-                    "context_decisions": [d for d in decided if d][:5], "context_letters": about[:10]})
+                    "context_decisions": [d for d in decided if d][:5], "context_letters": about[:10],
+                    "context_properties": lots.get(item["id"], [])[:8]})
+    return out
+
+
+def _item_properties(supabase, items: list[dict]) -> dict[int, list[str]]:
+    """Addresses of the lots each item names, and of every lot its matter has ever named: a rezoning item
+    titled "Bylaw No. 2110" still matches a letter about "2750 Leigh Road" (properties stage)."""
+    ids = [it["id"] for it in items]
+    matter_ids = sorted({it["matter_id"] for it in items if it.get("matter_id")})
+    try:
+        rows = (supabase.table("property_links").select("agenda_item_id,matter_id,properties(address,civic_number)")
+                .in_("agenda_item_id", ids).eq("hidden", False).execute().data or [])
+        if matter_ids:
+            rows += (supabase.table("property_links").select("agenda_item_id,matter_id,properties(address,civic_number)")
+                     .in_("matter_id", matter_ids).eq("hidden", False).execute().data or [])
+    except Exception as error:  # properties are context, never a reason to fail placement
+        print(f"  [!] Could not load item properties: {error}")
+        return {}
+    out: dict[int, list[str]] = {}
+    for item in items:
+        addresses = []
+        for row in rows:
+            lot = row.get("properties") or {}
+            if not lot.get("civic_number"):
+                continue  # streets are too broad to identify an item
+            if row.get("agenda_item_id") == item["id"] or (item.get("matter_id") and row.get("matter_id") == item["matter_id"]):
+                if lot["address"] not in addresses:
+                    addresses.append(lot["address"])
+        out[item["id"]] = addresses
     return out
 
 

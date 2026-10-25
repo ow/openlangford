@@ -100,6 +100,30 @@ export async function loadLetterQueue(supabase: Supabase) {
     if (text) motionsByItem.set(m.agenda_item_id, [...(motionsByItem.get(m.agenda_item_id) || []), `${text.length > 160 ? `${text.slice(0, 159)}…` : text}${m.result ? ` (${m.result.toLowerCase()})` : ""}`]);
   }
 
+  // Every lot an item's matter has named (properties stage), so a letter about "2750 Leigh Road"
+  // matches a rezoning item titled only by its bylaw number.
+  const propertiesByItem = new Map<number, string[]>();
+  const allItemIds = (items || []).map((it: any) => it.id);
+  const matterIds = [...new Set((items || []).map((it: any) => it.matters?.id).filter(Boolean))];
+  if (allItemIds.length) {
+    const [{ data: byItem }, { data: byMatter }] = await Promise.all([
+      supabase.from("property_links").select("agenda_item_id, properties(address, civic_number)").in("agenda_item_id", allItemIds).eq("hidden", false),
+      matterIds.length
+        ? supabase.from("property_links").select("matter_id, properties(address, civic_number)").in("matter_id", matterIds).eq("hidden", false)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
+    for (const it of items || []) {
+      const lots = [
+        ...(byItem || []).filter((l: any) => l.agenda_item_id === it.id),
+        ...(byMatter || []).filter((l: any) => it.matters?.id && l.matter_id === it.matters.id),
+      ]
+        .map((l: any) => l.properties)
+        .filter((p: any) => p?.civic_number)
+        .map((p: any) => p.address as string);
+      propertiesByItem.set(it.id, [...new Set(lots)]);
+    }
+  }
+
   const textByDoc = new Map<number, string>();
   for (const s of sections) textByDoc.set(s.extracted_document_id, `${textByDoc.get(s.extracted_document_id) || ""}\n\n${s.section_text || ""}`);
 
@@ -110,7 +134,7 @@ export async function loadLetterQueue(supabase: Supabase) {
         const itemTerms = new Map<number, Set<string>>(
           meetingItems.map((it: any) => [
             it.id,
-            specificTerms([it.title, it.plain_english_summary, ...(docsByItem.get(it.id) || []), ...(summariesByItem.get(it.id) || []), ...(motionsByItem.get(it.id) || [])].filter(Boolean).join(" ")),
+            specificTerms([it.title, it.plain_english_summary, ...(propertiesByItem.get(it.id) || []), ...(docsByItem.get(it.id) || []), ...(summariesByItem.get(it.id) || []), ...(motionsByItem.get(it.id) || [])].filter(Boolean).join(" ")),
           ]),
         );
         const entries = Object.entries((meeting.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap(

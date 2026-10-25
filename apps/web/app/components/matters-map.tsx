@@ -24,8 +24,13 @@ export function MattersMap({
   activeLocation,
   selectedAddress,
   mapCenter,
+  hrefFor = matterPath,
+  linkLabel = "View matter",
 }: {
   matters: Matter[];
+  /** Where a pin's links go; the property pages pin addresses rather than matters. */
+  hrefFor?: (matter: Matter) => string;
+  linkLabel?: string;
   onMarkerClick?: (matter: Matter, address?: string) => void;
   activeLocation?: { lat: number; lng: number };
   selectedAddress?: string | null;
@@ -423,7 +428,7 @@ export function MattersMap({
               >
                 {marker.address || "Show location"}
               </button>
-              <Link className="underline" to={matterPath(marker.matter)}>
+              <Link className="underline" to={hrefFor(marker.matter)}>
                 {displayTitle(marker.matter.title)}
               </Link>
             </li>
@@ -442,7 +447,7 @@ export function MattersMap({
                 <h3 className="text-sm font-semibold leading-snug">
                   {displayTitle(matter.title)}
                 </h3>
-                <div className="flex flex-wrap items-center gap-1.5">
+                {matter.status && <div className="flex flex-wrap items-center gap-1.5">
                   <Badge
                     variant={
                       ["Adopted", "Completed"].includes(matter.status)
@@ -459,17 +464,17 @@ export function MattersMap({
                   <span className="text-xs text-zinc-500">
                     {matter.category}
                   </span>
-                </div>
+                </div>}
                 {matter.description && (
                   <p className="line-clamp-2 text-xs text-zinc-600">
                     {matter.description}
                   </p>
                 )}
                 <Link
-                  to={matterPath(matter)}
+                  to={hrefFor(matter)}
                   className="inline-block text-xs font-semibold text-brand-700 underline"
                 >
-                  View matter
+                  {linkLabel}
                 </Link>
               </div>
             ))}

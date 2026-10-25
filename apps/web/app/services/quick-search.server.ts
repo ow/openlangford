@@ -8,7 +8,7 @@ import { matterTitle } from "../lib/display-text";
  * matters (title / bylaw number / address), meetings (by date or type) and
  * bylaws. Plain indexed lookups — no AI, fast enough to run on every keystroke.
  */
-export type QuickMatchType = "person" | "matter" | "meeting" | "bylaw";
+export type QuickMatchType = "person" | "matter" | "meeting" | "bylaw" | "property";
 
 export interface QuickMatch {
   type: QuickMatchType;
@@ -71,7 +71,7 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
   const address = !bylawNo && /^\s*#?\d+[a-z]?\s*[-–]?\s*\d*\s+[a-z]/.test(q) ? q : null;
   const date = parseMeetingDate(q);
 
-  const [people, matters, bylawMatters, addressItems, meetings] = await Promise.all([
+  const [people, matters, bylawMatters, addressItems, meetings, properties] = await Promise.all([
     supabase.from("people").select("id, name, slug, is_councillor").ilike("name", like).limit(10),
     supabase
       .from("matters")
@@ -118,6 +118,10 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
           .ilike("title", like)
           .order("meeting_date", { ascending: false })
           .limit(3),
+    // Lots ("2750 leigh") and streets ("leigh road"); spelling of the street type varies, so match the start.
+    q.length >= 4
+      ? supabase.from("properties").select("id, slug, address, civic_number").ilike("address", `${q.replace(/[%_]/g, "").replace(/\s+(rd|road|ave|avenue|dr|drive|st|street|pl|place|pkwy|parkway|cres|crescent|way|hwy|highway)\.?$/, "")}%`).limit(5)
+      : Promise.resolve({ data: [] as any[] }),
   ]);
 
   for (const p of people.data || []) {
@@ -159,6 +163,20 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
       href: matterPath(m),
       score: 88,
       exact: false,
+    });
+  }
+
+  // The address page (everything at that lot or on that street) outranks individual matters there.
+  for (const p of properties.data || []) {
+    const exact = p.address.toLowerCase() === q || (properties.data || []).length === 1;
+    matches.push({
+      type: "property",
+      id: p.id,
+      title: p.address,
+      subtitle: p.civic_number ? "Everything council considered at this address" : "Street",
+      href: `/properties/${p.slug}`,
+      score: exact ? 96 : 89,
+      exact,
     });
   }
 

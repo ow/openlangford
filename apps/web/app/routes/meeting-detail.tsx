@@ -68,6 +68,7 @@ import { useVideoPlayer } from "../hooks/useVideoPlayer";
 import { useSpeakerStats } from "../hooks/useSpeakerStats";
 import { getMeetingDuration } from "../lib/timeline-utils";
 import { AgendaOverview } from "../components/meeting/AgendaOverview";
+import { getPropertiesForItems } from "../services/properties";
 import { TranscriptDrawer } from "../components/meeting/TranscriptDrawer";
 import { VideoWithSidebar } from "../components/meeting/VideoWithSidebar";
 import { MeetingDecisions } from "../components/meeting/MeetingDecisions";
@@ -176,7 +177,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     // the page fetch the text from /api/meeting-text (transcript on demand, sections on expand).
     const transcript = (data.transcript || []).map(({ text_content, ...rest }: any) => rest);
     const sections = (documentSections || []).map(({ section_text, ...rest }: any) => rest);
-    return { ...data, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm };
+    const itemProperties = await getPropertiesForItems(supabase, (data.agendaItems || []).map((it: any) => it.id));
+    return { ...data, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties };
   } catch (error: any) {
     if (error instanceof Response) throw error;
     console.error("[meeting-detail loader]", error?.message || error);
@@ -674,6 +676,7 @@ function MeetingDetailContent({ loaderData }: any) {
                   }}
                   meetingId={meeting.id}
                   meetingSlug={meeting.slug}
+                  itemProperties={(loaderData as any).itemProperties}
                 />
               </section>
             )}

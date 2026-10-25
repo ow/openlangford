@@ -7,7 +7,7 @@ import { classifyIntent } from "../../lib/intent";
 import { cn } from "../../lib/utils";
 
 type QuickMatch = {
-  type: "person" | "matter" | "meeting" | "bylaw";
+  type: "person" | "matter" | "meeting" | "bylaw" | "property";
   id: number;
   title: string;
   subtitle?: string;
@@ -25,6 +25,7 @@ const TYPE_LABEL: Record<QuickMatch["type"], string> = {
   matter: "Matter",
   meeting: "Meeting",
   bylaw: "Bylaw",
+  property: "Address",
 };
 
 function isTypingTarget(el: EventTarget | null) {

@@ -1,4 +1,6 @@
-import { Link } from "react-router";
+import { Link, useFetcher } from "react-router";
+import { isAdminEmail, requireAdmin } from "../lib/auth.server";
+import { createSupabaseServerClient } from "../lib/supabase.server";
 import { FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
@@ -36,22 +38,59 @@ export const meta: Route.MetaFunction = ({ data }) => {
   ];
 };
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const result = await getPropertyBySlug(getSupabaseAdminClient(), params.slug);
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const [result, user] = await Promise.all([
+    getPropertyBySlug(getSupabaseAdminClient(), params.slug),
+    createSupabaseServerClient(request).supabase.auth.getUser().then((r) => r.data.user).catch(() => null),
+  ]);
   if (!result) throw new Response("Property Not Found", { status: 404 });
-  return result;
+  return { ...result, isAdmin: isAdminEmail(user?.email) };
+}
+
+/** Admins remove a wrong link (the address parser misread a title). The pipeline keeps it hidden. */
+export async function action({ request, params }: Route.ActionArgs) {
+  await requireAdmin(request);
+  const form = await request.formData();
+  const supabase = getSupabaseAdminClient();
+  const { data: property } = await supabase.from("properties").select("id").eq("slug", params.slug).maybeSingle();
+  if (!property) return { error: "Unknown property." };
+  const matterId = Number(form.get("matter_id")) || null;
+  const itemId = Number(form.get("agenda_item_id")) || null;
+  if (!matterId && !itemId) return { error: "Nothing to unlink." };
+  let query = supabase.from("property_links").update({ hidden: true }).eq("property_id", property.id);
+  query = matterId ? query.eq("matter_id", matterId) : query.eq("agenda_item_id", itemId!);
+  const { error } = await query;
+  return error ? { error: error.message } : { ok: true };
+}
+
+function Unlink({ field, id }: { field: "matter_id" | "agenda_item_id"; id: number }) {
+  const fetcher = useFetcher<typeof action>();
+  if (fetcher.state !== "idle" || (fetcher.data as any)?.ok) return <span className="text-xs text-zinc-400">Removed</span>;
+  return (
+    <fetcher.Form method="post" className="shrink-0">
+      <input type="hidden" name={field} value={id} />
+      <button type="submit" className="text-xs font-medium text-zinc-400 hover:text-red-700 hover:underline">
+        Not at this address
+      </button>
+    </fetcher.Form>
+  );
 }
 
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
-  const { property, matters, items, neighbours } = loaderData;
+  const { property, matters, items, neighbours, lots, isStreet, streetSlug, isAdmin } = loaderData;
   const geo = property.geo as { lat: number; lng: number } | null;
   const dates = [...matters.flatMap((m: any) => [m.first_seen, m.last_seen]), ...items.map((i: any) => i.meetings?.meeting_date)]
     .filter(Boolean)
     .sort();
   // The map draws matters at their locations; every matter here is at this lot.
-  const pins = geo ? matters.map((m: any) => ({ ...m, locations: [{ ...geo, address: property.address }] })) : [];
+  // A street page pins each lot that has coordinates instead.
+  const pins = isStreet
+    ? lots.filter((l: any) => l.geo).map((l: any) => ({ id: l.id, slug: l.slug, title: l.address, locations: [{ ...l.geo, address: l.address }] }))
+    : geo
+      ? matters.map((m: any) => ({ ...m, locations: [{ ...geo, address: property.address }] }))
+      : [];
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -59,7 +98,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
         <DetailHeader
           back={{ to: "/matters", label: "Matters" }}
           meta={[
-            <span key="kind">Property</span>,
+            <span key="kind">{isStreet ? "Street" : "Property"}</span>,
             dates.length > 0 ? (
               <span key="dates" className="tabular-nums">
                 In council records {String(dates[0]).slice(0, 4)}
@@ -69,7 +108,11 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           ]}
           title={property.address}
           description={
-            matters.length > 0
+            isStreet
+              ? `${lots.length} ${lots.length === 1 ? "address" : "addresses"} on ${property.address} in council records${
+                  matters.length || items.length ? `, plus ${matters.length + items.length} about the street itself` : ""
+                }.`
+              : matters.length > 0
               ? `Everything Council considered about this lot: ${matters.length} ${matters.length === 1 ? "matter" : "matters"}${
                   items.length ? ` and ${items.length} other agenda ${items.length === 1 ? "item" : "items"}` : ""
                 }. Developments that span several lots also appear on each lot's page.`
@@ -81,19 +124,32 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           {pins.length > 0 && (
             <section>
               <div className="overflow-hidden rounded-2xl border border-zinc-200 shadow-sm">
-                <MattersMap matters={pins as any} activeLocation={geo!} />
+                <MattersMap
+                  matters={pins as any}
+                  activeLocation={geo || pins[0]?.locations[0]}
+                  {...(isStreet ? { hrefFor: (lot: any) => propertyPath(lot), linkLabel: "View address" } : {})}
+                />
               </div>
             </section>
           )}
 
           {matters.length > 0 && (
             <section>
-              <SectionHeading title="Matters" icon={Landmark} description="Applications, permits and bylaws for this address, most recent first." />
+              <SectionHeading
+                title={isStreet ? "About the street" : "Matters"}
+                icon={Landmark}
+                description={isStreet ? "Road works, closures and other matters about the street itself." : "Applications, permits and bylaws for this address, most recent first."}
+              />
               <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
                 {matters.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
                   return (
-                    <li key={m.id}>
+                    <li key={m.id} className="relative">
+                      {isAdmin && (
+                        <div className="absolute right-4 top-3 z-10">
+                          <Unlink field="matter_id" id={m.id} />
+                        </div>
+                      )}
                       <Link to={matterPath(m)} className="group block px-5 py-4 hover:bg-zinc-50">
                         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums text-zinc-500">
                           <span>
@@ -120,7 +176,12 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
               <SectionHeading title="Other mentions" icon={FileText} description="Agenda items that named this address outside any matter." />
               <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
                 {items.map((item: any) => (
-                  <li key={item.id}>
+                  <li key={item.id} className="relative">
+                    {isAdmin && (
+                      <div className="absolute right-4 top-3 z-10">
+                        <Unlink field="agenda_item_id" id={item.id} />
+                      </div>
+                    )}
                     <Link to={`${meetingPath(item.meetings)}#item-${item.id}`} className="group block px-5 py-4 hover:bg-zinc-50">
                       <p className="text-xs tabular-nums text-zinc-500">
                         {shortDate(item.meetings?.meeting_date)} · {item.meetings?.title}
@@ -136,9 +197,32 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             </section>
           )}
 
+          {lots.length > 0 && (
+            <section>
+              <SectionHeading title="Addresses on this street" icon={MapPin} />
+              <ul className="grid gap-x-6 sm:grid-cols-2">
+                {lots.map((l: any) => (
+                  <li key={l.slug} className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-2 text-sm">
+                    <Link to={propertyPath(l)} className="font-medium text-zinc-800 hover:text-brand-700 hover:underline">
+                      {l.address}
+                    </Link>
+                    <span className="shrink-0 tabular-nums text-xs text-zinc-500">
+                      {l.records} {l.records === 1 ? "record" : "records"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {neighbours.length > 0 && (
             <section>
-              <SectionHeading title={`Nearby on ${property.street}`} icon={MapPin} />
+              <SectionHeading
+                title={`Nearby on ${property.street}`}
+                icon={MapPin}
+                href={streetSlug ? propertyPath({ slug: streetSlug }) : undefined}
+                linkLabel={`All of ${property.street}`}
+              />
               <div className="flex flex-wrap gap-2">
                 {neighbours.map((n: any) => (
                   <Link

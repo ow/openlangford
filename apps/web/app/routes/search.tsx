@@ -103,7 +103,7 @@ const QUESTION_EXAMPLES = [
 ];
 
 type QuickMatch = {
-  type: "person" | "matter" | "meeting" | "bylaw";
+  type: "person" | "matter" | "meeting" | "bylaw" | "property";
   id: number;
   title: string;
   subtitle?: string;
@@ -116,6 +116,7 @@ const MATCH_LABEL: Record<QuickMatch["type"], string> = {
   matter: "Matter",
   meeting: "Meeting",
   bylaw: "Bylaw",
+  property: "Address",
 };
 
 function isTopicChange(newQuery: string, history: { question: string }[]): boolean {
