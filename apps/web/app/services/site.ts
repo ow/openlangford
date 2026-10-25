@@ -189,7 +189,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
       supabase
         .from("motions")
         .select(
-          "id, plain_english_summary, text_content, result, disposition, financial_cost, meeting_id, vote_coverage:meta->>individual_vote_coverage, meetings!inner(slug, id, meeting_date, title), votes(vote)",
+          "id, plain_english_summary, text_content, result, disposition, financial_cost, meeting_id, vote_coverage:meta->>individual_vote_coverage, headline:meta->>headline, meetings!inner(slug, id, meeting_date, title), votes(vote)",
         )
         .eq("meetings.municipality_id", municipalityId)
         .not("result", "is", null)
@@ -393,6 +393,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
     return {
       id: m.id,
       summary: m.plain_english_summary || m.text_content,
+      headline: m.headline ?? null,
       result: m.result,
       financialCost: m.financial_cost,
       meetingId: m.meeting_id,
