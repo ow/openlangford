@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SitemapEntry } from "../lib/sitemap";
 import { latestDate } from "../lib/sitemap";
 import { bylawPath, documentPath, electionPath, matterPath, meetingDocumentsPath, meetingPath } from "../lib/paths";
+import { propertyPath } from "./properties";
 import { participantPath, personPath } from "../lib/people-paths";
 import { getMunicipality } from "./municipality";
 import { getPublicParticipantStats } from "./people";
@@ -14,7 +15,7 @@ import { publicData } from "./public-data-cache.server";
  * visibility rules of its page: public-ready meetings only, canonical non-hidden
  * matters, council members under /people and everyone else under /participants.
  */
-export const SITEMAP_SECTIONS = ["pages", "meetings", "documents", "matters", "bylaws", "people", "participants", "elections"] as const;
+export const SITEMAP_SECTIONS = ["pages", "meetings", "documents", "matters", "properties", "bylaws", "people", "participants", "elections"] as const;
 export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
 
 // Same rule as the meetings list/detail pages (services/meetings.ts PUBLIC_READY_FILTER).
@@ -120,6 +121,13 @@ async function buildSitemapEntries(
         supabase.from("bylaws").select("id, slug, updated_at").eq("municipality_id", municipality.id).order("id").range(from, to),
       );
       return bylaws.map((b) => ({ path: bylawPath(b), lastmod: latestDate(b.updated_at), changefreq: "monthly" as const, priority: 0.6 }));
+    }
+
+    case "properties": {
+      const properties = await pageAll<any>((from, to) =>
+        supabase.from("properties").select("slug, updated_at").eq("municipality_id", municipality.id).order("id").range(from, to),
+      );
+      return properties.map((p) => ({ path: propertyPath(p), lastmod: latestDate(p.updated_at), changefreq: "monthly" as const, priority: 0.5 }));
     }
 
     case "people": {

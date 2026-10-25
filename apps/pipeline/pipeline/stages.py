@@ -547,6 +547,17 @@ def run_written_submissions(ctx: StageContext):
     return totals
 
 
+def run_properties(ctx: StageContext):
+    from pipeline.ingestion.properties import build_properties
+
+    stats = build_properties(ctx.supabase, dry_run=ctx.dry_run)
+    print(f"  [Properties] {stats['properties']} properties, {stats['links']} links, {stats['matters']} matters; "
+          f"{stats['multi_matter_properties']} properties with 2+ matters")
+    for key in stats.get("sample", []):
+        print(f"    {key}")
+    return stats
+
+
 def run_letter_placement_eval(ctx: StageContext):
     import json
     from pipeline.ingestion.written_submissions import evaluate_placement
@@ -789,6 +800,11 @@ STAGES: list[Stage] = [
         description="Link related matters (same initiative) and mentions in mixed-topic items.",
         run=run_matter_links, when="post_ingest", scope="matter", version="1",
         depends_on=("matter-summaries",),
+    ),
+    Stage(
+        name="properties",
+        description="Link every matter and agenda item to the properties (civic addresses) it names.",
+        run=run_properties, when="post_ingest", scope="global", version="1",
     ),
     Stage(
         name="profile-refresh",

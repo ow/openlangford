@@ -49,6 +49,8 @@ import { crossNotes, writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
+import { matterStatusVariant } from "../lib/matter-status";
+import { getPropertiesForMatter, propertyPath } from "../services/properties";
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 
@@ -320,9 +322,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     // Fetch documents for all agenda items in this matter (batch query)
     const agendaItemIds = (matter.agenda_items || []).map((ai) => ai.id);
     const matterDocuments = await getDocumentsForAgendaItems(supabase, agendaItemIds);
-    const [matterEvidence, story] = await Promise.all([
+    const [matterEvidence, story, properties] = await Promise.all([
       getMatterEvidence(supabase, matter.id, matter.meta?.merged_matter_ids || []),
       getMatterStory(supabase, matter.id),
+      getPropertiesForMatter(supabase, matter.id),
     ]);
 
     // Pipeline-picked pictures from the staff reports (meta.images), resolved to public URLs.
@@ -345,7 +348,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     }
     (matter as any).locations = Array.from(pins.values());
 
-    return { matter, matterDocuments, matterEvidence, story, images };
+    return { matter, matterDocuments, matterEvidence, story, images, properties };
   } catch (error) {
     if (error instanceof Response) throw error;
     console.error("Error fetching matter:", error);
@@ -354,7 +357,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 }
 
 export default function MatterDetail({ loaderData }: Route.ComponentProps) {
-  const { matter, matterDocuments, matterEvidence, story, images } = loaderData;
+  const { matter, matterDocuments, matterEvidence, story, images, properties = [] } = loaderData;
 
   // Sort agenda items by meeting date
   const timeline = [...(matter.agenda_items || [])].sort(
@@ -480,16 +483,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       ? directEntries[directEntries.length - 1].date
       : null;
 
-  const statusVariant =
-    matter.status && matter.status !== "Active"
-      ? /defeat|fail|withdraw|rescind|repeal/i.test(matter.status)
-        ? "danger"
-        : /adopt|complete|approv|pass|closed|resolved/i.test(matter.status)
-          ? "success"
-          : /pend|defer|tabled|hold/i.test(matter.status)
-            ? "warning"
-            : "muted"
-      : null;
+  const statusVariant = matterStatusVariant(matter.status);
 
   const shortDate = (d: string | null | undefined) =>
     d
@@ -614,12 +608,51 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
         </header>
 
         <div className="space-y-12">
-          {matter.locations && matter.locations.length > 0 && (
+          {((matter.locations && matter.locations.length > 0) || properties.length > 0) && (
             <section>
               <SectionHeading title="Location" icon={MapPin} />
-              <div className="overflow-hidden rounded-2xl border border-zinc-200 shadow-sm">
-                <MattersMap matters={[matter]} activeLocation={matter.locations?.[0]} />
-              </div>
+              {matter.locations && matter.locations.length > 0 && (
+                <div className="overflow-hidden rounded-2xl border border-zinc-200 shadow-sm">
+                  <MattersMap matters={[matter]} activeLocation={matter.locations?.[0]} />
+                </div>
+              )}
+              {properties.length > 0 && (
+                <ul className={cn("space-y-3", matter.locations?.length ? "mt-4" : "")}>
+                  {properties.map((p) => (
+                    <li key={p.id} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <Link to={propertyPath(p)} className="font-semibold text-zinc-900 hover:text-brand-700">
+                          {p.address}
+                        </Link>
+                        <span className="text-sm text-zinc-500">
+                          {p.others.length === 0
+                            ? "No other matters at this address"
+                            : `${p.others.length} other ${p.others.length === 1 ? "matter" : "matters"} at this address`}
+                        </span>
+                      </div>
+                      {p.others.length > 0 && (
+                        <ul className="mt-2 space-y-1.5">
+                          {p.others.slice(0, 4).map((m: any) => (
+                            <li key={m.id} className="flex items-baseline gap-3 text-sm">
+                              <span className="w-12 shrink-0 tabular-nums text-xs text-zinc-400">
+                                {String(m.last_seen || m.first_seen || "").slice(0, 4)}
+                              </span>
+                              <Link to={matterPath(m)} className="min-w-0 text-zinc-700 hover:text-brand-700 hover:underline">
+                                {matterTitle(m)}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {p.others.length > 4 && (
+                        <Link to={propertyPath(p)} className="mt-2 inline-block text-sm font-medium text-brand-700 hover:underline">
+                          See all {p.others.length + 1} at {p.address}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           )}
 
