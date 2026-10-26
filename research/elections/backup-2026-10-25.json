@@ -1,0 +1,967 @@
+{
+ "elections": [
+  {
+   "id": 2,
+   "name": "2026 General Local Election",
+   "election_date": "2026-10-17",
+   "classification": "General",
+   "term_length_years": 4,
+   "notes": "Preliminary results reported by CivicInfo BC, linked by the City of Langford; checked October 18, 2026. Scheduled inaugural meeting: November 2, 2026. Winners are incoming until that date.",
+   "source_id": null,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T15:56:08.221912+00:00",
+   "results_status": "preliminary",
+   "source_url": "https://localelections.ca/election_results/60_2026_results.html",
+   "slug": "2026-general-local-election"
+  },
+  {
+   "id": 3,
+   "name": "2018 General Local Election",
+   "election_date": "2018-10-20",
+   "classification": "General",
+   "term_length_years": 4,
+   "notes": null,
+   "source_id": null,
+   "meta": {
+    "historical_results_import": {
+     "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+     "verified_on": "2026-10-20",
+     "source_pages": [
+      34
+     ],
+     "results_status": "official",
+     "candidate_count": 9,
+     "office_candidate_vote_sums": {
+      "Mayor": 4729,
+      "Councillor": 21896
+     }
+    }
+   },
+   "created_at": "2026-10-19T04:48:32.286797+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00",
+   "results_status": "official",
+   "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+   "slug": "2018-general-local-election"
+  },
+  {
+   "id": 1,
+   "name": "2022 General Local Election",
+   "election_date": "2022-10-15",
+   "classification": "General",
+   "term_length_years": 4,
+   "notes": null,
+   "source_id": null,
+   "meta": {
+    "historical_results_import": {
+     "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+     "verified_on": "2026-10-20",
+     "results_status": "official",
+     "candidate_count": 16,
+     "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+     "office_candidate_vote_sums": {
+      "Mayor": 8279,
+      "Councillor": 46171
+     }
+    }
+   },
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00",
+   "results_status": "official",
+   "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+   "slug": "2022-general-local-election"
+  }
+ ],
+ "election_offices": [
+  {
+   "id": 1,
+   "election_id": 2,
+   "office": "Mayor",
+   "seats_available": 1,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 2,
+   "election_id": 2,
+   "office": "Councillor",
+   "seats_available": 6,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 3,
+   "election_id": 3,
+   "office": "Mayor",
+   "seats_available": 1,
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 4,
+   "election_id": 3,
+   "office": "Councillor",
+   "seats_available": 6,
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 5,
+   "election_id": 1,
+   "office": "Mayor",
+   "seats_available": 1,
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 6,
+   "election_id": 1,
+   "office": "Councillor",
+   "seats_available": 6,
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  }
+ ],
+ "candidacies": [
+  {
+   "id": 1,
+   "election_office_id": 1,
+   "person_id": 143,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 9801,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 2,
+   "election_office_id": 1,
+   "person_id": 1,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 5411,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 3,
+   "election_office_id": 2,
+   "person_id": 353,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 8574,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 4,
+   "election_office_id": 2,
+   "person_id": 60,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 7720,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 5,
+   "election_office_id": 2,
+   "person_id": 354,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 7533,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 6,
+   "election_office_id": 2,
+   "person_id": 355,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 7117,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 7,
+   "election_office_id": 2,
+   "person_id": 50,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 6600,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 8,
+   "election_office_id": 2,
+   "person_id": 21,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 6082,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 9,
+   "election_office_id": 2,
+   "person_id": 22,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 5981,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 10,
+   "election_office_id": 2,
+   "person_id": 34,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 5513,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 11,
+   "election_office_id": 2,
+   "person_id": 23,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 5033,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 12,
+   "election_office_id": 2,
+   "person_id": 19,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 4966,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 13,
+   "election_office_id": 2,
+   "person_id": 134,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2843,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 14,
+   "election_office_id": 2,
+   "person_id": 356,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2328,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 15,
+   "election_office_id": 2,
+   "person_id": 357,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 1772,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 16,
+   "election_office_id": 2,
+   "person_id": 358,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 1386,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 17,
+   "election_office_id": 2,
+   "person_id": 359,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 1132,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 18,
+   "election_office_id": 2,
+   "person_id": 360,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 772,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T01:04:17.974087+00:00"
+  },
+  {
+   "id": 19,
+   "election_office_id": 3,
+   "person_id": 90,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 790,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Robert Fraser",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 20,
+   "election_office_id": 3,
+   "person_id": 143,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 3939,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Stewart Young",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 21,
+   "election_office_id": 4,
+   "person_id": 133,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 3369,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Denise Blackwell",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 22,
+   "election_office_id": 4,
+   "person_id": 60,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2712,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Wendy Hobbs",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 23,
+   "election_office_id": 4,
+   "person_id": 134,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 3073,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Matt Sahlstrom",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 24,
+   "election_office_id": 4,
+   "person_id": 135,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 3121,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Lanny Seaton",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 25,
+   "election_office_id": 4,
+   "person_id": 35,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 3466,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Lillian Szpak",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 26,
+   "election_office_id": 4,
+   "person_id": 136,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 3207,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Norma Stewart",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 27,
+   "election_office_id": 4,
+   "person_id": 137,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 2948,
+   "meta": {
+    "source_url": "https://langford.ca/wp-content/uploads/2021/05/20181105-Inaugural-Agenda-Package.pdf",
+    "ballot_name": "Roger Wade",
+    "verified_on": "2026-10-20",
+    "source_pages": [
+     34
+    ],
+    "results_status": "official",
+    "candidate_count": 9,
+    "office_candidate_vote_sums": {
+     "Mayor": 4729,
+     "Councillor": 21896
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 28,
+   "election_office_id": 5,
+   "person_id": 1,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 4483,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Scott Peter Goodmanson",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 29,
+   "election_office_id": 5,
+   "person_id": 143,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 3796,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Stewart Young",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 30,
+   "election_office_id": 6,
+   "person_id": 367,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2540,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Shirley Ackland",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 31,
+   "election_office_id": 6,
+   "person_id": 133,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2379,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Denise Blackwell",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 32,
+   "election_office_id": 6,
+   "person_id": 23,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 4255,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Kimberley Guiry",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 33,
+   "election_office_id": 6,
+   "person_id": 21,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 5072,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Colby Harder",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 34,
+   "election_office_id": 6,
+   "person_id": 60,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2592,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Wendy Hobbs",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 35,
+   "election_office_id": 6,
+   "person_id": 20,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 4048,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Mark Morley",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 36,
+   "election_office_id": 6,
+   "person_id": 368,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2430,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Shannon Russell Willing",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 37,
+   "election_office_id": 6,
+   "person_id": 134,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2481,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Matt Sahlstrom",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 38,
+   "election_office_id": 6,
+   "person_id": 135,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2547,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Lanny Seaton",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 39,
+   "election_office_id": 6,
+   "person_id": 136,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2583,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Norma Stewart",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 40,
+   "election_office_id": 6,
+   "person_id": 35,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 3512,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Lillian Szpak",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 41,
+   "election_office_id": 6,
+   "person_id": 137,
+   "is_elected": false,
+   "is_acclaimed": false,
+   "votes_received": 2309,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Roger Wade",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 42,
+   "election_office_id": 6,
+   "person_id": 22,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 4844,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Mary Wagner",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  },
+  {
+   "id": 43,
+   "election_office_id": 6,
+   "person_id": 34,
+   "is_elected": true,
+   "is_acclaimed": false,
+   "votes_received": 4579,
+   "meta": {
+    "source_url": "https://pub-langford.escribemeetings.com/filestream.ashx?DocumentId=3977",
+    "ballot_name": "Keith Yacucha",
+    "verified_on": "2026-10-20",
+    "results_status": "official",
+    "candidate_count": 16,
+    "supplemental_source_url": "https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2022",
+    "office_candidate_vote_sums": {
+     "Mayor": 8279,
+     "Councillor": 46171
+    }
+   },
+   "created_at": "2026-10-20T15:06:25.344504+00:00",
+   "updated_at": "2026-10-20T15:06:25.344504+00:00"
+  }
+ ],
+ "council_terms": [
+  {
+   "id": 4,
+   "municipality_id": 1,
+   "election_id": null,
+   "name": "2008\u20132011 Council",
+   "start_date": "2008-12-01",
+   "end_date": "2011-12-04",
+   "meta": {
+    "historical_import": {
+     "method": "research/council-terms: PRESENT rosters of all minutes in term; no mid-term changes found",
+     "end_basis": "Day before 2011-12-05 inaugural",
+     "verified_on": "2026-10-25",
+     "start_source": "Inaugural Meeting of Council, Dec 1 2008",
+     "election_date": "2008-11-15"
+    }
+   },
+   "created_at": "2026-10-26T03:33:25.313644+00:00",
+   "updated_at": "2026-10-26T03:33:25.313644+00:00"
+  },
+  {
+   "id": 5,
+   "municipality_id": 1,
+   "election_id": null,
+   "name": "2011\u20132014 Council",
+   "start_date": "2011-12-05",
+   "end_date": "2014-11-30",
+   "meta": {
+    "historical_import": {
+     "method": "research/council-terms: PRESENT rosters of all minutes in term; no mid-term changes found",
+     "end_basis": "Day before 2014-12-01 inaugural",
+     "verified_on": "2026-10-25",
+     "start_source": "Inaugural Meeting of Council, Dec 5 2011",
+     "election_date": "2011-11-19"
+    }
+   },
+   "created_at": "2026-10-26T03:33:25.313644+00:00",
+   "updated_at": "2026-10-26T03:33:25.313644+00:00"
+  },
+  {
+   "id": 6,
+   "municipality_id": 1,
+   "election_id": null,
+   "name": "2014\u20132018 Council",
+   "start_date": "2014-12-01",
+   "end_date": "2018-11-04",
+   "meta": {
+    "historical_import": {
+     "method": "research/council-terms: PRESENT rosters of all minutes in term; no mid-term changes found",
+     "end_basis": "Day before 2018-11-05 inaugural (existing term 3 '2018\u20132022 Council' starts 2018-11-05)",
+     "verified_on": "2026-10-25",
+     "start_source": "Inaugural Meeting of Council, Dec 1 2014",
+     "election_date": "2014-11-15"
+    }
+   },
+   "created_at": "2026-10-26T03:33:25.313644+00:00",
+   "updated_at": "2026-10-26T03:33:25.313644+00:00"
+  }
+ ],
+ "people": [
+  {
+   "id": 358,
+   "name": "Michael Mortimore",
+   "is_councillor": false,
+   "email": null,
+   "image_url": null,
+   "bio": null,
+   "voice_fingerprint_id": null,
+   "meta": null,
+   "created_at": "2026-10-19T01:04:17.974087+00:00",
+   "updated_at": "2026-10-19T02:25:59.543376+00:00",
+   "slug": "michael-mortimore"
+  }
+ ]
+}

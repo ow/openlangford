@@ -1,0 +1,73 @@
+{
+  "2008": {
+    "name": "2008 General Local Election", "election_date": "2008-11-15", "term_length_years": 3, "council_term_id": 4,
+    "results_status": "official",
+    "source_url": "http://web.archive.org/web/20201102000957/https://civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2008",
+    "source_note": "CivicInfo BC election results (Wayback snapshot 2020-11-02); council counts corroborated by victoriavision.blogspot.com/2014/09/2008-langford-election-results.html. The City's 2008 proclamation is only referenced (not reproduced) in the Dec 1 2008 inaugural minutes.",
+    "turnout": {"ballots_cast": 3844, "eligible_voters": 16450, "turnout_pct": 23.4, "source": "VotingVista (third-party, not official)"},
+    "offices": {
+      "Mayor": {"seats": 1, "candidates": [
+        {"name": "Stewart Young", "person_id": 143, "votes": null, "elected": true, "acclaimed": true}]},
+      "Councillor": {"seats": 6, "candidates": [
+        {"name": "Denise Blackwell", "person_id": 133, "votes": 2264, "elected": true},
+        {"name": "Lillian Szpak", "person_id": 35, "votes": 2257, "elected": true},
+        {"name": "Lanny Seaton", "person_id": 135, "votes": 2181, "elected": true},
+        {"name": "Winnie Sifert", "person_id": 363, "votes": 2137, "elected": true},
+        {"name": "Roger Wade", "person_id": 137, "votes": 1910, "elected": true},
+        {"name": "Matt Sahlstrom", "person_id": 134, "votes": 1859, "elected": true},
+        {"name": "Steven Hurdle", "votes": 1419, "elected": false},
+        {"name": "Harry Kuiack", "votes": 1169, "elected": false},
+        {"name": "Ryan Hinton", "votes": 1149, "elected": false},
+        {"name": "Michael Mortimore", "person_id": 358, "votes": 1119, "elected": false},
+        {"name": "Vern Trew", "votes": 1051, "elected": false},
+        {"name": "Herman Surkis", "votes": 986, "elected": false},
+        {"name": "Vick Siu", "votes": 352, "elected": false}]}}
+  },
+  "2011": {
+    "name": "2011 General Local Election", "election_date": "2011-11-19", "term_length_years": 3, "council_term_id": 5,
+    "results_status": "official",
+    "source_url": "http://web.archive.org/web/20210811231451/https://www.civicinfo.bc.ca/electionreports/candidates-and-results.php?year=2011",
+    "source_note": "CivicInfo BC election results (Wayback snapshot 2021-08-11). Mayor figures (Young 2,319, Johnson 507) match a search-result summary of CivicInfo's current page. The City's proclamation is only referenced in the Dec 5 2011 inaugural minutes.",
+    "turnout": {"ballots_cast": 2826, "eligible_voters": 21465, "turnout_pct": 13.2, "source": "VotingVista (third-party, not official)"},
+    "offices": {
+      "Mayor": {"seats": 1, "candidates": [
+        {"name": "Stewart Young", "person_id": 143, "votes": 2319, "elected": true},
+        {"name": "Christopher Johnson", "votes": 507, "elected": false}]},
+      "Councillor": {"seats": 6, "candidates": [
+        {"name": "Denise Blackwell", "person_id": 133, "votes": 1960, "elected": true},
+        {"name": "Lillian Szpak", "person_id": 35, "votes": 1936, "elected": true},
+        {"name": "Winnie Sifert", "person_id": 363, "votes": 1833, "elected": true},
+        {"name": "Lanny Seaton", "person_id": 135, "votes": 1831, "elected": true},
+        {"name": "Matt Sahlstrom", "person_id": 134, "votes": 1680, "elected": true},
+        {"name": "Roger Wade", "person_id": 137, "votes": 1640, "elected": true},
+        {"name": "Grant McLachlan", "votes": 1219, "elected": false},
+        {"name": "Sean Horgan", "votes": 1019, "elected": false}]}}
+  },
+  "2014": {
+    "name": "2014 General Local Election", "election_date": "2014-11-15", "term_length_years": 4, "council_term_id": 6,
+    "results_status": "official",
+    "source_url": "https://gspr.emc2.build/api/documents/5c6d5e90-b29a-4577-ac7c-6b1af081d394/artifacts/original",
+    "source_note": "City of Langford Proclamation and Voting Results signed by Chief Election Officer Thomas F. Moore, dated Nov 17 2014 (pp. P2-P3 of the Dec 1 2014 inaugural agenda package, PDF pages 4-5; verified against page image). Also held an amalgamation question: Yes 2,222 / No 2,209.",
+    "turnout": {"ballots_cast": 4532, "eligible_voters": 21523, "turnout_pct": 21.1, "source": "VotingVista (third-party, not official)"},
+    "offices": {
+      "Mayor": {"seats": 1, "candidates": [
+        {"name": "Stewart Young", "person_id": 143, "votes": 3727, "elected": true},
+        {"name": "David Shebib", "votes": 556, "elected": false}]},
+      "Councillor": {"seats": 6, "candidates": [
+        {"name": "Lillian M. Szpak", "person_id": 35, "votes": 2760, "elected": true},
+        {"name": "Denise Blackwell", "person_id": 133, "votes": 2540, "elected": true},
+        {"name": "Lanny Seaton", "person_id": 135, "votes": 2373, "elected": true},
+        {"name": "Winnie Sifert", "person_id": 363, "votes": 2326, "elected": true},
+        {"name": "Roger Wade", "person_id": 137, "votes": 2236, "elected": true},
+        {"name": "Matt Sahlstrom", "person_id": 134, "votes": 2174, "elected": true},
+        {"name": "Jim Munroe", "votes": 1328, "elected": false},
+        {"name": "Pauline Adams", "votes": 1293, "elected": false},
+        {"name": "Dustin Finerty", "votes": 1241, "elected": false},
+        {"name": "Grant McLachlan", "votes": 1065, "elected": false},
+        {"name": "Mark McInnes", "votes": 1003, "elected": false},
+        {"name": "Paul Barber", "votes": 889, "elected": false},
+        {"name": "Timothy Power", "votes": 854, "elected": false},
+        {"name": "Andre Mollon", "votes": 368, "elected": false}]}}
+  },
+  "omitted": {"2008 Norma Stewart": "CivicInfo lists Councillor candidate Norma Stewart (#136) with 0 votes, not elected (likely withdrew; unverified), so not inserted."}
+}
