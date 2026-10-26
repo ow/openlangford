@@ -923,6 +923,128 @@
    "source_status": "cancelled"
   }
  ],
+ "slug_only": [
+  {
+   "meeting_id": 232,
+   "official_date": "2026-02-02",
+   "type": "Regular Council",
+   "old_slug": "2026-02-03-regular-council",
+   "proposed_slug": "2026-02-02-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 274,
+   "official_date": "2025-02-03",
+   "type": "Regular Council",
+   "old_slug": "2025-02-04-regular-council",
+   "proposed_slug": "2025-02-03-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 202,
+   "official_date": "2026-01-12",
+   "type": "Regular Council",
+   "old_slug": "2026-01-13-regular-council",
+   "proposed_slug": "2026-01-12-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 309,
+   "official_date": "2025-02-18",
+   "type": "Regular Council",
+   "old_slug": "2025-02-19-regular-council",
+   "proposed_slug": "2025-02-18-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 23,
+   "official_date": "2026-02-17",
+   "type": "Regular Council",
+   "old_slug": "2026-02-18-regular-council",
+   "proposed_slug": "2026-02-17-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 159,
+   "official_date": "2026-03-02",
+   "type": "Regular Council",
+   "old_slug": "2026-03-03-regular-council",
+   "proposed_slug": "2026-03-02-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 208,
+   "official_date": "2025-11-03",
+   "type": "Regular Council",
+   "old_slug": "2025-11-04-regular-council",
+   "proposed_slug": "2025-11-03-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 15,
+   "official_date": "2025-12-15",
+   "type": "Regular Council",
+   "old_slug": "2025-12-16-regular-council",
+   "proposed_slug": "2025-12-15-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 342,
+   "official_date": "2024-11-18",
+   "type": "Regular Council",
+   "old_slug": "2024-11-19-regular-council",
+   "proposed_slug": "2024-11-18-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 284,
+   "official_date": "2025-12-01",
+   "type": "Regular Council",
+   "old_slug": "2025-12-02-regular-council",
+   "proposed_slug": "2025-12-01-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 307,
+   "official_date": "2024-12-02",
+   "type": "Regular Council",
+   "old_slug": "2024-12-03-regular-council",
+   "proposed_slug": "2024-12-02-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 205,
+   "official_date": "2024-11-04",
+   "type": "Regular Council",
+   "old_slug": "2024-11-05-regular-council",
+   "proposed_slug": "2024-11-04-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 358,
+   "official_date": "2025-01-13",
+   "type": "Regular Council",
+   "old_slug": "2025-01-14-regular-council",
+   "proposed_slug": "2025-01-13-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 164,
+   "official_date": "2025-03-03",
+   "type": "Regular Council",
+   "old_slug": "2025-03-04-regular-council",
+   "proposed_slug": "2025-03-03-regular-council",
+   "slug_collision_suffix": false
+  },
+  {
+   "meeting_id": 169,
+   "official_date": "2025-11-17",
+   "type": "Regular Council",
+   "old_slug": "2025-11-18-regular-council",
+   "proposed_slug": "2025-11-17-regular-council",
+   "slug_collision_suffix": false
+  }
+ ],
  "held": [],
  "counts": {},
  "evidence_conflicts": []

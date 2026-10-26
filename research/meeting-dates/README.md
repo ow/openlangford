@@ -113,3 +113,14 @@ Data (not run)
   (3) rerun the attendance plan for the 29 held council meetings; (4) next ingest refreshes ballot source validation once.
 * Slugs: dates and slugs are corrected together. The history table and redirect fallback are in place (47-26 + web), so run with
   `--rename-slugs` (handles the 172 collision and the 38/174 chain).
+
+## Applied 2026-10-25
+
+`correct_meeting_dates.py --apply --rename-slugs` committed in one SERIALIZABLE transaction (backup: `backups/meeting-dates-backup-20261025T235916Z.json`):
+36 `meetings.meeting_date` corrected, 58 `source_meetings.meeting_date` corrected (36 + 15 + 7 cancelled), 51 slugs renamed (36 + 15 slug-only
+fixes for the meetings whose dates were corrected earlier), 51 `meeting_slug_history` rows. Afterwards: 0 wrong dates, 0 slug/date mismatches.
+Live check (openlangford.ca): old slugs 301 to the new ones including `/documents`, `/explorer` and `/summary.md` sub-paths; new URLs 200;
+`/meetings/2024-02-13-committee-of-the-whole` is meeting 174 (title February 13, 2024), 174's old slug redirects to it.
+Attendance plan re-run: 159 meetings read (was 130), 1094 records (was 894), 200 written (193 updated, 7 inserted); per-councillor
+before/after in `attendance-before.txt` / `attendance-after.txt`. Remaining holds: 9 members with 0 roster matches, 6 minutes not a PDF,
+1 no minutes, 1 scanned, 1 no named roster.

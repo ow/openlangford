@@ -88,7 +88,7 @@ def build_plan(cur, archive_root: Path | None) -> dict:
         FROM source_meetings s LEFT JOIN meetings m ON m.id = s.ingested_meeting_id
         WHERE s.source_type = 'escribe' ORDER BY s.id""")
     rows = cur.fetchall()
-    plan = {"meetings": [], "source_only": [], "held": [], "counts": Counter()}
+    plan = {"meetings": [], "source_only": [], "slug_only": [], "held": [], "counts": Counter()}
     for r in rows:
         off = official_date(r["raw"])
         if off is None:
@@ -118,6 +118,12 @@ def build_plan(cur, archive_root: Path | None) -> dict:
                 plan["meetings"].append(entry)
             else:
                 plan["source_only"].append(entry)
+    # Slug-only pass: meetings whose date is already right (fixed earlier) but whose slug still has the old date.
+    planned = {e["meeting_id"] for e in plan["meetings"]}
+    cur.execute("SELECT id, meeting_date, slug, type::text AS type FROM meetings WHERE slug ~ '^\\d{4}-\\d{2}-\\d{2}-' AND left(slug, 10) <> meeting_date::text")
+    for r in cur.fetchall():
+        if r["id"] not in planned:
+            plan["slug_only"].append({"meeting_id": r["id"], "official_date": r["meeting_date"].isoformat(), "type": r["type"], "old_slug": r["slug"]})
     ids = [e["meeting_id"] for e in plan["meetings"]]
     # Guard: attendance evidence keyed on the old date would flip to "unknown" in the web app.
     cur.execute("SELECT meeting_id, notes FROM attendance WHERE meeting_id = ANY(%s) AND notes LIKE '%%local_date%%'", (ids,))
@@ -131,11 +137,12 @@ def build_plan(cur, archive_root: Path | None) -> dict:
     if cur.fetchone()["t"]:  # an existing redirect must not be shadowed by a new live slug
         cur.execute("SELECT municipality_id, old_slug, meeting_id FROM meeting_slug_history")
         taken.update({(r["municipality_id"], r["old_slug"]): r["meeting_id"] for r in cur.fetchall()})
-    cur.execute("SELECT id, municipality_id FROM meetings WHERE id = ANY(%s)", (ids,))
+    renames = plan["meetings"] + plan["slug_only"]
+    cur.execute("SELECT id, municipality_id FROM meetings WHERE id = ANY(%s)", ([e["meeting_id"] for e in renames],))
     muni = {r["id"]: r["municipality_id"] for r in cur.fetchall()}
-    for e in plan["meetings"]:
+    for e in renames:
         taken.pop((muni[e["meeting_id"]], e["old_slug"]), None)
-    for e in sorted(plan["meetings"], key=lambda e: e["meeting_id"]):
+    for e in sorted(renames, key=lambda e: e["meeting_id"]):
         base = f"{e['official_date']}-{slugify(e['type'])}"
         cand, n = base, 1
         while (muni[e["meeting_id"]], cand) in taken:
@@ -148,7 +155,7 @@ def build_plan(cur, archive_root: Path | None) -> dict:
 
 def backup(cur, plan: dict, out_dir: Path) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
-    mids = [e["meeting_id"] for e in plan["meetings"]]
+    mids = [e["meeting_id"] for e in plan["meetings"] + plan["slug_only"]]
     sids = [e["source_meeting_id"] for e in plan["meetings"] + plan["source_only"]]
     cols = lambda t: ", ".join(  # noqa: E731
         f'"{c}"' for c in _columns(cur, t) if c not in EXCLUDE_COLUMNS)
@@ -176,6 +183,8 @@ def print_plan(plan: dict) -> None:
     for e in ms:
         flag = "  <-- slug collision, suffixed" if e["slug_collision_suffix"] else ""
         print(f"{e['meeting_id']:>7}  {e['meeting_old_date']}  {e['official_date']}  {e['old_slug']:42} {e['proposed_slug']}{flag}")
+    for e in plan["slug_only"]:
+        print(f"slug-only meeting={e['meeting_id']}  {e['old_slug']} -> {e['proposed_slug']}")
     for e in plan["source_only"]:
         print(f"source-only src={e['source_meeting_id']}  {e['source_old_date']} -> {e['official_date']}  meeting_id={e['meeting_id']} status={e['source_status']}")
     for h in plan["held"]:
@@ -204,11 +213,12 @@ def apply_plan(conn, cur, plan: dict, rename_slugs: bool) -> None:
         cur.execute("UPDATE source_meetings SET meeting_date=%s WHERE id=%s AND meeting_date=%s",
                     (e["official_date"], e["source_meeting_id"], e["source_old_date"]))
         assert cur.rowcount == 1, f"source_meeting {e['source_meeting_id']} changed under us"
+    renames = plan["meetings"] + plan["slug_only"]
     if rename_slugs:
-        for e in plan["meetings"]:  # two phases: the unique index is checked per row
+        for e in renames:  # two phases: the unique index is checked per row
             cur.execute("UPDATE meetings SET slug=%s WHERE id=%s AND slug=%s", (f"tmp-{e['meeting_id']}", e["meeting_id"], e["old_slug"]))
             assert cur.rowcount == 1
-        for e in plan["meetings"]:
+        for e in renames:
             # History row and new slug in the same transaction: the old URL never 404s.
             cur.execute("INSERT INTO meeting_slug_history (meeting_id, municipality_id, old_slug) SELECT id, municipality_id, %s FROM meetings WHERE id=%s",
                         (e["old_slug"], e["meeting_id"]))
