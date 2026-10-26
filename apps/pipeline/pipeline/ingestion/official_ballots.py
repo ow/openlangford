@@ -121,10 +121,10 @@ def _load_official_minutes(meeting, *, root, people, cache_dir):
   signed=[f for f in files if 'signed' in f.name.lower()]
   preferred=signed or [f for f in files if f.name=='Minutes.pdf'] or files
   if len(preferred)!=1:return {'error':'ambiguous_original_minutes_pdf','files':[str(f.relative_to(ROOT)) for f in preferred]}
-  path=preferred[0];digest=hashlib.sha256(path.read_bytes()).hexdigest();cache=CACHE/(digest+'.txt')
-  if not cache.exists():
-   subprocess.run(['pdftotext','-layout',str(path),str(cache)],check=True,timeout=40,capture_output=True)
-  text=cache.read_text(errors='replace');source_format='original_pdf_layout'
+  path=preferred[0];digest=hashlib.sha256(path.read_bytes()).hexdigest()
+  # Text layer when there is one, Marker OCR for scans (shared with ingest's minutes reading).
+  from pipeline.parser import pdf_text
+  text,source_format=pdf_text(path,cache_dir=CACHE)
  else:
   html=list((folder/'Minutes').glob('*.html'))
   if len(html)!=1:return {'error':'no_original_minutes_pdf_or_unique_official_html'}

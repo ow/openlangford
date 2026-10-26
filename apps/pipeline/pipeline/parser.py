@@ -211,6 +211,46 @@ def get_pdf_text_ocr(pdf_path):
         return ""
 
 
+def markdown_to_plain(text):
+    """Marker returns markdown; parsers built for layout text want plain lines
+    ("## 1. CALL TO ORDER" -> "1. CALL TO ORDER", "**MOVED BY:**" -> "MOVED BY:")."""
+    text = re.sub(r"(?m)^\s{0,3}#{1,6}\s*", "", text or "")
+    text = re.sub(r"\*\*|__", "", text)
+    text = re.sub(r"(?m)^\s*[-*]\s+(?=\S)", "", text)
+    return text
+
+
+def pdf_text(pdf_path, *, cache_dir=None, layout=True, min_chars=100):
+    """The text of a PDF for parsing: its text layer (pdftotext, layout kept), or
+    Marker OCR when the PDF is a scan. Returns (text, source_format), source_format
+    'original_pdf_layout' or 'ocr_marker'. With cache_dir, results are cached by the
+    file's SHA-256 so a scan is OCR'd once."""
+    import hashlib
+    import subprocess
+    from pathlib import Path
+
+    data = Path(pdf_path).read_bytes()
+    digest = hashlib.sha256(data).hexdigest()
+    cache = Path(cache_dir) if cache_dir else None
+    if cache:
+        cache.mkdir(parents=True, exist_ok=True)
+        layout_file, ocr_file = cache / f"{digest}.txt", cache / f"{digest}.ocr.txt"
+        if layout_file.exists() and len(layout_file.read_text(errors="replace").strip()) >= min_chars:
+            return layout_file.read_text(errors="replace"), "original_pdf_layout"
+        if ocr_file.exists():
+            return ocr_file.read_text(errors="replace"), "ocr_marker"
+    args = ["pdftotext"] + (["-layout"] if layout else []) + [str(pdf_path), "-"]
+    text = subprocess.run(args, check=True, timeout=40, capture_output=True).stdout.decode(errors="replace")
+    if len(text.strip()) >= min_chars:
+        if cache:
+            layout_file.write_text(text)
+        return text, "original_pdf_layout"
+    text = markdown_to_plain(get_pdf_text_ocr(str(pdf_path)))
+    if cache and len(text.strip()) >= min_chars:
+        ocr_file.write_text(text)
+    return text, "ocr_marker"
+
+
 def _clean_extracted_text(text):
     """
     Cleans up garbage Unicode and ASCII patterns often produced by
