@@ -22,6 +22,7 @@ dependencies = [
     "supabase>=2.27.2",
     "surya-ocr>=0.13.1",
     "tqdm>=4.67.1",
+    "transformers>=4.48,<4.52",
     "yt-dlp>=2025.12.8",
 ]
 
