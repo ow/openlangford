@@ -20,7 +20,7 @@ import fitz
 _MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December'
 _DATE = re.compile(
     r'(?:(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s*,?\s*)?'
-    r'\b(' + _MONTHS + r')\s+(\d{1,2})(st|nd|rd|th)?\s*,\s*(20\d{2})\b', re.I,
+    r'\b(' + _MONTHS + r')\s+(\d{1,2})(st|nd|rd|th|[17]H)?\s*,\s*(20\d{2})\b', re.I,
 )
 
 
@@ -34,8 +34,12 @@ def _candidate_date(text):
         parsed=datetime.strptime(f'{month} {day} {year}', '%B %d %Y').date()
     except ValueError:
         return None
+    noisy=bool(ordinal) and ordinal.casefold() not in ('st','nd','rd','th')
+    if noisy and not (weekday and len(day)==2):
+        # A noisy ordinal ("117H") is accepted only when the weekday verifies.
+        return None
     expected='th' if 10 <= parsed.day % 100 <= 20 else {1:'st',2:'nd',3:'rd'}.get(parsed.day % 10,'th')
-    if ordinal and ordinal.casefold()!=expected:
+    if ordinal and not noisy and ordinal.casefold()!=expected:
         return None
     if weekday and parsed.strftime('%A').casefold()!=weekday.casefold():
         return None
@@ -53,9 +57,10 @@ def recover_pdf_header_date(path, *, catalog_date, cache_dir):
         helper_sha=hashlib.sha256(swift.read_bytes()).hexdigest()
         with fitz.open(path) as document:
             page=document[0]
-            present=[word for word in page.get_text('words') if re.fullmatch(r'PRESENT:?',word[4],re.I)]
-            # Multiple/no native anchors cannot prove this is the own header.
-            if len(present)!=1 or not 0<present[0][1]<page.rect.height*.65:
+            # Uppercase roster label only; body text may say lowercase "present".
+            present=sorted((word for word in page.get_text('words') if re.fullmatch(r'PRESENT:?',word[4])),key=lambda w:(w[1],w[0]))
+            # No native anchor cannot prove this is the own header; take the first.
+            if not present or not 0<present[0][1]<page.rect.height*.65:
                 return None,None
             clip=[page.rect.x0,page.rect.y0,page.rect.x1,present[0][1]]
             config={'source_sha256':source_sha,'helper_sha256':helper_sha,
