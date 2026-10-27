@@ -31,6 +31,9 @@ def _surname_index(people):
     return surnames
 
 
+_MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December'
+
+
 def _normalise_header_text(header):
     """Undo letter-spacing and split ordinals without adding or guessing digits."""
     def join_run(match):
@@ -40,18 +43,46 @@ def _normalise_header_text(header):
     # Five or more single characters separated by single spaces are a
     # letter-spaced text layer ("M o n d a y , M a r c h 3 , 2 0 1 4").
     header = re.sub(r'(?<!\S)\S(?: \S){4,}(?!\S)', join_run, header)
+    # Two split day digits between a month and a year ("July 1 4 , 2014").
+    header = re.sub(r'\b(' + _MONTHS + r')\s+(\d)[ \t]+(\d)(?=[ \t]*,?[ \t]*(?:19|20)\d\d\b)',
+                    r'\1 \2\3,', header, flags=re.I)
+    header = re.sub(r',[ \t]*,', ',', header)
     # Split ordinal suffixes ("3 r d", "7 t h") rejoin their digit.
     return re.sub(r'(?<=\d)[ \t]*(s[ \t]*t|n[ \t]*d|r[ \t]*d|t[ \t]*h)(?![A-Za-z])',
                   lambda m: re.sub(r'[ \t]', '', m.group(1)), header, flags=re.I)
 
 
 def _native_header_date(header):
-    months = 'January|February|March|April|May|June|July|August|September|October|November|December'
+    months = _MONTHS
     header = _normalise_header_text(header)
-    direct = re.search(r'\b(' + months + r')\s+(\d{1,2})(?:st|nd|rd|th)?\s*,?\s*(20\d{2})\b', header, re.I)
-    if direct:
-        date = datetime.strptime(' '.join(direct.groups()), '%B %d %Y').date()
+    for direct in re.finditer(r'\b(' + months + r')\s+(\d{1,2})(?:st|nd|rd|th)?\s*,?\s*(20\d{2})\b', header, re.I):
+        try:
+            date = datetime.strptime(' '.join(direct.groups()), '%B %d %Y').date()
+        except ValueError:
+            continue  # impossible day (OCR noise): fall through, never raise
         return date.isoformat(), {'method': 'native_month_day_year', 'source_quote': direct[0]}
+    # Doubled-digit OCR noise ("October 66" for "6th"): only with a printed
+    # weekday, only the leading digit, only if exactly one candidate fits.
+    doubled = []
+    for match in re.finditer(r'\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[ \t]*,?[ \t]*('
+                             + months + r')\s+(\d)(\d)[ \t]*,?[ \t]*(20\d{2})\b', header, re.I):
+        weekday, month, lead, tail, year = match.groups()
+        try:
+            datetime.strptime(f'{month} {lead}{tail} {year}', '%B %d %Y')
+            continue  # the day is valid as printed; not this noise pattern
+        except ValueError:
+            pass
+        try:
+            date = datetime.strptime(f'{month} {lead} {year}', '%B %d %Y').date()
+        except ValueError:
+            continue
+        if date.strftime('%A').casefold() == weekday.casefold():
+            doubled.append((date.isoformat(), {
+                'method': 'native_weekday_with_doubled_digit_ocr_noise',
+                'source_quote': match[0], 'weekday_verified': True,
+            }))
+    if len({d for d, _ in doubled}) == 1:
+        return doubled[0]
     # Scanned ordinals often become ^, *^ or t^. Keep every date digit;
     # only accept the noisy suffix when the printed weekday independently fits.
     pattern = re.compile(
