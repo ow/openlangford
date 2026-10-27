@@ -1,6 +1,22 @@
 import { getVimeoVideoData } from "../services/vimeo.server";
 import { createSupabaseServerClient } from "../lib/supabase.server";
 import { getMunicipality } from "../services/municipality";
+import { isRateLimited, tooManyRequests } from "../lib/rate-limit.server";
+
+const ESCRIBE_HOST = "escribemeetings.com";
+
+/** Strict allowlist: https and escribemeetings.com or a subdomain (e.g. pub-langford.escribemeetings.com). */
+export function isAllowedEscribeUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    return (
+      u.protocol === "https:" &&
+      (u.hostname === ESCRIBE_HOST || u.hostname.endsWith(`.${ESCRIBE_HOST}`))
+    );
+  } catch {
+    return false;
+  }
+}
 
 function extractHtmlAttr(html: string, attr: string): string | null {
   const pattern = new RegExp(`${attr}=["']([^"']+)["']`, "i");
@@ -9,7 +25,7 @@ function extractHtmlAttr(html: string, attr: string): string | null {
 
 async function getIsiVideoData(videoUrl: string) {
   const parsed = new URL(videoUrl);
-  if (!parsed.hostname.includes("escribemeetings.com")) return null;
+  if (!isAllowedEscribeUrl(videoUrl)) return null;
   if (!parsed.pathname.toLowerCase().includes("/players/isistandaloneplayer.aspx")) {
     return null;
   }
@@ -33,7 +49,7 @@ async function getIsiVideoData(videoUrl: string) {
   };
 }
 
-export async function loader({ request }: { request: Request }) {
+export async function loader({ request, context }: { request: Request; context?: any }) {
   const url = new URL(request.url);
   const videoUrl = url.searchParams.get("video_url");
   const meetingId = url.searchParams.get("meeting_id");
@@ -41,6 +57,21 @@ export async function loader({ request }: { request: Request }) {
   if (!videoUrl) {
     return Response.json({ error: "video_url required" }, { status: 400 });
   }
+
+  // Only eSCRIBE or Vimeo https URLs are ever fetched/proxied; reject anything else up front.
+  let parsedVideo: URL;
+  try {
+    parsedVideo = new URL(videoUrl);
+  } catch {
+    return Response.json({ error: "Invalid video_url" }, { status: 400 });
+  }
+  const host = parsedVideo.hostname;
+  const isVimeo = host === "vimeo.com" || host.endsWith(".vimeo.com");
+  if (parsedVideo.protocol !== "https:" || !(isAllowedEscribeUrl(videoUrl) || isVimeo)) {
+    return Response.json({ error: "Unsupported video_url host" }, { status: 400 });
+  }
+
+  if (await isRateLimited(request, "vimeo-url", 30, context)) return tooManyRequests();
 
   try {
     const isiResult = await getIsiVideoData(videoUrl);

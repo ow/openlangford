@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useFetcher } from "react-router";
+import { useFetcher, useRouteLoaderData } from "react-router";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -59,6 +59,8 @@ export function IntelligenceSection({
   resolveSpeakerName,
 }: IntelligenceSectionProps) {
   const fetcher = useFetcher();
+  // Per-request root loader data (never in the public data cache). Generation is admin-only.
+  const isAdmin = !!(useRouteLoaderData("root") as { isAdmin?: boolean } | undefined)?.isAdmin;
   const [intelligence, setIntelligence] = useState(initialIntelligence);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -83,7 +85,7 @@ export function IntelligenceSection({
 
   return (
     <div>
-      {!intelligence ? (
+      {!intelligence && !isAdmin ? null : !intelligence ? (
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"

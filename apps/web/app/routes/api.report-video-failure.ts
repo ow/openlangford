@@ -1,19 +1,27 @@
 import { data, type ActionFunctionArgs } from "react-router";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { clearVimeoCache } from "../services/vimeo.server";
+import { isRateLimited, tooManyRequests } from "../lib/rate-limit.server";
 
-export async function action({ request }: ActionFunctionArgs) {
-  const supabaseAdmin = getSupabaseAdminClient();
+export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {
     return data({ error: "Method not allowed" }, { status: 405 });
   }
 
-  const formData = await request.formData();
-  const meetingId = formData.get("meetingId");
+  // Anonymous by design (viewers report broken video), so throttle per IP.
+  if (await isRateLimited(request, "video-failure", 5, context as any)) return tooManyRequests();
 
-  if (!meetingId) {
+  const formData = await request.formData();
+  const rawId = formData.get("meetingId");
+
+  if (!rawId) {
     return data({ error: "Missing meetingId" }, { status: 400 });
   }
+  if (typeof rawId !== "string" || !/^[1-9][0-9]{0,9}$/.test(rawId)) {
+    return data({ error: "Invalid meetingId" }, { status: 400 });
+  }
+  const meetingId = Number(rawId);
+  const supabaseAdmin = getSupabaseAdminClient();
 
   try {
     // 1. Fetch current meta and video_url
