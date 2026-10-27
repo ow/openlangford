@@ -1,0 +1,1992 @@
+{
+  "note": "current meetings.minutes_url for the rows in plan['update']; restore by setting these values",
+  "rows": [
+    {
+      "id": 419,
+      "archive_path": "archive/langford/Administration & Finance Committee/2016/01/2016-01-12 445pm Administration & Finance Committee [gx-8fc4d6d5]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/8fc4d6d5-41e8-4c26-8c85-64bbfdfd0765"
+    },
+    {
+      "id": 519,
+      "archive_path": "archive/langford/Administration & Finance Committee/2016/03/2016-03-15 445pm Administration & Finance Committee [gx-4d235e26]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4d235e26-63e4-4579-b5d3-ca7710467ba2"
+    },
+    {
+      "id": 586,
+      "archive_path": "archive/langford/Administration & Finance Committee/2016/09/2016-09-13 445pm Administration & Finance Committee [gx-1a004fdf]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1a004fdf-75df-4292-9fff-4e8912be1fe2"
+    },
+    {
+      "id": 617,
+      "archive_path": "archive/langford/Administration & Finance Committee/2016/12/2016-12-13 445pm Administration & Finance Committee [gx-24c092f8]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/24c092f8-5aee-4418-a2d4-25ce7b71bb5a"
+    },
+    {
+      "id": 421,
+      "archive_path": "archive/langford/Administration & Finance Committee/2017/01/2017-01-10 445pm Administration & Finance Committee [gx-f9102340]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f9102340-22a1-4586-a266-eaa5ca7b6ff8"
+    },
+    {
+      "id": 424,
+      "archive_path": "archive/langford/Administration & Finance Committee/2017/02/2017-02-14 445pm Administration & Finance Committee [gx-265c066d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/265c066d-8628-4a48-b5d0-f261f31f4ac4"
+    },
+    {
+      "id": 527,
+      "archive_path": "archive/langford/Administration & Finance Committee/2017/04/2017-04-11 445pm Administration & Finance Committee [gx-1068ec92]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1068ec92-de8f-4f87-95f3-89e904d24e89"
+    },
+    {
+      "id": 538,
+      "archive_path": "archive/langford/Administration & Finance Committee/2017/05/2017-05-09 445pm Administration & Finance Committee [gx-cb3d7fae]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/cb3d7fae-131c-45dc-962b-aab09392af9e"
+    },
+    {
+      "id": 577,
+      "archive_path": "archive/langford/Administration & Finance Committee/2017/09/2017-09-12 445pm Administration & Finance Committee [gx-b14a7f52]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b14a7f52-f6e1-4268-ac38-f00c69d7ebf8"
+    },
+    {
+      "id": 447,
+      "archive_path": "archive/langford/Administration & Finance Committee/2018/02/2018-02-13 445pm Administration & Finance Committee [gx-62c524b3]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/62c524b3-ba46-48de-b05a-aa40666557b3"
+    },
+    {
+      "id": 537,
+      "archive_path": "archive/langford/Administration & Finance Committee/2018/03/2018-03-15 445pm Administration & Finance Committee [gx-0f7d22a1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/0f7d22a1-4ddc-4f08-9160-9c87ef23bb25"
+    },
+    {
+      "id": 548,
+      "archive_path": "archive/langford/Administration & Finance Committee/2018/04/2018-04-10 445pm Administration & Finance Committee [gx-bfaf9ddb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/bfaf9ddb-bf15-4acb-8b9b-072f3da5d86a"
+    },
+    {
+      "id": 572,
+      "archive_path": "archive/langford/Administration & Finance Committee/2018/09/2018-09-18 445pm Administration & Finance Committee [gx-3d74ea5c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3d74ea5c-c118-4a55-9556-d8ac9d5e3417"
+    },
+    {
+      "id": 433,
+      "archive_path": "archive/langford/Administration & Finance Committee/2019/01/2019-01-29 445pm Administration & Finance Committee [gx-32bc4382]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/32bc4382-3480-4cf7-87ff-53f054c8d58f"
+    },
+    {
+      "id": 452,
+      "archive_path": "archive/langford/Administration & Finance Committee/2019/04/2019-04-23 445pm Administration & Finance Committee [gx-5854b828]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5854b828-0f7c-4452-9411-da03a62670d8"
+    },
+    {
+      "id": 626,
+      "archive_path": "archive/langford/Administration & Finance Committee/2019/06/2019-06-11 445pm Administration & Finance Committee [gx-d7a903e9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d7a903e9-78f3-40b2-a9e7-31faef6962b5"
+    },
+    {
+      "id": 634,
+      "archive_path": "archive/langford/Administration & Finance Committee/2019/09/2019-09-10 445pm Administration & Finance Committee [gx-bdf578bc]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/bdf578bc-a04d-47c4-9884-b6d4971ad115"
+    },
+    {
+      "id": 541,
+      "archive_path": "archive/langford/Administration & Finance Committee/2020/02/2020-02-13 445pm Administration & Finance Committee [gx-fc09b4c6]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/fc09b4c6-3a52-4d3c-a7f2-d7bb84252698"
+    },
+    {
+      "id": 604,
+      "archive_path": "archive/langford/Administration & Finance Committee/2021/02/2021-02-09 445pm Administration & Finance Committee [gx-424cf211]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/424cf211-c5e6-497b-a61e-425b0174c20a"
+    },
+    {
+      "id": 646,
+      "archive_path": "archive/langford/Administration & Finance Committee/2021/09/2021-09-14 445pm Administration & Finance Committee [gx-cf41e2bb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/cf41e2bb-b9bb-4b97-93ba-6eb22d6d508a"
+    },
+    {
+      "id": 615,
+      "archive_path": "archive/langford/Administration & Finance Committee/2022/02/2022-02-08 445pm Administration & Finance Committee [gx-9ab5d753]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9ab5d753-fd50-4c08-bbee-a382fe78264e"
+    },
+    {
+      "id": 644,
+      "archive_path": "archive/langford/Administration & Finance Committee/2022/04/2022-04-20 530pm Administration & Finance Committee \u2013 Special [gx-669ca051]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/669ca051-1b04-4040-8611-b8896b26ece0"
+    },
+    {
+      "id": 744,
+      "archive_path": "archive/langford/Council/2008/12/2008-12-15 700pm Regular Council [gx-4372d5b1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4372d5b1-5b4f-4ec7-9d85-1858bf53f05b"
+    },
+    {
+      "id": 681,
+      "archive_path": "archive/langford/Council/2009/01/2009-01-19 700pm Regular Council [gx-f2072e39]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f2072e39-31a4-496f-8d34-a7ee4f8ae2c5"
+    },
+    {
+      "id": 687,
+      "archive_path": "archive/langford/Council/2009/02/2009-02-02 700pm Regular Council [gx-edc450c1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/edc450c1-4c13-4e7d-b0cc-835482cf6261"
+    },
+    {
+      "id": 693,
+      "archive_path": "archive/langford/Council/2009/02/2009-02-16 700pm Regular Council [gx-ae3d5e0b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ae3d5e0b-bf89-492f-950e-8c7b7da2451d"
+    },
+    {
+      "id": 733,
+      "archive_path": "archive/langford/Council/2009/02/2009-02-23 700pm Special Council [gx-28fea84a]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/28fea84a-8411-4f5e-a092-ab8f1483c92c"
+    },
+    {
+      "id": 701,
+      "archive_path": "archive/langford/Council/2009/03/2009-03-02 700pm Regular Council [gx-3958673b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3958673b-c1a1-47ea-81c2-8d81e4c30013"
+    },
+    {
+      "id": 736,
+      "archive_path": "archive/langford/Council/2009/03/2009-03-12 515pm Special Council [gx-4be33a53]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4be33a53-5753-42ef-bf14-dcda27345218"
+    },
+    {
+      "id": 743,
+      "archive_path": "archive/langford/Council/2009/03/2009-03-16 700pm Regular Council [gx-2bd63ccb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/2bd63ccb-34ba-40e7-a093-ff2addf95ee0"
+    },
+    {
+      "id": 714,
+      "archive_path": "archive/langford/Council/2009/04/2009-04-06 700pm Regular Council [gx-1e9fb951]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1e9fb951-3336-40a4-bbfc-5e12c6533bb8"
+    },
+    {
+      "id": 715,
+      "archive_path": "archive/langford/Council/2009/04/2009-04-20 700pm Regular Council [gx-1028a2a4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1028a2a4-8e56-4c8a-b20b-7e67de22d6a5"
+    },
+    {
+      "id": 756,
+      "archive_path": "archive/langford/Council/2009/05/2009-05-04 700pm Regular Council [gx-5f1a2bd9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5f1a2bd9-8360-4b62-ba33-9bb627c1ab08"
+    },
+    {
+      "id": 760,
+      "archive_path": "archive/langford/Council/2009/05/2009-05-11 500pm Special Council [gx-028bf323]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/028bf323-8e58-4152-9b4c-ee416e39499c"
+    },
+    {
+      "id": 718,
+      "archive_path": "archive/langford/Council/2009/05/2009-05-19 700pm Regular Council [gx-21b2d1b4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/21b2d1b4-fbdf-4313-98dc-7e0664546f0d"
+    },
+    {
+      "id": 764,
+      "archive_path": "archive/langford/Council/2009/06/2009-06-01 700pm Regular Council [gx-d0df7005]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d0df7005-2925-49c2-8a69-9c05f90451ec"
+    },
+    {
+      "id": 772,
+      "archive_path": "archive/langford/Council/2009/06/2009-06-15 700pm Regular Council [gx-a2d36dc8]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a2d36dc8-777d-4564-89da-4a3ddafc234d"
+    },
+    {
+      "id": 780,
+      "archive_path": "archive/langford/Council/2009/07/2009-07-20 700pm Regular Council [gx-fb69dcf0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/fb69dcf0-ba00-4335-ac9c-2ff96563c443"
+    },
+    {
+      "id": 788,
+      "archive_path": "archive/langford/Council/2009/08/2009-08-17 700pm Regular Council [gx-d304540e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d304540e-6142-417f-85ed-262f59a5aa8e"
+    },
+    {
+      "id": 794,
+      "archive_path": "archive/langford/Council/2009/09/2009-09-08 700pm Regular Council [gx-8cd441dd]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/8cd441dd-4cd9-4c0f-92dd-c104343cf676"
+    },
+    {
+      "id": 801,
+      "archive_path": "archive/langford/Council/2009/09/2009-09-21 700pm Regular Council [gx-99c9c08e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/99c9c08e-dbf7-4b06-ae1e-3b6ebd22c5ba"
+    },
+    {
+      "id": 808,
+      "archive_path": "archive/langford/Council/2009/10/2009-10-05 700pm Regular Council [gx-1287de00]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1287de00-d5e7-4a1e-a5bb-9c4c9eb022e7"
+    },
+    {
+      "id": 822,
+      "archive_path": "archive/langford/Council/2009/10/2009-10-07 500pm Special Council [gx-b515b2eb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b515b2eb-4e8b-4cd9-b7ed-25355cd3df51"
+    },
+    {
+      "id": 812,
+      "archive_path": "archive/langford/Council/2009/10/2009-10-19 700pm Regular Council [gx-9d37ec03]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9d37ec03-b678-4e9d-924f-977a4de10e87"
+    },
+    {
+      "id": 815,
+      "archive_path": "archive/langford/Council/2009/11/2009-11-02 700pm Regular Council [gx-6c6b7db9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6c6b7db9-acbe-402e-9878-ebc604ac3449"
+    },
+    {
+      "id": 819,
+      "archive_path": "archive/langford/Council/2009/11/2009-11-16 700pm Regular Council [gx-71ba2ef2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/71ba2ef2-a95c-4c7d-959c-ea3262535b9d"
+    },
+    {
+      "id": 821,
+      "archive_path": "archive/langford/Council/2009/12/2009-12-07 700pm Regular Council [gx-3b3b903e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3b3b903e-1b36-45df-8ef6-0ebf6215a262"
+    },
+    {
+      "id": 820,
+      "archive_path": "archive/langford/Council/2009/12/2009-12-15 430pm Special Council [gx-ad17f1b9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ad17f1b9-64de-4ee7-9935-48c990a542c3"
+    },
+    {
+      "id": 672,
+      "archive_path": "archive/langford/Council/2010/01/2010-01-18 700pm Regular Council [gx-1e2f95dd]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1e2f95dd-7294-4677-a94a-5edc5e0370a4"
+    },
+    {
+      "id": 676,
+      "archive_path": "archive/langford/Council/2010/02/2010-02-01 700pm Regular Council [gx-696c7b39]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/696c7b39-ddd0-4325-badc-982d8bc521ca"
+    },
+    {
+      "id": 680,
+      "archive_path": "archive/langford/Council/2010/02/2010-02-15 700pm Regular Council [gx-249addf1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/249addf1-6e44-4bce-956d-13ed0ac92274"
+    },
+    {
+      "id": 683,
+      "archive_path": "archive/langford/Council/2010/03/2010-03-01 700pm Regular Council [gx-ecbbaea8]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ecbbaea8-6edc-4fcc-9353-4a3b4ef575d4"
+    },
+    {
+      "id": 688,
+      "archive_path": "archive/langford/Council/2010/03/2010-03-15 700pm Regular Council [gx-23353e20]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/23353e20-6e38-479b-a82d-f8559f333b0b"
+    },
+    {
+      "id": 690,
+      "archive_path": "archive/langford/Council/2010/04/2010-04-06 700pm Regular Council [gx-144421fc]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/144421fc-aad7-4a68-a981-e069cbcecde4"
+    },
+    {
+      "id": 696,
+      "archive_path": "archive/langford/Council/2010/04/2010-04-19 700pm Regular Council [gx-fa7c9d0b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/fa7c9d0b-7bf7-40fc-b4ee-77990f54dd98"
+    },
+    {
+      "id": 700,
+      "archive_path": "archive/langford/Council/2010/05/2010-05-03 700pm Regular Council [gx-e7e06a1c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e7e06a1c-ab3f-4dfc-8537-82f0d09a5128"
+    },
+    {
+      "id": 704,
+      "archive_path": "archive/langford/Council/2010/05/2010-05-17 700pm Regular Council [gx-b72cc588]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b72cc588-d2d2-4a06-a693-98c02d2f943f"
+    },
+    {
+      "id": 705,
+      "archive_path": "archive/langford/Council/2010/06/2010-06-07 700pm Regular Council [gx-1bacd0df]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1bacd0df-fda3-4f3f-a959-6fa4fbe07bed"
+    },
+    {
+      "id": 709,
+      "archive_path": "archive/langford/Council/2010/06/2010-06-21 700pm Regular Council [gx-078a6055]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/078a6055-ecb6-41be-a852-937d6db60902"
+    },
+    {
+      "id": 712,
+      "archive_path": "archive/langford/Council/2010/07/2010-07-19 700pm Regular Council [gx-f29b7bd7]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f29b7bd7-d6d1-4517-b2fb-97bf88abe7fe"
+    },
+    {
+      "id": 722,
+      "archive_path": "archive/langford/Council/2010/08/2010-08-16 700pm Regular Council [gx-9a2bafb2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9a2bafb2-6a3c-464c-adb9-9c4c4e806852"
+    },
+    {
+      "id": 725,
+      "archive_path": "archive/langford/Council/2010/09/2010-09-07 700pm Regular Council [gx-10659a1b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/10659a1b-de95-4750-a1e9-cd79295aef4f"
+    },
+    {
+      "id": 726,
+      "archive_path": "archive/langford/Council/2010/09/2010-09-20 700pm Regular Council [gx-9bbe28a0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9bbe28a0-8e5f-4a72-87b3-068d8f099f7a"
+    },
+    {
+      "id": 729,
+      "archive_path": "archive/langford/Council/2010/09/2010-09-22 445pm Special Council [gx-a1750f88]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a1750f88-a215-47b1-93be-65b4c97197f8"
+    },
+    {
+      "id": 731,
+      "archive_path": "archive/langford/Council/2010/10/2010-10-04 700pm Regular Council [gx-d9183c89]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d9183c89-3416-4f06-b2f2-2d5fde52a67a"
+    },
+    {
+      "id": 732,
+      "archive_path": "archive/langford/Council/2010/10/2010-10-18 700pm Regular Council [gx-e673f2e3]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e673f2e3-be66-4cee-b5ae-504bdca8238c"
+    },
+    {
+      "id": 735,
+      "archive_path": "archive/langford/Council/2010/11/2010-11-01 700pm Regular Council [gx-9795c85b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9795c85b-83c9-4138-a649-192c8b97d85f"
+    },
+    {
+      "id": 740,
+      "archive_path": "archive/langford/Council/2010/11/2010-11-15 700pm Regular Council [gx-0cab5ccb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/0cab5ccb-ff50-4e6a-a95e-7e8d62a4be38"
+    },
+    {
+      "id": 750,
+      "archive_path": "archive/langford/Council/2010/12/2010-12-06 700pm Regular Council [gx-06cf8a63]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/06cf8a63-eb9b-4c06-a0df-1167fb6d2be3"
+    },
+    {
+      "id": 824,
+      "archive_path": "archive/langford/Council/2010/12/2010-12-20 700pm Regular Council [gx-12d2c1aa]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/12d2c1aa-3788-4945-939c-e75f12752236"
+    },
+    {
+      "id": 671,
+      "archive_path": "archive/langford/Council/2011/01/2011-01-04 700pm Regular Council [gx-7e04efa8]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7e04efa8-0edf-4a9a-b1b2-0301e52a9c25"
+    },
+    {
+      "id": 673,
+      "archive_path": "archive/langford/Council/2011/01/2011-01-17 700pm Regular Council [gx-ec993710]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ec993710-af82-4e2f-ba70-2c405b840e3d"
+    },
+    {
+      "id": 675,
+      "archive_path": "archive/langford/Council/2011/02/2011-02-07 700pm Regular Council [gx-14b92a0f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/14b92a0f-5b89-4f2f-b5d3-abf31690045f"
+    },
+    {
+      "id": 826,
+      "archive_path": "archive/langford/Council/2011/02/2011-02-21 700pm Regular Council [gx-859df1b2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/859df1b2-93c1-49b0-8f5f-d9a0a2c995e9"
+    },
+    {
+      "id": 684,
+      "archive_path": "archive/langford/Council/2011/03/2011-03-07 700pm Regular Council [gx-c8a82d17]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c8a82d17-80f9-4792-be9c-8c2c8d35f911"
+    },
+    {
+      "id": 686,
+      "archive_path": "archive/langford/Council/2011/03/2011-03-21 700pm Regular Council [gx-cb70e238]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/cb70e238-c013-485c-af62-faf711815c94"
+    },
+    {
+      "id": 691,
+      "archive_path": "archive/langford/Council/2011/04/2011-04-04 700pm Regular Council [gx-24137a67]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/24137a67-0476-4ee3-b5c2-9ec683d4a4d4"
+    },
+    {
+      "id": 694,
+      "archive_path": "archive/langford/Council/2011/04/2011-04-18 700pm Regular Council [gx-53e64382]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/53e64382-f5bd-4784-9c77-4f7b2fdb38fb"
+    },
+    {
+      "id": 697,
+      "archive_path": "archive/langford/Council/2011/05/2011-05-02 700pm Regular Council [gx-11f2ad37]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/11f2ad37-6eaf-4e12-a62b-caa2ef990c6f"
+    },
+    {
+      "id": 702,
+      "archive_path": "archive/langford/Council/2011/05/2011-05-16 700pm Regular Council [gx-318e7bca]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/318e7bca-0ab6-4a43-b012-b6097c8b0e00"
+    },
+    {
+      "id": 706,
+      "archive_path": "archive/langford/Council/2011/06/2011-06-20 700pm Regular Council [gx-43c14c5e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/43c14c5e-2d06-4253-8bbc-03a35282be23"
+    },
+    {
+      "id": 825,
+      "archive_path": "archive/langford/Council/2011/07/2011-07-18 700pm Regular Council [gx-a1c6663b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a1c6663b-cf9a-4b88-87bb-6b95ff486ab3"
+    },
+    {
+      "id": 823,
+      "archive_path": "archive/langford/Council/2011/08/2011-08-15 700pm Regular Council [gx-02e590be]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/02e590be-e266-4223-b7d5-b04bf2c0b3bf"
+    },
+    {
+      "id": 828,
+      "archive_path": "archive/langford/Council/2011/09/2011-09-06 700pm Regular Council [gx-d8b3bc28]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d8b3bc28-b1ad-4345-8fde-3b46aad91a6d"
+    },
+    {
+      "id": 833,
+      "archive_path": "archive/langford/Council/2011/09/2011-09-19 700pm Regular Council [gx-b9daaf02]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b9daaf02-f2ab-4e99-90f9-ec6dc0baae66"
+    },
+    {
+      "id": 830,
+      "archive_path": "archive/langford/Council/2011/10/2011-10-03 700pm Regular Council [gx-e961ab48]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e961ab48-67f3-43f6-b765-4901e4015b6f"
+    },
+    {
+      "id": 827,
+      "archive_path": "archive/langford/Council/2011/10/2011-10-17 700pm Regular Council [gx-2189b7c4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/2189b7c4-c7c1-40af-af34-454b357eef5a"
+    },
+    {
+      "id": 832,
+      "archive_path": "archive/langford/Council/2011/11/2011-11-21 700pm Regular Council [gx-fb3dea8f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/fb3dea8f-4586-4d4c-beaf-fc355bde8954"
+    },
+    {
+      "id": 837,
+      "archive_path": "archive/langford/Council/2011/12/2011-12-19 700pm Regular Council [gx-e9123789]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e9123789-fcba-4837-a08c-35bc33b7216c"
+    },
+    {
+      "id": 759,
+      "archive_path": "archive/langford/Council/2012/01/2012-01-16 700pm Regular Council [gx-ad3a5732]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ad3a5732-ce83-4681-b250-bf0bad5ae01b"
+    },
+    {
+      "id": 770,
+      "archive_path": "archive/langford/Council/2012/02/2012-02-06 700pm Regular Council [gx-70676187]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/70676187-3bf5-4220-9011-004cc3f4249c"
+    },
+    {
+      "id": 773,
+      "archive_path": "archive/langford/Council/2012/02/2012-02-20 700pm Regular Council [gx-3ccc925d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3ccc925d-a4b2-420b-abc3-5cb32b421795"
+    },
+    {
+      "id": 776,
+      "archive_path": "archive/langford/Council/2012/03/2012-03-05 700pm Regular Council [gx-7addf767]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7addf767-5d88-4eda-b3cf-adfbad6e8b9f"
+    },
+    {
+      "id": 778,
+      "archive_path": "archive/langford/Council/2012/03/2012-03-19 700pm Regular Council [gx-05290438]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/05290438-eb62-495f-9146-784ccef69f5d"
+    },
+    {
+      "id": 782,
+      "archive_path": "archive/langford/Council/2012/04/2012-04-02 700pm Regular Council [gx-caa79dec]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/caa79dec-2a92-4054-a7dc-ade9c1ec8492"
+    },
+    {
+      "id": 784,
+      "archive_path": "archive/langford/Council/2012/04/2012-04-16 700pm Regular Council [gx-53eb263b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/53eb263b-60db-4661-ad7f-7aa88a646969"
+    },
+    {
+      "id": 787,
+      "archive_path": "archive/langford/Council/2012/05/2012-05-07 700pm Regular Council [gx-c726f7fb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c726f7fb-8cbb-447a-8137-226eefa8c570"
+    },
+    {
+      "id": 791,
+      "archive_path": "archive/langford/Council/2012/05/2012-05-22 700pm Regular Council [gx-621a49b0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/621a49b0-b624-4f3f-adc7-eb3802741a0f"
+    },
+    {
+      "id": 797,
+      "archive_path": "archive/langford/Council/2012/05/2012-05-28 700pm Special Council [gx-75acb7db]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/75acb7db-f4dd-41e9-bd97-140f32e23e97"
+    },
+    {
+      "id": 800,
+      "archive_path": "archive/langford/Council/2012/06/2012-06-18 700pm Regular Council [gx-31674a9c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/31674a9c-8eb3-4da7-be47-20c235e10a3f"
+    },
+    {
+      "id": 803,
+      "archive_path": "archive/langford/Council/2012/07/2012-07-16 700pm Regular Council [gx-17af9316]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/17af9316-ecce-47a1-bdaf-37586a0bfc1e"
+    },
+    {
+      "id": 804,
+      "archive_path": "archive/langford/Council/2012/07/2012-07-26 900am Special Council [gx-68b96a81]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/68b96a81-a426-43f3-b5d6-89d9241b39a8"
+    },
+    {
+      "id": 805,
+      "archive_path": "archive/langford/Council/2012/08/2012-08-10 900am Special Council [gx-dfa0f969]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/dfa0f969-a9de-40ec-8f21-dde935455a5f"
+    },
+    {
+      "id": 831,
+      "archive_path": "archive/langford/Council/2012/08/2012-08-20 700pm Regular Council [gx-44bd8481]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/44bd8481-41f3-46dd-a0d5-5eabe3f51db2"
+    },
+    {
+      "id": 811,
+      "archive_path": "archive/langford/Council/2012/09/2012-09-04 700pm Regular Council [gx-e701d33f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e701d33f-f6fe-4786-9594-fb721056283a"
+    },
+    {
+      "id": 813,
+      "archive_path": "archive/langford/Council/2012/09/2012-09-17 700pm Regular Council [gx-4b601bbf]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4b601bbf-6103-4a49-b06b-917d3f0f8add"
+    },
+    {
+      "id": 814,
+      "archive_path": "archive/langford/Council/2012/10/2012-10-01 700pm Regular Council [gx-473d7a9e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/473d7a9e-dbfd-42a6-8fee-ede00c8eb9a9"
+    },
+    {
+      "id": 816,
+      "archive_path": "archive/langford/Council/2012/10/2012-10-15 700pm Regular Council [gx-a5b9e7f2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a5b9e7f2-42f6-41bf-bbdd-effbf4e04c43"
+    },
+    {
+      "id": 829,
+      "archive_path": "archive/langford/Council/2012/11/2012-11-05 700pm Regular Council [gx-08ed8e38]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/08ed8e38-2ec6-4fa9-86de-dc19596b5afd"
+    },
+    {
+      "id": 835,
+      "archive_path": "archive/langford/Council/2012/11/2012-11-19 700pm Regular Council [gx-7f2395d3]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7f2395d3-e34f-46be-9ab4-fe82ceed297e"
+    },
+    {
+      "id": 842,
+      "archive_path": "archive/langford/Council/2012/12/2012-12-03 700pm Regular Council [gx-6bd3a45e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6bd3a45e-53ba-49d7-89f3-93803b887579"
+    },
+    {
+      "id": 839,
+      "archive_path": "archive/langford/Council/2012/12/2012-12-17 700pm Regular Council [gx-b5f7d0eb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b5f7d0eb-293b-4252-9040-bdc0e3dbcb63"
+    },
+    {
+      "id": 670,
+      "archive_path": "archive/langford/Council/2013/01/2013-01-21 700pm Regular Council [gx-408d0936]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/408d0936-877f-4081-b054-cf531f44f66c"
+    },
+    {
+      "id": 677,
+      "archive_path": "archive/langford/Council/2013/02/2013-02-04 700pm Regular Council [gx-f4a303fa]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f4a303fa-ccec-4d0f-8390-fabefea25dc1"
+    },
+    {
+      "id": 678,
+      "archive_path": "archive/langford/Council/2013/02/2013-02-18 700pm Regular Council [gx-032f58a4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/032f58a4-4a68-45ed-a6c2-b7ac6f742af9"
+    },
+    {
+      "id": 682,
+      "archive_path": "archive/langford/Council/2013/03/2013-03-04 700pm Regular Council [gx-ce34c2d9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ce34c2d9-7df2-46d9-a046-d18b79003bd0"
+    },
+    {
+      "id": 685,
+      "archive_path": "archive/langford/Council/2013/03/2013-03-18 700pm Regular Council [gx-de8a7c89]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/de8a7c89-c77c-4c4f-ab31-13623b5c63dd"
+    },
+    {
+      "id": 689,
+      "archive_path": "archive/langford/Council/2013/04/2013-04-02 700pm Regular Council [gx-ec97d6d9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ec97d6d9-e93b-4a17-9376-4755895fa91d"
+    },
+    {
+      "id": 692,
+      "archive_path": "archive/langford/Council/2013/04/2013-04-15 700pm Regular Council [gx-0d3de893]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/0d3de893-b299-4529-b7c2-5e36c5fdc0d9"
+    },
+    {
+      "id": 695,
+      "archive_path": "archive/langford/Council/2013/05/2013-05-06 700pm Regular Council [gx-534f0fa1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/534f0fa1-0a3b-49bd-8d8b-861d926f5f8d"
+    },
+    {
+      "id": 698,
+      "archive_path": "archive/langford/Council/2013/05/2013-05-21 700pm Regular Council [gx-fc8ae125]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/fc8ae125-a010-4fa6-8d6a-9a51eebf1f1b"
+    },
+    {
+      "id": 703,
+      "archive_path": "archive/langford/Council/2013/06/2013-06-17 700pm Regular Council [gx-ec28f023]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ec28f023-8265-4a27-ab94-d1608b8ae60b"
+    },
+    {
+      "id": 708,
+      "archive_path": "archive/langford/Council/2013/07/2013-07-15 700pm Regular Council [gx-43ce2731]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/43ce2731-369e-45a0-9046-21e7a9328485"
+    },
+    {
+      "id": 739,
+      "archive_path": "archive/langford/Council/2013/08/2013-08-19 700pm Regular Council [gx-e1d95bc5]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e1d95bc5-c1c6-4320-8c85-c73b4ca68816"
+    },
+    {
+      "id": 741,
+      "archive_path": "archive/langford/Council/2013/09/2013-09-03 700pm Regular Council [gx-f2fd7eaf]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f2fd7eaf-4c5e-4ee6-906d-0363683cfec6"
+    },
+    {
+      "id": 834,
+      "archive_path": "archive/langford/Council/2013/10/2013-10-07 700pm Regular Council [gx-72304309]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/72304309-1938-4482-904f-664630b807df"
+    },
+    {
+      "id": 745,
+      "archive_path": "archive/langford/Council/2013/10/2013-10-21 700pm Regular Council [gx-da9a13da]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/da9a13da-e4f3-4498-acbc-cd8633df5e58"
+    },
+    {
+      "id": 746,
+      "archive_path": "archive/langford/Council/2013/11/2013-11-04 700pm Regular Council [gx-1dd35160]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1dd35160-817d-424d-9f37-8d77bb9c41bb"
+    },
+    {
+      "id": 747,
+      "archive_path": "archive/langford/Council/2013/11/2013-11-18 700pm Regular Council [gx-f24ecbf3]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f24ecbf3-21ec-4411-9801-95d92defcf5f"
+    },
+    {
+      "id": 748,
+      "archive_path": "archive/langford/Council/2013/12/2013-12-02 700pm Regular Council [gx-e320892d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e320892d-8a31-4a81-bf24-a030e5b7332a"
+    },
+    {
+      "id": 749,
+      "archive_path": "archive/langford/Council/2013/12/2013-12-16 700pm Regular Council [gx-54d0d36b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/54d0d36b-62d9-42a0-a4d5-55a8834f84a8"
+    },
+    {
+      "id": 757,
+      "archive_path": "archive/langford/Council/2014/01/2014-01-20 700pm Regular Council [gx-411cddba]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/411cddba-2c79-4140-9796-c9a3f4b47917"
+    },
+    {
+      "id": 758,
+      "archive_path": "archive/langford/Council/2014/02/2014-02-03 700pm Regular Council [gx-eb934f7a]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/eb934f7a-df23-4145-9451-41caf057db6b"
+    },
+    {
+      "id": 761,
+      "archive_path": "archive/langford/Council/2014/02/2014-02-17 700pm Regular Council [gx-1df1c999]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1df1c999-b6cb-4b1e-bffa-f6fc04bc01c9"
+    },
+    {
+      "id": 840,
+      "archive_path": "archive/langford/Council/2014/03/2014-03-03 700pm Regular Council [gx-e0b5aa1b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e0b5aa1b-5723-4b64-b7e7-8babbca67283"
+    },
+    {
+      "id": 845,
+      "archive_path": "archive/langford/Council/2014/03/2014-03-11 430pm Special Council [gx-1a2c0be9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1a2c0be9-019f-45bb-8628-8dc17da4fb31"
+    },
+    {
+      "id": 843,
+      "archive_path": "archive/langford/Council/2014/03/2014-03-17 700pm Regular Council [gx-c6caddd5]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c6caddd5-c844-4427-b660-9d200e59b773"
+    },
+    {
+      "id": 768,
+      "archive_path": "archive/langford/Council/2014/04/2014-04-07 700pm Regular Council [gx-b7c0c5d0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b7c0c5d0-a236-4839-ac1b-83709130584f"
+    },
+    {
+      "id": 769,
+      "archive_path": "archive/langford/Council/2014/04/2014-04-22 700pm Regular Council [gx-309ab095]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/309ab095-6d67-4681-a537-507db0aeb596"
+    },
+    {
+      "id": 771,
+      "archive_path": "archive/langford/Council/2014/05/2014-05-05 700pm Regular Council [gx-ae254487]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ae254487-b08c-4406-8a53-5104e6ea3d3c"
+    },
+    {
+      "id": 844,
+      "archive_path": "archive/langford/Council/2014/05/2014-05-20 700pm Regular Council [gx-97672d06]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/97672d06-4f15-42ec-9830-4e26e5898946"
+    },
+    {
+      "id": 777,
+      "archive_path": "archive/langford/Council/2014/05/2014-05-28 400pm Special Council [gx-527ee310]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/527ee310-1657-4a84-bdfd-9f520213064f"
+    },
+    {
+      "id": 846,
+      "archive_path": "archive/langford/Council/2014/06/2014-06-16 700pm Regular Council [gx-15d93ad4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/15d93ad4-ae09-40c3-9479-f3c8155f57f4"
+    },
+    {
+      "id": 783,
+      "archive_path": "archive/langford/Council/2014/06/2014-06-18 400pm Special Council [gx-c9df4ce6]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c9df4ce6-3ed9-48d3-8d73-4ad1f1900d18"
+    },
+    {
+      "id": 860,
+      "archive_path": "archive/langford/Council/2014/07/2014-07-14 400pm Special Council [gx-2e77b81a]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/2e77b81a-a1d8-4e9f-b43b-e4c814c980d2"
+    },
+    {
+      "id": 786,
+      "archive_path": "archive/langford/Council/2014/07/2014-07-21 700pm Regular Council [gx-d80e3ed0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d80e3ed0-b7d8-48fc-8615-3e80a4f2b782"
+    },
+    {
+      "id": 789,
+      "archive_path": "archive/langford/Council/2014/08/2014-08-18 700pm Regular Council [gx-5ded4248]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5ded4248-f106-4986-8ca2-4fc140b24b2c"
+    },
+    {
+      "id": 790,
+      "archive_path": "archive/langford/Council/2014/09/2014-09-02 700pm Regular Council [gx-486b9229]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/486b9229-8e76-44d1-b1a8-b6c213bd0f65"
+    },
+    {
+      "id": 793,
+      "archive_path": "archive/langford/Council/2014/09/2014-09-15 700pm Regular Council [gx-e436f697]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e436f697-f159-4dd1-b845-3100313c8802"
+    },
+    {
+      "id": 861,
+      "archive_path": "archive/langford/Council/2014/10/2014-10-06 700pm Regular Council [gx-adccbe7b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/adccbe7b-e41c-43ca-94f5-2c777d2cba3d"
+    },
+    {
+      "id": 798,
+      "archive_path": "archive/langford/Council/2014/10/2014-10-20 700pm Regular Council [gx-4f857d35]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4f857d35-6960-4793-b022-9aeb7c662836"
+    },
+    {
+      "id": 799,
+      "archive_path": "archive/langford/Council/2014/11/2014-11-03 700pm Regular Council [gx-420c116a]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/420c116a-64b3-4991-8880-1a558ed4a409"
+    },
+    {
+      "id": 802,
+      "archive_path": "archive/langford/Council/2014/11/2014-11-17 700pm Regular Council [gx-026ab0e3]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/026ab0e3-b0fc-4271-ae66-e5ba407bbec3"
+    },
+    {
+      "id": 849,
+      "archive_path": "archive/langford/Council/2014/12/2014-12-15 700pm Regular Council [gx-b6781fb3]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b6781fb3-27d1-47a8-b0c4-a2d48012cbdd"
+    },
+    {
+      "id": 751,
+      "archive_path": "archive/langford/Council/2015/01/2015-01-19 700pm Regular Council [gx-29d6b9c2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/29d6b9c2-36c9-4e99-84ea-ff9ea19b0521"
+    },
+    {
+      "id": 415,
+      "archive_path": "archive/langford/Council/2015/02/2015-02-02 700pm Regular Council [gx-08e1eefb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/08e1eefb-f802-4184-b5a4-2e2a98aa3df5"
+    },
+    {
+      "id": 752,
+      "archive_path": "archive/langford/Council/2015/02/2015-02-16 700pm Regular Council [gx-f648d7ea]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f648d7ea-90f8-4abf-8038-db32241ec448"
+    },
+    {
+      "id": 850,
+      "archive_path": "archive/langford/Council/2015/03/2015-03-02 700pm Regular Council [gx-7a7fbd9c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7a7fbd9c-5d83-4914-853e-d0cd04be121e"
+    },
+    {
+      "id": 755,
+      "archive_path": "archive/langford/Council/2015/03/2015-03-16 700pm Regular Council [gx-316659ec]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/316659ec-da34-4cf0-b9b4-94805f252df3"
+    },
+    {
+      "id": 763,
+      "archive_path": "archive/langford/Council/2015/03/2015-03-18 430pm Special Council [gx-c186eb93]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c186eb93-8e65-4e72-9e31-3fd58dc60483"
+    },
+    {
+      "id": 765,
+      "archive_path": "archive/langford/Council/2015/04/2015-04-07 700pm Regular Council [gx-4151aaae]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4151aaae-4b38-4b50-a575-632fa19c9fbf"
+    },
+    {
+      "id": 779,
+      "archive_path": "archive/langford/Council/2015/04/2015-04-20 700pm Regular Council [gx-d90f1c9c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d90f1c9c-a670-4d2e-8d8f-0a11b32fb52d"
+    },
+    {
+      "id": 792,
+      "archive_path": "archive/langford/Council/2015/05/2015-05-04 700pm Regular Council [gx-fa941720]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/fa941720-e409-4645-8e38-ffc8394e0418"
+    },
+    {
+      "id": 795,
+      "archive_path": "archive/langford/Council/2015/05/2015-05-19 700pm Regular Council [gx-c8125159]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c8125159-d6d0-48a6-b365-347f0c6e88d2"
+    },
+    {
+      "id": 848,
+      "archive_path": "archive/langford/Council/2015/06/2015-06-01 700pm Regular Council [gx-edfe6303]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/edfe6303-3633-44b7-b7c3-f86ea7eff5c2"
+    },
+    {
+      "id": 841,
+      "archive_path": "archive/langford/Council/2015/06/2015-06-15 700pm Regular Council [gx-fb7a688f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/fb7a688f-f4a6-4b7e-a285-b7d9b45fd6a9"
+    },
+    {
+      "id": 852,
+      "archive_path": "archive/langford/Council/2015/06/2015-06-30 1015am Special Council [gx-15fd57b2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/15fd57b2-1be8-4ac7-a856-9a8ec4056972"
+    },
+    {
+      "id": 851,
+      "archive_path": "archive/langford/Council/2015/07/2015-07-20 700pm Regular Council [gx-3b05445e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3b05445e-54bd-4fd0-9b84-302382a8d929"
+    },
+    {
+      "id": 856,
+      "archive_path": "archive/langford/Council/2015/08/2015-08-17 700pm Regular Council [gx-7f7b4456]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7f7b4456-26b9-4612-b223-13b221b7d9bc"
+    },
+    {
+      "id": 855,
+      "archive_path": "archive/langford/Council/2015/09/2015-09-08 700pm Regular Council [gx-acba5c7f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/acba5c7f-5baf-481e-954b-5a44ae31d2e3"
+    },
+    {
+      "id": 854,
+      "archive_path": "archive/langford/Council/2015/10/2015-10-05 700pm Regular Council [gx-3f0745ea]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3f0745ea-c6cb-4419-89d3-56568adfef03"
+    },
+    {
+      "id": 853,
+      "archive_path": "archive/langford/Council/2015/10/2015-10-19 700pm Regular Council [gx-5a09df6b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5a09df6b-9a91-4f9e-b213-000c4e281ac1"
+    },
+    {
+      "id": 858,
+      "archive_path": "archive/langford/Council/2015/11/2015-11-02 700pm Regular Council [gx-3babad6a]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3babad6a-e49d-4420-acda-e6cee0f94e1d"
+    },
+    {
+      "id": 859,
+      "archive_path": "archive/langford/Council/2015/11/2015-11-16 700pm Regular Council [gx-d0837cb1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d0837cb1-6df3-4665-b166-77ae45a65efc"
+    },
+    {
+      "id": 857,
+      "archive_path": "archive/langford/Council/2015/12/2015-12-07 700pm Regular Council [gx-29145685]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/29145685-66ce-4b86-9631-9168d407161a"
+    },
+    {
+      "id": 430,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2016/01/2016-01-25 500pm Parks, Recreation, Culture & Beautification Committee [gx-7e62d276]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7e62d276-d3a0-457e-be59-abccf4fffe9b"
+    },
+    {
+      "id": 529,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2016/04/2016-04-25 500pm Parks, Recreation, Culture & Beautification Committee [gx-6752a6fb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6752a6fb-81e6-42b1-bcaf-c66870b13c58"
+    },
+    {
+      "id": 592,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2016/09/2016-09-26 500pm Parks, Recreation, Culture & Beautification Committee [gx-93ec060d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/93ec060d-4f18-4ec6-8afd-b4d3112a7c9e"
+    },
+    {
+      "id": 612,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2016/11/2016-11-28 430pm Parks, Recreation, Culture & Beautification Committee [gx-7546f572]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7546f572-5663-448f-8d58-b63c29caabbd"
+    },
+    {
+      "id": 423,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2017/01/2017-01-26 500pm Parks, Recreation, Culture & Beautification Committee [gx-93d6add0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/93d6add0-520d-4db8-a411-c696f391c1b1"
+    },
+    {
+      "id": 434,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2017/02/2017-02-23 500pm Parks, Recreation, Culture & Beautification Committee [gx-bf93e210]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/bf93e210-6e08-4569-8d58-71642ecc043c"
+    },
+    {
+      "id": 533,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2017/04/2017-04-27 500pm Parks, Recreation, Culture & Beautification Committee [gx-606b3622]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/606b3622-082a-4341-818e-d7801cd1dd02"
+    },
+    {
+      "id": 570,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2017/08/2017-08-24 500pm Parks, Recreation, Culture & Beautification Committee [gx-9f12da08]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9f12da08-f30d-4329-a8ac-d4d585b53fa7"
+    },
+    {
+      "id": 599,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2017/11/2017-11-23 500pm Parks, Recreation, Culture & Beautification Committee [gx-29a0a9fb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/29a0a9fb-606e-4f0f-bf0c-68f898286594"
+    },
+    {
+      "id": 441,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2018/01/2018-01-24 500pm Parks, Recreation, Culture & Beautification Committee [gx-a4ace9f2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a4ace9f2-af75-4fdb-8076-02a8f12a6570"
+    },
+    {
+      "id": 448,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2018/02/2018-02-22 500pm Parks, Recreation, Culture & Beautification Committee [gx-3c87d81d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3c87d81d-36d2-4b71-ac91-5a8933f42cd7"
+    },
+    {
+      "id": 540,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2018/03/2018-03-22 500pm Parks, Recreation, Culture & Beautification Committee [gx-d08cbe45]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d08cbe45-e0d5-403b-98d7-17502cf59603"
+    },
+    {
+      "id": 555,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2018/05/2018-05-24 500pm Parks, Recreation, Culture & Beautification Committee [gx-80f08c44]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/80f08c44-122a-4420-a90c-ae99edbd9176"
+    },
+    {
+      "id": 420,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2019/01/2019-01-24 500pm Parks, Recreation, Culture & Beautification Committee [gx-90cc0e87]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/90cc0e87-71f4-487d-8fdc-d3a81b80102c"
+    },
+    {
+      "id": 629,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2019/07/2019-07-04 500pm Parks, Recreation, Culture & Beautification Committee [gx-f61e9656]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f61e9656-b917-4775-aa62-0b043252df1c"
+    },
+    {
+      "id": 641,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2019/11/2019-11-28 500pm Parks, Recreation, Culture & Beautification Committee [gx-4d070c6d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4d070c6d-f3ca-44e3-9cf1-e64f61499933"
+    },
+    {
+      "id": 522,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2020/01/2020-01-23 500pm Parks, Recreation, Culture & Beautification Committee [gx-ae1a01ce]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ae1a01ce-ef15-41f1-bf1c-bcd7ec7be9d3"
+    },
+    {
+      "id": 559,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2020/07/2020-07-23 500pm Parks, Recreation, Culture & Beautification Committee [gx-86bf57d6]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/86bf57d6-b688-4167-82cd-e8445ac39a18"
+    },
+    {
+      "id": 565,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2020/09/2020-09-24 500pm Parks, Recreation, Culture & Beautification Committee [gx-1de911bc]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1de911bc-21de-4bb5-b73c-4638b234c4c7"
+    },
+    {
+      "id": 581,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2020/11/2020-11-26 500pm Parks, Recreation, Culture & Beautification Committee [gx-cc379235]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/cc379235-99e6-4e94-b803-cd6f6aa74e2a"
+    },
+    {
+      "id": 596,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2021/01/2021-01-28 500pm Parks, Recreation, Culture & Beautification Committee [gx-708b0abc]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/708b0abc-76d4-4e1f-8243-27968879aa68"
+    },
+    {
+      "id": 638,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2021/06/2021-06-24 500pm Parks, Recreation, Culture & Beautification Committee [gx-999141df]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/999141df-7dd1-4a6d-bb8f-5292bd1bbdf3"
+    },
+    {
+      "id": 607,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2022/01/2022-01-27 500pm Parks, Recreation, Culture & Beautification Committee [gx-08874457]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/08874457-8eea-426f-9fe8-df4c7b95ad26"
+    },
+    {
+      "id": 653,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2022/04/2022-04-28 500pm Parks, Recreation, Culture & Beautification Committee [gx-c361d933]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c361d933-ed9c-489f-841a-8c1124143f09"
+    },
+    {
+      "id": 663,
+      "archive_path": "archive/langford/Parks, Recreation, Culture & Beautification Committee/2022/09/2022-09-22 500pm Parks, Recreation, Culture & Beautification Committee [gx-9919011f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9919011f-0987-4735-bc20-18aaa6e49979"
+    },
+    {
+      "id": 416,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/01/2016-01-11 700pm Planning, Zoning & Affordable Housing Committee [gx-1924541a]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1924541a-fa7f-4c14-89ea-0a2c3a6f5523"
+    },
+    {
+      "id": 446,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/02/2016-02-22 700pm Planning, Zoning & Affordable Housing Committee [gx-31424d85]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/31424d85-147d-4b33-b8f1-7787c7f0be58"
+    },
+    {
+      "id": 524,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/03/2016-03-29 700pm Planning, Zoning & Affordable Housing Committee [gx-33464088]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/33464088-353c-4bcb-b69a-180107cc023d"
+    },
+    {
+      "id": 526,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/04/2016-04-11 700pm Planning, Zoning & Affordable Housing Committee [gx-efda919d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/efda919d-c5a3-4375-a835-bc4708f0d24d"
+    },
+    {
+      "id": 531,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/05/2016-05-09 700pm Planning, Zoning & Affordable Housing Committee [gx-e865a6bf]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e865a6bf-e023-4be9-91a2-fc9635fba7e2"
+    },
+    {
+      "id": 554,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/06/2016-06-13 700pm Planning, Zoning & Affordable Housing Committee [gx-7cafa379]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7cafa379-9244-48ec-a8c4-b2b5669e79f4"
+    },
+    {
+      "id": 569,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/07/2016-07-11 700pm Planning, Zoning & Affordable Housing Committee [gx-354ce83c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/354ce83c-81e0-4235-9917-9a697a198d3a"
+    },
+    {
+      "id": 578,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/08/2016-08-08 500pm Planning, Zoning & Affordable Housing Committee [gx-f7ae5af9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f7ae5af9-2ae5-4301-9b64-51e83e7841c2"
+    },
+    {
+      "id": 584,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/09/2016-09-12 530pm Planning, Zoning & Affordable Housing Committee [gx-559c9588]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/559c9588-6f82-484d-9a41-939ae3e116b6"
+    },
+    {
+      "id": 594,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/10/2016-10-24 545pm Planning, Zoning & Affordable Housing Committee [gx-92285522]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/92285522-ae7a-4305-bc2f-36e5744c32bb"
+    },
+    {
+      "id": 606,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/11/2016-11-14 530pm Planning, Zoning & Affordable Housing Committee [gx-8a5ce826]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/8a5ce826-25f9-41a9-9fc7-21b724e245d6"
+    },
+    {
+      "id": 613,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2016/11/2016-11-28 530pm Planning, Zoning & Affordable Housing Committee [gx-3ee16fa0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3ee16fa0-cc30-42cc-b552-5966b0385ddb"
+    },
+    {
+      "id": 417,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/01/2017-01-09 530pm Planning, Zoning & Affordable Housing Committee [gx-4ec57c01]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/4ec57c01-09de-44f0-ad84-09316ded49a2"
+    },
+    {
+      "id": 428,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/02/2017-02-14 530pm Planning, Zoning & Affordable Housing Committee [gx-6fa53aaa]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6fa53aaa-fcd5-48ad-91e0-7e144ae2dcf6"
+    },
+    {
+      "id": 436,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/02/2017-02-27 530pm Planning, Zoning & Affordable Housing Committee [gx-d37e6599]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d37e6599-ff59-41f9-a5bc-d14dbf829fa0"
+    },
+    {
+      "id": 449,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/03/2017-03-27 530pm Planning, Zoning & Affordable Housing Committee [gx-ec20f3eb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ec20f3eb-9da8-4997-a0e3-af60d680432a"
+    },
+    {
+      "id": 525,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/04/2017-04-10 530pm Planning, Zoning & Affordable Housing Committee [gx-f452bf33]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f452bf33-6cd4-44d9-90ff-0ffa7ce5f34f"
+    },
+    {
+      "id": 535,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/05/2017-05-08 530pm Planning, Zoning & Affordable Housing Committee [gx-8139f021]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/8139f021-4e16-4fd0-a38e-39b47ade3bd0"
+    },
+    {
+      "id": 545,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/05/2017-05-29 530pm Planning, Zoning & Affordable Housing Committee [gx-27ed6d90]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/27ed6d90-7862-42bd-876a-6cf298ef4934"
+    },
+    {
+      "id": 547,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/06/2017-06-12 530pm Planning, Zoning & Affordable Housing Committee [gx-73c8ada5]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/73c8ada5-d06c-47fe-b47f-af9305ba71de"
+    },
+    {
+      "id": 557,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/07/2017-07-10 530pm Planning, Zoning & Affordable Housing Committee [gx-ecfa1c9b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ecfa1c9b-425e-49e8-97e5-d54af9248799"
+    },
+    {
+      "id": 561,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/07/2017-07-24 530pm Planning, Zoning & Affordable Housing Committee [gx-a8695c2e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a8695c2e-89c9-4745-90d2-47c78a2e4c14"
+    },
+    {
+      "id": 567,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/08/2017-08-21 530pm Planning, Zoning & Affordable Housing Committee [gx-bfb381b9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/bfb381b9-3635-4868-bc31-57e708f7e33d"
+    },
+    {
+      "id": 574,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/09/2017-09-11 530pm Planning, Zoning & Affordable Housing Committee [gx-cb1ca3b1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/cb1ca3b1-86b7-4c9e-8683-f23835a3cfda"
+    },
+    {
+      "id": 585,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/09/2017-09-25 530pm Planning, Zoning & Affordable Housing Committee [gx-f821f32f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f821f32f-1dcb-4ec8-80e3-0399bb13a3e4"
+    },
+    {
+      "id": 589,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/10/2017-10-23 530pm Planning, Zoning & Affordable Housing Committee [gx-168d5b0f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/168d5b0f-4e41-4bb5-a3a3-0673ae7ddca4"
+    },
+    {
+      "id": 595,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/11/2017-11-14 530pm Planning, Zoning & Affordable Housing Committee [gx-5258b121]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5258b121-f16d-42b7-8403-6af9b32c9e69"
+    },
+    {
+      "id": 603,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2017/12/2017-12-11 530pm Planning, Zoning & Affordable Housing Committee [gx-5f9cc1ca]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5f9cc1ca-9547-442e-b98d-e9f865e3366a"
+    },
+    {
+      "id": 429,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/01/2018-01-15 530pm Planning, Zoning & Affordable Housing Committee [gx-3d43444c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3d43444c-ee27-4546-aeca-9da844ae84cf"
+    },
+    {
+      "id": 530,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/03/2018-03-12 530pm Planning, Zoning & Affordable Housing Committee [gx-56b1ec3d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/56b1ec3d-7362-4ec4-a634-4f70a0d3bfbb"
+    },
+    {
+      "id": 542,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/03/2018-03-26 530pm Planning, Zoning & Affordable Housing Committee [gx-20b83736]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/20b83736-38be-4202-b3e9-7583da536a22"
+    },
+    {
+      "id": 546,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/04/2018-04-09 530pm Planning, Zoning & Affordable Housing Committee [gx-f58ced11]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f58ced11-5457-4566-b242-6bae48c05cd2"
+    },
+    {
+      "id": 549,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/04/2018-04-23 530pm Planning, Zoning & Affordable Housing Committee [gx-ccaf8482]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ccaf8482-89fe-4e83-b3a3-04d2ced64546"
+    },
+    {
+      "id": 552,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/05/2018-05-14 530pm Planning, Zoning & Affordable Housing Committee [gx-2a0643a4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/2a0643a4-7cd7-48f7-b30c-36135c4ee571"
+    },
+    {
+      "id": 558,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/06/2018-06-11 530pm Planning, Zoning & Affordable Housing Committee [gx-6f7b4505]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6f7b4505-9211-41b7-838a-be3a0e7a0957"
+    },
+    {
+      "id": 568,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/07/2018-07-09 530pm Planning, Zoning & Affordable Housing Committee [gx-cab5f775]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/cab5f775-2889-4878-aef5-9dd0c7824cf8"
+    },
+    {
+      "id": 576,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/11/2018-11-06 530pm Planning, Zoning & Affordable Housing Committee [gx-554478fb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/554478fb-4cdf-4d10-b076-09df607a407f"
+    },
+    {
+      "id": 580,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2018/11/2018-11-26 530pm Planning, Zoning & Affordable Housing Committee [gx-65da23ad]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/65da23ad-0f99-4ebb-84fb-a15b7ec5ade8"
+    },
+    {
+      "id": 431,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/01/2019-01-28 530pm Planning, Zoning & Affordable Housing Committee [gx-675f19b7]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/675f19b7-08d9-4722-af66-7f7ab64ed23a"
+    },
+    {
+      "id": 438,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/02/2019-02-25 530pm Planning, Zoning & Affordable Housing Committee [gx-87d67440]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/87d67440-d4a6-4225-bdef-44caf29efc0b"
+    },
+    {
+      "id": 442,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/04/2019-04-08 530pm Planning, Zoning & Affordable Housing Committee [gx-60e1e17b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/60e1e17b-2ffc-45df-bf86-cdc2d386ff6d"
+    },
+    {
+      "id": 621,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/05/2019-05-27 530pm Planning, Zoning & Affordable Housing Committee [gx-5bf9ac3f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5bf9ac3f-976f-4f98-a63d-ba33bac6b350"
+    },
+    {
+      "id": 625,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/06/2019-06-10 530pm Planning, Zoning & Affordable Housing Committee [gx-c993b595]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c993b595-8e2f-4d8b-a108-7a698d1acbc9"
+    },
+    {
+      "id": 628,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/06/2019-06-24 530pm Planning, Zoning & Affordable Housing Committee [gx-be0fb165]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/be0fb165-8d97-4fa0-a8fc-9a132c55103f"
+    },
+    {
+      "id": 412,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/07/2019-07-08 530pm Planning, Zoning & Affordable Housing Committee [gx-d4f11593]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d4f11593-bc3c-4650-9fb8-7317b5a49b92"
+    },
+    {
+      "id": 630,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/08/2019-08-26 530pm Planning, Zoning & Affordable Housing Committee [gx-73d5ed85]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/73d5ed85-ebd3-456f-9f1c-29f21474be66"
+    },
+    {
+      "id": 633,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/09/2019-09-09 530pm Planning, Zoning & Affordable Housing Committee [gx-b3caf3bb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b3caf3bb-1cb1-4f30-b7d5-69f77c647091"
+    },
+    {
+      "id": 635,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/10/2019-10-15 530pm Planning, Zoning & Affordable Housing Committee [gx-1a44c9cc]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1a44c9cc-5f1e-4284-989c-3e8873d85bb9"
+    },
+    {
+      "id": 636,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/10/2019-10-28 530pm Planning, Zoning & Affordable Housing Committee [gx-a20b35c0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a20b35c0-76e2-4ddc-a31e-ef1ecdd1b8f8"
+    },
+    {
+      "id": 668,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2019/12/2019-12-09 530pm Planning, Zoning & Affordable Housing Committee [gx-ca130339]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ca130339-30e7-4bb2-b7ab-22777a9d1137"
+    },
+    {
+      "id": 669,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/01/2020-01-13 530pm Planning, Zoning & Affordable Housing Committee [gx-94182850]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/94182850-e57b-4815-9ed8-9572f0a5dabd"
+    },
+    {
+      "id": 536,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/02/2020-02-10 530pm Planning, Zoning & Affordable Housing Committee [gx-cb25128c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/cb25128c-37cb-4be8-9a35-d891d8210133"
+    },
+    {
+      "id": 543,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/02/2020-02-24 530pm Planning, Zoning & Affordable Housing Committee [gx-5978a0e2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5978a0e2-8275-42c7-8d97-9b08b0a9a360"
+    },
+    {
+      "id": 550,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/03/2020-03-09 530pm Planning, Zoning & Affordable Housing Committee [gx-9f9eca68]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9f9eca68-c0dc-4178-a8d7-8c265945eae4"
+    },
+    {
+      "id": 562,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/09/2020-09-14 530pm Planning, Zoning & Affordable Housing Committee [gx-21e88fc1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/21e88fc1-9f40-4abe-ad4a-c2bfe9ad3521"
+    },
+    {
+      "id": 571,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/10/2020-10-26 530pm Planning, Zoning & Affordable Housing Committee [gx-3777b86e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3777b86e-fc2c-494f-9556-4db4a8871f45"
+    },
+    {
+      "id": 575,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/11/2020-11-23 530pm Planning, Zoning & Affordable Housing Committee [gx-c8fe52b5]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c8fe52b5-91d5-4dea-ae89-176aa658988c"
+    },
+    {
+      "id": 582,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2020/12/2020-12-14 530pm Planning, Zoning & Affordable Housing Committee [gx-22b80ac2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/22b80ac2-9762-46e2-b69b-3fc62caa9f74"
+    },
+    {
+      "id": 587,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/01/2021-01-11 530pm Planning, Zoning & Affordable Housing Committee [gx-2e60cd57]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/2e60cd57-2556-4d54-8f68-32c1a12c5a48"
+    },
+    {
+      "id": 598,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/02/2021-02-08 530pm Planning, Zoning & Affordable Housing Committee [gx-60d0483e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/60d0483e-5481-41c3-a514-0f873b43eaba"
+    },
+    {
+      "id": 611,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/03/2021-03-08 530pm Planning, Zoning & Affordable Housing Committee [gx-406c087f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/406c087f-213a-4c36-842e-220e34ea7438"
+    },
+    {
+      "id": 618,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/04/2021-04-12 530pm Planning, Zoning & Affordable Housing Committee [gx-5ef18cfd]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5ef18cfd-99f8-4871-9d6a-5f8848444b1d"
+    },
+    {
+      "id": 622,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/05/2021-05-03 530pm Planning, Zoning & Affordable Housing Committee [gx-bb458cb4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/bb458cb4-5d0d-46f6-b220-8cfc279e3a19"
+    },
+    {
+      "id": 631,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/06/2021-06-14 530pm Planning, Zoning & Affordable Housing Committee [gx-5f91884d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5f91884d-94e1-4326-a974-4eaf995fab74"
+    },
+    {
+      "id": 640,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/07/2021-07-12 530pm Planning, Zoning & Affordable Housing Committee [gx-dc45a020]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/dc45a020-d83f-4291-ab4d-5728c415675f"
+    },
+    {
+      "id": 642,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/08/2021-08-09 530pm Planning, Zoning & Affordable Housing Committee [gx-89ec2152]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/89ec2152-4dcb-4dcd-968d-b104204c8989"
+    },
+    {
+      "id": 645,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/09/2021-09-13 530pm Planning, Zoning & Affordable Housing Committee [gx-83a4218b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/83a4218b-85f3-492e-9cda-b58323dae6e8"
+    },
+    {
+      "id": 649,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/09/2021-09-27 530pm Planning, Zoning & Affordable Housing Committee [gx-eab7a6a4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/eab7a6a4-b8a6-4ebd-9ee2-e7ee111f2e26"
+    },
+    {
+      "id": 652,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/10/2021-10-12 530pm Planning, Zoning & Affordable Housing Committee [gx-a3ceeb51]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/a3ceeb51-3860-40c0-be57-f666b413b1f5"
+    },
+    {
+      "id": 654,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/11/2021-11-08 530pm Planning, Zoning & Affordable Housing Committee [gx-0cd51227]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/0cd51227-ab05-4cf6-b5dc-795e6ba3e433"
+    },
+    {
+      "id": 656,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/11/2021-11-29 530pm Planning, Zoning & Affordable Housing Committee [gx-b7b4b2ef]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b7b4b2ef-aab0-4bff-b574-7cc5a677fd48"
+    },
+    {
+      "id": 658,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2021/12/2021-12-13 530pm Planning, Zoning & Affordable Housing Committee \u2013 Special [gx-d0b5caf9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d0b5caf9-8bb4-49f7-821b-f232b5e919c8"
+    },
+    {
+      "id": 593,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/01/2022-01-17 530pm Planning, Zoning & Affordable Housing Committee [gx-e9a878d4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e9a878d4-e371-4f1e-97f0-0813ba74134c"
+    },
+    {
+      "id": 610,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/01/2022-01-31 530pm Planning, Zoning & Affordable Housing Committee [gx-94df18c1]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/94df18c1-73c2-4fe2-bf34-7d8ec9f79e87"
+    },
+    {
+      "id": 620,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/02/2022-02-14 530pm Planning, Zoning & Affordable Housing Committee [gx-e465c989]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e465c989-b4a0-4b58-a958-63814bf78a50"
+    },
+    {
+      "id": 623,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/02/2022-02-28 530pm Planning, Zoning & Affordable Housing Committee [gx-7a4e8260]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7a4e8260-c0f8-4481-82e0-02001754cab0"
+    },
+    {
+      "id": 632,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/03/2022-03-14 530pm Planning, Zoning & Affordable Housing Committee [gx-6761a64b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6761a64b-3f39-4855-aa6e-78acf160855f"
+    },
+    {
+      "id": 639,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/03/2022-03-28 530pm Planning, Zoning & Affordable Housing Committee [gx-88f6f609]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/88f6f609-b1e7-46f8-b9a4-36cd4f0258e1"
+    },
+    {
+      "id": 647,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/04/2022-04-25 530pm Planning, Zoning & Affordable Housing Committee [gx-e308a8ff]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e308a8ff-be8e-4f10-a9fa-5529f4ecdee5"
+    },
+    {
+      "id": 655,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/05/2022-05-09 530pm Planning, Zoning & Affordable Housing Committee [gx-760355fa]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/760355fa-666b-47cb-9658-800c839a0392"
+    },
+    {
+      "id": 657,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/05/2022-05-30 530pm Planning, Zoning & Affordable Housing Committee [gx-00070ea3]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/00070ea3-a37c-4394-a23e-f32705307c72"
+    },
+    {
+      "id": 659,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/06/2022-06-13 530pm Planning, Zoning & Affordable Housing Committee [gx-d98de3db]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d98de3db-4393-4902-9090-6122aadb29c5"
+    },
+    {
+      "id": 660,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/07/2022-07-11 530pm Planning, Zoning & Affordable Housing Committee [gx-aa4f7ab2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/aa4f7ab2-3a73-40f7-bb4f-9dfccab1ec44"
+    },
+    {
+      "id": 661,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/08/2022-08-08 530pm Planning, Zoning & Affordable Housing Committee [gx-d8f20a15]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d8f20a15-0606-4a0a-aa63-9b8bda6a45b4"
+    },
+    {
+      "id": 662,
+      "archive_path": "archive/langford/Planning, Zoning & Affordable Housing Committee/2022/08/2022-08-29 530pm Planning, Zoning & Affordable Housing Committee [gx-b8d53c6c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b8d53c6c-5fcd-4527-bc0e-ac9fa4fd4b4b"
+    },
+    {
+      "id": 432,
+      "archive_path": "archive/langford/Protective Services Committee/2016/01/2016-01-26 500pm Protective Services Committee [gx-1e27edb9]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1e27edb9-b418-4f9a-bfc6-49f817547508"
+    },
+    {
+      "id": 451,
+      "archive_path": "archive/langford/Protective Services Committee/2016/02/2016-02-23 500pm Protective Services Committee [gx-22ad55b0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/22ad55b0-3582-4724-aa9f-f3ec0b65e5c9"
+    },
+    {
+      "id": 551,
+      "archive_path": "archive/langford/Protective Services Committee/2016/05/2016-05-24 500pm Protective Services Committee [gx-2e43978d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/2e43978d-6d68-4076-803e-f89758b46bec"
+    },
+    {
+      "id": 600,
+      "archive_path": "archive/langford/Protective Services Committee/2016/10/2016-10-25 500pm Protective Services Committee [gx-52f3cd45]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/52f3cd45-2df4-4bf7-afd0-0c4e3a2e1538"
+    },
+    {
+      "id": 614,
+      "archive_path": "archive/langford/Protective Services Committee/2016/11/2016-11-29 500pm Protective Services Committee [gx-547ba605]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/547ba605-1dbf-4fef-b53c-57e9ba498ba3"
+    },
+    {
+      "id": 439,
+      "archive_path": "archive/langford/Protective Services Committee/2017/02/2017-02-28 500pm Protective Services Committee [gx-07c608ed]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/07c608ed-09c5-4e5c-96c4-0d114abdfef5"
+    },
+    {
+      "id": 520,
+      "archive_path": "archive/langford/Protective Services Committee/2017/03/2017-03-28 500pm Protective Services Committee [gx-92edf69c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/92edf69c-1a42-468a-8608-cef5f9770acc"
+    },
+    {
+      "id": 556,
+      "archive_path": "archive/langford/Protective Services Committee/2017/06/2017-06-27 500pm Protective Services Committee [gx-71d28e22]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/71d28e22-7c3c-4e66-b590-6137f77ed7aa"
+    },
+    {
+      "id": 579,
+      "archive_path": "archive/langford/Protective Services Committee/2017/09/2017-09-19 500pm Protective Services Committee [gx-39c9306e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/39c9306e-5cec-4e82-8920-b17779898bbc"
+    },
+    {
+      "id": 590,
+      "archive_path": "archive/langford/Protective Services Committee/2017/10/2017-10-24 500pm Protective Services Committee [gx-41fe60a7]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/41fe60a7-754a-43de-9da5-0a9c4919099d"
+    },
+    {
+      "id": 601,
+      "archive_path": "archive/langford/Protective Services Committee/2017/11/2017-11-28 500pm Protective Services Committee [gx-e4045011]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/e4045011-db9e-44ee-a19a-84ab72972a07"
+    },
+    {
+      "id": 435,
+      "archive_path": "archive/langford/Protective Services Committee/2018/01/2018-01-23 500pm Protective Services Committee [gx-51521695]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/51521695-913b-4810-9ad1-745025220c8b"
+    },
+    {
+      "id": 521,
+      "archive_path": "archive/langford/Protective Services Committee/2018/02/2018-02-27 300pm Protective Services Committee [gx-d6a86bf6]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d6a86bf6-9000-44a8-9046-7d54ed53f15b"
+    },
+    {
+      "id": 583,
+      "archive_path": "archive/langford/Protective Services Committee/2018/11/2018-11-27 500pm Protective Services Committee [gx-3fd77ab4]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3fd77ab4-6500-454c-b1e7-9c174eeaef1c"
+    },
+    {
+      "id": 437,
+      "archive_path": "archive/langford/Protective Services Committee/2019/01/2019-01-31 500pm Protective Services Committee [gx-f56372cd]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/f56372cd-44ac-465e-943c-8c09b701e169"
+    },
+    {
+      "id": 445,
+      "archive_path": "archive/langford/Protective Services Committee/2019/04/2019-04-11 500pm Protective Services Committee [gx-7c458c8a]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7c458c8a-539d-44ca-bdc4-5e814fbf8f19"
+    },
+    {
+      "id": 624,
+      "archive_path": "archive/langford/Protective Services Committee/2019/05/2019-05-28 500pm Protective Services Committee [gx-de49838c]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/de49838c-3afb-4186-9fdf-1aa8595eab34"
+    },
+    {
+      "id": 637,
+      "archive_path": "archive/langford/Protective Services Committee/2019/11/2019-11-26 500pm Protective Services Committee [gx-6f744bfa]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6f744bfa-c79b-4a9e-b232-a92c93857fe1"
+    },
+    {
+      "id": 523,
+      "archive_path": "archive/langford/Protective Services Committee/2020/01/2020-01-28 500pm Protective Services Committee [gx-5faa6aa2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5faa6aa2-5f96-4bc9-8df0-50d152ec0fe3"
+    },
+    {
+      "id": 560,
+      "archive_path": "archive/langford/Protective Services Committee/2020/07/2020-07-28 500pm Protective Services Committee [gx-de6590f2]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/de6590f2-dc80-4ad5-b2c9-2f152b4b1df0"
+    },
+    {
+      "id": 608,
+      "archive_path": "archive/langford/Protective Services Committee/2021/02/2021-02-11 500pm Protective Services Committee [gx-43b71775]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/43b71775-bfc6-4deb-9b26-747c8129b103"
+    },
+    {
+      "id": 651,
+      "archive_path": "archive/langford/Protective Services Committee/2021/09/2021-09-28 500pm Protective Services Committee [gx-af2cffa7]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/af2cffa7-525e-468c-8405-3ee6897b7867"
+    },
+    {
+      "id": 602,
+      "archive_path": "archive/langford/Protective Services Committee/2022/01/2022-01-25 500pm Protective Services Committee [gx-41b806b7]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/41b806b7-8459-4ae3-825b-3cc084b4ba2d"
+    },
+    {
+      "id": 650,
+      "archive_path": "archive/langford/Protective Services Committee/2022/04/2022-04-26 500pm Protective Services Committee [gx-237e8cee]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/237e8cee-e8da-4b47-a25e-ceccd18ed5e7"
+    },
+    {
+      "id": 443,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2016/02/2016-02-09 530pm Transportation & Public Works Committee [gx-2210a952]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/2210a952-c8c8-4423-a59b-c48184dc2da5"
+    },
+    {
+      "id": 528,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2016/04/2016-04-12 530pm Transportation & Public Works Committee [gx-1164db21]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1164db21-866b-419b-9b47-c198d159e71a"
+    },
+    {
+      "id": 544,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2016/05/2016-05-10 530pm Transportation & Public Works Committee [gx-6129e7d0]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6129e7d0-f7bb-407d-b383-7c71485f26f1"
+    },
+    {
+      "id": 563,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2016/06/2016-06-14 530pm Transportation & Public Works Committee [gx-5f63ce51]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/5f63ce51-9dfe-4451-917c-be4aedd05427"
+    },
+    {
+      "id": 588,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2016/09/2016-09-13 530pm Transportation & Public Works Committee [gx-6190c66f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6190c66f-f685-4cb8-929f-35aba93ebcd0"
+    },
+    {
+      "id": 609,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2016/11/2016-11-15 530pm Transportation & Public Works Committee [gx-0ab7fcdb]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/0ab7fcdb-68f7-4684-bdbf-8556f394f5c2"
+    },
+    {
+      "id": 619,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2016/12/2016-12-13 530pm Transportation & Public Works Committee [gx-ca98567b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/ca98567b-3602-4f44-a66a-9032e0a640ae"
+    },
+    {
+      "id": 539,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2017/05/2017-05-09 530pm Transportation & Public Works Committee [gx-6d5af6b6]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6d5af6b6-8bf0-464f-a5f0-926bb667839d"
+    },
+    {
+      "id": 597,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2017/11/2017-11-21 530pm Transportation & Public Works Committee [gx-707e032b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/707e032b-0598-4e4e-a905-1a8f88a45418"
+    },
+    {
+      "id": 534,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2018/03/2018-03-13 530pm Transportation & Public Works Committee [gx-9be86b8e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/9be86b8e-fa37-4dbc-98aa-7b9ef6ad3819"
+    },
+    {
+      "id": 564,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2018/06/2018-06-12 530pm Transportation & Public Works Committee [gx-1940f052]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/1940f052-3745-4d1f-b014-d5fa24072137"
+    },
+    {
+      "id": 573,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2018/09/2018-09-18 530pm Transportation & Public Works Committee [gx-6bb3698d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/6bb3698d-1037-4a32-ae57-b3d2410b1d73"
+    },
+    {
+      "id": 591,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2018/12/2018-12-11 530pm Transportation & Public Works Committee [gx-69b9246d]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/69b9246d-1a25-477b-963f-dd19a8dd2da1"
+    },
+    {
+      "id": 440,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2019/03/2019-03-12 530pm Transportation & Public Works Committee [gx-7f91458b]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/7f91458b-463d-4d0f-96b4-4675e16d7933"
+    },
+    {
+      "id": 444,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2019/04/2019-04-09 530pm Transportation & Public Works Committee [gx-712a91fc]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/712a91fc-e53a-4733-ac97-2d9ba68744dc"
+    },
+    {
+      "id": 532,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2020/01/2020-01-28 600pm Transportation & Public Works Committee [gx-63eb5f9f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/63eb5f9f-706e-450b-835f-dee319ca30fb"
+    },
+    {
+      "id": 553,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2020/03/2020-03-10 530pm Transportation & Public Works Committee [gx-3e8af23f]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/3e8af23f-8ad1-4d48-bda9-18121351f6ff"
+    },
+    {
+      "id": 566,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2020/10/2020-10-13 530pm Transportation & Public Works Committee [gx-b7103c01]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/b7103c01-c35a-4dce-8efb-814dc585a82a"
+    },
+    {
+      "id": 605,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2021/02/2021-02-09 530pm Transportation & Public Works Committee [gx-c41a6515]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/c41a6515-efd7-4bc4-b4fd-0ef190c5e8f8"
+    },
+    {
+      "id": 627,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2021/06/2021-06-08 530pm Transportation & Public Works Committee [gx-49d0128e]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/49d0128e-7619-4cb7-8f70-eaf0c13f3f0e"
+    },
+    {
+      "id": 648,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2021/09/2021-09-14 530pm Transportation & Public Works Committee [gx-d914b512]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/d914b512-e2db-49bb-9457-ffda3a5e0707"
+    },
+    {
+      "id": 616,
+      "archive_path": "archive/langford/Transportation & Public Works Committee/2022/02/2022-02-08 530pm Transportation & Public Works Committee [gx-8d3dc6dc]",
+      "old": null,
+      "new": "https://gspr.emc2.build/documents/8d3dc6dc-c52e-47c5-8af2-cec2aac44225"
+    }
+  ],
+  "conflicts": []
+}

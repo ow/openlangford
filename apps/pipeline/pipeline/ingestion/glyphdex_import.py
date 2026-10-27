@@ -27,6 +27,7 @@ import time
 import multiprocessing
 import signal
 import traceback
+from datetime import datetime
 
 import requests
 
@@ -114,6 +115,32 @@ def download_meeting(meeting: dict, archive_root: str, session=None, pause: floa
     with open(os.path.join(folder, "glyphdex.json"), "w", encoding="utf-8") as handle:
         json.dump(record, handle, indent=2)
     return {"folder": folder, "files": len(record["documents"])}
+
+
+def minutes_url_for_folder(folder: str) -> str | None:
+    """Glyphdex URL of the meeting's minutes document, from the folder's ``glyphdex.json`` (None if it has none)."""
+    try:
+        with open(os.path.join(folder, "glyphdex.json"), encoding="utf-8") as handle:
+            record = json.load(handle)
+    except (OSError, ValueError):
+        return None
+    urls = [d.get("archive_url") for d in record.get("documents", []) if d.get("category") == "Minutes" and d.get("archive_url")]
+    return urls[0] if urls else None
+
+
+def set_minutes_url(supabase, meeting_id, folder: str) -> str | None:
+    """Set ``meetings.minutes_url`` from the Glyphdex minutes URL (the ingester only fills ``agenda_url``
+    from the Agenda ``.url`` sidecar). Returns the URL written, or None."""
+    url = minutes_url_for_folder(folder)
+    if url:
+        supabase.table("meetings").update({"minutes_url": url}).eq("id", meeting_id).execute()
+    return url
+
+
+def archive_path_for(folder: str) -> str:
+    """Same value the ingester stores in ``meetings.archive_path`` (``archive/<slug>/...``)."""
+    abs_path = os.path.abspath(folder)
+    return abs_path[abs_path.find("/archive/") + 1:]
 
 
 def _sha256(path: str) -> str:
@@ -213,7 +240,6 @@ def main(argv=None):
     if args.ingest and args.workers > 1:
         return run_parallel(todo, archive_root, args.workers)
     import subprocess
-    from datetime import datetime
 
     report_path = os.path.join(archive_root, "reports", "glyphdex-import.jsonl")
     os.makedirs(os.path.dirname(report_path), exist_ok=True)
@@ -231,6 +257,11 @@ def main(argv=None):
                     code = subprocess.run(["uv", "run", "python", "main.py", "--target", result["folder"]],
                                           stdout=handle, stderr=subprocess.STDOUT).returncode
                 entry.update({"ingest_exit": code, "log": log})
+                if not code:
+                    row = (supabase.table("meetings").select("id").eq("archive_path", archive_path_for(result["folder"]))
+                           .limit(1).execute().data)
+                    if row:
+                        set_minutes_url(supabase, row[0]["id"], result["folder"])
                 if code:
                     failed += 1
                     print(f"      [!] ingest failed (exit {code}); see {log}", flush=True)
@@ -254,6 +285,27 @@ def split_by_meeting(meetings: list[dict], workers: int) -> list[list[dict]]:
     return [shard for shard in shards if shard]
 
 
+def collect_run_results(report_paths: list[str], since: str) -> tuple[list[int], int]:
+    """(meeting ids, failure count) from the shard reports, counting only entries whose ``at`` timestamp
+    (ISO, second resolution) is >= ``since``: the reports accumulate across runs."""
+    ids, failed = [], 0
+    for path in report_paths:
+        if not os.path.exists(path):
+            continue
+        with open(path) as handle:
+            for line in handle:
+                if not line.strip():
+                    continue
+                entry = json.loads(line)
+                if str(entry.get("at", "")) < since:
+                    continue
+                if entry.get("meeting_id"):
+                    ids.append(entry["meeting_id"])
+                else:
+                    failed += 1
+    return ids, failed
+
+
 def run_parallel(todo: list[dict], archive_root: str, workers: int):
     import subprocess
     import sys
@@ -264,6 +316,9 @@ def run_parallel(todo: list[dict], archive_root: str, workers: int):
     os.makedirs(reports, exist_ok=True)
     shards = split_by_meeting(todo, workers)
     with PipelineLock():  # scheduled runs wait (exit cleanly) until the backfill is done
+        # The shard .jsonl reports are appended to across runs (history is kept), so only entries stamped at or
+        # after this moment belong to this run (issue #66).
+        run_started = datetime.now().isoformat(timespec="seconds")
         children = []
         for i, shard in enumerate(shards):
             shard_file = os.path.join(reports, f"glyphdex-shard-{i}.json")
@@ -277,15 +332,8 @@ def run_parallel(todo: list[dict], archive_root: str, workers: int):
         for child, log in children:
             child.wait()
             log.close()
-        ids, failed = [], 0
-        for i in range(len(shards)):
-            path = os.path.join(reports, f"glyphdex-shard-{i}.jsonl")
-            for line in open(path) if os.path.exists(path) else []:
-                entry = json.loads(line)
-                if entry.get("meeting_id"):
-                    ids.append(entry["meeting_id"])
-                else:
-                    failed += 1
+        ids, failed = collect_run_results([os.path.join(reports, f"glyphdex-shard-{i}.jsonl") for i in range(len(shards))],
+                                          run_started)
         print(f"Ingested {len(ids)} meeting(s), {failed} failed. Running post-ingest stages once...", flush=True)
         if ids:
             from pipeline.orchestrator import Archiver, load_municipality
@@ -384,8 +432,6 @@ def ingest_guarded(ingester, folder: str, timeout: float = None, target=None) ->
 def run_shard(shard_file: str):
     """Child: download and ingest each meeting (each in its own watchdog child process; no pipeline lock,
     no post-ingest stages), and record it only once its meeting row and agenda items exist."""
-    from datetime import datetime
-
     from pipeline import config
     from pipeline.ingestion.ingester import MeetingIngester
     from pipeline.orchestrator import load_municipality
@@ -409,6 +455,7 @@ def run_shard(shard_file: str):
             if not row or not items:
                 raise RuntimeError("meeting not in the database after ingest" if not row else "meeting has no agenda items")
             entry["meeting_id"] = row[0]["id"]
+            set_minutes_url(ingester.supabase, row[0]["id"], folder)
         except Exception as error:  # one bad meeting never stops the shard
             entry["error"] = f"{type(error).__name__}: {error}"
             print(f"  [!] {entry['error']}", flush=True)

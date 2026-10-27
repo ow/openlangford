@@ -287,13 +287,19 @@ uv run python -m pipeline.ingestion.glyphdex_import --body "Committee" --from 20
 
 - **Provenance:** each PDF gets a `.url` sidecar pointing at Glyphdex's archived
   copy (stored as the document's `source_url`), and the meeting folder gets
-  `glyphdex.json` with Glyphdex ids, original filenames and SHA-256.
+  `glyphdex.json` with Glyphdex ids, original filenames and SHA-256. After each
+  successful ingest the importer sets `meetings.minutes_url` to the minutes
+  document's Glyphdex URL (the ingester itself only fills `agenda_url`). For
+  meetings imported earlier: `research/glyphdex/backfill_minutes_url.py`
+  (dry-run by default, `--apply` to write).
 - **Parallel mode** holds the pipeline lock for the whole run (scheduled runs
   exit cleanly until it's done). Workers ingest meetings directly, record a
   meeting only once its row and agenda items exist, and delete a meeting they
   created if its ingest fails, so rerunning the same command picks up exactly
   what's missing. Progress: `archive/langford/reports/glyphdex-shard-N.log` and
-  `.jsonl` (one line per meeting).
+  `.jsonl` (one line per meeting; appended across runs as history, but the
+  post-ingest stages and the "Ingested N meeting(s), M failed" line only count
+  entries stamped during the current run).
 - **Standing committees** become their own organizations (slug
   `2019-07-08-planning-zoning-affordable-housing-committee`). Their motions are
   recommendations to Council and there are no validated committee ballot rules,

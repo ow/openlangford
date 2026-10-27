@@ -99,3 +99,47 @@ def test_pre_2023_standing_committee_same_date_still_matches():
     rows = [_ours("2019-07-08", body, "Standing Committee", body)]
     assert matches_existing(_gx(body, "2019-07-08"), rows)
     assert not matches_existing(_gx(body, "2019-07-09"), rows)
+
+
+def test_collect_run_results_ignores_entries_from_earlier_runs(tmp_path):
+    import json
+
+    from pipeline.ingestion.glyphdex_import import collect_run_results
+
+    a, b = tmp_path / "s0.jsonl", tmp_path / "s1.jsonl"
+    rows = [{"at": "2026-10-20T09:00:00", "meeting_id": 1}, {"at": "2026-10-20T09:05:00", "error": "old"},
+            {"at": "2026-10-27T10:00:00", "meeting_id": 2}, {"at": "2026-10-27T10:30:00", "error": "boom"}]
+    a.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+    b.write_text(json.dumps({"at": "2026-10-27T11:00:00", "meeting_id": 3}) + "\n\n")
+    ids, failed = collect_run_results([str(a), str(b), str(tmp_path / "missing.jsonl")], "2026-10-27T10:00:00")
+    assert ids == [2, 3] and failed == 1
+
+
+def test_minutes_url_for_folder_uses_minutes_document(tmp_path):
+    import json
+    from unittest.mock import MagicMock
+
+    from pipeline.ingestion.glyphdex_import import minutes_url_for_folder, set_minutes_url
+
+    (tmp_path / "glyphdex.json").write_text(json.dumps({"documents": [
+        {"category": "Agenda", "archive_url": "https://gspr.emc2.build/documents/a"},
+        {"category": "Minutes", "archive_url": "https://gspr.emc2.build/documents/m"}]}))
+    assert minutes_url_for_folder(str(tmp_path)) == "https://gspr.emc2.build/documents/m"
+
+    sb = MagicMock()
+    assert set_minutes_url(sb, 5, str(tmp_path)) == "https://gspr.emc2.build/documents/m"
+    sb.table.return_value.update.assert_called_once_with({"minutes_url": "https://gspr.emc2.build/documents/m"})
+    sb.table.return_value.update.return_value.eq.assert_called_once_with("id", 5)
+
+
+def test_minutes_url_absent_when_no_minutes_or_no_record(tmp_path):
+    import json
+    from unittest.mock import MagicMock
+
+    from pipeline.ingestion.glyphdex_import import minutes_url_for_folder, set_minutes_url
+
+    assert minutes_url_for_folder(str(tmp_path)) is None
+    (tmp_path / "glyphdex.json").write_text(json.dumps({"documents": [{"category": "Agenda", "archive_url": "x"}]}))
+    sb = MagicMock()
+    assert set_minutes_url(sb, 5, str(tmp_path)) is None
+    sb.table.assert_not_called()
