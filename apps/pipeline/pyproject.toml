@@ -13,7 +13,7 @@ dependencies = [
     "playwright>=1.64.0",
     "psycopg2-binary>=2.9.11",
     "pydub>=0.25.1",
-    "pymupdf>=1.26.7",
+    "pymupdf==1.27.2.3",  # roster OCR receipts are bound to this exact build (fitz.VersionBind)
     "pytest>=9.0.2",
     "pytest-mock>=3.15.1",
     "python-dotenv>=1.2.1",
