@@ -414,6 +414,52 @@ def _child_ingest(folder: str, municipality_id) -> None:
     ingester.process_meeting(folder, force_update=True, force_refine=True)
 
 
+_CLEANUP_PAGE = 200
+# Direct meeting_id children, cheapest-first; transcript_identity_evidence is ON DELETE RESTRICT.
+_MEETING_CHILD_TABLES = ("transcript_identity_evidence", "meeting_events", "key_statements", "documents", "attendance",
+                         "public_speaker_names", "meeting_slug_history", "meeting_speaker_aliases")
+
+
+def _delete_in_pages(supabase, table, column, value):
+    """Delete rows of `table` where column == value in id-bounded pages, one request each, so no single
+    statement cascades far enough to hit the PostgREST statement timeout."""
+    while True:
+        ids = [r["id"] for r in supabase.table(table).select("id").eq(column, value).limit(_CLEANUP_PAGE).execute().data or []]
+        if not ids:
+            return
+        supabase.table(table).delete().in_("id", ids).execute()
+
+
+def cleanup_partial_meeting(supabase, path):
+    """Remove a partially ingested meeting table by table, each step its own request. A failing step is
+    logged and skipped so later steps still run; the meeting row is deleted last."""
+    rows = supabase.table("meetings").select("id").eq("archive_path", path).execute().data or []
+    for row in rows:
+        meeting_id = row["id"]
+
+        def step(label, fn):
+            try:
+                fn()
+            except Exception as error:
+                print(f"  [!] cleanup {label} for meeting {meeting_id} failed: {error}", flush=True)
+
+        def votes_and_motions():
+            while True:
+                motions = [r["id"] for r in supabase.table("motions").select("id").eq("meeting_id", meeting_id).limit(_CLEANUP_PAGE).execute().data or []]
+                if not motions:
+                    return
+                for motion_id in motions:
+                    _delete_in_pages(supabase, "votes", "motion_id", motion_id)
+                supabase.table("motions").delete().in_("id", motions).execute()
+
+        step("transcript_segments", lambda: _delete_in_pages(supabase, "transcript_segments", "meeting_id", meeting_id))
+        step("votes/motions", votes_and_motions)
+        for table in _MEETING_CHILD_TABLES:
+            step(table, lambda table=table: supabase.table(table).delete().eq("meeting_id", meeting_id).execute())
+        step("agenda_items", lambda: _delete_in_pages(supabase, "agenda_items", "meeting_id", meeting_id))
+        supabase.table("meetings").delete().eq("id", meeting_id).execute()
+
+
 def ingest_guarded(ingester, folder: str, timeout: float = None, target=None) -> None:
     """Ingest one meeting in a child process under a time budget. On failure or timeout a meeting row
     we created is deleted (a rerun must not think it was done); one that existed before is left alone."""
@@ -425,7 +471,10 @@ def ingest_guarded(ingester, folder: str, timeout: float = None, target=None) ->
         run_with_timeout(target, (folder, ingester.municipality_id), timeout)
     except Exception:
         if not before:
-            ingester.supabase.table("meetings").delete().eq("archive_path", path).execute()
+            try:
+                cleanup_partial_meeting(ingester.supabase, path)
+            except Exception as cleanup_error:  # never mask the original failure
+                print(f"  [!] cleanup of partial meeting {path} failed: {cleanup_error}", flush=True)
         raise
 
 

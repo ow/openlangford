@@ -52,6 +52,12 @@ def to_seconds(val):
     return None
 
 
+def motion_hold_applies(is_planned_meeting, classification, ballot_context):
+    """True when a non-Council body's ballot rules are unvalidated, so AI motions are held as unverified."""
+    return (not is_planned_meeting and classification not in ("Council", "Committee of the Whole")
+            and (ballot_context or {}).get("status") == "committee_membership_rules_need_validation")
+
+
 class MeetingIngester:
     def __init__(self, supabase_url, supabase_key, municipality_id=None):
         if not supabase_url or not supabase_key:
@@ -2203,11 +2209,12 @@ class MeetingIngester:
         initial_claim_inventory = ballot_context.get("meeting_claim_inventory")
         ballot_outcomes = Counter()
         canonical_report = {"status": "not_enabled_for_source"}
-        # Standing committees (pre-2023 Langford, backfilled from Glyphdex) have no validated membership
-        # or minutes rules yet. Their motions are recommendations that Council's own minutes decide on,
-        # so ingest the items and documents and hold every AI motion reading as unverified.
-        committee_hold = (not is_planned_meeting and classification == "Committee"
-                          and ballot_context.get("status") == "committee_membership_rules_need_validation")
+        # Any non-Council body whose ballot rules are not validated (standing committees backfilled from
+        # Glyphdex, advisory committees such as SDAC, boards such as Board of Variance) has no validated
+        # membership or minutes rules yet. Keyed on the ballot context status, not on body names: bodies
+        # with validated rules (Community Advisory Committee) get status "available" and stay canonical.
+        # Ingest items and documents and hold every AI motion reading as unverified.
+        committee_hold = motion_hold_applies(is_planned_meeting, classification, ballot_context)
         canonical_enabled = not is_planned_meeting and not committee_hold and (
             ballot_context.get("status") == "available" or "archive/langford/" in normalized_path.replace("\\", "/")
         )
@@ -2215,7 +2222,7 @@ class MeetingIngester:
             for item in refined.get("items", []):
                 item["_unverified_motion_proposals"] = item.pop("motions", None) or []
                 item["motions"] = []
-            print("  [i] Standing committee: motions held as unverified recommendations (no official ballot rules yet)")
+            print(f"  [i] {classification}: motions held as unverified proposals (no validated ballot rules for this body yet)")
         if canonical_enabled:
             if not valid_inventory(initial_claim_inventory, meeting_id):
                 raise RuntimeError("Complete current motion claims required before source writes")
