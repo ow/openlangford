@@ -31,8 +31,23 @@ def _surname_index(people):
     return surnames
 
 
+def _normalise_header_text(header):
+    """Undo letter-spacing and split ordinals without adding or guessing digits."""
+    def join_run(match):
+        joined = match.group(0).replace(' ', '')
+        joined = re.sub(r',(?=\S)', ', ', joined)
+        return re.sub(r'(?<=[A-Za-z])(?=\d)', ' ', joined)
+    # Five or more single characters separated by single spaces are a
+    # letter-spaced text layer ("M o n d a y , M a r c h 3 , 2 0 1 4").
+    header = re.sub(r'(?<!\S)\S(?: \S){4,}(?!\S)', join_run, header)
+    # Split ordinal suffixes ("3 r d", "7 t h") rejoin their digit.
+    return re.sub(r'(?<=\d)[ \t]*(s[ \t]*t|n[ \t]*d|r[ \t]*d|t[ \t]*h)(?![A-Za-z])',
+                  lambda m: re.sub(r'[ \t]', '', m.group(1)), header, flags=re.I)
+
+
 def _native_header_date(header):
     months = 'January|February|March|April|May|June|July|August|September|October|November|December'
+    header = _normalise_header_text(header)
     direct = re.search(r'\b(' + months + r')\s+(\d{1,2})(?:st|nd|rd|th)?\s*,?\s*(20\d{2})\b', header, re.I)
     if direct:
         date = datetime.strptime(' '.join(direct.groups()), '%B %d %Y').date()
@@ -41,13 +56,11 @@ def _native_header_date(header):
     # only accept the noisy suffix when the printed weekday independently fits.
     pattern = re.compile(
         r'\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[ \t]*,?[ \t]*('
-        + months + r')\s+(\d{1,2})([^\n\d]{1,12})\s*(20\d{2})\b', re.I,
+        + months + r')\s+(\d{1,2})((?<=\d\d)[17]H[ \t,]*|[ \t,stndrh^*"\'’`°º™0Oo]{1,12})\s*(20\d{2})\b', re.I,
     )
     candidates = []
     for match in pattern.finditer(header):
         weekday, month, day, suffix, year = match.groups()
-        if not re.fullmatch(r'''[ \t,stndrh^*"'’`°º]+''', suffix, re.I):
-            continue
         try:
             date = datetime.strptime(f'{month} {day} {year}', '%B %d %Y').date()
         except ValueError:
