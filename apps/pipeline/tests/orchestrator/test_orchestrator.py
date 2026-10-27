@@ -30,7 +30,7 @@ def mock_orchestrator_deps():
     """Patch all heavy external dependencies that orchestrator imports at module level."""
     with patch("pipeline.orchestrator.create_client") as mock_create, \
          patch("pipeline.orchestrator.LocalDiarizer") as mock_diarizer_cls, \
-         patch("pipeline.orchestrator.VimeoClient") as mock_vimeo_cls, \
+         patch("pipeline.orchestrator.get_video_client") as mock_vimeo_cls, \
          patch("pipeline.orchestrator.CivicWebScraper") as mock_scraper_cls:
 
         mock_diarizer = MagicMock()

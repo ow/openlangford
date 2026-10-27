@@ -25,6 +25,13 @@ SCANNED_PDF = os.path.join(
 )
 
 
+# Needs a local archive file (not tracked in the repo) and, for the OCR test, Marker model weights.
+pytestmark = pytest.mark.skipif(
+    not os.path.exists(SCANNED_PDF),
+    reason="local scanned-PDF fixture missing (viewroyal_archive is not tracked in the repo)",
+)
+
+
 @pytest.fixture(scope="module")
 def marker_converter():
     """Load Marker models once for the module (slow), skipping table processors."""

@@ -75,7 +75,7 @@ def test_review_clip_respects_selected_voice_and_review_window():
 
 
 def test_probable_self_id_is_only_a_name_screen():
-    assert probable_self_id("Hi, Lisa Doeball from Langford", "Jane Doe")
+    assert probable_self_id("Hi, Jayne Doeball from Langford", "Jane Doe")
     assert probable_self_id("Jane Doe, speaking to item 6", "Jane Doe")
     assert not probable_self_id("Lisa spoke after Mr. Doe", "Jane Doe")
 

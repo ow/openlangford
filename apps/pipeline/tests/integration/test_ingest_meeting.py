@@ -601,6 +601,60 @@ class TestIngestMeeting:
         assert not tables['transcript_segments'].insert.called
 
 
+def _claim_aware_context(tables, *contexts):
+    """Stand-in for prepare_ballot_context: like production, attach the meeting's current claim inventory.
+
+    The ingester refuses source writes without a complete inventory, and compares it with the rows it
+    reads, so the fake derives it from whatever _persisting_motions currently holds.
+    """
+    from pipeline.ingestion.source_claims import build_claim_inventory
+    remaining = list(contexts)
+    def prepare(*args, **kwargs):
+        context = remaining.pop(0) if len(remaining) > 1 else remaining[0]
+        rows = tables['motions'].store
+        return {**context, 'meeting_claim_inventory': build_claim_inventory(rows, meeting_id=693, expected_count=len(rows))}
+    return prepare
+
+
+def _persisting_motions(tables, initial):
+    """Write-through motions fake: updates and inserts return the persisted row, as PostgREST does.
+
+    The ingester verifies each returned row against the semantic claim it intended to write and then
+    re-reads the meeting's claim inventory, so a static mock cannot stand in for the table.
+    """
+    from copy import deepcopy
+    table = tables['motions']
+    store = table.store = [{'meeting_id': 693, **deepcopy(row)} for row in initial]
+    state = {'op': None, 'payload': None, 'id': None}
+    def update(data):
+        state.update(op='update', payload=deepcopy(data), id=None)
+        return table
+    def insert(data):
+        state.update(op='insert', payload=deepcopy(data), id=None)
+        return table
+    def eq(column, value):
+        if column == 'id':
+            state['id'] = value
+        return table
+    def execute():
+        op, payload = state['op'], state['payload']
+        state.update(op=None, payload=None)
+        if op == 'update':
+            row = next(row for row in store if row['id'] == state['id'])
+            row.update(payload)
+            return MagicMock(data=[deepcopy(row)], count=1)
+        if op == 'insert':
+            row = {**payload, 'id': max([entry['id'] for entry in store] + [3000]) + 1}
+            store.append(row)
+            return MagicMock(data=[deepcopy(row)], count=1)
+        return MagicMock(data=deepcopy(store), count=len(store))
+    table.update.side_effect = update
+    table.insert.side_effect = insert
+    table.eq.side_effect = eq
+    table.execute.side_effect = execute
+    return store
+
+
 def _capture_vote_rows(table, initial, fail_after=None):
     """A persistence fake stores writes; it has no ballot-validation behavior."""
     from copy import deepcopy
@@ -660,10 +714,10 @@ def test_ordinary_ingest_persists_complete_ballot_or_holds_conflicting_history(i
     if model_omits:
         template['motions']=[]
     refinement['items']=[template]
-    tables['motions'].execute.return_value=MagicMock(data=[{'plain_english_summary':'Existing readable summary','disposition':'Substantive','time_offset_seconds':1234,'financial_cost':10,'id':3001,'agenda_item_id':5001,'text_content':TEXT,'result':'CARRIED','meta':{'individual_vote_coverage':'named_only','unrelated':'preserved'}}],count=1)
+    _persisting_motions(tables,[{'plain_english_summary':'Existing readable summary','disposition':'Substantive','time_offset_seconds':1234,'financial_cost':10,'id':3001,'agenda_item_id':5001,'text_content':TEXT,'result':'CARRIED','meta':{'individual_vote_coverage':'named_only','unrelated':'preserved'}}])
     old=[{'id':7,'motion_id':3001,'person_id':21,'vote':'No','recusal_reason':None}] if prior_conflict else []
     persisted_votes = _capture_vote_rows(tables['votes'], old, fail_after)
-    with patch('pipeline.ingestion.ingester.prepare_ballot_context',return_value=context),patch.object(ing,'_ingest_documents',return_value=0),patch.object(ing,'_ingest_document_sections'),patch.object(ing,'_geocode_agenda_items',return_value=0):
+    with patch('pipeline.ingestion.ingester.prepare_ballot_context',side_effect=_claim_aware_context(tables,context)),patch.object(ing,'_ingest_documents',return_value=0),patch.object(ing,'_ingest_document_sections'),patch.object(ing,'_geocode_agenda_items',return_value=0):
         if fail_after is None:
             ing.process_meeting(str(populated_archive),precomputed_refinement=refinement)
         else:
@@ -740,12 +794,12 @@ def test_source_revision_preserves_unmapped_legacy_rows_and_holds_old_complete_c
     # The current official source says 2269; the legacy stored motion says 2270.
     old_meta = {'individual_vote_coverage':'reconstructed_complete', 'unrelated':'keep',
                 'ballot_reconstruction':{'source_sha256':'old-source-sha'},'vote_record':{'coverage':'reconstructed_complete'}}
-    tables['motions'].execute.return_value = MagicMock(data=[{
+    _persisting_motions(tables, [{
         'id':309, 'agenda_item_id':5001, 'text_content':TEXT.replace('2269','2270'),
         'meta':old_meta, 'result':'CARRIED', 'updated_at':'2026-10-01T00:00:00Z',
-    }], count=1)
+    }])
     tables['votes'].execute.return_value = MagicMock(data=[{'id':7,'motion_id':309,'person_id':21,'vote':'Yes'}])
-    with patch('pipeline.ingestion.ingester.prepare_ballot_context', return_value=context), \
+    with patch('pipeline.ingestion.ingester.prepare_ballot_context', side_effect=_claim_aware_context(tables, context)), \
          patch.object(ing,'_ingest_documents',return_value=0), \
          patch.object(ing,'_ingest_document_sections'), \
          patch.object(ing,'_geocode_agenda_items',return_value=0):
@@ -783,8 +837,8 @@ def test_canonical_dry_run_reports_actual_existing_motion_without_writes(ingeste
     ing, tables = ingester
     _setup_supabase_responses(tables)
     context = official_context(tmp_path/'native', meeting_id=693, source_date='November 18, 2025')
-    tables['motions'].execute.return_value = MagicMock(data=[{'id':309,'agenda_item_id':5001,'text_content':TEXT,'meta':{}}], count=1)
-    with patch('pipeline.ingestion.ingester.prepare_ballot_context',return_value=context), \
+    _persisting_motions(tables, [{'id':309,'agenda_item_id':5001,'text_content':TEXT,'meta':{}}])
+    with patch('pipeline.ingestion.ingester.prepare_ballot_context',side_effect=_claim_aware_context(tables,context)), \
          patch.object(ing,'_ingest_documents',return_value=0):
         result = ing.process_meeting(str(populated_archive),dry_run=True,precomputed_refinement=deepcopy(meeting_693_refinement))
     canonical = [motion for item in result['items'] for motion in item['motions']]
@@ -815,11 +869,7 @@ def test_only_finished_current_source_receipt_can_skip_a_cached_ingestion(
     tables['meetings'].execute.return_value = MagicMock(data=[{'id':693,'status':'Completed','has_agenda':True,'has_minutes':True,'has_transcript':True,'meta':{'motion_source_ingestion':receipt},'meeting_date':'2025-11-17','title':'Corrected Council title','type':'Special Council','organization_id':777,'archive_path':'archive/langford/Council/2025/meeting','organization':{'classification':'Council'}}], count=1)
     legacy_present = cache_present
     legacy = [{'id':309,'agenda_item_id':5001,'text_content':TEXT,'result':'CARRIED','meta':{}}] if legacy_present else []
-    tables['motions'].execute.return_value = MagicMock(data=legacy,count=len(legacy))
-    def insert_motion(data):
-        tables['motions'].execute.return_value=MagicMock(data=[{'id':3001}],count=1)
-        return tables['motions']
-    tables['motions'].insert.side_effect = insert_motion
+    _persisting_motions(tables, legacy)
     _capture_vote_rows(tables['votes'], [])
     tables['transcript_segments'].execute.return_value=MagicMock(data=[{'id':789}])
     from copy import deepcopy
@@ -829,7 +879,7 @@ def test_only_finished_current_source_receipt_can_skip_a_cached_ingestion(
          patch('pipeline.ingestion.ingester.parser.extract_meeting_metadata',side_effect=AssertionError('Fact-only identity must come from the stored catalog')), \
          patch('pipeline.ingestion.ingester.BASE_DIR',source_root), \
          patch('pipeline.ingestion.ingester.refine_meeting_data',side_effect=AssertionError('Source-only refresh must not buy new AI enrichment')), \
-         patch('pipeline.ingestion.ingester.prepare_ballot_context',side_effect=[context, changed_context] if receipt_status=='changed_context' else None, return_value=context) as context_loader, \
+         patch('pipeline.ingestion.ingester.prepare_ballot_context',side_effect=_claim_aware_context(tables, context, changed_context) if receipt_status=='changed_context' else _claim_aware_context(tables, context)) as context_loader, \
          patch.object(ing,'get_raw_texts',return_value=((populated_archive/'agenda.md').read_text(),(populated_archive/'minutes.md').read_text(),'')), \
          patch.object(ing,'_ingest_documents',return_value=0), \
          patch.object(ing,'_ingest_document_sections'), \
@@ -849,7 +899,7 @@ def test_only_finished_current_source_receipt_can_skip_a_cached_ingestion(
         assert result['meeting']['organization_id'] == 777
         finished = [call.args[0]['meta'] for call in tables['meetings'].update.call_args_list
                     if 'motion_source_ingestion' in call.args[0].get('meta', {})][-1]
-        assert finished['motion_source_ingestion']['validation_inputs']['version'] == 2
+        assert finished['motion_source_ingestion']['validation_inputs']['version'] == 3
         assert 'hold_reasons' in finished['motion_source_ingestion']['ballot_validation']
         tables['meetings'].execute.return_value = MagicMock(data=[{'id':693,'status':'Completed','has_agenda':True,
             'has_minutes':True,'has_transcript':True,'meta':finished,'meeting_date':'2025-11-17','title':'Corrected Council title','type':'Special Council','organization_id':777,'archive_path':'archive/langford/Council/2025/meeting','organization':{'classification':'Council'}}], count=1)

@@ -352,12 +352,14 @@ class TestUpsertStance:
         assert row["confidence"] == "low"
 
 
-# ── Snapshot Testing for Stance Structure ───────────────────────────────
+# ── Stance row structure ────────────────────────────────────────────────
+# Explicit expected rows rather than syrupy snapshots: apps/pipeline/.gitignore excludes
+# __snapshots__/, so snapshot files never exist on a fresh checkout or CI.
 
 
 class TestStanceStructureSnapshot:
-    def test_stance_output_structure(self, snapshot):
-        """Verify the processed stance output structure matches snapshot."""
+    def test_stance_output_structure(self):
+        """Verify the processed stance output structure."""
         # This is the kind of response the model returns
         raw_response = json.dumps({
             "position": "supports",
@@ -387,10 +389,22 @@ class TestStanceStructureSnapshot:
             "confidence": confidence,
         }
 
-        assert output == snapshot
+        assert output == {
+            "person_id": 35,
+            "topic": "Environment",
+            "position": "supports",
+            "position_score": 0.75,
+            "summary": "Councillor Smith has consistently supported environmental initiatives, voting in favor of climate action plans and speaking positively about park improvements.",
+            "evidence_quotes": [
+                {"text": "We need to invest more in our parks", "meeting_date": "2025-06-15", "segment_id": None},
+                {"text": "Climate action is a priority for our community", "meeting_date": "2025-07-20", "segment_id": None},
+            ],
+            "statement_count": 10,
+            "confidence": "high",
+        }
 
-    def test_low_confidence_stance_structure(self, snapshot):
-        """Verify low-confidence stance output matches snapshot."""
+    def test_low_confidence_stance_structure(self):
+        """Verify low-confidence stance output structure."""
         raw_response = json.dumps({
             "position": "neutral",
             "position_score": 0.1,
@@ -415,7 +429,18 @@ class TestStanceStructureSnapshot:
             "confidence": confidence,
         }
 
-        assert output == snapshot
+        assert output == {
+            "person_id": 40,
+            "topic": "Transportation",
+            "position": "neutral",
+            "position_score": 0.1,
+            "summary": "Limited data suggests Councillor Jones may lean towards supporting transportation improvements, but evidence is insufficient for a definitive position.",
+            "evidence_quotes": [
+                {"text": "The road needs repair", "meeting_date": "2025-03-10", "segment_id": None},
+            ],
+            "statement_count": 1,
+            "confidence": "low",
+        }
 
 
 # ── Topics constant ─────────────────────────────────────────────────────

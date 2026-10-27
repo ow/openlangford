@@ -64,8 +64,11 @@ def read(case):
                                       project_ref='test-project',municipality_id=1)
 
 
-def test_scan_requires_explicit_review_and_never_emits_actors_attendance_or_votes(scan_review):
+def test_scan_requires_explicit_review_and_never_emits_actors_attendance_or_votes(scan_review,monkeypatch):
     meeting,review,root=scan_review
+    # The shared pdf_text path now falls back to Marker OCR for scans. Here OCR yields nothing usable
+    # (and the test must not load Marker models), so only the explicit review can supply source text.
+    monkeypatch.setattr('pipeline.parser.get_pdf_text_ocr',lambda path:'')
     original=load_official_minutes(meeting,root=root,people=[],cache_dir=root/'cache')
     assert original['error']=='pdf_requires_ocr'
     source=read(scan_review)
