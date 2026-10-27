@@ -11,7 +11,7 @@ sys.path.append(
 )
 
 from dotenv import load_dotenv
-from supabase import create_client
+from pipeline.supabase_client import create_client
 from pydantic import BaseModel, Field
 from pipeline import ai
 

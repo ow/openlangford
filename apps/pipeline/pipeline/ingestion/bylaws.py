@@ -3,7 +3,7 @@ import os
 import re
 
 from dotenv import load_dotenv
-from supabase import create_client
+from pipeline.supabase_client import create_client
 
 from pipeline import ai
 from pipeline.ingestion.bylaw_text import chunk_text, extract_text_from_pdf

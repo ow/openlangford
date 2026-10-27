@@ -264,7 +264,7 @@ def _meeting_folder(m: dict) -> str:
 
 
 def _new_client():
-    from supabase import create_client
+    from pipeline.supabase_client import create_client
 
     from pipeline import config
 

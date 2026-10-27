@@ -45,7 +45,7 @@ def download_bylaw(url, title, folder):
 
     print(f"[*] Downloading: {filename}")
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, timeout=30)
         response.raise_for_status()
         with open(filepath, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
@@ -65,7 +65,7 @@ def scrape_bylaws():
 
     try:
         print(f"[*] Fetching index...")
-        response = requests.get(BYLAWS_URL)
+        response = requests.get(BYLAWS_URL, timeout=30)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.content, "html.parser")

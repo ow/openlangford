@@ -379,7 +379,7 @@ def format_summary(s: BylawSummary) -> str:
 
 def _client():
     from dotenv import load_dotenv
-    from supabase import create_client
+    from pipeline.supabase_client import create_client
 
     load_dotenv()
     url, key = os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_SECRET_KEY")

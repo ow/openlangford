@@ -1,12 +1,18 @@
-from pipeline.ingestion.glyphdex_import import folder_for, group_meetings, matches_existing, split_by_year
+from pipeline.ingestion.glyphdex_import import folder_for, group_meetings, matches_existing, split_by_meeting
 
 
-def test_split_by_year_keeps_years_together_and_balances():
-    meetings = [{"date": f"{y}-0{m}-01", "time": "1900"} for y, n in ((2016, 5), (2017, 3), (2018, 2)) for m in range(1, n + 1)]
-    shards = split_by_year(meetings, 2)
-    years = [{m["date"][:4] for m in shard} for shard in shards]
-    assert all(not (a & b) for i, a in enumerate(years) for b in years[i + 1:])
-    assert sorted(len(s) for s in shards) == [5, 5]
+def test_split_by_meeting_round_robins_by_date_and_balances():
+    meetings = [{"date": f"{y}-0{m}-01", "time": "1900", "body": "Council"}
+                for y, n in ((2016, 5), (2017, 3), (2018, 2)) for m in range(1, n + 1)]
+    shards = split_by_meeting(meetings[::-1], 3)
+    assert sorted(len(s) for s in shards) == [3, 3, 4]
+    for shard in shards:  # each shard stays in date order, and years are mixed across workers
+        assert [m["date"] for m in shard] == sorted(m["date"] for m in shard)
+        assert len({m["date"][:4] for m in shard}) > 1
+
+
+def test_split_by_meeting_more_workers_than_meetings():
+    assert len(split_by_meeting([{"date": "2020-01-01", "time": "1900", "body": "Council"}], 4)) == 1
 
 
 def test_group_and_folder_names():

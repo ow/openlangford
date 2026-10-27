@@ -283,7 +283,7 @@ def ingest_meeting_attachments(supabase, meeting: dict, meeting_folder: str, *, 
         # The sync supabase client isn't thread-safe; give each extraction thread its own.
         if not hasattr(local, "client"):
             from pipeline import config as pipeline_config
-            from supabase import create_client
+            from pipeline.supabase_client import create_client
 
             local.client = create_client(
                 pipeline_config.SUPABASE_URL, pipeline_config.SUPABASE_SECRET_KEY or pipeline_config.SUPABASE_KEY

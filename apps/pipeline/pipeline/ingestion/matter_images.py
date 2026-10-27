@@ -97,7 +97,7 @@ def _candidate_images(supabase: Client, matter_id: int) -> list[dict]:
 
 def _judge(img: dict, context: str) -> dict | None:
     try:
-        data = httpx.get(f"{IMAGE_BASE}/{img['r2_key']}", timeout=30).content
+        data = httpx.get(f"{IMAGE_BASE}/{img['r2_key']}", timeout=httpx.Timeout(connect=10, read=30, write=30, pool=10)).content
         answers = ai.decide(
             context,
             [KIND_QUESTION, SIDEWAYS_QUESTION],

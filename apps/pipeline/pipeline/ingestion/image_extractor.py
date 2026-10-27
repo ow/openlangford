@@ -35,6 +35,9 @@ SKIP_PATTERNS = re.compile(
 
 # ── Lazy singleton R2 client ─────────────────────────────────────────
 
+R2_CONNECT_TIMEOUT = 10  # seconds; boto3 retries (3 attempts) then raises
+R2_READ_TIMEOUT = 120
+
 _r2_client = None
 _r2_warned = False
 
@@ -51,6 +54,7 @@ def get_r2_client():
 
     try:
         import boto3
+        from botocore.config import Config
     except ImportError:
         if not _r2_warned:
             logger.warning("boto3 not installed — R2 image uploads will be skipped")
@@ -75,6 +79,11 @@ def get_r2_client():
         endpoint_url=endpoint,
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key,
+        config=Config(
+            connect_timeout=R2_CONNECT_TIMEOUT,
+            read_timeout=R2_READ_TIMEOUT,
+            retries={"max_attempts": 3, "mode": "standard"},
+        ),
     )
     logger.info("R2 client initialized (endpoint: %s)", endpoint)
     return _r2_client
