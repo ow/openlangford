@@ -362,7 +362,7 @@ export function MattersMap({
   return (
     <div className="space-y-2">
       <div
-        className={`relative z-0 w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm ${compact ? "h-[240px] sm:h-[300px]" : "h-[360px] sm:h-[560px]"}`}
+        className={`relative z-0 w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm ${compact ? "h-[360px] sm:h-[450px]" : "h-[360px] sm:h-[560px]"}`}
         role="region"
         aria-label="Map of council matters"
         aria-busy={loading}
@@ -454,7 +454,8 @@ export function MattersMap({
         selected &&
         createPortal(
           <div className="max-h-64 space-y-3 overflow-auto p-1 text-zinc-900">
-            {selected.address && (
+            {/* Street pages pin addresses whose title is the address itself: don't repeat it. */}
+            {selected.address && !popupMarkers.every(({ matter }) => displayTitle(matter.title) === selected.address) && (
               <p className="text-xs text-zinc-500">{selected.address}</p>
             )}
             {popupMarkers.map(({ matter }) => (
