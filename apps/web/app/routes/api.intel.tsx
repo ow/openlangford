@@ -1,5 +1,5 @@
 import type { Route } from "./+types/api.intel";
-import { isAuthenticated } from "../lib/auth.server";
+import { requireAdmin } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getAiClient } from "../services/ai/index.server";
 import {
@@ -14,8 +14,19 @@ export async function action({ params, request }: Route.ActionArgs) {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  if (!(await isAuthenticated(request))) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  // Spends AI budget and overwrites agenda_items.meta, so admin-only (signup is open).
+  // Return JSON instead of a login redirect: callers are fetchers.
+  try {
+    await requireAdmin(request);
+  } catch (error) {
+    if (error instanceof Response) {
+      const forbidden = error.status === 403;
+      return Response.json(
+        { error: forbidden ? "Admin access required" : "Unauthorized" },
+        { status: forbidden ? 403 : 401 },
+      );
+    }
+    throw error;
   }
 
   const supabaseAdmin = getSupabaseAdminClient();
