@@ -151,7 +151,7 @@ _installed: SupabaseUsageSink | None = None
 
 
 def _default_client_factory():
-    from supabase import create_client
+    from pipeline.supabase_client import create_client
 
     from pipeline import config
 

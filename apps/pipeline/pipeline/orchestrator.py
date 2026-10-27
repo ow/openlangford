@@ -6,7 +6,7 @@ import time as _time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
-from supabase import create_client
+from pipeline.supabase_client import create_client
 from tqdm import tqdm
 
 from pipeline import config, parser, utils

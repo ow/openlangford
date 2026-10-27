@@ -8,7 +8,8 @@ import time
 
 import requests as http_requests
 from bs4 import BeautifulSoup
-from supabase import Client, create_client
+from supabase import Client
+from pipeline.supabase_client import create_client
 
 import pipeline.parser as parser
 from pipeline import utils

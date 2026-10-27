@@ -10,7 +10,7 @@ sys.path.append(
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from supabase import create_client
+from pipeline.supabase_client import create_client
 from pipeline import ai
 
 load_dotenv()

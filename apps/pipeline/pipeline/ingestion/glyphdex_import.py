@@ -24,7 +24,9 @@ import json
 import os
 import re
 import time
-from collections import defaultdict
+import multiprocessing
+import signal
+import traceback
 
 import requests
 
@@ -177,7 +179,7 @@ def already_ingested(supabase, meeting: dict) -> bool:
 
 
 def main(argv=None):
-    from supabase import create_client
+    from pipeline.supabase_client import create_client
 
     from pipeline import config
     from pipeline.paths import get_municipality_archive_root
@@ -190,7 +192,7 @@ def main(argv=None):
     parser.add_argument("--dry-run", action="store_true", help="List what would be imported; download nothing")
     parser.add_argument("--ingest", action="store_true", help="Run the pipeline on each downloaded folder")
     parser.add_argument("--workers", type=int, default=1,
-                        help="With --ingest: run N child processes (meetings split by year), then the post-ingest "
+                        help="With --ingest: run N child processes (meetings dealt round-robin by date), then the post-ingest "
                              "stages once for every new meeting. Holds the pipeline lock throughout.")
     parser.add_argument("--shard-file", help=argparse.SUPPRESS)  # child mode
     args = parser.parse_args(argv)
@@ -241,16 +243,15 @@ def main(argv=None):
     print(f"Done: {len(todo) - failed} ok, {failed} failed. Report: {report_path}")
 
 
-def split_by_year(meetings: list[dict], workers: int) -> list[list[dict]]:
-    """Whole years per worker (a bylaw's meetings mostly fall in one year, so two workers rarely
-    create the same new matter at once), balanced by meeting count."""
-    years: dict[str, list[dict]] = defaultdict(list)
-    for m in meetings:
-        years[m["date"][:4]].append(m)
-    shards: list[list[dict]] = [[] for _ in range(workers)]
-    for year in sorted(years, key=lambda y: -len(years[y])):
-        min(shards, key=len).extend(years[year])
-    return [sorted(shard, key=lambda m: (m["date"], m["time"])) for shard in shards if shard]
+def split_by_meeting(meetings: list[dict], workers: int) -> list[list[dict]]:
+    """Round-robin over meetings sorted by date, so every worker stays busy until the queue is nearly
+    empty. (Two workers creating the same new matter at once is handled by the ingester, which links to
+    the existing matter on a ``matters_identifier_key`` conflict.)"""
+    ordered = sorted(meetings, key=lambda m: (m["date"], m["time"], m["body"]))
+    shards: list[list[dict]] = [[] for _ in range(max(1, workers))]
+    for i, m in enumerate(ordered):
+        shards[i % len(shards)].append(m)
+    return [shard for shard in shards if shard]
 
 
 def run_parallel(todo: list[dict], archive_root: str, workers: int):
@@ -261,7 +262,7 @@ def run_parallel(todo: list[dict], archive_root: str, workers: int):
 
     reports = os.path.join(archive_root, "reports")
     os.makedirs(reports, exist_ok=True)
-    shards = split_by_year(todo, workers)
+    shards = split_by_meeting(todo, workers)
     with PipelineLock():  # scheduled runs wait (exit cleanly) until the backfill is done
         children = []
         for i, shard in enumerate(shards):
@@ -293,9 +294,96 @@ def run_parallel(todo: list[dict], archive_root: str, workers: int):
         print("Done.", flush=True)
 
 
+MEETING_TIMEOUT = float(os.environ.get("GLYPHDEX_MEETING_TIMEOUT", 30 * 60))  # seconds per meeting ingest
+
+
+class MeetingTimeout(Exception):
+    pass
+
+
+def _child_main(target, args, conn):
+    """Child process entry: become a process-group leader (so the parent can kill ffmpeg/marker
+    grandchildren too), run ``target`` and report the outcome over the pipe."""
+    try:
+        os.setsid()
+    except OSError:
+        pass
+    try:
+        target(*args)
+        conn.send(("ok", ""))
+    except BaseException:  # report everything, including SystemExit
+        conn.send(("error", traceback.format_exc(limit=8)))
+    finally:
+        conn.close()
+
+
+def run_with_timeout(target, args: tuple, timeout: float):
+    """Run ``target(*args)`` in a fresh child process; kill its whole process group and raise
+    ``MeetingTimeout`` if it runs longer than ``timeout`` seconds. A child failure raises RuntimeError."""
+    ctx = multiprocessing.get_context("spawn")
+    parent_conn, child_conn = ctx.Pipe(duplex=False)
+    process = ctx.Process(target=_child_main, args=(target, args, child_conn))
+    process.start()
+    child_conn.close()
+    try:
+        if parent_conn.poll(timeout):
+            try:
+                status, detail = parent_conn.recv()
+            except EOFError:
+                status, detail = "error", "child exited without a result"
+            process.join(10)
+            if status != "ok":
+                raise RuntimeError(detail.strip().splitlines()[-1] if detail.strip() else "child failed")
+            return
+        _kill_group(process)
+        raise MeetingTimeout(f"ingest exceeded {timeout:.0f}s and was abandoned")
+    finally:
+        if process.is_alive():
+            _kill_group(process)
+        parent_conn.close()
+
+
+def _kill_group(process):
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(process.pid, sig)  # the child called setsid(), so pid == pgid
+        except OSError:
+            try:
+                os.kill(process.pid, sig)
+            except OSError:
+                pass
+        process.join(5)
+        if not process.is_alive():
+            return
+
+
+def _child_ingest(folder: str, municipality_id) -> None:
+    from pipeline import config
+    from pipeline.ingestion.ingester import MeetingIngester
+
+    key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
+    ingester = MeetingIngester(config.SUPABASE_URL, key, municipality_id=municipality_id)
+    ingester.process_meeting(folder, force_update=True, force_refine=True)
+
+
+def ingest_guarded(ingester, folder: str, timeout: float = None, target=None) -> None:
+    """Ingest one meeting in a child process under a time budget. On failure or timeout a meeting row
+    we created is deleted (a rerun must not think it was done); one that existed before is left alone."""
+    target = target or _child_ingest
+    timeout = MEETING_TIMEOUT if timeout is None else timeout
+    path = ingester._normalize_archive_path(folder)
+    before = ingester.supabase.table("meetings").select("id").eq("archive_path", path).limit(1).execute().data
+    try:
+        run_with_timeout(target, (folder, ingester.municipality_id), timeout)
+    except Exception:
+        if not before:
+            ingester.supabase.table("meetings").delete().eq("archive_path", path).execute()
+        raise
+
+
 def run_shard(shard_file: str):
-    """Child: download and ingest each meeting directly (no pipeline lock, no post-ingest stages),
-    and record it only once its meeting row and agenda items exist."""
+    """Child: download and ingest each meeting (each in its own watchdog child process; no pipeline lock,
+    no post-ingest stages), and record it only once its meeting row and agenda items exist."""
     from datetime import datetime
 
     from pipeline import config
@@ -314,15 +402,7 @@ def run_shard(shard_file: str):
             folder = download_meeting(m, archive_root)["folder"]
             entry["folder"] = folder
             print(f"[{entry['at']}] {m['date']} {m['body']}", flush=True)
-            path = ingester._normalize_archive_path(folder)
-            before = ingester.supabase.table("meetings").select("id").eq("archive_path", path).limit(1).execute().data
-            try:
-                ingester.process_meeting(folder, force_update=True, force_refine=True)
-            except Exception:
-                # Never leave a half-ingested meeting behind: a rerun would think it was done.
-                if not before:
-                    ingester.supabase.table("meetings").delete().eq("archive_path", path).execute()
-                raise
+            ingest_guarded(ingester, folder)
             row = (ingester.supabase.table("meetings").select("id").eq("archive_path", ingester._normalize_archive_path(folder))
                    .limit(1).execute().data)
             items = row and ingester.supabase.table("agenda_items").select("id", count="exact").eq("meeting_id", row[0]["id"]).limit(1).execute().count

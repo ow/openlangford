@@ -44,7 +44,7 @@ class VimeoClient:
         count = 0
         while True:
             try:
-                resp = requests.get(api_url, headers=self.headers, params=params)
+                resp = requests.get(api_url, headers=self.headers, params=params, timeout=config.REQUEST_TIMEOUT)
                 if resp.status_code != 200:
                     print(f"[!] API Error {resp.status_code}: {resp.text}")
                     break
@@ -116,7 +116,7 @@ class VimeoClient:
         }
 
         try:
-            resp = requests.get(api_url, headers=self.headers, params=params)
+            resp = requests.get(api_url, headers=self.headers, params=params, timeout=config.REQUEST_TIMEOUT)
             if resp.status_code != 200:
                 return None
 
@@ -277,12 +277,12 @@ class VimeoClient:
             api_url = f"https://api.vimeo.com{uri}/texttracks"
 
             try:
-                resp = requests.get(api_url, headers=self.headers)
+                resp = requests.get(api_url, headers=self.headers, timeout=config.REQUEST_TIMEOUT)
 
                 if resp.status_code == 429:
                     print(f"    [API] Rate limit hit (429). Sleeping 15s...")
                     time.sleep(15)
-                    resp = requests.get(api_url, headers=self.headers)
+                    resp = requests.get(api_url, headers=self.headers, timeout=config.REQUEST_TIMEOUT)
 
                 if resp.status_code != 200:
                     print(f"    [API] Failed to fetch tracks: {resp.status_code}")
@@ -327,7 +327,7 @@ class VimeoClient:
             print(f"    [Transcript] Downloading VTT...")
             try:
                 # FIX: Pass headers (Auth + User-Agent) to the file download too
-                vtt_resp = requests.get(download_link, headers=self.headers)
+                vtt_resp = requests.get(download_link, headers=self.headers, timeout=config.REQUEST_TIMEOUT)
 
                 if vtt_resp.status_code == 200:
                     with open(save_path, "wb") as f:
@@ -359,6 +359,9 @@ class VimeoClient:
             "no_overwrites": True,
             "ignoreerrors": True,
             "cookiesfrombrowser": (config.COOKIE_BROWSER,),
+            "socket_timeout": config.YTDLP_SOCKET_TIMEOUT,
+            "retries": 5,
+            "fragment_retries": 5,
             "concurrent_fragment_downloads": 25,
         }
         try:
@@ -384,6 +387,9 @@ class VimeoClient:
             "no_overwrites": True,
             "ignoreerrors": True,
             "cookiesfrombrowser": (config.COOKIE_BROWSER,),
+            "socket_timeout": config.YTDLP_SOCKET_TIMEOUT,
+            "retries": 5,
+            "fragment_retries": 5,
             "concurrent_fragment_downloads": 15,
         }
         try:

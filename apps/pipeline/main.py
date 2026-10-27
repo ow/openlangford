@@ -312,7 +312,7 @@ if __name__ == "__main__":
             print("\n--- Classifying Agenda Items into Topics ---")
             from pipeline.profiling.topic_classifier import classify_topics
             from pipeline import config as pipeline_config
-            from supabase import create_client as create_sb_client
+            from pipeline.supabase_client import create_client as create_sb_client
             sb_key = pipeline_config.SUPABASE_SECRET_KEY or pipeline_config.SUPABASE_KEY
             if not pipeline_config.SUPABASE_URL or not sb_key:
                 print("  [!] SUPABASE_URL/KEY not set, skipping topic classification.")
@@ -364,7 +364,7 @@ if __name__ == "__main__":
             print("\n--- Detecting Key Votes ---")
             from pipeline.profiling.key_vote_detector import detect_all_key_votes
             from pipeline import config as pipeline_config
-            from supabase import create_client as create_sb_client
+            from pipeline.supabase_client import create_client as create_sb_client
             sb_key = pipeline_config.SUPABASE_SECRET_KEY or pipeline_config.SUPABASE_KEY
             if not pipeline_config.SUPABASE_URL or not sb_key:
                 print("  [!] SUPABASE_URL/KEY not set, skipping key vote detection.")
@@ -376,7 +376,7 @@ if __name__ == "__main__":
             print("\n--- Generating Enhanced AI Narrative Profiles ---")
             from pipeline.profiling.stance_generator import generate_councillor_narratives
             from pipeline import config as pipeline_config
-            from supabase import create_client as create_sb_client
+            from pipeline.supabase_client import create_client as create_sb_client
             sb_key = pipeline_config.SUPABASE_SECRET_KEY or pipeline_config.SUPABASE_KEY
             if not pipeline_config.SUPABASE_URL or not sb_key:
                 print("  [!] SUPABASE_URL/KEY not set, skipping profile generation.")

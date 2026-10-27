@@ -157,6 +157,9 @@ class ISILiveClient:
             "format": "bestvideo+bestaudio/best",
             "quiet": False,
             "no_warnings": True,
+            "socket_timeout": config.YTDLP_SOCKET_TIMEOUT,
+            "retries": 5,
+            "fragment_retries": 5,
         }
 
         with yt_dlp.YoutubeDL(opts) as ydl:

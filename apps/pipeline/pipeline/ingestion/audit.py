@@ -24,7 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from dotenv import load_dotenv
-from supabase import create_client
+from pipeline.supabase_client import create_client
 
 load_dotenv()
 

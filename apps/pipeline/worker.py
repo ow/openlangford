@@ -17,7 +17,7 @@ import time
 import traceback
 from datetime import datetime, timezone
 
-from supabase import create_client
+from pipeline.supabase_client import create_client
 
 from pipeline import config
 from pipeline.email_outbox import EmailEnqueuePersistenceError, DELIVERY_WINDOW, record_email_enqueue
