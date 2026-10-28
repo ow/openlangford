@@ -196,3 +196,27 @@ it("keeps historical route-only meeting/document navigation warm for 24h while r
   await serve(req(urls[0]), render, "deploy-b:corrected"); expect(render).toHaveBeenCalledTimes(10);
   vi.advanceTimersByTime(86400_000); await serve(req(urls[0]), render); expect(render).toHaveBeenCalledTimes(11);
 });
+
+it("caches anonymous public detail pages for five minutes and keeps their navigation payloads to their own route", async () => {
+  const at = (p: string, init?: RequestInit) => new Request(`https://openlangford.ca${p}`, { headers: { Accept: p.split("?")[0].endsWith(".data") ? "*/*" : "text/html" }, ...init });
+  for (const page of ["/matters/953-walfred-road-rezoning", "/bylaws/bylaw-2275", "/properties/2140-caribou-drive", "/people/scott-goodmanson", "/people/scott-goodmanson/votes", "/elections/2022"]) {
+    const render = vi.fn(async () => html(`page:${page}`));
+    await serve(at(page), render); await Promise.all(jobs);
+    const hit = await serve(at(page), render);
+    expect(hit.headers.get("X-Public-Meeting-Cache")).toBe("HIT");
+    expect(await hit.text()).toBe(`page:${page}`);
+    // Filters, other routes' loaders and signed-in visitors always render.
+    expect((await serve(at(`${page}?timeRange=12m`), render)).headers.get("X-Public-Meeting-Cache")).toBeNull();
+    expect((await serve(at(`${page}.data?_routes=routes/meeting-detail`), render)).headers.get("X-Public-Meeting-Cache")).toBeNull();
+    expect((await serve(at(page, { headers: { Accept: "text/html", Cookie: "sb-ref-auth-token=session" } }), render)).headers.get("X-Public-Meeting-Cache")).toBeNull();
+    expect(render).toHaveBeenCalledTimes(4);
+  }
+  for (const page of ["/matters", "/properties", "/admin/matters", "/settings"]) {
+    expect((await serve(at(page), async () => html())).headers.get("X-Public-Meeting-Cache")).toBeNull();
+  }
+  const render = vi.fn(async () => html());
+  await serve(at("/matters/x"), render); await Promise.all(jobs);
+  vi.advanceTimersByTime(300_001);
+  await serve(at("/matters/x"), render);
+  expect(render).toHaveBeenCalledTimes(2);
+});

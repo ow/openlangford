@@ -29,6 +29,19 @@ export async function getSearchBudget(
   }
 }
 
+// Shown on every page (search availability); a minute's staleness is harmless. Spending
+// still goes through getSearchBudget(limit, true), which never uses this copy.
+let displayed: { limit: unknown; at: number; value: Promise<SearchBudget> } | null = null;
+export function getSearchBudgetForDisplay(configuredLimit: unknown, now = Date.now()): Promise<SearchBudget> {
+  if (!displayed || displayed.limit !== configuredLimit || now - displayed.at > 60_000) {
+    const value = getSearchBudget(configuredLimit);
+    displayed = { limit: configuredLimit, at: now, value };
+    // A failed read must not be served for a minute.
+    value.then((budget) => { if (!budget.available && budget.resetsAt === null && displayed?.value === value) displayed = null; });
+  }
+  return displayed.value;
+}
+
 /** SSE keeps EventSource clients from silently treating a quota response as a network error. */
 export function searchBudgetExceeded(budget: SearchBudget): Response {
   return new Response(`data: ${JSON.stringify({ type: "budget_exhausted", resetsAt: budget.resetsAt })}\n\ndata: {"type":"done"}\n\n`, {

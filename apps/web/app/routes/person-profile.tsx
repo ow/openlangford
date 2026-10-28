@@ -98,14 +98,12 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const timeRange = url.searchParams.get("timeRange") || "all";
 
   // Compute date range for speaking time queries
-  const now = new Date();
   let startDate: string | undefined;
   let endDate: string | undefined;
   if (timeRange === "12m") {
-    const d = new Date(now);
-    d.setFullYear(d.getFullYear() - 1);
-    startDate = d.toISOString().slice(0, 10);
-    endDate = now.toISOString().slice(0, 10);
+    // Civic (Pacific) dates, so the cache key changes once a day, at local midnight.
+    endDate = civicToday();
+    startDate = `${Number(endDate.slice(0, 4)) - 1}${endDate.slice(4)}`.replace(/-02-29$/, "-02-28");
   } else if (timeRange === "term") {
     endDate = civicToday();
   }

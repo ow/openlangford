@@ -7,6 +7,24 @@ import { historicalPublicDate, HISTORICAL_PUBLIC_TTL, RECENT_PUBLIC_TTL } from "
 
 type PublicMeetingCacheConfig = { version?: string; posthogKey?: string };
 
+// Detail pages whose loaders read no session (property-detail's admin check reads
+// none here: only anonymous, cookie-stripped requests are admitted). Short TTL.
+const PUBLIC_PAGES: [RegExp, string][] = [
+  [/^\/matters\/[a-z0-9-]+$/, "routes/matter-detail"],
+  [/^\/bylaws\/[a-z0-9-]+$/, "routes/bylaw-detail"],
+  [/^\/properties\/[a-z0-9-]+$/, "routes/property-detail"],
+  [/^\/people\/[a-z0-9-]+$/, "routes/person-profile"],
+  [/^\/people\/[a-z0-9-]+\/votes$/, "routes/person-votes"],
+  [/^\/people\/[a-z0-9-]+\/proposals$/, "routes/person-proposals"],
+  [/^\/participants\/[a-z0-9-]+$/, "routes/participant-profile"],
+  [/^\/elections\/[a-z0-9-]+$/, "routes/election-detail"],
+];
+
+function publicPage(pathname: string): string | null {
+  const path = pathname.replace(/\.data$/, "");
+  return PUBLIC_PAGES.find(([pattern]) => pattern.test(path))?.[1] ?? null;
+}
+
 function cacheKey(request: Request, { version, posthogKey }: PublicMeetingCacheConfig): Request | null {
   const url = new URL(request.url);
   if (!anonymousPublicRequest(request, posthogKey)) return null;
@@ -18,16 +36,19 @@ function cacheKey(request: Request, { version, posthogKey }: PublicMeetingCacheC
   }
 
   const match = /^\/meetings\/(\d{4}-\d{2}-\d{2})-[a-z0-9-]+(\/documents(?:\/[1-9][0-9]*)?)?(\.data)?$/.exec(url.pathname);
-  if (!match) return null;
-  const date = Date.parse(`${match[1]}T00:00:00Z`);
-  if (!Number.isFinite(date) || new Date(date).toISOString().slice(0, 10) !== match[1] || date > Date.now() - 2 * 86400_000) return null;
+  const page = match ? null : publicPage(url.pathname);
+  if (!match && !page) return null;
+  if (match) {
+    const date = Date.parse(`${match[1]}T00:00:00Z`);
+    if (!Number.isFinite(date) || new Date(date).toISOString().slice(0, 10) !== match[1] || date > Date.now() - 2 * 86400_000) return null;
+  }
 
-  const isData = !!match[3];
+  const isData = match ? !!match[3] : url.pathname.endsWith(".data");
   const accept = request.headers.get("accept") || "";
   if (isData ? !["", "*/*", "text/x-script"].includes(accept) : !accept.includes("text/html") || /markdown|json/i.test(accept)) return null;
   // React Router uses _routes to request only the loaders it needs. Never
   // conflate that with a full navigation payload, or with another route.
-  const allowedRoute = match[2]?.startsWith("/documents/") ? "routes/document-viewer" : match[2] ? "routes/meeting-documents" : "routes/meeting-detail";
+  const allowedRoute = page ?? (match![2]?.startsWith("/documents/") ? "routes/document-viewer" : match![2] ? "routes/meeting-documents" : "routes/meeting-detail");
   for (const [name, value] of url.searchParams) {
     if (!isData || name !== "_routes" || url.searchParams.getAll(name).length !== 1) return null;
     const routes = value.split(",");

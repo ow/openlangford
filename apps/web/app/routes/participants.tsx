@@ -1,4 +1,4 @@
-import { cachedCompute } from "../services/computed-cache.server";
+import { cachedCompute, HOURLY_SHARED } from "../services/computed-cache.server";
 import { SITE_NAME } from "../lib/site-name";
 import { meetingPath } from "../lib/paths";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
@@ -51,9 +51,11 @@ export async function loader() {
     const [participants, identificationCoverage] = await Promise.all([
       cachedCompute(`public-participants:${municipality.id}`, () =>
         getPublicParticipantStats(supabase, municipality.id, getPublicParticipationHistories(municipality.slug)),
+        HOURLY_SHARED,
       ),
       cachedCompute(`participant-coverage:${municipality.id}`, () =>
         getParticipantIdentificationCoverage(supabase, municipality.id),
+        HOURLY_SHARED,
       ).catch(error => {
         console.error("Speaker coverage unavailable:", error);
         return null;

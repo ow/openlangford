@@ -77,7 +77,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         startDate: `${selectedYear}-01-01`,
         endDate: `${selectedYear}-12-31`,
       }), (result) => result.statsComplete, historicalPublicDate(`${selectedYear}-12-31`) ? HISTORICAL_PUBLIC_TTL : RECENT_PUBLIC_TTL),
-      publicData(`meeting-bounds:${municipality.id}`, () => getMeetingDateBounds(supabase, municipality)).catch((error) => {
+      publicData(`meeting-bounds:${municipality.id}`, () => getMeetingDateBounds(supabase, municipality), () => true, 3600).catch((error) => {
         console.error("Error loading meeting history availability:", error);
         return null;
       }),

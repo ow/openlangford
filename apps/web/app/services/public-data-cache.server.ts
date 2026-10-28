@@ -1,6 +1,6 @@
 /// <reference types="@cloudflare/workers-types" />
 import { AsyncLocalStorage } from "node:async_hooks";
-import { anonymousPublicRequest } from "../lib/public-cache-admission.server";
+import { anonymousPublicRequest, publicReadRequest } from "../lib/public-cache-admission.server";
 
 type Scope = {
   version?: string;
@@ -26,10 +26,16 @@ export async function withPublicDataCache(scope: Omit<Scope, "states">, render: 
   });
 }
 
-/** Only explicit, public DTO computations belong here. Keys must include municipality and all data filters. */
-export async function publicData<T>(key: string, compute: () => Promise<T>, cacheable: (value: T) => boolean = () => true, ttlSeconds = TTL_SECONDS): Promise<T> {
+/**
+ * Only explicit, public DTO computations belong here. Keys must include municipality and all data filters.
+ * Signed-in visitors bypass by default; `shareWithSignedIn` lets them use the same value too, for
+ * expensive aggregates computed with no session (an explicit refresh still recomputes).
+ */
+export async function publicData<T>(key: string, compute: () => Promise<T>, cacheable: (value: T) => boolean = () => true, ttlSeconds = TTL_SECONDS,
+  { shareWithSignedIn = false }: { shareWithSignedIn?: boolean } = {}): Promise<T> {
   const scope = storage.getStore();
-  if (!scope?.version || !anonymousPublicRequest(scope.request, scope.posthogKey) || typeof caches === "undefined") {
+  const admitted = scope && (shareWithSignedIn ? publicReadRequest(scope.request) : anonymousPublicRequest(scope.request, scope.posthogKey));
+  if (!scope?.version || !admitted || typeof caches === "undefined") {
     scope?.states.add("BYPASS");
     return compute();
   }

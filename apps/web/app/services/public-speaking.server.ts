@@ -7,8 +7,10 @@ import { getSpeakingTimeStats, getSpeakingTimeByMeeting, getSpeakingTimeByTopic 
 // accept a request/session client here. The deployment/content namespace also
 // supplies the existing explicit correction-refresh mechanism.
 function summary<T>(kind: string, personId: number | null, startDate: string | undefined, endDate: string | undefined, municipalityId: number, compute: () => Promise<T>) {
+  // The council-wide ranking is the heavy RPC and changes only when a meeting is ingested.
+  const ttl = historicalPublicDate(endDate) ? HISTORICAL_PUBLIC_TTL : personId === null ? 3600 : RECENT_PUBLIC_TTL;
   return publicData(JSON.stringify(["speaking-v1", kind, municipalityId, personId, startDate ?? null, endDate ?? null]), compute, () => true,
-    historicalPublicDate(endDate) ? HISTORICAL_PUBLIC_TTL : RECENT_PUBLIC_TTL);
+    ttl, { shareWithSignedIn: true });
 }
 
 export function getPublicSpeakingTimeStats(startDate?: string, endDate?: string, municipalityId = 1) {

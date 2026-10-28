@@ -50,3 +50,14 @@ it("does not store errors or incomplete summaries and falls back when the cache 
   vi.stubGlobal("caches", { default: { match: async () => { throw new Error("unavailable"); }, put: async () => { throw new Error("unavailable"); } } });
   expect(await (await run("home:1", async () => ({ complete: true }))).json()).toEqual({ complete: true }); await Promise.all(jobs);
 });
+it("shares opted-in aggregates with signed-in visitors, but an explicit refresh still recomputes", async () => {
+  const compute = vi.fn(async () => ({ public: "index" }));
+  const shared = (headers?: HeadersInit) => withPublicDataCache({
+    request: new Request("https://openlangford.ca/properties", { headers }), version: "deploy-a", posthogKey: "phc_test", waitUntil: job => jobs.push(job),
+  }, async () => Response.json(await publicData("properties-index", compute, () => true, 3600, { shareWithSignedIn: true })));
+  await shared({ Cookie: "sb-test-auth-token=session" }); await Promise.all(jobs);
+  expect((await shared({ Cookie: "sb-test-auth-token=other" })).headers.get("X-Public-Data-Cache")).toBe("HIT");
+  expect((await shared()).headers.get("X-Public-Data-Cache")).toBe("HIT");
+  expect((await shared({ Cookie: "sb-test-auth-token=session", "Cache-Control": "no-cache" })).headers.get("X-Public-Data-Cache")).toBe("BYPASS");
+  expect(compute).toHaveBeenCalledTimes(2);
+});

@@ -34,8 +34,13 @@ it("preserves public RPC output and avoids all three origin calls on warm profil
   expect((await run(read, { Cookie: "ph_phc_test_posthog=visitor" })).headers.get("X-Public-Data-Cache")).toBe("HIT");
   await run(() => Promise.all([getPublicSpeakingTimeStats(), getPublicSpeakingTimeByTopic(1)]));
   expect(origin).toHaveBeenCalledTimes(3);
-  for (const headers of ([{ Cookie: "sb-project-auth-token=session" }, { Cookie: "unknown=value" }, { Authorization: "Bearer synthetic" }] as HeadersInit[])) await run(read, headers);
-  expect(origin).toHaveBeenCalledTimes(12);
+  // Session-free aggregates are shared with signed-in visitors; credentials or an explicit refresh recompute.
+  for (const headers of ([{ Cookie: "sb-project-auth-token=session" }, { Cookie: "unknown=value" }] as HeadersInit[])) {
+    expect((await run(read, headers)).headers.get("X-Public-Data-Cache")).toBe("HIT");
+  }
+  expect(origin).toHaveBeenCalledTimes(3);
+  for (const headers of ([{ Authorization: "Bearer synthetic" }, { Cookie: "sb-project-auth-token=session", "Cache-Control": "no-cache" }] as HeadersInit[])) await run(read, headers);
+  expect(origin).toHaveBeenCalledTimes(9);
 });
 it("isolates every RPC filter and refreshes historical corrections at expiry or deployment", async () => {
   const historical = () => getPublicSpeakingTimeByTopic(1, "2020-01-01", "2020-12-31", 1);

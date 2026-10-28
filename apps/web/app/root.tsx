@@ -1,4 +1,4 @@
-import { getSearchBudget } from "./services/search-budget.server";
+import { getSearchBudgetForDisplay } from "./services/search-budget.server";
 import { SITE_NAME } from "./lib/site-name";
 import { SITE_ORIGIN } from "./lib/og";
 import { DEFAULT_MUNICIPALITY } from "./lib/site-config";
@@ -73,10 +73,12 @@ export const links: Route.LinksFunction = () => [
 
 export async function loader({ request, context }: Route.LoaderArgs) {
   const { supabase, headers } = createSupabaseServerClient(request);
-  const [{ data: { user } }, municipality, searchBudget] = await Promise.all([
-    supabase.auth.getUser(),
+  // No Supabase auth cookie means no session: skip the auth round trip for anonymous visitors.
+  const hasSession = /(?:^|;\s*)sb-[^=;]*-auth-token/.test(request.headers.get("cookie") || "");
+  const [user, municipality, searchBudget] = await Promise.all([
+    hasSession ? supabase.auth.getUser().then(({ data }) => data.user) : Promise.resolve(null),
     getMunicipality(supabase),
-    getSearchBudget(context.cloudflare?.env?.AI_SEARCH_DAILY_LIMIT),
+    getSearchBudgetForDisplay(context.cloudflare?.env?.AI_SEARCH_DAILY_LIMIT),
   ]);
 
   // Redirect new users to onboarding if they haven't completed it

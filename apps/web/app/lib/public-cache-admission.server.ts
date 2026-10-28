@@ -10,10 +10,20 @@ function onlyPostHogCookie(header: string, key: string | undefined) {
   });
 }
 
+const UNCACHED_HEADERS = ["authorization", "range", "if-none-match", "if-modified-since", "cache-control", "pragma"];
+
 export function anonymousPublicRequest(request: Request, posthogKey?: string): boolean {
-  const url = new URL(request.url);
-  if (url.origin !== "https://openlangford.ca" || request.method !== "GET") return false;
   const cookie = request.headers.get("cookie");
-  return (cookie === null || onlyPostHogCookie(cookie, posthogKey)) &&
-    !["authorization", "range", "if-none-match", "if-modified-since", "cache-control", "pragma"].some((header) => request.headers.has(header));
+  return (cookie === null || onlyPostHogCookie(cookie, posthogKey)) && publicReadRequest(request);
+}
+
+/**
+ * Any visitor, signed in or not, but still a plain GET on the public origin: an explicit
+ * refresh (Cache-Control/Pragma), credentials header or conditional/range request bypasses.
+ * Only for values that never depend on who is asking.
+ */
+export function publicReadRequest(request: Request): boolean {
+  const url = new URL(request.url);
+  return url.origin === "https://openlangford.ca" && request.method === "GET" &&
+    !UNCACHED_HEADERS.some((header) => request.headers.has(header));
 }
