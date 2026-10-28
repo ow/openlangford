@@ -1,4 +1,7 @@
+# Content Signals (https://contentsignals.org/): search and answering questions
+# from these public records are welcome; model training is not.
 User-agent: *
+Content-Signal: ai-train=no, search=yes, ai-input=yes
 Allow: /
 Disallow: /admin/
 Disallow: /speaker-alias

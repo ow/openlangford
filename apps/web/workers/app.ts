@@ -8,6 +8,7 @@ import { withPublicDataCache } from "../app/services/public-data-cache.server";
 import publicContent from "../public-content-version.json";
 
 import { EMAIL_DISPATCH_CRON, dispatchEmailAlerts } from "./email-dispatch";
+import { negotiateMarkdown } from "./markdown-negotiation";
 import { publicMeetingCache } from "./public-meeting-cache";
 
 declare module "react-router" {
@@ -41,13 +42,14 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, url: UR
     return apiApp.fetch(request, env, ctx);
   }
 
-  // Everything else goes to React Router
-  return publicMeetingCache(request, {
+  // Everything else goes to React Router. Accept: text/markdown pages are
+  // rendered as HTML through the caches, then converted (Markdown for Agents).
+  return negotiateMarkdown(request, (pageRequest) => publicMeetingCache(pageRequest, {
     version: (env.CF_VERSION_METADATA?.id ? `${env.CF_VERSION_METADATA.id}:${publicContent.version}` : undefined),
     posthogKey: env.VITE_POSTHOG_KEY,
   }, ctx, (publicRequest) =>
     requestHandler(publicRequest, { cloudflare: { env, ctx } }),
-  );
+  ));
 }
 
 export default {

@@ -33,6 +33,8 @@
     "lucide-react": "^0.562.0",
     "maplibre-gl": "^6.15.0",
     "marked": "^17.0.3",
+    "node-html-markdown": "^1.3.0",
+    "node-html-parser": "^6.1.13",
     "openai": "^6.17.0",
     "posthog-js": "^1.357.2",
     "radix-ui": "^1.4.3",
