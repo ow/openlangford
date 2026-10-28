@@ -257,20 +257,28 @@ export function propertyPath(property: { slug: string }) {
   return `/properties/${property.slug}`;
 }
 
-export type PropertyIndexEntry = { slug: string; address: string; records: number; geo: { lat: number; lng: number } | null };
+/** `years`: the years Council considered the address (newest first), for the map's year filter. */
+export type PropertyIndexEntry = { slug: string; address: string; records: number; years: number[]; geo: { lat: number; lng: number } | null };
 export type RecentPropertyItem = {
-  item: { id: number; title: string };
-  meeting: { id: number; slug: string | null; title: string; meeting_date: string };
+  key: string;
+  href: string;
+  /** What is happening, in plain language (the matter's summary, else the item's). */
+  summary: string;
+  /** Where it stands ("Rezoning bylaw adopted Sep 21, 2026."), when the matter records it. */
+  status: string | null;
+  date: string;
+  meetingTitle: string;
   properties: { slug: string; address: string }[];
 };
 
-/**
- * Every address and street with at least one visible record (a matter, or an agenda
- * item outside any matter), most records first, plus the latest agenda items that
- * named an address. Records count the same way as the street page's "3 records".
- */
+// Public input items are left out of "recent": their addresses are often residents' homes.
 const PUBLIC_INPUT = /public\s+(?:participation|input|comment|hearing\s+submission)|correspondence|delegation|written\s+submission|petition/i;
 
+/**
+ * Every address and street with at least one visible record (a matter, or an agenda
+ * item outside any matter), most records first, plus what Council most recently
+ * considered at an address. Records count the same way as the street page's "3 records".
+ */
 export async function getPropertiesIndex(supabase: SupabaseClient, recentCount = 8) {
   // First page carries the total, the rest are fetched together (the link join is the slow part).
   const pageAll = async <T,>(build: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: any; count?: number | null }>) => {
@@ -288,17 +296,20 @@ export async function getPropertiesIndex(supabase: SupabaseClient, recentCount =
     pageAll<any>((from, to) =>
       supabase
         .from("property_links")
-        .select("id, property_id, matter_id, agenda_item_id, agenda_items(id, title, meetings(id, slug, title, meeting_date))", { count: "exact" })
+        .select("id, property_id, matter_id, agenda_item_id, agenda_items(id, title, plain_english_summary, meetings(id, slug, title, meeting_date))", { count: "exact" })
         .eq("hidden", false)
         .order("id")
         .range(from, to),
     ),
   ]);
   const records = new Map<number, Set<string>>();
+  const years = new Map<number, Set<number>>();
   for (const l of links) {
     const set = records.get(l.property_id) || new Set<string>();
     set.add(l.matter_id ? `m${l.matter_id}` : `i${l.agenda_item_id}`);
     records.set(l.property_id, set);
+    const date = l.agenda_items?.meetings?.meeting_date;
+    if (date) years.set(l.property_id, (years.get(l.property_id) || new Set<number>()).add(Number(date.slice(0, 4))));
   }
   // Five decimals is about a metre: plenty for a pin, and a smaller page payload.
   const round = (n: number) => Math.round(n * 1e5) / 1e5;
@@ -306,6 +317,7 @@ export async function getPropertiesIndex(supabase: SupabaseClient, recentCount =
     slug: p.slug,
     address: p.address,
     records: records.get(p.id)?.size || 0,
+    years: [...(years.get(p.id) || [])].sort((a, b) => b - a),
     geo: p.geo?.lat != null && p.geo?.lng != null ? { lat: round(p.geo.lat), lng: round(p.geo.lng) } : null,
   });
   const byRecords = (a: PropertyIndexEntry, b: PropertyIndexEntry) => b.records - a.records || a.address.localeCompare(b.address);
@@ -319,28 +331,54 @@ export async function getPropertiesIndex(supabase: SupabaseClient, recentCount =
     .filter((s) => s.records > 0 || s.lots > 0)
     .sort((a, b) => a.address.localeCompare(b.address));
 
-  // Latest agenda items that named an address (one entry per item; a development
-  // spanning several lots lists each). Planned meetings count: they are upcoming.
-  // Public input items are left out: their addresses are often residents' homes.
+  return { lots, streets, recent: await recentAtAddresses(supabase, properties, links, recentCount) };
+}
+
+/** Latest council activity at an address, one entry per matter (or per item outside a matter). */
+async function recentAtAddresses(supabase: SupabaseClient, properties: any[], links: any[], count: number): Promise<RecentPropertyItem[]> {
   const byId = new Map(properties.map((p) => [p.id, p]));
-  const items = new Map<number, RecentPropertyItem>();
+  type Group = { key: string; matterId: number | null; item: any; date: string; properties: { slug: string; address: string }[] };
+  const groups = new Map<string, Group>();
   for (const l of links) {
     const item = l.agenda_items;
     const property = byId.get(l.property_id);
     if (!item?.meetings?.meeting_date || !item.meetings.slug || !property || property.civic_number === "" || PUBLIC_INPUT.test(item.title || "")) continue;
-    const entryForItem: RecentPropertyItem = items.get(item.id) || { item: { id: item.id, title: item.title }, meeting: item.meetings, properties: [] };
-    if (!entryForItem.properties.some((p) => p.slug === property.slug)) entryForItem.properties.push({ slug: property.slug, address: property.address });
-    items.set(item.id, entryForItem);
+    const key = l.matter_id ? `m${l.matter_id}` : `i${item.id}`;
+    const group: Group = groups.get(key) || { key, matterId: l.matter_id, item, date: item.meetings.meeting_date, properties: [] };
+    // The group speaks for its latest agenda item (a later reading, an adoption).
+    if (item.meetings.meeting_date > group.date || (item.meetings.meeting_date === group.date && item.id > group.item.id)) {
+      group.item = item;
+      group.date = item.meetings.meeting_date;
+    }
+    if (!group.properties.some((p) => p.slug === property.slug)) group.properties.push({ slug: property.slug, address: property.address });
+    groups.set(key, group);
   }
-  // Each place once: a later reading of the same bylaw doesn't push other places out.
+  // Each place once, so one busy development doesn't fill the card.
   const shown = new Set<string>();
-  const recent = [...items.values()]
-    .sort((a, b) => b.meeting.meeting_date.localeCompare(a.meeting.meeting_date) || b.item.id - a.item.id)
-    .filter((entry) => {
-      if (entry.properties.every((p) => shown.has(p.slug))) return false;
-      entry.properties.forEach((p) => shown.add(p.slug));
+  const picked = [...groups.values()]
+    .sort((a, b) => b.date.localeCompare(a.date) || b.item.id - a.item.id)
+    .filter((group) => {
+      if (group.properties.every((p) => shown.has(p.slug))) return false;
+      group.properties.forEach((p) => shown.add(p.slug));
       return true;
     })
-    .slice(0, recentCount);
-  return { lots, streets, recent };
+    .slice(0, count);
+  const matterIds = picked.map((g) => g.matterId).filter(Boolean) as number[];
+  const { data: matters } = matterIds.length
+    ? await supabase.from("matters").select("id, slug, title, plain_english_summary, meta").in("id", matterIds)
+    : { data: [] as any[] };
+  const matterById = new Map((matters || []).filter(visible).map((m) => [m.id, m]));
+  return picked.map((group) => {
+    const matter = group.matterId ? matterById.get(group.matterId) : null;
+    const meeting = group.item.meetings;
+    return {
+      key: group.key,
+      href: matter ? `/matters/${matter.slug || matter.id}` : `/meetings/${meeting.slug}#item-${group.item.id}`,
+      summary: (matter?.plain_english_summary || group.item.plain_english_summary || group.item.title || "").trim(),
+      status: matter?.meta?.status_line || (matter ? group.item.plain_english_summary : null) || null,
+      date: group.date,
+      meetingTitle: meeting.title,
+      properties: group.properties,
+    };
+  });
 }

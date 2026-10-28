@@ -12,12 +12,12 @@ import { SectionHeading } from "../components/ui/section-heading";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { SITE_NAME } from "../lib/site-name";
 import { ogImageUrl, ogUrl } from "../lib/og";
-import { displayTitle } from "../lib/display-text";
-import { meetingPath } from "../lib/paths";
-import { formatDate } from "../lib/utils";
+import { cn, formatDate } from "../lib/utils";
 
 const DESCRIPTION = `Every ${DEFAULT_MUNICIPALITY.short_name} address and street named in council records: rezonings, permits, variances and road works, by location.`;
 const TOP = 30;
+// The map's year control: "All", the most recent years, then everything before them.
+const RECENT_YEARS = 6;
 const MATCHES = 100;
 
 export const meta: Route.MetaFunction = () => [
@@ -33,10 +33,10 @@ export const meta: Route.MetaFunction = () => [
 
 export async function loader() {
   // The pipeline's properties stage changes this a few times a day at most.
-  return publicData("properties-index", () => getPropertiesIndex(getSupabaseAdminClient()), (v) => v.lots.length > 0, 3600);
+  return publicData("properties-index", () => getPropertiesIndex(getSupabaseAdminClient()), (v) => v.lots.length > 0, 3600, { shareWithSignedIn: true });
 }
 
-const plural = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`;
+const plural = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : word.endsWith("s") ? "es" : "s"}`;
 
 function AddressList({ lots }: { lots: PropertyIndexEntry[] }) {
   return (
@@ -56,22 +56,22 @@ function AddressList({ lots }: { lots: PropertyIndexEntry[] }) {
 function RecentlyInCouncil({ recent }: { recent: Route.ComponentProps["loaderData"]["recent"] }) {
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <SectionHeading title="Recently in council" icon={CalendarClock} description="The latest agenda items that named an address." />
-      <ol className="grid gap-x-8 gap-y-4 md:grid-cols-2">
-        {recent.map(({ item, meeting, properties }) => (
-          <li key={item.id} className="min-w-0">
+      <SectionHeading title="Recently in council" icon={CalendarClock} description="What Council last considered at an address." />
+      <ol className="grid gap-x-8 gap-y-5 md:grid-cols-2">
+        {recent.map((entry) => (
+          <li key={entry.key} className="min-w-0">
             <p className="flex flex-wrap gap-x-2 text-sm font-semibold">
-              {properties.slice(0, 3).map((p) => (
+              {entry.properties.slice(0, 3).map((p) => (
                 <Link key={p.slug} to={propertyPath(p)} className="text-zinc-900 hover:text-brand-700 hover:underline">
                   {p.address}
                 </Link>
               ))}
-              {properties.length > 3 && <span className="font-normal text-zinc-500">+{properties.length - 3} more</span>}
+              {entry.properties.length > 3 && <span className="font-normal text-zinc-500">+{entry.properties.length - 3} more</span>}
             </p>
-            <Link to={`${meetingPath(meeting)}#item-${item.id}`} className="group mt-0.5 block text-sm leading-snug">
-              <span className="line-clamp-2 text-zinc-700 group-hover:text-brand-700">{displayTitle(item.title)}</span>
-              <span className="text-xs tabular-nums text-zinc-500">
-                {formatDate(meeting.meeting_date, { year: "numeric", month: "short", day: "numeric" })} · {meeting.title}
+            <Link to={entry.href} className="group mt-1 block text-sm leading-snug">
+              <span className="line-clamp-2 text-zinc-700 group-hover:text-brand-700">{entry.summary}</span>
+              <span className="mt-0.5 block text-xs tabular-nums text-zinc-500">
+                {entry.status || `${formatDate(entry.date, { year: "numeric", month: "short", day: "numeric" })} · ${entry.meetingTitle}`}
               </span>
             </Link>
           </li>
@@ -84,14 +84,20 @@ function RecentlyInCouncil({ recent }: { recent: Route.ComponentProps["loaderDat
 export default function Properties({ loaderData }: Route.ComponentProps) {
   const { lots, streets, recent } = loaderData;
   const [filterText, setFilterText] = useState("");
+  const [year, setYear] = useState<"all" | "earlier" | number>("all");
+  const yearOptions = useMemo(() => {
+    const all = [...new Set(lots.flatMap((lot) => lot.years))].sort((a, b) => b - a);
+    return { recent: all.slice(0, RECENT_YEARS), earlier: all.length > RECENT_YEARS ? all[RECENT_YEARS] : null };
+  }, [lots]);
   const query = filterText.trim().toLowerCase();
 
   const pins = useMemo(
     () =>
       lots
         .filter((lot) => lot.geo)
+        .filter((lot) => year === "all" || (year === "earlier" ? lot.years.some((y) => y <= yearOptions.earlier!) : lot.years.includes(year)))
         .map((lot) => ({ id: lot.slug, slug: lot.slug, title: `${lot.address} · ${plural(lot.records, "record")}`, locations: [{ ...lot.geo!, address: lot.address }] })),
-    [lots],
+    [lots, year, yearOptions],
   );
   const matchingLots = useMemo(() => (query ? lots.filter((lot) => lot.address.toLowerCase().includes(query)) : []), [lots, query]);
   const matchingStreets = useMemo(() => (query ? streets.filter((s) => s.address.toLowerCase().includes(query)) : streets), [streets, query]);
@@ -120,11 +126,28 @@ export default function Properties({ loaderData }: Route.ComponentProps) {
         <div className="space-y-12">
           {recent.length > 0 && <RecentlyInCouncil recent={recent} />}
 
-          {pins.length > 0 && (
+          {lots.some((lot) => lot.geo) && (
             <section>
+              <div role="tablist" aria-label="Show addresses by year" className="mb-3 inline-flex max-w-full overflow-x-auto rounded-lg border border-zinc-200 bg-white p-0.5 shadow-xs">
+                {(["all", ...yearOptions.recent, ...(yearOptions.earlier ? ["earlier" as const] : [])] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    role="tab"
+                    aria-selected={year === option}
+                    onClick={() => setYear(option)}
+                    className={cn(
+                      "shrink-0 cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium tabular-nums transition-colors",
+                      year === option ? "bg-brand-50 text-brand-800" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900",
+                    )}
+                  >
+                    {option === "all" ? "All" : option === "earlier" ? `${yearOptions.earlier} and earlier` : option}
+                  </button>
+                ))}
+              </div>
               <MattersMap compact tall matters={pins as any} hrefFor={(lot: any) => propertyPath(lot)} linkLabel="View address" />
               <p className="mt-2 text-xs text-zinc-500">
-                {plural(pins.length, "address")} with a known location. Numbered circles group nearby addresses; zoom in to explore.
+                {plural(pins.length, "address")} with a known location{year === "all" ? "" : year === "earlier" ? ` before ${yearOptions.earlier! + 1}` : ` in council records in ${year}`}. Numbered circles group nearby addresses; zoom in to explore.
               </p>
             </section>
           )}
