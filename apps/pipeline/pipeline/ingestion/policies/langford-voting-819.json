@@ -1,0 +1,22 @@
+{
+  "rule_id": "langford_819_recorded_dissent_deemed_affirmative",
+  "enabled_from": "2004-03-15",
+  "enabled_through": "2021-10-17",
+  "original_section": "Voting on Questions, para (c)(i) and (c)(iv)",
+  "rule": "Names of those voting for and against are entered in the minutes whenever a member calls for the ayes and nays; a member who refrains from voting is regarded as having voted in the affirmative (Procedure Bylaw No. 819, 2004; Community Charter s.123(4)). Inference applies ONLY to a Council motion whose minutes record an explicit list of opposed members: every other voting member present is Yes. A bare CARRIED or DEFEATED is not sufficient; 819 does not require dissenters to be named.",
+  "bylaw_url": "https://files.constantcontact.com/ffd90173501/fad32882-1a45-4cd8-8627-77e82fee655e.pdf",
+  "bylaw_sha256": "93afb42d3f625f3f823c70d559fa3d64cb63eb96e056068493020691098ced59",
+  "bylaw_provenance": "Third-party hosted copy (PDF created 2013-05-30); the City's bylaws directory does not publish repealed Bylaw 819. Accepted as the source by the project owner on 2026-10-27.",
+  "refresh": "none: repealed 2021-10-18 by Bylaw 1971; the document is frozen and identified by sha256 only",
+  "adopted": "2004-03-15",
+  "repealed": "2021-10-18",
+  "amendments": [
+    {"bylaw": "1654", "effect": "meeting start time only; no voting change"},
+    {"bylaw": "1701", "effect": "electronic participation; no voting change", "adoption": "2020-03-26"}
+  ],
+  "statute": "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03026_05#section123",
+  "vote_provenance": "inferred_recorded_dissent_deemed_affirmative, distinct from explicit_named and inferred_official_dissent_recording_rule",
+  "limitations": "Requires a resolved recorded opposed list and no partial In Favour list. Committee of the Whole excluded (819: names of members shall not be recorded). Appeals of the Chair's ruling excluded (tie passes, Mayor not voting). Special thresholds, recusals and abstentions held. Reconstructed tally must agree with the recorded outcome.",
+  "validated_as_of": "2026-10-27",
+  "municipality_slug": "langford"
+}

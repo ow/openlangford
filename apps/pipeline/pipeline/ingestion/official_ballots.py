@@ -7,6 +7,7 @@ validated before any inferred choice is returned. Functions do not write DB.
 from collections import defaultdict
 from datetime import datetime
 import hashlib
+import json
 import re
 import subprocess
 from pathlib import Path
@@ -20,6 +21,17 @@ from .source_occurrences import original_formal_inventory, own_formal_envelopes,
 from .historical_references import original_historical_references
 from .vote_evidence import minutes_motion_blocks, normalize_text, named_votes, named_vote_declarations, outcome_family, special_voting_threshold
 from .ballot_reconstruction import validate_roster_entries, physical_presence_events, voters_before_vote, resolve_people
+
+
+_BYLAW_819 = None
+
+
+def bylaw_819_rule():
+    """Frozen historical rule (repealed bylaw, no refresh); see the policy file."""
+    global _BYLAW_819
+    if _BYLAW_819 is None:
+        _BYLAW_819 = json.loads((Path(__file__).parent/'policies'/'langford-voting-819.json').read_text())
+    return _BYLAW_819
 
 
 def _surname_index(people):
@@ -365,7 +377,17 @@ def inspect_motion(motion, source, *, meeting, people, memberships, policy, clai
  named_yes=sum(v['vote']=='Yes' for v in named.values())
  unique_passed=('2004-01-01'<=local_date<'2021-10-18' and voting_body=='council' and not special_threshold and outcome_family(block['result'])=='passed'
                 and named_yes==0 and bool(unknown) and len(unknown)==required_yes)
- if not complete_explicit and not unique_passed:
+ # Bylaw 819 (2004-03-15..2021-10-17) entered names only when a member called
+ # the ayes and nays, and a member who refrained was deemed affirmative. A
+ # recorded opposed list therefore fixes every other present Council choice; a
+ # bare CARRIED never does. COTW names were never recorded and chair appeals
+ # follow a different tie rule, so both stay held.
+ rule_819=bylaw_819_rule()
+ recorded_dissent=(not complete_explicit and not unique_passed and voting_body=='council'
+                   and rule_819['enabled_from']<=local_date<=rule_819['enabled_through']
+                   and named_yes==0 and any(v['vote']=='No' for v in named.values())
+                   and not re.search(r'chair\s+be\s+sustained|ruling\s+of\s+the\s+chair|chair.s\s+ruling',block['motion_text'],re.I))
+ if not complete_explicit and not unique_passed and not recorded_dissent:
   if 'UNANIMOUS' not in block['result'] or voting_body=='committee_of_the_whole':
    if policy.get('policy_status')!='verified_unchanged':
     return {**result,'status':policy.get('policy_status','recording_rule_not_refreshed')}
@@ -375,12 +397,12 @@ def inspect_motion(motion, source, *, meeting, people, memberships, policy, clai
  votes=[]
  for pid in sorted(present):
   v=named.get(pid)
-  votes.append({'person_id':pid,'person_name':next(p['name'] for p in people if p['id']==pid),'vote':v['vote'] if v else 'Yes','evidence':'explicit_named' if v else ('inferred_explicit_unanimity' if 'UNANIMOUS' in block['result'] else 'inferred_unique_tally_constraint' if unique_passed else 'inferred_official_dissent_recording_rule'),'source_quote':v['source_quote'] if v else block['outcome_quote']})
+  votes.append({'person_id':pid,'person_name':next(p['name'] for p in people if p['id']==pid),'vote':v['vote'] if v else 'Yes','evidence':'explicit_named' if v else ('inferred_explicit_unanimity' if 'UNANIMOUS' in block['result'] else 'inferred_unique_tally_constraint' if unique_passed else 'inferred_recorded_dissent_deemed_affirmative' if recorded_dissent else 'inferred_official_dissent_recording_rule'),'source_quote':v['source_quote'] if v else block['outcome_quote']})
  yes=sum(v['vote']=='Yes' for v in votes);no=sum(v['vote']=='No' for v in votes)
  if (outcome_family(block['result'])=='passed')!=(yes>no):return {**result,'status':'reconstructed_tally_conflicts_with_outcome','yes':yes,'no':no}
  # Special supermajority decisions need separate threshold verification.
  if special_threshold:return {**result,'status':'special_voting_threshold_needs_validation'}
- return {**result,'status':'reconstructable_candidate','inference_basis':'every_present_voter_explicitly_named' if complete_explicit else 'unique_passed_majority_assignment' if unique_passed else None,'majority_constraint':{'present_voters':len(present),'required_yes':required_yes,'explicit_yes':named_yes,'explicit_no':sum(v['vote']=='No' for v in named.values()),'unknown_voters':len(unknown),'unique_assignment':True,'statutory_basis':'Community Charter123(1),(3),(5), all present vote; majority decides; tie defeated','statute_url':'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03026_05#section123','history_url':'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03026_pit','history_sha256':'a650b396989fe681dd7db386e64d278c8cd23274a60c66632c441d1f2f3f6415','statute_sha256':'89e24743565b0eaab376b0a8ea02c4511749e9e4d750fdb8c39bc3b186991bec','effective_from':'2004-01-01'} if unique_passed else None,'source_classification':source_body,'voting_body':voting_body,'outcome_role':'committee_guidance_or_recommendation' if voting_body=='committee_of_the_whole' else 'council_decision','scope_basis':policy.get('committee_of_the_whole_scope') if voting_body=='committee_of_the_whole' else 'official_council_header_and_dated_council_membership','source_result':block['result'],'votes':votes,'yes':yes,'no':no,'source_file':source['source_file'],'source_format':source['source_format'],'source_url':source['source_url'],'source_sha256':source['source_sha256'],'source_date':local_date,'stored_date':source['stored_date'],'roster_quote':source['roster_quote'],'membership_evidence':'dated_db_council_membership','initial_arrival_adjustments':initial_adjustments,'presence_events':[e for e in events if e['offset']<position],'source_motion_text':block['motion_text'],'source_block':block['source_block'],'recording_rule':'CommunityCharter123 statutory majority uniquely forces unnamed Yes choices; no historical dissent-recording assumption' if unique_passed else 'Langford1971 section38(original)/44(consolidated), CommunityCharter123; proposed inferred choices, not explicit rollcall'}
+ return {**result,'status':'reconstructable_candidate','inference_basis':'every_present_voter_explicitly_named' if complete_explicit else 'unique_passed_majority_assignment' if unique_passed else 'recorded_dissent_deemed_affirmative_819' if recorded_dissent else None,'historical_rule':{k:rule_819[k] for k in ('rule_id','enabled_from','enabled_through','original_section','bylaw_url','bylaw_sha256','bylaw_provenance','statute','validated_as_of')} if recorded_dissent else None,'majority_constraint':{'present_voters':len(present),'required_yes':required_yes,'explicit_yes':named_yes,'explicit_no':sum(v['vote']=='No' for v in named.values()),'unknown_voters':len(unknown),'unique_assignment':True,'statutory_basis':'Community Charter123(1),(3),(5), all present vote; majority decides; tie defeated','statute_url':'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03026_05#section123','history_url':'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03026_pit','history_sha256':'a650b396989fe681dd7db386e64d278c8cd23274a60c66632c441d1f2f3f6415','statute_sha256':'89e24743565b0eaab376b0a8ea02c4511749e9e4d750fdb8c39bc3b186991bec','effective_from':'2004-01-01'} if unique_passed else None,'source_classification':source_body,'voting_body':voting_body,'outcome_role':'committee_guidance_or_recommendation' if voting_body=='committee_of_the_whole' else 'council_decision','scope_basis':policy.get('committee_of_the_whole_scope') if voting_body=='committee_of_the_whole' else 'official_council_header_and_dated_council_membership','source_result':block['result'],'votes':votes,'yes':yes,'no':no,'source_file':source['source_file'],'source_format':source['source_format'],'source_url':source['source_url'],'source_sha256':source['source_sha256'],'source_date':local_date,'stored_date':source['stored_date'],'roster_quote':source['roster_quote'],'membership_evidence':'dated_db_council_membership','initial_arrival_adjustments':initial_adjustments,'presence_events':[e for e in events if e['offset']<position],'source_motion_text':block['motion_text'],'source_block':block['source_block'],'recording_rule':'CommunityCharter123 statutory majority uniquely forces unnamed Yes choices; no historical dissent-recording assumption' if unique_passed else 'Langford819 Voting on Questions (c)(i),(c)(iv), CommunityCharter123(4): recorded opposed list; every other present member deemed affirmative' if recorded_dissent else 'Langford1971 section38(original)/44(consolidated), CommunityCharter123; proposed inferred choices, not explicit rollcall'}
 
 
 def load_official_minutes(meeting, *, root, people, cache_dir):
@@ -419,14 +441,18 @@ def complete_ballot_proof(candidate, policy):
     unique_tally = candidate.get('inference_basis') == 'unique_passed_majority_assignment'
     if unique_tally:
         proof['majority_constraint'] = candidate['majority_constraint']
+    recorded_dissent = candidate.get('inference_basis') == 'recorded_dissent_deemed_affirmative_819'
+    historical = candidate.get('historical_rule') if recorded_dissent else None
+    if historical:
+        proof['historical_rule'] = historical
     proof.update({
-        'rule_id': 'explicit_complete_named_rollcall' if fully_explicit else 'explicit_unanimity' if unanimous else 'unique_passed_majority_assignment' if unique_tally else policy['rule_id'],
-        'bylaw_url': None if unique_tally else policy.get('bylaw_url'),
-        'bylaw_sha256': None if unique_tally else policy.get('bylaw_sha256'),
-        'policy_checked_as_of': policy.get('validated_as_of'),
-        'policy_status': policy.get('policy_status'),
+        'rule_id': 'explicit_complete_named_rollcall' if fully_explicit else 'explicit_unanimity' if unanimous else 'unique_passed_majority_assignment' if unique_tally else historical['rule_id'] if historical else policy['rule_id'],
+        'bylaw_url': None if unique_tally else historical['bylaw_url'] if historical else policy.get('bylaw_url'),
+        'bylaw_sha256': None if unique_tally else historical['bylaw_sha256'] if historical else policy.get('bylaw_sha256'),
+        'policy_checked_as_of': historical['validated_as_of'] if historical else policy.get('validated_as_of'),
+        'policy_status': 'frozen_repealed_bylaw' if historical else policy.get('policy_status'),
         'method': 'explicit_official_rollcall' if fully_explicit else 'documentary_reconstruction_not_explicit_rollcall',
-        'basis': 'every_present_voter_explicitly_named' if fully_explicit else 'explicit_unanimity_with_per_vote_roster' if unanimous else 'unique_passed_majority_assignment' if unique_tally else 'validated_dissent_recording_rule_with_per_vote_roster',
+        'basis': 'every_present_voter_explicitly_named' if fully_explicit else 'explicit_unanimity_with_per_vote_roster' if unanimous else 'unique_passed_majority_assignment' if unique_tally else 'recorded_dissent_deemed_affirmative_819' if historical else 'validated_dissent_recording_rule_with_per_vote_roster',
         'choice_provenance': {f"person_{v['person_id']}": v['evidence'] for v in candidate['votes']},
     })
     return proof

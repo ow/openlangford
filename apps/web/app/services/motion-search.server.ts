@@ -15,7 +15,7 @@ function choiceBasis(meta: any, choice: any): "explicit" | "inferred" | "unknown
   const evidence = mapped ?? recorded[0]?.evidence;
   if (mapped && recorded[0]?.evidence && mapped !== recorded[0].evidence) return "unknown";
   if (evidence === "explicit_named") return "explicit";
-  if (["inferred_explicit_unanimity", "inferred_unique_tally_constraint", "inferred_official_dissent_recording_rule"].includes(evidence)) return "inferred";
+  if (["inferred_explicit_unanimity", "inferred_unique_tally_constraint", "inferred_recorded_dissent_deemed_affirmative", "inferred_official_dissent_recording_rule"].includes(evidence)) return "inferred";
   return "unknown";
 }
 

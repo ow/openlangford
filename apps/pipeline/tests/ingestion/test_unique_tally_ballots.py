@@ -28,5 +28,9 @@ def test_march_2021_majority_only_supplies_choices_when_source_forces_every_one(
         assert proof['choice_provenance']['person_133']=='explicit_named'
         assert proof['choice_provenance']['person_135']=='inferred_unique_tally_constraint'
         assert proof['majority_constraint']['unknown_voters']==4
-    else:
+    elif case=='uncertain_presence':
         assert choices==[] and meta.get('individual_vote_coverage')!='reconstructed_complete'
+    else:
+        # Not forced by the majority, but Bylaw 819 recorded dissent fixes the rest as Yes.
+        assert meta['ballot_reconstruction']['basis']=='recorded_dissent_deemed_affirmative_819'
+        assert 'majority_constraint' not in meta['ballot_reconstruction']
