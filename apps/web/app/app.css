@@ -789,3 +789,26 @@ body {
   --color-zinc-900: oklch(21% 0.006 285.885);
   --color-zinc-950: oklch(14.1% 0.005 285.823);
 }
+
+/* MapLibre ships its own white popup and control chrome; follow the surface in dark mode. */
+.dark .maplibregl-popup-content {
+  background: var(--color-surface);
+  color: var(--color-zinc-900);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+}
+.dark .maplibregl-popup-close-button { color: var(--color-zinc-500); }
+.dark .maplibregl-popup-close-button:hover { background: var(--color-zinc-100); }
+.dark .maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.dark .maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.dark .maplibregl-popup-anchor-top-right .maplibregl-popup-tip { border-bottom-color: var(--color-surface); }
+.dark .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.dark .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.dark .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip { border-top-color: var(--color-surface); }
+.dark .maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: var(--color-surface); }
+.dark .maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: var(--color-surface); }
+.dark .maplibregl-ctrl-group,
+.dark .maplibregl-ctrl-attrib.maplibregl-compact,
+.dark .maplibregl-ctrl.maplibregl-ctrl-attrib { background: var(--color-surface); color: var(--color-zinc-600); }
+.dark .maplibregl-ctrl-attrib a { color: var(--color-zinc-600); }
+.dark .maplibregl-ctrl-group button + button { border-top-color: var(--color-zinc-200); }
+.dark .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1); }
