@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { redirect } from "react-router";
+import { throwIfFailed } from "./loader-errors";
 
 type SlugTable = "meetings" | "matters" | "bylaws" | "elections";
 
@@ -13,14 +14,16 @@ export async function findMeetingBySlugHistory(
   supabase: SupabaseClient,
   slug: string,
 ): Promise<ResolvedSlugRow | null> {
-  const { data: hist } = await supabase
+  const { data: hist, error: histError } = await supabase
     .from("meeting_slug_history")
     .select("meeting_id")
     .eq("old_slug", slug)
     .limit(1)
     .maybeSingle();
+  throwIfFailed(histError);
   if (!hist) return null;
-  const { data } = await supabase.from("meetings").select("id, slug").eq("id", hist.meeting_id).maybeSingle();
+  const { data, error } = await supabase.from("meetings").select("id, slug").eq("id", hist.meeting_id).maybeSingle();
+  throwIfFailed(error);
   const row = data as ResolvedSlugRow | null;
   return row?.slug && row.slug !== slug ? row : null;
 }
@@ -30,7 +33,7 @@ export async function findMeetingBySlugHistory(
  *
  * - all-digit param (legacy id URL): look the row up by id and 301 to
  *   `buildPath(row)` + the original query string.
- * - otherwise: look up by slug; 404 if missing. Old id-prefixed matter/bylaw
+ * - otherwise: look up by slug; 404 if missing, 503 if the query failed. Old id-prefixed matter/bylaw
  *   slugs ("1665-solid-waste-...") 301 to the current slug via their id.
  *
  * `buildPath` receives the row and should rebuild the full current URL
@@ -52,7 +55,8 @@ export async function resolveSlugParam(
   const { search } = new URL(request.url);
 
   const byId = async (id: number) => {
-    const { data } = await supabase.from(table).select("id, slug").eq("id", id).maybeSingle();
+    const { data, error } = await supabase.from(table).select("id, slug").eq("id", id).maybeSingle();
+    throwIfFailed(error); // a failed lookup is a 503, never a 404
     return data as ResolvedSlugRow | null;
   };
 
@@ -64,7 +68,8 @@ export async function resolveSlugParam(
   }
 
   const slug = decodeURIComponent(param).toLowerCase();
-  const { data } = await supabase.from(table).select("id, slug").eq("slug", slug).limit(1).maybeSingle();
+  const { data, error } = await supabase.from(table).select("id, slug").eq("slug", slug).limit(1).maybeSingle();
+  throwIfFailed(error);
   if (data) {
     const row = data as ResolvedSlugRow;
     if (param !== row.slug && redirectLegacy) throw redirect(buildPath(row) + search, 301);

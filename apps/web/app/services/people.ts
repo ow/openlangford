@@ -645,7 +645,7 @@ export async function getPersonProfile(
   const personRes = await supabase.from("people").select(
     "id, name, is_councillor, email, image_url, bio, created_at, council_service_history:meta->council_service_history, in_memoriam:meta->in_memoriam, memberships(id, organization_id, role, start_date, end_date, organization:organizations(id, name, classification))",
   ).eq("id", id).single();
-  if (personRes.error) throw new Error("Person Not Found");
+  if (personRes.error) throw personRes.error.code === "PGRST116" ? new Error("Person Not Found") : personRes.error;
   const serviceIntervals = (personRes.data.memberships || []).filter((m: any) => m.organization_id === councilOrg?.id);
   const period: ProfilePeriod = { ...requestedPeriod, end: requestedPeriod?.end || civicToday(), intervals: requestedPeriod ? serviceIntervals : undefined };
   const votesCount = (filter?: string) => {

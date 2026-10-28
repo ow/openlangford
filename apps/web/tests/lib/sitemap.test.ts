@@ -10,11 +10,18 @@ describe("sitemap xml", () => {
     expect(sitemapDate("2024-03-18")).toBe("2024-03-18");
     expect(sitemapDate("not a date")).toBeNull();
     expect(sitemapDate(null)).toBeNull();
-    expect(latestDate("2024-01-01", null, "2025-06-30T01:00:00Z")).toBe("2025-06-30");
+    expect(latestDate("2024-01-01", null, "2025-06-30T12:00:00Z")).toBe("2025-06-30");
+  });
+  it("uses Langford's civic date for zoned timestamps, and leaves date-only values alone", () => {
+    expect(sitemapDate("2025-06-30T01:00:00Z")).toBe("2025-06-29");
+    expect(sitemapDate("2026-10-27T03:15:00.123+00:00")).toBe("2026-10-26");
+    expect(sitemapDate("2026-01-01T07:59:00+00:00")).toBe("2025-12-31");
+    expect(sitemapDate("2026-01-01")).toBe("2026-01-01");
+    expect(sitemapDate("2026-01-01T03:00:00")).toBe("2026-01-01");
   });
   it("builds a urlset with absolute, deduplicated locations", () => {
     const xml = urlset("https://openlangford.ca", [
-      { path: "/matters/a&b", lastmod: "2026-01-02T00:00:00Z", changefreq: "weekly", priority: 0.7 },
+      { path: "/matters/a&b", lastmod: "2026-01-02T20:00:00Z", changefreq: "weekly", priority: 0.7 },
       { path: "/matters/a&b" },
       { path: "" },
     ]);

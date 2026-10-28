@@ -1,4 +1,3 @@
-import { SITE_NAME } from "../lib/site-name";
 import { bylawPath } from "../lib/paths";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import type { Route } from "./+types/bylaws";
@@ -13,20 +12,20 @@ import { PageHeader } from "../components/ui/page-header";
 import { useState, useMemo } from "react";
 import { displayTitle } from "../lib/display-text";
 import { bylawLead, bylawStatus } from "../lib/bylaw-summary";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { pageMeta } from "../lib/page-meta";
+import { breadcrumbList, jsonLd } from "../lib/structured-data";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: `Bylaws | ${SITE_NAME}` },
-    { name: "description", content: `Browse ${DEFAULT_MUNICIPALITY.short_name} municipal bylaws and policies` },
-    { property: "og:title", content: `Bylaws | ${SITE_NAME}` },
-    { property: "og:description", content: `Browse ${DEFAULT_MUNICIPALITY.short_name} municipal bylaws and policies` },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: ogUrl("/bylaws") },
-    { property: "og:image", content: ogImageUrl("Bylaws & Policies", { type: "bylaw" }) },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(
+      "Langford Bylaws",
+      `${DEFAULT_MUNICIPALITY.short_name} bylaws and policies, from zoning and development to fees, parks and traffic: plain-language summaries, full text, amendments and the council matters behind each.`,
+      "/bylaws",
+      "website",
+      { image: ogImageUrl("Bylaws & Policies", { type: "bylaw" }) },
+    ),
+    jsonLd(breadcrumbList([["Bylaws", "/bylaws"]])),
   ];
 };
 

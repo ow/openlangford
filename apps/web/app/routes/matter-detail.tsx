@@ -11,25 +11,25 @@ import { parseRelatedAddresses } from "../lib/addresses";
 import { documentImageUrl } from "../lib/document-images.server";
 import { Link, redirect } from "react-router";
 import { SubscribeButton } from "../components/subscribe-button";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { fitTitle, pageMeta } from "../lib/page-meta";
+import { breadcrumbList, jsonLd } from "../lib/structured-data";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.matter) return [{ title: `Matter | ${SITE_NAME}` }];
   const m = data.matter as any;
-  const title = `${m.title} | ${SITE_NAME}`;
+  const name = matterTitle(m);
   const description = m.plain_english_summary || m.description
-    || `${m.category || "Council matter"} — ${m.status || "Active"}`;
+    || `${m.category || "Council matter"} before Langford Council — ${m.status || "Active"}.`;
+  const lead = (data as any)?.images?.lead;
   return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: m.title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "article" },
-    { property: "og:url", content: ogUrl(matterPath(m)) },
-    { property: "og:image", content: (data as any)?.images?.lead?.url || ogImageUrl(m.title, { subtitle: m.status, type: "matter" }) },
-    { property: "og:image:width", content: String((data as any)?.images?.lead?.width || 1200) },
-    { property: "og:image:height", content: String((data as any)?.images?.lead?.height || 630) },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(name, description, matterPath(m), "article", {
+      fullTitle: fitTitle(name, "Langford Council"),
+      image: lead?.url || ogImageUrl(m.title, { subtitle: m.status, type: "matter" }),
+      imageWidth: lead?.url ? lead.width : undefined,
+      imageHeight: lead?.url ? lead.height : undefined,
+    }),
+    jsonLd(breadcrumbList([["Matters", "/matters"], [name, matterPath(m)]])),
   ];
 };
 import {
@@ -53,6 +53,7 @@ import { matterStatusVariant } from "../lib/matter-status";
 import { getPropertiesForMatter, propertyPath, propertyPin } from "../services/properties";
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
+import { loaderFailure } from "../lib/loader-errors";
 
 
 const GENERIC_EVIDENCE_TITLES = new Set([
@@ -352,9 +353,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
     return { matter, matterDocuments, matterEvidence, story, images, properties };
   } catch (error) {
-    if (error instanceof Response) throw error;
-    console.error("Error fetching matter:", error);
-    throw new Response("Matter Not Found", { status: 404 });
+    throw loaderFailure(error, "Matter Not Found");
   }
 }
 

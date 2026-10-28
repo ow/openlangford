@@ -10,8 +10,9 @@ import { Input } from "../components/ui/input";
 import { PageHeader, PAGE_CONTAINER } from "../components/ui/page-header";
 import { SectionHeading } from "../components/ui/section-heading";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
-import { SITE_NAME } from "../lib/site-name";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { pageMeta } from "../lib/page-meta";
+import { breadcrumbList, jsonLd } from "../lib/structured-data";
 import { cn, formatDate } from "../lib/utils";
 
 const DESCRIPTION = `Every ${DEFAULT_MUNICIPALITY.short_name} address and street named in council records: rezonings, permits, variances and road works, by location.`;
@@ -21,14 +22,10 @@ const RECENT_YEARS = 6;
 const MATCHES = 100;
 
 export const meta: Route.MetaFunction = () => [
-  { title: `Properties | ${SITE_NAME}` },
-  { name: "description", content: DESCRIPTION },
-  { property: "og:title", content: `Properties | ${SITE_NAME}` },
-  { property: "og:description", content: DESCRIPTION },
-  { property: "og:type", content: "website" },
-  { property: "og:url", content: ogUrl("/properties") },
-  { property: "og:image", content: ogImageUrl("Properties", { subtitle: "Addresses in council records", type: "matter" }) },
-  { name: "twitter:card", content: "summary_large_image" },
+  ...pageMeta("Langford Properties and Streets", DESCRIPTION, "/properties", "website", {
+    image: ogImageUrl("Properties", { subtitle: "Addresses in council records", type: "matter" }),
+  }),
+  jsonLd(breadcrumbList([["Properties", "/properties"]])),
 ];
 
 export async function loader() {
@@ -83,6 +80,7 @@ function RecentlyInCouncil({ recent }: { recent: Route.ComponentProps["loaderDat
 
 export default function Properties({ loaderData }: Route.ComponentProps) {
   const { lots, streets, recent } = loaderData;
+  const unlisted = loaderData.unlisted || [];
   const [filterText, setFilterText] = useState("");
   const [year, setYear] = useState<"all" | "earlier" | number>("all");
   const yearOptions = useMemo(() => {
@@ -185,6 +183,21 @@ export default function Properties({ loaderData }: Route.ComponentProps) {
               </ul>
             )}
           </section>
+
+          {!query && unlisted.length > 0 && (
+            <section>
+              <SectionHeading title="Other addresses" icon={MapPin} description="Addresses on streets without their own page." />
+              <ul className="grid gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
+                {unlisted.map((lot) => (
+                  <li key={lot.slug} className="border-b border-zinc-100 py-2 text-sm">
+                    <Link to={propertyPath(lot)} className="font-medium text-zinc-800 hover:text-brand-700 hover:underline">
+                      {lot.address}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
       </div>
     </div>

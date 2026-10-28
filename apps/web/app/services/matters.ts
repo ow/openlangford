@@ -350,3 +350,33 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
   }).filter(item => item.relatedMatter);
   return { related, mentions, background };
 }
+
+export type MatterLink = { id: number; slug: string | null; title: string };
+
+/**
+ * Matter id -> the public matter page an agenda item belongs to (aliases resolve to their canonical
+ * matter; hidden matters are left out), for linking meeting agenda items to their matter.
+ */
+export async function getMatterLinks(supabase: SupabaseClient, matterIds: (number | null | undefined)[]): Promise<Record<number, MatterLink>> {
+  const ids = [...new Set(matterIds.filter((id): id is number => !!id))];
+  if (!ids.length) return {};
+  const fields = "id, slug, title, hidden:meta->>hidden, canonical:meta->>canonical_matter_id";
+  const { data, error } = await supabase.from("matters").select(fields).in("id", ids);
+  if (error) {
+    console.error("Error fetching agenda item matters:", error);
+    return {};
+  }
+  const rows = (data || []) as any[];
+  const canonicalIds = rows.map((m) => Number(m.canonical) || 0).filter(Boolean);
+  const { data: canonical } = canonicalIds.length
+    ? await supabase.from("matters").select(fields).in("id", canonicalIds)
+    : { data: [] as any[] };
+  const byId = new Map(((canonical || []) as any[]).map((m) => [m.id, m]));
+  const links: Record<number, MatterLink> = {};
+  for (const row of rows) {
+    const target = row.canonical ? byId.get(Number(row.canonical)) : row;
+    if (!target || target.hidden === "true" || target.canonical) continue;
+    links[row.id] = { id: target.id, slug: target.slug, title: target.title };
+  }
+  return links;
+}

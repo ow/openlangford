@@ -1,6 +1,6 @@
 import { ParticipationList, WrittenSubmissions } from "./participation-list";
 import { crossNotes, writtenLetters } from "../../lib/written";
-import { documentPath } from "../../lib/paths";
+import { documentPath, matterPath } from "../../lib/paths";
 import { useState } from "react";
 import { Link } from "react-router";
 import {
@@ -36,6 +36,8 @@ interface AgendaOverviewProps {
   items: AgendaItem[];
   /** Agenda item id -> property pages for the addresses it names. */
   itemProperties?: Record<number, { slug: string; address: string }[]>;
+  /** Matter id -> its public matter page (services/matters getMatterLinks). */
+  itemMatters?: Record<number, { id: number; slug: string | null; title: string }>;
   documentSections?: DocumentSection[];
   extractedDocuments?: ExtractedDocument[];
   expandedItemId: number | null;
@@ -57,6 +59,7 @@ export function AgendaOverview({
   meetingId,
   meetingSlug,
   itemProperties,
+  itemMatters,
 }: AgendaOverviewProps) {
   const groups = groupAgendaItems(items);
   // People who both spoke and wrote in at this meeting get a note on each side.
@@ -91,6 +94,7 @@ export function AgendaOverview({
                   onMotionClick={onMotionClick}
                   variant="parent"
                   properties={itemProperties?.[group.parent.id]}
+                  matter={group.parent.matter_id ? itemMatters?.[group.parent.matter_id] : undefined}
                   hasChildren={group.children.length > 0}
                   meetingId={meetingId}
                   meetingSlug={meetingSlug}
@@ -142,6 +146,7 @@ export function AgendaOverview({
                       onMotionClick={onMotionClick}
                       variant={group.key !== "other" ? "child" : "flat"}
                       properties={itemProperties?.[child.id]}
+                      matter={child.matter_id ? itemMatters?.[child.matter_id] : undefined}
                       isLastChild={isLast}
                       meetingId={meetingId}
                       meetingSlug={meetingSlug}
@@ -278,6 +283,7 @@ function normalizeRelatedAddresses(value: unknown): string[] {
 interface AgendaItemRowProps {
   notes?: ReturnType<typeof crossNotes>;
   properties?: { slug: string; address: string }[];
+  matter?: { id: number; slug: string | null; title: string };
   item: AgendaItem;
   documentSections?: DocumentSection[];
   extractedDocuments?: ExtractedDocument[];
@@ -309,6 +315,7 @@ function AgendaItemRow({
   meetingSlug,
   notes,
   properties = [],
+  matter,
 }: AgendaItemRowProps) {
   const linkedSections = (documentSections || []).filter(
     (s) => s.agenda_item_id === item.id,
@@ -449,6 +456,16 @@ function AgendaItemRow({
             )}
           >
             <div className="space-y-6">
+              {/* The matter this item belongs to: its whole history across meetings. */}
+              {matter && (
+                <p className="text-sm">
+                  <span className="text-xs font-semibold text-zinc-500">Matter: </span>
+                  <Link to={matterPath(matter)} className="font-medium text-brand-700 hover:underline">
+                    {displayTitle(matter.title)}
+                  </Link>
+                </p>
+              )}
+
               {/* Plain English Summary */}
               {item.plain_english_summary && (
                 <div className="space-y-1">

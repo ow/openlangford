@@ -1,4 +1,3 @@
-import { SITE_NAME } from "../lib/site-name";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import type { Route } from "./+types/meetings";
 import {
@@ -11,30 +10,31 @@ import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getMunicipalityFromMatches } from "../lib/municipality-helpers";
 import type { Meeting } from "../lib/types";
 import { cn } from "../lib/utils";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { pageMeta } from "../lib/page-meta";
+import { breadcrumbList, jsonLd } from "../lib/structured-data";
 
-export const meta: Route.MetaFunction = ({ data, matches }) => {
+export const meta: Route.MetaFunction = ({ data, matches, location }) => {
   const municipality = getMunicipalityFromMatches(matches);
   const shortName = municipality?.short_name || DEFAULT_MUNICIPALITY.short_name;
-  const year = (data as any)?.selectedYear;
-  const title = year
-    ? `${year} Council Meetings | ${SITE_NAME}`
-    : `Council Meetings | ${SITE_NAME}`;
-  const ogTitle = year ? `${year} Council Meetings` : "Council Meetings";
-  const description = `Browse all ${shortName} council meetings, agendas, transcripts, and voting records.`;
+  // A year view (/meetings?year=2024) is its own indexable page; the bare list is the current year.
+  const yearView = new URLSearchParams(location.search).has("year") && data?.selectedYear !== data?.currentYear ? data?.selectedYear : null;
+  const title = yearView ? `Langford Council Meetings in ${yearView}` : "Langford Council Meetings";
+  const description = yearView
+    ? `Every ${shortName} council and committee meeting in ${yearView}: agendas, minutes, video, decisions and recorded votes.`
+    : `Every ${shortName} council and committee meeting: agendas, minutes, video, plain-language summaries, decisions and recorded votes, searchable by year.`;
   return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: ogUrl("/meetings") },
-    { property: "og:image", content: ogImageUrl(ogTitle, { type: "meeting" }) },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(title, description, meetingsYearPath(yearView), "website", {
+      image: ogImageUrl(yearView ? `${yearView} Council Meetings` : "Council Meetings", { type: "meeting" }),
+    }),
+    jsonLd(breadcrumbList(yearView ? [["Meetings", "/meetings"], [String(yearView), meetingsYearPath(yearView)]] : [["Meetings", "/meetings"]])),
   ];
 };
+
+/** The bare list shows the current year; other years live at ?year=YYYY (self-canonical). */
+function meetingsYearPath(year: number | null | undefined, currentYear?: number) {
+  return year && year !== currentYear ? `/meetings?year=${year}` : "/meetings";
+}
 import {
   Link,
   useSearchParams,
@@ -140,6 +140,14 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
     yearsArr.sort((a, b) => b - a);
     return yearsArr;
   }, [currentYear, selectedYear, bounds]);
+
+  // Plain links to every year with meeting records, so each year's page is reachable by crawlers.
+  const yearsWithMeetings = useMemo(() => {
+    const first = Number(bounds?.earliest?.slice(0, 4));
+    const last = Number(bounds?.latest?.slice(0, 4));
+    if (!first || !last) return [];
+    return Array.from({ length: last - first + 1 }, (_, i) => last - i);
+  }, [bounds]);
 
   const meetingTypes = useMemo(() => {
     const types = new Set<string>();
@@ -515,6 +523,21 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
             )}
           </div>
         </nav>
+        {yearsWithMeetings.length > 1 && (
+          <nav aria-label="Meetings by year" className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-2 px-1 text-sm">
+            <span className="font-semibold text-zinc-600">Browse by year</span>
+            {yearsWithMeetings.map((y) => (
+              <Link
+                key={y}
+                to={meetingsYearPath(y, currentYear)}
+                aria-current={y === selectedYear ? "page" : undefined}
+                className={cn("tabular-nums hover:underline", y === selectedYear ? "font-semibold text-zinc-900" : "text-brand-700")}
+              >
+                {y}
+              </Link>
+            ))}
+          </nav>
+        )}
       </div>
     </div>
   );
