@@ -64,6 +64,7 @@ export function breadcrumbList(trail: [name: string, path: string][]): Thing {
 export function meetingEvent(m: { title: string; meeting_date: string; status?: string | null; summary?: string | null }, path: string, description?: string): Thing {
   return compact({
     "@type": "Event",
+    "@id": `${abs(path)}#event`,
     name: `${m.title}`,
     startDate: m.meeting_date.slice(0, 10),
     url: abs(path),
@@ -72,6 +73,38 @@ export function meetingEvent(m: { title: string; meeting_date: string; status?: 
     eventAttendanceMode: `${CONTEXT}/OfflineEventAttendanceMode`,
     location: CITY_HALL,
     organizer: CITY_OF_LANGFORD,
+  });
+}
+
+/** ISO 8601 duration ("PT1H39M5S") from seconds. */
+export function isoDuration(seconds: number): string {
+  const s = Math.max(0, Math.round(seconds));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+  return `PT${h ? `${h}H` : ""}${m ? `${m}M` : ""}${r || (!h && !m) ? `${r}S` : ""}`;
+}
+
+/**
+ * The meeting recording, embedded on the meeting page from the City's eSCRIBE player. eSCRIBE
+ * has no thumbnails, so the page's share card stands in. recordedAt ties it to the meeting Event.
+ */
+export function meetingVideo(
+  m: { title: string; meeting_date: string; video_url?: string | null },
+  path: string,
+  opts: { description: string; thumbnailUrl: string; durationSeconds?: number | null },
+): Thing | null {
+  if (!m.video_url || !/^https:\/\//.test(m.video_url)) return null;
+  return compact({
+    "@type": "VideoObject",
+    name: `${m.title} — ${m.meeting_date.slice(0, 10)} (Langford council meeting video)`,
+    description: opts.description,
+    uploadDate: m.meeting_date.slice(0, 10),
+    thumbnailUrl: opts.thumbnailUrl,
+    duration: opts.durationSeconds ? isoDuration(opts.durationSeconds) : null,
+    embedUrl: m.video_url,
+    url: abs(path),
+    inLanguage: "en-CA",
+    publisher: CITY_OF_LANGFORD,
+    recordedAt: { "@id": `${abs(path)}#event` },
   });
 }
 

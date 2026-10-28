@@ -1,6 +1,7 @@
 import { CalendarProvenance } from "../components/calendar-provenance";
-import { pageMeta, recordDate, markdownAlternate } from "../lib/page-meta";
-import { breadcrumbList, jsonLd, meetingEvent } from "../lib/structured-data";
+import { pageMeta, recordDate, markdownAlternate, metaDescription } from "../lib/page-meta";
+import { ogImageUrl } from "../lib/og";
+import { breadcrumbList, jsonLd, meetingEvent, meetingVideo } from "../lib/structured-data";
 import { SITE_NAME } from "../lib/site-name";
 import { personPath } from "../lib/people-paths";
 import { getCouncilTerms } from "../services/council-terms";
@@ -43,6 +44,12 @@ export const meta: Route.MetaFunction = ({ data }) => {
     markdownAlternate(meetingPath(m, "/summary.md")),
     jsonLd(
       meetingEvent(m, meetingPath(m), description),
+      ...[meetingVideo(m, meetingPath(m), {
+        description: metaDescription(m.summary?.replace(/^\s*[-*•]\s+/gm, "").replace(/\s*\n+\s*/g, " ") || `Video recording of Langford’s ${m.title} meeting on ${date}, with a searchable transcript and agenda on this page.`),
+        thumbnailUrl: ogImageUrl(`${m.title}`, { subtitle: date, type: "meeting" }),
+        // Many recordings have no stored length; the transcript's last timestamp is close.
+        durationSeconds: m.video_duration_seconds || (data?.transcript?.length ? data.transcript[data.transcript.length - 1].end_time : null),
+      })].filter((thing): thing is NonNullable<typeof thing> => thing !== null),
       breadcrumbList([["Meetings", "/meetings"], [`${m.title} — ${date}`, meetingPath(m)]]),
     ),
   ];

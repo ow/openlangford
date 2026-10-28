@@ -212,3 +212,17 @@ describe("agenda item matter links", () => {
     });
   });
 });
+
+describe("meeting video structured data", () => {
+  it("describes the eSCRIBE recording with an ISO duration, thumbnail and its meeting event", async () => {
+    const { isoDuration, meetingVideo } = await import("../../app/lib/structured-data");
+    expect(isoDuration(5945)).toBe("PT1H39M5S");
+    expect(isoDuration(3600)).toBe("PT1H");
+    expect(isoDuration(0)).toBe("PT0S");
+    const m = { title: "Regular Council", meeting_date: "2026-10-05", video_url: "https://pub-langford.escribemeetings.com/Players/ISIStandAlonePlayer.aspx?Id=abc" };
+    const video = meetingVideo(m, "/meetings/2026-10-05-regular-council", { description: "d", thumbnailUrl: "https://openlangford.ca/api/og-image?title=x", durationSeconds: 5945 }) as any;
+    expect(video).toMatchObject({ "@type": "VideoObject", uploadDate: "2026-10-05", duration: "PT1H39M5S", embedUrl: m.video_url,
+      recordedAt: { "@id": "https://openlangford.ca/meetings/2026-10-05-regular-council#event" } });
+    expect(meetingVideo({ ...m, video_url: null }, "/x", { description: "d", thumbnailUrl: "t" })).toBeNull();
+  });
+});
