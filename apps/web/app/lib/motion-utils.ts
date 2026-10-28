@@ -61,3 +61,18 @@ export const OUTCOME_LABELS: Record<MotionOutcome, string> = {
   tabled: "Tabled",
   withdrawn: "Withdrawn",
 };
+
+const ADJOURN_RE = /^\s*(that\s+)?(the\s+)?(council|meeting|committee)?\s*(be\s+)?adjourn/i;
+
+/** Call to order, adopt agenda, adjourn…: folded away on meeting pages and left out of vote analysis. */
+export function isProceduralMotion(
+  motion: { disposition?: string | null; result?: string | null; text_content?: string | null },
+  item?: { category?: string | null } | null,
+): boolean {
+  return (
+    motion.disposition === "Procedural" ||
+    item?.category === "Procedural" ||
+    !motion.result ||
+    ADJOURN_RE.test(motion.text_content || "")
+  );
+}

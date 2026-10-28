@@ -2,7 +2,7 @@ import { isInferredChoice, voteTally } from "../../lib/vote-coverage";
 import { useMemo, useState } from "react";
 import { CheckCircle2, ChevronDown, MinusCircle, PlayCircle, XCircle } from "lucide-react";
 import type { AgendaItem, Motion } from "../../lib/types";
-import { normalizeMotionResult } from "../../lib/motion-utils";
+import { isProceduralMotion, normalizeMotionResult } from "../../lib/motion-utils";
 import { formatTimestamp } from "../../lib/timeline-utils";
 import { displayTitle, lastName } from "../../lib/display-text";
 import { cn } from "../../lib/utils";
@@ -17,8 +17,6 @@ interface MeetingDecisionsProps {
   agendaItems: AgendaItem[];
   onWatch?: (seconds: number) => void;
 }
-
-const ADJOURN_RE = /^\s*(that\s+)?(the\s+)?(council|meeting|committee)?\s*(be\s+)?adjourn/i;
 
 function cleanOrder(order?: string) {
   return (order || "").trim().replace(/^[\s(.)]+|[\s(.)]+$/g, "");
@@ -126,11 +124,7 @@ export function MeetingDecisions({ agendaItems, onWatch }: MeetingDecisionsProps
         (item.motions || []).map((motion) => ({
           motion,
           item,
-          procedural:
-            motion.disposition === "Procedural" ||
-            item.category === "Procedural" ||
-            !motion.result ||
-            ADJOURN_RE.test(motion.text_content || ""),
+          procedural: isProceduralMotion(motion, item),
         })),
       )
       .map((d, i) => ({ d, i, t: d.motion.time_offset_seconds ?? d.item.discussion_start_time ?? null }))

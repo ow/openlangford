@@ -3,13 +3,15 @@ import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { civicToday, councilTermStatus, membershipIsActiveOn, membershipOverlapsRange } from "../lib/council-terms";
 import { getCouncilTerms } from "../services/council-terms";
 import type { Route } from "./+types/alignment";
-import { getVotingAlignment } from "../services/analytics";
+import { getContestedMotions, getVotingAlignment } from "../services/analytics";
+import { cachedCompute, HOURLY_SHARED } from "../services/computed-cache.server";
+import { VoteMatrix } from "../components/alignment/vote-matrix";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getMunicipality } from "../services/municipality";
-import { Users, Info, Scale, Grid3X3 } from "lucide-react";
+import { Users, Info, Scale, Grid3X3, Rows3 } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { cn } from "../lib/utils";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PageHeader } from "../components/ui/page-header";
 import { SectionHeading } from "../components/ui/section-heading";
 import { NativeSelect } from "../components/ui/native-select";
@@ -39,7 +41,12 @@ export async function loader() {
       getVotingAlignment(supabase, municipality.id),
       getCouncilTerms(supabase, municipality.id),
     ]);
-    return { ...data, councilTerms };
+    const contestedMotions = await cachedCompute(
+      `alignment-contested-motions:${municipality.id}`,
+      () => getContestedMotions(supabase, data.votes),
+      HOURLY_SHARED,
+    );
+    return { ...data, councilTerms, contestedMotions };
   } catch (error) {
     console.error("Error loading alignment data:", error);
     throw new Response("Error loading alignment", { status: 500 });
@@ -54,7 +61,7 @@ const parseDate = (dateStr: string | null | undefined) => {
 };
 
 export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
-  const { people, votes, motions, memberships, councilTerms } = loaderData;
+  const { people, votes, motions, memberships, councilTerms, contestedMotions } = loaderData;
   const [searchParams] = useSearchParams();
   const requestedPersonId = Number(searchParams.get("person"));
   const focusedPersonId = Number.isSafeInteger(requestedPersonId) && requestedPersonId > 0
@@ -78,10 +85,13 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
     || personTerms[0] || terms[0];
   const [selectedTermId, setSelectedId] = useState<number | null>(defaultTerm?.id || null);
   const selectedTerm = terms.find((term) => term.id === selectedTermId) || defaultTerm;
-  const servedOn = (personId: number, date: Date) => {
-    const day = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-    return memberships.some((m: any) => (m.person_id || m.people?.id) === personId && membershipIsActiveOn(m, day));
-  };
+  const servedOnDay = useCallback(
+    (personId: number, day: string) =>
+      memberships.some((m: any) => (m.person_id || m.people?.id) === personId && membershipIsActiveOn(m, day)),
+    [memberships],
+  );
+  const servedOn = (personId: number, date: Date) =>
+    servedOnDay(personId, `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`);
 
   const { alignmentMatrix, consensusRate, dataQuality } = useMemo(() => {
     if (!selectedTerm) {
@@ -459,6 +469,22 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
                 </div>
               )}
             </div>
+
+            <section className="lg:col-span-12">
+              <SectionHeading
+                title="Split votes, member by member"
+                icon={Rows3}
+                description="Every motion this term where members voted on both sides, with each member's recorded vote. Unanimous and procedural motions are left out, as are motions whose minutes name only some voters."
+              />
+              <VoteMatrix
+                motions={contestedMotions}
+                members={selectedTerm.members}
+                start={selectedTerm.start_date}
+                end={selectedTerm.end_date || today}
+                servedOn={servedOnDay}
+                focusedPersonId={focusedPersonId}
+              />
+            </section>
           </div>
         )}
       </div>
