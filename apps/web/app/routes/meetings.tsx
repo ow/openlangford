@@ -55,6 +55,7 @@ import { NativeSelect } from "../components/ui/native-select";
 import { FilterBar } from "../components/ui/filter-bar";
 import { SearchField } from "../components/ui/search-field";
 import { CalendarView } from "../components/calendar-view";
+import { MeetingYearHeatmap } from "../components/meeting-year-heatmap";
 import {
   meetingPeriod,
   meetingPeriodLabel,
@@ -445,6 +446,9 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
           }
         />
 
+        {view !== "calendar" && !loadError && meetings.length > 0 && (
+          <MeetingYearHeatmap year={selectedYear} meetings={filtered} statsMap={statsMap} />
+        )}
         <h2 className="mb-4 text-sm font-semibold text-zinc-600">
           Meetings in {periodLabel}
         </h2>

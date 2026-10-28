@@ -7,6 +7,7 @@ import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { unavailable } from "../lib/loader-errors";
 import { getPropertyBySlug, propertyPath } from "../services/properties";
 import { MattersMap } from "../components/matters-map";
+import { RecordsSparkline } from "../components/records-sparkline";
 import { Badge } from "../components/ui/badge";
 import { DetailHeader } from "../components/ui/detail-header";
 import { SectionHeading } from "../components/ui/section-heading";
@@ -87,12 +88,14 @@ function Unlink({ field, id }: { field: "matter_id" | "agenda_item_id"; id: numb
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
-  const { property, matters, items, nearby, lots, isStreet, streetSlug, isAdmin } = loaderData;
+  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, isAdmin } = loaderData;
   const geo = property.geo as { lat: number; lng: number } | null;
   const summary: string | undefined = (property as any).meta?.summary || undefined;
   const dates = [...matters.flatMap((m: any) => [m.first_seen, m.last_seen]), ...items.map((i: any) => i.meetings?.meeting_date)]
     .filter(Boolean)
     .sort();
+  // A street's span includes its lots, matching the sparkline.
+  if (isStreet && activity.length) dates.splice(0, dates.length, String(activity[0].year), String(activity.at(-1)!.year));
   // The map draws matters at their locations; every matter here is at this lot.
   // A street page pins each lot that has coordinates instead.
   const pins = isStreet
@@ -116,6 +119,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             ) : null,
           ]}
           title={property.address}
+          actions={activity.length > 1 ? <RecordsSparkline data={activity} /> : undefined}
           description={
             summary ||
             (isStreet
