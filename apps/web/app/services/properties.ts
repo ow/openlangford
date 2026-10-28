@@ -43,7 +43,7 @@ export async function getPropertiesForMatter(supabase: SupabaseClient, matterId:
 
 /** One property: its matters (newest activity first) and agenda items that named it outside any matter. */
 export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) {
-  const { data: property, error } = await supabase.from("properties").select("id, slug, address, civic_number, street, geo").eq("slug", slug).maybeSingle();
+  const { data: property, error } = await supabase.from("properties").select("id, slug, address, civic_number, street, geo, meta").eq("slug", slug).maybeSingle();
   if (error) throw error;
   if (!property) return null;
   const { data: links, error: linksError } = await supabase

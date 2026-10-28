@@ -20,7 +20,11 @@ export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.property) return [{ title: `Property | ${SITE_NAME}` }];
   const { property, matters } = data;
   const title = `${property.address} | ${SITE_NAME}`;
-  const description = matters.length
+  // The pipeline's property-summaries stage writes a plain-language overview for addresses with 2+ records.
+  const summary: string | undefined = (property as any).meta?.summary || undefined;
+  const description = summary
+    ? `${property.address}, Langford: ${summary}`
+    : matters.length
     ? `${matters.length} council ${matters.length === 1 ? "matter" : "matters"} about ${property.address}, Langford: ${matters
         .slice(0, 3)
         .map((m: any) => matterTitle(m))
@@ -81,6 +85,7 @@ const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
   const { property, matters, items, nearby, lots, isStreet, streetSlug, isAdmin } = loaderData;
   const geo = property.geo as { lat: number; lng: number } | null;
+  const summary: string | undefined = (property as any).meta?.summary || undefined;
   const dates = [...matters.flatMap((m: any) => [m.first_seen, m.last_seen]), ...items.map((i: any) => i.meetings?.meeting_date)]
     .filter(Boolean)
     .sort();
@@ -108,7 +113,8 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           ]}
           title={property.address}
           description={
-            isStreet
+            summary ||
+            (isStreet
               ? `${lots.length} ${lots.length === 1 ? "address" : "addresses"} on ${property.address} in council records${
                   matters.length || items.length ? `, plus ${matters.length + items.length} about the street itself` : ""
                 }.`
@@ -116,7 +122,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
               ? `Everything Council considered about this lot: ${matters.length} ${matters.length === 1 ? "matter" : "matters"}${
                   items.length ? ` and ${items.length} other agenda ${items.length === 1 ? "item" : "items"}` : ""
                 }. Developments that span several lots also appear on each lot's page.`
-              : "Agenda items that named this address."
+              : "Agenda items that named this address.")
           }
         />
 
