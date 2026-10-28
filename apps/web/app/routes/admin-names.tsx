@@ -160,7 +160,7 @@ const SOURCE_LABEL: Record<string, string> = {
 function NameCard({ name, busy }: { name: any; busy: boolean }) {
   const [choice, setChoice] = useState<string>(name.options[0]);
   return (
-    <li className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <li className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
       <div className="px-5 pt-4">
         <p className="text-sm text-zinc-500">Heard on the recording</p>
         <h2 className="text-xl font-semibold text-zinc-900">{name.transcribed}</h2>

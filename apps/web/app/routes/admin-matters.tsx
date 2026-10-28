@@ -356,7 +356,7 @@ function ProposalCard({ proposal, busy }: { proposal: any; busy: boolean }) {
   const [canonical, ...absorbed] = matters;
 
   return (
-    <li className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <li className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 bg-zinc-50/70 px-5 py-3 text-sm">
         <p className="text-zinc-700">
           <span className="text-zinc-500">Proposed because </span>
@@ -500,7 +500,7 @@ export default function AdminMatters({ loaderData, actionData }: Route.Component
           description="Possible duplicates the resolver wasn't sure about. Merging is reversible: the later matters become aliases of the earliest, and their history shows on its page."
         />
 
-        <dl className="mb-8 grid gap-x-6 gap-y-2 rounded-2xl border border-zinc-200 bg-white px-5 py-4 text-sm sm:grid-cols-3">
+        <dl className="mb-8 grid gap-x-6 gap-y-2 rounded-2xl border border-zinc-200 bg-surface px-5 py-4 text-sm sm:grid-cols-3">
           {VERDICTS.map(([key, label, meaning]) => (
             <div key={key}>
               <dt className="font-medium text-zinc-900">{label}</dt>

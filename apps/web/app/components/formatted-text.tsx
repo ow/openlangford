@@ -122,7 +122,7 @@ export function FormattedText({
           className,
         )}
       >
-        <div className="max-w-[210mm] mx-auto bg-white shadow-xl shadow-zinc-900/5 border border-zinc-200/50 min-h-[297mm] p-[20mm] md:p-[25mm] print:shadow-none print:border-none print:p-0 print:w-full">
+        <div className="max-w-[210mm] mx-auto bg-surface shadow-xl shadow-zinc-900/5 border border-zinc-200/50 min-h-[297mm] p-[20mm] md:p-[25mm] print:shadow-none print:border-none print:p-0 print:w-full">
           {/* Document Header */}
           <div className="mb-12 border-b-2 border-zinc-900 pb-6 flex justify-between items-end">
             <div className="space-y-2">
@@ -174,9 +174,9 @@ export function FormattedText({
   const blocks = content ? parseMinutesIntoBlocks(content) : [];
 
   return (
-    <div className={cn("bg-white min-h-screen", className)}>
+    <div className={cn("bg-surface min-h-screen", className)}>
       <div className="max-w-3xl mx-auto py-16 px-8">
-        <div className="mb-8 rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+        <div className="mb-8 rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
           This is a preview of the extracted text. The fully formatted version is still being processed.
         </div>
         {blocks.map((block, idx) => (

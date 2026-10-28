@@ -402,7 +402,7 @@ function LetterRow({ meeting, entry, hidden, handlers }: { meeting: MeetingGroup
               key={c.itemId}
               type="button"
               onClick={() => decide("place", c.itemId)}
-              className="flex w-full items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-left text-sm text-zinc-800 transition-colors hover:border-brand-300 hover:bg-brand-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="flex w-full items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-surface px-3 py-2 text-left text-sm text-zinc-800 transition-colors hover:border-brand-300 hover:bg-brand-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <span className="min-w-0 break-words">
                 {label}
@@ -491,7 +491,7 @@ function MeetingQueue({ meeting, hidden, handlers }: { meeting: MeetingGroup; hi
   const noItem = visible.filter((e) => e.likelyNone);
   const decideCount = toDecide.filter((e) => !hidden.has(e.id)).length;
   return (
-    <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-zinc-100 px-4 py-3">
         <h2 className="text-base font-semibold text-zinc-900">
           <Link to={meetingPath(meeting)} target="_blank" className="hover:text-brand-700 hover:underline">

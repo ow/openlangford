@@ -1,3 +1,4 @@
+import { THEME_SCRIPT } from "./lib/theme";
 import { getSearchBudgetForDisplay } from "./services/search-budget.server";
 import { SITE_NAME } from "./lib/site-name";
 import { SITE_ORIGIN } from "./lib/og";
@@ -118,16 +119,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   // address and filtered list views aren't indexed as duplicates.
   const { pathname } = useLocation();
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {!pathname.startsWith("/email/unsubscribe/") && <link rel="canonical" href={`${SITE_ORIGIN}${pathname === "/" ? "/" : pathname.replace(/\/+$/, "")}`} />}
         <Meta />
         <Links />
         <link rel="help" type="text/markdown" href={`${SITE_ORIGIN}/agents.md`} title="Public Markdown records" />
       </head>
-      <body className="antialiased">
+      <body className="bg-surface text-zinc-900 antialiased">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -205,15 +207,15 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
           <a href="/" className="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
             Go home
           </a>
-          <a href="/meetings" className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:border-brand-300 hover:text-brand-700">
+          <a href="/meetings" className="rounded-full border border-zinc-200 bg-surface px-4 py-2 text-sm font-semibold text-zinc-700 hover:border-brand-300 hover:text-brand-700">
             Browse meetings
           </a>
-          <a href="/search" className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:border-brand-300 hover:text-brand-700">
+          <a href="/search" className="rounded-full border border-zinc-200 bg-surface px-4 py-2 text-sm font-semibold text-zinc-700 hover:border-brand-300 hover:text-brand-700">
             Search
           </a>
         </div>
         {stack && (
-          <pre className="mt-10 w-full overflow-x-auto rounded-xl border border-zinc-200 bg-white p-4 text-left text-xs text-zinc-600">
+          <pre className="mt-10 w-full overflow-x-auto rounded-xl border border-zinc-200 bg-surface p-4 text-left text-xs text-zinc-600">
             <code>{stack}</code>
           </pre>
         )}

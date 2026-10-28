@@ -61,7 +61,7 @@ export function SearchResults({
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-5 bg-white rounded-2xl border border-zinc-200 animate-pulse"
+              className="p-5 bg-surface rounded-2xl border border-zinc-200 animate-pulse"
             >
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-4 w-4 bg-zinc-200 rounded" />
@@ -80,7 +80,7 @@ export function SearchResults({
       {/* Results list */}
       {!isLoading && results.length > 0 && (
         <div className="space-y-4">
-          <ul className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm divide-y divide-zinc-100">
+          <ul className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm divide-y divide-zinc-100">
             {groups.map((group) =>
               group.meeting && group.items.length > 1 ? (
                 <li key={group.key}>
@@ -113,7 +113,7 @@ export function SearchResults({
           {hasMore && (
             <button
               onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-              className="mx-auto flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:border-brand-300 hover:text-brand-700"
+              className="mx-auto flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-5 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:border-brand-300 hover:text-brand-700"
             >
               Show more ({results.length - visibleCount} remaining)
             </button>

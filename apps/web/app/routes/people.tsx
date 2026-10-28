@@ -85,8 +85,8 @@ export default function PeopleList({ loaderData }: Route.ComponentProps) {
           description="Who serves, who has been elected, and the record of each council term."
           actions={
             <>
-              <Link className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700" to="/elections">Elections</Link>
-              <Link className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700" to={`/alignment${selected ? `?term=${selected.id}` : ""}`}>Voting alignment</Link>
+              <Link className="rounded-full border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700" to="/elections">Elections</Link>
+              <Link className="rounded-full border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700" to={`/alignment${selected ? `?term=${selected.id}` : ""}`}>Voting alignment</Link>
             </>
           }
         />

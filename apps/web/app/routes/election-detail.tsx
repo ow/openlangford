@@ -91,7 +91,7 @@ export default function ElectionDetail({ loaderData }: Route.ComponentProps) {
                 href={election.source_url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:border-brand-200 hover:text-brand-700"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:border-brand-200 hover:text-brand-700"
               >
                 {hasResults ? "Source results" : "Council term source"}
               </a>
@@ -111,7 +111,7 @@ export default function ElectionDetail({ loaderData }: Route.ComponentProps) {
         )}
 
         {!hasResults ? (
-          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500">
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface p-8 text-center text-sm text-zinc-500">
             This election is recorded for council term history. Candidate
             results have not been added.
           </div>

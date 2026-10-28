@@ -149,7 +149,7 @@ const subscriptionTypeTone: Record<
   digest: "brand",
 };
 
-const CARD = "rounded-2xl border border-zinc-200 bg-white shadow-sm";
+const CARD = "rounded-2xl border border-zinc-200 bg-surface shadow-sm";
 const LABEL = "text-sm font-medium text-zinc-700";
 const HINT = "text-xs text-zinc-500";
 
@@ -261,7 +261,7 @@ function TopicCategoryGrid({
 
   if (topics.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
         Topic categories haven't been set up yet.
       </div>
     );
@@ -283,7 +283,7 @@ function TopicCategoryGrid({
               "flex items-center gap-2.5 rounded-lg border p-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40",
               subscribed
                 ? "border-brand-500 bg-brand-50"
-                : "border-zinc-200 bg-white hover:border-zinc-300",
+                : "border-zinc-200 bg-surface hover:border-zinc-300",
               isLoading && "opacity-50",
             )}
           >
@@ -293,7 +293,7 @@ function TopicCategoryGrid({
                 "flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 transition-colors",
                 subscribed
                   ? "border-brand-600 bg-brand-600"
-                  : "border-zinc-300 bg-white",
+                  : "border-zinc-300 bg-surface",
               )}
             >
               {isLoading ? (
@@ -371,7 +371,7 @@ function KeywordManager({
           onChange={(e) => setKeywordInput(e.target.value)}
           placeholder='e.g. "housing", "bike lanes"'
           aria-label="New keyword"
-          className="h-10 bg-white"
+          className="h-10 bg-surface"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
@@ -479,7 +479,7 @@ function AddressField({
             name="address"
             value={address}
             autoComplete="street-address"
-            className="h-10 bg-white"
+            className="h-10 bg-surface"
             onChange={(e) => {
               setAddress(e.target.value);
               setGeocodeResult(null);
@@ -600,7 +600,7 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
                   id="display_name"
                   name="display_name"
                   autoComplete="name"
-                  className="h-10 bg-white"
+                  className="h-10 bg-surface"
                   defaultValue={profile?.display_name || ""}
                   placeholder="How you'd like to be addressed"
                 />
@@ -615,7 +615,7 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
                   type="email"
                   name="notification_email"
                   autoComplete="email"
-                  className="h-10 bg-white"
+                  className="h-10 bg-surface"
                   defaultValue={profile?.notification_email || user.email || ""}
                   placeholder="Where to send alerts"
                 />
@@ -661,7 +661,7 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
                       return (
                         <label
                           key={opt.value}
-                          className="cursor-pointer rounded-lg border border-zinc-200 bg-white px-2 py-2 text-center text-sm font-medium tabular-nums text-zinc-600 transition-colors hover:border-zinc-300 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-800 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500/40"
+                          className="cursor-pointer rounded-lg border border-zinc-200 bg-surface px-2 py-2 text-center text-sm font-medium tabular-nums text-zinc-600 transition-colors hover:border-zinc-300 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-800 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500/40"
                         >
                           <input
                             type="radio"
@@ -780,7 +780,7 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
             />
 
             {otherSubscriptions.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+              <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                 You're not following anything yet. Open a{" "}
                 <Link to="/matters" className="font-medium text-brand-700 hover:underline">
                   matter

@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 import { ButtonGroup } from "../ui/button-group";
 import { cn, formatRelativeTime } from "../../lib/utils";
 
-const card = "rounded-2xl border border-zinc-200 bg-white shadow-sm";
+const card = "rounded-2xl border border-zinc-200 bg-surface shadow-sm";
 
 function formatTokens(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`;
@@ -30,7 +30,7 @@ function formatMs(ms: number | null) {
 function UsageTable({ window }: { window: AiUsageWindow }) {
   if (window.stages.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
         No model calls recorded in the last {window.days} days.
       </div>
     );
@@ -138,7 +138,7 @@ export function AiUsageSection({ usage }: { usage: AiUsageDashboard }) {
       </div>
 
       {!usage.available ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
           AI usage isn't available{usage.error ? `: ${usage.error}` : "."}
         </div>
       ) : (

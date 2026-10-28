@@ -44,7 +44,7 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
   const lead = decisions.slice(0, 3);
   return (
     <>
-      <div className="relative overflow-hidden bg-gradient-to-b from-brand-600 to-brand-800 text-white">
+      <div className="light-scope relative overflow-hidden bg-gradient-to-b from-brand-600 to-brand-800 text-white">
         <div className="relative container mx-auto max-w-6xl px-4 pt-12 pb-28 md:pt-16">
           <h1 className="text-sm font-semibold text-brand-200">What's happening in {shortName}</h1>
           <p className="mt-2 max-w-3xl text-3xl md:text-5xl font-extrabold leading-[1.05] tracking-tight">
@@ -53,7 +53,7 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
 
           <ol className="mt-10 grid gap-8 md:grid-cols-3 md:gap-6 lg:gap-8">
             {lead.map((d, i) => (
-              <li key={d.id} className="border-t border-white/25 pt-5">
+              <li key={d.id} className="border-t border-surface/25 pt-5">
                 <Link
                   to={meetingPath({ id: d.meetingId, slug: d.meetingSlug })}
                   className="group flex h-full flex-col"
@@ -89,14 +89,14 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
 
       {upcoming.length > 0 && (
         // Top of the strip overlaps the teal; the rest blends into the white section below.
-        <div className="relative z-10 -mt-24 bg-[linear-gradient(to_bottom,transparent_6rem,white_6rem)]">
+        <div className="relative z-10 -mt-24 bg-[linear-gradient(to_bottom,transparent_6rem,var(--color-surface)_6rem)]">
           <div className="container mx-auto max-w-6xl px-4">
           <ol className="grid gap-3 md:grid-cols-3 md:gap-6 lg:gap-8">
             {upcoming.slice(0, 3).map((m, i) => (
               <li key={m.id}>
                 <Link
                   to={meetingPath(m)}
-                  className="group flex h-full items-center gap-4 rounded-2xl bg-white p-4 shadow-lg ring-1 ring-black/5 transition-shadow hover:shadow-xl md:p-5"
+                  className="group flex h-full items-center gap-4 rounded-2xl bg-surface p-4 shadow-lg ring-1 ring-black/5 transition-shadow hover:shadow-xl md:p-5"
                 >
                   <span className="flex w-14 shrink-0 flex-col items-center rounded-xl bg-brand-50 py-2 text-brand-800">
                     <span className="text-[11px] font-bold uppercase tracking-wide">

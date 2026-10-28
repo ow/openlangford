@@ -378,7 +378,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-sm font-medium text-zinc-600 transition-colors hover:border-brand-300 hover:text-brand-700"
+                    className="rounded-full border border-zinc-200 bg-surface px-3 py-1 text-sm font-medium text-zinc-600 transition-colors hover:border-brand-300 hover:text-brand-700"
                   >
                     {link.label}
                   </a>
@@ -392,7 +392,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
           {/* Left column: video, summary, facts */}
           <div className="space-y-6 lg:sticky lg:top-20 lg:col-span-5">
             {hasVideo ? (
-              <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 <MeetingPlayer
                   ref={playerRef}
                   videoUrl={meeting.video_url}
@@ -400,12 +400,12 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                 />
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+              <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                 No video was published for this meeting, so the timeline and transcript may be empty.
               </div>
             )}
 
-            <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <section className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
               <h2 className="mb-2 text-sm font-semibold text-zinc-900">Summary</h2>
               {meeting.summary ? (
                 <div className="text-sm">
@@ -455,7 +455,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                     onSeek={hasVideo ? openInVimeo : undefined}
                   />
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+                  <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                     The speaking timeline needs a transcript, and this meeting hasn't been transcribed yet.
                   </div>
                 )}
@@ -468,7 +468,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                       : "No agenda items were recorded for this meeting."}
                   </p>
                   {agendaItems.length > 0 && (
-                    <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                    <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                       {agendaItems.map((item: any) => (
                         <AgendaCard
                           key={item.id}
@@ -502,11 +502,11 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
 
               <TabsContent value="transcript" className="mt-0 outline-none">
                 {transcript.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+                  <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                     No transcript is available for this meeting yet.
                   </div>
                 ) : (
-                  <div className="flex h-[75vh] min-h-[480px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                  <div className="flex h-[75vh] min-h-[480px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                     <div className="flex flex-col gap-3 border-b border-zinc-100 p-4 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-sm text-zinc-500">
                         <span className="font-semibold tabular-nums text-zinc-900">{filteredTranscript.length}</span>

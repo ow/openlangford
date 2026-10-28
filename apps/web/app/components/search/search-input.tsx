@@ -46,7 +46,7 @@ export function SearchInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={isStreaming}
-        className="pl-12 pr-12 h-14 bg-white border-zinc-200 text-lg rounded-2xl shadow-sm focus:ring-4 focus:ring-brand-500/10 transition-all"
+        className="pl-12 pr-12 h-14 bg-surface border-zinc-200 text-lg rounded-2xl shadow-sm focus:ring-4 focus:ring-brand-500/10 transition-all"
       />
       {isStreaming && (
         <div className="absolute right-4 top-1/2 -translate-y-1/2">

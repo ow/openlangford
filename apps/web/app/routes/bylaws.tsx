@@ -76,7 +76,7 @@ export default function Bylaws({ loaderData }: Route.ComponentProps) {
                   aria-label="Search bylaws"
                   value={filterText}
                   onChange={(e) => setFilterText(e.target.value)}
-                  className="bg-white pl-9"
+                  className="bg-surface pl-9"
                 />
               </div>
             ) : undefined
@@ -84,7 +84,7 @@ export default function Bylaws({ loaderData }: Route.ComponentProps) {
         />
 
         {!hasBylaws ? (
-          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface px-6 py-16 text-center">
             <FileText className="mx-auto mb-3 h-8 w-8 text-zinc-300" />
             <p className="text-base font-semibold text-zinc-900">
               No bylaws yet
@@ -103,7 +103,7 @@ export default function Bylaws({ loaderData }: Route.ComponentProps) {
             </p>
           </div>
         ) : filteredBylaws.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface px-6 py-16 text-center">
             <Search className="mx-auto mb-3 h-8 w-8 text-zinc-300" />
             <p className="text-sm text-zinc-500">
               No bylaws match &ldquo;{filterText}&rdquo;.
@@ -115,7 +115,7 @@ export default function Bylaws({ loaderData }: Route.ComponentProps) {
               {filteredBylaws.length.toLocaleString()}{" "}
               {filteredBylaws.length === 1 ? "bylaw" : "bylaws"}
             </p>
-            <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+            <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface shadow-sm">
               {filteredBylaws.map((bylaw) => (
                 <li key={bylaw.id}>
                   <Link

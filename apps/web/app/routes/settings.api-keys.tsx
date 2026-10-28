@@ -20,7 +20,7 @@ import { Trash2 } from "lucide-react";
 import { cn, formatDate } from "../lib/utils";
 import { siteName } from "../lib/site-name";
 
-const CARD = "rounded-2xl border border-zinc-200 bg-white shadow-sm";
+const CARD = "rounded-2xl border border-zinc-200 bg-surface shadow-sm";
 
 interface ApiKey {
   id: string;
@@ -203,14 +203,14 @@ export default function ApiKeysPage({
               </div>
 
               <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-                <code className="flex-1 select-all break-all rounded-lg border border-amber-200 bg-white px-4 py-3 font-mono text-sm text-zinc-900">
+                <code className="flex-1 select-all break-all rounded-lg border border-amber-200 bg-surface px-4 py-3 font-mono text-sm text-zinc-900">
                   {actionData.newKey}
                 </code>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => copyKey(actionData.newKey as string)}
-                  className="h-auto min-h-10 flex-shrink-0 bg-white"
+                  className="h-auto min-h-10 flex-shrink-0 bg-surface"
                   aria-live="polite"
                 >
                   {copied ? "Copied" : "Copy key"}
@@ -260,7 +260,7 @@ export default function ApiKeysPage({
             )}
 
             {activeKeys.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+              <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                 No active keys. Create one to start using the {siteName()} API.
               </div>
             ) : (

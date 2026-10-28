@@ -91,7 +91,7 @@ export default function AdminUser({ loaderData }: Route.ComponentProps) {
         </Link>
       </div>
       {!user.hasProfile && (
-        <p className="mb-5 rounded-xl border border-zinc-200 bg-white p-4 text-sm">
+        <p className="mb-5 rounded-xl border border-zinc-200 bg-surface p-4 text-sm">
           This Auth account has no saved profile yet. It is still included in
           the user directory.
         </p>

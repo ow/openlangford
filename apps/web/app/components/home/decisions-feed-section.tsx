@@ -47,7 +47,7 @@ export function DecisionsFeedSection({ decisions }: DecisionsFeedSectionProps) {
               className={cn(
                 "px-3 py-1 rounded-md text-xs font-semibold transition-colors",
                 filter === "recent"
-                  ? "bg-white text-zinc-900 shadow-sm"
+                  ? "bg-surface text-zinc-900 shadow-sm"
                   : "text-zinc-500 hover:text-zinc-700"
               )}
             >
@@ -58,7 +58,7 @@ export function DecisionsFeedSection({ decisions }: DecisionsFeedSectionProps) {
               className={cn(
                 "px-3 py-1 rounded-md text-xs font-semibold transition-colors",
                 filter === "divided"
-                  ? "bg-white text-zinc-900 shadow-sm"
+                  ? "bg-surface text-zinc-900 shadow-sm"
                   : "text-zinc-500 hover:text-zinc-700"
               )}
             >
@@ -74,13 +74,13 @@ export function DecisionsFeedSection({ decisions }: DecisionsFeedSectionProps) {
       />
 
       {displayedDecisions.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6 text-center">
+        <div className="bg-surface rounded-2xl border border-zinc-200 shadow-sm p-6 text-center">
           <p className="text-sm text-zinc-500">
             No recorded dissent in these recent decisions
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden divide-y divide-zinc-100">
+        <div className="bg-surface rounded-2xl border border-zinc-200 shadow-sm overflow-hidden divide-y divide-zinc-100">
           {displayedDecisions.map((decision) => (
             <Link
               key={decision.id}

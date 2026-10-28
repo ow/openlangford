@@ -89,7 +89,7 @@ export function AskQuestion({
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder || defaultPlaceholder}
-            className={cn("flex-1 bg-white", !showHeader && "h-11 text-base")}
+            className={cn("flex-1 bg-surface", !showHeader && "h-11 text-base")}
           />
           <Button
             type="submit"

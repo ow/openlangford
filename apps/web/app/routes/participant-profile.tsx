@@ -53,7 +53,7 @@ export default function ParticipantProfile({ loaderData }: Route.ComponentProps)
         <Link to="/participants" className="inline-flex items-center text-sm font-medium text-zinc-600 hover:text-brand-700">
           <ChevronLeft className="h-4 w-4" aria-hidden="true" /> Public participants
         </Link>
-        <header className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+        <header className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-100">
               {person.image_url ? <img src={person.image_url} alt={person.name} className="h-full w-full object-cover" /> : <User className="h-8 w-8 text-zinc-400" aria-hidden="true" />}
@@ -73,11 +73,11 @@ export default function ParticipantProfile({ loaderData }: Route.ComponentProps)
               ["Meetings with recorded participation", String(participation.meetingCount)],
               ["Meetings documented in minutes", String(participation.documentedMeetingCount)],
               ["Audio-attributed speaking time", participation.totalSeconds > 0 ? duration(participation.totalSeconds) : "Not available"],
-            ].map(([label, value]) => <div key={label} className="rounded-2xl border border-zinc-200 bg-white p-5"><dt className="text-sm text-zinc-500">{label}</dt><dd className="mt-2 text-2xl font-bold tabular-nums text-zinc-900">{value}</dd></div>)}
+            ].map(([label, value]) => <div key={label} className="rounded-2xl border border-zinc-200 bg-surface p-5"><dt className="text-sm text-zinc-500">{label}</dt><dd className="mt-2 text-2xl font-bold tabular-nums text-zinc-900">{value}</dd></div>)}
           </dl>
           <p className="text-sm leading-relaxed text-zinc-500">These counts cover identified public appearances in the available records. Audio attribution is incomplete; minutes-documented appearances do not establish speaking time.</p>
           {history && <PublicParticipation history={history} beforeCouncil={false} />}
-          <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             <div className="p-5 sm:p-6"><h2 className="text-lg font-bold text-zinc-900">Recorded audio appearances</h2><p className="mt-1 text-sm text-zinc-500">Open a meeting to hear the attributed speech in context.</p></div>
             {appearances.length ? <ol className="divide-y divide-zinc-100 border-t border-zinc-100">
               {appearances.map(appearance => <li key={`${appearance.meetingId}-${appearance.agendaItemId || "none"}`} className="p-5 sm:px-6">
@@ -87,7 +87,7 @@ export default function ParticipantProfile({ loaderData }: Route.ComponentProps)
               </li>)}
             </ol> : <p className="border-t border-zinc-100 p-5 text-sm text-zinc-500">No audio has been attributed to this participant.</p>}
           </section>
-        </> : <div className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm text-zinc-600">No public participation has been identified in the available records.</div>}
+        </> : <div className="rounded-2xl border border-zinc-200 bg-surface p-6 text-sm text-zinc-600">No public participation has been identified in the available records.</div>}
       </div>
     </div>
   );

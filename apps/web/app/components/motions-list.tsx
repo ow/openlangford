@@ -56,7 +56,7 @@ export function MotionsList({ agendaItems, onWatchVideo }: MotionsListProps) {
 
   if (allMotions.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
         No motions were recorded for this meeting.
       </div>
     );
@@ -91,7 +91,7 @@ export function MotionsList({ agendaItems, onWatchVideo }: MotionsListProps) {
         }
       />
 
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
         <div className="border-b border-zinc-100 px-5 py-3 text-sm text-zinc-500">
           <span className="font-semibold tabular-nums text-zinc-900">{filteredMotions.length}</span>{" "}
           {filtered ? `of ${allMotions.length} ` : ""}

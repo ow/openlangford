@@ -17,6 +17,21 @@ import { Badge } from "./ui/badge";
 const DEFAULT_CENTER = { lat: 48.4496, lng: -123.5045 };
 // OpenFreeMap's public, keyless service. Do not substitute a metered provider.
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/positron";
+const MAP_STYLE_DARK = "https://tiles.openfreemap.org/styles/dark";
+
+/** Follows the html.dark class (system setting or the visitor's theme choice). */
+function useDarkMode() {
+  const [dark, setDark] = useState(() => typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
+  useEffect(() => {
+    const root = document.documentElement;
+    const read = () => setDark(root.classList.contains("dark"));
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+  return dark;
+}
 
 export function MattersMap({
   matters,
@@ -53,6 +68,7 @@ export function MattersMap({
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const dark = useDarkMode();
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [popupHost, setPopupHost] = useState<HTMLDivElement | null>(null);
   const selected = markers.find((marker) => marker.key === selectedKey);
@@ -97,7 +113,7 @@ export function MattersMap({
             : DEFAULT_CENTER;
         const current = (instance = new maplibre.Map({
           container: container.current,
-          style: MAP_STYLE,
+          style: dark ? MAP_STYLE_DARK : MAP_STYLE,
           center: [center.lng, center.lat],
           zoom: isMapLocation(focus) ? 16 : 12.8,
           maxZoom: 19,
@@ -283,7 +299,7 @@ export function MattersMap({
       observer?.disconnect();
       instance?.remove();
     };
-  }, [attempt]);
+  }, [attempt, dark]);
 
   useEffect(() => {
     if (!map) return;
@@ -395,7 +411,7 @@ export function MattersMap({
             </p>
             <button
               type="button"
-              className="rounded-lg border border-zinc-300 bg-white px-4 py-2 font-semibold text-brand-700"
+              className="rounded-lg border border-zinc-300 bg-surface px-4 py-2 font-semibold text-brand-700"
               onClick={() => setAttempt((value) => value + 1)}
             >
               Retry map
@@ -410,7 +426,7 @@ export function MattersMap({
         {matters.length === 1 ? "matter" : "matters"}
       </p>}
       {markers.length === 0 && (
-        <p className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+        <p className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
           None of these addresses have been geocoded yet, so there's nothing to
           plot on the map.
         </p>
@@ -421,7 +437,7 @@ export function MattersMap({
         </p>
       )}
       {!compact && <details
-        className="rounded-lg border border-zinc-200 bg-white p-3 text-sm"
+        className="rounded-lg border border-zinc-200 bg-surface p-3 text-sm"
         open={failed || undefined}
       >
         <summary className="cursor-pointer font-medium text-brand-700">

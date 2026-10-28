@@ -86,7 +86,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-const card = "rounded-2xl border border-zinc-200 bg-white shadow-sm";
+const card = "rounded-2xl border border-zinc-200 bg-surface shadow-sm";
 const logPanel =
   "overflow-auto rounded-xl border border-zinc-200 bg-zinc-50 p-3 font-mono text-xs leading-relaxed text-zinc-800";
 

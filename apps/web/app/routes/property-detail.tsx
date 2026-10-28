@@ -148,7 +148,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                 icon={Landmark}
                 description={isStreet ? "Road works, closures and other matters about the street itself." : "Applications, permits and bylaws for this address, most recent first."}
               />
-              <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {matters.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
                   return (
@@ -182,7 +182,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           {items.length > 0 && (
             <section>
               <SectionHeading title="Other mentions" icon={FileText} description="Agenda items that named this address outside any matter." />
-              <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {items.map((item: any) => (
                   <li key={item.id}>
                     <Link to={`${meetingPath(item.meetings)}#item-${item.id}`} className="group block px-5 py-4 hover:bg-zinc-50">
@@ -234,7 +234,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                     : `What Council has considered at neighbouring addresses on ${property.street}.`
                 }
               />
-              <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {nearby.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
                   return (

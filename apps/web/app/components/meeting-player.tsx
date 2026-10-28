@@ -72,7 +72,7 @@ export const MeetingPlayer = forwardRef<MeetingPlayerHandle, MeetingPlayerProps>
         </div>
 
         {/* Now discussing */}
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}

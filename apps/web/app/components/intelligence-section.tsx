@@ -91,7 +91,7 @@ export function IntelligenceSection({
             type="button"
             onClick={generateIntelligence}
             disabled={loading}
-            className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-sm font-medium text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700 disabled:cursor-wait disabled:opacity-60"
+            className="rounded-full border border-zinc-200 bg-surface px-3 py-1 text-sm font-medium text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700 disabled:cursor-wait disabled:opacity-60"
           >
             {loading ? "Analyzing discussion…" : "Analyze the discussion"}
           </button>
@@ -146,7 +146,7 @@ export function IntelligenceSection({
           {questions.length > 0 && (
             <div>
               <h5 className="mb-2 text-sm font-semibold text-zinc-900">Questions asked</h5>
-              <ul className="divide-y divide-zinc-200 overflow-hidden rounded-lg border border-zinc-200 bg-white">
+              <ul className="divide-y divide-zinc-200 overflow-hidden rounded-lg border border-zinc-200 bg-surface">
                 {questions.map((q: any, idx: number) => (
                   <li key={idx} className="px-3 py-2.5 text-sm">
                     <p className="font-medium text-zinc-900">{q.question}</p>

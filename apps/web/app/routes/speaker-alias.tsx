@@ -646,7 +646,7 @@ function PersonTypeahead({
             compact ? "h-8 px-2 text-xs" : "h-9 px-2.5 text-sm",
             assignedPerson
               ? "border-brand-200 bg-brand-50 font-medium text-brand-800 hover:border-brand-300"
-              : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300",
+              : "border-zinc-200 bg-surface text-zinc-500 hover:border-zinc-300",
           )}
           onClick={() => openMenu()}
           onKeyDown={handleTriggerKeyDown}
@@ -690,7 +690,7 @@ function PersonTypeahead({
             ref={listRef}
             id={listboxId}
             role="listbox"
-            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border border-zinc-200 bg-white py-1 shadow-lg"
+            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border border-zinc-200 bg-surface py-1 shadow-lg"
           >
             {items.length === 0 && query.trim().length === 0 && (
               <div className="px-3 py-2 text-xs text-zinc-500">
@@ -703,7 +703,7 @@ function PersonTypeahead({
                   <div
                     key={`h-${item.label}`}
                     role="presentation"
-                    className="sticky top-0 bg-white/95 px-3 pb-1 pt-2 text-xs font-medium text-zinc-500"
+                    className="sticky top-0 bg-surface/95 px-3 pb-1 pt-2 text-xs font-medium text-zinc-500"
                   >
                     {item.label}
                   </div>
@@ -1193,14 +1193,14 @@ export default function SpeakerAliasTool({ loaderData }: any) {
     cn(
       "flex flex-1 items-center justify-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-brand-500/20",
       active
-        ? "border-brand-600 bg-white text-brand-800"
+        ? "border-brand-600 bg-surface text-brand-800"
         : "border-transparent text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800",
     );
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-zinc-50">
       {/* Header */}
-      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-zinc-200 bg-white px-4">
+      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-zinc-200 bg-surface px-4">
         <h1 className="shrink-0 text-base font-semibold text-zinc-900">
           Speaker aliases
         </h1>
@@ -1249,7 +1249,7 @@ export default function SpeakerAliasTool({ loaderData }: any) {
       {currentMeeting ? (
         <div className="flex flex-1 overflow-hidden">
           {/* Left Panel: Video & Aliases */}
-          <div className="z-10 flex w-[560px] shrink-0 flex-col overflow-y-auto border-r border-zinc-200 bg-white">
+          <div className="z-10 flex w-[560px] shrink-0 flex-col overflow-y-auto border-r border-zinc-200 bg-surface">
             <div className="group relative sticky top-0 aspect-video bg-black">
               {!currentMeeting.direct_video_url ? (
                 <div className="flex h-full items-center justify-center text-sm text-zinc-400">
@@ -1304,7 +1304,7 @@ export default function SpeakerAliasTool({ loaderData }: any) {
                       onChange={(e) =>
                         videoPlayer.seekTo(parseFloat(e.target.value))
                       }
-                      className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/30 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-500"
+                      className="h-1 w-full cursor-pointer appearance-none rounded-full bg-surface/30 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-500"
                     />
                     <div className="flex items-center justify-between text-white">
                       <div className="flex items-center gap-3">
@@ -1343,7 +1343,7 @@ export default function SpeakerAliasTool({ loaderData }: any) {
                             onChange={(e) =>
                               videoPlayer.setVolume(parseFloat(e.target.value))
                             }
-                            className="h-1 w-20 cursor-pointer rounded-full bg-white/30"
+                            className="h-1 w-20 cursor-pointer rounded-full bg-surface/30"
                           />
                         </div>
                         <span className="font-mono text-xs tabular-nums">
@@ -1402,11 +1402,11 @@ export default function SpeakerAliasTool({ loaderData }: any) {
                 </button>
               </div>
 
-              <ScrollArea className="h-[300px] bg-white">
+              <ScrollArea className="h-[300px] bg-surface">
                 {/* Voice ID Tab */}
                 {activeTab === "voiceid" &&
                   (centroidCount === 0 ? (
-                    <div className="m-3 rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+                    <div className="m-3 rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                       No voice centroids for this meeting. Use transcript labels instead, or rerun audio processing to generate them.
                     </div>
                   ) : (
@@ -1529,7 +1529,7 @@ export default function SpeakerAliasTool({ loaderData }: any) {
                 {/* Transcript labels tab (existing alias behaviour) */}
                 {activeTab === "aliases" &&
                   (uniqueSpeakers.length === 0 ? (
-                    <div className="m-3 rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+                    <div className="m-3 rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                       This meeting has no transcript segments yet.
                     </div>
                   ) : (
@@ -1649,7 +1649,7 @@ export default function SpeakerAliasTool({ loaderData }: any) {
                       <Input
                         id="bulk-new-person"
                         name="newPersonName"
-                        className="h-9 bg-white text-sm"
+                        className="h-9 bg-surface text-sm"
                         autoFocus
                         required
                       />
@@ -1763,7 +1763,7 @@ export default function SpeakerAliasTool({ loaderData }: any) {
           {/* Right Panel: Transcript */}
           <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
             {/* Toolbar */}
-            <div className="flex shrink-0 items-center gap-2 border-b border-zinc-200 bg-white px-4 py-2">
+            <div className="flex shrink-0 items-center gap-2 border-b border-zinc-200 bg-surface px-4 py-2">
               <SearchField
                 value={filterText}
                 onValueChange={setFilterText}
@@ -1827,9 +1827,9 @@ export default function SpeakerAliasTool({ loaderData }: any) {
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto bg-white">
+            <div className="flex-1 overflow-y-auto bg-surface">
               {filteredSegments.length === 0 ? (
-                <div className="m-4 rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+                <div className="m-4 rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                   {segments.length === 0
                     ? "This meeting has no transcript segments."
                     : "No segments match the current search or speaker filter."}
@@ -1927,7 +1927,7 @@ export default function SpeakerAliasTool({ loaderData }: any) {
         </div>
       ) : (
         <div className="flex flex-1 items-start justify-center p-12">
-          <div className="w-full max-w-md rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+          <div className="w-full max-w-md rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
             Select a meeting above to map its diarized speaker labels to
             people. Only meetings with video are listed.
           </div>

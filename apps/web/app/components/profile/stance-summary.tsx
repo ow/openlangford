@@ -116,14 +116,14 @@ function StanceCard({ stance }: { stance: CouncillorStance }) {
 export function StanceSummary({ stances }: StanceSummaryProps) {
   if (!stances || stances.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
         No topic positions have been summarized yet.
       </div>
     );
   }
 
   return (
-    <div className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <div className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
       {stances.map((stance) => (
         <StanceCard key={stance.id} stance={stance} />
       ))}

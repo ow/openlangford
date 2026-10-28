@@ -131,7 +131,7 @@ function MobileTOC({
   const activeTitle = activeItem?.title ?? items[0]?.title ?? "Contents";
 
   return (
-    <div className="sticky top-16 z-30 bg-white border-b border-zinc-200">
+    <div className="sticky top-16 z-30 bg-surface border-b border-zinc-200">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="w-full flex items-center gap-2 px-4 py-2 text-sm text-zinc-700"
@@ -152,7 +152,7 @@ function MobileTOC({
       {isOpen && (
         <div
           id="mobile-toc-dropdown"
-          className="absolute left-0 right-0 bg-white border-b border-zinc-200 shadow-lg"
+          className="absolute left-0 right-0 bg-surface border-b border-zinc-200 shadow-lg"
         >
           {splitItems(items).pages.length > 0 && (
             <div className="px-4 pt-3">

@@ -70,7 +70,7 @@ export function EnhancedVideoScrubber({
   };
 
   return (
-    <div className={cn("relative border-t border-zinc-200 bg-white px-4 pb-2.5 pt-3", className)}>
+    <div className={cn("relative border-t border-zinc-200 bg-surface px-4 pb-2.5 pt-3", className)}>
       {/* Tooltip */}
       {hovered && (
         <div
@@ -146,7 +146,7 @@ export function EnhancedVideoScrubber({
             <div className="absolute inset-y-0 left-0 bg-brand-500" style={{ width: `${playheadPosition}%` }} />
           </div>
           <div
-            className="pointer-events-none absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-brand-600 shadow"
+            className="pointer-events-none absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-brand-600 shadow"
             style={{ left: `${playheadPosition}%` }}
           />
         </div>
@@ -205,7 +205,7 @@ function AgendaBlock({
   return (
     <div
       className={cn(
-        "absolute top-0 h-full cursor-pointer border-r border-white transition-opacity",
+        "absolute top-0 h-full cursor-pointer border-r border-surface transition-opacity",
         AGENDA_COLORS[colorIdx],
         isActive ? "opacity-100" : "opacity-40 hover:opacity-70",
       )}
@@ -302,7 +302,7 @@ function MotionMarker({
     >
       <div
         className={cn(
-          "h-full w-full rounded-full ring-1 ring-white",
+          "h-full w-full rounded-full ring-1 ring-surface",
           outcome === "passed"
             ? "bg-emerald-500"
             : outcome === "failed"

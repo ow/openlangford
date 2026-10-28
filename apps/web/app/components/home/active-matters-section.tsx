@@ -23,7 +23,7 @@ export function ActiveMattersSection({ matters }: ActiveMattersSectionProps) {
     <section>
       <SectionHeading title="Active matters" icon={Gavel} href="/matters" />
 
-      <ul className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden divide-y divide-zinc-100">
+      <ul className="bg-surface rounded-2xl border border-zinc-200 shadow-sm overflow-hidden divide-y divide-zinc-100">
         {matters.map((matter) => {
           // A single recorded appearance may be years old; it does not mean new.
           const ageDays = matter.first_seen

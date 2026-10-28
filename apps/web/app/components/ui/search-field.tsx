@@ -16,7 +16,7 @@ export function SearchField({ value, onValueChange, className, ...props }: Searc
         type="search"
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
-        className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-9 text-sm text-zinc-900 shadow-xs placeholder:text-zinc-400 transition-colors hover:border-zinc-300 focus-visible:border-brand-500 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-500/20 [&::-webkit-search-cancel-button]:hidden"
+        className="h-10 w-full rounded-lg border border-zinc-200 bg-surface pl-9 pr-9 text-sm text-zinc-900 shadow-xs placeholder:text-zinc-400 transition-colors hover:border-zinc-300 focus-visible:border-brand-500 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-500/20 [&::-webkit-search-cancel-button]:hidden"
         {...props}
       />
       {value && (

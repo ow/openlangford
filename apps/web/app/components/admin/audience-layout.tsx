@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import { PageHeader } from "../ui/page-header";
 
 export const adminCard =
-  "rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm";
+  "rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm";
 export const adminField =
-  "h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm";
+  "h-10 rounded-lg border border-zinc-300 bg-surface px-3 text-sm";
 export const adminLink =
   "font-semibold text-brand-700 underline-offset-4 hover:underline";
 export function AdminAudienceLayout({

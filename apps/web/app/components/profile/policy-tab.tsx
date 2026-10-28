@@ -19,7 +19,7 @@ export function PolicyTab({ stances, highlights }: PolicyTabProps) {
 
   if (!hasContent) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
         <p className="font-medium text-zinc-700">No policy positions yet</p>
         <p className="mt-1 leading-relaxed">
           Positions are summarized from statements in meeting transcripts once enough have been
@@ -34,7 +34,7 @@ export function PolicyTab({ stances, highlights }: PolicyTabProps) {
       {highlights.length > 0 && (
         <section>
           <SectionHeading title="Notable positions" />
-          <div className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <div className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             {highlights.map((h, i) => (
               <HighlightCard key={i} highlight={h} />
             ))}

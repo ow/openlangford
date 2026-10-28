@@ -10,7 +10,7 @@ export function Footer() {
   const signedOut = !rootData?.user;
 
   return (
-    <footer className="mt-auto border-t border-zinc-200 bg-white py-8 text-sm text-zinc-500">
+    <footer className="mt-auto border-t border-zinc-200 bg-surface py-8 text-sm text-zinc-500">
       <div className="container mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:flex-row sm:items-center sm:justify-between">
         <p>
           © {new Date().getFullYear()} {name}. Forked from{" "}

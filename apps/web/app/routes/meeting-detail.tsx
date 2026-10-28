@@ -107,7 +107,7 @@ function MeetingLoadingSkeleton() {
               </svg>
             </div>
             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full animate-ping" />
+              <div className="w-2 h-2 bg-surface rounded-full animate-ping" />
             </div>
           </div>
 
@@ -523,7 +523,7 @@ function MeetingDetailContent({ loaderData }: any) {
               {transcript.length > 0 && (
                 <Link
                   to={meetingPath(meeting, "/explorer")}
-                  className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-3 py-1 text-sm font-medium text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
+                  className="inline-flex items-center rounded-full border border-zinc-200 bg-surface px-3 py-1 text-sm font-medium text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
                 >
                   Timeline explorer
                 </Link>
@@ -531,7 +531,7 @@ function MeetingDetailContent({ loaderData }: any) {
               {user && meeting.video_url && (
                 <Link
                   to={`/speaker-alias?meetingId=${meeting.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-sm font-medium text-zinc-600 transition-colors hover:border-brand-300 hover:text-brand-700"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-3 py-1 text-sm font-medium text-zinc-600 transition-colors hover:border-brand-300 hover:text-brand-700"
                 >
                   <Mic className="h-3.5 w-3.5" />
                   Aliases
@@ -594,7 +594,7 @@ function MeetingDetailContent({ loaderData }: any) {
               onClick={() => setVideoOpen((v) => !v)}
               aria-expanded={videoOpen}
               className={cn(
-                "flex w-full items-center gap-3 border border-zinc-200 bg-white px-4 py-3 text-left shadow-sm transition-colors hover:bg-zinc-50",
+                "flex w-full items-center gap-3 border border-zinc-200 bg-surface px-4 py-3 text-left shadow-sm transition-colors hover:bg-zinc-50",
                 videoOpen ? "rounded-t-2xl border-b-0" : "rounded-2xl",
               )}
             >
@@ -636,11 +636,11 @@ function MeetingDetailContent({ loaderData }: any) {
             <section>
               <SectionHeading title="Summary" />
               {meeting.summary ? (
-                <div className="rounded-2xl border border-zinc-200 bg-white p-5 text-[15px] shadow-sm sm:p-6">
+                <div className="rounded-2xl border border-zinc-200 bg-surface p-5 text-[15px] shadow-sm sm:p-6">
                   <MeetingSummary summary={meeting.summary} />
                 </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+                <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                   {isPast
                     ? "A summary will appear here once the meeting records have been processed."
                     : "This meeting hasn't happened yet."}

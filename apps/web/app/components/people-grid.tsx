@@ -113,7 +113,7 @@ export function PeopleGrid({
 
   if (allParticipants.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
         No attendance or speaker information has been recorded for this meeting.
       </div>
     );
@@ -122,7 +122,7 @@ export function PeopleGrid({
   return (
     <div className="space-y-6">
       {speakerStats.totalTime > 0 && distributionData.length > 0 && (
-        <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-zinc-900">Who did the talking</h3>
           <p className="mb-3 text-xs text-zinc-500">
             Share of recorded speaking time · {formatDuration(speakerStats.totalTime)} total
@@ -134,7 +134,7 @@ export function PeopleGrid({
               return (
                 <div
                   key={name}
-                  className={cn("h-full border-r border-white last:border-r-0", SPEAKER_COLORS[getSpeakerColorIndex(name)])}
+                  className={cn("h-full border-r border-surface last:border-r-0", SPEAKER_COLORS[getSpeakerColorIndex(name)])}
                   style={{ width: `${percent}%` }}
                   title={`${name}: ${formatDuration(time)} (${percent.toFixed(0)}%)`}
                 />
@@ -185,7 +185,7 @@ export function PeopleGrid({
           }
         />
 
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
           {filteredParticipants.length > 0 ? (
             <ul className="divide-y divide-zinc-100">
               {filteredParticipants.map((p) => {

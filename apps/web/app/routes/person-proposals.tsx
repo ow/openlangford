@@ -143,7 +143,7 @@ export default function PersonProposals({ loaderData }: Route.ComponentProps) {
           <div
             role="tablist"
             aria-label="Filter by role"
-            className="inline-flex max-w-full overflow-x-auto rounded-lg border border-zinc-200 bg-white p-0.5 shadow-xs"
+            className="inline-flex max-w-full overflow-x-auto rounded-lg border border-zinc-200 bg-surface p-0.5 shadow-xs"
           >
             {roles.map((f) => (
               <button
@@ -166,14 +166,14 @@ export default function PersonProposals({ loaderData }: Route.ComponentProps) {
         </div>
 
         {motions.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-14 text-center">
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface px-6 py-14 text-center">
             <Gavel className="mx-auto mb-3 h-8 w-8 text-zinc-300" />
             <p className="text-sm text-zinc-500">
               No motions found for this role.
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             {motions.map((m: any, idx) => (
               <li
                 key={`${m.id}-${m.role}-${idx}`}

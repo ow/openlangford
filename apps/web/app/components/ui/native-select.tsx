@@ -14,7 +14,7 @@ export function NativeSelect({
   return (
     <div className={cn("relative", className)}>
       <select
-        className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-zinc-200 bg-white pl-3 pr-9 text-sm font-medium text-zinc-800 shadow-xs transition-colors hover:border-zinc-300 focus-visible:border-brand-500 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+        className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-zinc-200 bg-surface pl-3 pr-9 text-sm font-medium text-zinc-800 shadow-xs transition-colors hover:border-zinc-300 focus-visible:border-brand-500 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-500/20 disabled:cursor-not-allowed disabled:opacity-50"
         {...props}
       >
         {children}

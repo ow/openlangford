@@ -8,7 +8,7 @@ import { cn } from "../../lib/utils";
 
 function Panel({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <section className="rounded-2xl border border-zinc-200 bg-surface shadow-sm">
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <h2 className="text-sm font-semibold text-zinc-900">{title}</h2>
         {action}
@@ -21,7 +21,7 @@ function Panel({ title, children, action }: { title: string; children: React.Rea
 export function MeetingFacts({ facts }: { facts: { label: string; value: React.ReactNode }[] }) {
   if (facts.length === 0) return null;
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <section className="rounded-2xl border border-zinc-200 bg-surface p-4 shadow-sm">
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
         {facts.map((f) => (
           <div key={f.label}>

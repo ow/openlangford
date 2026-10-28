@@ -144,11 +144,11 @@ export function QuickJump() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden h-9 w-56 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 text-sm text-zinc-500 transition-colors hover:border-zinc-300 hover:bg-white lg:flex"
+        className="hidden h-9 w-56 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 text-sm text-zinc-500 transition-colors hover:border-zinc-300 hover:bg-surface lg:flex"
       >
         <Search className="h-4 w-4 text-zinc-400" aria-hidden="true" />
         <span className="flex-1 text-left">Search</span>
-        <kbd className="rounded border border-zinc-200 bg-white px-1.5 font-sans text-[11px] text-zinc-500">⌘K</kbd>
+        <kbd className="rounded border border-zinc-200 bg-surface px-1.5 font-sans text-[11px] text-zinc-500">⌘K</kbd>
       </button>
       <button
         type="button"

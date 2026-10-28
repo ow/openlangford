@@ -210,7 +210,7 @@ function StatMetric({
   tone?: "default" | "danger" | "quiet";
 }) {
   return (
-    <div className="min-w-0 bg-white px-5 py-4">
+    <div className="min-w-0 bg-surface px-5 py-4">
       <div className="text-sm font-medium text-zinc-600">{label}</div>
       <div
         className={cn(
@@ -258,14 +258,14 @@ function SectionHeader({
 function QueueJobMenu({ isSubmitting }: { isSubmitting: boolean }) {
   return (
     <details className="group relative w-full md:w-auto">
-      <summary className="inline-flex h-9 w-full cursor-pointer list-none items-center justify-center gap-2 whitespace-nowrap rounded-md border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-800 shadow-xs transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-500/20 md:w-auto [&::-webkit-details-marker]:hidden">
+      <summary className="inline-flex h-9 w-full cursor-pointer list-none items-center justify-center gap-2 whitespace-nowrap rounded-md border border-zinc-200 bg-surface px-3 text-sm font-medium text-zinc-800 shadow-xs transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-500/20 md:w-auto [&::-webkit-details-marker]:hidden">
         Queue job
         <ChevronDown
           className="h-4 w-4 text-zinc-400 transition-transform group-open:rotate-180"
           aria-hidden="true"
         />
       </summary>
-      <div className="mt-2 w-full rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg md:absolute md:right-0 md:z-30 md:w-[400px]">
+      <div className="mt-2 w-full rounded-2xl border border-zinc-200 bg-surface p-4 shadow-lg md:absolute md:right-0 md:z-30 md:w-[400px]">
         <div className="mb-3">
           <div className="text-sm font-semibold text-zinc-900">
             Manual queue
@@ -368,7 +368,7 @@ function jobLifecycleSummary(job: any) {
   return "Unknown time";
 }
 
-const card = "rounded-2xl border border-zinc-200 bg-white shadow-sm";
+const card = "rounded-2xl border border-zinc-200 bg-surface shadow-sm";
 
 function workerSummary(counts: any, jobs: any[]) {
   if (counts.jobRunning > 0 || counts.jobQueued > 0) {
@@ -690,7 +690,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
         <section aria-labelledby="jobs-heading" className="mt-10">
           <SectionHeader id="jobs-heading" title="Recent jobs" />
           {jobs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+            <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
               No jobs queued yet.
             </div>
           ) : (
@@ -754,7 +754,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
           />
 
           {sourceMeetings.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+            <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
               {sourceMeetingsPage.search
                 ? `No source meetings match "${sourceMeetingsPage.search}".`
                 : "No source meetings recorded yet. Queue discovery to populate this list."}

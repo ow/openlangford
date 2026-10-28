@@ -146,7 +146,7 @@ export function TimelineStep({
   }
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+    <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
       {meetingLine}
       <h3 className="mt-1 text-lg font-semibold leading-snug text-zinc-900">{title}</h3>
       {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>}
@@ -154,7 +154,7 @@ export function TimelineStep({
 
       {layoutImage && (
         <figure className="mt-4">
-          <a href={layoutImage.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-xl border border-zinc-200 bg-white">
+          <a href={layoutImage.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-xl border border-zinc-200 bg-surface">
             <img src={layoutImage.url} alt="Proposed layout" width={layoutImage.width} height={layoutImage.height} className="max-h-[360px] w-full object-contain" loading="lazy" />
           </a>
           <figcaption className="mt-1.5 text-xs text-zinc-500">Proposed layout</figcaption>

@@ -88,7 +88,7 @@ export function CalendarView({
     "inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500";
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       {/* Month navigation */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-5">
         <div className="flex items-center gap-1">

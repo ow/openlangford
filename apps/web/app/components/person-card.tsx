@@ -21,7 +21,7 @@ export function PersonCard({ person, role, showStats = true }: PersonCardProps) 
     <Link
       to={personPath(person)}
       className={cn(
-        "group flex flex-col sm:flex-row sm:items-center bg-white rounded-2xl border border-zinc-200 shadow-sm transition-all overflow-hidden hover:shadow-md hover:border-brand-300 p-6 gap-6",
+        "group flex flex-col sm:flex-row sm:items-center bg-surface rounded-2xl border border-zinc-200 shadow-sm transition-all overflow-hidden hover:shadow-md hover:border-brand-300 p-6 gap-6",
         isMayor && "ring-1 ring-brand-100 border-brand-200"
       )}
     >

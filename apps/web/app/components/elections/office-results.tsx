@@ -62,11 +62,11 @@ export function OfficeResults({ office, preliminary }: OfficeResultsProps) {
       <SectionHeading title={office.office} description={meta} />
 
       {candidates.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-6 text-center text-sm text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface p-6 text-center text-sm text-zinc-500">
           No candidates recorded for this office.
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
           <div className="hidden grid-cols-[1.5rem_minmax(0,1fr)_5.5rem_11rem] items-center gap-4 border-b border-zinc-100 bg-zinc-50/60 px-5 py-2 text-xs font-medium text-zinc-500 sm:grid">
             <span className="text-right">#</span>
             <span>Candidate</span>

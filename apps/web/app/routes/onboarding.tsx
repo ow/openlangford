@@ -278,7 +278,7 @@ function TopicStep({
                 "flex items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40",
                 selected
                   ? "border-brand-500 bg-brand-50"
-                  : "border-zinc-200 bg-white hover:border-zinc-300",
+                  : "border-zinc-200 bg-surface hover:border-zinc-300",
               )}
             >
               <div
@@ -287,7 +287,7 @@ function TopicStep({
                   "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors",
                   selected
                     ? "border-brand-500 bg-brand-500"
-                    : "border-zinc-300 bg-white",
+                    : "border-zinc-300 bg-surface",
                 )}
               >
                 {selected && <Check className="h-3 w-3 text-white" />}
@@ -324,7 +324,7 @@ function TopicStep({
             onChange={(e) => setKeywordInput(e.target.value)}
             placeholder='e.g. "housing", "bike lanes", "property tax"'
             aria-label="New keyword"
-            className="h-10 bg-white"
+            className="h-10 bg-surface"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -448,7 +448,7 @@ function LocationStep({
           <Input
             id="onboarding-address"
             autoComplete="street-address"
-            className="h-10 bg-white"
+            className="h-10 bg-surface"
             value={address}
             onChange={(e) => {
               setAddress(e.target.value);
@@ -495,7 +495,7 @@ function LocationStep({
           <div className="w-full border-t border-zinc-200" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-white px-3 text-zinc-500">or</span>
+          <span className="bg-surface px-3 text-zinc-500">or</span>
         </div>
       </div>
 
@@ -532,7 +532,7 @@ function LocationStep({
                 "rounded-lg border px-2 py-2 text-sm font-medium tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40",
                 proximityRadius === opt.value
                   ? "border-brand-500 bg-brand-50 text-brand-700"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300",
+                  : "border-zinc-200 bg-surface text-zinc-600 hover:border-zinc-300",
               )}
             >
               {opt.label}
@@ -580,7 +580,7 @@ function DigestStep({
           "w-full flex items-start gap-4 p-5 rounded-xl border text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40",
           digestEnabled
             ? "border-brand-500 bg-brand-50"
-            : "border-zinc-200 bg-white hover:border-zinc-300",
+            : "border-zinc-200 bg-surface hover:border-zinc-300",
         )}
       >
         <div
@@ -589,7 +589,7 @@ function DigestStep({
             "w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors",
             digestEnabled
               ? "border-brand-500 bg-brand-500"
-              : "border-zinc-300 bg-white",
+              : "border-zinc-300 bg-surface",
           )}
         >
           {digestEnabled && <Check className="h-3 w-3 text-white" />}
@@ -603,7 +603,7 @@ function DigestStep({
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             {["Key decisions", "Vote results", "Your neighbourhood", "Divided votes"].map((tag) => (
-              <Badge key={tag} variant="outline" className="bg-white text-zinc-600">
+              <Badge key={tag} variant="outline" className="bg-surface text-zinc-600">
                 {tag}
               </Badge>
             ))}
@@ -683,7 +683,7 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
         <StepIndicator currentStep={step} />
 
         {/* Step content */}
-        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
           {step === 0 && (
             <TopicStep
               topics={topics}

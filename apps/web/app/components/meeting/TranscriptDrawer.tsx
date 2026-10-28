@@ -167,7 +167,7 @@ export function TranscriptDrawer({
         aria-label="Transcript"
         aria-hidden={!isOpen}
         className={cn(
-          "fixed top-0 right-0 z-50 flex h-full w-full max-w-md flex-col border-l border-zinc-200 bg-white shadow-xl transition-transform duration-300",
+          "fixed top-0 right-0 z-50 flex h-full w-full max-w-md flex-col border-l border-zinc-200 bg-surface shadow-xl transition-transform duration-300",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -227,7 +227,7 @@ export function TranscriptDrawer({
         >
           <div className="p-3">
             {filteredSubSegments.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+              <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                 {searchQuery
                   ? `Nothing in the transcript matches “${searchQuery}”.`
                   : "No transcript is available for this meeting yet."}

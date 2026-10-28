@@ -105,7 +105,7 @@ export function SearchFilters({
           "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border",
           isAllActive
             ? "bg-brand-50 text-brand-700 border-brand-200 shadow-sm"
-            : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300",
+            : "bg-surface text-zinc-500 border-zinc-200 hover:border-zinc-300",
         )}
       >
         All
@@ -136,7 +136,7 @@ export function SearchFilters({
               "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border",
               isActive
                 ? "bg-brand-50 text-brand-700 border-brand-200 shadow-sm"
-                : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300",
+                : "bg-surface text-zinc-500 border-zinc-200 hover:border-zinc-300",
             )}
           >
             {label}
@@ -168,7 +168,7 @@ export function SearchFilters({
               "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border",
               time
                 ? "bg-brand-50 text-brand-700 border-brand-200 shadow-sm"
-                : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300",
+                : "bg-surface text-zinc-500 border-zinc-200 hover:border-zinc-300",
             )}
           >
             <span>{timeLabel}</span>
@@ -177,7 +177,7 @@ export function SearchFilters({
         </PopoverTrigger>
         <PopoverContent
           align="end"
-          className="w-40 p-1 bg-white border border-zinc-200 rounded-xl shadow-lg"
+          className="w-40 p-1 bg-surface border border-zinc-200 rounded-xl shadow-lg"
         >
           {TIME_OPTIONS.map((opt) => (
             <button
@@ -209,7 +209,7 @@ export function SearchFilters({
               "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border",
               sort
                 ? "bg-brand-50 text-brand-700 border-brand-200 shadow-sm"
-                : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300",
+                : "bg-surface text-zinc-500 border-zinc-200 hover:border-zinc-300",
             )}
           >
             <span>{sortLabel}</span>
@@ -218,7 +218,7 @@ export function SearchFilters({
         </PopoverTrigger>
         <PopoverContent
           align="end"
-          className="w-40 p-1 bg-white border border-zinc-200 rounded-xl shadow-lg"
+          className="w-40 p-1 bg-surface border border-zinc-200 rounded-xl shadow-lg"
         >
           {SORT_OPTIONS.map((opt) => (
             <button

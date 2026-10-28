@@ -234,7 +234,7 @@ export default function Participants({ loaderData }: Route.ComponentProps) {
           <p>Audio attribution is machine-generated and may contain identity errors. Minutes records are included where the source and person have been established.</p>
         </div>
 
-        <div className="mb-6 grid grid-cols-3 divide-x divide-zinc-100 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div className="mb-6 grid grid-cols-3 divide-x divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface shadow-sm">
           {stats.map((stat) => (
             <div key={stat.label} className="px-4 py-3 sm:px-5">
               <div className="text-xl font-bold tabular-nums text-zinc-900 sm:text-2xl">
@@ -253,7 +253,7 @@ export default function Participants({ loaderData }: Route.ComponentProps) {
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search by name, topic or meeting"
               aria-label="Search participants"
-              className="h-10 rounded-xl border-zinc-200 bg-white pl-10"
+              className="h-10 rounded-xl border-zinc-200 bg-surface pl-10"
             />
           </div>
           <p className="text-sm tabular-nums text-zinc-500">
@@ -264,12 +264,12 @@ export default function Participants({ loaderData }: Route.ComponentProps) {
         </div>
 
         {filteredParticipants.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-12 text-center">
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface p-12 text-center">
             <MessageSquare className="mx-auto mb-3 h-10 w-10 text-zinc-300" />
             <p className="font-semibold text-zinc-600">{loadError ? "Participant records could not be loaded. Please try again." : "No matching participants found."}</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             <div className="hidden grid-cols-[1.75rem_minmax(0,1fr)_10rem_4rem] gap-4 border-b border-zinc-100 bg-zinc-50/60 px-5 py-2 text-xs font-medium text-zinc-500 sm:grid">
               <span className="text-right">#</span>
               <span>Participant and recent appearances</span>

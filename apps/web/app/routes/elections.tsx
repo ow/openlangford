@@ -63,11 +63,11 @@ export default function Elections({ loaderData }: Route.ComponentProps) {
         />
 
         {elections.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-12 text-center text-sm text-zinc-500">
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface p-12 text-center text-sm text-zinc-500">
             No elections have been recorded yet.
           </div>
         ) : (
-          <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             {elections.map((election: any) => {
               const totalCandidates =
                 election.election_offices?.reduce(

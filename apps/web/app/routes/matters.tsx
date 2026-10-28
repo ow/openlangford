@@ -265,7 +265,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold transition-colors",
                   viewMode === "list"
-                    ? "bg-white text-zinc-900 shadow-sm"
+                    ? "bg-surface text-zinc-900 shadow-sm"
                     : "text-zinc-500 hover:text-zinc-800",
                 )}
               >
@@ -276,7 +276,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold transition-colors",
                   viewMode === "map"
-                    ? "bg-white text-zinc-900 shadow-sm"
+                    ? "bg-surface text-zinc-900 shadow-sm"
                     : "text-zinc-500 hover:text-zinc-800",
                 )}
               >
@@ -364,7 +364,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
           )}
         >
           {filteredMatters.length === 0 ? (
-            <div className="text-center py-24 bg-white rounded-2xl border border-dashed border-zinc-200 lg:col-span-12">
+            <div className="text-center py-24 bg-surface rounded-2xl border border-dashed border-zinc-200 lg:col-span-12">
               <Filter className="h-12 w-12 text-zinc-200 mx-auto mb-4" />
               <p className="text-zinc-500 text-lg">
                 No matters match your search.
@@ -372,7 +372,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
             </div>
           ) : viewMode === "list" ? (
             <div>
-              <ul className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm divide-y divide-zinc-100">
+              <ul className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm divide-y divide-zinc-100">
                 {filteredMatters.slice(0, visibleCount).map((matter) => {
                   const bylawLabel =
                     matter.bylaw &&
@@ -466,7 +466,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
                 <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-                    className="rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:border-brand-300 hover:text-brand-700"
+                    className="rounded-full border border-zinc-200 bg-surface px-5 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:border-brand-300 hover:text-brand-700"
                   >
                     Show more
                     <span className="ml-1.5 font-normal text-zinc-500">
@@ -477,7 +477,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
               )}
             </div>
           ) : mattersByAddress.grouped.length === 0 && !hasGeocoded ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500 lg:col-span-12">
+            <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500 lg:col-span-12">
               None of these {filteredMatters.length.toLocaleString()}{" "}
               {filteredMatters.length === 1 ? "matter has" : "matters have"} a
               mapped address yet. Addresses appear here once they've been
@@ -495,7 +495,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
             <>
               {/* Address list for map view */}
               <div
-                className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm"
+                className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm"
               >
                 <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-4 py-3">
                   <h2 className="text-sm font-semibold text-zinc-900">

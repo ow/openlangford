@@ -8,7 +8,7 @@ export function IncomingCouncilSection({ council }: { council: IncomingCouncil |
   if (!council) return null;
 
   return (
-    <section aria-labelledby="incoming-council-heading" className="border-b border-zinc-200 bg-white">
+    <section aria-labelledby="incoming-council-heading" className="border-b border-zinc-200 bg-surface">
       <div className="container mx-auto max-w-6xl px-4 py-6 sm:py-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <div>

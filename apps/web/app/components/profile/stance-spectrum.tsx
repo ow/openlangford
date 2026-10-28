@@ -25,10 +25,10 @@ const POSITION_LABELS: Record<StanceSpectrumProps["position"], string> = {
 };
 
 const POSITION_MARKER_COLORS: Record<StanceSpectrumProps["position"], string> = {
-  supports: "bg-emerald-600 border-white",
-  opposes: "bg-red-600 border-white",
-  mixed: "bg-amber-500 border-white",
-  neutral: "bg-zinc-500 border-white",
+  supports: "bg-emerald-600 border-surface",
+  opposes: "bg-red-600 border-surface",
+  mixed: "bg-amber-500 border-surface",
+  neutral: "bg-zinc-500 border-surface",
 };
 
 export function StanceSpectrum({ score, position }: StanceSpectrumProps) {

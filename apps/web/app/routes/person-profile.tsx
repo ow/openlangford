@@ -272,7 +272,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-6xl px-4 pt-8 pb-16">
         {/* Profile header */}
-        <header className="mb-8 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+        <header className="mb-8 rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-zinc-100 ring-1 ring-zinc-200 sm:h-28 sm:w-28">
               {person.image_url ? (
@@ -328,7 +328,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                 {person.email && (
                   <a
                     href={`mailto:${person.email}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
                   >
                     Email
                   </a>
@@ -336,7 +336,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                 {person.is_councillor && (
                 <Link
                   to={`/compare?a=${person.slug || person.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-semibold text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
                 >
                   Compare
                 </Link>
@@ -441,7 +441,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                   {/* Voting record */}
                   <Link
                     to={personPath(person, "/votes")}
-                    className="group rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-colors hover:border-brand-300"
+                    className="group rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm transition-colors hover:border-brand-300"
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <h3 className="text-sm text-zinc-500">Recorded votes</h3>
@@ -474,7 +474,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                   {/* Motions moved / seconded */}
                   <Link
                     to={personPath(person, "/proposals")}
-                    className="group rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-colors hover:border-brand-300"
+                    className="group rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm transition-colors hover:border-brand-300"
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <h3 className="text-sm text-zinc-500">Motions moved or seconded</h3>
@@ -497,7 +497,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                 </div>
 
                 {/* Voting alignment */}
-                <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                   <div className="flex items-start justify-between gap-4 px-5 pt-5 pb-3">
                     <div>
                       <h3 className="text-base font-semibold text-zinc-900">Voting alignment</h3>
@@ -568,7 +568,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                     fixedPeriodLabel={selectedTerm?.name}
                   />
                   {speakingTimeRanking && speakingTimeRanking.some((r: any) => r.total_seconds > 0) && (
-                    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+                    <section className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
                       <SpeakerRanking
                         rankings={speakingTimeRanking}
                         currentPersonId={person.id}
@@ -581,7 +581,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
               {/* Attendance Tab */}
               <TabsContent value="attendance" className="space-y-8">
                 {relevantAttendance.length > 0 ? (
-                  <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                  <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 pt-5 pb-3">
                       <h3 className="text-base font-semibold text-zinc-900">Meeting attendance</h3>
                       {attendanceStats.total > 0 && (
@@ -640,7 +640,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                             preventScrollReset={true}
                             aria-disabled={page === 0}
                             className={cn(
-                              "rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50",
+                              "rounded-lg border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50",
                               page === 0 && "pointer-events-none opacity-50",
                             )}
                           >
@@ -651,7 +651,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                             preventScrollReset={true}
                             aria-disabled={(page + 1) * 20 >= attendanceTotal}
                             className={cn(
-                              "rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50",
+                              "rounded-lg border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50",
                               (page + 1) * 20 >= attendanceTotal && "pointer-events-none opacity-50",
                             )}
                           >
@@ -662,7 +662,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                     )}
                   </section>
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+                  <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                     {attendanceCoverageText(attendanceStats)} Missing or unverified records are unknown, not absences.
                   </div>
                 )}
@@ -670,7 +670,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                 {candidacies.length > 0 && (
                   <section>
                     <SectionHeading title="Electoral history" />
-                    <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                    <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                       {candidacies.map((can: any) => {
                         const election = can.election_offices?.elections;
                         const year = election?.election_date ? election.election_date.slice(0, 4) : null;
@@ -716,7 +716,7 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
 
           {/* Sidebar */}
           <aside className="space-y-6 lg:col-span-4">
-            <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div className="rounded-2xl border border-zinc-200 bg-surface p-4 shadow-sm">
               <label htmlFor="profile-term" className="mb-2 block text-sm font-semibold text-zinc-900">
                 Statistics period
               </label>

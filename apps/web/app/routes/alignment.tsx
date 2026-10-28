@@ -236,7 +236,7 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
         />
 
         {!selectedTerm && (
-          <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+          <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
             No verified council term dates are available yet, so alignment can't be calculated.
           </div>
         )}
@@ -245,7 +245,7 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
             {/* Term summary */}
             <div className="space-y-6 lg:col-span-4">
-              <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <div className="rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 <div className="border-b border-zinc-100 p-5">
                   <p className="text-sm text-zinc-500">Council term</p>
                   <h2 className="text-lg font-bold tracking-tight text-zinc-900">
@@ -310,7 +310,7 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
               </div>
 
               {hasMatrixData && (
-              <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+              <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
                 <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
                   <Info className="h-4 w-4 text-brand-600" aria-hidden="true" />
                   How to read this
@@ -346,11 +346,11 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
                       reflect recorded individual votes.
                     </div>
                   )}
-                  <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                  <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                     <table className="w-full border-collapse text-sm">
                       <thead>
                         <tr className="border-b border-zinc-100">
-                          <th scope="col" className="sticky left-0 z-10 bg-white px-4 py-3 text-left font-medium text-zinc-500">
+                          <th scope="col" className="sticky left-0 z-10 bg-surface px-4 py-3 text-left font-medium text-zinc-500">
                             <span className="sr-only">Member</span>
                           </th>
                           {selectedTerm.members.map((p2: any) => (
@@ -375,7 +375,7 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
                               scope="row"
                               className={cn(
                                 "sticky left-0 z-10 whitespace-nowrap px-4 py-2 text-left font-medium text-zinc-800",
-                                p1.id === focusedPersonId ? "bg-brand-50" : "bg-white",
+                                p1.id === focusedPersonId ? "bg-brand-50" : "bg-surface",
                               )}
                             >
                               <Link
@@ -438,7 +438,7 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
                   </div>
                 </>
               ) : (
-                <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm leading-relaxed text-zinc-500">
+                <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm leading-relaxed text-zinc-500">
                   <p className="font-medium text-zinc-700">
                     No per-councillor vote records for this term yet
                   </p>

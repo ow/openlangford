@@ -62,7 +62,8 @@ export default defineConfig(({ mode }) => {
         .filter(Boolean),
     },
     plugins: [
-      cloudflare({ viteEnvironment: { name: "ssr" } }),
+      // CF_REMOTE_BINDINGS=false runs dev without a Wrangler login (AI calls then fail; pages render).
+      cloudflare({ viteEnvironment: { name: "ssr" }, remoteBindings: process.env.CF_REMOTE_BINDINGS !== "false" }),
       tailwindcss(),
       reactRouter(),
       tsconfigPaths(),

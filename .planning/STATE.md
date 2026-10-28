@@ -64,6 +64,8 @@ Recent decisions affecting current work:
 1. **Let users supply their own Gemini API key** (api)
 2. **Speaker Identification** (pipeline) -- deferred to v1.8+
 3. **Neighbourhood Relevance Filtering** (web) -- deferred to v1.8+ (needs DB column + geocoding)
+4. **Development pipeline funnel visualization** (web) [#55]
+5. **Neighbourhood × year heatmap of council activity** (web) [#56]
 
 ### Blockers/Concerns
 

@@ -54,7 +54,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600";
+  "w-full rounded-lg border border-zinc-300 bg-surface px-3 py-2 text-zinc-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600";
 
 export default function Contact() {
   const result = useActionData<typeof action>();
@@ -64,7 +64,7 @@ export default function Contact() {
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-xl px-4 py-12">
         <PageHeader title="Contact" />
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8">
           {result?.ok ? (
             <p className="text-zinc-700">Thanks, your message was sent. I'll reply by email.</p>
           ) : (

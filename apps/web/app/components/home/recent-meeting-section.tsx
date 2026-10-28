@@ -40,7 +40,7 @@ export function RecentMeetingSection({
 
       <Link
         to={meetingPath(meeting)}
-        className="block bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden p-6 hover:border-brand-200 hover:shadow-md transition-all group"
+        className="block bg-surface rounded-2xl border border-zinc-200 shadow-sm overflow-hidden p-6 hover:border-brand-200 hover:shadow-md transition-all group"
       >
         {/* Header — only show the type when the title doesn't already say it */}
         {meeting.type && meeting.type !== meeting.title && (

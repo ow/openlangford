@@ -55,7 +55,7 @@ function AddressList({ lots }: { lots: PropertyIndexEntry[] }) {
 
 function RecentlyInCouncil({ recent }: { recent: Route.ComponentProps["loaderData"]["recent"] }) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
       <SectionHeading title="Recently in council" icon={CalendarClock} description="What Council last considered at an address." />
       <ol className="grid gap-x-8 gap-y-5 md:grid-cols-2">
         {recent.map((entry) => (
@@ -117,7 +117,7 @@ export default function Properties({ loaderData }: Route.ComponentProps) {
                 aria-label="Find an address or street"
                 value={filterText}
                 onChange={(e) => setFilterText(e.target.value)}
-                className="bg-white pl-9"
+                className="bg-surface pl-9"
               />
             </div>
           }
@@ -128,7 +128,7 @@ export default function Properties({ loaderData }: Route.ComponentProps) {
 
           {lots.some((lot) => lot.geo) && (
             <section>
-              <div role="tablist" aria-label="Show addresses by year" className="mb-3 inline-flex max-w-full overflow-x-auto rounded-lg border border-zinc-200 bg-white p-0.5 shadow-xs">
+              <div role="tablist" aria-label="Show addresses by year" className="mb-3 inline-flex max-w-full overflow-x-auto rounded-lg border border-zinc-200 bg-surface p-0.5 shadow-xs">
                 {(["all", ...yearOptions.recent, ...(yearOptions.earlier ? ["earlier" as const] : [])] as const).map((option) => (
                   <button
                     key={option}

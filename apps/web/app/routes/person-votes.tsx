@@ -136,7 +136,7 @@ export default function PersonVotes({ loaderData }: Route.ComponentProps) {
           <div
             role="tablist"
             aria-label="Filter by vote"
-            className="inline-flex max-w-full overflow-x-auto rounded-lg border border-zinc-200 bg-white p-0.5 shadow-xs"
+            className="inline-flex max-w-full overflow-x-auto rounded-lg border border-zinc-200 bg-surface p-0.5 shadow-xs"
           >
             {filters.map((f) => (
               <button
@@ -159,7 +159,7 @@ export default function PersonVotes({ loaderData }: Route.ComponentProps) {
         </div>
 
         {votes.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-14 text-center">
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface px-6 py-14 text-center">
             <VoteIcon className="mx-auto mb-3 h-8 w-8 text-zinc-300" />
             <p className="text-sm text-zinc-500">
               No individual vote records for this selection. That doesn&apos;t
@@ -167,7 +167,7 @@ export default function PersonVotes({ loaderData }: Route.ComponentProps) {
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             {votes.map((v: any) => {
               const meeting = v.motions?.meetings;
               return (

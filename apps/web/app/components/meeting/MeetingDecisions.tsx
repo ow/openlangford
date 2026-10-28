@@ -149,7 +149,7 @@ export function MeetingDecisions({ agendaItems, onWatch }: MeetingDecisionsProps
   const divided = substantive.filter((d) => (d.motion.votes || []).some((v) => v.vote === "No")).length;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-zinc-100 px-5 py-3 text-sm text-zinc-500">
         <span>
           <span className="font-semibold text-zinc-900">{substantive.length}</span>{" "}

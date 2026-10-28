@@ -1,3 +1,4 @@
+import { ThemeToggle } from "./theme-toggle";
 import { Link, useLocation, useRouteLoaderData } from "react-router";
 import { useState, useEffect } from "react";
 import {
@@ -98,7 +99,7 @@ function NavDropdown({
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-56 bg-white rounded-xl shadow-xl border-zinc-200 overflow-hidden p-1"
+        className="w-56 bg-surface rounded-xl shadow-xl border-zinc-200 overflow-hidden p-1"
       >
         {items.map((item) => (
           <DropdownMenuItem key={item.href} asChild className="p-0">
@@ -142,7 +143,7 @@ export function Navbar() {
   }, [location.pathname]);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200">
+    <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-zinc-200">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between h-16">
           <Link to="/" prefetch="intent" className="flex items-center gap-2 group">
@@ -200,6 +201,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-2 md:gap-4">
             <QuickJump />
+            <ThemeToggle className="hidden sm:inline-flex" />
             {/* Desktop User Menu */}
             {user ? (
               <div className="hidden sm:flex items-center gap-4">
@@ -237,6 +239,7 @@ export function Navbar() {
               </Link>
             ) : null}
 
+            <ThemeToggle className="sm:hidden" />
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -255,7 +258,7 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-zinc-200 bg-white">
+        <div className="md:hidden border-t border-zinc-200 bg-surface">
           <div className="container mx-auto px-4 py-4 space-y-1">
             <MobileNavLink
               name="Meetings"

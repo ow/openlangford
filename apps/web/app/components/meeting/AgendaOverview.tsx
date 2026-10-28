@@ -66,7 +66,7 @@ export function AgendaOverview({
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
 
       <div className="divide-y divide-zinc-100">
         {items.length === 0 ? (
@@ -683,7 +683,7 @@ function MotionCardInline({
     <div
       onClick={onClick}
       className={cn(
-        "group relative p-3 rounded-xl border border-zinc-200 bg-white hover:border-brand-300 transition-all",
+        "group relative p-3 rounded-xl border border-zinc-200 bg-surface hover:border-brand-300 transition-all",
         onClick && "cursor-pointer hover:shadow-sm",
       )}
     >

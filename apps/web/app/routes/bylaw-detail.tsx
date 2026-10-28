@@ -111,7 +111,7 @@ export default function BylawDetail({ loaderData }: Route.ComponentProps) {
                 href={pdfHref}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-sm font-semibold text-zinc-800 shadow-xs transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                className="inline-flex items-center rounded-lg border border-zinc-200 bg-surface px-3.5 py-2 text-sm font-semibold text-zinc-800 shadow-xs transition-colors hover:border-zinc-300 hover:bg-zinc-50"
               >
                 Official PDF
               </a>
@@ -133,7 +133,7 @@ export default function BylawDetail({ loaderData }: Route.ComponentProps) {
           {keyRules.length > 0 && (
             <section>
               <SectionHeading title="Key rules" description="The parts residents most often run into. The PDF is the official text." />
-              <ul className="space-y-2.5 rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
+              <ul className="space-y-2.5 rounded-2xl border border-zinc-200 bg-surface px-5 py-4 shadow-sm">
                 {keyRules.map((rule, i) => (
                   <li key={i} className="flex gap-3 text-sm leading-relaxed text-zinc-800">
                     <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
@@ -157,7 +157,7 @@ export default function BylawDetail({ loaderData }: Route.ComponentProps) {
                     <li key={m.id}>
                       <Link
                         to={matterPath(m)}
-                        className="group block rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-colors hover:border-brand-200"
+                        className="group block rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm transition-colors hover:border-brand-200"
                       >
                         <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
                           {variant && <Badge variant={variant}>{m.status}</Badge>}
@@ -193,7 +193,7 @@ export default function BylawDetail({ loaderData }: Route.ComponentProps) {
                 title="Amendments"
                 description="This version includes these amending bylaws."
               />
-              <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white text-sm shadow-sm">
+              <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface text-sm shadow-sm">
                 {amendments.map((a) => {
                   const m = matters.find((x: any) => new RegExp(`\\b0*${a.bylawNumber}\\b`).test(x.identifier || ""));
                   return (
@@ -215,7 +215,7 @@ export default function BylawDetail({ loaderData }: Route.ComponentProps) {
           )}
 
           <section>
-            <details className="group rounded-2xl border border-zinc-200 bg-white shadow-sm">
+            <details className="group rounded-2xl border border-zinc-200 bg-surface shadow-sm">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-base font-semibold text-zinc-900">
                 Full text
                 <span className="text-sm font-medium text-brand-700 group-open:hidden">Show</span>

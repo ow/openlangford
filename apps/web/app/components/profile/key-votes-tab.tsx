@@ -10,7 +10,7 @@ interface KeyVotesTabProps {
 export function KeyVotesTab({ keyVotes, personName, totalKeyVotes }: KeyVotesTabProps) {
   if (!keyVotes || keyVotes.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
         <p className="font-medium text-zinc-700">No key votes identified</p>
         <p className="mt-1 leading-relaxed">
           A vote is flagged as key when this member was in the minority, the result was close, or they
@@ -27,7 +27,7 @@ export function KeyVotesTab({ keyVotes, personName, totalKeyVotes }: KeyVotesTab
         The {keyVotes.length} most notable votes, ranked by significance.
       </p>
 
-      <div className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <div className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
         {keyVotes.map((kv) => (
           <KeyVoteCard key={kv.id} keyVote={kv} personName={personName} />
         ))}

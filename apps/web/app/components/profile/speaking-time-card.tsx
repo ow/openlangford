@@ -57,7 +57,7 @@ function TimeRangeSelector({ current }: { current: string }) {
             className={cn(
               "whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
               isActive
-                ? "bg-white text-zinc-900 shadow-sm"
+                ? "bg-surface text-zinc-900 shadow-sm"
                 : "text-zinc-500 hover:text-zinc-700"
             )}
           >
@@ -233,7 +233,7 @@ export function SpeakingTimeCard({
   }, [totalSeconds, meetingCount, trendData.length]);
 
   return (
-    <section className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="space-y-4 rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-base font-semibold text-zinc-900">Recorded speech</h3>
         {fixedPeriodLabel ? <span className="text-sm text-zinc-500">{fixedPeriodLabel}</span> : <TimeRangeSelector current={timeRange} />}

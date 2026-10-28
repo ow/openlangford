@@ -15,7 +15,7 @@ export default function Terms() {
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-3xl px-4 py-12">
         <PageHeader title="Terms of service" />
-        <div className="prose prose-zinc max-w-none rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8 prose-h2:text-lg prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-3">
+        <div className="prose prose-zinc max-w-none rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8 prose-h2:text-lg prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-3">
         <p className="text-sm text-zinc-500">Last Updated: February 10, 2026</p>
 
         <h2>1. Accuracy of Data</h2>

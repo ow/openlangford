@@ -116,7 +116,7 @@ export function AgendaCard({
               <h4 className="mb-2 text-sm font-semibold text-zinc-900">
                 {motionCount === 1 ? "Motion" : "Motions"}
               </h4>
-              <ul className="divide-y divide-zinc-100 overflow-hidden rounded-xl border border-zinc-200 bg-white">
+              <ul className="divide-y divide-zinc-100 overflow-hidden rounded-xl border border-zinc-200 bg-surface">
                 {motions.map((motion) => (
                   <MotionCard key={motion.id} motion={motion} onWatchVideo={onWatchVideo} className="px-4" />
                 ))}

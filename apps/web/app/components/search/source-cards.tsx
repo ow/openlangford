@@ -56,7 +56,7 @@ function SourceCard({ source, index }: { source: any; index: number }) {
   const link = sourceHref(source);
 
   return (
-    <div className="p-3 bg-white rounded-lg border border-zinc-200 hover:border-brand-200 transition-colors">
+    <div className="p-3 bg-surface rounded-lg border border-zinc-200 hover:border-brand-200 transition-colors">
       {/* Header row */}
       <div className="flex items-center gap-1.5 mb-1.5">
         <span className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center text-[10px] font-bold text-brand-700 shrink-0">

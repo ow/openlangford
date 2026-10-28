@@ -288,7 +288,7 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
       className={cn(
         "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition-colors",
         view === value
-          ? "bg-white text-zinc-900 shadow-sm"
+          ? "bg-surface text-zinc-900 shadow-sm"
           : "text-zinc-500 hover:text-zinc-800",
       )}
     >
@@ -317,7 +317,7 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
       </h2>
       <div
         className={cn(
-          "overflow-hidden rounded-2xl border bg-white shadow-sm divide-y divide-zinc-100",
+          "overflow-hidden rounded-2xl border bg-surface shadow-sm divide-y divide-zinc-100",
           tone === "brand" ? "border-brand-200" : "border-zinc-200",
         )}
       >
@@ -409,7 +409,7 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
                     : "Oldest first — switch to newest first"
                 }
                 title={sortOrder === "desc" ? "Newest first" : "Oldest first"}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-xs transition-colors hover:border-zinc-300 hover:text-zinc-800"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-surface text-zinc-500 shadow-xs transition-colors hover:border-zinc-300 hover:text-zinc-800"
               >
                 {sortOrder === "desc" ? (
                   <ArrowDownWideNarrow className="h-4 w-4" />
@@ -441,7 +441,7 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
           Meetings in {periodLabel}
         </h2>
         {view === "calendar" && !loadError ? (
-          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             <CalendarView
               meetings={filtered}
               year={selectedYear}
@@ -452,7 +452,7 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
             />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface px-6 py-16 text-center">
             <h3 className="text-base font-semibold text-zinc-900">
               {loadError ? "Meetings could not be loaded" : "No meetings found"}
             </h3>
@@ -481,7 +481,7 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
         )}
         <nav
           aria-label="Meeting history"
-          className="mt-8 flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+          className="mt-8 flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-surface p-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
             <p

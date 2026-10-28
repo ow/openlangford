@@ -541,7 +541,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
           {images.lead && (
             <figure className="mt-6">
-              <a href={images.lead.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+              <a href={images.lead.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl border border-zinc-200 bg-surface">
                 <img
                   src={images.lead.url}
                   alt={`${IMAGE_CAPTION[images.lead.kind] || "From the staff report"}: ${matterTitle(matter)}`}
@@ -566,7 +566,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
           )}
 
           {matter.bylaw && (
-            <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <div className="mt-6 rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
               <p className="mb-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-zinc-500">
                 {[
                   "Governing bylaw",
@@ -621,7 +621,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               {properties.length > 0 && (
                 <ul className={cn("space-y-3", matter.locations?.length ? "mt-4" : "")}>
                   {properties.map((p) => (
-                    <li key={p.id} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+                    <li key={p.id} className="rounded-2xl border border-zinc-200 bg-surface p-4 shadow-sm">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                         <Link to={propertyPath(p)} className="font-semibold text-zinc-900 hover:text-brand-700">
                           {p.address}
@@ -664,7 +664,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                 title="Background"
                 description="Earlier and later steps of the same initiative."
               />
-              <ol className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm divide-y divide-zinc-100">
+              <ol className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm divide-y divide-zinc-100">
                 {story.related.map((r: any) => (
                   <li key={r.id}>
                     <Link to={matterPath(r)} className="group block px-5 py-4 hover:bg-zinc-50">
@@ -695,7 +695,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             />
 
             {timelineEntries.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-12 text-center text-sm text-zinc-500">
+              <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface px-6 py-12 text-center text-sm text-zinc-500">
                 No meeting records are linked to this matter yet.
               </div>
             ) : (
@@ -706,7 +706,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     return (
                       <li key={entry.key} className="relative pl-7">
                         <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                        <div className="rounded-2xl border border-dashed border-zinc-200 bg-white/70 px-5 py-4">
+                        <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
                           <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
                             <Link to={meetingPath({ id: item.meeting_id, slug: item.meetings?.slug })} className="tabular-nums hover:text-brand-700">
                               {formatDate(item.meetings?.meeting_date)}
@@ -735,7 +735,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     return (
                       <li key={entry.key} className="relative pl-7">
                         <span className="absolute left-0 top-6 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+                        <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
                           <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
                             {entry.meetingId ? (
                               <Link

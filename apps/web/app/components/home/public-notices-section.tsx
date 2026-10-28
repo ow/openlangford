@@ -31,7 +31,7 @@ export function PublicNoticesSection({
         }
       />
 
-      <ul className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden divide-y divide-zinc-100">
+      <ul className="bg-surface rounded-2xl border border-zinc-200 shadow-sm overflow-hidden divide-y divide-zinc-100">
         {notices.map((notice, i) => (
           <li key={i}>
             <a

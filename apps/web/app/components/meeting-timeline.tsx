@@ -268,7 +268,7 @@ export function MeetingTimeline({
       : hoveredEvent?.start;
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
       <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 className="text-lg font-bold tracking-tight text-zinc-900">Meeting timeline</h2>
         <span className="text-xs tabular-nums text-zinc-500">
@@ -308,7 +308,7 @@ export function MeetingTimeline({
               type="button"
               aria-label={`Agenda item ${cleanOrder(agenda.item_order)}: ${displayTitle(agenda.title)} at ${formatTimestamp(agenda.start)}`}
               className={cn(
-                "absolute top-0 h-4 w-2 -translate-x-1/2 rounded-sm bg-brand-600 ring-2 ring-white transition-transform hover:scale-125 focus-visible:outline-none focus-visible:ring-brand-300",
+                "absolute top-0 h-4 w-2 -translate-x-1/2 rounded-sm bg-brand-600 ring-2 ring-surface transition-transform hover:scale-125 focus-visible:outline-none focus-visible:ring-brand-300",
                 hoveredEvent?.id === agenda.id && "scale-125",
               )}
               style={{ left: `${pct(agenda.start)}%` }}
@@ -353,7 +353,7 @@ export function MeetingTimeline({
                       <div
                         key={seg.id}
                         className={cn(
-                          "h-full border-r border-white/40 last:border-r-0 hover:bg-black/5",
+                          "h-full border-r border-surface/40 last:border-r-0 hover:bg-black/5",
                           activeSegmentId === seg.id && "bg-black/10",
                         )}
                         style={{
@@ -382,7 +382,7 @@ export function MeetingTimeline({
               type="button"
               aria-label={`Motion at ${formatTimestamp(motion.start)}${motion.result ? `, ${motion.result.toLowerCase()}` : ""}`}
               className={cn(
-                "absolute top-0.5 h-3 w-3 -translate-x-1/2 rounded-full ring-2 ring-white transition-transform hover:scale-125 focus-visible:outline-none focus-visible:ring-brand-300",
+                "absolute top-0.5 h-3 w-3 -translate-x-1/2 rounded-full ring-2 ring-surface transition-transform hover:scale-125 focus-visible:outline-none focus-visible:ring-brand-300",
                 motionDotClass(motion.result),
                 hoveredEvent?.id === motion.id && "scale-125",
               )}

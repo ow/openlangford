@@ -75,7 +75,7 @@ export default function About() {
             {statItems.map(({ key, label, icon: Icon }) => (
               <div
                 key={key}
-                className="bg-white rounded-2xl p-4 shadow-lg border border-zinc-200 text-center"
+                className="bg-surface rounded-2xl p-4 shadow-lg border border-zinc-200 text-center"
               >
                 <Icon className="h-5 w-5 text-brand-500 mx-auto mb-2" />
                 <div className="text-2xl font-black text-zinc-900">
@@ -89,7 +89,7 @@ export default function About() {
           </div>
         )}
 
-        <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-zinc-200 mb-12">
+        <div className="bg-surface rounded-3xl p-8 md:p-12 shadow-xl border border-zinc-200 mb-12">
           <article
             className="prose prose-zinc lg:prose-lg max-w-none
             prose-headings:text-zinc-900 prose-headings:font-black

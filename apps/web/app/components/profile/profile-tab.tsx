@@ -54,7 +54,7 @@ export function ProfileTab({
   return (
     <div className="space-y-6">
       {showStats && (
-        <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
           <h3 className="sr-only">At a glance</h3>
           <dl className="grid grid-cols-2 divide-zinc-100 md:grid-cols-4 md:divide-x [&>div]:p-4 sm:[&>div]:p-5">
             <StatItem
@@ -99,7 +99,7 @@ export function ProfileTab({
       )}
 
       {displayText ? (
-        <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+        <section className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
           <h3 className="text-base font-semibold text-zinc-900">Overview</h3>
           <div className="mt-3 space-y-4">
             {displayText.split("\n\n").map((paragraph, i) => (
@@ -116,7 +116,7 @@ export function ProfileTab({
       ) : !showStats ? (
         // Only explain the gap when there's nothing else on the tab; when the
         // stats are present, a missing AI overview needs no apology card.
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm leading-relaxed text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm leading-relaxed text-zinc-500">
           {emptyDetail}
         </div>
       ) : null}

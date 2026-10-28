@@ -151,13 +151,13 @@ export default function AdminPeople({ loaderData }: Route.ComponentProps) {
         />
 
         {filteredPeople.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+          <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
             {searchTerm
               ? `No people match "${searchTerm}".`
               : "No people recorded yet. Add one to get started."}
           </div>
         ) : (
-          <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <ul className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface shadow-sm">
             {filteredPeople.map((person) => (
               <li
                 key={person.id}
@@ -244,7 +244,7 @@ export default function AdminPeople({ loaderData }: Route.ComponentProps) {
                 </h3>
 
                 {!selectedPerson.memberships?.length ? (
-                  <div className="rounded-xl border border-dashed border-zinc-300 bg-white/60 p-4 text-sm text-zinc-500">
+                  <div className="rounded-xl border border-dashed border-zinc-300 bg-surface/60 p-4 text-sm text-zinc-500">
                     No memberships recorded.
                   </div>
                 ) : (

@@ -27,7 +27,7 @@ export function CollapsibleSection({
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden",
+        "bg-surface rounded-2xl shadow-sm border border-zinc-200 overflow-hidden",
         className
       )}
     >

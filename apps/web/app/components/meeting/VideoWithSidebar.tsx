@@ -238,7 +238,7 @@ export function VideoWithSidebar({
     );
 
   return (
-    <div className="overflow-hidden rounded-b-2xl border border-zinc-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-b-2xl border border-zinc-200 bg-surface shadow-sm">
       <div className="flex flex-col lg:flex-row">
         {/* Video Player */}
         <div
@@ -296,7 +296,7 @@ export function VideoWithSidebar({
                   setTimeout(() => videoPlayer.togglePlay(), 100);
                 }}
               >
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-lg transition-transform group-hover/play:scale-105">
+                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface/90 text-zinc-900 shadow-lg transition-transform group-hover/play:scale-105">
                   <Play className="ml-1 h-7 w-7 fill-current" />
                 </span>
               </button>
@@ -397,7 +397,7 @@ export function VideoWithSidebar({
 
         {/* Sidebar - Desktop only */}
         {!sidebarCollapsed && (
-          <div className="relative hidden border-l border-zinc-200 bg-white lg:block lg:w-1/3">
+          <div className="relative hidden border-l border-zinc-200 bg-surface lg:block lg:w-1/3">
            <div className="absolute inset-0 flex min-h-0 flex-col overflow-hidden">
             <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-3 py-2.5">
               <ModeToggle mode={sidebarMode} onChange={selectMode} />
@@ -421,7 +421,7 @@ export function VideoWithSidebar({
 
         {/* Collapsed Sidebar Toggle - Desktop only */}
         {sidebarCollapsed && (
-          <div className="hidden w-10 items-start justify-center border-l border-zinc-200 bg-white pt-2.5 lg:flex">
+          <div className="hidden w-10 items-start justify-center border-l border-zinc-200 bg-surface pt-2.5 lg:flex">
             <button
               type="button"
               onClick={() => setSidebarCollapsed(false)}
@@ -452,7 +452,7 @@ export function VideoWithSidebar({
             </button>
           ))}
         </div>
-        <DrawerContent className="h-[80vh] bg-white">
+        <DrawerContent className="h-[80vh] bg-surface">
           <DrawerTitle className="sr-only">
             {sidebarMode === "agenda" ? "Agenda" : "Transcript"}
           </DrawerTitle>
@@ -528,8 +528,8 @@ function CaptionButton({ on, onClick }: { on: boolean; onClick: () => void }) {
       className={cn(
         "rounded border px-1.5 py-0.5 text-xs font-semibold leading-none transition-colors",
         on
-          ? "border-white bg-white text-zinc-900"
-          : "border-white/40 text-white/60 hover:border-white hover:text-white",
+          ? "border-surface bg-surface text-zinc-900"
+          : "border-surface/40 text-white/60 hover:border-surface hover:text-white",
       )}
     >
       CC
@@ -544,7 +544,7 @@ function RateButton({ rate, onClick }: { rate: number; onClick: () => void }) {
       onClick={onClick}
       aria-label={`Playback speed ${rate}x`}
       title="Playback speed"
-      className="min-w-9 rounded px-1.5 py-0.5 text-xs font-semibold tabular-nums text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+      className="min-w-9 rounded px-1.5 py-0.5 text-xs font-semibold tabular-nums text-white/80 transition-colors hover:bg-surface/10 hover:text-white"
     >
       {rate}x
     </button>
@@ -563,7 +563,7 @@ function ModeToggle({ mode, onChange }: { mode: SidebarMode; onChange: (mode: Si
           onClick={() => onChange(m)}
           className={cn(
             "rounded-md px-3 py-1 text-sm font-medium transition-colors",
-            mode === m ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-800",
+            mode === m ? "bg-surface text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-800",
           )}
         >
           {m === "agenda" ? "Agenda" : "Transcript"}
@@ -607,7 +607,7 @@ function AgendaList({
   if (agendaItems.length === 0) {
     return (
       <div className="p-4">
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
           No agenda items were recorded for this meeting.
         </div>
       </div>
@@ -708,7 +708,7 @@ function AgendaItemDetails({ item, onSeek }: { item: AgendaItem; onSeek: (time: 
       )}
 
       {motions.length > 0 && (
-        <div className="divide-y divide-zinc-100 rounded-xl border border-zinc-200 bg-white">
+        <div className="divide-y divide-zinc-100 rounded-xl border border-zinc-200 bg-surface">
           {motions.map((motion) => (
             <MotionRow key={motion.id} motion={motion} onSeek={onSeek} />
           ))}
@@ -802,7 +802,7 @@ function TranscriptSidebarContent({
   if (subSegments.length === 0) {
     return (
       <div className="p-4">
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
           No transcript is available for this meeting yet.
         </div>
       </div>
@@ -812,7 +812,7 @@ function TranscriptSidebarContent({
   return (
     <div className="relative">
       {!autoScrollEnabled && (
-        <div className="sticky top-0 z-10 border-b border-zinc-100 bg-white/95 px-3 py-2 backdrop-blur-sm">
+        <div className="sticky top-0 z-10 border-b border-zinc-100 bg-surface/95 px-3 py-2 backdrop-blur-sm">
           <button
             type="button"
             onClick={onJumpToLive}

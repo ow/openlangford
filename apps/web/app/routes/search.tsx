@@ -466,7 +466,7 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
           </div>
           <button
             onClick={() => navigate("/search")}
-            className="h-14 shrink-0 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700"
+            className="h-14 shrink-0 rounded-xl border border-zinc-200 bg-surface px-3 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-700"
             title="Start a new search"
             aria-label="Start a new search"
           >
@@ -483,7 +483,7 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
                 <li key={`${m.type}-${m.id}`}>
                   <Link
                     to={m.href}
-                    className={`flex h-full items-start justify-between gap-3 rounded-xl border bg-white px-4 py-3 transition-colors hover:border-brand-300 ${m.exact ? "border-brand-300 ring-1 ring-brand-100" : "border-zinc-200"}`}
+                    className={`flex h-full items-start justify-between gap-3 rounded-xl border bg-surface px-4 py-3 transition-colors hover:border-brand-300 ${m.exact ? "border-brand-300 ring-1 ring-brand-100" : "border-zinc-200"}`}
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold text-zinc-900">{m.title}</span>
@@ -501,7 +501,7 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
         {showAnswer ? (
           <section className="mt-6" aria-label="Answer">
             {conversation.map((turn, i) => (
-              <div key={i} className="mb-4 rounded-2xl border border-zinc-200 bg-white/70 p-5 text-sm text-zinc-600">
+              <div key={i} className="mb-4 rounded-2xl border border-zinc-200 bg-surface/70 p-5 text-sm text-zinc-600">
                 <p className="mb-1 font-semibold text-zinc-900">{turn.question}</p>
                 <p className="line-clamp-3">{turn.answer}</p>
               </div>
@@ -536,7 +536,7 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
                   value={followUpQuery}
                   onChange={(e) => setFollowUpQuery(e.target.value)}
                   placeholder="Ask a follow-up..."
-                  className="h-12 rounded-2xl border-zinc-200 bg-white pl-5 pr-12 text-base shadow-sm"
+                  className="h-12 rounded-2xl border-zinc-200 bg-surface pl-5 pr-12 text-base shadow-sm"
                 />
                 <Button type="submit" disabled={!followUpQuery.trim()} size="icon" aria-label="Ask" className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full">
                   <Send className="h-4 w-4" />

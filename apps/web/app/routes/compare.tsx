@@ -285,7 +285,7 @@ function SelectionMode({
           icon={ArrowLeftRight}
         />
 
-        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <CouncillorSelector
               label="First councillor"
@@ -365,7 +365,7 @@ function CouncillorSelector({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         className={cn(
-          "flex w-full items-center gap-3 rounded-xl border bg-white p-3 text-left transition-colors",
+          "flex w-full items-center gap-3 rounded-xl border bg-surface p-3 text-left transition-colors",
           isOpen
             ? "border-brand-500 ring-3 ring-brand-500/20"
             : "border-zinc-200 hover:border-zinc-300",
@@ -398,7 +398,7 @@ function CouncillorSelector({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute left-0 right-0 top-full z-50 mt-2 max-h-80 overflow-y-auto rounded-xl border border-zinc-200 bg-white shadow-lg animate-in fade-in zoom-in-95 duration-200"
+          className="absolute left-0 right-0 top-full z-50 mt-2 max-h-80 overflow-y-auto rounded-xl border border-zinc-200 bg-surface shadow-lg animate-in fade-in zoom-in-95 duration-200"
         >
           <ul className="divide-y divide-zinc-100">
             {filteredCouncillors.map((c) => (
@@ -490,7 +490,7 @@ function ComparisonMode({ data }: { data: CompareModeData }) {
   return (
     <div className="min-h-screen bg-zinc-50">
       {/* Sticky mobile comparison bar */}
-      <div className="sticky top-16 z-40 border-b border-zinc-200 bg-white/95 px-4 py-2 backdrop-blur-sm lg:hidden">
+      <div className="sticky top-16 z-40 border-b border-zinc-200 bg-surface/95 px-4 py-2 backdrop-blur-sm lg:hidden">
         <div className="flex items-center justify-between gap-2 text-sm">
           <div className="flex min-w-0 items-center gap-2">
             <PersonAvatar person={personA} className="h-6 w-6" />
@@ -543,7 +543,7 @@ function ComparisonMode({ data }: { data: CompareModeData }) {
         />
 
         {/* Head-to-head */}
-        <section className="mb-10 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm lg:p-8">
+        <section className="mb-10 rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm lg:p-8">
           <div className="grid grid-cols-2 items-start gap-6 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-10">
             <PersonColumn person={personA} />
 
@@ -608,7 +608,7 @@ function ComparisonMode({ data }: { data: CompareModeData }) {
           {speakingUnavailable ? (
             <section>
               <SectionHeading title="Speaking time by topic" icon={Clock} />
-              <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+              <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                 Speaking time couldn't be loaded right now. Try again in a moment, or pick a
                 shorter period.
               </div>
@@ -668,7 +668,7 @@ function PersonColumn({ person }: { person: PersonWithStats }) {
     >
       <PersonAvatar
         person={person}
-        className="h-20 w-20 shadow-sm ring-4 ring-white transition-shadow group-hover:shadow-md lg:h-24 lg:w-24"
+        className="h-20 w-20 shadow-sm ring-4 ring-surface transition-shadow group-hover:shadow-md lg:h-24 lg:w-24"
       />
       <span className="mt-3 text-base font-bold text-zinc-900 transition-colors group-hover:text-brand-700 lg:text-lg">
         {person.name}
@@ -703,11 +703,11 @@ function StanceComparisonSection({
         description="AI-summarised from what each councillor has said in meetings. Covers all recorded service."
       />
       {!hasAny ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white/60 p-5 text-sm text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
           No stance summaries have been generated for either councillor yet.
         </div>
       ) : (
-        <div className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface shadow-sm">
           {topics.map((topic) => (
             <StanceRow
               key={topic}
@@ -826,7 +826,7 @@ function ActivityCard({
   const attendanceRate = person.stats?.rate;
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
       <div className="mb-4 flex items-center gap-3">
         <PersonAvatar person={person} className="h-8 w-8" />
         <span className="text-sm font-semibold text-zinc-900">{person.name}</span>
@@ -868,7 +868,7 @@ function SpeakingTimeComparison({
   return (
     <section>
       <SectionHeading title="Speaking time by topic" icon={Clock} />
-      <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
         <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-brand-600" />

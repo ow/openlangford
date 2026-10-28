@@ -103,7 +103,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   return redirect(redirectTo, { headers });
 }
 
-const fieldClass = "h-10 bg-white";
+const fieldClass = "h-10 bg-surface";
 const labelClass = "text-sm font-medium text-zinc-700";
 
 export default function Signup() {
@@ -120,7 +120,7 @@ export default function Signup() {
         <div className="container mx-auto max-w-md px-4 py-16">
           <div
             role="status"
-            className="space-y-3 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+            className="space-y-3 rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8"
           >
             <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900">
               Check your email
@@ -150,7 +150,7 @@ export default function Signup() {
     return (
       <div className="min-h-screen bg-zinc-50">
         <div className="container mx-auto max-w-md px-4 py-16">
-          <div className="space-y-3 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="space-y-3 rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8">
             <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900">
               Sign-ups are closed for now
             </h1>
@@ -183,7 +183,7 @@ export default function Signup() {
   return (
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-md px-4 py-16">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8">
           <div className="mb-6 space-y-2">
             <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900">
               Create an account

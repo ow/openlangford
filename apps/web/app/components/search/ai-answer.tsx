@@ -341,7 +341,7 @@ export function AiAnswer({
       {/* Answer card */}
       <div
         className={cn(
-          "p-6 bg-white border rounded-2xl shadow-sm transition-all duration-300",
+          "p-6 bg-surface border rounded-2xl shadow-sm transition-all duration-300",
           isStreaming && answer
             ? "border-brand-200 ring-1 ring-brand-100"
             : "border-zinc-200",

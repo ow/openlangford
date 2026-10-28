@@ -8,7 +8,7 @@ export function AskSection({ shortName }: { shortName: string }) {
   return (
     <section
       aria-labelledby="ask-heading"
-      className="bg-gradient-to-b from-brand-700 to-brand-800 text-white"
+      className="light-scope bg-gradient-to-b from-brand-700 to-brand-800 text-white"
     >
       <div className="container mx-auto max-w-4xl px-4 py-12 md:py-16">
         <div className="mb-6 text-center">
@@ -23,7 +23,7 @@ export function AskSection({ shortName }: { shortName: string }) {
         <AskQuestion
           title=""
           placeholder={`Ask anything about ${shortName} council decisions...`}
-          className="bg-white text-zinc-900 shadow-2xl border-0"
+          className="bg-surface text-zinc-900 shadow-2xl border-0"
         />
       </div>
     </section>

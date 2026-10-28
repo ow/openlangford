@@ -316,7 +316,7 @@ export default function DocumentViewer({ loaderData }: Route.ComponentProps) {
   }, [sections]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
       <div className="border-b border-zinc-200 bg-zinc-50">
         <div className={cn("mx-auto px-4 py-6 sm:px-6", showTOC ? "max-w-6xl" : "max-w-4xl")}>
@@ -338,7 +338,7 @@ export default function DocumentViewer({ loaderData }: Route.ComponentProps) {
                   href={(parentDocument as any).source_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:border-brand-300 hover:text-brand-700"
                 >
                   Original PDF
                 </a>
@@ -405,7 +405,7 @@ function KeyFacts({ facts }: { facts: string[] }) {
   const LIMIT = 5;
   const shown = expanded ? facts : facts.slice(0, LIMIT);
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-zinc-900">
         <Lightbulb className="h-4 w-4 text-brand-600" />
         Key facts

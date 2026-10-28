@@ -31,7 +31,7 @@ export function PublicParticipation({ history, beforeCouncil = true }: { history
   const visible = expanded ? matching : matching.slice(0, 6);
 
   return (
-    <section id="public-participation" className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <section id="public-participation" className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
       <div className="space-y-4 p-5 sm:p-6">
         <div>
           {beforeCouncil && <p className="text-sm text-zinc-500">Before council service</p>}

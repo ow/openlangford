@@ -23,7 +23,7 @@ export function SearchTabs({
           "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all border",
           activeTab === "ai"
             ? "bg-brand-50 text-brand-700 border-brand-200 shadow-sm"
-            : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:text-zinc-700",
+            : "bg-surface text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:text-zinc-700",
         )}
       >
         AI Answer
@@ -38,7 +38,7 @@ export function SearchTabs({
           "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all border",
           activeTab === "results"
             ? "bg-brand-50 text-brand-700 border-brand-200 shadow-sm"
-            : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:text-zinc-700",
+            : "bg-surface text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:text-zinc-700",
         )}
       >
         Search Results
