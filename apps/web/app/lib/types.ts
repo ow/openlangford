@@ -96,6 +96,8 @@ export interface Meeting {
   minutes_url?: string;
   agenda_url?: string;
   video_duration_seconds?: number;
+  /** getMeetings only: PostgREST embedded count of the meeting's agenda items. */
+  agenda_item_count?: { count: number }[];
   archive_path?: string;
   chair_person_id?: number;
   summary?: string;

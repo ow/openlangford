@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { recordsPerYear, type RecordDate } from "../lib/activity-charts";
 
 /**
  * Properties: one civic address (one lot) and every matter and agenda item that
@@ -48,7 +49,7 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   if (!property) return null;
   const { data: links, error: linksError } = await supabase
     .from("property_links")
-    .select("agenda_item_id, matter_id")
+    .select("agenda_item_id, matter_id, agenda_items(meetings(meeting_date))")
     .eq("property_id", property.id)
     .eq("hidden", false);
   if (linksError) throw linksError;
@@ -71,14 +72,18 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   const number = parseInt(property.civic_number, 10);
   // How many matters each lot on a street page has, for "3 matters" beside each address.
   const lotCounts = new Map<number, number>();
+  // Each record's meeting dates (for the per-year sparkline); a street page adds every lot's.
+  const recordKey = (l: any) => (l.matter_id ? `m${l.matter_id}` : `i${l.agenda_item_id}`);
+  const recordDates: RecordDate[] = (links || []).map((l: any) => ({ key: recordKey(l), date: l.agenda_items?.meetings?.meeting_date }));
   if (isStreet && neighbours?.length) {
     const lotIds = neighbours.map((n) => n.id);
     for (let i = 0; i < lotIds.length; i += 300) {
-      const { data } = await supabase.from("property_links").select("property_id, matter_id, agenda_item_id").in("property_id", lotIds.slice(i, i + 300)).eq("hidden", false);
+      const { data } = await supabase.from("property_links").select("property_id, matter_id, agenda_item_id, agenda_items(meetings(meeting_date))").in("property_id", lotIds.slice(i, i + 300)).eq("hidden", false);
       const seen = new Map<number, Set<string>>();
-      for (const l of data || []) {
+      for (const l of (data || []) as any[]) {
         const set = seen.get(l.property_id) || new Set<string>();
-        set.add(l.matter_id ? `m${l.matter_id}` : `i${l.agenda_item_id}`);
+        set.add(recordKey(l));
+        recordDates.push({ key: recordKey(l), date: l.agenda_items?.meetings?.meeting_date });
         seen.set(l.property_id, set);
       }
       for (const [id, set] of seen) lotCounts.set(id, set.size);
@@ -88,9 +93,14 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   const streetSlug = isStreet
     ? null
     : (await supabase.from("properties").select("slug").eq("slug", slugOfStreet).maybeSingle()).data?.slug ?? null;
+  // Hidden or merged matters drop out; a matter link without a dated agenda item falls back to first_seen.
+  const hiddenMatters = new Set((matters || []).filter((m) => !visible(m)).map((m) => `m${m.id}`));
+  const dated = new Set(recordDates.filter((r) => r.date).map((r) => r.key));
+  for (const m of (matters || []).filter(visible)) if (!dated.has(`m${m.id}`)) recordDates.push({ key: `m${m.id}`, date: m.first_seen });
   return {
     isStreet,
     streetSlug,
+    activity: recordsPerYear(recordDates.filter((r) => !hiddenMatters.has(r.key))),
     lots: isStreet
       ? (neighbours || [])
           .map((n) => ({ ...n, records: lotCounts.get(n.id) || 0 }))
