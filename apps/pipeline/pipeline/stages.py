@@ -16,7 +16,7 @@ Each stage takes a ``StageContext`` and picks its own targets:
 
 Version stamps live next to what a stage writes (``matters.meta.summary_version``,
 ``matters.meta.images_version``, ``agenda_items.meta.participation_version``,
-``motions.meta.headline_version``);
+``motions.meta.headline_version``, ``properties.meta.summary_version``);
 bump the module's ``*_VERSION`` constant when a prompt changes, then run
 ``--stage <name> --stale``.
 """
@@ -40,6 +40,7 @@ from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
 from pipeline.ingestion.motion_headlines import HEADLINE_VERSION
 from pipeline.ingestion.participation_minutes import MINUTES_VERSION as MINUTES_PARTICIPATION_VERSION
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
+from pipeline.ingestion.property_summaries import PROPERTY_SUMMARY_VERSION
 
 When = Literal["post_ingest", "backfill_only"]
 Scope = Literal["meeting", "matter", "global"]
@@ -621,6 +622,60 @@ def run_properties(ctx: StageContext):
     return stats
 
 
+def _property_targets(ctx: StageContext) -> list[int]:
+    """--target for property-summaries: one property id or several, comma-separated."""
+    try:
+        return [int(t) for t in str(ctx.target).split(",") if t.strip()]
+    except ValueError:
+        raise StageError(f"property-summaries: --target must be property ids (e.g. 12 or 12,34), got {ctx.target!r}")
+
+
+def stale_property_summaries(ctx: StageContext) -> list[int]:
+    from pipeline.ingestion.property_summaries import is_property_stale, load_properties
+
+    props = ctx.cache.get("properties") or load_properties(ctx.supabase)
+    ctx.cache["properties"] = props
+    return [p["id"] for p in props if is_property_stale(p, PROPERTY_SUMMARY_VERSION)]
+
+
+def run_property_summaries(ctx: StageContext):
+    """Plain-language overview per property with 2+ records. Post-ingest and --stale: only properties
+    whose records changed (or prompt version). Default: those without a summary; --force: every one."""
+    from pipeline.ingestion.property_summaries import (
+        clear_summaries, eligible, load_properties, needs_clearing, summarize_properties,
+    )
+
+    props = load_properties(ctx.supabase)
+    ctx.cache["properties"] = props
+    by_id = {p["id"]: p for p in props}
+    clear = []
+    if ctx.target not in (None, ""):
+        wanted = _property_targets(ctx)
+        unknown = [i for i in wanted if i not in by_id]
+        if unknown:
+            print(f"  [!] Unknown property id(s): {unknown}")
+        chosen = [by_id[i] for i in wanted if i in by_id and eligible(by_id[i])]
+        skipped = [i for i in wanted if i in by_id and not eligible(by_id[i])]
+        if skipped:
+            print(f"  [Properties] Skipping {skipped}: fewer than 2 records")
+    else:
+        if ctx.post_ingest or ctx.stale:
+            ids = set(stale_property_summaries(ctx))
+            chosen = [p for p in props if p["id"] in ids]
+        else:
+            chosen = [p for p in props if eligible(p) and (ctx.force or not p["meta"].get("summary"))]
+        clear = [p for p in props if needs_clearing(p)]
+    if ctx.dry_run:
+        _preview("properties to summarize", [p["id"] for p in chosen])
+        _preview("properties to clear (now fewer than 2 records)", [p["id"] for p in clear])
+        print(f"  [dry-run] {sum(1 for p in props if eligible(p))} of {len(props)} properties have 2+ records")
+        return {"properties": len(chosen), "clear": len(clear)}
+    cleared = clear_summaries(ctx.supabase, clear) if clear else 0
+    done = summarize_properties(ctx.supabase, chosen) if chosen else {}
+    print(f"  [Properties] {len(done)}/{len(chosen)} summarized, {cleared} cleared")
+    return {"properties": len(chosen), "summarized": len(done), "cleared": cleared}
+
+
 def run_letter_placement_eval(ctx: StageContext):
     import json
     from pipeline.ingestion.written_submissions import evaluate_placement
@@ -874,6 +929,13 @@ STAGES: list[Stage] = [
         name="properties",
         description="Link every matter and agenda item to the properties (civic addresses) it names.",
         run=run_properties, when="post_ingest", scope="global", version="1",
+    ),
+    Stage(
+        name="property-summaries",
+        description="One- or two-sentence plain-language overview per property with 2+ records (properties.meta.summary). "
+                    "--target PROPERTY_ID[,ID...]; --stale re-runs changed record sets.",
+        run=run_property_summaries, when="post_ingest", scope="global", version=PROPERTY_SUMMARY_VERSION,
+        depends_on=("properties",), stale=stale_property_summaries,
     ),
     Stage(
         name="profile-refresh",
