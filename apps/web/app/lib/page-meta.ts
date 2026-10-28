@@ -24,12 +24,16 @@ export function metaDescription(text: string, max = 155): string {
 }
 
 /**
- * "<lead> | <context> | Open Langford", trimming the lead (never the context) to keep the title near
- * `max` characters, which is about what a results page shows.
+ * "<lead> | <context> | Open Langford" when that fits in about `max` characters (what a results
+ * page shows). Otherwise the context goes, never the name: search engines match on the whole
+ * title and truncate the display themselves, so a lead is only clipped past `hardMax`. The site
+ * name already says Langford.
  */
-export function fitTitle(lead: string, context?: string, max = 65): string {
-  const suffix = `${context ? ` | ${context}` : ""} | ${SITE_NAME}`;
-  return `${clip(lead, Math.max(24, max - suffix.length))}${suffix}`;
+export function fitTitle(lead: string, context?: string, max = 65, hardMax = 90): string {
+  const site = ` | ${SITE_NAME}`;
+  const clean = lead.replace(/\s+/g, " ").trim();
+  if (context && clean.length + context.length + 3 + site.length <= max) return `${clean} | ${context}${site}`;
+  return `${clip(clean, hardMax - site.length)}${site}`;
 }
 
 type PageMetaOptions = {

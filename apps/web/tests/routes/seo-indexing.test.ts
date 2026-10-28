@@ -51,11 +51,12 @@ describe("titles and descriptions", () => {
     expect(metaDescription("Short.")).toBe("Short.");
     expect(clip("one two three", 9)).toBe("one two…");
   });
-  it("trims the lead of a long title, never the site context", () => {
-    const t = fitTitle("Official Community Plan Amendment and Rezoning for 2140 Caribou Drive and Area", "Langford Council");
-    expect(t.length).toBeLessThanOrEqual(66);
-    expect(t.endsWith(" | Langford Council | Open Langford")).toBe(true);
+  it("keeps the whole name, dropping the context label before cutting a name", () => {
     expect(fitTitle("Short matter", "Langford Council")).toBe("Short matter | Langford Council | Open Langford");
+    expect(fitTitle("Amenity Cost Charge Bylaw (No. 2275)", "Langford Bylaw")).toBe("Amenity Cost Charge Bylaw (No. 2275) | Open Langford");
+    const long = fitTitle("Official Community Plan Amendment and Rezoning for 2140 Caribou Drive and the surrounding Area Plan lands", "Langford Council");
+    expect(long.length).toBeLessThanOrEqual(90);
+    expect(long.endsWith("… | Open Langford")).toBe(true);
   });
   it("gives the home page its search title and site-wide structured data", () => {
     const meta = homeMeta({ data: {} } as any) as any[];
@@ -65,8 +66,8 @@ describe("titles and descriptions", () => {
   });
   it("names Langford on matter pages with twitter tags and breadcrumbs", () => {
     const meta = matterMeta({ data: { matter: { id: 1, slug: "caribou", title: "Rezoning application for 2140 Caribou Drive to permit a six storey apartment building", status: "Active", plain_english_summary: "x ".repeat(120) } } } as any) as any[];
-    expect(title(meta)).toMatch(/ \| Langford Council \| Open Langford$/);
-    expect(title(meta).length).toBeLessThanOrEqual(66);
+    expect(title(meta)).toMatch(/^Rezoning application for 2140 Caribou Drive to permit a six storey\b.*… \| Open Langford$/);
+    expect(title(meta).length).toBeLessThanOrEqual(90);
     expect(value(meta, "twitter:title")).toBe(title(meta));
     expect(value(meta, "twitter:description")).toBe(value(meta, "description"));
     expect(value(meta, "twitter:image")).toMatch(/^https:/);
