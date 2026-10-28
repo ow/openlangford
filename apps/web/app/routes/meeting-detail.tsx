@@ -1,5 +1,6 @@
 import { CalendarProvenance } from "../components/calendar-provenance";
 import { pageMeta, recordDate, markdownAlternate } from "../lib/page-meta";
+import { breadcrumbList, jsonLd, meetingEvent } from "../lib/structured-data";
 import { SITE_NAME } from "../lib/site-name";
 import { personPath } from "../lib/people-paths";
 import { getCouncilTerms } from "../services/council-terms";
@@ -30,16 +31,20 @@ import {
 } from "react-router";
 import { meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
+import { loaderFailure } from "../lib/loader-errors";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const m = data?.meeting;
   if (!m) return [{ title: `Meeting | ${SITE_NAME}` }];
   const date = recordDate(m.meeting_date);
+  const description = `Read the meeting summary and available council records for Langford’s ${m.title} meeting on ${date}.`;
   return [
-    ...pageMeta(`${m.title} — ${date}`,
-      `Read the meeting summary and available council records for Langford’s ${m.title} meeting on ${date}.`,
-      meetingPath(m, ""), "article"),
+    ...pageMeta(`${m.title} — ${date}`, description, meetingPath(m, ""), "article"),
     markdownAlternate(meetingPath(m, "/summary.md")),
+    jsonLd(
+      meetingEvent(m, meetingPath(m), description),
+      breadcrumbList([["Meetings", "/meetings"], [`${m.title} — ${date}`, meetingPath(m)]]),
+    ),
   ];
 };
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
@@ -69,6 +74,7 @@ import { useSpeakerStats } from "../hooks/useSpeakerStats";
 import { getMeetingDuration } from "../lib/timeline-utils";
 import { AgendaOverview } from "../components/meeting/AgendaOverview";
 import { getPropertiesForItems } from "../services/properties";
+import { getMatterLinks } from "../services/matters";
 import { TranscriptDrawer } from "../components/meeting/TranscriptDrawer";
 import { VideoWithSidebar } from "../components/meeting/VideoWithSidebar";
 import { MeetingDecisions } from "../components/meeting/MeetingDecisions";
@@ -177,15 +183,13 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     // the page fetch the text from /api/meeting-text (transcript on demand, sections on expand).
     const transcript = (data.transcript || []).map(({ text_content, ...rest }: any) => rest);
     const sections = (documentSections || []).map(({ section_text, ...rest }: any) => rest);
-    const itemProperties = await getPropertiesForItems(supabase, (data.agendaItems || []).map((it: any) => it.id));
-    return { ...data, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties };
-  } catch (error: any) {
-    if (error instanceof Response) throw error;
-    console.error("[meeting-detail loader]", error?.message || error);
-    if (error.message === "Meeting Not Found") {
-      throw new Response("Meeting Not Found", { status: 404 });
-    }
-    throw new Response("Error loading meeting", { status: 500 });
+    const [itemProperties, itemMatters] = await Promise.all([
+      getPropertiesForItems(supabase, (data.agendaItems || []).map((it: any) => it.id)),
+      getMatterLinks(supabase, (data.agendaItems || []).map((it: any) => it.matter_id)),
+    ]);
+    return { ...data, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties, itemMatters };
+  } catch (error) {
+    throw loaderFailure(error, "Meeting Not Found");
   }
 }
 
@@ -677,6 +681,7 @@ function MeetingDetailContent({ loaderData }: any) {
                   meetingId={meeting.id}
                   meetingSlug={meeting.slug}
                   itemProperties={(loaderData as any).itemProperties}
+                  itemMatters={(loaderData as any).itemMatters}
                 />
               </section>
             )}

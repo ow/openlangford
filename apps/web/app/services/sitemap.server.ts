@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SitemapEntry } from "../lib/sitemap";
-import { latestDate } from "../lib/sitemap";
+import { latestDate, sitemapDate } from "../lib/sitemap";
 import { bylawPath, documentPath, electionPath, matterPath, meetingDocumentsPath, meetingPath } from "../lib/paths";
 import { propertyPath } from "./properties";
 import { participantPath, personPath } from "../lib/people-paths";
@@ -40,6 +40,21 @@ async function publicMeetings(supabase: SupabaseClient, municipalityId: number) 
       .or(PUBLIC_READY_FILTER)
       .order("id")
       .range(from, to),
+  );
+}
+
+/** Per-section lastmod for /sitemap.xml: the newest entry in each section (from the same cache). */
+export async function sitemapIndexEntries(supabase: SupabaseClient, today = sitemapDate(new Date().toISOString())!): Promise<{ path: string; lastmod: string | null }[]> {
+  return Promise.all(
+    SITEMAP_SECTIONS.map(async (section) => {
+      const entries = await sitemapEntries(supabase, section).catch((error) => {
+        console.error(`Sitemap section ${section} failed:`, error);
+        return [] as SitemapEntry[];
+      });
+      // Scheduled meetings carry future dates; a section can't have changed after today.
+      const dates = entries.map((e) => sitemapDate(e.lastmod)).filter((d): d is string => !!d && d <= today);
+      return { path: `/sitemaps/${section}.xml`, lastmod: latestDate(...dates) };
+    }),
   );
 }
 
@@ -83,8 +98,10 @@ async function buildSitemapEntries(
         const rows = await pageAll<any>((from, to) => supabase.from("documents").select("meeting_id").in("meeting_id", ids).range(from, to));
         for (const r of rows) docMeetings.add(r.meeting_id);
       }
+      const today = sitemapDate(new Date().toISOString())!;
       return meetings.flatMap((m) => {
-        const lastmod = latestDate(m.updated_at, m.meeting_date);
+        // A scheduled meeting's date is when it happens, not when its page changed.
+        const lastmod = latestDate(m.updated_at, m.meeting_date <= today ? m.meeting_date : null);
         const out: SitemapEntry[] = [{ path: meetingPath(m), lastmod, changefreq: "monthly", priority: 0.7 }];
         if (docMeetings.has(m.id)) out.push({ path: meetingDocumentsPath(m), lastmod, changefreq: "monthly", priority: 0.4 });
         if (m.has_transcript) out.push({ path: meetingPath(m, "/explorer"), lastmod, changefreq: "monthly", priority: 0.3 });
@@ -107,14 +124,15 @@ async function buildSitemapEntries(
       const matters = await pageAll<any>((from, to) =>
         supabase
           .from("matters")
-          .select("id, slug, last_seen, updated_at")
+          .select("id, slug, first_seen, last_seen")
           .eq("municipality_id", municipality.id)
           .is("meta->>canonical_matter_id", null)
           .is("meta->>hidden", null)
           .order("id")
           .range(from, to),
       );
-      return matters.map((m) => ({ path: matterPath(m), lastmod: latestDate(m.updated_at, m.last_seen), changefreq: "weekly" as const, priority: 0.7 }));
+      // updated_at is touched by bulk backfills; last_seen is the latest meeting that took the matter up.
+      return matters.map((m) => ({ path: matterPath(m), lastmod: latestDate(m.last_seen || m.first_seen), changefreq: "weekly" as const, priority: 0.7 }));
     }
 
     case "bylaws": {
@@ -129,15 +147,35 @@ async function buildSitemapEntries(
       // street with one itself or at any of its addresses (hidden links leave thin pages).
       const [properties, links] = await Promise.all([
         pageAll<any>((from, to) =>
-          supabase.from("properties").select("id, slug, street, civic_number, updated_at").eq("municipality_id", municipality.id).order("id").range(from, to),
+          supabase.from("properties").select("id, slug, street, civic_number").eq("municipality_id", municipality.id).order("id").range(from, to),
         ),
-        pageAll<any>((from, to) => supabase.from("property_links").select("id, property_id").eq("hidden", false).order("id").range(from, to)),
+        pageAll<any>((from, to) =>
+          supabase
+            .from("property_links")
+            .select("id, property_id, agenda_items(meetings(meeting_date)), matters(last_seen)")
+            .eq("hidden", false)
+            .order("id")
+            .range(from, to),
+        ),
       ]);
-      const linked = new Set(links.map((l) => l.property_id));
-      const streets = new Set(properties.filter((p) => linked.has(p.id)).map((p) => String(p.street).toLowerCase()));
+      // lastmod = the latest meeting that considered the address (properties.updated_at is a backfill stamp).
+      const latest = new Map<number, string | null>();
+      for (const l of links) latest.set(l.property_id, latestDate(latest.get(l.property_id), l.agenda_items?.meetings?.meeting_date, l.matters?.last_seen));
+      const streetLatest = new Map<string, string | null>();
+      for (const p of properties) {
+        if (!latest.has(p.id)) continue;
+        const street = String(p.street).toLowerCase();
+        streetLatest.set(street, latestDate(streetLatest.get(street), latest.get(p.id)));
+      }
       return properties
-        .filter((p) => linked.has(p.id) || (p.civic_number === "" && streets.has(String(p.street).toLowerCase())))
-        .map((p) => ({ path: propertyPath(p), lastmod: latestDate(p.updated_at), changefreq: "monthly" as const, priority: p.civic_number === "" ? 0.6 : 0.5 }));
+        .filter((p) => latest.has(p.id) || (p.civic_number === "" && streetLatest.has(String(p.street).toLowerCase())))
+        .map((p) => ({
+          path: propertyPath(p),
+          // A street page lists its lots, so it changes whenever any of them does.
+          lastmod: p.civic_number === "" ? latestDate(latest.get(p.id), streetLatest.get(String(p.street).toLowerCase())) : latest.get(p.id) ?? null,
+          changefreq: "monthly" as const,
+          priority: p.civic_number === "" ? 0.6 : 0.5,
+        }));
     }
 
     case "people": {

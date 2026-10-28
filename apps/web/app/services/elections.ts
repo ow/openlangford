@@ -28,7 +28,7 @@ export async function getElections(supabase: SupabaseClient) {
 
 export async function getElectionById(supabase: SupabaseClient, id: string) {
   const electionIds = await municipalityElectionIds(supabase);
-  if (!electionIds.includes(Number(id))) throw new Error("Election not found for this municipality");
+  if (!electionIds.includes(Number(id))) throw new Error("Election Not Found");
   const { data: election, error } = await supabase
     .from("elections")
     .select(

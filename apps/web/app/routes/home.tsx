@@ -1,7 +1,6 @@
 import { onboardingNotice } from "../lib/onboarding-notice.server";
 import { OnboardingCompleteNotice } from "../components/onboarding-complete-notice";
 import { useSiteFlags } from "../lib/use-site-flags";
-import { SITE_NAME } from "../lib/site-name";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import type { Route } from "./+types/home";
 import { data as routeData, Await, useRouteLoaderData } from "react-router";
@@ -20,22 +19,22 @@ import { HeroDecisions } from "../components/home/hero-decisions";
 import { ActiveMattersSection } from "../components/home/active-matters-section";
 import { DecisionsFeedSection } from "../components/home/decisions-feed-section";
 import { PublicNoticesSection } from "../components/home/public-notices-section";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { pageMeta } from "../lib/page-meta";
+import { websiteGraph } from "../lib/structured-data";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const municipality = (data as any)?.municipality as Municipality | undefined;
   const municipalityName = municipality?.name || DEFAULT_MUNICIPALITY.name;
   return [
-    { title: `${SITE_NAME} | Council Meeting Intelligence` },
-    { name: "description", content: `Searchable database of ${municipalityName} council meetings, voting records, and AI-powered insights.` },
-    { property: "og:title", content: `${SITE_NAME} | Council Meeting Intelligence` },
-    { property: "og:description", content: `AI-powered civic transparency platform for the ${municipalityName}.` },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: ogUrl("/") },
-    { property: "og:image", content: ogImageUrl("Council Meeting Intelligence") },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(
+      "Langford Council Meetings, Bylaws & Records",
+      `Search every ${municipalityName} council meeting, decision, vote, bylaw and development application, with plain-language summaries, video and the original records.`,
+      "/",
+      "website",
+      { image: ogImageUrl("Council Meeting Intelligence") },
+    ),
+    websiteGraph(),
   ];
 };
 

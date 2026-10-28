@@ -3,9 +3,12 @@ import type { Route } from "./+types/bylaw-detail";
 import { getBylawById } from "../services/bylaws";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Link } from "react-router";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { fitTitle, metaDescription, pageMeta } from "../lib/page-meta";
+import { breadcrumbList, bylawLegislation, jsonLd } from "../lib/structured-data";
 import { bylawPath, matterPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
+import { loaderFailure } from "../lib/loader-errors";
 import { ChevronRight } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { SectionHeading } from "../components/ui/section-heading";
@@ -18,20 +21,17 @@ export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.bylaw) return [{ title: `Bylaw | ${SITE_NAME}` }];
   const b = data.bylaw as any;
   const label = b.bylaw_number ? `${displayTitle(b.title)} (No. ${b.bylaw_number})` : displayTitle(b.title);
-  const title = `${label} | ${SITE_NAME}`;
   const status = bylawStatus(b.status)?.label;
-  const description = bylawLead(b.plain_english_summary) || `${b.title}${status ? ` — ${status}` : ""}`;
+  const description = bylawLead(b.plain_english_summary) || `City of Langford ${displayTitle(b.title)}${b.bylaw_number ? ` (Bylaw No. ${b.bylaw_number})` : ""}${status ? ` — ${status}` : ""}: plain-language summary, full text and the council matters behind it.`;
   return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: label },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "article" },
-    { property: "og:url", content: ogUrl(bylawPath(b)) },
-    { property: "og:image", content: ogImageUrl(label, { subtitle: status, type: "bylaw" }) },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(label, description, bylawPath(b), "article", {
+      fullTitle: fitTitle(label, "Langford Bylaw"),
+      image: ogImageUrl(label, { subtitle: status, type: "bylaw" }),
+    }),
+    jsonLd(
+      bylawLegislation({ ...b, title: displayTitle(b.title) }, bylawPath(b), metaDescription(description)),
+      breadcrumbList([["Bylaws", "/bylaws"], [label, bylawPath(b)]]),
+    ),
   ];
 };
 
@@ -54,8 +54,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       fullTextTruncated: truncated,
     };
   } catch (error) {
-    console.error(error);
-    throw new Response("Bylaw Not Found", { status: 404 });
+    throw loaderFailure(error, "Bylaw Not Found");
   }
 }
 

@@ -2,11 +2,13 @@ import { recordDate } from "../lib/page-meta";
 import { SITE_NAME } from "../lib/site-name";
 import { electionPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
+import { loaderFailure } from "../lib/loader-errors";
 import type { Route } from "./+types/election-detail";
 import { getElectionById } from "../services/elections";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Link } from "react-router";
 import { ogImageUrl, ogUrl } from "../lib/og";
+import { breadcrumbList, jsonLd } from "../lib/structured-data";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.election) return [{ title: `Election | ${SITE_NAME}` }];
@@ -24,6 +26,9 @@ export const meta: Route.MetaFunction = ({ data }) => {
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    jsonLd(breadcrumbList([["Elections", "/elections"], [e.name, electionPath(e)]])),
   ];
 };
 import { AlertTriangle, ExternalLink } from "lucide-react";
@@ -48,8 +53,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const election = await getElectionById(supabase, String(resolved.id));
     return { election };
   } catch (error) {
-    console.error("Error fetching election:", error);
-    throw new Response("Election Not Found", { status: 404 });
+    throw loaderFailure(error, "Election Not Found");
   }
 }
 

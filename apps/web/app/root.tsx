@@ -2,6 +2,7 @@ import { THEME_SCRIPT } from "./lib/theme";
 import { getSearchBudgetForDisplay } from "./services/search-budget.server";
 import { SITE_NAME } from "./lib/site-name";
 import { SITE_ORIGIN } from "./lib/og";
+import { canonicalUrl } from "./lib/canonical";
 import { DEFAULT_MUNICIPALITY } from "./lib/site-config";
 import {
   isRouteErrorResponse,
@@ -14,6 +15,7 @@ import {
   useLoaderData,
   useNavigation,
   useLocation,
+  useRouteError,
 } from "react-router";
 import { createSupabaseServerClient } from "./lib/supabase.server";
 import { getMunicipality } from "./services/municipality";
@@ -31,7 +33,15 @@ import { Footer } from "./components/footer";
 import { PostHogProvider } from "./components/posthog-provider";
 import { isAdminEmail } from "./lib/auth.server";
 
-export const meta: Route.MetaFunction = ({ matches }) => {
+export const meta: Route.MetaFunction = ({ matches, error }) => {
+  // Error pages (404s, 503s) are never indexed.
+  if (error) {
+    const notFound = isRouteErrorResponse(error) && error.status === 404;
+    return [
+      { title: `${notFound ? "Page not found" : "Something went wrong"} | ${SITE_NAME}` },
+      { name: "robots", content: "noindex" },
+    ];
+  }
   const municipality = getMunicipalityFromMatches(matches);
   const shortName = municipality?.short_name || DEFAULT_MUNICIPALITY.short_name;
   return [
@@ -54,6 +64,14 @@ export const meta: Route.MetaFunction = ({ matches }) => {
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:image", content: ogImageUrl("Council Meeting Intelligence") },
   ];
+};
+
+/** A 503 from a detail loader (database hiccup) tells crawlers when to come back. */
+export const headers: Route.HeadersFunction = ({ parentHeaders, errorHeaders }) => {
+  const headers = new Headers(parentHeaders);
+  const retryAfter = errorHeaders?.get("Retry-After");
+  if (retryAfter) headers.set("Retry-After", retryAfter);
+  return headers;
 };
 
 export const links: Route.LinksFunction = () => [
@@ -115,16 +133,17 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  // One canonical URL per page (openlangford.ca, no query string), so the workers.dev
-  // address and filtered list views aren't indexed as duplicates.
-  const { pathname } = useLocation();
+  // One canonical URL per page (lib/canonical.ts), so the workers.dev address and filtered
+  // list views aren't indexed as duplicates. Error responses get none (and are noindexed).
+  const { pathname, search } = useLocation();
+  const error = useRouteError();
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {!pathname.startsWith("/email/unsubscribe/") && <link rel="canonical" href={`${SITE_ORIGIN}${pathname === "/" ? "/" : pathname.replace(/\/+$/, "")}`} />}
+        {!error && !pathname.startsWith("/email/unsubscribe/") && <link rel="canonical" href={canonicalUrl(pathname, search)} />}
         <Meta />
         <Links />
         <link rel="help" type="text/markdown" href={`${SITE_ORIGIN}/agents.md`} title="Public Markdown records" />

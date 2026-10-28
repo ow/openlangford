@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "../lib/supabase.server";
 import { FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { unavailable } from "../lib/loader-errors";
 import { getPropertyBySlug, propertyPath } from "../services/properties";
 import { MattersMap } from "../components/matters-map";
 import { Badge } from "../components/ui/badge";
@@ -13,13 +14,14 @@ import { displayTitle, matterTitle } from "../lib/display-text";
 import { matterStatusVariant } from "../lib/matter-status";
 import { matterPath, meetingPath } from "../lib/paths";
 import { SITE_NAME } from "../lib/site-name";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { metaDescription, pageMeta } from "../lib/page-meta";
+import { breadcrumbList, jsonLd, propertyPlace } from "../lib/structured-data";
 import { formatDate } from "../lib/utils";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.property) return [{ title: `Property | ${SITE_NAME}` }];
   const { property, matters } = data;
-  const title = `${property.address} | ${SITE_NAME}`;
   // The pipeline's property-summaries stage writes a plain-language overview for addresses with 2+ records.
   const summary: string | undefined = (property as any).meta?.summary || undefined;
   const description = summary
@@ -30,21 +32,23 @@ export const meta: Route.MetaFunction = ({ data }) => {
         .map((m: any) => matterTitle(m))
         .join("; ")}.`
     : `Council records that mention ${property.address}, Langford.`;
+  const path = propertyPath(property);
   return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: property.address },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "article" },
-    { property: "og:url", content: ogUrl(propertyPath(property)) },
-    { property: "og:image", content: ogImageUrl(property.address, { subtitle: "Property", type: "matter" }) },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(`${property.address}, Langford`, description, path, "article", {
+      image: ogImageUrl(property.address, { subtitle: data.isStreet ? "Street" : "Property", type: "matter" }),
+    }),
+    jsonLd(
+      // A lot pinned only to its street has no coordinates of its own.
+      propertyPlace({ address: property.address, geo: property.civic_number && (property.geo as any)?.precision === "street" ? null : (property.geo as any) }, path, metaDescription(description)),
+      breadcrumbList([["Properties", "/properties"], [property.address, path]]),
+    ),
   ];
 };
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const [result, user] = await Promise.all([
-    getPropertyBySlug(getSupabaseAdminClient(), params.slug),
+    // getPropertyBySlug throws on a failed query and returns null only when no row matched.
+    getPropertyBySlug(getSupabaseAdminClient(), params.slug).catch((error) => { throw unavailable(error); }),
     createSupabaseServerClient(request).supabase.auth.getUser().then((r) => r.data.user).catch(() => null),
   ]);
   if (!result) throw new Response("Property Not Found", { status: 404 });

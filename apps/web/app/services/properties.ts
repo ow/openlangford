@@ -325,13 +325,20 @@ export async function getPropertiesIndex(supabase: SupabaseClient, recentCount =
   const lots = lotRows.map(entry).sort(byRecords);
   const lotsPerStreet = new Map<string, number>();
   for (const lot of lotRows) lotsPerStreet.set(String(lot.street).toLowerCase(), (lotsPerStreet.get(String(lot.street).toLowerCase()) || 0) + 1);
-  const streets = properties
+  const streetRows = properties
     .filter((p) => p.civic_number === "")
-    .map((p) => ({ ...entry(p), lots: lotsPerStreet.get(String(p.street).toLowerCase()) || 0 }))
-    .filter((s) => s.records > 0 || s.lots > 0)
-    .sort((a, b) => a.address.localeCompare(b.address));
+    .map((p) => ({ street: String(p.street).toLowerCase(), entry: { ...entry(p), lots: lotsPerStreet.get(String(p.street).toLowerCase()) || 0 } }))
+    .filter((s) => s.entry.records > 0 || s.entry.lots > 0);
+  const streets = streetRows.map((s) => s.entry).sort((a, b) => a.address.localeCompare(b.address));
+  // Every address must be one plain link from /properties: street pages list their lots, so only
+  // lots on a street without its own page need listing directly.
+  const streetsWithPages = new Set(streetRows.map((s) => s.street));
+  const unlisted = lotRows
+    .filter((p) => !streetsWithPages.has(String(p.street).toLowerCase()))
+    .map((p) => ({ slug: p.slug as string, address: p.address as string }))
+    .sort((a, b) => a.address.localeCompare(b.address, "en", { numeric: true }));
 
-  return { lots, streets, recent: await recentAtAddresses(supabase, properties, links, recentCount) };
+  return { lots, streets, unlisted, recent: await recentAtAddresses(supabase, properties, links, recentCount) };
 }
 
 /** Latest council activity at an address, one entry per matter (or per item outside a matter). */

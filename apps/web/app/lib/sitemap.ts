@@ -10,13 +10,19 @@ export interface SitemapEntry {
 const ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" };
 export const xmlEscape = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPES[c]);
 
-/** W3C datetime date (YYYY-MM-DD) from a date or timestamp string; null if unparseable. */
+const CIVIC_DATE = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver", year: "numeric", month: "2-digit", day: "2-digit" });
+
+/**
+ * W3C date (YYYY-MM-DD) from a date or timestamp string; null if unparseable. Date-only values are
+ * civic dates already; a zoned timestamp is converted to its Langford (America/Vancouver) date.
+ */
 export function sitemapDate(value: string | null | undefined): string | null {
   if (!value) return null;
+  const zoned = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::[\d.]+)?(?:Z|[+-]\d{2}(?::?\d{2})?)$/.test(value);
   const match = /^(\d{4}-\d{2}-\d{2})/.exec(value);
-  if (match) return match[1];
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10);
+  if (match && !zoned) return match[1];
+  const date = new Date(zoned ? value.replace(" ", "T") : value);
+  return Number.isNaN(date.getTime()) ? null : CIVIC_DATE.format(date);
 }
 
 /** Latest of several dates (for "last modified" across related records). */

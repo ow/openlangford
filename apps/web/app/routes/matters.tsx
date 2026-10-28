@@ -1,12 +1,13 @@
 import { getMunicipality } from "../services/municipality";
 import { cachedCompute, HOURLY_SHARED } from "../services/computed-cache.server";
-import { SITE_NAME } from "../lib/site-name";
 import { matterPath } from "../lib/paths";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import type { Route } from "./+types/matters";
 import { getMatters } from "../services/matters";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
-import { Link, useRouteLoaderData, useSearchParams } from "react-router";
+import { Link, redirect, useFetcher, useRouteLoaderData, useSearchParams, type ShouldRevalidateFunctionArgs } from "react-router";
+import { pageMeta } from "../lib/page-meta";
+import { breadcrumbList, jsonLd } from "../lib/structured-data";
 import type { Municipality } from "../lib/types";
 import {
   FileText,
@@ -31,41 +32,112 @@ import { MattersMap } from "../components/matters-map";
 import type { Matter } from "../lib/types";
 import { ogImageUrl, ogUrl } from "../lib/og";
 
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({ data }) => {
+  const page = data?.page || 1;
+  const pageCount = data?.pageCount || 1;
+  const total = data?.total || 0;
+  const description = `${total ? `${total.toLocaleString("en-CA")} ` : ""}${DEFAULT_MUNICIPALITY.short_name} council matters: rezonings, development permits, bylaws and recurring items, each traced through every meeting, motion and vote.${page > 1 ? ` Page ${page} of ${pageCount}.` : ""}`;
   return [
-    { title: `Council Matters | ${SITE_NAME}` },
-    { name: "description", content: `Active and historical council matters for ${DEFAULT_MUNICIPALITY.short_name}` },
-    { property: "og:title", content: `Council Matters | ${SITE_NAME}` },
-    { property: "og:description", content: `Active and historical council matters for ${DEFAULT_MUNICIPALITY.short_name}` },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: ogUrl("/matters") },
-    { property: "og:image", content: ogImageUrl("Council Matters", { type: "matter" }) },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(`Langford Council Matters${page > 1 ? ` — Page ${page}` : ""}`, description, mattersPagePath(page), "website", {
+      image: ogImageUrl("Council Matters", { type: "matter" }),
+    }),
+    ...(page > 1 ? [{ tagName: "link", rel: "prev", href: ogUrl(mattersPagePath(page - 1)) }] : []),
+    ...(page < pageCount ? [{ tagName: "link", rel: "next", href: ogUrl(mattersPagePath(page + 1)) }] : []),
+    jsonLd(breadcrumbList([["Matters", "/matters"]])),
   ];
 };
 
-export async function loader() {
+const PAGE_SIZE = 50;
+const PROCEDURAL_TITLES = new Set(["call to order", "approval of agenda", "adjournment", "question period", "termination"]);
+const mattersPagePath = (page: number) => (page > 1 ? `/matters?page=${page}` : "/matters");
+
+/** The status filter's buckets; counted server-side so the paginated view needn't ship every matter. */
+function statusCounts(matters: { status: string }[]) {
+  return {
+    All: matters.length,
+    Active: matters.filter((m) => m.status === "Active").length,
+    Completed: matters.filter((m) => ["Adopted", "Completed"].includes(m.status)).length,
+    Inactive: matters.filter((m) => ["Inactive", "Denied", "Repealed"].includes(m.status)).length,
+  };
+}
+
+/**
+ * The default view is server-paginated (?page=N, 50 a page, plain links) so every matter is a
+ * crawlable link and the payload stays small. Searching (?q=, or ?all=1, which the page fetches once
+ * a filter or the map is used) returns the whole list for client-side filtering.
+ */
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const complete = url.searchParams.has("q") || url.searchParams.get("all") === "1";
+  const rawPage = url.searchParams.get("page");
+  const requested = rawPage === null ? 1 : Number(rawPage);
+  if (!Number.isInteger(requested) || requested < 1) throw redirect("/matters", 301);
+  let all: Matter[];
   try {
     const supabase = getSupabaseAdminClient();
     const municipality = await getMunicipality(supabase);
     // Building the list joins every matter's agenda items (~4s); it only changes on ingest.
-    const matters = (await cachedCompute(`matters-list:${municipality.id}`, () => getMatters(supabase, municipality), HOURLY_SHARED)).map((m: any) => ({
-      ...m,
-      // Lead picture picked from the staff reports, as a thumbnail in the list.
-      image_url: documentImageUrl(m.lead_image_key),
-      lead_image_key: undefined,
-    }));
-    return { matters };
+    all = ((await cachedCompute(`matters-list:${municipality.id}`, () => getMatters(supabase, municipality), HOURLY_SHARED)) as Matter[])
+      .filter((m) => !PROCEDURAL_TITLES.has(m.title.toLowerCase()));
   } catch (error) {
     console.error("Error fetching matters:", error);
-    return { matters: [] };
+    all = [];
   }
+  const pageCount = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+  if (all.length && requested > pageCount) throw new Response("Not Found", { status: 404 });
+  const page = Math.min(requested, pageCount);
+  const shown = complete ? all : all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  return {
+    // Lead picture picked from the staff reports, as a thumbnail in the list.
+    matters: shown.map((m: any) => ({ ...m, image_url: documentImageUrl(m.lead_image_key), lead_image_key: undefined })) as Matter[],
+    complete,
+    page,
+    pageCount,
+    total: all.length,
+    counts: statusCounts(all),
+    categories: ["All", ...Array.from(new Set(all.map((m) => m.category || "General"))).sort()],
+  };
+}
+
+/** Typing in the search box rewrites ?q= on every keystroke; only a page change needs new data. */
+export function shouldRevalidate({ currentUrl, nextUrl, formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+  if (formMethod || currentUrl.pathname !== nextUrl.pathname) return defaultShouldRevalidate;
+  return currentUrl.searchParams.get("page") !== nextUrl.searchParams.get("page");
+}
+
+function PageLinks({ page, pageCount }: { page: number; pageCount: number }) {
+  if (pageCount <= 1) return null;
+  const pages = [...new Set([1, page - 2, page - 1, page, page + 1, page + 2, pageCount])]
+    .filter((n) => n >= 1 && n <= pageCount)
+    .sort((a, b) => a - b);
+  const link = "inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border px-3 text-sm font-semibold tabular-nums transition-colors";
+  const idle = "border-zinc-200 bg-surface text-zinc-700 hover:border-brand-300 hover:text-brand-700";
+  return (
+    <nav aria-label="Matters pages" className="mt-6 flex flex-wrap items-center justify-center gap-2">
+      {page > 1 && <Link to={mattersPagePath(page - 1)} rel="prev" className={cn(link, idle)}>Previous</Link>}
+      {pages.map((n, i) => (
+        <span key={n} className="contents">
+          {i > 0 && n - pages[i - 1] > 1 && <span className="px-1 text-zinc-400" aria-hidden="true">…</span>}
+          <Link
+            to={mattersPagePath(n)}
+            aria-current={n === page ? "page" : undefined}
+            className={cn(link, n === page ? "border-brand-600 bg-brand-600 text-white" : idle)}
+          >
+            {n}
+          </Link>
+        </span>
+      ))}
+      {page < pageCount && <Link to={mattersPagePath(page + 1)} rel="next" className={cn(link, idle)}>Next</Link>}
+    </nav>
+  );
 }
 
 export default function Matters({ loaderData }: Route.ComponentProps) {
-  const { matters } = loaderData;
+  const { page, pageCount, total, counts, categories } = loaderData;
+  // The whole list, once filtering or the map needs it: in the loader data for ?q=, else fetched once.
+  const everything = useFetcher<typeof loader>();
+  const fullList = loaderData.complete ? loaderData.matters : everything.data?.matters ?? null;
+  const matters = fullList ?? loaderData.matters;
   const rootData = useRouteLoaderData("root") as { municipality?: Municipality } | undefined;
   const municipality = rootData?.municipality;
   const [searchParams, setSearchParams] = useSearchParams();
@@ -78,25 +150,19 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
     { lat: number; lng: number } | undefined
   >();
   const [showMap, setShowMap] = useState(true);
-  const PAGE_SIZE = 50;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sidebarRef = useRef<HTMLUListElement>(null);
   const addressRefs = useRef<Record<string, HTMLElement | null>>({});
 
+  const filtering = !!filterText || statusFilter !== "All" || categoryFilter !== "All" || viewMode === "map";
+  // Unfiltered list view: the server's page, with plain page links.
+  const paginated = !filtering && !loaderData.complete;
+  useEffect(() => {
+    if (filtering && !fullList && everything.state === "idle" && !everything.data) everything.load("/matters?all=1");
+  }, [filtering, fullList, everything]);
+
   const filteredMatters = useMemo(() => {
     let result = matters;
-
-    // Filter out procedural matters
-    const proceduralTitles = [
-      "call to order",
-      "approval of agenda",
-      "adjournment",
-      "question period",
-      "termination",
-    ];
-    result = result.filter(
-      (m) => !proceduralTitles.includes(m.title.toLowerCase()),
-    );
 
     if (categoryFilter !== "All") {
       result = result.filter((m) => m.category === categoryFilter);
@@ -208,19 +274,6 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
     setVisibleCount(PAGE_SIZE);
   }, [filterText, statusFilter, categoryFilter]);
 
-  const counts = useMemo(() => {
-    return {
-      All: matters.length,
-      Active: matters.filter((m) => m.status === "Active").length,
-      Completed: matters.filter((m) =>
-        ["Adopted", "Completed"].includes(m.status),
-      ).length,
-      Inactive: matters.filter((m) =>
-        ["Inactive", "Denied", "Repealed"].includes(m.status),
-      ).length,
-    };
-  }, [matters]);
-
   // Status tabs only help when matters actually spread across statuses
   const statusTabs = [
     { value: "All", label: "All", count: counts.All },
@@ -240,10 +293,6 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
     return <Badge variant="muted">{status}</Badge>;
   };
 
-  const categories = useMemo(() => {
-    const cats = new Set(matters.map((m) => m.category || "General"));
-    return ["All", ...Array.from(cats).sort()];
-  }, [matters]);
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -348,12 +397,17 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
             </>
           }
           status={
-            <>
-              <span className="font-semibold text-zinc-900">
-                {filteredMatters.length.toLocaleString()}
-              </span>{" "}
-              {filteredMatters.length === 1 ? "matter" : "matters"}
-            </>
+            filtering && !fullList ? (
+              <span>Loading all matters…</span>
+            ) : (
+              <>
+                <span className="font-semibold text-zinc-900">
+                  {(paginated ? total : filteredMatters.length).toLocaleString()}
+                </span>{" "}
+                {(paginated ? total : filteredMatters.length) === 1 ? "matter" : "matters"}
+                {paginated && pageCount > 1 && <span className="text-zinc-500"> · page {page} of {pageCount}</span>}
+              </>
+            )
           }
         />
 
@@ -373,7 +427,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
           ) : viewMode === "list" ? (
             <div>
               <ul className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm divide-y divide-zinc-100">
-                {filteredMatters.slice(0, visibleCount).map((matter) => {
+                {(paginated ? filteredMatters : filteredMatters.slice(0, visibleCount)).map((matter) => {
                   const bylawLabel =
                     matter.bylaw &&
                     !matter.identifier?.toLowerCase().includes("bylaw")
@@ -462,7 +516,8 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
                   );
                 })}
               </ul>
-              {visibleCount < filteredMatters.length && (
+              {paginated && <PageLinks page={page} pageCount={pageCount} />}
+              {!paginated && visibleCount < filteredMatters.length && (
                 <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}

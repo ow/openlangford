@@ -7,6 +7,7 @@ import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { participantPath, personPath } from "../lib/people-paths";
 import { NativeSelect } from "../components/ui/native-select";
 import { resolvePersonParam } from "../lib/people.server";
+import { loaderFailure } from "../lib/loader-errors";
 import { useMemo, useState, useEffect } from "react";
 import type { Route } from "./+types/person-profile";
 import { civicToday, membershipIsActiveOn, councilTermStatus } from "../lib/council-terms";
@@ -62,7 +63,9 @@ import { cn, formatDate } from "../lib/utils";
 import { AskQuestion } from "../components/ask-question";
 import { SectionHeading } from "../components/ui/section-heading";
 import { displayTitle } from "../lib/display-text";
-import { ogImageUrl, ogUrl } from "../lib/og";
+import { ogImageUrl } from "../lib/og";
+import { metaDescription, pageMeta } from "../lib/page-meta";
+import { breadcrumbList, councilPerson, jsonLd } from "../lib/structured-data";
 
 export const meta: Route.MetaFunction = ({ data, matches }) => {
   if (!data?.person) return [{ title: `Person | ${SITE_NAME}` }];
@@ -74,20 +77,21 @@ export const meta: Route.MetaFunction = ({ data, matches }) => {
   );
   const upcomingMembership = p.memberships?.find((m) => m.start_date && m.start_date > civicToday());
   const role = activeMembership?.role || (upcomingMembership ? `${upcomingMembership.role}-elect` : p.is_councillor ? ((p as any).in_memoriam ? "Councillor (in memoriam)" : "Former Council Member") : "Public participant");
-  const title = `${p.name} — ${role} | ${SITE_NAME}`;
-  const description = p.bio || `${role} for the ${municipalityName}.`;
+  // "Councillor, 2018–present; Mayor, 2014–2018" from council service periods (lib/council-service).
+  const service = councilServicePeriods(p as Person)
+    .filter((period) => period.startYear)
+    .map((period) => `${period.role}, ${councilServiceRange(period)}`)
+    .join("; ");
+  const lead = `${p.name}: ${role} for the ${municipalityName}${service ? ` (${service})` : ""}.`;
+  const description = p.bio ? `${lead} ${p.bio}` : `${lead} Voting record, attendance, motions and speaking time on Langford Council.`;
+  const path = personPath(p);
   const image = p.image_url || ogImageUrl(p.name, { subtitle: role, type: "person" });
   return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: `${p.name} — ${role}` },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "profile" },
-    { property: "og:url", content: ogUrl(personPath(p)) },
-    { property: "og:image", content: image },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(`${p.name} — ${role}`, description, path, "profile", { image }),
+    jsonLd(
+      councilPerson(p, role, path, metaDescription(description)),
+      breadcrumbList([["People", "/people"], [p.name, path]]),
+    ),
   ];
 };
 
@@ -176,13 +180,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       speakingRank: rank,
       totalCouncillorsWithData,
     };
-  } catch (error: any) {
-    if (error instanceof Response) throw error;
-    if (error.message === "Person Not Found") {
-      throw new Response("Person Not Found", { status: 404 });
-    }
-    console.error("Error loading person profile:", error);
-    throw new Response("Error loading person profile", { status: 500 });
+  } catch (error) {
+    throw loaderFailure(error, "Person Not Found");
   }
 }
 
