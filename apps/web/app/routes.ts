@@ -18,6 +18,7 @@ export default [
 
   route("matters", "routes/matters.tsx"),
   route("matters/:id", "routes/matter-detail.tsx"),
+  route("properties", "routes/properties.tsx"),
   route("properties/:slug", "routes/property-detail.tsx"),
   route("bylaws", "routes/bylaws.tsx"),
   route("bylaws/:id", "routes/bylaw-detail.tsx"),

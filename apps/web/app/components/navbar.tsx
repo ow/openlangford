@@ -22,6 +22,8 @@ import {
   Settings,
   ArrowLeftRight,
   ShieldCheck,
+  MapPin,
+  Vote,
 } from "lucide-react";
 import { siteName } from "../lib/site-name";
 import { useSiteFlags } from "../lib/use-site-flags";
@@ -163,9 +165,10 @@ export function Navbar() {
             <NavDropdown
               label="Records"
               icon={Landmark}
-              isActive={isLinkActive("/matters") || isLinkActive("/bylaws")}
+              isActive={isLinkActive("/matters") || isLinkActive("/properties") || isLinkActive("/bylaws")}
               items={[
                 { name: "Matters", href: "/matters", icon: Tag },
+                { name: "Properties", href: "/properties", icon: MapPin },
                 { name: "Bylaws", href: "/bylaws", icon: Book },
               ]}
             />
@@ -176,13 +179,15 @@ export function Navbar() {
                 isLinkActive("/people") ||
                 isLinkActive("/participants") ||
                 isLinkActive("/alignment") ||
-                isLinkActive("/compare")
+                isLinkActive("/compare") ||
+                isLinkActive("/elections")
               }
               items={[
                 { name: "Members", href: "/people", icon: Users },
                 { name: "Participants", href: "/participants", icon: Mic },
                 { name: "Alignment", href: "/alignment", icon: Scale },
                 { name: "Compare", href: "/compare", icon: ArrowLeftRight },
+                { name: "Elections", href: "/elections", icon: Vote },
               ]}
             />
             <NavLink
@@ -265,6 +270,12 @@ export function Navbar() {
               isActive={isLinkActive("/matters")}
             />
             <MobileNavLink
+              name="Properties"
+              href="/properties"
+              icon={MapPin}
+              isActive={isLinkActive("/properties")}
+            />
+            <MobileNavLink
               name="Bylaws"
               href="/bylaws"
               icon={Book}
@@ -293,6 +304,12 @@ export function Navbar() {
               href="/compare"
               icon={ArrowLeftRight}
               isActive={isLinkActive("/compare")}
+            />
+            <MobileNavLink
+              name="Elections"
+              href="/elections"
+              icon={Vote}
+              isActive={isLinkActive("/elections")}
             />
             <MobileNavLink
               name="About"

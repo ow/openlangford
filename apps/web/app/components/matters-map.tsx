@@ -27,6 +27,7 @@ export function MattersMap({
   hrefFor = matterPath,
   linkLabel = "View matter",
   compact = false,
+  tall = false,
   fitToMarkers = false,
 }: {
   matters: Matter[];
@@ -35,6 +36,8 @@ export function MattersMap({
   linkLabel?: string;
   /** One place (a property page): a shorter map without the counts and location list. */
   compact?: boolean;
+  /** A page-leading map (the properties index): taller, same compact chrome. */
+  tall?: boolean;
   /** Frame every pin on load (a street page) instead of the default town view. */
   fitToMarkers?: boolean;
   onMarkerClick?: (matter: Matter, address?: string) => void;
@@ -362,9 +365,9 @@ export function MattersMap({
   return (
     <div className="space-y-2">
       <div
-        className={`relative z-0 w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm ${compact ? "h-[360px] sm:h-[450px]" : "h-[360px] sm:h-[560px]"}`}
+        className={`relative z-0 w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm ${tall ? "h-[420px] sm:h-[640px]" : compact ? "h-[360px] sm:h-[450px]" : "h-[360px] sm:h-[560px]"}`}
         role="region"
-        aria-label="Map of council matters"
+        aria-label={hrefFor === matterPath ? "Map of council matters" : "Map of addresses"}
         aria-busy={loading}
       >
         <div ref={container} className="h-full w-full" />

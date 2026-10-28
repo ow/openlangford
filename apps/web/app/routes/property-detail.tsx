@@ -96,7 +96,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-4xl px-4 py-12">
         <DetailHeader
-          back={{ to: "/matters", label: "Matters" }}
+          back={{ to: "/properties", label: "Properties" }}
           meta={[
             <span key="kind">{isStreet ? "Street" : "Property"}</span>,
             dates.length > 0 ? (

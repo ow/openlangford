@@ -63,6 +63,7 @@ async function buildSitemapEntries(
         { path: "/", changefreq: "daily", priority: 1 },
         { path: "/meetings", changefreq: "daily", priority: 0.9 },
         { path: "/matters", changefreq: "daily", priority: 0.9 },
+        { path: "/properties", changefreq: "weekly", priority: 0.8 },
         { path: "/bylaws", changefreq: "weekly", priority: 0.8 },
         { path: "/people", changefreq: "weekly", priority: 0.8 },
         { path: "/participants", changefreq: "weekly", priority: 0.6 },
@@ -124,10 +125,19 @@ async function buildSitemapEntries(
     }
 
     case "properties": {
-      const properties = await pageAll<any>((from, to) =>
-        supabase.from("properties").select("slug, updated_at").eq("municipality_id", municipality.id).order("id").range(from, to),
-      );
-      return properties.map((p) => ({ path: propertyPath(p), lastmod: latestDate(p.updated_at), changefreq: "monthly" as const, priority: 0.5 }));
+      // Only pages with something on them: an address with a visible record, or a
+      // street with one itself or at any of its addresses (hidden links leave thin pages).
+      const [properties, links] = await Promise.all([
+        pageAll<any>((from, to) =>
+          supabase.from("properties").select("id, slug, street, civic_number, updated_at").eq("municipality_id", municipality.id).order("id").range(from, to),
+        ),
+        pageAll<any>((from, to) => supabase.from("property_links").select("id, property_id").eq("hidden", false).order("id").range(from, to)),
+      ]);
+      const linked = new Set(links.map((l) => l.property_id));
+      const streets = new Set(properties.filter((p) => linked.has(p.id)).map((p) => String(p.street).toLowerCase()));
+      return properties
+        .filter((p) => linked.has(p.id) || (p.civic_number === "" && streets.has(String(p.street).toLowerCase())))
+        .map((p) => ({ path: propertyPath(p), lastmod: latestDate(p.updated_at), changefreq: "monthly" as const, priority: p.civic_number === "" ? 0.6 : 0.5 }));
     }
 
     case "people": {

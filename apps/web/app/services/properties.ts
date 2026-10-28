@@ -256,3 +256,91 @@ export async function getPropertiesForItems(supabase: SupabaseClient, itemIds: n
 export function propertyPath(property: { slug: string }) {
   return `/properties/${property.slug}`;
 }
+
+export type PropertyIndexEntry = { slug: string; address: string; records: number; geo: { lat: number; lng: number } | null };
+export type RecentPropertyItem = {
+  item: { id: number; title: string };
+  meeting: { id: number; slug: string | null; title: string; meeting_date: string };
+  properties: { slug: string; address: string }[];
+};
+
+/**
+ * Every address and street with at least one visible record (a matter, or an agenda
+ * item outside any matter), most records first, plus the latest agenda items that
+ * named an address. Records count the same way as the street page's "3 records".
+ */
+const PUBLIC_INPUT = /public\s+(?:participation|input|comment|hearing\s+submission)|correspondence|delegation|written\s+submission|petition/i;
+
+export async function getPropertiesIndex(supabase: SupabaseClient, recentCount = 8) {
+  // First page carries the total, the rest are fetched together (the link join is the slow part).
+  const pageAll = async <T,>(build: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: any; count?: number | null }>) => {
+    const first = await build(0, 999);
+    if (first.error) throw first.error;
+    const rest = await Promise.all(
+      Array.from({ length: Math.max(0, Math.ceil((first.count ?? 0) / 1000) - 1) }, (_, i) => build((i + 1) * 1000, (i + 1) * 1000 + 999)),
+    );
+    const failed = rest.find((page) => page.error);
+    if (failed) throw failed.error;
+    return [first, ...rest].flatMap((page) => page.data || []);
+  };
+  const [properties, links] = await Promise.all([
+    pageAll<any>((from, to) => supabase.from("properties").select("id, slug, address, civic_number, street, geo", { count: "exact" }).order("id").range(from, to)),
+    pageAll<any>((from, to) =>
+      supabase
+        .from("property_links")
+        .select("id, property_id, matter_id, agenda_item_id, agenda_items(id, title, meetings(id, slug, title, meeting_date))", { count: "exact" })
+        .eq("hidden", false)
+        .order("id")
+        .range(from, to),
+    ),
+  ]);
+  const records = new Map<number, Set<string>>();
+  for (const l of links) {
+    const set = records.get(l.property_id) || new Set<string>();
+    set.add(l.matter_id ? `m${l.matter_id}` : `i${l.agenda_item_id}`);
+    records.set(l.property_id, set);
+  }
+  // Five decimals is about a metre: plenty for a pin, and a smaller page payload.
+  const round = (n: number) => Math.round(n * 1e5) / 1e5;
+  const entry = (p: any): PropertyIndexEntry => ({
+    slug: p.slug,
+    address: p.address,
+    records: records.get(p.id)?.size || 0,
+    geo: p.geo?.lat != null && p.geo?.lng != null ? { lat: round(p.geo.lat), lng: round(p.geo.lng) } : null,
+  });
+  const byRecords = (a: PropertyIndexEntry, b: PropertyIndexEntry) => b.records - a.records || a.address.localeCompare(b.address);
+  const lotRows = properties.filter((p) => p.civic_number !== "" && records.has(p.id));
+  const lots = lotRows.map(entry).sort(byRecords);
+  const lotsPerStreet = new Map<string, number>();
+  for (const lot of lotRows) lotsPerStreet.set(String(lot.street).toLowerCase(), (lotsPerStreet.get(String(lot.street).toLowerCase()) || 0) + 1);
+  const streets = properties
+    .filter((p) => p.civic_number === "")
+    .map((p) => ({ ...entry(p), lots: lotsPerStreet.get(String(p.street).toLowerCase()) || 0 }))
+    .filter((s) => s.records > 0 || s.lots > 0)
+    .sort((a, b) => a.address.localeCompare(b.address));
+
+  // Latest agenda items that named an address (one entry per item; a development
+  // spanning several lots lists each). Planned meetings count: they are upcoming.
+  // Public input items are left out: their addresses are often residents' homes.
+  const byId = new Map(properties.map((p) => [p.id, p]));
+  const items = new Map<number, RecentPropertyItem>();
+  for (const l of links) {
+    const item = l.agenda_items;
+    const property = byId.get(l.property_id);
+    if (!item?.meetings?.meeting_date || !item.meetings.slug || !property || property.civic_number === "" || PUBLIC_INPUT.test(item.title || "")) continue;
+    const entryForItem: RecentPropertyItem = items.get(item.id) || { item: { id: item.id, title: item.title }, meeting: item.meetings, properties: [] };
+    if (!entryForItem.properties.some((p) => p.slug === property.slug)) entryForItem.properties.push({ slug: property.slug, address: property.address });
+    items.set(item.id, entryForItem);
+  }
+  // Each place once: a later reading of the same bylaw doesn't push other places out.
+  const shown = new Set<string>();
+  const recent = [...items.values()]
+    .sort((a, b) => b.meeting.meeting_date.localeCompare(a.meeting.meeting_date) || b.item.id - a.item.id)
+    .filter((entry) => {
+      if (entry.properties.every((p) => shown.has(p.slug))) return false;
+      entry.properties.forEach((p) => shown.add(p.slug));
+      return true;
+    })
+    .slice(0, recentCount);
+  return { lots, streets, recent };
+}
