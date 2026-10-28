@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isProceduralMotion } from "../lib/motion-utils";
+import { contestedMotionIds, normalizeVote, type ContestedMotion, type MatrixVote } from "../lib/vote-matrix";
 
 async function fetchAllVotesForAlignment(
   supabase: SupabaseClient,
@@ -95,4 +97,45 @@ export async function getVotingAlignment(
     motions: motions || [],
     memberships: membershipsRes.data || [],
   };
+}
+
+/**
+ * Split decisions for the vote matrix: motions where the alignment votes above include
+ * both a Yes and a No, with every recorded choice (recusals too). Procedural motions
+ * are dropped by the same rule as meeting pages.
+ */
+export async function getContestedMotions(
+  supabase: SupabaseClient,
+  alignmentVotes: { motion_id: number; vote: string }[],
+): Promise<ContestedMotion[]> {
+  const ids = contestedMotionIds(alignmentVotes);
+  const rows: any[] = [];
+  for (let i = 0; i < ids.length; i += 200) {
+    const { data, error } = await supabase
+      .from("motions")
+      .select("id, text_content, plain_english_summary, result, disposition, agenda_items(category), meetings(id, slug, meeting_date), votes(person_id, vote, recusal_reason)")
+      .in("id", ids.slice(i, i + 200));
+    if (error) throw error;
+    rows.push(...(data || []));
+  }
+  return rows
+    .filter((m) => m.meetings?.meeting_date && !isProceduralMotion(m, m.agenda_items))
+    .map((m) => {
+      const votes: Record<number, MatrixVote> = {};
+      for (const v of m.votes || []) {
+        const n = normalizeVote(v.vote, v.recusal_reason);
+        if (n && v.person_id) votes[v.person_id] = n;
+      }
+      const text = String(m.plain_english_summary || m.text_content || "").replace(/\s+/g, " ").trim();
+      return {
+        id: m.id,
+        date: String(m.meetings.meeting_date).slice(0, 10),
+        meetingId: m.meetings.id,
+        meetingSlug: m.meetings.slug || null,
+        summary: text.length > 180 ? `${text.slice(0, 177).trim()}…` : text,
+        result: m.result || null,
+        votes,
+      };
+    })
+    .sort((a, b) => a.date.localeCompare(b.date) || a.id - b.id);
 }

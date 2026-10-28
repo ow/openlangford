@@ -54,6 +54,9 @@ import { getPropertiesForMatter, propertyPath, propertyPin } from "../services/p
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 import { loaderFailure } from "../lib/loader-errors";
+import { civicToday } from "../lib/council-terms";
+import { buildStrip } from "../lib/matter-timeline";
+import { TimelineStrip } from "../components/matter/timeline-strip";
 
 
 const GENERIC_EVIDENCE_TITLES = new Set([
@@ -351,14 +354,14 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const lots = properties.map(propertyPin).filter((p): p is NonNullable<typeof p> => p !== null);
     (matter as any).locations = lots.length ? lots : Array.from(pins.values());
 
-    return { matter, matterDocuments, matterEvidence, story, images, properties };
+    return { matter, matterDocuments, matterEvidence, story, images, properties, today: civicToday() };
   } catch (error) {
     throw loaderFailure(error, "Matter Not Found");
   }
 }
 
 export default function MatterDetail({ loaderData }: Route.ComponentProps) {
-  const { matter, matterDocuments, matterEvidence, story, images, properties = [] } = loaderData;
+  const { matter, matterDocuments, matterEvidence, story, images, properties = [], today } = loaderData;
 
   // Sort agenda items by meeting date
   const timeline = [...(matter.agenda_items || [])].sort(
@@ -458,9 +461,9 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     timelineEntries.flatMap((entry: any) =>
       entry.kind === "mention"
         ? speakersAbout(entry.item.meta?.participation, aboutMatter)
-        : entry.item.meta?.participation?.speakers || [],
+        : entry.item?.meta?.participation?.speakers || [],
     ),
-    timelineEntries.flatMap((entry: any) => writtenLetters(entry.item.meta?.written_participation)),
+    timelineEntries.flatMap((entry: any) => writtenLetters(entry.item?.meta?.written_participation)),
   );
 
   // Build document lookup by agenda item ID
@@ -485,6 +488,19 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       : null;
 
   const statusVariant = matterStatusVariant(matter.status);
+  const strip = buildStrip(
+    directEntries.map((entry: any) => ({
+      key: `timeline-${entry.key}`,
+      date: entry.date,
+      meetingId: entry.kind === "evidence" ? entry.meetingId : entry.item?.meeting_id,
+      kind: entry.kind,
+      title: entry.kind === "evidence" ? entry.title : entry.item?.title,
+      headline: entry.kind === "primary" ? matter.meta?.timeline_headlines?.[String(entry.item.id)] : null,
+      motions: entry.kind === "primary" ? entry.item.motions : [],
+      hasSpeakers: Boolean(entry.item?.meta?.participation?.speakers?.length),
+    })),
+    { today, ongoing: !matter.status || /active|pend|defer|tabled|hold|progress|review/i.test(matter.status) },
+  );
 
   const shortDate = (d: string | null | undefined) =>
     d
@@ -698,110 +714,113 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                 No meeting records are linked to this matter yet.
               </div>
             ) : (
-              <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-zinc-200">
-                {timelineEntries.map((entry: any) => {
-                  if (entry.kind === "mention") {
-                    const item = entry.item;
-                    return (
-                      <li key={entry.key} className="relative pl-7">
-                        <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                        <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
-                          <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-                            <Link to={meetingPath({ id: item.meeting_id, slug: item.meetings?.slug })} className="tabular-nums hover:text-brand-700">
-                              {formatDate(item.meetings?.meeting_date)}
-                            </Link>
-                            <span className="text-zinc-300">·</span>
-                            {entry.relatedMatter ? (
-                              <Link to={matterPath(entry.relatedMatter)} className="hover:text-brand-700">Background · {matterTitle(entry.relatedMatter)}</Link>
-                            ) : <span>{mentionLabel(item.title)}</span>}
-                          </div>
-                          {entry.relatedMatter && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
-                          {(() => {
-                            const about = speakersAbout(item.meta?.participation, `${matterTitle(matter)} ${matter.plain_english_summary || ""}`);
-                            return about.length > 0 ? (
-                              <ParticipationList speakers={about} note={notes.speaker} className="mt-1" />
-                            ) : (
-                              item.plain_english_summary && (
-                                <p className="text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>
-                              )
-                            );
-                          })()}
-                        </div>
-                      </li>
-                    );
-                  }
-                  if (entry.kind === "evidence") {
-                    return (
-                      <li key={entry.key} className="relative pl-7">
-                        <span className="absolute left-0 top-6 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                        <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
-                          <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-                            {entry.meetingId ? (
-                              <Link
-                                to={meetingPath({ id: entry.meetingId, slug: entry.meetingSlug })}
-                                className="tabular-nums hover:text-brand-700"
-                              >
-                                {formatDate(entry.date)}
+              <>
+                {strip && <TimelineStrip strip={strip} />}
+                <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-zinc-200">
+                  {timelineEntries.map((entry: any) => {
+                    if (entry.kind === "mention") {
+                      const item = entry.item;
+                      return (
+                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
+                          <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
+                          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
+                            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
+                              <Link to={meetingPath({ id: item.meeting_id, slug: item.meetings?.slug })} className="tabular-nums hover:text-brand-700">
+                                {formatDate(item.meetings?.meeting_date)}
                               </Link>
-                            ) : (
-                              <span className="tabular-nums">
-                                {formatDate(entry.date)}
-                              </span>
-                            )}
-                            <Badge variant="muted">{entry.label}</Badge>
-                            {entry.matchCount > 1 && (
-                              <span className="text-xs tabular-nums">
-                                {entry.matchCount} references
-                              </span>
+                              <span className="text-zinc-300">·</span>
+                              {entry.relatedMatter ? (
+                                <Link to={matterPath(entry.relatedMatter)} className="hover:text-brand-700">Background · {matterTitle(entry.relatedMatter)}</Link>
+                              ) : <span>{mentionLabel(item.title)}</span>}
+                            </div>
+                            {entry.relatedMatter && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
+                            {(() => {
+                              const about = speakersAbout(item.meta?.participation, `${matterTitle(matter)} ${matter.plain_english_summary || ""}`);
+                              return about.length > 0 ? (
+                                <ParticipationList speakers={about} note={notes.speaker} className="mt-1" />
+                              ) : (
+                                item.plain_english_summary && (
+                                  <p className="text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>
+                                )
+                              );
+                            })()}
+                          </div>
+                        </li>
+                      );
+                    }
+                    if (entry.kind === "evidence") {
+                      return (
+                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
+                          <span className="absolute left-0 top-6 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
+                          <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
+                            <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
+                              {entry.meetingId ? (
+                                <Link
+                                  to={meetingPath({ id: entry.meetingId, slug: entry.meetingSlug })}
+                                  className="tabular-nums hover:text-brand-700"
+                                >
+                                  {formatDate(entry.date)}
+                                </Link>
+                              ) : (
+                                <span className="tabular-nums">
+                                  {formatDate(entry.date)}
+                                </span>
+                              )}
+                              <Badge variant="muted">{entry.label}</Badge>
+                              {entry.matchCount > 1 && (
+                                <span className="text-xs tabular-nums">
+                                  {entry.matchCount} references
+                                </span>
+                              )}
+                            </div>
+                            <h3 className="text-base font-semibold leading-snug text-zinc-900">
+                              {displayTitle(entry.title)}
+                            </h3>
+                            {entry.snippet && (
+                              <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-zinc-600">
+                                {entry.snippet}
+                              </p>
                             )}
                           </div>
-                          <h3 className="text-base font-semibold leading-snug text-zinc-900">
-                            {displayTitle(entry.title)}
-                          </h3>
-                          {entry.snippet && (
-                            <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-zinc-600">
-                              {entry.snippet}
-                            </p>
+                        </li>
+                      );
+                    }
+
+                    const item = entry.item;
+                    const itemDocs = docsByItem.get(item.id) || [];
+                    // Pipeline-written plain-English headline; the agenda wording lives in Details.
+                    const headline: string | undefined = matter.meta?.timeline_headlines?.[String(item.id)];
+                    const layout = images.layout && images.layout.agenda_item_id === item.id ? images.layout : null;
+                    const procedural = isProceduralStep(item, {
+                      hasParticipation: Boolean(
+                        (item as any).meta?.participation?.speakers?.length ||
+                          writtenLetters((item as any).meta?.written_participation).length,
+                      ),
+                      hasImage: Boolean(layout),
+                      headline,
+                    });
+                    return (
+                      <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
+                        <span
+                          className={cn(
+                            "absolute left-0 h-[11px] w-[11px] rounded-full border-2 border-zinc-50",
+                            procedural ? "top-1.5 bg-zinc-300" : "top-6 bg-brand-600",
                           )}
-                        </div>
+                        />
+                        <TimelineStep
+                          item={item}
+                          headline={headline}
+                          docs={itemDocs}
+                          layoutImage={layout}
+                          participation={(item as any).meta?.participation}
+                          written={(item as any).meta?.written_participation}
+                          notes={notes}
+                        />
                       </li>
                     );
-                  }
-
-                  const item = entry.item;
-                  const itemDocs = docsByItem.get(item.id) || [];
-                  // Pipeline-written plain-English headline; the agenda wording lives in Details.
-                  const headline: string | undefined = matter.meta?.timeline_headlines?.[String(item.id)];
-                  const layout = images.layout && images.layout.agenda_item_id === item.id ? images.layout : null;
-                  const procedural = isProceduralStep(item, {
-                    hasParticipation: Boolean(
-                      (item as any).meta?.participation?.speakers?.length ||
-                        writtenLetters((item as any).meta?.written_participation).length,
-                    ),
-                    hasImage: Boolean(layout),
-                    headline,
-                  });
-                  return (
-                    <li key={entry.key} className="relative pl-7">
-                      <span
-                        className={cn(
-                          "absolute left-0 h-[11px] w-[11px] rounded-full border-2 border-zinc-50",
-                          procedural ? "top-1.5 bg-zinc-300" : "top-6 bg-brand-600",
-                        )}
-                      />
-                      <TimelineStep
-                        item={item}
-                        headline={headline}
-                        docs={itemDocs}
-                        layoutImage={layout}
-                        participation={(item as any).meta?.participation}
-                        written={(item as any).meta?.written_participation}
-                        notes={notes}
-                      />
-                    </li>
-                  );
-                })}
-              </ol>
+                  })}
+                </ol>
+              </>
             )}
           </section>
         </div>
