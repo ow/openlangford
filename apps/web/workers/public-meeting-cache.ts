@@ -5,6 +5,11 @@ import { parseMeetingTextRequest } from "../app/lib/meeting-text-request";
 
 import { historicalPublicDate, HISTORICAL_PUBLIC_TTL, RECENT_PUBLIC_TTL } from "../app/lib/public-content-cache";
 
+// Keys carry the database's last-change stamp (workers/content-version.ts), so data
+// changes end entries within a minute. The TTL only bounds time-relative text ("in 3
+// days") and site flags in the root loader.
+const PAGE_TTL = 6 * 3600;
+
 type PublicMeetingCacheConfig = { version?: string; posthogKey?: string };
 
 // Detail pages whose loaders read no session (property-detail's admin check reads
@@ -114,7 +119,7 @@ export async function publicMeetingCache(
   const date = /^\/meetings\/(\d{4}-\d{2}-\d{2})-/.exec(path)?.[1];
   const historical = path === "/api/meeting-text" ? response.headers.get("X-Public-Content-Policy") === "historical"
     : routeOnly && historicalPublicDate(date);
-  stored.headers.set("Cache-Control", `public, max-age=${historical ? HISTORICAL_PUBLIC_TTL : RECENT_PUBLIC_TTL}`);
+  stored.headers.set("Cache-Control", `public, max-age=${historical ? HISTORICAL_PUBLIC_TTL : PAGE_TTL}`);
   ctx.waitUntil(cache.put(key, stored).catch(() => {}));
   return delivery(response, "MISS");
 }

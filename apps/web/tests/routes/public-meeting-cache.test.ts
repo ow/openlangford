@@ -34,7 +34,7 @@ beforeEach(() => {
 });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
-it("reuses anonymous historical HTML, preserves content/status/headers, expires in five minutes and invalidates on deploy", async () => {
+it("reuses anonymous historical HTML, preserves content/status/headers, expires in six hours and invalidates on deploy", async () => {
   const render = vi.fn(async () => html());
   const first = await serve(request(), render); await Promise.all(jobs);
   const hit = await serve(request(), render);
@@ -47,7 +47,7 @@ it("reuses anonymous historical HTML, preserves content/status/headers, expires 
   expect(render).toHaveBeenCalledTimes(1);
   await serve(request(), render, "deploy-b"); await Promise.all(jobs);
   expect(render).toHaveBeenCalledTimes(2);
-  vi.advanceTimersByTime(300_001);
+  vi.advanceTimersByTime(6 * 3600_000 + 1);
   await serve(request(), render);
   expect(render).toHaveBeenCalledTimes(3);
 });
@@ -183,21 +183,21 @@ it("fails open when cache reads/writes fail and bypasses missing version metadat
   expect(response.headers.has("X-Public-Meeting-Cache")).toBe(false);
 });
 
-it("keeps historical route-only meeting/document navigation warm for 24h while root-inclusive representations stay short", async () => {
+it("keeps historical route-only meeting/document navigation warm for 24h while root-inclusive representations stay at six hours", async () => {
   const archive = "/meetings/2016-01-01-regular-council";
   const urls = [".data?_routes=routes%2Fmeeting-detail", "/documents.data?_routes=routes%2Fmeeting-documents", "/documents/42.data?_routes=routes%2Fdocument-viewer", ".data", ".data?_routes=root,routes%2Fmeeting-detail", ""];
   const render = vi.fn(async (req: Request) => new URL(req.url).pathname.endsWith(".data") ? new Response("stream", { headers: { "Content-Type": "text/x-script" } }) : html());
   const req = (suffix: string) => new Request(`https://openlangford.ca${archive}${suffix}`, { headers: { Accept: suffix === "" ? "text/html" : "*/*" } });
   for (const suffix of urls) { await serve(req(suffix), render); await Promise.all(jobs); }
   expect(render).toHaveBeenCalledTimes(6);
-  vi.advanceTimersByTime(300_001);
+  vi.advanceTimersByTime(6 * 3600_000 + 1);
   for (const [index, suffix] of urls.entries()) expect((await serve(req(suffix), render)).headers.get("X-Public-Meeting-Cache")).toBe(index < 3 ? "HIT" : "MISS");
   expect(render).toHaveBeenCalledTimes(9); await Promise.all(jobs);
   await serve(req(urls[0]), render, "deploy-b:corrected"); expect(render).toHaveBeenCalledTimes(10);
   vi.advanceTimersByTime(86400_000); await serve(req(urls[0]), render); expect(render).toHaveBeenCalledTimes(11);
 });
 
-it("caches anonymous public detail pages for five minutes and keeps their navigation payloads to their own route", async () => {
+it("caches anonymous public detail pages for six hours and keeps their navigation payloads to their own route", async () => {
   const at = (p: string, init?: RequestInit) => new Request(`https://openlangford.ca${p}`, { headers: { Accept: p.split("?")[0].endsWith(".data") ? "*/*" : "text/html" }, ...init });
   for (const page of ["/matters/953-walfred-road-rezoning", "/bylaws/bylaw-2275", "/properties/2140-caribou-drive", "/people/scott-goodmanson", "/people/scott-goodmanson/votes", "/elections/2022"]) {
     const render = vi.fn(async () => html(`page:${page}`));
@@ -216,7 +216,7 @@ it("caches anonymous public detail pages for five minutes and keeps their naviga
   }
   const render = vi.fn(async () => html());
   await serve(at("/matters/x"), render); await Promise.all(jobs);
-  vi.advanceTimersByTime(300_001);
+  vi.advanceTimersByTime(6 * 3600_000 + 1);
   await serve(at("/matters/x"), render);
   expect(render).toHaveBeenCalledTimes(2);
 });

@@ -20,14 +20,14 @@ beforeEach(() => {
   } });
 });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
-it("warm public transcript reads avoid another origin payload and expire corrected text in five minutes", async () => {
+it("warm public transcript reads avoid another origin payload and expire corrected text in six hours (data changes end it sooner via the content stamp)", async () => {
   const query = "kind=transcript&meeting=4";
   const first = await serve(query); const body = await first.text(); await Promise.all(jobs);
   const hit = await serve(query, { Cookie: "ph_phc_test_posthog=another-visitor" });
   expect(first.headers.get("X-Public-Meeting-Cache")).toBe("MISS"); expect(hit.headers.get("X-Public-Meeting-Cache")).toBe("HIT");
   expect(hit.headers.get("Cache-Control")).toBe("private, no-store"); expect(await hit.text()).toBe(body); expect(body.length).toBeGreaterThan(20_000); expect(origin).toHaveBeenCalledTimes(1);
   origin.mockImplementation(async () => Response.json([{ id: 1, text_content: "Corrected transcript" }]));
-  vi.advanceTimersByTime(300_001);
+  vi.advanceTimersByTime(6 * 3600_000 + 1);
   expect(await (await serve(query)).json()).toEqual({ texts: { 1: "Corrected transcript" } }); expect(origin).toHaveBeenCalledTimes(2);
 });
 it("keeps meetings, section selectors, and deployments separate", async () => {
@@ -75,5 +75,5 @@ it.each(["2026-10-20", null])("keeps a mixed historical/recent-or-unknown-date b
     { id: 3, section_text: "Changing", documents: { meetings: { meeting_date: date } } }]));
   const query = "kind=sections&ids=2,3";
   expect((await serve(query)).headers.get("X-Public-Content-Policy")).toBe("recent"); await Promise.all(jobs);
-  vi.advanceTimersByTime(300_001); await serve(query); expect(origin).toHaveBeenCalledTimes(2);
+  vi.advanceTimersByTime(6 * 3600_000 + 1); await serve(query); expect(origin).toHaveBeenCalledTimes(2);
 });
