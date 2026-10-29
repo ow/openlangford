@@ -1,30 +1,15 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { SITE_ORIGIN } from "../lib/og";
+import { CONTACT_ADMIN_PATH, civicTime, type ContactFilter, type ContactMessage } from "../lib/contact-messages";
+
+export { CONTACT_ADMIN_PATH, CONTACT_FILTERS, CONTACT_REPLY_SUBJECT, civicTime, contactFilter, replyMailto } from "../lib/contact-messages";
+export type { ContactFilter, ContactMessage } from "../lib/contact-messages";
 
 /** Verified sender shared with supabase/functions/_shared/alerts.ts. */
 export const CONTACT_FROM_EMAIL = "Open Langford <alerts@openlangford.ca>";
-export const CONTACT_ADMIN_PATH = "/admin/contact";
-export const CONTACT_REPLY_SUBJECT = "Re: your message to Open Langford";
-
-export const CONTACT_FILTERS = ["open", "handled", "all"] as const;
-export type ContactFilter = (typeof CONTACT_FILTERS)[number];
-
-export type ContactMessage = {
-  id: string;
-  name: string | null;
-  email: string;
-  message: string;
-  created_at: string;
-  handled_at: string | null;
-  notified_at: string | null;
-};
 
 const LIST_COLUMNS = "id, name, email, message, created_at, handled_at, notified_at";
 const LIST_LIMIT = 200;
-
-export function contactFilter(value: string | null): ContactFilter {
-  return (CONTACT_FILTERS as readonly string[]).includes(value || "") ? (value as ContactFilter) : "open";
-}
 
 export async function listContactMessages(supabase: SupabaseClient, filter: ContactFilter) {
   let query = supabase
@@ -65,18 +50,7 @@ export function escapeHtml(value: string) {
     .replace(/'/g, "&#39;");
 }
 
-/** mailto link for replying from the admin page. */
-export function replyMailto(email: string) {
-  return `mailto:${encodeURIComponent(email).replace(/%40/g, "@")}?subject=${encodeURIComponent(CONTACT_REPLY_SUBJECT)}`;
-}
 
-export function civicTime(iso: string) {
-  return new Date(iso).toLocaleString("en-CA", {
-    timeZone: "America/Vancouver",
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
 
 export type NewContactMessage = Pick<ContactMessage, "id" | "name" | "email" | "message" | "created_at">;
 

@@ -6,14 +6,8 @@ import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
 import { cn } from "../lib/utils";
-import {
-  CONTACT_FILTERS,
-  civicTime,
-  contactFilter,
-  listContactMessages,
-  replyMailto,
-  setContactMessageHandled,
-} from "../services/contact-messages.server";
+import { CONTACT_FILTERS, civicTime, contactFilter, replyMailto } from "../lib/contact-messages";
+import { listContactMessages, setContactMessageHandled } from "../services/contact-messages.server";
 
 export const meta = () => [
   { title: "Contact messages | Admin | Open Langford" },
