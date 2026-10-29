@@ -3,6 +3,8 @@ import type { Route } from "./+types/contact";
 import { Form, useActionData, useNavigation } from "react-router";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { PageHeader } from "../components/ui/page-header";
+import { getConfiguredAdminEmails } from "../lib/auth.server";
+import { notifyContactMessage } from "../services/contact-messages.server";
 
 export const meta = () => pageMeta("Contact", "Contact Open Langford with questions, feedback or corrections about Langford council records.", "/contact");
 
@@ -18,7 +20,7 @@ function isRateLimited(ip: string): boolean {
   return recent.length > RATE_LIMIT_MAX;
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
 
   // Honeypot: real visitors never see or fill this field. Pretend success for bots.
@@ -43,13 +45,30 @@ export async function action({ request }: Route.ActionArgs) {
     return { ok: false as const, error: "Too many messages. Please try again later." };
   }
 
-  const { error } = await getSupabaseAdminClient()
+  const supabase = getSupabaseAdminClient();
+  const { data: saved, error } = await supabase
     .from("contact_messages")
-    .insert({ name: name || null, email, message, client_ip: ip });
-  if (error) {
-    console.error("Failed to save contact message:", error.message);
+    .insert({ name: name || null, email, message, client_ip: ip })
+    .select("id, created_at")
+    .single();
+  if (error || !saved) {
+    console.error("Failed to save contact message:", error?.message);
     return { ok: false as const, error: "Something went wrong. Please try again." };
   }
+
+  // Email the admins in the background; the submission has already succeeded.
+  // RESEND_API_KEY is a runtime Worker secret (never inlined at build time); without it this no-ops.
+  const cloudflare = (context as { cloudflare?: { env?: Partial<Env>; ctx?: ExecutionContext } } | undefined)?.cloudflare;
+  const notification = notifyContactMessage({
+    apiKey: cloudflare?.env?.RESEND_API_KEY,
+    recipients: getConfiguredAdminEmails(),
+    message: { id: saved.id, created_at: saved.created_at, name: name || null, email, message },
+    supabase,
+  }).catch(() => {
+    console.error("[Contact] Notification email failed");
+  });
+  if (cloudflare?.ctx) cloudflare.ctx.waitUntil(notification);
+  else await notification;
   return { ok: true as const };
 }
 

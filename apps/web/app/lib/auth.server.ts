@@ -1,7 +1,8 @@
 import { redirect } from "react-router";
 import { createSupabaseServerClient } from "./supabase.server";
 
-function getConfiguredAdminEmails() {
+/** The admin allowlist used by requireAdmin; also the recipients of contact-form notifications. */
+export function getConfiguredAdminEmails() {
   return (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "")
     .split(",")
     .map((email) => email.trim().toLowerCase())

@@ -13,6 +13,7 @@ import * as matters from "~/routes/admin-matters";
 import * as pipeline from "~/routes/admin-pipeline";
 import * as job from "~/routes/admin-pipeline-job";
 import * as speakers from "~/routes/speaker-alias";
+import * as contact from "~/routes/admin-contact";
 
 const mocks = vi.hoisted(() => ({ user: vi.fn(), adminClient: vi.fn() }));
 vi.mock("~/lib/supabase.server", () => ({
@@ -26,12 +27,13 @@ const modules: Record<string, any> = {
   "routes/admin-people.tsx": people, "routes/admin-profiles.tsx": profiles,
   "routes/admin-matters.tsx": matters, "routes/admin-pipeline.tsx": pipeline,
   "routes/admin-pipeline-job.tsx": job, "routes/speaker-alias.tsx": speakers,
+  "routes/admin-contact.tsx": contact,
 };
 const handler = createStaticHandler(routes.map(route => ({
   id: route.id ?? route.file, path: route.path ?? undefined, index: route.index,
   loader: modules[route.file]?.loader, action: modules[route.file]?.action,
 })));
-const paths = ["/admin/users", "/admin/users/11111111-1111-4111-8111-111111111111", "/admin/emails", "/admin/emails/22222222-2222-4222-8222-222222222222", "/admin", "/admin/pipeline", "/admin/pipeline/jobs/123", "/admin/matters", "/admin/profiles", "/admin/people", "/speaker-alias", "/admin-pipeline", "/admin-matters"];
+const paths = ["/admin/users", "/admin/users/11111111-1111-4111-8111-111111111111", "/admin/emails", "/admin/emails/22222222-2222-4222-8222-222222222222", "/admin", "/admin/pipeline", "/admin/pipeline/jobs/123", "/admin/matters", "/admin/profiles", "/admin/people", "/speaker-alias", "/admin/contact", "/admin-pipeline", "/admin-matters"];
 
 beforeEach(() => {
   vi.clearAllMocks();
