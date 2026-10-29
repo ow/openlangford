@@ -1588,6 +1588,15 @@ class MeetingIngester:
             rank = {"Planned": 0, "Occurred": 1, "Completed": 2}
             if rank.get(persisted_meeting.get("status"), 0) > rank.get(meeting_data["status"], 0):
                 meeting_data["status"] = persisted_meeting["status"]
+        # A cancellation (or postponement) is a recorded fact, not a gap in the sources: a past date
+        # without minutes must never reopen it as "Occurred", or it counts toward attendance.
+        target_meeting_id = scheduled_meeting_id or (persisted_meeting or {}).get("id")
+        cancelled_meeting = bool(target_meeting_id) and any(
+            row.get("status") == "Cancelled"
+            for row in self.supabase.table("meetings").select("status").eq("id", target_meeting_id).execute().data
+        )
+        if cancelled_meeting:
+            meeting_data["status"] = "Cancelled"
 
         if not dry_run:
             try:
@@ -1839,7 +1848,7 @@ class MeetingIngester:
                 # over the AI's content-based guess (which may say "Planned" for
                 # agenda-only meetings that already happened).
                 status_rank = {"Planned": 0, "Occurred": 1, "Completed": 2}
-                if ai_status and status_rank.get(ai_status, 0) >= status_rank.get(meeting_status, 0):
+                if ai_status and not cancelled_meeting and status_rank.get(ai_status, 0) >= status_rank.get(meeting_status, 0):
                     update_fields["status"] = ai_status
 
                 if ai_summary:

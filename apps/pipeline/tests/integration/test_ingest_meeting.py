@@ -831,6 +831,21 @@ def test_planned_refresh_cannot_downgrade_an_already_occurred_meeting(ingester, 
     assert not tables['motions'].delete.called
 
 
+def test_reingest_keeps_a_cancelled_meeting_cancelled(ingester, populated_archive, meeting_693_refinement):
+    """A postponed meeting has a past date and no minutes; re-ingesting must not reopen it as Occurred."""
+    ing, tables = ingester
+    _setup_supabase_responses(tables)
+    tables['meetings'].execute.return_value = MagicMock(data=[{'id': 693, 'status': 'Cancelled', 'video_url': None, 'meta': {}}], count=1)
+    with patch("pipeline.ingestion.ingester.VimeoClient"), \
+         patch.object(ing, "_ingest_documents", return_value=0), \
+         patch.object(ing, "_ingest_document_sections"), \
+         patch.object(ing, "_geocode_agenda_items", return_value=0):
+        ing.process_meeting(str(populated_archive), precomputed_refinement={**meeting_693_refinement, 'status': 'Completed'})
+    written = [c.args[0] for c in tables['meetings'].upsert.call_args_list + tables['meetings'].update.call_args_list]
+    statuses = [w['status'] for w in written if isinstance(w, dict) and 'status' in w]
+    assert statuses and set(statuses) == {'Cancelled'}
+
+
 def test_canonical_dry_run_reports_actual_existing_motion_without_writes(ingester,populated_archive,meeting_693_refinement,tmp_path):
     from copy import deepcopy
     from ingestion.ballot_fixture import official_context, TEXT
