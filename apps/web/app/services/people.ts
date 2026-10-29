@@ -6,6 +6,7 @@ import { civicToday, membershipIsActiveOn } from "../lib/council-terms";
 import type { ParticipationHistory } from "../components/profile/public-participation";
 import { isNamedParticipant } from "../lib/participant-identity";
 import { documentedCommitteeRole, documentedParticipantRole } from "../lib/participant-roles";
+import type { ParticipantStatement } from "../lib/participant-statements";
 import type {
   Person,
   Membership,
@@ -30,6 +31,9 @@ export interface PublicParticipantStats {
   audioMeetingCount: number;
   documentedMeetingCount: number;
   agendaItemCount: number;
+  /** Linked spoken comments and letters (participants index only; 0 elsewhere). */
+  commentCount: number;
+  letterCount: number;
   firstSpokeAt: string | null;
   lastSpokeAt: string | null;
   topCategories: { category: string; seconds: number; count: number }[];
@@ -46,6 +50,8 @@ export interface PublicParticipantStats {
     firstStartTime: number;
     minutesUrl?: string;
     summary?: string;
+    /** Set for an appearance known only from a linked comment or letter. */
+    kind?: "spoken" | "written";
   }[];
 }
 
@@ -142,9 +148,13 @@ export async function getPublicParticipantStats(
   municipalityId?: number,
   documentedHistories: readonly (ParticipationHistory & { personId: number })[] = [],
   personId?: number,
+  /** Linked comments and letters by person (see getAllParticipantStatements), counted like the profile counts them. */
+  linkedStatements?: ReadonlyMap<number, readonly ParticipantStatement[]>,
 ): Promise<PublicParticipantStats[]> {
   const today = civicToday();
   if (personId !== undefined) documentedHistories = documentedHistories.filter(history => history.personId === personId);
+  const linked = [...(linkedStatements || new Map<number, readonly ParticipantStatement[]>())]
+    .filter(([id, statements]) => statements.length > 0 && (personId === undefined || id === personId));
   const segments = await fetchAllIdentifiedTranscriptSegments(supabase, municipalityId, personId, today);
   const scopedSegments = municipalityId
     ? segments.filter((segment) => segment.meetings?.municipality_id === municipalityId)
@@ -152,7 +162,7 @@ export async function getPublicParticipantStats(
 
   const personIds = Array.from(
     new Set([...scopedSegments.map((segment) => segment.person_id).filter(Boolean),
-      ...documentedHistories.map(history => history.personId)]),
+      ...documentedHistories.map(history => history.personId), ...linked.map(([id]) => id)]),
   );
   if (personIds.length === 0) return [];
 
@@ -222,6 +232,8 @@ export async function getPublicParticipantStats(
         audioMeetingCount: 0,
         documentedMeetingCount: 0,
         agendaItemCount: 0,
+        commentCount: 0,
+        letterCount: 0,
         firstSpokeAt: meetingDate,
         lastSpokeAt: meetingDate,
         topCategories: [],
@@ -323,6 +335,33 @@ export async function getPublicParticipantStats(
     }
   }
 
+  // Linked comments and letters add meetings and agenda items (counted once with
+  // audio and minutes, as on the profile) and list people known only through them.
+  // The pipeline never links council or staff, so no role check applies here.
+  for (const [id, statements] of linked) {
+    const person = peopleById.get(id);
+    if (!person) continue;
+    for (const statement of statements) {
+      if (statement.meetingDate > today) continue;
+      const stats = getStats(person, statement.meetingDate);
+      stats.meetingIds.add(statement.meetingId);
+      stats.agendaItemIds.add(statement.agendaItemId);
+      if (statement.kind === "written") stats.letterCount += 1;
+      else stats.commentCount += 1;
+      const appearances = [...stats.appearanceMap.values()];
+      const covered = statement.kind === "written"
+        ? stats.appearanceMap.has(`${statement.meetingId}:${statement.agendaItemId}:written`)
+        : appearances.some(a => a.meetingId === statement.meetingId && (a.agendaItemId == null || a.agendaItemId === statement.agendaItemId));
+      if (covered) continue;
+      stats.appearanceMap.set(`${statement.meetingId}:${statement.agendaItemId}${statement.kind === "written" ? ":written" : ""}`, {
+        meetingId: statement.meetingId, meetingSlug: statement.meetingSlug, meetingTitle: statement.meetingTitle,
+        meetingDate: statement.meetingDate, agendaItemId: statement.agendaItemId,
+        agendaTitle: statement.topic || statement.agendaTitle, category: null,
+        seconds: 0, segmentCount: 0, firstStartTime: 0, summary: statement.point, kind: statement.kind,
+      });
+    }
+  }
+
   const results = Array.from(statsByPerson.values())
     .map((stats) => ({
       person: stats.person,
@@ -332,6 +371,8 @@ export async function getPublicParticipantStats(
       audioMeetingCount: stats.audioMeetingIds.size,
       documentedMeetingCount: stats.documentedMeetingIds.size,
       agendaItemCount: stats.agendaItemIds.size,
+      commentCount: stats.commentCount,
+      letterCount: stats.letterCount,
       firstSpokeAt: stats.firstSpokeAt,
       lastSpokeAt: stats.lastSpokeAt,
       topCategories: Array.from(stats.categoryMap.values())

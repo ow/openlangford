@@ -5,9 +5,7 @@ import { bylawPath, documentPath, electionPath, matterPath, meetingDocumentsPath
 import { propertyPath } from "./properties";
 import { participantPath, personPath } from "../lib/people-paths";
 import { getMunicipality } from "./municipality";
-import { getPublicParticipantStats } from "./people";
-import { getPublicParticipationHistories } from "./public-participation.server";
-import { cachedCompute, HOURLY_SHARED } from "./computed-cache.server";
+import { getPublicParticipantsIndex } from "./participant-statements.server";
 import { publicData } from "./public-data-cache.server";
 
 /**
@@ -200,10 +198,7 @@ async function buildSitemapEntries(
 
     case "participants": {
       // Same computation (and cache entry) as the /participants page.
-      const participants = await cachedCompute(`public-participants:${municipality.id}`, () =>
-        getPublicParticipantStats(supabase, municipality.id, getPublicParticipationHistories(municipality.slug)),
-        HOURLY_SHARED,
-      );
+      const participants = await getPublicParticipantsIndex(supabase, municipality);
       return (participants as any[])
         .filter((p) => p?.person?.slug || p?.person?.id)
         .map((p) => ({

@@ -1,5 +1,26 @@
 import { describe, it, expect } from "vitest";
-import { addToItem, placeHeldLetter, shortItemLabel, takeHeld, writtenLetters, writtenSources } from "../written";
+import { addToItem, placeHeldLetter, shortItemLabel, takeHeld, withLinkedPeople, writtenLetters, writtenSources } from "../written";
+
+describe("withLinkedPeople", () => {
+  const people = { 19: { id: 19, name: "Tanya Sunshine", slug: "tanya-sunshine" } };
+  it("attaches the linked person to speakers and letter writers by person_id only", () => {
+    const meta = withLinkedPeople({
+      other: 1,
+      participation: { overview: "o", speakers: [{ who: "Tanya Sunshine", person_id: 19 }, { who: "Tanya Sunshine" }] },
+      written_participation: { version: "3", documents: [{ extracted_document_id: 1, document_id: 2, letters: [{ who: "Tanya Sunshine (Langvista Drive)", person_id: 19 }, { who: "Tanya Sunshine", person_id: 7 }] }] },
+    } as Record<string, any>, people);
+    expect(meta.other).toBe(1);
+    expect(meta.participation.speakers.map((s: any) => s.person?.slug ?? null)).toEqual(["tanya-sunshine", null]);
+    expect(writtenLetters(meta.written_participation).map((l: any) => l.person?.slug ?? null)).toEqual(["tanya-sunshine", null]);
+    expect(meta.written_participation.version).toBe("3");
+  });
+  it("leaves items without participation alone", () => {
+    const meta = { title: "x" };
+    expect(withLinkedPeople(meta, people)).toBe(meta);
+    expect(withLinkedPeople(null, people)).toBeNull();
+    expect(withLinkedPeople({ written_participation: { letters: [{ who: "A", person_id: 19 }] } } as Record<string, any>, people).written_participation.letters[0].person.id).toBe(19);
+  });
+});
 
 const held = (key: string) => ({
   who: `Writer ${key}`,

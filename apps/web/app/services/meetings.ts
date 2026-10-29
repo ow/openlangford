@@ -389,7 +389,7 @@ export async function getMeetingById(
 
   (agendaRes.data || []).forEach((item: any) => {
     // Canonical ids stamped on public speakers by the pipeline (never a name match here).
-    (item.meta?.participation?.speakers || []).forEach((s: any) => {
+    [...(item.meta?.participation?.speakers || []), ...writtenLetters(item.meta?.written_participation)].forEach((s: any) => {
       if (Number.isInteger(s?.person_id)) personIds.add(s.person_id);
     });
   });

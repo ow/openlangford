@@ -80,7 +80,52 @@ describe("mergeParticipation", () => {
   });
 });
 
+describe("letters", () => {
+  const letterRows: StatementItemRow[] = [
+    {
+      id: 11, title: "Rezoning 123 Main", meetings: meeting(2, "2025-12-15"), matter: null,
+      written: { version: "3", documents: [
+        { extracted_document_id: 44, document_id: 9, letters: [
+          { who: "Tanya Sunshine (Langvista Drive)", position: "opposes", topic: "Height", point: "Opposes the height.", person_id: 19 },
+          { who: "A resident", position: "supports", topic: "Height", point: "Supports it." },
+        ] },
+        null,
+        { extracted_document_id: 45, letters: [{ who: "Tanya Sunshine", position: "asks", topic: "Parking", point: "Asks about parking.", person_id: 19 }] },
+      ] },
+    },
+    { id: 14, title: "Old shape", meetings: meeting(6, "2023-05-01"), written: { letters: [{ who: "Tanya Sunshine", position: "supports", topic: "Trail", point: "Supports the trail.", person_id: 19 }] } },
+  ];
+  const statements = statementsFromItems([...rows, ...letterRows], 19, "2026-10-29");
+
+  it("reads letters in both stored shapes, marked as written, with their source document", () => {
+    expect(statements.map((s) => [s.agendaItemId, s.kind, s.documentId])).toEqual([
+      [11, "spoken", null], [11, "written", 44], [11, "written", 45], [14, "written", null], [10, "spoken", null],
+    ]);
+    expect(statements.filter((s) => s.kind === "written").every((s) => s.source === null)).toBe(true);
+    expect(JSON.stringify(statements)).not.toMatch(/Langvista|Tanya/);
+  });
+
+  it("never folds audio into a letter, counts letters, and counts a shared item once", () => {
+    const merged = mergeParticipation([{ meetingId: 2, agendaItemId: 11, meetingDate: "2025-12-15", seconds: 30, segmentCount: 2, firstStartTime: 5 }], statements);
+    expect(merged.statements.filter((s) => s.audio).map((s) => s.kind)).toEqual(["spoken"]);
+    expect(merged).toMatchObject({ letterCount: 3, lettersOnly: false, meetingCount: 3, agendaItemCount: 3 });
+    const lettersOnly = mergeParticipation([], statementsFromItems(letterRows, 19, "2026-10-29"));
+    expect(lettersOnly).toMatchObject({ letterCount: 3, lettersOnly: true, meetingCount: 2, agendaItemCount: 2, audioOnly: [] });
+  });
+});
+
 describe("participationSummary", () => {
+  it("mentions letters", () => {
+    expect(participationSummary("A B", 2, 2, "2023-05-01", "2025-12-15", 3, true)).toBe(
+      "A B wrote to Langford council as a member of the public: 3 letters for 2 meetings, 2023–2025, on 2 agenda items. Read what they wrote.",
+    );
+    expect(participationSummary("A B", 3, 3, "2022-01-01", "2025-01-01", 1)).toBe(
+      "A B addressed Langford council as a member of the public at 3 meetings, 2022–2025, on 3 agenda items, including 1 letter. Read what they said and wrote.",
+    );
+  });
+});
+
+describe("participationSummary (spoken)", () => {
   it("describes counts and span", () => {
     expect(participationSummary("Tanya Sunshine", 12, 10, "2022-02-07", "2026-10-05")).toBe(
       "Tanya Sunshine addressed Langford council as a member of the public at 12 meetings, 2022–2026, on 10 agenda items. Read what they said.",

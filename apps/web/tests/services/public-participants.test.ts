@@ -101,3 +101,26 @@ it("keeps a committee member's public comments while excluding only their dated 
   expect(result[0]).toMatchObject({ meetingCount: 3, totalSeconds: 180 });
   expect(result[0].recentAppearances.map(a => a.meetingId).sort()).toEqual([2, 3, 4]);
 });
+
+it("lists people known only through linked comments or letters, counting meetings and items once with audio", async () => {
+  const people = [{ id: 1, name: "Audio Speaker", memberships: [] }, { id: 19, name: "Tanya Sunshine", memberships: [] }];
+  const statement = (meetingId: number, agendaItemId: number, kind: "spoken" | "written", date = "2024-01-01") => ({
+    agendaItemId, agendaTitle: "Rezoning", meetingId, meetingSlug: `m-${meetingId}`, meetingTitle: "Council", meetingDate: date,
+    matter: null, position: "opposes", topic: "Height", point: "Opposes the height.", source: null, kind, documentId: kind === "written" ? 44 : null,
+  });
+  const audio = { ...segment(1, 1, "2024-01-01"), agenda_item_id: 10 };
+  const linked = new Map([
+    // Same meeting and item as the audio: no new meeting or item.
+    [1, [statement(1, 10, "spoken"), statement(1, 10, "written")]],
+    // Comment and letter on the same item, plus a letter at another meeting; a future one is ignored.
+    [19, [statement(3, 30, "spoken", "2024-03-01"), statement(3, 30, "written", "2024-03-01"), statement(4, 40, "written", "2024-04-01"), statement(5, 50, "written", "2099-01-01")]],
+  ]);
+  const result = await (getPublicParticipantStats as any)(client([audio], people), 1, [], undefined, linked);
+  expect(result.map((p: any) => [p.person.id, p.meetingCount, p.agendaItemCount, p.commentCount, p.letterCount, p.totalSeconds]))
+    .toEqual([[1, 1, 1, 1, 1, 60], [19, 2, 2, 1, 2, 0]]);
+  const tanya = result[1];
+  expect(tanya.lastSpokeAt).toBe("2024-04-01");
+  expect(tanya.recentAppearances.map((a: any) => [a.meetingId, a.agendaItemId, a.kind])).toEqual([[4, 40, "written"], [3, 30, "spoken"], [3, 30, "written"]]);
+  // The audio appearance already covers person 1's comment; the letter still shows.
+  expect(result[0].recentAppearances.map((a: any) => a.kind ?? "audio")).toEqual(["audio", "written"]);
+});

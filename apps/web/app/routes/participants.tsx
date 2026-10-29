@@ -16,7 +16,7 @@ import {
   getParticipantIdentificationCoverage,
   type PublicParticipantStats,
 } from "../services/people";
-import { getPublicParticipationHistories } from "../services/public-participation.server";
+import { getPublicParticipantsIndex } from "../services/participant-statements.server";
 import type { Municipality } from "../lib/types";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
@@ -50,10 +50,7 @@ export async function loader() {
     const municipality = await getMunicipality(supabase);
     // Both are slow full-table aggregations that only change when a meeting is ingested.
     const [participants, identificationCoverage] = await Promise.all([
-      cachedCompute(`public-participants:${municipality.id}`, () =>
-        getPublicParticipantStats(supabase, municipality.id, getPublicParticipationHistories(municipality.slug)),
-        HOURLY_SHARED,
-      ),
+      getPublicParticipantsIndex(supabase, municipality),
       cachedCompute(`participant-coverage:${municipality.id}`, () =>
         getParticipantIdentificationCoverage(supabase, municipality.id),
         HOURLY_SHARED,
@@ -84,6 +81,8 @@ function plural(count: number, word: string) {
 }
 
 const INITIAL_VISIBLE = 30;
+
+const APPEARANCE_LABEL = { minutes: "Official minutes", spoken: "Comment", written: "Letter to council" } as const;
 
 function ParticipantRow({
   participant,
@@ -122,13 +121,16 @@ function ParticipantRow({
         </div>
         <div className="mt-0.5 text-xs tabular-nums text-zinc-500">
           {plural(participant.meetingCount, "meeting")} · {participant.audioMeetingCount} audio-attributed · {participant.documentedMeetingCount} minutes-documented
+          {participant.commentCount > 0 && <> · {plural(participant.commentCount, "comment")}</>}
+          {participant.letterCount > 0 && <> · {plural(participant.letterCount, "letter")}</>}
         </div>
         {topAppearances.length > 0 && (
           <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
             {topAppearances.map((appearance) => (
               <Link
                 key={`${appearance.meetingId}-${appearance.agendaItemId || "none"}`}
-                to={meetingPath({ id: appearance.meetingId, slug: appearance.meetingSlug }, appearance.firstStartTime ? `?t=${Math.floor(appearance.firstStartTime)}` : "")}
+                to={meetingPath({ id: appearance.meetingId, slug: appearance.meetingSlug },
+                  appearance.kind && appearance.agendaItemId ? `#item-${appearance.agendaItemId}` : appearance.firstStartTime ? `?t=${Math.floor(appearance.firstStartTime)}` : "")}
                 className="group inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 text-xs text-zinc-500"
               >
                 {appearance.segmentCount > 0 && <PlayCircle className="h-3.5 w-3.5 shrink-0 text-zinc-400 group-hover:text-brand-600" aria-hidden="true" />}
@@ -136,7 +138,7 @@ function ParticipantRow({
                   {appearance.agendaTitle || appearance.meetingTitle}
                 </span>
                 <span className="shrink-0 tabular-nums">
-                  {formatDate(appearance.meetingDate)} · {appearance.segmentCount > 0 ? formatDuration(appearance.seconds) : "Official minutes"}
+                  {formatDate(appearance.meetingDate)} · {appearance.segmentCount > 0 ? formatDuration(appearance.seconds) : APPEARANCE_LABEL[appearance.kind ?? "minutes"]}
                 </span>
               </Link>
             ))}
@@ -226,11 +228,11 @@ export default function Participants({ loaderData }: Route.ComponentProps) {
         <PageHeader
           title="Public participants"
           icon={Mic}
-          description={`Public appearances in ${shortName} meetings, drawn from named audio segments and source-backed minutes records. Council and staff service, and committee members speaking in their committee role, are excluded using the role held at each meeting.`}
+          description={`Public appearances in ${shortName} meetings, drawn from named audio segments, source-backed minutes records, and comments and letters linked to a person by exact full name. Council and staff service, and committee members speaking in their committee role, are excluded using the role held at each meeting.`}
         />
 
         <div className="mb-6 space-y-2 text-sm text-zinc-600">
-          <p>Speaking totals and percentages cover audio-attributed public speech only. Minutes-documented appearances add meetings, not speaking time; a meeting found in both sources counts once.</p>
+          <p>Speaking totals and percentages cover audio-attributed public speech only. Minutes-documented appearances, linked comments and letters add meetings, not speaking time; a meeting found in several sources counts once.</p>
           {identificationCoverage && identificationCoverage.totalSegments > 0 ? (
             <p>Speaker identification: {identificationCoverage.linkedSegments.toLocaleString()} of {identificationCoverage.totalSegments.toLocaleString()} transcript segments ({Math.round(100 * identificationCoverage.linkedSegments / identificationCoverage.totalSegments)}%) are linked to a person record, including council and staff. This measures segment identification, not the percentage of public speakers or the archive covered.</p>
           ) : <p>Speaker identification coverage {identificationCoverage ? "has no transcript segments to measure" : "is unavailable"}.</p>}
@@ -306,7 +308,8 @@ export default function Participants({ loaderData }: Route.ComponentProps) {
         <p className="mt-6 text-sm leading-relaxed text-zinc-500">
           Share is of all identified public speaking time; bars are scaled to the
           top speaker. Unidentified speaker labels are excluded. Identities come
-          from transcript-to-person links and may improve as aliases are reviewed.
+          from transcript-to-person links, minutes records and exact full-name links on
+          comments and letters, and may improve as aliases are reviewed.
         </p>
       </div>
     </div>

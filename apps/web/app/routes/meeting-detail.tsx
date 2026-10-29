@@ -1,6 +1,7 @@
 import { CalendarProvenance } from "../components/calendar-provenance";
 import { pageMeta, recordDate, markdownAlternate, metaDescription } from "../lib/page-meta";
 import { ogImageUrl } from "../lib/og";
+import { withLinkedPeople } from "../lib/written";
 import { breadcrumbList, jsonLd, meetingEvent, meetingVideo } from "../lib/structured-data";
 import { SITE_NAME } from "../lib/site-name";
 import { personPath } from "../lib/people-paths";
@@ -242,17 +243,7 @@ function MeetingDetailContent({ loaderData }: any) {
     () =>
       rawAgendaItems.map((item: any) => ({
         ...item,
-        meta: item.meta?.participation?.speakers
-          ? {
-              ...item.meta,
-              participation: {
-                ...item.meta.participation,
-                speakers: item.meta.participation.speakers.map((s: any) =>
-                  s?.person_id && people[s.person_id] ? { ...s, person: people[s.person_id] } : s,
-                ),
-              },
-            }
-          : item.meta,
+        meta: withLinkedPeople(item.meta, people),
         motions: (item.motions || []).map((motion: any) => ({
           ...motion,
           mover_person: motion.mover_id ? people[motion.mover_id] : undefined,

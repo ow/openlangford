@@ -4,7 +4,15 @@
  * Letters the pipeline couldn't place wait on the meeting in `meta.written_unplaced`.
  */
 
-export type WrittenLetter = { who: string; position: string; topic: string; point: string; sent?: string };
+export type WrittenLetter = {
+  who: string;
+  position: string;
+  topic: string;
+  point: string;
+  sent?: string;
+  /** Canonical people id stamped by the pipeline (unique full-name match, never council or staff). */
+  person_id?: number | null;
+};
 export type WrittenDocument = {
   extracted_document_id: number;
   document_id: number;
@@ -24,6 +32,31 @@ export type UnplacedDocument = { document_id: number; title?: string; fingerprin
 export function writtenLetters(written: WrittenParticipation | null | undefined): WrittenLetter[] {
   if (!written) return [];
   return written.documents ? written.documents.flatMap((d) => d.letters || []) : written.letters || [];
+}
+
+type LinkedPerson = { id: number; name?: string | null; slug?: string | null };
+
+/**
+ * An agenda item's meta with the linked person (for the profile slug) attached
+ * to each public speaker and letter writer that carries a pipeline `person_id`.
+ */
+export function withLinkedPeople<M extends Record<string, any> | null | undefined>(meta: M, people: Record<number, LinkedPerson | undefined>): M {
+  if (!meta) return meta;
+  const attach = (entry: any) => (entry?.person_id && people[entry.person_id] ? { ...entry, person: people[entry.person_id] } : entry);
+  const speakers = meta.participation?.speakers;
+  const written = meta.written_participation as WrittenParticipation | undefined;
+  if (!speakers && !written) return meta;
+  return {
+    ...meta,
+    ...(speakers ? { participation: { ...meta.participation, speakers: speakers.map(attach) } } : {}),
+    ...(written
+      ? {
+          written_participation: written.documents
+            ? { ...written, documents: written.documents.map((d) => ({ ...d, letters: (d.letters || []).map(attach) })) }
+            : { ...written, letters: (written.letters || []).map(attach) },
+        }
+      : {}),
+  };
 }
 
 /** Source documents for "Read the letters". The document viewer is keyed by the extracted document, not the PDF. */
