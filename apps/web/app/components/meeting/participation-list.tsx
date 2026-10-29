@@ -16,7 +16,7 @@ export type ParticipationSpeaker = {
 };
 export type Participation = { overview?: string; source?: "minutes" | "transcript"; speakers?: ParticipationSpeaker[] };
 
-const POSITION_LABEL: Record<string, string> = {
+export const POSITION_LABEL: Record<string, string> = {
   supports: "Supports",
   opposes: "Opposes",
   concerned: "Concerned",
@@ -24,7 +24,7 @@ const POSITION_LABEL: Record<string, string> = {
   mixed: "Mixed",
 };
 
-const POSITION_TONE: Record<string, string> = {
+export const POSITION_TONE: Record<string, string> = {
   supports: "text-emerald-700",
   opposes: "text-red-700",
   concerned: "text-amber-700",

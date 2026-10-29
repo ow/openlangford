@@ -40,6 +40,10 @@ it("shares public participation at the participant canonical URL", () => {
   expect(value(meta, "og:url")).toBe("https://openlangford.ca/participants/alex-resident");
   expect(value(meta, "og:type")).toBe("profile");
   expect(value(meta, "twitter:description")).toContain("member of the public");
+  const withComments = participantMeta({ data: { person: { id: 25, name: "Alex Resident", slug: "alex-resident" },
+    summary: { meetingCount: 3, agendaItemCount: 4, firstDate: "2022-02-07", lastDate: "2025-12-15" } } } as any) as any[];
+  expect(value(withComments, "description")).toContain("at 3 meetings, 2022–2025, on 4 agenda items. Read what they said.");
+  expect(value(withComments, "description").length).toBeLessThanOrEqual(155);
 });
 it.each([undefined, "budget", "What is the budget?"])("noindexes search variant %s", query => {
   expect(value(searchMeta({ data: { query } } as any) as any[], "robots")).toBe("noindex, follow");

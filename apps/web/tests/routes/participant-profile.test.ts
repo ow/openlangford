@@ -47,13 +47,48 @@ it("retains the council profile for a person with actual council service", async
 });
 
 it("shows a public participant's appearances without council-only labels or analytics", () => {
+  const appearance = { meetingId: 10, meetingDate: "2024-01-01", meetingTitle: "Council meeting", agendaItemId: null, seconds: 42, segmentCount: 1, firstStartTime: 10 };
   const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(ParticipantProfile, { loaderData: {
     person: state.person, hasCouncilService: false, history: null, participation: {
-      meetingCount: 1, documentedMeetingCount: 0, totalSeconds: 42,
-      recentAppearances: [{ meetingId: 10, meetingDate: "2024-01-01", meetingTitle: "Council meeting", seconds: 42, segmentCount: 1, firstStartTime: 10 }],
+      meetingCount: 1, documentedMeetingCount: 0, totalSeconds: 42, recentAppearances: [appearance],
     },
+    statements: [], audioOnly: [appearance], summary: { meetingCount: 1, agendaItemCount: 0, firstDate: "2024-01-01", lastDate: "2024-01-01" },
   } } as any)));
   expect(html).toContain("Public participant");
   expect(html).toContain("/meetings/10?t=10");
   expect(html).not.toMatch(/Former|Recorded votes|Voting alignment|Attendance rate|Key votes|Policy|council service profile/i);
+});
+
+it("lists linked comments newest first with item anchors, matter links and positions, never the street qualifier", () => {
+  const statement = (agendaItemId: number, meetingDate: string, extra: object = {}) => ({
+    agendaItemId, agendaTitle: "PUBLIC PARTICIPATION", meetingId: agendaItemId * 10, meetingSlug: `${meetingDate}-regular-council`,
+    meetingTitle: "Regular Council", meetingDate, matter: null, position: "supports", topic: "Waste management",
+    point: "Supports a municipal garbage contract.", source: null, audio: null, ...extra,
+  });
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(ParticipantProfile, { loaderData: {
+    person: state.person, hasCouncilService: false, history: null, participation: null, audioOnly: [],
+    statements: [
+      statement(7, "2025-12-15", { matter: { id: 3, slug: "zoning-bylaw-2100", title: "Zoning Bylaw 2100" }, audio: { seconds: 75, firstStartTime: 300.6 } }),
+      statement(5, "2022-09-06", { position: "opposes", topic: "Dust bylaw", point: "Opposes dust.", source: "minutes" }),
+    ],
+    summary: { meetingCount: 2, agendaItemCount: 2, firstDate: "2022-09-06", lastDate: "2025-12-15" },
+  } } as any)));
+  expect(html).toContain("Public participant");
+  expect(html).not.toContain("No public comments");
+  expect(html).toContain("/meetings/2025-12-15-regular-council#item-7");
+  expect(html).toContain("/matters/zoning-bylaw-2100");
+  expect(html).toContain("/meetings/2025-12-15-regular-council?t=300");
+  expect(html).toContain("Supports");
+  expect(html).toContain("Opposes");
+  expect(html).toContain("From the minutes");
+  expect(html.indexOf("item-7")).toBeLessThan(html.indexOf("item-5"));
+  expect(html).not.toContain("Recorded audio appearances");
+});
+
+it("explains the empty state", () => {
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(ParticipantProfile, { loaderData: {
+    person: state.person, hasCouncilService: false, history: null, participation: null, statements: [], audioOnly: [],
+    summary: { meetingCount: 0, agendaItemCount: 0, firstDate: null, lastDate: null },
+  } } as any)));
+  expect(html).toContain("No public comments or appearances have been linked to Alex Resident");
 });
