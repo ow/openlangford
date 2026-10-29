@@ -3,7 +3,7 @@ import { documentPath, meetingDocumentsPath } from "../../lib/paths";
 import { Link } from "react-router";
 import { Check, ChevronDown, ChevronRight, FileText } from "lucide-react";
 import { getDocumentTypeLabel } from "../../lib/document-types";
-import { personPath } from "../../lib/people-paths";
+import { participantPath, personPath } from "../../lib/people-paths";
 import { cn } from "../../lib/utils";
 
 function Panel({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
@@ -132,7 +132,18 @@ export function MeetingAttendance({ attendanceGroups, speakerStats, getPersonRol
             <ul className="mt-2 space-y-1.5 text-sm">
               {[...staff, ...others].map((r) => (
                 <li key={r.id ?? r.resolvedName} className="flex items-baseline justify-between gap-2">
-                  <span className="min-w-0 truncate text-zinc-800">{r.resolvedName || "Unknown"}</span>
+                  {/* Rows carry a canonical person_id from attendance or identified transcript
+                      segments; staff link to their profile, the public to their participant page. */}
+                  {r.person_id ? (
+                    <Link
+                      to={(staff.includes(r) ? personPath : participantPath)({ id: r.person_id, name: r.person?.name, slug: r.person?.slug })}
+                      className="min-w-0 truncate text-zinc-800 hover:text-brand-700"
+                    >
+                      {r.resolvedName || "Unknown"}
+                    </Link>
+                  ) : (
+                    <span className="min-w-0 truncate text-zinc-800">{r.resolvedName || "Unknown"}</span>
+                  )}
                   <span className="shrink-0 truncate text-xs text-zinc-500">
                     {isAway(r) ? r.attendance_mode : r.participationEvidence === "transcript_only" ? "Transcript only" : r.participationEvidence === "unknown" ? "Attendance unknown" : getPersonRole(r.person ?? undefined) || (staff.includes(r) ? "Staff" : "Guest")}
                     {isAway(r) && r.hasTranscriptEvidence && " · Transcript attribution conflicts"}

@@ -239,6 +239,17 @@ function MeetingDetailContent({ loaderData }: any) {
     () =>
       rawAgendaItems.map((item: any) => ({
         ...item,
+        meta: item.meta?.participation?.speakers
+          ? {
+              ...item.meta,
+              participation: {
+                ...item.meta.participation,
+                speakers: item.meta.participation.speakers.map((s: any) =>
+                  s?.person_id && people[s.person_id] ? { ...s, person: people[s.person_id] } : s,
+                ),
+              },
+            }
+          : item.meta,
         motions: (item.motions || []).map((motion: any) => ({
           ...motion,
           mover_person: motion.mover_id ? people[motion.mover_id] : undefined,

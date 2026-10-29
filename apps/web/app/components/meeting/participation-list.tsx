@@ -1,9 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { participantPath } from "../../lib/people-paths";
 import { cn } from "../../lib/utils";
 import { writtenLetters, writtenSources, type WrittenParticipation } from "../../lib/written";
 
-export type ParticipationSpeaker = { who: string; position: string; point: string; topic: string };
+export type ParticipationSpeaker = {
+  who: string;
+  position: string;
+  point: string;
+  topic: string;
+  /** Canonical people id stamped by the pipeline (unique full-name match, never council or staff). */
+  person_id?: number | null;
+  /** Hydrated by the loader when available, for the profile slug. */
+  person?: { id: number; name?: string | null; slug?: string | null };
+};
 export type Participation = { overview?: string; source?: "minutes" | "transcript"; speakers?: ParticipationSpeaker[] };
 
 const POSITION_LABEL: Record<string, string> = {
@@ -49,7 +59,17 @@ export function ParticipationList({
     <ul className={cn("space-y-2", className)}>
       {list.map((s, i) => (
         <li key={i} className="text-sm leading-relaxed text-zinc-700">
-          <span className="font-medium text-zinc-900">{s.who}</span>
+          {/* Only the pipeline's person_id links a speaker; the name string never does. */}
+          {s.person_id ? (
+            <Link
+              to={participantPath(s.person?.id === s.person_id ? s.person : { id: s.person_id })}
+              className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:text-brand-700 hover:decoration-brand-300"
+            >
+              {s.who}
+            </Link>
+          ) : (
+            <span className="font-medium text-zinc-900">{s.who}</span>
+          )}
           {POSITION_LABEL[s.position] && (
             <span className={cn("ml-1.5 text-xs font-medium", POSITION_TONE[s.position] || "text-zinc-500")}>
               {POSITION_LABEL[s.position]}

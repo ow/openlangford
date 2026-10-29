@@ -342,6 +342,13 @@ export async function getMeetingById(
     });
   });
 
+  (agendaRes.data || []).forEach((item: any) => {
+    // Canonical ids stamped on public speakers by the pipeline (never a name match here).
+    (item.meta?.participation?.speakers || []).forEach((s: any) => {
+      if (Number.isInteger(s?.person_id)) personIds.add(s.person_id);
+    });
+  });
+
   (aliasRes.data || []).forEach((a: any) => personIds.add(a.person_id));
   (attendanceRes.data || []).forEach((a: any) => personIds.add(a.person_id));
   transcript.forEach((s) => {
@@ -355,7 +362,7 @@ export async function getMeetingById(
     const { data: peopleData } = await supabase
       .from("people")
       .select(
-        "id, name, is_councillor, memberships(role, start_date, end_date, organization:organizations(name, classification))",
+        "id, name, slug, is_councillor, memberships(role, start_date, end_date, organization:organizations(name, classification))",
       )
       .in("id", Array.from(personIds));
 

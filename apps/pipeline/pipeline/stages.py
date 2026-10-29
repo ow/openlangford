@@ -16,7 +16,8 @@ Each stage takes a ``StageContext`` and picks its own targets:
 
 Version stamps live next to what a stage writes (``matters.meta.summary_version``,
 ``matters.meta.images_version``, ``agenda_items.meta.participation_version``,
-``motions.meta.headline_version``, ``properties.meta.summary_version``);
+``motions.meta.headline_version``, ``properties.meta.summary_version``,
+``agenda_items.meta.participation_links_version``);
 bump the module's ``*_VERSION`` constant when a prompt changes, then run
 ``--stage <name> --stale``.
 """
@@ -39,6 +40,7 @@ from pipeline.ingestion.matter_images import IMAGES_VERSION
 from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
 from pipeline.ingestion.motion_headlines import HEADLINE_VERSION
 from pipeline.ingestion.participation_minutes import MINUTES_VERSION as MINUTES_PARTICIPATION_VERSION
+from pipeline.ingestion.participation_person_links import LINKS_VERSION as PARTICIPATION_LINKS_VERSION
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
 from pipeline.ingestion.property_summaries import PROPERTY_SUMMARY_VERSION
 
@@ -227,6 +229,31 @@ def minutes_participation_items(ctx: StageContext, meeting_ids: list[int] | None
     return [{"id": r["id"], "meeting_id": r["meeting_id"], "participation_minutes_version": r.get("stamp")}
             for r in _paginate(q)
             if PARTICIPATION_TITLE.search(r.get("title") or "") and (not r.get("has_summary") or r.get("source") == "minutes")]
+
+
+def speaker_items(ctx: StageContext, meeting_ids: list[int] | None = None) -> list[dict]:
+    """Agenda items with participation speakers (meta and updated_at for guarded writes)."""
+    from pipeline.ingestion.participation_person_links import STAMP
+
+    select = f"id, meeting_id, meta, updated_at, stamp:meta->>{STAMP}"
+    if ctx.since:
+        select += ", meetings!inner(meeting_date)"
+
+    def q():
+        query = ctx.supabase.table("agenda_items").select(select).not_.is_("meta->participation->speakers", "null").order("id")
+        if meeting_ids is not None:
+            query = query.in_("meeting_id", meeting_ids)
+        if ctx.since:
+            query = query.gte("meetings.meeting_date", ctx.since)
+        return query
+
+    if meeting_ids is not None and not meeting_ids:
+        return []
+    return _paginate(q, page=200)
+
+
+def stale_participation_links(ctx: StageContext) -> list[int]:
+    return select_stale(speaker_items(ctx), "stamp", PARTICIPATION_LINKS_VERSION)
 
 
 def stale_minutes_participation(ctx: StageContext) -> list[int]:
@@ -506,6 +533,42 @@ def run_participation_names(ctx: StageContext):
     verb = "would name" if ctx.dry_run else "named"
     print(f"  [Participation] {verb} {named} speaker(s) from minutes across {len(ids)} item(s)")
     return {"items": len(ids), "named": named}
+
+
+def run_participation_person_links(ctx: StageContext):
+    """Stamp person_id on speakers whose full name matches exactly one non-official person. No AI."""
+    from pipeline.ingestion.participation_person_links import link_item, load_registry
+
+    if ctx.post_ingest:
+        items = speaker_items(ctx, ctx.meeting_ids)
+    elif ctx.target_id() is not None:  # a meeting id
+        items = speaker_items(ctx, [ctx.target_id()])
+    else:
+        items = speaker_items(ctx)
+    if ctx.stale:
+        items = [r for r in items if is_stale(r.get("stamp"), PARTICIPATION_LINKS_VERSION)]
+    if not items:
+        return {"items": 0}
+    registry, excluded = load_registry(ctx.supabase)
+    results = [link_item(ctx.supabase, item, registry, dry_run=ctx.dry_run, force=ctx.force) for item in items]
+    linked = [pid for r in results for pid in r["linked"]]
+    summary = {
+        "items": len(items),
+        "items_changed": sum(r["changed"] for r in results),
+        "items_with_links": sum(bool(r["linked"]) for r in results),
+        "speakers": sum(len((i.get("meta") or {}).get("participation", {}).get("speakers") or []) for i in items),
+        "speakers_linked": len(linked),
+        "distinct_people": len(set(linked)),
+        "officials_linked": len(set(linked) & excluded),
+        "written": sum(r["written"] for r in results),
+        "conflicts": sum(bool(r.get("conflict")) for r in results),
+    }
+    verb = "would link" if ctx.dry_run else "linked"
+    print(f"  [Participation links] {verb} {summary['speakers_linked']}/{summary['speakers']} speaker(s), "
+          f"{summary['distinct_people']} distinct people, across {summary['items_with_links']} item(s); "
+          f"{summary['items_changed']}/{summary['items']} item(s) change; officials linked: {summary['officials_linked']}"
+          + ("" if ctx.dry_run else f"; written {summary['written']}, conflicts {summary['conflicts']}"))
+    return summary
 
 
 def _motion_headline_stamps(ctx: StageContext) -> list[dict]:
@@ -906,6 +969,13 @@ STAGES: list[Stage] = [
         description="Name resident-labelled speakers in existing summaries from the meeting minutes (no redraft; --target is a meeting id).",
         run=run_participation_names, when="post_ingest", scope="meeting", version="1",
         depends_on=("participation-summaries",),
+    ),
+    Stage(
+        name="participation-person-links",
+        description="Link named public speakers to people by unique full-name match, never council or staff "
+                    "(deterministic, no AI; --target is a meeting id).",
+        run=run_participation_person_links, when="post_ingest", scope="meeting", version=PARTICIPATION_LINKS_VERSION,
+        depends_on=("participation-from-minutes", "participation-names"), stale=stale_participation_links,
     ),
     Stage(
         name="motion-headlines",

@@ -16,7 +16,9 @@ export function applyNameDecision(participation: Participation | null | undefine
     const who = (shown?.trim() || "A resident") + suffix;
     if (who === speaker.who) return speaker;
     changed = true;
-    return { ...speaker, who };
+    // A renamed speaker's profile link no longer holds; the pipeline re-derives it.
+    const { person_id: _stale, ...rest } = speaker;
+    return { ...rest, who };
   });
   return { participation: changed ? { ...participation, speakers } : participation, changed };
 }

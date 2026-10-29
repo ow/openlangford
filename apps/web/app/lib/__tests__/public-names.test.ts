@@ -22,6 +22,12 @@ describe("applyNameDecision", () => {
     expect(next?.speakers?.[1].who).toBe("A resident");
   });
 
+  it("drops a profile link when the shown name changes", () => {
+    const linked = { speakers: [{ who: "Holly Adams", name_ref: "holly adams", person_id: 7 }] };
+    const { participation: next } = applyNameDecision(linked, "holly adams", null);
+    expect(next?.speakers?.[0]).toEqual({ who: "A resident", name_ref: "holly adams" });
+  });
+
   it("reports no change when nothing matches", () => {
     expect(applyNameDecision(participation, "nobody", "X").changed).toBe(false);
     expect(applyNameDecision(null, "x", "y").changed).toBe(false);
