@@ -181,8 +181,8 @@ export async function loader({ request }: { request: Request }) {
     speakerMapping = (meetingMeta?.meta as any)?.speaker_mapping || {};
   }
 
-  // Load existing voice fingerprints for people
-  const { data: fingerprints } = await serverClient
+  // Load existing voice fingerprints for people (service role only: voice embeddings are private)
+  const { data: fingerprints } = await getSupabaseAdminClient()
     .from("voice_fingerprints")
     .select("id, person_id");
 

@@ -24,41 +24,19 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const supabaseAdmin = getSupabaseAdminClient();
 
   try {
-    // 1. Fetch current meta and video_url
-    const { data: meeting, error: fetchError } = await supabaseAdmin
-      .from("meetings")
-      .select("meta, video_url")
-      .eq("id", meetingId)
-      .single();
-
-    if (fetchError || !meeting) {
+    // One atomic UPDATE (jsonb merge) so concurrent meta writes from the pipeline aren't lost.
+    const { data: rows, error: rpcError } = await supabaseAdmin.rpc("invalidate_meeting_vimeo_cache", {
+      p_meeting_id: meetingId,
+    });
+    if (rpcError) throw rpcError;
+    const meeting = (rows as { video_url: string | null }[] | null)?.[0];
+    if (!meeting) {
       return data({ error: "Meeting not found" }, { status: 404 });
     }
 
-    // 2. Clear in-memory cache if video_url exists
+    // Clear this isolate's in-memory cache too.
     if (meeting.video_url) {
       clearVimeoCache(meeting.video_url);
-    }
-
-    const meta = (meeting.meta as any) || {};
-
-    // 3. Clear vimeo cache keys in DB
-    const newMeta = {
-      ...meta,
-      vimeo_direct_url: null,
-      vimeo_direct_audio_url: null,
-      vimeo_direct_url_updated_at: null,
-      vimeo_cache_invalidated_at: new Date().toISOString(),
-    };
-
-    // 4. Update DB
-    const { error: updateError } = await supabaseAdmin
-      .from("meetings")
-      .update({ meta: newMeta })
-      .eq("id", meetingId);
-
-    if (updateError) {
-      throw updateError;
     }
 
     console.log(`[Video Failure] Invalidated cache for meeting ${meetingId}`);

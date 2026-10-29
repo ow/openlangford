@@ -67,7 +67,7 @@ it.each([
   ["/admin-pipeline?page=2&q=parks", "/admin/pipeline?page=2&q=parks"],
   ["/admin-matters", "/admin/matters"],
 ])("recovers the registered legacy destination %s for an explicitly allowlisted admin", async (path, expected) => {
-  mocks.user.mockResolvedValue({ data: { user: { id: "admin", email: "ADMIN@example.com" } } });
+  mocks.user.mockResolvedValue({ data: { user: { id: "admin", email: "ADMIN@example.com", email_confirmed_at: "2026-01-01T00:00:00Z" } } });
   const response = await handler.query(new Request(`https://openlangford.ca${path}`)) as Response;
   expect(response.status).toBe(302);
   expect(response.headers.get("Location")).toBe(expected);
@@ -76,8 +76,15 @@ it.each([
 });
 
 it("opens the registered admin directory for an existing admin without running any processing", async () => {
-  mocks.user.mockResolvedValue({ data: { user: { id: "admin", email: "admin@example.com" } } });
+  mocks.user.mockResolvedValue({ data: { user: { id: "admin", email: "admin@example.com", email_confirmed_at: "2026-01-01T00:00:00Z" } } });
   const page = await handler.query(new Request("https://openlangford.ca/admin"));
   expect((page as any).statusCode).toBe(200);
+  expect(mocks.adminClient).not.toHaveBeenCalled();
+});
+
+it("denies an allowlisted email that has not been confirmed", async () => {
+  mocks.user.mockResolvedValue({ data: { user: { id: "admin", email: "admin@example.com", email_confirmed_at: null } } });
+  const result = await handler.query(new Request("https://openlangford.ca/admin/contact"));
+  expect((result as any).statusCode).toBe(403);
   expect(mocks.adminClient).not.toHaveBeenCalled();
 });

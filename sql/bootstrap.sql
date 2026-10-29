@@ -1225,7 +1225,7 @@ CREATE POLICY "Allow public read-only access on motions" ON motions FOR SELECT T
 CREATE POLICY "Allow public read-only access on votes" ON votes FOR SELECT TO public USING (true);
 CREATE POLICY "Allow public read-only access on transcript_segments" ON transcript_segments FOR SELECT TO public USING (true);
 CREATE POLICY "Allow public read-only access on meeting_speaker_aliases" ON meeting_speaker_aliases FOR SELECT TO public USING (true);
-CREATE POLICY "Allow public read-only access on voice_fingerprints" ON voice_fingerprints FOR SELECT TO public USING (true);
+-- voice_fingerprints: no public read; voice embeddings are service-role only.
 CREATE POLICY "Enable service role access on voice_fingerprints" ON voice_fingerprints FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
 CREATE POLICY "Allow public read-only access on meeting_events" ON meeting_events FOR SELECT TO public USING (true);
 CREATE POLICY "Allow public read-only access on bylaws" ON bylaws FOR SELECT TO public USING (true);

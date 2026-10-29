@@ -107,16 +107,29 @@ describe("/api/report-video-failure", () => {
     expect(mocks.adminClient).not.toHaveBeenCalled();
   });
 
-  it("returns 404 for a meeting that does not exist and writes nothing", async () => {
-    const update = vi.fn();
-    mocks.adminClient.mockImplementation(() => ({
-      from: () => ({
-        select: () => ({ eq: () => ({ single: async () => ({ data: null, error: { message: "none" } }) }) }),
-        update,
-      }),
-    }));
+  it("returns 404 for a meeting that does not exist", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: [], error: null });
+    const from = vi.fn();
+    mocks.adminClient.mockImplementation(() => ({ rpc, from }));
     expect(status(await failureReq("999999"))).toBe(404);
-    expect(update).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledWith("invalidate_meeting_vimeo_cache", { p_meeting_id: 999999 });
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it("invalidates in one atomic call without reading or rewriting the whole meta object", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: [{ video_url: "https://vimeo.com/1" }], error: null });
+    const from = vi.fn();
+    mocks.adminClient.mockImplementation(() => ({ rpc, from }));
+    const res = await failureReq("42");
+    expect(res.data).toEqual({ success: true });
+    expect(rpc).toHaveBeenCalledWith("invalidate_meeting_vimeo_cache", { p_meeting_id: 42 });
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it("returns a generic 500 when the database call fails", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mocks.adminClient.mockImplementation(() => ({ rpc: vi.fn().mockResolvedValue({ data: null, error: { message: "x" } }) }));
+    expect(status(await failureReq("42"))).toBe(500);
   });
 
   it("rate limits per IP", async () => {

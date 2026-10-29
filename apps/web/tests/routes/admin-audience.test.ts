@@ -75,7 +75,7 @@ const account = {
 };
 function adminSession() {
   mocks.currentUser.mockResolvedValue({
-    data: { user: { id, email: "ADMIN@example.test" } },
+    data: { user: { id, email: "ADMIN@example.test", email_confirmed_at: "2026-01-01T00:00:00Z" } },
   });
 }
 beforeEach(() => {

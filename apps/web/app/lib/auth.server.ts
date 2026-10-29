@@ -20,6 +20,11 @@ export function isAdminEmail(email?: string | null) {
   return email ? adminEmails.includes(email.toLowerCase()) : false;
 }
 
+/** Admin = allowlisted email that the user has confirmed (Supabase sets email_confirmed_at). */
+export function isAdminUser(user?: { email?: string | null; email_confirmed_at?: string | null } | null) {
+  return !!user?.email_confirmed_at && isAdminEmail(user.email);
+}
+
 // 1. Helper to check if user is authenticated
 export async function isAuthenticated(request: Request) {
   const { supabase } = createSupabaseServerClient(request);
@@ -47,7 +52,7 @@ export async function requireAuth(request: Request) {
 export async function requireAdmin(request: Request) {
   const user = await requireAuth(request);
 
-  if (!isAdminEmail(user.email)) {
+  if (!isAdminUser(user)) {
     throw new Response("Admin access is not enabled for this account.", {
       status: 403,
       statusText: "Forbidden",

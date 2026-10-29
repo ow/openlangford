@@ -33,7 +33,7 @@ import "./app.css";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { PostHogProvider } from "./components/posthog-provider";
-import { isAdminEmail } from "./lib/auth.server";
+import { isAdminUser } from "./lib/auth.server";
 
 export const meta: Route.MetaFunction = ({ matches, error }) => {
   // Error pages (404s, 503s) are never indexed.
@@ -127,7 +127,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   return {
     user,
     municipality,
-    isAdmin: !!user && isAdminEmail(user.email),
+    isAdmin: isAdminUser(user),
     signupsEnabled: publicSignupsEnabled(),
     emailAlertsAvailable: emailAlertsAvailable(),
     aiSearchAvailable: searchBudget.available,

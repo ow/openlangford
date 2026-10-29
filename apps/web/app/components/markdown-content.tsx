@@ -1,18 +1,48 @@
 import { marked, Renderer } from "marked";
 import { cn } from "../lib/utils";
 
+function escapeHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+/**
+ * Raw HTML in document text is shown as text, except bare <br> (used for line breaks inside
+ * extracted table cells). Defence in depth: the text comes from City PDFs, not users.
+ */
+export function safeRawHtml(text: string) {
+  return escapeHtml(text).replace(/&lt;br\s*\/?&gt;/gi, "<br>");
+}
+
+/** Allow relative URLs and http(s)/mailto/tel only; anything else (javascript:, data:, …) is dropped. */
+export function isSafeUrl(href: string) {
+  const normalized = href.replace(/[\u0000-\u0020\u007f-\u009f]/g, "").toLowerCase();
+  const scheme = /^([a-z][a-z0-9+.-]*):/.exec(normalized)?.[1];
+  return !scheme || ["http", "https", "mailto", "tel"].includes(scheme);
+}
+
 // Configure marked for GFM with custom table renderer
 const defaultRenderer = new Renderer();
 marked.use({
   gfm: true,
   breaks: false,
+  walkTokens(token) {
+    if ((token.type === "link" || token.type === "image") && !isSafeUrl(token.href)) token.href = "#";
+  },
   renderer: {
+    html({ text }) {
+      return safeRawHtml(text);
+    },
     table(...args: Parameters<typeof defaultRenderer.table>) {
       const html = defaultRenderer.table.apply(this, args);
       return `<div class="table-scroll-container overflow-x-auto -mx-2 px-2 my-4">${html}</div>`;
     },
   },
 });
+
+/** Markdown to HTML with raw HTML escaped and unsafe link schemes removed. */
+export function renderMarkdown(content: string) {
+  return marked.parse(content, { async: false }) as string;
+}
 
 interface MarkdownContentProps {
   content: string;
@@ -25,7 +55,7 @@ interface MarkdownContentProps {
  * react-markdown hydration mismatches between server and client.
  */
 export function MarkdownContent({ content, className }: MarkdownContentProps) {
-  const html = marked.parse(content, { async: false }) as string;
+  const html = renderMarkdown(content);
 
   return (
     <div

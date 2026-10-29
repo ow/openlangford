@@ -43,7 +43,7 @@ it("rejects signed-in non-admin users before any AI or database work", async () 
 });
 
 it("lets an allowlisted admin through to privileged work", async () => {
-  mocks.user.mockResolvedValue({ data: { user: { id: "a", email: "admin@example.com" } } });
+  mocks.user.mockResolvedValue({ data: { user: { id: "a", email: "admin@example.com", email_confirmed_at: "2026-01-01T00:00:00Z" } } });
   await expect(call()).rejects.toThrow("Unexpected privileged database access");
   expect(mocks.adminClient).toHaveBeenCalled();
 });
