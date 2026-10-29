@@ -2,6 +2,7 @@ import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { matterPath, meetingPath } from "../lib/paths";
 import { personPath } from "../lib/people-paths";
 import { matterTitle } from "../lib/display-text";
+import { matterQuickScore } from "../lib/matter-rank";
 
 /**
  * Instant "jump to" matches for the search box and ⌘K palette: people,
@@ -75,8 +76,8 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
     supabase.from("people").select("id, name, slug, is_councillor").ilike("name", like).limit(10),
     supabase
       .from("matters")
-      .select("id, slug, title, category, status, last_seen, meta")
-      .or(`title.ilike.${like},meta->>display_title.ilike.${like}`)
+      .select("id, slug, title, identifier, category, status, last_seen, meta")
+      .or(`title.ilike.${like},meta->>display_title.ilike.${like},identifier.ilike.${like}`)
       .is("meta->>canonical_matter_id", null)
       .is("meta->>hidden", null)
       .order("last_seen", { ascending: false, nullsFirst: false })
@@ -187,16 +188,15 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
   for (const m of matters.data || []) {
     if (seenMatters.has(m.id)) continue;
     seenMatters.add(m.id);
-    const t = (m.meta?.display_title || m.title).toLowerCase();
-    const s = t === q ? 90 : t.startsWith(q) ? 70 : 55;
+    const { score, exact } = matterQuickScore(m, q);
     matches.push({
       type: "matter",
       id: m.id,
       title: matterTitle(m),
-      subtitle: [m.category, m.status !== "Active" ? m.status : null].filter(Boolean).join(" · "),
+      subtitle: [m.identifier, m.category, m.status !== "Active" ? m.status : null].filter(Boolean).join(" · "),
       href: matterPath(m),
-      score: s,
-      exact: s >= 90,
+      score,
+      exact,
     });
   }
 

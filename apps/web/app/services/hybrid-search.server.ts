@@ -11,6 +11,7 @@
 
 import { embedQuery } from "./ai/index.server";
 import { attachSourceSlugs } from "./source-slugs.server";
+import { identifierMatches, matterRecencyBoost, matterStatusBoost } from "../lib/matter-rank";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 
 // ---------------------------------------------------------------------------
@@ -247,6 +248,9 @@ async function searchMatters(
       if ((matter.plain_english_summary || matter.description || "").toLowerCase().includes(lower)) {
         rankScore += 0.03;
       }
+      // An exact policy/bylaw number wins; then in-force and recent matters beat repealed or old ones.
+      if (identifierMatches(matter.identifier, lower)) rankScore += 0.1;
+      rankScore += (matterStatusBoost(matter.status) + matterRecencyBoost(matter.last_seen)) * 0.004;
 
       const aliasPreview = aliases.length > 0 ? `Aliases: ${aliases.slice(0, 5).join(", ")}` : "";
       return {

@@ -22,6 +22,7 @@ export default [
   route("properties/:slug", "routes/property-detail.tsx"),
   route("bylaws", "routes/bylaws.tsx"),
   route("bylaws/:id", "routes/bylaw-detail.tsx"),
+  route("policies", "routes/policies.tsx"),
   route("elections", "routes/elections.tsx"),
   route("elections/:id", "routes/election-detail.tsx"),
   route("search", "routes/search.tsx"),
