@@ -1,7 +1,7 @@
 # Meetings stored one day late (eSCRIBE epoch) - investigation and proposed fix
 
 Status: read-only investigation, no production writes. Nothing here has been applied.
-Run date 2026-10-25. Files: `correct_meeting_dates.py` (dry run by default), `plan.json` (the dry-run plan). Owner decision: correct dates AND rename slugs, with old-slug redirects (migration `supabase/migrations/47-26-meeting-slug-history.sql`, applied to production; `resolveSlugParam`, the markdown routes and the meeting API fall back to `meeting_slug_history`).
+Run date 2026-10-25. Files: `correct_meeting_dates.py` (dry run by default), `plan.json` (the dry-run plan). Owner decision: correct dates AND rename slugs, with old-slug redirects (migration `supabase/migrations/20261025233709_47_26_meeting_slug_history.sql`, applied to production; `resolveSlugParam`, the markdown routes and the meeting API fall back to `meeting_slug_history`).
 
 ## Root cause
 

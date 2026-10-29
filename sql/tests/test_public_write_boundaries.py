@@ -4,7 +4,7 @@ from postgres_case import PostgresCase
 
 ROOT = Path(__file__).resolve().parents[2]
 MIGRATIONS = ROOT / 'supabase/migrations'
-MIGRATION = MIGRATIONS / '47-19-public-write-boundaries.sql'
+MIGRATION = MIGRATIONS / '20261022053745_47_19_public_write_boundaries.sql'
 A = '00000000-0000-0000-0000-000000000001'
 B = '00000000-0000-0000-0000-000000000002'
 
@@ -26,9 +26,9 @@ class PublicWriteBoundaries(PostgresCase):
           INSERT INTO municipalities VALUES(1);
           CREATE TABLE user_profiles(id uuid PRIMARY KEY,location_lng double precision,location_lat double precision);
         """)
-        migration=(MIGRATIONS/'42-01-pipeline-ops-console.sql').read_text()
+        migration=(MIGRATIONS/'20260527155703_42_01_pipeline_ops_console.sql').read_text()
         self.sql(migration[migration.index('CREATE TABLE IF NOT EXISTS pipeline_jobs'):migration.index('DROP TRIGGER IF EXISTS set_timestamp_pipeline_jobs')])
-        self.sql((MIGRATIONS/'create_search_results_cache.sql').read_text())
+        self.sql((MIGRATIONS/'20260218030321_create_search_results_cache.sql').read_text())
         for t in ['pipeline_jobs','user_profiles','search_results_cache']:
             self.sql(f'ALTER TABLE {t} ENABLE ROW LEVEL SECURITY; GRANT ALL ON {t} TO anon,authenticated,service_role;')
         self.sql('GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon,authenticated,service_role;')
@@ -40,9 +40,9 @@ class PublicWriteBoundaries(PostgresCase):
           CREATE POLICY profile_service ON user_profiles FOR ALL USING (auth.role()='service_role') WITH CHECK (auth.role()='service_role');
           CREATE POLICY job_service ON pipeline_jobs FOR ALL USING (auth.role()='service_role') WITH CHECK (auth.role()='service_role');
         """)
-        profile_migration=(MIGRATIONS/'43-01-auth-profiles-subscriptions.sql').read_text()
+        profile_migration=(MIGRATIONS/'20260527155704_43_01_auth_profiles_subscriptions.sql').read_text()
         self.sql(profile_migration[profile_migration.index('CREATE OR REPLACE FUNCTION update_user_location'):])
-        self.sql((MIGRATIONS/'45-03-worker-job-type-and-source-lock.sql').read_text())
+        self.sql((MIGRATIONS/'20260527155708_45_03_worker_job_type_and_source_lock.sql').read_text())
         self.sql("""
           GRANT EXECUTE ON FUNCTION update_user_location(uuid,double precision,double precision) TO PUBLIC,anon,authenticated,service_role;
           GRANT EXECUTE ON FUNCTION claim_next_pipeline_job(text,text[]) TO PUBLIC,anon,authenticated,service_role;

@@ -1,5 +1,5 @@
 -- MANUAL PROPOSAL ONLY: do not apply as part of deploying the web app.
--- Apply 47-14-inauguration-meeting-type.sql and COMMIT it first.
+-- Apply 20261020150531_47_14_inauguration_meeting_type.sql and COMMIT it first.
 -- Source: https://langford.ca/election-2026/ (Key Election Dates).
 -- Scope: one Langford council event on November 2, 2026. Preserve any existing
 -- id/slug/links/content. Never inserts a missing event.

@@ -180,6 +180,6 @@
   },
   "result": "PASS",
   "scope": "Read-only live verification after approved direct SQL correction. No production DML probes.",
-  "migration": "supabase/migrations/47-18-municipalities-public-read-only.sql",
+  "migration": "supabase/migrations/20261022053126_47_18_municipalities_public_read_only.sql",
   "tracking_note": "Applied 2026-10-22T05:27:25Z using direct administrative SQL; no CLI history entry. Repository migration adds safe policy recreation for replay with the same final permissions."
 }

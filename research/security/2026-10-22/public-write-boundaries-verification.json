@@ -212,7 +212,7 @@
     "service_role": "Backend profile/job/review reads available"
   },
   "applied_at": "2026-10-22T05:36:15.211266+00:00",
-  "migration": "supabase/migrations/47-19-public-write-boundaries.sql",
+  "migration": "supabase/migrations/20261022053745_47_19_public_write_boundaries.sql",
   "sha256": "fd4bdf87b7b801c3cafd20e162af9f4736e37025d86f551c550fad923b413d93",
   "tracking_note": "Owner-approved direct SQL correction; no CLI migration-history entry. Migration is safe to replay.",
   "local_validation": {

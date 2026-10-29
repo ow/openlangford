@@ -48,7 +48,7 @@ describe.skipIf(!container)("Postgres attendance aggregation parity and transfer
       CREATE TABLE attendance(id bigint, meeting_id bigint, person_id bigint, attendance_mode text, notes text);
       INSERT INTO organizations VALUES(10,1,'Council'),(20,2,'Council');
       GRANT SELECT ON ALL TABLES IN SCHEMA public TO service_role;`);
-    const migration = readFileSync(new URL("../../../../supabase/migrations/47-17-council-attendance-summaries.sql", import.meta.url), "utf8");
+    const migration = readFileSync(new URL("../../../../supabase/migrations/20261021041012_47_17_council_attendance_summaries.sql", import.meta.url), "utf8");
     sql(migration); sql(migration); // Applying the additive definition twice is safe.
     const old = add("2016-01-01"), gap = add("2022-05-01"), start = add("2022-11-07"), current = add("2026-01-01"), missing = add("2026-02-01");
     add("2026-03-01", { status: "Cancelled" }); add("2026-03-02", { status: "cAnCeLeD" }); add("2026-11-02");

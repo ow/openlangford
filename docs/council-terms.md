@@ -17,7 +17,7 @@ separate periods of service must not be merged into continuous tenure.
 
 ## Langford 2026 transition
 
-Migration `46-01-council-terms-and-langford-2026-election.sql` records:
+Migration `20261019011039_46_01_council_terms_and_langford_2026_election.sql` records:
 
 - 2022 term: November 7, 2022 through November 1, 2026.
 - Incoming term: scheduled to begin November 2, 2026; end date unknown.

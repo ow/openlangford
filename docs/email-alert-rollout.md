@@ -8,8 +8,8 @@ The owner test identity is consequently opted out until it explicitly opts in ag
 The correct Resend account/domain was verified in the owner's Safari session.
 No Auth SMTP changes or Auth-email delivery proof are implied.
 
-PR46 is merged and deployed. Migrations `47-20-application-email-ledger.sql` and
-`47-21-per-meeting-email-alerts.sql` are applied. Sender and signed-event functions,
+PR46 is merged and deployed. Migrations `20261025052302_47_20_application_email_ledger.sql` and
+`20261025081711_47_21_per_meeting_email_alerts.sql` are applied. Sender and signed-event functions,
 the six-event webhook and their Supabase secrets exist. Public signups remain on;
 `EMAIL_ALERTS_AVAILABLE=false`, `EMAIL_ALERT_DISPATCH_ENABLED=false`, and Edge
 `ALERT_DELIVERY_MODE=off`. There are no pending/live email records from the test.
@@ -21,7 +21,7 @@ enqueue if its HTTP call failed. The pipeline now records only that explicit
 meeting's intent in a local SQLite outbox before any HTTP call. The embedding pass
 drains it after embedding generation; the existing pipeline worker also drains
 one due intent each polling loop, including when no pipeline job is queued.
-SQL migration `47-22-email-enqueue-readiness.sql` replaces only the existing
+SQL migration `20261025160430_47_22_email_enqueue_readiness.sql` replaces only the existing
 service-only enqueue RPC. It raises a retryable readiness error while agenda items with title, summary,
 debate or matching linked/timed transcript text lack embeddings, before any
 subscriber match/email insertion.

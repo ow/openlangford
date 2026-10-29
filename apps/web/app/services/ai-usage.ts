@@ -5,7 +5,7 @@
  */
 import { estimateCostUsd } from "./ai/pricing";
 
-/** One row of `ai_usage_summary(since)` (supabase/migrations/47-11-ai-usage.sql). */
+/** One row of `ai_usage_summary(since)` (supabase/migrations/20261019163911_47_11_ai_usage.sql). */
 export interface AiUsageSummaryRow {
   source: string;
   stage: string;

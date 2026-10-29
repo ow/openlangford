@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from postgres_case import PostgresCase
 
-MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/47-15-calendar-sync.sql'
+MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261020161233_47_15_calendar_sync.sql'
 
 
 class CalendarSync(PostgresCase):
@@ -30,7 +30,7 @@ class CalendarSync(PostgresCase):
           INSERT INTO organizations(name,municipality_id,classification) VALUES('Council',1,'Council');
         """)
         self.sql(MIGRATION.read_text())
-        self.sql((MIGRATION.parent / "47-16-calendar-document-reconciliation.sql").read_text())
+        self.sql((MIGRATION.parent / "20261020162205_47_16_calendar_document_reconciliation.sql").read_text())
         self.date = self.sql("SELECT ((now() AT TIME ZONE 'America/Vancouver')::date+7)::text")[0]
         self.event = dict(source_type='official_schedule', source_id='reviewed-entry', meeting_date=self.date,
                           title='Regular Council', type='Regular Council', organization_name='Council',

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from postgres_case import PostgresCase
 
-MIGRATION = Path(__file__).resolve().parents[2] / "supabase/migrations/47-18-municipalities-public-read-only.sql"
+MIGRATION = Path(__file__).resolve().parents[2] / "supabase/migrations/20261022053126_47_18_municipalities_public_read_only.sql"
 
 
 class MunicipalitiesSecurity(PostgresCase):

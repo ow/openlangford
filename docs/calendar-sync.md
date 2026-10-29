@@ -49,7 +49,7 @@ analysis/transcription remains separate and is not queued by calendar Cron.
 
 ## Operator verification
 
-Apply migrations `47-15-calendar-sync.sql` and `47-16-calendar-document-reconciliation.sql` before deploying calendar import/reconciliation.
+Apply migrations `20261020161233_47_15_calendar_sync.sql` and `20261020162205_47_16_calendar_document_reconciliation.sql` before deploying calendar import/reconciliation.
 Run a dry run from `apps/web`:
 
 ```sh

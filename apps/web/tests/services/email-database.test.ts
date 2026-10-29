@@ -40,12 +40,12 @@ beforeAll(async () => {
   db = new PGlite({ extensions: { vector } });
   await db.exec(text("../fixtures/email-schema.sql"));
   await db.exec(
-    text("../../../../supabase/migrations/47-20-application-email-ledger.sql"),
+    text("../../../../supabase/migrations/20261025052302_47_20_application_email_ledger.sql"),
   );
   await db.exec(
-    text("../../../../supabase/migrations/47-21-per-meeting-email-alerts.sql"),
+    text("../../../../supabase/migrations/20261025081711_47_21_per_meeting_email_alerts.sql"),
   );
-  await db.exec(text("../../../../supabase/migrations/47-22-email-enqueue-readiness.sql"));
+  await db.exec(text("../../../../supabase/migrations/20261025160430_47_22_email_enqueue_readiness.sql"));
 }, 30000);
 afterAll(async () => {
   await db?.close();
@@ -81,7 +81,7 @@ it("preserves completed explicit per-meeting digest choices without inventing a 
   );
   await db.exec(
     text(
-      "../../../../supabase/migrations/47-21-per-meeting-email-alerts.sql",
+      "../../../../supabase/migrations/20261025081711_47_21_per_meeting_email_alerts.sql",
     ).replace(/^BEGIN;|^COMMIT;/gm, ""),
   );
   const profile = (

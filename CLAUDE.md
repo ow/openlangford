@@ -100,6 +100,7 @@ The `vite.config.ts` `define` block inlines all env vars at build time since `pr
 - `agenda_items.neighborhood` exists in the live database (verified October 18, 2026); its values may be null.
 - Always verify columns exist in the actual database before adding them to `.select()` strings — TypeScript types in `app/lib/types.ts` can be aspirational/ahead of the schema.
 - Schema is bootstrapped from `sql/bootstrap.sql`. Uses pgvector extension for embeddings.
+- Migrations live in `supabase/migrations/` as `<UTC timestamp>_<name>.sql` (create with `npx supabase migration new <name>`). Merging to main applies new ones to production via `.github/workflows/supabase-migrations.yml` (`supabase db push`, recorded in `supabase_migrations.schema_migrations`), so a migration must be safe to run against live data the moment it merges. Never apply migrations by hand anymore; never rename an applied migration file.
 
 ## Known Issues
 

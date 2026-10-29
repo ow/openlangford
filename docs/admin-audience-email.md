@@ -21,7 +21,7 @@ address, and a saved preference is not proof of delivery readiness.
 
 ## Proposed database migration — not applied
 
-`supabase/migrations/47-20-application-email-ledger.sql` creates only:
+`supabase/migrations/20261025052302_47_20_application_email_ledger.sql` creates only:
 
 - `public.email_messages`: one application alert, recipient/subject/type, unique
   deduplication key, status/provider ID, attempt count, transition timestamps,

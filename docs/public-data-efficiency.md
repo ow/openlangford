@@ -86,7 +86,7 @@ usage attribution still requires the Supabase usage dashboard. Search, admin, ro
 
 ## Database prerequisite (approval required before application)
 
-Apply `supabase/migrations/47-17-council-attendance-summaries.sql` to the existing
+Apply `supabase/migrations/20261021041012_47_17_council_attendance_summaries.sql` to the existing
 production Supabase project **before merging/deploying its Worker caller**.
 It transactionally defines three evidence helpers and one read-only aggregate RPC,
 revokes public/anon/authenticated execution, grants execution only to the existing

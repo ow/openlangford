@@ -35,7 +35,7 @@ class InaugurationCorrection(PostgresCase):
           INSERT INTO municipalities VALUES (1, 'langford'), (2, 'other');
           INSERT INTO organizations VALUES (1, 1, 'Council', 'Council');
         """)
-        self.sql((ROOT / "supabase/migrations/47-14-inauguration-meeting-type.sql").read_text())
+        self.sql((ROOT / "supabase/migrations/20261020150531_47_14_inauguration_meeting_type.sql").read_text())
 
     def placeholder(self, extra=""):
         self.sql("""INSERT INTO meetings(municipality_id, organization_id, title, slug,
