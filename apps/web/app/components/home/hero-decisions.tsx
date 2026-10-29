@@ -45,7 +45,7 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
   return (
     <>
       <div className="light-scope relative overflow-hidden bg-gradient-to-b from-brand-600 to-brand-800 text-white">
-        <div className="relative container mx-auto max-w-6xl px-4 pt-12 pb-28 md:pt-16">
+        <div className="relative container mx-auto max-w-6xl px-4 pt-12 pb-14 md:pt-16 md:pb-16">
           <h1 className="text-sm font-semibold text-brand-200">What's happening in {shortName}</h1>
           <p className="mt-2 max-w-3xl text-3xl md:text-5xl font-extrabold leading-[1.05] tracking-tight">
             What council decided lately
@@ -77,7 +77,7 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
           </ol>
 
           {upcoming.length > 0 && (
-            <div className="mt-14 flex items-baseline justify-between gap-4">
+            <div className="mt-10 flex items-baseline justify-between gap-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-brand-200">Coming up</p>
               <Link to="/meetings" className="text-sm font-semibold text-brand-100 hover:text-white">
                 Full calendar
@@ -88,15 +88,16 @@ export function HeroDecisions({ shortName, decisions, upcoming }: HeroDecisionsP
       </div>
 
       {upcoming.length > 0 && (
-        // Top of the strip overlaps the teal; the rest blends into the white section below.
-        <div className="relative z-10 -mt-24 bg-[linear-gradient(to_bottom,transparent_6rem,var(--color-surface)_6rem)]">
+        // Cards straddle the hero edge: the top band (-mt-10/-mt-12, matching the
+        // transparent part of the gradient) sits on the teal, the rest on the page surface.
+        <div className="relative z-10 -mt-10 pb-4 bg-[linear-gradient(to_bottom,transparent_2.5rem,var(--color-surface)_2.5rem)] md:-mt-12 md:bg-[linear-gradient(to_bottom,transparent_3rem,var(--color-surface)_3rem)]">
           <div className="container mx-auto max-w-6xl px-4">
           <ol className="grid gap-3 md:grid-cols-3 md:gap-6 lg:gap-8">
             {upcoming.slice(0, 3).map((m, i) => (
               <li key={m.id}>
                 <Link
                   to={meetingPath(m)}
-                  className="group flex h-full items-center gap-4 rounded-2xl bg-surface p-4 shadow-lg ring-1 ring-black/5 transition-shadow hover:shadow-xl md:p-5"
+                  className="group flex h-full items-center gap-4 rounded-2xl bg-surface p-4 shadow-lg ring-1 ring-zinc-200 transition-shadow hover:shadow-xl md:p-5"
                 >
                   <span className="flex w-14 shrink-0 flex-col items-center rounded-xl bg-brand-50 py-2 text-brand-800">
                     <span className="text-[11px] font-bold uppercase tracking-wide">
