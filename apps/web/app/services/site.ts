@@ -32,14 +32,21 @@ function getCachedPublicValue<T>(cache: Map<string, { data: T; expires: number }
   return undefined;
 }
 
+/** The municipality's RSS notices: an external fetch (up to 3s), shared at the edge for half an hour. */
 export async function getPublicNotices(rssUrl?: string): Promise<PublicNotice[]> {
   if (!rssUrl) return [];
   const cached = noticesCache.get(rssUrl);
   if (cached && cached.expires > Date.now()) return cached.items;
+  const result = await publicData(`notices:${rssUrl}`, () => fetchPublicNotices(rssUrl), (value) => value.ok, 1800, { shareWithSignedIn: true });
+  if (result.ok) noticesCache.set(rssUrl, { items: result.items, expires: Date.now() + 5 * 60_000 });
+  return result.items;
+}
+
+async function fetchPublicNotices(rssUrl: string): Promise<{ items: PublicNotice[]; ok: boolean }> {
   try {
     const response = await fetch(rssUrl, { signal: AbortSignal.timeout(3000) });
 
-    if (!response.ok) return [];
+    if (!response.ok) return { items: [], ok: false };
     const text = await response.text();
 
     // Simple regex-based RSS parsing for the environment
@@ -60,11 +67,10 @@ export async function getPublicNotices(rssUrl?: string): Promise<PublicNotice[]>
       });
     }
 
-    noticesCache.set(rssUrl, { items, expires: Date.now() + 5 * 60_000 });
-    return items;
+    return { items, ok: true };
   } catch (error) {
     console.error("Error fetching public notices:", error);
-    return [];
+    return { items: [], ok: false };
   }
 }
 
@@ -436,6 +442,7 @@ export async function getPublicHomeData(
 ) {
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
   const key = `${municipalityId}:${today}:${JSON.stringify(municipalityMeta ?? null)}`;
-  const result = await publicData(`home:${key}`, () => loadHomeData(getSupabasePublicClient(), municipalityMeta, municipalityId), (value) => value.complete);
+  const result = await publicData(`home:${key}`, () => loadHomeData(getSupabasePublicClient(), municipalityMeta, municipalityId), (value) => value.complete,
+    undefined, { shareWithSignedIn: true });
   return result.data;
 }

@@ -1,11 +1,13 @@
 import { getMunicipality } from "../services/municipality";
 import { cachedCompute, HOURLY_SHARED } from "../services/computed-cache.server";
+import { timed } from "../lib/server-timing.server";
 import { matterPath } from "../lib/paths";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import type { Route } from "./+types/matters";
 import { getMatters } from "../services/matters";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
-import { Link, redirect, useFetcher, useRouteLoaderData, useSearchParams, type ShouldRevalidateFunctionArgs } from "react-router";
+import { DEGRADED_HEADERS, forwardCacheControl } from "../lib/degraded-response";
+import { Link, data as routeData, redirect, useFetcher, useRouteLoaderData, useSearchParams, type ShouldRevalidateFunctionArgs } from "react-router";
 import { pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd } from "../lib/structured-data";
 import type { Municipality } from "../lib/types";
@@ -73,21 +75,23 @@ export async function loader({ request }: Route.LoaderArgs) {
   const requested = rawPage === null ? 1 : Number(rawPage);
   if (!Number.isInteger(requested) || requested < 1) throw redirect("/matters", 301);
   let all: Matter[];
+  let failed = false;
   try {
     const supabase = getSupabaseAdminClient();
     const municipality = await getMunicipality(supabase);
     // Building the list joins every matter's agenda items (~4s); it only changes on ingest.
-    all = ((await cachedCompute(`matters-list:${municipality.id}`, () => getMatters(supabase, municipality), HOURLY_SHARED)) as Matter[])
+    all = ((await timed("matters-list", cachedCompute(`matters-list:${municipality.id}`, () => getMatters(supabase, municipality), HOURLY_SHARED))) as Matter[])
       .filter((m) => !PROCEDURAL_TITLES.has(m.title.toLowerCase()));
   } catch (error) {
     console.error("Error fetching matters:", error);
     all = [];
+    failed = true;
   }
   const pageCount = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
   if (all.length && requested > pageCount) throw new Response("Not Found", { status: 404 });
   const page = Math.min(requested, pageCount);
   const shown = complete ? all : all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  return {
+  const result = {
     // Lead picture picked from the staff reports, as a thumbnail in the list.
     matters: shown.map((m: any) => ({ ...m, image_url: documentImageUrl(m.lead_image_key), lead_image_key: undefined })) as Matter[],
     complete,
@@ -97,7 +101,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     counts: statusCounts(all),
     categories: ["All", ...Array.from(new Set(all.map((m) => m.category || "General"))).sort()],
   };
+  return failed ? routeData(result, { headers: DEGRADED_HEADERS }) : result;
 }
+
+export const headers = forwardCacheControl;
 
 /** Typing in the search box rewrites ?q= on every keystroke; only a page change needs new data. */
 export function shouldRevalidate({ currentUrl, nextUrl, formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {

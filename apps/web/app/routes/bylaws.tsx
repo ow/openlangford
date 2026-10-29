@@ -4,7 +4,8 @@ import type { Route } from "./+types/bylaws";
 import { getBylaws, getPolicies } from "../services/bylaws";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { cachedCompute, HOURLY_SHARED } from "../services/computed-cache.server";
-import { Link, useRouteLoaderData, useSearchParams, type ShouldRevalidateFunctionArgs } from "react-router";
+import { Link, data as routeData, useRouteLoaderData, useSearchParams, type ShouldRevalidateFunctionArgs } from "react-router";
+import { DEGRADED_HEADERS, forwardCacheControl } from "../lib/degraded-response";
 import type { Bylaw, Municipality } from "../lib/types";
 import { Book, Search, FileText, ChevronRight, History } from "lucide-react";
 import { Badge } from "../components/ui/badge";
@@ -48,9 +49,11 @@ export async function loader() {
     );
   } catch (error) {
     console.error("Error fetching bylaws and policies:", error);
-    return { bylaws: [] as Bylaw[], policies: [] as PolicyRow[] };
+    return routeData({ bylaws: [] as Bylaw[], policies: [] as PolicyRow[] }, { headers: DEGRADED_HEADERS });
   }
 }
+
+export const headers = forwardCacheControl;
 
 /** Switching between the Bylaws and Policies tabs (?view=) reuses the data already loaded. */
 export function shouldRevalidate({ currentUrl, nextUrl, formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {

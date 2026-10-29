@@ -8,6 +8,8 @@ declare namespace Cloudflare {
 		API_RATE_LIMITER: RateLimit;
 		SIGNUP_RATE_LIMITER: RateLimit;
 		AI: Ai;
+		/** Global second tier for public data caches; optional so tests/local dev work without it. */
+		PUBLIC_CACHE?: KVNamespace;
 		CF_VERSION_METADATA: { id: string; tag: string; timestamp: string };
 		AI_GATEWAY_ID: "langford-open-a-i";
 		AI_SEARCH_DAILY_LIMIT: "1000";

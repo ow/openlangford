@@ -5,6 +5,7 @@ import { CALENDAR_CRON, syncCalendar } from "../app/services/calendar-sync";
 import { getSupabaseAdminClient } from "../app/lib/supabase.server";
 import { runWithAiRequestContext } from "../app/services/ai/usage-sink.server";
 import { withPublicDataCache } from "../app/services/public-data-cache.server";
+import { timed, withServerTiming } from "../app/lib/server-timing.server";
 import publicContent from "../public-content-version.json";
 
 import { EMAIL_DISPATCH_CRON, dispatchEmailAlerts } from "./email-dispatch";
@@ -26,7 +27,9 @@ const requestHandler = createRequestHandler(
   import.meta.env.MODE
 );
 
-async function handle(request: Request, env: Env, ctx: ExecutionContext, url: URL, version: string | undefined) {
+type CacheVersion = { deploy?: string; stamp?: string };
+
+async function handle(request: Request, env: Env, ctx: ExecutionContext, url: URL, { deploy, stamp }: CacheVersion) {
   // Cover paid generation and embedding-backed keyword search, including the
   // legacy endpoint. The database quota separately enforces the global day cap.
   if (url.pathname === "/api/search" || url.pathname === "/api/ask") {
@@ -46,7 +49,8 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, url: UR
   // Everything else goes to React Router. Accept: text/markdown pages are
   // rendered as HTML through the caches, then converted (Markdown for Agents).
   return negotiateMarkdown(request, (pageRequest) => publicMeetingCache(pageRequest, {
-    version,
+    deploy,
+    stamp,
     posthogKey: env.VITE_POSTHOG_KEY,
   }, ctx, (publicRequest) =>
     requestHandler(publicRequest, { cloudflare: { env, ctx } }),
@@ -63,14 +67,16 @@ export default {
       requestId: request.headers.get("cf-ray") ?? crypto.randomUUID(),
       job: url.pathname,
     };
-    // Deployment + manual content bump + when the database last changed: cached pages and
-    // public data last up to a day but end within about a minute of any change.
+    // Pages are keyed by deployment (+ manual content bump); public data by the manual bump only, so
+    // a deploy keeps warm data. Both carry when the database last changed: newer stamps make entries
+    // stale (served while a fresh copy is computed in the background), so changes show within a minute.
     const deploy = env.CF_VERSION_METADATA?.id ? `${env.CF_VERSION_METADATA.id}:${publicContent.version}` : undefined;
-    const stamp = deploy && request.method === "GET" ? await contentVersion() : null;
-    const version = deploy && stamp ? `${deploy}:${stamp}` : undefined;
-    return runWithAiRequestContext(aiContext, () => withPublicDataCache({
-      request, version, posthogKey: env.VITE_POSTHOG_KEY, waitUntil: ctx.waitUntil.bind(ctx),
-    }, () => handle(request, env, ctx, url, version)));
+    return withServerTiming(async () => {
+      const stamp = deploy && request.method === "GET" ? (await timed("stamp", contentVersion())) ?? undefined : undefined;
+      return runWithAiRequestContext(aiContext, () => withPublicDataCache({
+        request, stamp, namespace: publicContent.version, posthogKey: env.VITE_POSTHOG_KEY, waitUntil: ctx.waitUntil.bind(ctx), kv: env.PUBLIC_CACHE,
+      }, () => handle(request, env, ctx, url, { deploy, stamp })));
+    });
   },
 
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {

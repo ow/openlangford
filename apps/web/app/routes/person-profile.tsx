@@ -1,4 +1,7 @@
 import { getPublicSpeakingTimeStats, getPublicSpeakingTimeByMeeting, getPublicSpeakingTimeByTopic } from "../services/public-speaking.server";
+import { publicData } from "../services/public-data-cache.server";
+import { RECENT_PUBLIC_TTL } from "../lib/public-content-cache";
+import { timed } from "../lib/server-timing.server";
 import { attendanceEvidence, attendanceState, attendanceRateText, attendanceCoverageText } from "../lib/attendance-evidence";
 import { SITE_NAME } from "../lib/site-name";
 import { electionPath, meetingPath } from "../lib/paths";
@@ -115,17 +118,20 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   try {
     const supabase = getSupabaseAdminClient();
-    const municipality = await getMunicipality(supabase);
-    const resolved = await resolvePersonParam(supabase, id, request);
+    const [municipality, resolved] = await timed("person-resolve", Promise.all([
+      getMunicipality(supabase),
+      resolvePersonParam(supabase, id, request),
+    ]));
     const personId = resolved.id;
-    const { data: identity, error: identityError } = await supabase.from("people")
-      .select("*, memberships(*, organization:organizations(*))").eq("id", personId).single();
+    const [{ data: identity, error: identityError }, terms] = await timed("person-identity", Promise.all([
+      supabase.from("people").select("*, memberships(*, organization:organizations(*))").eq("id", personId).single(),
+      getCouncilTerms(supabase, municipality.id),
+    ]));
     if (identityError) throw identityError;
     if (!identity) throw new Response("Person Not Found", { status: 404 });
     if (councilServicePeriods(identity as Person).length === 0) {
       throw redirect(participantPath(identity) + url.search, 302);
     }
-    const terms = await getCouncilTerms(supabase, municipality.id);
     const selectedTermId = url.searchParams.get("term");
     const selectedTerm = selectedTermId ? terms.find((term) => String(term.id) === selectedTermId) : null;
     if (selectedTermId && !selectedTerm) throw new Response("Unknown council term", { status: 400 });
@@ -135,18 +141,31 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const termUnavailable = timeRange === "term" && !currentTerm && !selectedTerm;
     if (timeRange === "term") startDate = currentTerm?.start_date || "9999-12-31";
     if (selectedPeriod) { startDate = selectedPeriod.start; endDate = selectedPeriod.end; }
-    // Profile data is critical; profiling data is optional (graceful degradation)
-    const [data, speakingTimeRanking, speakingTimeTrend, speakingTimeByTopic, stances, highlights, keyVotes] =
-      await Promise.all([
-        getPublicPersonAttendance(municipality.id, personId, selectedTerm?.id).then(summary =>
-          getPersonProfile(supabase, String(personId), page, municipality.id, selectedPeriod, summary)),
-        getPublicSpeakingTimeStats(startDate, endDate, municipality.id).catch((e) => { console.error("Speaking time stats failed:", e); return [] as Awaited<ReturnType<typeof getPublicSpeakingTimeStats>>; }),
-        getPublicSpeakingTimeByMeeting(personId, startDate, endDate, municipality.id).catch((e) => { console.error("Speaking time by meeting failed:", e); return [] as Awaited<ReturnType<typeof getPublicSpeakingTimeByMeeting>>; }),
-        getPublicSpeakingTimeByTopic(personId, startDate, endDate, municipality.id).catch((e) => { console.error("Speaking time by topic failed:", e); return [] as Awaited<ReturnType<typeof getPublicSpeakingTimeByTopic>>; }),
-        getCouncillorStances(supabase, personId).catch((e) => { console.error("Councillor stances failed:", e); return [] as Awaited<ReturnType<typeof getCouncillorStances>>; }),
-        getCouncillorHighlights(supabase, personId).catch((e) => { console.error("Councillor highlights failed:", e); return null as Awaited<ReturnType<typeof getCouncillorHighlights>>; }),
-        getKeyVotes(supabase, personId).catch((e) => { console.error("Key votes failed:", e); return [] as Awaited<ReturnType<typeof getKeyVotes>>; }),
-      ]);
+    // Profile data is critical; profiling data is optional (graceful degradation). Everything here
+    // is public and session-free, so the whole bundle is shared at the edge (keyed by every input,
+    // including today's civic date for the 12-month and term windows); a bundle with a degraded
+    // part is never stored.
+    const { data, speakingTimeRanking, speakingTimeTrend, speakingTimeByTopic, stances, highlights, keyVotes, publicParticipation } =
+      await timed("person-profile", publicData(
+        JSON.stringify(["person-profile-v1", municipality.id, personId, page, timeRange, selectedTerm?.id ?? null, startDate ?? null, endDate ?? null, civicToday()]),
+        async () => {
+          let degraded = false;
+          const optional = <T,>(label: string, fallback: T) => (e: unknown) => { degraded = true; console.error(`${label} failed:`, e); return fallback; };
+          const [data, speakingTimeRanking, speakingTimeTrend, speakingTimeByTopic, stances, highlights, keyVotes, publicParticipation] = await Promise.all([
+            getPublicPersonAttendance(municipality.id, personId, selectedTerm?.id).then(summary =>
+              getPersonProfile(supabase, String(personId), page, municipality.id, selectedPeriod, summary)),
+            getPublicSpeakingTimeStats(startDate, endDate, municipality.id).catch(optional("Speaking time stats", [] as Awaited<ReturnType<typeof getPublicSpeakingTimeStats>>)),
+            getPublicSpeakingTimeByMeeting(personId, startDate, endDate, municipality.id).catch(optional("Speaking time by meeting", [] as Awaited<ReturnType<typeof getPublicSpeakingTimeByMeeting>>)),
+            getPublicSpeakingTimeByTopic(personId, startDate, endDate, municipality.id).catch(optional("Speaking time by topic", [] as Awaited<ReturnType<typeof getPublicSpeakingTimeByTopic>>)),
+            getCouncillorStances(supabase, personId).catch(optional("Councillor stances", [] as Awaited<ReturnType<typeof getCouncillorStances>>)),
+            getCouncillorHighlights(supabase, personId).catch(optional("Councillor highlights", null as Awaited<ReturnType<typeof getCouncillorHighlights>>)),
+            getKeyVotes(supabase, personId).catch(optional("Key votes", [] as Awaited<ReturnType<typeof getKeyVotes>>)),
+            withMeetingSlugs(supabase, getPublicParticipationHistory(personId, municipality.slug)),
+          ]);
+          return { data, speakingTimeRanking, speakingTimeTrend, speakingTimeByTopic, stances, highlights, keyVotes, publicParticipation, degraded };
+        },
+        (bundle) => !bundle.degraded, RECENT_PUBLIC_TTL, { shareWithSignedIn: true },
+      ));
 
     // Find current person's speaking time from the ranking
     const currentPersonSpeaking = speakingTimeRanking.find(
@@ -164,7 +183,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
     return {
       ...data,
-      publicParticipation: await withMeetingSlugs(supabase, getPublicParticipationHistory(personId, municipality.slug)),
+      publicParticipation,
       page,
       speakingTimeRanking,
       speakingTimeTrend,

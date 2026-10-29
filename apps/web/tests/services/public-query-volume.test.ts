@@ -35,6 +35,12 @@ beforeEach(() => {
       expect(limit).toBe(20); // Only the evidence page actually displayed, never all history.
       rows = Array.from({ length: Math.min(limit, 41 - offset) }, (_, i) => ({ id: offset + i + 1, person_id: 1, meeting_id: offset + i + 1,
         attendance_mode: "In Person", notes: "", meetings: { meeting_date: "2026-01-01", title: `Meeting ${offset + i + 1}` } }));
+    } else if (table === "motions" && url.searchParams.get("select") === "meeting_id,result") {
+      // Meeting stats read only the selected meetings' motion results.
+      const ids = url.searchParams.get("meeting_id")!.slice(4, -1).split(",").map(Number);
+      rows = ids.map(id => ({ meeting_id: id, result: "CARRIED" }));
+    } else if (table === "agenda_items" && url.searchParams.get("select") === "meeting_id,category") {
+      rows = [{ meeting_id: 1, category: "Budget" }];
     } else if (table === "agenda_items") {
       // Letter counts: only items with written participation come back.
       rows = [{ meeting_id: 2, written: { documents: [{ extracted_document_id: 1, document_id: 1, letters: [{ who: "A", position: "supports", topic: "t", point: "p" }] }] } }];
@@ -47,6 +53,9 @@ afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 it("transfers only selected meeting stats rather than all municipal history", async () => {
   const result = await getMeetings(client(), { id: 1 } as Municipality, { startDate: "2026-01-01", endDate: "2026-12-31" });
   expect(Object.keys(result.statsMap)).toEqual(["1", "2", "3"]); expect(result.statsMap[1].motion_carried_count).toBe(1);
+  expect(result.statsMap[1].topics).toEqual(["Finance"]); expect(result.statsMap[2].topics).toEqual([]);
+  const paths = origin.mock.calls.map(([input]) => new URL(typeof input === "string" ? input : input.url).pathname);
+  expect(paths.some(path => path.endsWith("get_meetings_with_stats"))).toBe(false); // the whole-history RPC
   expect(result.statsMap[2].letter_count).toBe(1); expect(result.statsMap[1].letter_count).toBeUndefined();
   expect(transferred).toBeLessThan(2000); expect(result.statsComplete).toBe(true);
 });
@@ -60,15 +69,16 @@ it("loads compact SQL attendance summaries without fetching meeting or attendanc
   expect(paths).toHaveLength(4);
 });
 
-it("warm council browsing makes zero Supabase calls, while authenticated requests bypass shared values", async () => {
+it("warm council browsing makes zero Supabase calls, for signed-in visitors too; only an explicit refresh recomputes", async () => {
   const entries = new Map<string, Response>(); const jobs: Promise<unknown>[] = [];
   vi.stubGlobal("caches", { default: { match: async (key: Request) => entries.get(key.url)?.clone(), put: async (key: Request, response: Response) => { entries.set(key.url, new Response(await response.arrayBuffer(), response)); } } });
-  const run = (headers?: HeadersInit) => withPublicDataCache({ version: "test-council-deploy", request: new Request("https://openlangford.ca/people.data?_routes=routes%2Fpeople", { headers }), waitUntil: p => jobs.push(p) }, async () => Response.json(await getPublicCouncilSummary(1)));
+  const run = (headers?: HeadersInit) => withPublicDataCache({ stamp: "1", namespace: "test-council-deploy", request: new Request("https://openlangford.ca/people.data?_routes=routes%2Fpeople", { headers }), waitUntil: p => jobs.push(p) }, async () => Response.json(await getPublicCouncilSummary(1)));
   const cold = await run(); await Promise.all(jobs); const calls = origin.mock.calls.length; const bytes = transferred;
   expect(calls).toBeGreaterThan(0); expect(bytes).toBeLessThan(2000);
   const warm = await run(); expect(await warm.text()).toBe(await cold.text()); expect(warm.headers.get("X-Public-Data-Cache")).toBe("HIT");
   expect(origin).toHaveBeenCalledTimes(calls); expect(transferred).toBe(bytes);
-  await run({ Cookie: "sb-test-auth-token=session" }); expect(origin.mock.calls.length).toBeGreaterThan(calls);
+  expect((await run({ Cookie: "sb-test-auth-token=session" })).headers.get("X-Public-Data-Cache")).toBe("HIT"); expect(origin).toHaveBeenCalledTimes(calls);
+  await run({ Cookie: "sb-test-auth-token=session", "Cache-Control": "no-cache" }); expect(origin.mock.calls.length).toBeGreaterThan(calls);
 });
 it("fails unavailable SQL summaries instead of inventing or caching zero attendance", async () => {
   const normal = origin.getMockImplementation()!;
@@ -82,7 +92,7 @@ it("fails unavailable SQL summaries instead of inventing or caching zero attenda
 it("reuses council totals for comparison and individual all-service/term counts without another origin call", async () => {
   const entries = new Map<string, Response>(); const jobs: Promise<unknown>[] = [];
   vi.stubGlobal("caches", { default: { match: async (key: Request) => entries.get(key.url)?.clone(), put: async (key: Request, response: Response) => { entries.set(key.url, new Response(await response.arrayBuffer(), response)); } } });
-  const run = <T,>(compute: () => Promise<T>) => withPublicDataCache({ version: "cross-surface", request: new Request("https://openlangford.ca/people"), waitUntil: p => jobs.push(p) }, async () => Response.json(await compute()));
+  const run = <T,>(compute: () => Promise<T>) => withPublicDataCache({ stamp: "1", namespace: "cross-surface", request: new Request("https://openlangford.ca/people"), waitUntil: p => jobs.push(p) }, async () => Response.json(await compute()));
   await run(() => getPublicCouncilSummary(1)); await Promise.all(jobs); const calls = origin.mock.calls.length;
   const compare = await (await run(() => getPublicCouncilComparisonPeople(1))).json() as any;
   const all = await (await run(() => getPublicPersonAttendance(1, 1))).json();
@@ -112,7 +122,7 @@ it("does not retain a partial member-term map and recovers immediately when orig
     if (partial && url.pathname.endsWith("council_attendance_summaries")) return Response.json((await response.json() as any[]).filter(row => row.term_key !== "1"));
     return response;
   });
-  const run = () => withPublicDataCache({ version: "partial-recovery", request: new Request("https://openlangford.ca/people"), waitUntil: p => jobs.push(p) }, async () => Response.json(await getPublicPersonAttendance(1, 1, 1)));
+  const run = () => withPublicDataCache({ stamp: "1", namespace: "partial-recovery", request: new Request("https://openlangford.ca/people"), waitUntil: p => jobs.push(p) }, async () => Response.json(await getPublicPersonAttendance(1, 1, 1)));
   await expect(run()).rejects.toThrow("Incomplete council attendance summary"); await Promise.all(jobs);
   partial = false;
   expect((await (await run()).json() as any).total).toBe(3);

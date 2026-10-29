@@ -8,7 +8,8 @@ import { Suspense } from "react";
 import { getPublicHomeData, getPublicNotices } from "../services/site";
 import { publicData } from "../services/public-data-cache.server";
 import { civicToday } from "../lib/council-terms";
-import { getSupabasePublicClient, createSupabaseServerClient } from "../lib/supabase.server";
+import { getSupabasePublicClient } from "../lib/supabase.server";
+import { timed } from "../lib/server-timing.server";
 import { getMunicipality } from "../services/municipality";
 import type { Municipality } from "../lib/types";
 import { IncomingCouncilSection } from "../components/home/incoming-council-section";
@@ -40,7 +41,9 @@ export const meta: Route.MetaFunction = ({ data }) => {
 
 export async function loader({ request }: { request: Request }) {
   try {
-    const { supabase, headers } = createSupabaseServerClient(request);
+    // Session-free apart from the onboarding flash cookie: a request carrying it is never
+    // served from or stored in the shared caches (it fails cache admission).
+    const headers = new Headers();
     const onboardingComplete = await onboardingNotice.parse(request.headers.get("Cookie")) === "complete";
     if (onboardingComplete) {
       headers.append("Set-Cookie", await onboardingNotice.serialize("", { maxAge: 0 }));
@@ -49,14 +52,15 @@ export async function loader({ request }: { request: Request }) {
     // getMunicipality call is intentionally duplicated from root loader.
     // The home loader needs rss_url at server time for getPublicNotices(),
     // and React Router 7 child loaders cannot access parent loader data on the server.
-    const municipality = await getMunicipality(supabase);
+    const municipality = await timed("home-municipality", getMunicipality(getSupabasePublicClient()));
     const [data, publicNotices, incomingCouncil] = await Promise.all([
-      getPublicHomeData(municipality.id, municipality.meta),
-      getPublicNotices(municipality.rss_url),
-      publicData(`incoming-council:${municipality.id}:${civicToday()}`, () => getIncomingCouncil(getSupabasePublicClient(), municipality.id)).catch((error) => {
+      timed("home-data", getPublicHomeData(municipality.id, municipality.meta)),
+      timed("home-notices", getPublicNotices(municipality.rss_url)),
+      timed("home-incoming", publicData(`incoming-council:${municipality.id}:${civicToday()}`, () => getIncomingCouncil(getSupabasePublicClient(), municipality.id),
+        () => true, undefined, { shareWithSignedIn: true }).catch((error) => {
         console.error("Error loading incoming council:", error);
         return null;
-      }),
+      })),
     ]);
 
     return routeData({

@@ -200,12 +200,12 @@ it("counts only matching meetings in the visible calendar month", () => {
 it.each([["2026-01-05T12:00:00Z", 300], ["2026-02-05T12:00:00Z", 86400]] as const)("keeps prior-year data short-lived until every possible meeting is historical at %s", async (date, expectedTTL) => {
   vi.useFakeTimers(); vi.setSystemTime(new Date(date));
   const stored = new Map<string, string>(); const jobs: Promise<unknown>[] = [];
-  vi.stubGlobal("caches", { default: { match: async () => undefined, put: async (key: Request, response: Response) => { stored.set(key.url, response.headers.get("Cache-Control")!); } } });
+  vi.stubGlobal("caches", { default: { match: async () => undefined, put: async (key: Request, response: Response) => { stored.set(key.url, response.headers.get("X-Fresh-For")!); } } });
   try {
     const request = new Request("https://openlangford.ca/meetings?year=2025");
-    await withPublicDataCache({ version: date, request, waitUntil: job => jobs.push(job) }, async () => Response.json(await loader({ request } as any)));
+    await withPublicDataCache({ stamp: "1", namespace: date, request, waitUntil: job => jobs.push(job) }, async () => Response.json(await loader({ request } as any)));
     await Promise.all(jobs);
     const annual = [...stored].find(([key]) => key.includes(encodeURIComponent("meetings:1:2025")));
-    expect(annual?.[1]).toBe(`public, max-age=${expectedTTL}`);
+    expect(annual?.[1]).toBe(String(expectedTTL));
   } finally { vi.useRealTimers(); vi.unstubAllGlobals(); }
 });

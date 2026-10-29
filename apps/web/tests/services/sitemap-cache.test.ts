@@ -11,7 +11,7 @@ const client = () => createClient("https://example.supabase.co", "synthetic-key"
   auth: { persistSession: false }, global: { fetch: catalog as typeof fetch },
 });
 async function read(section: SitemapSection = "documents", headers?: HeadersInit, version = "a") {
-  const response = await withPublicDataCache({ request: new Request(`https://openlangford.ca/sitemaps/${section}.xml`, { headers }), version,
+  const response = await withPublicDataCache({ request: new Request(`https://openlangford.ca/sitemaps/${section}.xml`, { headers }), stamp: "1", namespace: version,
     waitUntil: job => jobs.push(job) }, async () => Response.json(await sitemapEntries(client(), section)));
   await Promise.all(jobs); return response;
 }
@@ -48,12 +48,17 @@ it("reuses the complete public catalog across crawls, separates sections, and re
   corrected = true; vi.advanceTimersByTime(3599_000);
   expect((await read()).headers.get("X-Public-Data-Cache")).toBe("HIT");
   vi.advanceTimersByTime(1001);
+  // Expired: served once more while the corrected list is built in the background.
+  const stale = await read();
+  expect(stale.headers.get("X-Public-Data-Cache")).toBe("STALE"); expect((await stale.json() as any[]).at(-1).lastmod).toBe("2020-01-02");
   expect((await (await read()).json() as any[]).at(-1).lastmod).toBe("2026-10-22");
   expect((await read("documents", undefined, "correction-version")).headers.get("X-Public-Data-Cache")).toBe("MISS");
 });
-it("bypasses shared lists for sessions and never stores a failed catalog read", async () => {
+it("shares lists with signed-in visitors, bypasses an explicit refresh, and never stores a failed catalog read", async () => {
   await read(); const before = catalog.mock.calls.length;
-  expect((await read("documents", { Cookie: "sb-project-auth-token=session" })).headers.get("X-Public-Data-Cache")).toBe("BYPASS");
+  expect((await read("documents", { Cookie: "sb-project-auth-token=session" })).headers.get("X-Public-Data-Cache")).toBe("HIT");
+  expect(catalog.mock.calls.length).toBe(before);
+  expect((await read("documents", { Cookie: "sb-project-auth-token=session", "Cache-Control": "no-cache" })).headers.get("X-Public-Data-Cache")).toBe("BYPASS");
   expect(catalog.mock.calls.length).toBeGreaterThan(before);
   catalog.mockResolvedValueOnce(Response.json({ message: "catalog unavailable" }, { status: 500 }));
   await expect(read("documents", undefined, "failed-version")).rejects.toThrow();

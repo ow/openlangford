@@ -4,7 +4,8 @@ import { meetingPath } from "../lib/paths";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { participantPath } from "../lib/people-paths";
 import type { Route } from "./+types/participants";
-import { Link, useRouteLoaderData } from "react-router";
+import { Link, data as routeData, useRouteLoaderData } from "react-router";
+import { DEGRADED_HEADERS, forwardCacheControl } from "../lib/degraded-response";
 import { ChevronDown, MessageSquare, Mic, PlayCircle, Search } from "lucide-react";
 import { PageHeader } from "../components/ui/page-header";
 import { useMemo, useState } from "react";
@@ -61,12 +62,14 @@ export async function loader() {
         return null;
       }),
     ]);
-    return { participants, identificationCoverage, loadError: false };
+    return routeData({ participants, identificationCoverage, loadError: false }, identificationCoverage ? undefined : { headers: DEGRADED_HEADERS });
   } catch (error) {
     console.error("Error loading public participants:", error);
-    return { participants: [], identificationCoverage: null, loadError: true };
+    return routeData({ participants: [] as Awaited<ReturnType<typeof getPublicParticipantStats>>, identificationCoverage: null, loadError: true }, { headers: DEGRADED_HEADERS });
   }
 }
+
+export const headers = forwardCacheControl;
 
 function formatDuration(seconds: number) {
   const hours = Math.floor(seconds / 3600);

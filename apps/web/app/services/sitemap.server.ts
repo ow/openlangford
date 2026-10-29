@@ -7,7 +7,7 @@ import { participantPath, personPath } from "../lib/people-paths";
 import { getMunicipality } from "./municipality";
 import { getPublicParticipantStats } from "./people";
 import { getPublicParticipationHistories } from "./public-participation.server";
-import { cachedCompute } from "./computed-cache.server";
+import { cachedCompute, HOURLY_SHARED } from "./computed-cache.server";
 import { publicData } from "./public-data-cache.server";
 
 /**
@@ -64,7 +64,7 @@ export async function sitemapEntries(supabase: SupabaseClient, section: SitemapS
   // Corrections use the shared deployment/content version; expiry bounds
   // pipeline changes which have not yet published a new content version.
   return publicData(`sitemap:${municipality.id}:${section}`,
-    () => buildSitemapEntries(supabase, section, municipality), () => true, 3600);
+    () => buildSitemapEntries(supabase, section, municipality), () => true, 3600, { shareWithSignedIn: true });
 }
 
 async function buildSitemapEntries(
@@ -202,6 +202,7 @@ async function buildSitemapEntries(
       // Same computation (and cache entry) as the /participants page.
       const participants = await cachedCompute(`public-participants:${municipality.id}`, () =>
         getPublicParticipantStats(supabase, municipality.id, getPublicParticipationHistories(municipality.slug)),
+        HOURLY_SHARED,
       );
       return (participants as any[])
         .filter((p) => p?.person?.slug || p?.person?.id)

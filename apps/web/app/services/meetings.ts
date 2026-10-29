@@ -155,61 +155,106 @@ export async function getMeetings(
 
   const meetings = (data || []) as unknown as Meeting[];
 
-  // Fetch meeting stats (motion counts + topics) from RPC
-  let statsMap: Record<number, MeetingStats> = {};
+  // Motion counts, topics and residents' letters for exactly these meetings, in parallel.
+  // (The get_meetings_with_stats RPC aggregated every meeting's motions and agenda items on
+  // each call, ~1s, before PostgREST filtered it; these row reads take ~0.1s.)
+  const statsMap: Record<number, MeetingStats> = {};
   let statsComplete = true;
-  try {
-    // PostgREST filters the existing RPC result before transferring it. The RPC
-    // still owns vote-result/topic semantics; no schema migration is required.
-    const ids = meetings.map((meeting) => meeting.id);
-    const statsData: any[] = [];
-    for (let start = 0; start < ids.length; start += 100) {
-      const result = await supabase.rpc("get_meetings_with_stats", { filter_municipality_id: municipality.id })
-        .in("meeting_id", ids.slice(start, start + 100));
-      if (result.error) throw result.error;
-      statsData.push(...(result.data || []));
+  const ids = meetings.map((meeting) => meeting.id);
+  const [motionRows, categoryRows, letterRows] = await Promise.all([
+    rowsForMeetings(ids, (chunk) => supabase.from("motions").select("meeting_id, result").in("meeting_id", chunk)).catch((e) => {
+      // Stats are supplementary -- don't fail the whole request
+      statsComplete = false;
+      console.error("Error fetching meeting stats:", e);
+      return [];
+    }),
+    rowsForMeetings(ids, (chunk) => supabase.from("agenda_items").select("meeting_id, category").in("meeting_id", chunk).not("category", "is", null)).catch((e) => {
+      statsComplete = false;
+      console.error("Error fetching meeting topics:", e);
+      return [];
+    }),
+    // Residents' letters per meeting (only items that have any return data).
+    rowsForMeetings(ids, (chunk) => supabase.from("agenda_items").select("meeting_id, written:meta->written_participation")
+      .in("meeting_id", chunk).not("meta->written_participation", "is", null)).catch((e) => {
+      statsComplete = false;
+      console.error("Error fetching meeting letter counts:", e);
+      return [];
+    }),
+  ]);
+  if (statsComplete) {
+    const blank = (): MeetingStats => ({ motion_carried_count: 0, motion_defeated_count: 0, motion_other_count: 0, topics: [] });
+    for (const id of ids) statsMap[id] = blank();
+    for (const row of motionRows as { meeting_id: number; result: string | null }[]) {
+      const stats = statsMap[row.meeting_id];
+      if (!stats) continue;
+      const outcome = motionOutcome(row.result);
+      if (outcome === "carried") stats.motion_carried_count++;
+      else if (outcome === "defeated") stats.motion_defeated_count++;
+      else stats.motion_other_count++;
     }
-    if (statsData) {
-      for (const row of statsData as any[]) {
-        statsMap[row.meeting_id] = {
-          motion_carried_count: row.motion_carried_count,
-          motion_defeated_count: row.motion_defeated_count,
-          motion_other_count: row.motion_other_count,
-          topics: row.topics || [],
-        };
-      }
+    const topics = new Map<number, Set<string>>();
+    for (const row of categoryRows as { meeting_id: number; category: string | null }[]) {
+      const topic = categoryTopic(row.category);
+      if (topic === "General") continue;
+      if (!topics.has(row.meeting_id)) topics.set(row.meeting_id, new Set());
+      topics.get(row.meeting_id)!.add(topic);
     }
-  } catch (e) {
-    // Stats are supplementary -- don't fail the whole request
-    statsComplete = false;
-    console.error("Error fetching meeting stats:", e);
+    for (const [id, set] of topics) if (statsMap[id]) statsMap[id].topics = [...set].sort();
   }
-
-  // Residents' letters per meeting (only items that have any return data).
-  try {
-    const ids = meetings.map((meeting) => meeting.id);
-    for (let start = 0; start < ids.length; start += 100) {
-      const { data, error } = await supabase
-        .from("agenda_items")
-        .select("meeting_id, written:meta->written_participation")
-        .in("meeting_id", ids.slice(start, start + 100))
-        .not("meta->written_participation", "is", null);
-      if (error) throw error;
-      for (const row of data || []) {
-        const count = writtenLetters(row.written as any).length;
-        if (!count) continue;
-        statsMap[row.meeting_id] = {
-          ...(statsMap[row.meeting_id] || { motion_carried_count: 0, motion_defeated_count: 0, motion_other_count: 0, topics: [] }),
-          letter_count: (statsMap[row.meeting_id]?.letter_count || 0) + count,
-        };
-      }
-    }
-  } catch (e) {
-    statsComplete = false;
-    console.error("Error fetching meeting letter counts:", e);
+  for (const row of letterRows as { meeting_id: number; written: unknown }[]) {
+    const count = writtenLetters(row.written as any).length;
+    if (!count) continue;
+    statsMap[row.meeting_id] = {
+      ...(statsMap[row.meeting_id] || { motion_carried_count: 0, motion_defeated_count: 0, motion_other_count: 0, topics: [] }),
+      letter_count: (statsMap[row.meeting_id]?.letter_count || 0) + count,
+    };
   }
 
   return { meetings, statsMap, statsComplete };
+}
+
+const PAGE_ROWS = 1000; // PostgREST max rows per response
+
+/** Rows for many meetings: chunks fetched in parallel; a chunk that may be truncated is split. */
+async function rowsForMeetings(ids: number[], query: (chunk: number[]) => PromiseLike<{ data: any[] | null; error: unknown }>): Promise<any[]> {
+  const fetchChunk = async (chunk: number[]): Promise<any[]> => {
+    const { data, error } = await query(chunk);
+    if (error) throw error;
+    const rows = data || [];
+    if (rows.length < PAGE_ROWS) return rows;
+    if (chunk.length === 1) throw new Error("Too many rows for one meeting");
+    const half = Math.ceil(chunk.length / 2);
+    return (await Promise.all([fetchChunk(chunk.slice(0, half)), fetchChunk(chunk.slice(half))])).flat();
+  };
+  const chunks: number[][] = [];
+  for (let start = 0; start < ids.length; start += 40) chunks.push(ids.slice(start, start + 40));
+  return (await Promise.all(chunks.map(fetchChunk))).flat();
+}
+
+const CARRIED = new Set(["CARRIED", "CARRIED AS AMENDED", "AMENDED", "CARRRIED"]);
+const DEFEATED = new Set(["DEFEATED", "FAILED", "FAILED FOR LACK OF A SECONDER", "FAILED FOR LACK OF SECONDER", "NOT CARRIED"]);
+
+/** Same buckets as the get_meetings_with_stats SQL function. */
+export function motionOutcome(result: string | null): "carried" | "defeated" | "other" {
+  const value = result?.toUpperCase();
+  return value && CARRIED.has(value) ? "carried" : value && DEFEATED.has(value) ? "defeated" : "other";
+}
+
+const TOPIC_PATTERNS: [string, string[]][] = [
+  ["Bylaw", ["bylaw", "zoning", "rezoning", "regulatory", "legislat"]],
+  ["Development", ["develop", "planning", "land use", "permit", "ocp", "housing", "heritage", "subdivis"]],
+  ["Environment", ["environ", "park", "climate", "sustain", "trail", "tree", "conservation", "recreation"]],
+  ["Finance", ["financ", "budget", "tax", "grant", "capital", "debt", "fund"]],
+  ["Transportation", ["transport", "traffic", "road", "transit", "cycl", "pedestr", "infrastruc", "engineer"]],
+  ["Public Safety", ["safe", "polic", "fire", "protect", "emergency", "rcmp", "enforcement"]],
+  ["Administration", ["admin", "governance", "appoint", "committee", "procedur", "minutes", "agenda", "adjournm", "closed", "routine", "consent"]],
+];
+
+/** JS port of the normalize_category_to_topic SQL function (ILIKE '%x%' = case-insensitive contains). */
+export function categoryTopic(category: string | null): string {
+  if (category == null) return "General";
+  const value = category.toLowerCase();
+  return TOPIC_PATTERNS.find(([, needles]) => needles.some((needle) => value.includes(needle)))?.[0] ?? "General";
 }
 
 type MeetingTextOptions = { includeText?: boolean };

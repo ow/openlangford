@@ -11,7 +11,7 @@ const ranking = [{ person_id: 1, person_name: "Public Person", image_url: null, 
 const meetings = [{ meeting_id: 2, meeting_date: "2020-01-01", seconds_spoken: 12.5, segment_count: 3 }];
 const topics = [{ topic: "Housing", total_seconds: 12.5, segment_count: 3 }];
 async function run(compute: () => Promise<unknown>, headers?: HeadersInit, version = "a") {
-  const result = await withPublicDataCache({ request: new Request("https://openlangford.ca/people/person.data", { headers }), version, posthogKey: "phc_test", waitUntil: job => jobs.push(job) }, async () => Response.json(await compute()));
+  const result = await withPublicDataCache({ request: new Request("https://openlangford.ca/people/person.data", { headers }), stamp: "1", namespace: version, posthogKey: "phc_test", waitUntil: job => jobs.push(job) }, async () => Response.json(await compute()));
   await Promise.all(jobs); return result;
 }
 beforeEach(() => {

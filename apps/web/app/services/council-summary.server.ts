@@ -40,7 +40,7 @@ function getPublicCouncilData(municipalityId: number) {
     }
     if (!stats.all) throw new Error("Incomplete council attendance summary");
     return { people, terms, today, stats };
-  });
+  }, () => true, undefined, { shareWithSignedIn: true });
 }
 
 export async function getPublicCouncilSummary(municipalityId: number) {

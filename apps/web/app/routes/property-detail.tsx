@@ -1,6 +1,5 @@
-import { Link, useFetcher } from "react-router";
-import { isAdminEmail, requireAdmin } from "../lib/auth.server";
-import { createSupabaseServerClient } from "../lib/supabase.server";
+import { Link, useFetcher, useRouteLoaderData } from "react-router";
+import { requireAdmin } from "../lib/auth.server";
 import { FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
@@ -46,14 +45,12 @@ export const meta: Route.MetaFunction = ({ data }) => {
   ];
 };
 
-export async function loader({ params, request }: Route.LoaderArgs) {
-  const [result, user] = await Promise.all([
-    // getPropertyBySlug throws on a failed query and returns null only when no row matched.
-    getPropertyBySlug(getSupabaseAdminClient(), params.slug).catch((error) => { throw unavailable(error); }),
-    createSupabaseServerClient(request).supabase.auth.getUser().then((r) => r.data.user).catch(() => null),
-  ]);
+// Session-free (so the edge can share it, signed in or not): the admin flag comes from the root loader.
+export async function loader({ params }: Route.LoaderArgs) {
+  // getPropertyBySlug throws on a failed query and returns null only when no row matched.
+  const result = await getPropertyBySlug(getSupabaseAdminClient(), params.slug).catch((error) => { throw unavailable(error); });
   if (!result) throw new Response("Property Not Found", { status: 404 });
-  return { ...result, isAdmin: isAdminEmail(user?.email) };
+  return result;
 }
 
 /** Admins remove a wrong link (the address parser misread a title). The pipeline keeps it hidden. */
@@ -88,7 +85,8 @@ function Unlink({ field, id }: { field: "matter_id" | "agenda_item_id"; id: numb
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
-  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, isAdmin } = loaderData;
+  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity } = loaderData;
+  const isAdmin = !!(useRouteLoaderData("root") as { isAdmin?: boolean } | undefined)?.isAdmin;
   const geo = property.geo as { lat: number; lng: number } | null;
   const summary: string | undefined = (property as any).meta?.summary || undefined;
   const dates = [...matters.flatMap((m: any) => [m.first_seen, m.last_seen]), ...items.map((i: any) => i.meetings?.meeting_date)]

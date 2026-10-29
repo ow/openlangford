@@ -37,6 +37,7 @@ function meetingsYearPath(year: number | null | undefined, currentYear?: number)
 }
 import {
   Link,
+  data as routeData,
   useSearchParams,
   type ShouldRevalidateFunctionArgs,
 } from "react-router";
@@ -64,6 +65,10 @@ import {
 
 import { historicalPublicDate, HISTORICAL_PUBLIC_TTL, RECENT_PUBLIC_TTL } from "../lib/public-content-cache";
 import { publicData } from "../services/public-data-cache.server";
+import { timed } from "../lib/server-timing.server";
+import { DEGRADED_HEADERS, forwardCacheControl } from "../lib/degraded-response";
+
+export const headers = forwardCacheControl;
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -72,35 +77,36 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   try {
     const supabase = getSupabaseAdminClient();
-    const municipality = await getMunicipality(supabase);
-    const [{ meetings, statsMap }, bounds] = await Promise.all([
-      publicData(`meetings:${municipality.id}:${selectedYear}`, () => getMeetings(supabase, municipality, {
+    const municipality = await timed("meetings-municipality", getMunicipality(supabase));
+    // Both are computed with the admin client from public tables only: shared with signed-in visitors.
+    const [{ meetings, statsMap, statsComplete }, bounds] = await Promise.all([
+      timed("meetings-list", publicData(`meetings:${municipality.id}:${selectedYear}`, () => getMeetings(supabase, municipality, {
         startDate: `${selectedYear}-01-01`,
         endDate: `${selectedYear}-12-31`,
-      }), (result) => result.statsComplete, historicalPublicDate(`${selectedYear}-12-31`) ? HISTORICAL_PUBLIC_TTL : RECENT_PUBLIC_TTL),
-      publicData(`meeting-bounds:${municipality.id}`, () => getMeetingDateBounds(supabase, municipality), () => true, 3600).catch((error) => {
+      }), (result) => result.statsComplete, historicalPublicDate(`${selectedYear}-12-31`) ? HISTORICAL_PUBLIC_TTL : RECENT_PUBLIC_TTL, { shareWithSignedIn: true })),
+      timed("meetings-bounds", publicData(`meeting-bounds:${municipality.id}`, () => getMeetingDateBounds(supabase, municipality), () => true, 3600, { shareWithSignedIn: true })).catch((error) => {
         console.error("Error loading meeting history availability:", error);
         return null;
       }),
     ]);
-    return {
+    return routeData({
       meetings,
       statsMap,
       selectedYear,
       currentYear,
       bounds,
       loadError: false,
-    };
+    }, statsComplete && bounds ? undefined : { headers: DEGRADED_HEADERS });
   } catch (error) {
     console.error("Error loading meetings data:", error);
-    return {
+    return routeData({
       meetings: [],
       statsMap: {} as Record<number, MeetingStats>,
       selectedYear,
       currentYear,
       bounds: null,
       loadError: true,
-    };
+    }, { headers: DEGRADED_HEADERS });
   }
 }
 

@@ -13,6 +13,7 @@ import {
   getExtractedDocumentsForMeeting,
 } from "../services/meetings";
 import { createSupabaseServerClient } from "../lib/supabase.server";
+import { timed } from "../lib/server-timing.server";
 import { getAttendanceInfo } from "../lib/attendance";
 import type { AttendanceInfo } from "../lib/attendance";
 import { getMunicipality } from "../services/municipality";
@@ -166,13 +167,16 @@ function MeetingLoadingSkeleton() {
 export async function loader({ params, request }: Route.LoaderArgs) {
   try {
     const { supabase } = createSupabaseServerClient(request);
-    const resolved = await resolveSlugParam(supabase, "meetings", params.id, request, (m) => meetingPath(m), "Meeting Not Found");
+    const resolved = await timed("meeting-resolve", resolveSlugParam(supabase, "meetings", params.id, request, (m) => meetingPath(m), "Meeting Not Found"));
     const id = String(resolved.id);
-    const [data, documentSections, extractedDocuments, municipality] = await Promise.all([
-      getMeetingById(supabase, id, { includeText: false }),
-      getDocumentSectionsForMeeting(supabase, id, { includeText: false }),
-      getExtractedDocumentsForMeeting(supabase, id),
-      getMunicipality(supabase).catch(() => null),
+    const municipalityPromise = getMunicipality(supabase).catch(() => null);
+    const [data, documentSections, extractedDocuments, municipality, terms] = await Promise.all([
+      timed("meeting-record", getMeetingById(supabase, id, { includeText: false })),
+      timed("meeting-sections", getDocumentSectionsForMeeting(supabase, id, { includeText: false })),
+      timed("meeting-documents", getExtractedDocumentsForMeeting(supabase, id)),
+      municipalityPromise,
+      // Council terms only need the municipality: fetched alongside, not after, the meeting.
+      timed("meeting-terms", municipalityPromise.then((m) => m ? getCouncilTerms(supabase, m.id) : [])),
     ]);
 
     // Only show attendance info for future meetings (Vancouver timezone)
@@ -184,16 +188,15 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       ? getAttendanceInfo(municipality.meta, data.meeting?.meta, data.meeting?.type)
       : null;
 
-    const terms = municipality ? await getCouncilTerms(supabase, municipality.id) : [];
     const councilTerm = terms.find((term) => membershipIsActiveOn(term, data.meeting.meeting_date)) || null;
     // Transcript and report-section text run to megabytes; ship timings/titles only and let
     // the page fetch the text from /api/meeting-text (transcript on demand, sections on expand).
     const transcript = (data.transcript || []).map(({ text_content, ...rest }: any) => rest);
     const sections = (documentSections || []).map(({ section_text, ...rest }: any) => rest);
-    const [itemProperties, itemMatters] = await Promise.all([
+    const [itemProperties, itemMatters] = await timed("meeting-links", Promise.all([
       getPropertiesForItems(supabase, (data.agendaItems || []).map((it: any) => it.id)),
       getMatterLinks(supabase, (data.agendaItems || []).map((it: any) => it.matter_id)),
-    ]);
+    ]));
     return { ...data, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties, itemMatters };
   } catch (error) {
     throw loaderFailure(error, "Meeting Not Found");

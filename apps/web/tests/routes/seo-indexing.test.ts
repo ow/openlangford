@@ -163,7 +163,8 @@ describe("error responses", () => {
 });
 
 describe("matters list pagination", () => {
-  const load = (search = "") => mattersLoader({ request: new Request(`https://openlangford.ca/matters${search}`), params: {}, context: {} } as any);
+  // A successful load returns the plain object (only a degraded one is wrapped with no-store headers).
+  const load = async (search = "") => (await mattersLoader({ request: new Request(`https://openlangford.ca/matters${search}`), params: {}, context: {} } as any)) as any;
   it("serves 50 non-procedural matters a page with page counts for the full list", async () => {
     const first = await load();
     expect(first.matters).toHaveLength(50);

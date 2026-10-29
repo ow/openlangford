@@ -17,7 +17,9 @@ import {
   useLocation,
   useRouteError,
 } from "react-router";
+import type { ShouldRevalidateFunctionArgs } from "react-router";
 import { createSupabaseServerClient } from "./lib/supabase.server";
+import { timed } from "./lib/server-timing.server";
 import { getMunicipality } from "./services/municipality";
 import { emailAlertsAvailable, publicSignupsEnabled } from "./lib/features.server";
 import { getUserProfile } from "./services/subscriptions";
@@ -95,9 +97,9 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   // No Supabase auth cookie means no session: skip the auth round trip for anonymous visitors.
   const hasSession = /(?:^|;\s*)sb-[^=;]*-auth-token/.test(request.headers.get("cookie") || "");
   const [user, municipality, searchBudget] = await Promise.all([
-    hasSession ? supabase.auth.getUser().then(({ data }) => data.user) : Promise.resolve(null),
-    getMunicipality(supabase),
-    getSearchBudgetForDisplay(context.cloudflare?.env?.AI_SEARCH_DAILY_LIMIT),
+    hasSession ? timed("root-user", supabase.auth.getUser().then(({ data }) => data.user)) : Promise.resolve(null),
+    timed("root-municipality", getMunicipality(supabase)),
+    timed("root-search-budget", getSearchBudgetForDisplay(context.cloudflare?.env?.AI_SEARCH_DAILY_LIMIT)),
   ]);
 
   // Redirect new users to onboarding if they haven't completed it
@@ -114,7 +116,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       skipRedirectPaths.includes(pathname) || isApiRoute || isAdminRoute;
 
     if (!shouldSkipRedirect) {
-      const profile = await getUserProfile(supabase, user.id);
+      const profile = await timed("root-profile", getUserProfile(supabase, user.id));
       // No profile or onboarding not completed -> redirect to onboarding
       if (!profile || !profile.onboarding_completed) {
         throw redirect("/onboarding", { headers });
@@ -130,6 +132,24 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     emailAlertsAvailable: emailAlertsAvailable(),
     aiSearchAvailable: searchBudget.available,
   };
+}
+
+// Paths whose visit can change who is signed in or their profile/onboarding state.
+const AUTH_PATHS = ["/login", "/logout", "/signup", "/onboarding", "/settings"];
+const authPath = (pathname: string) => AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(path + "/"));
+
+/**
+ * The root loader (user, municipality, site flags, search budget) only changes when the session
+ * does. Plain GET navigations reuse it, so client navigation fetches just the page's own loader
+ * (which the edge can then serve from cache, even when signed in). It still re-runs after any
+ * form submission/action, on an explicit revalidate (same URL), and around the auth pages, so
+ * login, logout and onboarding update the nav.
+ */
+export function shouldRevalidate({ currentUrl, nextUrl, formMethod, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
+  if (formMethod && formMethod.toUpperCase() !== "GET") return defaultShouldRevalidate;
+  if (authPath(currentUrl.pathname) || authPath(nextUrl.pathname)) return defaultShouldRevalidate;
+  if (currentUrl.pathname === nextUrl.pathname && currentUrl.search === nextUrl.search) return defaultShouldRevalidate;
+  return false;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
