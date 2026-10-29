@@ -15,6 +15,11 @@ mode = "smart"
 [ai]
 binding = "AI"
 
+# Global second tier for public data caches (read when the per-datacenter cache misses).
+[[kv_namespaces]]
+binding = "PUBLIC_CACHE"
+id = "723e71f9a2b249aab101970d0be104e1"
+
 [vars]
 AI_GATEWAY_ID = "langford-open-a-i"
 # Shared daily generation attempts; resets at midnight America/Vancouver. 0 disables AI search.
