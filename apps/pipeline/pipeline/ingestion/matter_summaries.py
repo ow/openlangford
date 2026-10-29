@@ -281,7 +281,10 @@ def refresh_matter_summaries(
             meta = dict(matter["_meta"])
             meta["display_title"] = (descriptive.get("display_title") or "").strip() or None
             meta["summary_version"] = SUMMARY_VERSION
-            if fields and matter["history"]:
+            # A recorded replacement (meta.superseded_by) is a later council decision about this
+            # matter that its own history doesn't show, so the model can't re-derive its status.
+            superseded = bool(meta.get("superseded_by"))
+            if fields and matter["history"] and not superseded:
                 meta["status_line"] = (fields.get("status_line") or "").strip() or None
                 meta["timeline_headlines"] = {
                     str(t["item"]): t["headline"].strip()
@@ -291,7 +294,7 @@ def refresh_matter_summaries(
             update = {"plain_english_summary": descriptive["summary"].strip(), "meta": meta}
             if descriptive.get("category") in TOPICS:
                 update["category"] = descriptive["category"]
-            if fields and matter["history"] and fields.get("status") in STATUSES:
+            if fields and matter["history"] and not superseded and fields.get("status") in STATUSES:
                 update["status"] = fields["status"]
             results[matter["id"]] = update
             if not dry_run:
