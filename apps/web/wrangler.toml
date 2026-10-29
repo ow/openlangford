@@ -31,6 +31,8 @@ PUBLIC_SIGNUP_LINKS = "true"
 # UI readiness and scheduled dispatch remain off until approved rollout/testing.
 EMAIL_ALERTS_AVAILABLE = "false"
 EMAIL_ALERT_DISPATCH_ENABLED = "false"
+# Worker-side enqueue cutoff (YYYY-MM-DD, match Edge ALERT_START_DATE). Empty disables enqueue.
+EMAIL_ALERT_START_DATE = ""
 AI_PROVIDER = "openai"
 AI_MODEL = "gpt-6-luna"
 VIMEO_PROXY_URL = "https://vimeo-proxy.kpeatt.workers.dev"

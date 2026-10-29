@@ -1,5 +1,7 @@
 """Durable, bounded meeting-enqueue intent. Contains no recipients or credentials.
 
+Legacy path, disabled unless PIPELINE_EMAIL_OUTBOX=true: the web Worker cron
+(apps/web/workers/email-enqueue.ts) is the single enqueue path by default.
 Only explicit ingestion records an intent; retries never discover/backfill meetings.
 The server rechecks cutoff, consent and embedding readiness before creating emails.
 """
@@ -128,6 +130,8 @@ class EmailEnqueueOutbox:
 
 
 def record_email_enqueue(meeting_id: int, created_at: float | None = None):
+    if not config.PIPELINE_EMAIL_OUTBOX:
+        return False  # The web Worker cron enqueues alerts; no local intent is kept.
     if not config.SUPABASE_URL or not config.ALERT_WORKER_KEY:
         print('  [i] Email alert enqueue not configured; skipped')
         return False
@@ -142,6 +146,8 @@ def record_email_enqueue(meeting_id: int, created_at: float | None = None):
 
 
 def retry_email_enqueues(limit: int = 5):
+    if not config.PIPELINE_EMAIL_OUTBOX:
+        return 0
     if not config.SUPABASE_URL or not config.ALERT_WORKER_KEY:
         return 0
     # Idle polling must not create an outbox or discover historical work.

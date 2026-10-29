@@ -14,55 +14,55 @@ the six-event webhook and their Supabase secrets exist. Public signups remain on
 `EMAIL_ALERTS_AVAILABLE=false`, `EMAIL_ALERT_DISPATCH_ENABLED=false`, and Edge
 `ALERT_DELIVERY_MODE=off`. There are no pending/live email records from the test.
 
-## Reliability follow-up (proposed, not rolled out)
+## Enqueue path: the Cloudflare Worker cron (October 29)
 
-The old pipeline enqueued at ingestion, before embedding generation, and lost an
-enqueue if its HTTP call failed. The pipeline now records only that explicit
-meeting's intent in a local SQLite outbox before any HTTP call. The embedding pass
-drains it after embedding generation; the existing pipeline worker also drains
-one due intent each polling loop, including when no pipeline job is queued.
-SQL migration `20261025160430_47_22_email_enqueue_readiness.sql` replaces only the existing
-service-only enqueue RPC. It raises a retryable readiness error while agenda items with title, summary,
-debate or matching linked/timed transcript text lack embeddings, before any
-subscriber match/email insertion.
-Embedding failures are therefore deferred rather than mistaken for zero matches.
-It preserves the original cutoff, consent, municipality, publication and dedup rules.
-No new table, broader access, RLS policy or consent transition is added by 47-22;
-it explicitly reasserts the existing service-only execute ACL. This guard proves
-missing vectors are available; it does not establish freshness of pre-existing
-non-null vectors after unrelated content refreshes. That pre-existing embedding
-invalidation limitation requires separate pipeline work, not a historical re-embed
-or backfill in this fix.
+Migration `20261025160430_47_22_email_enqueue_readiness.sql` is applied in production: the enqueue
+RPC raises `Email matching data not ready` (SQLSTATE 55000) while agenda items with
+title, summary, debate or matching linked/timed transcript text lack embeddings,
+before any subscriber match or email insertion. The deployed `send-alerts` Edge
+function reports it (like any RPC failure) as HTTP 503, so callers retry rather
+than mistake it for zero. It preserves the original cutoff, consent, municipality,
+publication (`has_minutes OR has_transcript`, meeting date not in the future) and
+dedup rules. It proves vectors exist, not that pre-existing vectors are fresh after
+unrelated content refreshes; that limitation needs separate pipeline work.
 
-Intents contain meeting IDs and retry metadata only, never recipients, content or
-credentials. Default location is `$XDG_STATE_HOME/openlangford/email-enqueue.sqlite3`
-(or `~/.local/state/openlangford/email-enqueue.sqlite3`); `ALERT_OUTBOX_PATH` can
-select another persistent local path. Share the same durable file across pipeline
-processes/deploys on this host. Keep it on persistent storage, not a disposable
-checkout/container filesystem. The file is private (0600), with SQLite transactions
-and two-minute leases so concurrent processes cannot claim the same attempt. Late
-responses cannot overwrite a newer lease's receipt.
+Enqueue now runs in the web Worker (`apps/web/workers/email-enqueue.ts`), on the
+existing `*/5 * * * *` cron, immediately before `dispatch`. No pipeline worker,
+long-running process or persistent local file is needed. The Edge functions are
+unchanged; the Worker calls the deployed `enqueue` action as-is.
 
-Transient HTTP/transport/invalid-receipt failures retry with one-minute exponential
-backoff capped at one hour, at most 12 requests and 23 hours from the original
-intent. Repeated ingestion does not reset identity, attempts or deadline. The
-server's unique meeting/user/mode key handles a lost HTTP receipt after insertion.
-Permanent HTTP errors stop. Off/test-mode skips are terminal locally, never held
-for later activation. A successful zero (including cutoff rejection) is terminal.
-Expired/failed rows are retained for operator inspection; there is no automatic
-historical scan, backfill, deadline reset or resend. An idle continuously running
-pipeline worker is required for automatic retries after a standalone CLI exits.
-If the local outbox cannot persist a new intent, a typed failure carries its exact
-meeting ID and original creation/expiry times. The ops worker atomically stores a
-versioned recovery marker in the existing failed job args before best-effort logs.
-Admin job retry already copies those args. Recovery validates the canonical archive
-meeting and municipality and restores the original clock before ingestion, so
-cached skips and repeated forced attempts cannot drop or extend the intent. Expired
-or mismatched markers are rejected. No marker means no cached/source-only replay.
-Bulk/CLI ingestion propagates the typed storage failure rather than silently
-continuing; operators must repair storage and preserve the reported exact meeting
-and original deadline for scoped recovery, never scan old meetings or reset its
-clock. Subsequent retry-read failures log a generic warning and preserve rows.
+- **Gates (all required, else nothing runs, no DB read, no HTTP):**
+  `EMAIL_ALERT_DISPATCH_ENABLED="true"`, runtime secret `ALERT_WORKER_KEY`, and a
+  valid `EMAIL_ALERT_START_DATE` (YYYY-MM-DD, `wrangler.toml [vars]`, empty by
+  default). Set it to the same date as Edge `ALERT_START_DATE`.
+- **Candidates:** Langford meetings with status `Completed` or `Occurred`,
+  `has_minutes OR has_transcript`, meeting date from
+  `max(EMAIL_ALERT_START_DATE, today - 14 days)` to today (UTC), and not updated in
+  the last 30 minutes (lets an ingestion finish). Never a historical catch-up: the
+  14-day window and the start date both bound it. The server still enforces its
+  own `ALERT_START_DATE`.
+- **Bound:** at most 5 enqueue calls per cron run, 10s per call, 25s total for the
+  enqueue step, then dispatch (unchanged, 55s timeout, at most 5 messages).
+- **Receipts:** `email_enqueue_receipts` (migration
+  `20261029160000_email_enqueue_receipts.sql`; empty, RLS on, service-role only,
+  meeting IDs and retry metadata only) records one row per meeting. `{skipped:true}`
+  (off/test mode) is terminal, never held for later activation. `queued` >= 0
+  (including a deduplicated or cutoff-ineligible zero) is terminal. Readiness/503,
+  408, 425, 429, 5xx and transport errors retry with one-minute exponential
+  backoff capped at one hour, at most 12 attempts and 23 hours from the first
+  attempt, then `expired`. Other 4xx are `failed`. Expired/failed rows are kept for
+  inspection; do not reset them.
+- **Without the receipts table** the Worker still works: it re-asks for every
+  candidate each run (rotating within the 5-call bound) and the server's unique
+  meeting/user/mode key dedups. Prefer having the table before go-live: without it a
+  subscriber who opts in during the 14-day window could be matched to a meeting
+  that had zero matches earlier.
+
+The pipeline's local SQLite outbox (`pipeline/email_outbox.py`) is now off by
+default (`PIPELINE_EMAIL_OUTBOX` unset/false): ingestion records no intent, the
+embedding pass and idle ops worker drain nothing, and job recovery markers are
+ignored. Do not enable it alongside the Worker; there must be one enqueue path.
+The pipeline needs no `ALERT_WORKER_KEY` and no `ALERT_OUTBOX_PATH`.
 
 ## Consent and no historical catch-up
 
@@ -77,31 +77,37 @@ recheck aggregate eligibility immediately before live activation.
 `ALERT_START_DATE` is mandatory and applies to the **meeting date**, separately
 from consent or ingestion date. For activation on October 25 propose October 26;
 if activating later, agree a new forward-only date. Do not enqueue old meetings,
-rerun the test as live, reset outbox/ledger keys, or run broad catch-up commands.
+rerun the test as live, reset enqueue receipts/ledger keys, or run broad catch-up commands.
 Source-only documentary repairs still do not create an alert intent. Weekly and
 pre-meeting emails remain deferred.
 
 ## Remaining production approvals / activation order
 
-1. Review/merge this reliability fix and separately approve applying only migration
-   47-22 to `zxcvifwkaxtdfpanlwtl`; deploy it before any live enqueue. Keep all gates off.
-   Ensure the actual pipeline runtime uses the merged code and a persistent shared
-   outbox path. Process restart is a separate approved operation.
+1. Merge the Worker enqueue change. It is inert in production while the gates are
+   off. Merging also applies `20261029160000_email_enqueue_receipts.sql` through the
+   migrations Action (empty service-only table; safe while delivery is off). Confirm
+   the table exists before step 4. Nothing else needs applying; 47-22 is in place.
+   Keep all gates off.
 2. Rotate `ALERT_WORKER_KEY` (at least 32 random characters) while Edge mode is off,
-   storing the same value only in Supabase Edge secrets, Cloudflare
-   `langford-intelligence` runtime secrets, and the running pipeline environment.
-   The test key's temporary copy was removed and Supabase does not reveal stored
-   values. Do not create broad Cloudflare/API credentials just for this: the owner
-   has dashboard access. Never inline this key through Vite/build variables. Reuse
-   the deployed `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, and platform backend keys;
-   no new Resend key or webhook is needed.
-3. Obtain explicit live subscriber-send approval and the exact forward cutoff.
-   Recheck consent, suppression, pending queues, retention policy and build overrides.
-   Remove `ALERT_TEST_RECIPIENT`; set Edge mode `live` and `ALERT_START_DATE` to the
-   agreed date. Enable tracked Worker dispatch and UI readiness flags and rebuild.
-   The existing `*/5 * * * *` trigger dispatches at most five messages per run to
-   `/functions/v1/send-alerts`; the pipeline enqueues only explicitly ingested meetings.
-4. Owner may explicitly opt back in through Settings after public readiness is on;
+   storing the same value only in Supabase Edge secrets and Cloudflare
+   `langford-intelligence` runtime secrets (not the pipeline). The test key's
+   temporary copy was removed and Supabase does not reveal stored values. Do not
+   create broad Cloudflare/API credentials just for this: the owner has dashboard
+   access. Never inline this key through Vite/build variables. Reuse the deployed
+   `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, and platform backend keys; no new
+   Resend key or webhook is needed.
+3. Obtain explicit live subscriber-send approval and the exact forward cutoff
+   (the go-live meeting date). Recheck consent, suppression, pending queues,
+   retention policy and build overrides.
+4. Edge first: remove `ALERT_TEST_RECIPIENT`; set `ALERT_START_DATE` to the agreed
+   date and `ALERT_DELIVERY_MODE=live`. Do this before step 5: while Edge mode is
+   off, a gated-on Worker would record `skipped` (terminal) receipts.
+5. Worker: in `apps/web/wrangler.toml` set `EMAIL_ALERT_START_DATE` to the same date,
+   `EMAIL_ALERT_DISPATCH_ENABLED="true"` and `EMAIL_ALERTS_AVAILABLE="true"`; merge
+   and deploy. Within five minutes the cron enqueues eligible meetings dated on/after
+   the cutoff (at most five calls per run), then dispatches at most five messages
+   per run to `/functions/v1/send-alerts`.
+6. Owner may explicitly opt back in through Settings after public readiness is on;
    clear only its unsubscribe suppression via the existing authenticated consent RPC.
    Never clear another user's choices or a bounce/complaint/provider suppression.
 
@@ -116,7 +122,8 @@ or inbox placement. Admin previews omit raw payloads, HTML and opt-out capabilit
 ## Rollback and retained cleanup
 
 First set Edge `ALERT_DELIVERY_MODE=off`, then disable Worker dispatch and public
-readiness and rebuild. Off-mode enqueue receipts are terminal in the local outbox.
+readiness and rebuild (which also stops Worker enqueue). Off-mode `skipped` enqueue
+receipts are terminal in `email_enqueue_receipts`.
 Keep private ledger, suppression and deduplication history; do not reset accepted
 messages or retry deadlines. A provider request already in flight may finish.
 
@@ -126,6 +133,15 @@ Delete only that unused endpoint after the separate owner approval. It is not us
 by this implementation, the Cloudflare cron, or the Resend webhook.
 
 ## Follow-up verification
+
+Worker enqueue (October 29): vitest covers gating (nothing read or sent with any gate
+off or before the start date), candidate window/start date/status/publication/settle
+filters, skipped/queued/not-ready/permanent/transport handling, backoff, 23-hour and
+12-attempt expiry, the five-call bound and the missing-receipts fallback. Pipeline
+tests cover the outbox being a no-op with its flag off. No production enqueue or
+send was performed; the deploy is inert with the gates off.
+
+Earlier pipeline-outbox follow-up (now superseded by the Worker path):
 
 The keyword regression failed on the original enqueue RPC (it returned terminal
 zero before vectors existed); the pipeline ordering regression failed because

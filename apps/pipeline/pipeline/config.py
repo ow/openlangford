@@ -13,6 +13,9 @@ VIMEO_PROFILE_URL = "https://vimeo.com/viewroyal"
 VIMEO_ACCESS_TOKEN = os.environ.get("VIMEO_TOKEN")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 ALERT_WORKER_KEY = os.environ.get("ALERT_WORKER_KEY")
+# Legacy local email-enqueue outbox. Off by default: the web Worker cron now
+# enqueues per-meeting alerts, so the pipeline needs no persistent outbox file.
+PIPELINE_EMAIL_OUTBOX = os.environ.get("PIPELINE_EMAIL_OUTBOX", "").lower() == "true"
 ALERT_OUTBOX_PATH = os.environ.get(
     "ALERT_OUTBOX_PATH",
     os.path.join(os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state")),

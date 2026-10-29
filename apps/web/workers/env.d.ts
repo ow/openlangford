@@ -19,6 +19,7 @@ declare namespace Cloudflare {
 		EMAIL_ALERTS_AVAILABLE: "false";
 		EMAIL_ALERT_DISPATCH_ENABLED: string;
 		ALERT_WORKER_KEY?: string; // runtime-only secret; never inlined by Vite
+		EMAIL_ALERT_START_DATE?: string; // YYYY-MM-DD go-live meeting date; empty disables Worker enqueue
 		AI_PROVIDER: "openai";
 		AI_MODEL: "gpt-6-luna";
 		VIMEO_PROXY_URL: "https://vimeo-proxy.kpeatt.workers.dev";

@@ -13,6 +13,7 @@ from pipeline.orchestrator import Archiver
 @pytest.fixture
 def env(tmp_path, monkeypatch):
     path = str(tmp_path / "alerts.sqlite3")
+    monkeypatch.setattr(config, 'PIPELINE_EMAIL_OUTBOX', True)
     monkeypatch.setattr(config, 'ALERT_OUTBOX_PATH', path)
     monkeypatch.setattr(config, 'ALERT_WORKER_KEY', 'synthetic-alert-key')
     monkeypatch.setattr(config, 'SUPABASE_URL', 'https://example.invalid')
@@ -52,6 +53,17 @@ def test_enqueue_waits_until_embedding_pass_and_transmits_only_scoped_key(env):
         headers={'X-Alert-Worker-Key': 'synthetic-alert-key', 'Content-Type': 'application/json'},
         json={'action': 'enqueue', 'meeting_id': 42}, timeout=10, allow_redirects=False)
     assert row(path)['state'] == 'done'
+
+
+def test_outbox_flag_off_is_a_noop_because_the_web_worker_enqueues(env, monkeypatch):
+    path, _ = env
+    monkeypatch.setattr(config, 'PIPELINE_EMAIL_OUTBOX', False)
+    with patch('pipeline.email_outbox.requests.post') as post:
+        assert record_email_enqueue(42) is False
+        assert retry_email_enqueues() == 0
+    from pathlib import Path
+    assert not Path(path).exists()
+    post.assert_not_called()
 
 
 def test_without_config_does_not_record_or_discover_work(env, monkeypatch):

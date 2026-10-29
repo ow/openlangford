@@ -637,8 +637,8 @@ def run_job(supabase, job: dict):
 
 def restore_email_enqueue_retry(supabase, job, meeting_id):
     marker = (job.get('args') or {}).get('email_enqueue_retry')
-    if marker is None:
-        return
+    if marker is None or not config.PIPELINE_EMAIL_OUTBOX:
+        return  # Without the legacy outbox the web Worker cron enqueues this meeting.
     if job.get('job_type') != 'ingest_meeting' or not isinstance(marker, dict):
         raise ValueError('Invalid email enqueue recovery job')
     original = marker.get('created_at')
