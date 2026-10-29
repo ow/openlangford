@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Send, Sparkles } from "lucide-react";
 import { cn } from "../lib/utils";
+import { askUrl } from "../lib/search-ask";
 
 interface AskQuestionProps {
   personId?: number;
@@ -33,11 +34,7 @@ export function AskQuestion({
   const defaultTitle = isPerson ? `Ask about ${personName?.split(" ")[0] || "this person"}` : "Ask a question";
   const showHeader = title !== "";
 
-  const buildAskUrl = (q: string) => {
-    const params = new URLSearchParams({ q });
-    if (personName) params.set("person", personName);
-    return `/search?${params.toString()}`;
-  };
+  const buildAskUrl = (q: string) => askUrl(q, { person: personName });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

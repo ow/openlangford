@@ -27,6 +27,7 @@ import {
   type ContentType,
 } from "../lib/search-params";
 import { trackEvent } from "../lib/analytics";
+import { askUrl, shouldAutoAsk } from "../lib/search-ask";
 
 // ---------------------------------------------------------------------------
 // Meta
@@ -179,7 +180,19 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
     fetchMatches(activeQuery);
     fetchKeywordResults(activeQuery);
     if (cachedId) fetchCachedResult(cachedId);
-    // AI generation starts only after an explicit submission, never on a crawled URL.
+    // AI generation starts only when explicitly asked for: the "Ask" link below, or
+    // arriving via an Ask entry point (?mode=ai). Never for crawlers or on SSR.
+    else if (
+      shouldAutoAsk({
+        query: activeQuery,
+        mode: searchParams.get("mode"),
+        cachedId,
+        aiSearchAvailable,
+        userAgent: typeof navigator === "undefined" ? null : navigator.userAgent,
+      })
+    ) {
+      startAiStream(activeQuery);
+    }
   }, []);
 
   // ---------------------------------------------------------------------------
@@ -434,7 +447,7 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
               <p className="mb-2 text-sm font-medium text-zinc-500">Ask a question</p>
               <div className="flex flex-wrap justify-center gap-2">
                 {QUESTION_EXAMPLES.map((q) => (
-                  <button key={q} onClick={() => handleSubmit(q)} className="rounded-full bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100">
+                  <button key={q} onClick={() => navigate(askUrl(q))} className="rounded-full bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100">
                     {q}
                   </button>
                 ))}

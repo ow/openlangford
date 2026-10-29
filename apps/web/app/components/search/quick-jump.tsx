@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { Search } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { classifyIntent } from "../../lib/intent";
+import { askUrl, searchUrl } from "../../lib/search-ask";
 import { cn } from "../../lib/utils";
 
 type QuickMatch = {
@@ -116,8 +117,8 @@ export function QuickJump() {
       if (!row) return;
       setOpen(false);
       if (row.kind === "match") navigate(row.match.href);
-      else if (row.kind === "ask") navigate(`/search?q=${encodeURIComponent(row.query)}&mode=ai`);
-      else navigate(`/search?q=${encodeURIComponent(row.query)}`);
+      else if (row.kind === "ask") navigate(askUrl(row.query));
+      else navigate(searchUrl(row.query));
     },
     [navigate],
   );
