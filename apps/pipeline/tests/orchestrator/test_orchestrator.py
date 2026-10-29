@@ -61,6 +61,24 @@ def mock_orchestrator_deps():
 
 
 class TestArchiverInit:
+    def test_fingerprint_client_uses_secret_key(self, mock_orchestrator_deps):
+        """voice_fingerprints is service-role only; the publishable key cannot read it."""
+        from pipeline.orchestrator import Archiver
+
+        with patch("pipeline.orchestrator.config") as mock_config:
+            mock_config.SUPABASE_URL = "https://test.supabase.co"
+            mock_config.SUPABASE_SECRET_KEY = "secret"
+            mock_config.SUPABASE_KEY = "publishable"
+            Archiver()
+
+        mock_orchestrator_deps["create_client"].assert_called_once_with("https://test.supabase.co", "secret")
+        mock_orchestrator_deps["diarizer_cls"].assert_called_once_with(
+            supabase_client=mock_orchestrator_deps["supabase"]
+        )
+
+
+
+class TestArchiverInit:
     def test_default_init_no_municipality(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
         archiver = Archiver()

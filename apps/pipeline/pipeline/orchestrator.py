@@ -98,10 +98,13 @@ class Archiver:
             # Setup local diarizer (senko + parakeet) with fingerprint matching
             try:
                 supabase_client = None
-                if config.SUPABASE_URL and config.SUPABASE_KEY:
+                # voice_fingerprints is service-role only (not readable with the
+                # publishable key), so speaker matching needs the secret key.
+                fingerprint_key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
+                if config.SUPABASE_URL and fingerprint_key:
                     try:
                         supabase_client = create_client(
-                            config.SUPABASE_URL, config.SUPABASE_KEY
+                            config.SUPABASE_URL, fingerprint_key
                         )
                     except Exception as e:
                         print(
