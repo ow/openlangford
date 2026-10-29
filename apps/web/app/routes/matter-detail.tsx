@@ -54,9 +54,6 @@ import { getPropertiesForMatter, propertyPath, propertyPin } from "../services/p
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 import { loaderFailure } from "../lib/loader-errors";
-import { civicToday } from "../lib/council-terms";
-import { buildStrip } from "../lib/matter-timeline";
-import { TimelineStrip } from "../components/matter/timeline-strip";
 
 
 const GENERIC_EVIDENCE_TITLES = new Set([
@@ -354,14 +351,14 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const lots = properties.map(propertyPin).filter((p): p is NonNullable<typeof p> => p !== null);
     (matter as any).locations = lots.length ? lots : Array.from(pins.values());
 
-    return { matter, matterDocuments, matterEvidence, story, images, properties, today: civicToday() };
+    return { matter, matterDocuments, matterEvidence, story, images, properties };
   } catch (error) {
     throw loaderFailure(error, "Matter Not Found");
   }
 }
 
 export default function MatterDetail({ loaderData }: Route.ComponentProps) {
-  const { matter, matterDocuments, matterEvidence, story, images, properties = [], today } = loaderData;
+  const { matter, matterDocuments, matterEvidence, story, images, properties = [] } = loaderData;
 
   // Sort agenda items by meeting date
   const timeline = [...(matter.agenda_items || [])].sort(
@@ -488,20 +485,6 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       : null;
 
   const statusVariant = matterStatusVariant(matter.status);
-  const strip = buildStrip(
-    directEntries.map((entry: any) => ({
-      key: `timeline-${entry.key}`,
-      date: entry.date,
-      meetingId: entry.kind === "evidence" ? entry.meetingId : entry.item?.meeting_id,
-      kind: entry.kind,
-      title: entry.kind === "evidence" ? entry.title : entry.item?.title,
-      headline: entry.kind === "primary" ? matter.meta?.timeline_headlines?.[String(entry.item.id)] : null,
-      motions: entry.kind === "primary" ? entry.item.motions : [],
-      hasSpeakers: Boolean(entry.item?.meta?.participation?.speakers?.length),
-    })),
-    { today, ongoing: !matter.status || /active|pend|defer|tabled|hold|progress|review/i.test(matter.status) },
-  );
-
   const shortDate = (d: string | null | undefined) =>
     d
       ? formatDate(d, { year: "numeric", month: "short", day: "numeric" })
@@ -715,7 +698,6 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               </div>
             ) : (
               <>
-                {strip && <TimelineStrip strip={strip} />}
                 <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-zinc-200">
                   {timelineEntries.map((entry: any) => {
                     if (entry.kind === "mention") {
