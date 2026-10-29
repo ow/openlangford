@@ -1,7 +1,9 @@
-"""Link named public speakers to their ``people`` record, deterministically.
+"""Link named public speakers and letter writers to their ``people`` record, deterministically.
 
-A speaker in ``agenda_items.meta.participation.speakers`` gets a ``person_id``
-only when every check passes:
+A speaker in ``agenda_items.meta.participation.speakers``, or the author of a
+letter in ``agenda_items.meta.written_participation`` (``documents[].letters``,
+or a legacy flat ``letters`` list), gets a ``person_id`` only when every check
+passes:
 
 1. the name, after dropping a trailing "(Street Name)" qualifier, is a full
    name: at least two capitalized words, none of them an initial ("N. Joel"
@@ -14,8 +16,9 @@ only when every check passes:
 
 Anything else removes a stale ``person_id``, so re-running is idempotent. No
 model calls: this is a cheap backfill over existing summaries and runs after
-the participation stages so a redraft gets its links back. The web app only
-links a speaker through this id; the ``who`` string is never an identity.
+the participation and written-submission stages so a redraft gets its links
+back. The web app only links a speaker or letter writer through this id; the
+``who`` string is never an identity.
 """
 from __future__ import annotations
 
@@ -23,7 +26,8 @@ import re
 from typing import Any
 
 # Bump when the linking rule changes; stamped in agenda_items.meta.participation_links_version.
-LINKS_VERSION = "1"
+# "2": letter authors in meta.written_participation are linked too.
+LINKS_VERSION = "2"
 STAMP = "participation_links_version"
 
 QUALIFIER = re.compile(r"\s*\([^()]*\)\s*$")
@@ -37,7 +41,7 @@ NOT_A_PERSON = {
     "city", "district", "school", "church", "club", "foundation", "chamber", "commerce", "network", "alliance",
     "coalition", "partnership", "consulting", "architects", "engineering", "construction", "realty", "services",
     "avenue", "road", "street", "drive", "highway", "way", "place", "crescent", "terrace", "lane", "langford",
-    "staff", "mayor", "councillor", "unknown", "anonymous",
+    "staff", "mayor", "councillor", "unknown", "anonymous", "redacted", "withheld",
 }
 OFFICIAL_ROLE = re.compile(
     r"\b(?:mayor|councill?or|director|manager|clerk|cao|chief|officer|planner|engineer|administrator|"
@@ -94,7 +98,7 @@ def person_for(who: str, registry: dict[str, int | None]) -> int | None:
 
 
 def link_speakers(speakers: list[dict], registry: dict[str, int | None]) -> tuple[list[dict], bool]:
-    """Speakers with ``person_id`` set or removed per the rule, and whether anything changed."""
+    """Speakers (or letters) with ``person_id`` set or removed per the rule, and whether anything changed."""
     out, changed = [], False
     for speaker in speakers:
         pid = person_for(speaker.get("who") or "", registry)
@@ -107,6 +111,31 @@ def link_speakers(speakers: list[dict], registry: dict[str, int | None]) -> tupl
             updated["person_id"] = pid
         out.append(updated)
     return out, changed
+
+
+def letters_of(written: dict | None) -> list[dict]:
+    """Every letter in a written_participation value, in either stored shape."""
+    if not written:
+        return []
+    if "documents" in written:
+        return [letter for doc in written.get("documents") or [] for letter in (doc or {}).get("letters") or []]
+    return list(written.get("letters") or [])
+
+
+def link_letters(written: dict, registry: dict[str, int | None]) -> tuple[dict, bool]:
+    """``written_participation`` with each letter author linked per the rule, and whether anything changed."""
+    if "documents" in written:
+        documents, changed = [], False
+        for doc in written.get("documents") or []:
+            if not isinstance(doc, dict) or not doc.get("letters"):
+                documents.append(doc)
+                continue
+            letters, doc_changed = link_speakers(doc["letters"], registry)
+            changed |= doc_changed
+            documents.append({**doc, "letters": letters} if doc_changed else doc)
+        return ({**written, "documents": documents} if changed else written), changed
+    letters, changed = link_speakers(written.get("letters") or [], registry)
+    return ({**written, "letters": letters} if changed else written), changed
 
 
 def _paginate(build, page: int = 1000) -> list[dict]:
@@ -132,16 +161,27 @@ def load_registry(supabase: Any) -> tuple[dict[str, int | None], set[int]]:
 
 def link_item(supabase: Any, item: dict, registry: dict[str, int | None], *, dry_run: bool = False,
               force: bool = False) -> dict:
-    """Link one item's speakers. ``item`` has id, meta, updated_at. Writes guarded by updated_at."""
+    """Link one item's speakers and letter authors. ``item`` has id, meta, updated_at. Writes guarded by updated_at."""
     meta = item.get("meta") or {}
+    new_meta = dict(meta)
     participation = meta.get("participation") or {}
-    speakers, changed = link_speakers(participation.get("speakers") or [], registry)
+    speakers, speakers_changed = link_speakers(participation.get("speakers") or [], registry)
+    if participation.get("speakers"):
+        new_meta["participation"] = {**participation, "speakers": speakers}
+    written = meta.get("written_participation")
+    letters_changed = False
+    if isinstance(written, dict):
+        new_meta["written_participation"], letters_changed = link_letters(written, registry)
+    changed = speakers_changed or letters_changed
     linked = [s["person_id"] for s in speakers if s.get("person_id") is not None]
+    letters_linked = [l["person_id"] for l in letters_of(new_meta.get("written_participation"))
+                      if isinstance(l, dict) and l.get("person_id") is not None]
     stamped = meta.get(STAMP) == LINKS_VERSION
-    result = {"id": item["id"], "changed": changed, "linked": linked, "written": False}
-    if dry_run or (not changed and stamped and not force):
+    result = {"id": item["id"], "changed": changed, "linked": linked, "letters_linked": letters_linked,
+              "written": False, "would_write": force or changed or not stamped}
+    if dry_run or not result["would_write"]:
         return result
-    new_meta = {**meta, "participation": {**participation, "speakers": speakers}, STAMP: LINKS_VERSION}
+    new_meta[STAMP] = LINKS_VERSION
     query = supabase.table("agenda_items").update({"meta": new_meta}).eq("id", item["id"])
     if item.get("updated_at"):
         query = query.eq("updated_at", item["updated_at"])

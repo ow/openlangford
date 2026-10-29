@@ -3,7 +3,9 @@ from pipeline.ingestion.participation_person_links import (
     STAMP,
     build_registry,
     full_name,
+    letters_of,
     link_item,
+    link_letters,
     link_speakers,
     official_ids,
 )
@@ -131,3 +133,70 @@ def test_link_item_dry_run_and_up_to_date_items_do_not_write():
 def test_link_item_reports_a_lost_race():
     result = link_item(FakeSupabase(data=()), item(), registry())
     assert not result["written"] and result["conflict"]
+
+
+def letter(who, **extra):
+    return {"who": who, "position": "opposes", "topic": "t", "point": "p", "sent": "", **extra}
+
+
+def written(*letters):
+    return {"version": "3", "documents": [
+        {"extracted_document_id": 5, "document_id": 6, "title": "Correspondence", "letters": list(letters)},
+        {"extracted_document_id": 7, "document_id": 8, "letters": []},
+    ]}
+
+
+def test_letter_authors_follow_the_same_rule():
+    out, changed = link_letters(written(
+        letter("Tanya Sunshine (Langvista Drive)"),
+        letter("A resident"),
+        letter("T. Sunshine"),
+        letter("Pat Smith"),
+        letter("Dana Ross"),
+        letter("Kim Hall, Westhills Land Corporation"),
+        letter("John Redacted Sunshine"),
+    ), registry())
+    assert changed
+    ids = [l.get("person_id") for l in letters_of(out)]
+    assert ids == [1, None, None, None, None, None, None]
+    assert out["version"] == "3" and out["documents"][1] == {"extracted_document_id": 7, "document_id": 8, "letters": []}
+    assert out["documents"][0]["title"] == "Correspondence"
+    assert out["documents"][0]["letters"][0]["who"] == "Tanya Sunshine (Langvista Drive)"  # stored text untouched
+
+
+def test_legacy_flat_letters_and_idempotent_rerun():
+    out, changed = link_letters({"letters": [letter("Joel Nash")]}, registry())
+    assert changed and out["letters"][0]["person_id"] == 9
+    again, changed_again = link_letters(out, registry())
+    assert not changed_again and again is out
+
+
+def test_stale_letter_link_is_removed():
+    out, changed = link_letters(written(letter("A resident", person_id=1)), registry())
+    assert changed and "person_id" not in letters_of(out)[0]
+
+
+def test_link_item_links_letters_without_inventing_a_participation_block():
+    sb = FakeSupabase()
+    result = link_item(sb, {"id": 11, "updated_at": "t", "meta": {"written_participation": written(letter("Tanya Sunshine"))}},
+                       registry())
+    assert result["written"] and result["linked"] == [] and result["letters_linked"] == [1]
+    payload = sb.log[0][1]["meta"]
+    assert "participation" not in payload and payload[STAMP] == LINKS_VERSION
+    assert payload["written_participation"]["documents"][0]["letters"][0]["person_id"] == 1
+
+
+def test_link_item_links_speakers_and_letters_together():
+    sb = FakeSupabase()
+    meta = {"participation": {"speakers": [{"who": "Tanya Sunshine"}]}, "written_participation": written(letter("Joel Nash"))}
+    result = link_item(sb, {"id": 12, "updated_at": "t", "meta": meta}, registry())
+    assert result["linked"] == [1] and result["letters_linked"] == [9]
+    assert "person_id" not in meta["written_participation"]["documents"][0]["letters"][0]  # input not mutated
+
+
+def test_an_older_stamp_is_rewritten_even_when_nothing_changes():
+    sb = FakeSupabase()
+    current = {"id": 13, "updated_at": "t", "meta": {STAMP: "1", "participation": {"speakers": [{"who": "A resident"}]}}}
+    result = link_item(sb, current, registry())
+    assert not result["changed"] and result["would_write"] and result["written"]
+    assert sb.log[0][1]["meta"][STAMP] == LINKS_VERSION == "2"
