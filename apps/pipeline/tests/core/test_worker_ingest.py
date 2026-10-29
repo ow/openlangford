@@ -22,8 +22,18 @@ def test_ingest_completion_requires_advertised_sources(tmp_path,summary,has_minu
     for method in ['select','eq']:
         getattr(meeting,method).return_value=meeting
     meeting.execute.return_value.data=[{'id':42,'video_url':None,'summary':summary,'has_agenda':True,'has_minutes':has_minutes}]
+    # mark_source_meeting_ingested (pipeline.ops) only records 'ingested' when the
+    # public meeting has content and it finds the source row it is about to update.
+    agenda_items=MagicMock()
+    for method in ['select','eq','limit']:
+        getattr(agenda_items,method).return_value=agenda_items
+    agenda_items.execute.return_value.count=3
     sources=MagicMock()
-    client=MagicMock();client.table.side_effect=lambda name:meeting if name=='meetings' else sources
+    for method in ['select','eq']:
+        getattr(sources,method).return_value=sources
+    sources.execute.return_value.data=[{'id':7,'status':'documents_downloaded','ingested_meeting_id':None}]
+    tables={'meetings':meeting,'agenda_items':agenda_items,'source_meetings':sources}
+    client=MagicMock();client.table.side_effect=lambda name:tables[name]
     archiver=MagicMock()
     archiver._ingest_meetings.return_value={'source_only_refresh':source_only} if source_only is not None else None
     archiver.extract_documents_for_meeting.return_value={'skipped':'html_only_agenda','incomplete_attachment_extraction':True}
@@ -37,6 +47,7 @@ def test_ingest_completion_requires_advertised_sources(tmp_path,summary,has_minu
         assert not archiver._embed_new_content.called
     else:
         assert sources.update.call_args.args[0]=={'status':'ingested','ingested_meeting_id':42}
+        assert sources.update.return_value.eq.call_args.args==('id',7)
         assert finish.call_args.kwargs['result']['ingestion_skipped'] is (source_only is None)
         if source_only:
             assert not archiver.extract_documents_for_meeting.called
