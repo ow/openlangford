@@ -280,7 +280,7 @@ export async function loader({ request, context: loaderContext }: Route.LoaderAr
               if (error) console.error("Failed to cache follow-ups:", error.message);
             }
 
-            captureServerEvent("$ai_generation", getClientIP(request), {
+            captureServerEvent("$ai_generation", {
               $ai_trace_id: crypto.randomUUID(),
               $ai_model: aiModel,
               $ai_provider: aiProvider,
@@ -301,7 +301,7 @@ export async function loader({ request, context: loaderContext }: Route.LoaderAr
         }
       } catch (error: any) {
         console.error("Streaming search error:", error);
-        captureServerEvent("$ai_generation", getClientIP(request), {
+        captureServerEvent("$ai_generation", {
           $ai_trace_id: crypto.randomUUID(),
           $ai_model: aiModel,
           $ai_provider: aiProvider,

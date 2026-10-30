@@ -1,4 +1,19 @@
+import { ANONYMOUS_EVENT_PROPERTIES } from "./analytics-privacy";
+
 const POSTHOG_HOST = "https://us.i.posthog.com";
+
+/**
+ * The event body sent to PostHog. Each event gets a fresh random id, never the visitor's IP address,
+ * account id or email, and no person profile (lib/analytics-privacy.ts).
+ */
+export function serverEventBody(apiKey: string, event: string, properties?: Record<string, any>) {
+  return {
+    api_key: apiKey,
+    event,
+    distinct_id: crypto.randomUUID(),
+    properties: { ...properties, ...ANONYMOUS_EVENT_PROPERTIES, $lib: "server" },
+  };
+}
 
 /**
  * Fire-and-forget server-side PostHog event via HTTP.
@@ -9,7 +24,6 @@ const POSTHOG_HOST = "https://us.i.posthog.com";
  */
 export function captureServerEvent(
   event: string,
-  distinctId: string,
   properties?: Record<string, any>,
   waitUntil?: (promise: Promise<any>) => void,
 ): void {
@@ -24,12 +38,7 @@ export function captureServerEvent(
   const promise = fetch(`${POSTHOG_HOST}/capture/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      api_key: apiKey,
-      event,
-      distinct_id: distinctId,
-      properties: { ...properties, $lib: "server" },
-    }),
+    body: JSON.stringify(serverEventBody(apiKey, event, properties)),
   }).catch(() => {
     // Fire-and-forget: swallow errors to avoid blocking the response
   });
