@@ -10,6 +10,7 @@ import publicContent from "../public-content-version.json";
 
 import { EMAIL_DISPATCH_CRON, dispatchEmailAlerts } from "./email-dispatch";
 import { enqueueEnabled, enqueueMeetingEmails } from "./email-enqueue";
+import { discordPostsEnabled, runDiscordPosts } from "./discord-posts";
 import { negotiateMarkdown } from "./markdown-negotiation";
 import { publicMeetingCache } from "./public-meeting-cache";
 import { contentVersion } from "./content-version";
@@ -95,6 +96,14 @@ export default {
           : Promise.resolve()
         ).then(() => dispatchEmailAlerts(env).catch(() => { console.error("[Email alerts] Dispatch failed; durable queue retained"); })),
       );
+      // Discord meeting digests: no-op unless DISCORD_POSTS_ENABLED and the webhook secret are set.
+      if (discordPostsEnabled(env)) {
+        ctx.waitUntil(
+          runDiscordPosts(env, getSupabaseAdminClient())
+            .then((s) => { if (s.results.length) console.log("[Discord]", JSON.stringify(s)); })
+            .catch(() => { console.error("[Discord] Run failed; will retry next run"); }),
+        );
+      }
       return;
     }
     if (controller.cron === CALENDAR_CRON) {

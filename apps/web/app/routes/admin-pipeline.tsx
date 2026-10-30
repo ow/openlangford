@@ -44,25 +44,34 @@ import {
 } from "../lib/pipeline-status";
 import { getAiUsageDashboard } from "../services/ai-usage-admin.server";
 import { AiUsageSection } from "../components/admin/ai-usage-section";
+import { DiscordPostsSection } from "../components/admin/discord-posts-section";
+import { getDiscordAdmin, postDiscordNow } from "../services/channels/discord-admin.server";
+import type { DiscordEnv } from "../../workers/discord-posts";
 
-export async function loader({ request }: Route.LoaderArgs) {
+/** Runtime vars and secrets (never inlined at build time). */
+function discordEnv(context: Route.LoaderArgs["context"]): DiscordEnv {
+  return ((context as any)?.cloudflare?.env ?? {}) as DiscordEnv;
+}
+
+export async function loader({ request, context }: Route.LoaderArgs) {
   await requireAdmin(request);
   const supabase = getSupabaseAdminClient();
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page") || "1");
   const q = url.searchParams.get("q") || "";
-  const [dashboard, aiUsage] = await Promise.all([
+  const [dashboard, aiUsage, discord] = await Promise.all([
     getPipelineDashboard(supabase, {
       page: Number.isFinite(page) ? page : 1,
       search: q,
       pageSize: 25,
     }),
     getAiUsageDashboard(supabase),
+    getDiscordAdmin(discordEnv(context), supabase, url.searchParams.get("discord_preview")),
   ]);
-  return { ...dashboard, aiUsage };
+  return { ...dashboard, aiUsage, discord };
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   const user = await requireAdmin(request);
   const supabase = getSupabaseAdminClient();
   const formData = await request.formData();
@@ -75,6 +84,13 @@ export async function action({ request }: Route.ActionArgs) {
   const sourceMeetingId = formData.get("source_meeting_id") as string | null;
   const meetingId = formData.get("meeting_id") as string | null;
   const table = formData.get("table") as string | null;
+
+  if (intent === "discord_post") {
+    const slug = (formData.get("discord_slug") as string | null)?.trim();
+    if (!slug) return { error: "Missing meeting." };
+    const result = await postDiscordNow(discordEnv(context), supabase, slug);
+    return result.error ? { error: result.error } : { success: result.success ?? "Posted to Discord." };
+  }
 
   if (intent === "cancel_job") {
     if (!jobId) return { error: "Missing job id." };
@@ -584,6 +600,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
     sourceMeetingsPage,
     events,
     aiUsage,
+    discord,
   } = loaderData;
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
@@ -873,6 +890,8 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
             </div>
           )}
         </section>
+
+        <DiscordPostsSection discord={discord} isSubmitting={isSubmitting} />
 
         <AiUsageSection usage={aiUsage} />
       </div>

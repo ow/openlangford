@@ -23,6 +23,9 @@ declare namespace Cloudflare {
 		ALERT_WORKER_KEY?: string; // runtime-only secret; never inlined by Vite
 		RESEND_API_KEY?: string; // runtime-only secret for contact-form notifications; never inlined by Vite
 		EMAIL_ALERT_START_DATE?: string; // YYYY-MM-DD go-live meeting date; empty disables Worker enqueue
+		DISCORD_POSTS_ENABLED?: string; // global pause for Discord digests; only "true" posts
+		DISCORD_POSTS_START_DATE?: string; // optional YYYY-MM-DD override of EMAIL_ALERT_START_DATE for Discord
+		DISCORD_WEBHOOK_URL?: string; // runtime-only secret (wrangler secret put DISCORD_WEBHOOK_URL); never inlined by Vite
 		AI_PROVIDER: "openai";
 		AI_MODEL: "gpt-6-luna";
 		VITE_SUPABASE_URL: "https://zxcvifwkaxtdfpanlwtl.supabase.co";
