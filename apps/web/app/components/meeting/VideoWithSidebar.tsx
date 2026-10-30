@@ -14,7 +14,7 @@ import {
 import { displayTitle, lastName } from "../../lib/display-text";
 import { EnhancedVideoScrubber } from "./EnhancedVideoScrubber";
 import { MotionOutcomeBadge } from "../motion-outcome-badge";
-import { MeetingVideo, type MeetingVideoControls, type PosterLabel } from "./MeetingVideo";
+import { MeetingVideo, type MeetingVideoControls, type MeetingVideoProps, type PosterLabel } from "./MeetingVideo";
 import { SpeakerName } from "../ui/speaker-name";
 
 interface VideoWithSidebarProps {
@@ -34,6 +34,8 @@ interface VideoWithSidebarProps {
   setShowCaption: (show: boolean) => void;
   onVideoError?: () => void;
   onTranscriptOpen?: () => void;
+  /** The stream couldn't be found: show this message and link instead of the spinner. */
+  unavailable?: MeetingVideoProps["unavailable"];
 }
 
 type SidebarMode = "agenda" | "transcript";
@@ -76,6 +78,7 @@ export function VideoWithSidebar({
   setShowCaption,
   onVideoError,
   onTranscriptOpen,
+  unavailable,
 }: VideoWithSidebarProps) {
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>("agenda");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -235,6 +238,7 @@ export function VideoWithSidebar({
             setShowCaption={setShowCaption}
             totalDuration={totalDuration}
             onVideoError={onVideoError}
+            unavailable={unavailable}
           />
         </div>
 

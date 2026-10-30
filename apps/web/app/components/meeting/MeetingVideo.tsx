@@ -25,7 +25,7 @@ export interface MeetingVideoControls {
 
 export type PosterLabel = { title: string; date: string; eyebrow?: string | null };
 
-interface MeetingVideoProps {
+export interface MeetingVideoProps {
   videoPlayer: MeetingVideoControls;
   directVideoUrl?: string | null;
   directAudioUrl?: string | null;

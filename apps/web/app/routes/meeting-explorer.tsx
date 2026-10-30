@@ -133,19 +133,19 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
   // played in a <video> element), so seeking works from every timestamp here.
   const hasVideo = Boolean(rawMeeting.video_url);
   const media = useMeetingMedia(rawMeeting.video_url, rawMeeting.id);
-  const [videoFailed, setVideoFailed] = useState(false);
-  const handleVideoError = useCallback(() => setVideoFailed(true), []);
+  // First failure drops the cached stream and fetches a fresh one; a second shows the fallback link.
+  const handleVideoError = media.reportFailure;
   const videoPlayer = useVideoPlayer({
-    directVideoUrl: videoFailed ? null : media.directVideoUrl,
-    directAudioUrl: videoFailed ? null : media.directAudioUrl,
+    directVideoUrl: media.directVideoUrl,
+    directAudioUrl: media.directAudioUrl,
     meetingId: rawMeeting.id,
     onError: handleVideoError,
   });
   const [showCaption, setShowCaption] = useState(true);
-  const videoUnavailable = media.status === "unavailable" || videoFailed;
+  const videoUnavailable = media.status === "unavailable";
   const canSeek = hasVideo && !videoUnavailable;
   const seekTo = videoPlayer.seekTo;
-  const streamReady = Boolean(media.directVideoUrl) && !videoFailed;
+  const streamReady = Boolean(media.directVideoUrl);
   // A jump requested before the stream URL arrives (or a ?t=123 deep link) waits for it.
   const [pendingSeek, setPendingSeek] = useState<number | null>(() => {
     const t = Number(searchParams.get("t"));
@@ -391,7 +391,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
   const sourceLinks = [
     meeting.agenda_url && { href: meeting.agenda_url, label: "Agenda PDF" },
     meeting.minutes_url && { href: meeting.minutes_url, label: "Minutes PDF" },
-    meeting.video_url && { href: meeting.video_url, label: "Official video" },
+    meeting.video_url && { href: meeting.video_url, label: media.provider?.label ?? "Official video" },
   ].filter(Boolean) as { href: string; label: string }[];
 
   const tabTrigger =
@@ -448,8 +448,8 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                 <MeetingVideo
                   controls="bar"
                   videoPlayer={videoPlayer}
-                  directVideoUrl={videoFailed ? null : media.directVideoUrl}
-                  directAudioUrl={videoFailed ? null : media.directAudioUrl}
+                  directVideoUrl={media.directVideoUrl}
+                  directAudioUrl={media.directAudioUrl}
                   posterUrl={meeting.meta?.poster?.url}
                   posterLabel={{
                     title: meeting.title,
@@ -469,8 +469,8 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                     videoUnavailable
                       ? {
                           message: "This video can't be played here right now.",
-                          href: meeting.video_url,
-                          linkLabel: "Watch on the City's site",
+                          href: media.provider?.deepLink(meeting.video_url, videoPlayer.currentTime) ?? meeting.video_url,
+                          linkLabel: media.provider?.watchElsewhereLabel ?? "Watch on the City's site",
                         }
                       : null
                   }

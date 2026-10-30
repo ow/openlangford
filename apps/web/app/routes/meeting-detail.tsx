@@ -28,7 +28,6 @@ import type {
 } from "../lib/types";
 import {
   Link,
-  useRevalidator,
   useRouteLoaderData,
   useSearchParams,
 } from "react-router";
@@ -83,6 +82,7 @@ import {
 } from "../lib/colors";
 import { useMeetingTranscript } from "../hooks/useMeetingTranscript";
 import { useVideoPlayer } from "../hooks/useVideoPlayer";
+import { useMeetingMedia } from "../hooks/useMeetingMedia";
 import { formatSpeakerName } from "../lib/speaker-labels";
 import { useSpeakerStats } from "../hooks/useSpeakerStats";
 import { getMeetingDuration } from "../lib/timeline-utils";
@@ -301,26 +301,10 @@ function MeetingDetailContent({ loaderData }: any) {
     [rawAttendance, people],
   );
 
-  // Vimeo data — fetched client-side so it doesn't block page load
-  const [vimeoData, setVimeoData] = useState<{
-    direct_url?: string | null;
-    direct_audio_url?: string | null;
-  } | null>(null);
-
-  useEffect(() => {
-    if (!rawMeeting.video_url) return;
-    const params = new URLSearchParams({
-      video_url: rawMeeting.video_url,
-      meeting_id: String(rawMeeting.id),
-    });
-    fetch(`/api/vimeo-url?${params}`)
-      .then((res) => res.json())
-      .then((data: any) => setVimeoData(data))
-      .catch(() => setVimeoData(null));
-  }, [rawMeeting.video_url, rawMeeting.id]);
-
-  const directVideoUrl = vimeoData?.direct_url;
-  const directAudioUrl = vimeoData?.direct_audio_url;
+  // Video stream, resolved client-side through the municipality's video provider so it doesn't block page load
+  const media = useMeetingMedia(rawMeeting.video_url, rawMeeting.id);
+  const directVideoUrl = media.directVideoUrl;
+  const directAudioUrl = media.directAudioUrl;
 
   // UI state
   const [expandedAgendaItemId, setExpandedAgendaItemId] = useState<
@@ -361,35 +345,9 @@ function MeetingDetailContent({ loaderData }: any) {
     return () => window.removeEventListener("hashchange", openLinkedTranscript);
   }, [transcript]);
 
-  // Track if we've already reported a video error
-  const hasReportedVideoError = useRef(false);
   const hasAppliedInitialTime = useRef(false);
-  const revalidator = useRevalidator();
-
-  const handleVideoError = useCallback(() => {
-    if (!hasReportedVideoError.current && meeting?.id) {
-      hasReportedVideoError.current = true;
-      console.error(
-        "[Video] Error detected, reporting failure and revalidating...",
-      );
-
-      const formData = new FormData();
-      formData.append("meetingId", meeting.id.toString());
-
-      fetch("/api/report-video-failure", {
-        method: "POST",
-        body: formData,
-      })
-        .then(() => {
-          console.log("Reported failure. Revalidating...");
-          revalidator.revalidate();
-          setTimeout(() => {
-            hasReportedVideoError.current = false;
-          }, 5000);
-        })
-        .catch((e) => console.error("Failed to report video error", e));
-    }
-  }, [meeting?.id, revalidator]);
+  // First failure drops the cached stream and fetches a fresh one; a second shows the fallback link.
+  const handleVideoError = media.reportFailure;
 
   // Video player hook
   const videoPlayer = useVideoPlayer({
@@ -401,6 +359,21 @@ function MeetingDetailContent({ loaderData }: any) {
       handleVideoError();
     },
   });
+
+  // A jump requested before the stream URL arrives (timestamps, ?t=123) waits for it.
+  const streamReady = Boolean(directVideoUrl);
+  const playerSeekTo = videoPlayer.seekTo;
+  const [pendingSeek, setPendingSeek] = useState<number | null>(null);
+  useEffect(() => {
+    if (pendingSeek == null || !streamReady) return;
+    playerSeekTo(pendingSeek);
+    setPendingSeek(null);
+  }, [pendingSeek, streamReady, playerSeekTo]);
+  const seekVideo = useCallback(
+    (seconds: number) => (streamReady ? playerSeekTo(seconds) : setPendingSeek(seconds)),
+    [streamReady, playerSeekTo],
+  );
+  const sidebarPlayer = useMemo(() => ({ ...videoPlayer, seekTo: seekVideo }), [videoPlayer, seekVideo]);
 
   useEffect(() => {
     if (videoPlayer.isPlaying || videoPlayer.videoEnabled || videoPlayer.currentTime > 0) {
@@ -417,8 +390,8 @@ function MeetingDetailContent({ loaderData }: any) {
     if (!Number.isFinite(startTime) || startTime < 0) return;
 
     hasAppliedInitialTime.current = true;
-    videoPlayer.seekTo(startTime);
-  }, [searchParams, videoPlayer]);
+    seekVideo(startTime);
+  }, [searchParams, seekVideo]);
 
   const resolveSpeakerName = (seg: {
     person?: { name: string } | null;
@@ -455,7 +428,7 @@ function MeetingDetailContent({ loaderData }: any) {
     if (itemId) {
       setExpandedAgendaItemId(itemId);
     }
-    videoPlayer.seekTo(startTime);
+    seekVideo(startTime);
   };
 
   // Handle agenda item expansion
@@ -502,9 +475,9 @@ function MeetingDetailContent({ loaderData }: any) {
       requestAnimationFrame(() => {
         watchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
-      videoPlayer.seekTo(seconds);
+      seekVideo(seconds);
     },
-    [videoPlayer],
+    [seekVideo],
   );
 
   const facts = [
@@ -645,7 +618,7 @@ function MeetingDetailContent({ loaderData }: any) {
             {/* Kept mounted so timestamps can seek before it is opened */}
             <div className={cn(!videoOpen && "hidden")}>
               <VideoWithSidebar
-                videoPlayer={videoPlayer}
+                videoPlayer={sidebarPlayer}
                 directVideoUrl={directVideoUrl}
                 directAudioUrl={directAudioUrl}
                 meeting={meeting}
@@ -663,6 +636,15 @@ function MeetingDetailContent({ loaderData }: any) {
                 showCaption={showCaption}
                 setShowCaption={setShowCaption}
                 onVideoError={handleVideoError}
+                unavailable={
+                  media.status === "unavailable"
+                    ? {
+                        message: "This video can't be played here right now.",
+                        href: media.provider?.deepLink(meeting.video_url, videoPlayer.currentTime) ?? meeting.video_url,
+                        linkLabel: media.provider?.watchElsewhereLabel ?? "Watch on the City's site",
+                      }
+                    : null
+                }
               />
             </div>
           </div>
@@ -751,7 +733,7 @@ function MeetingDetailContent({ loaderData }: any) {
         currentTime={videoPlayer.currentTime}
         onSegmentClick={(time) => {
           setFocusedTranscriptSegmentId(null);
-          videoPlayer.seekTo(time);
+          seekVideo(time);
         }}
         searchQuery={transcriptSearchQuery}
         onSearchChange={setTranscriptSearchQuery}
