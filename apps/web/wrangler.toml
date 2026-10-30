@@ -33,6 +33,9 @@ EMAIL_ALERTS_AVAILABLE = "true"
 EMAIL_ALERT_DISPATCH_ENABLED = "true"
 # Worker-side enqueue cutoff (YYYY-MM-DD, match Edge ALERT_START_DATE). Empty disables enqueue.
 EMAIL_ALERT_START_DATE = "2026-10-29"
+# Discord meeting digests (issue #67). Global pause: only "true" posts. The webhook is the
+# DISCORD_WEBHOOK_URL Worker secret; eligibility reuses EMAIL_ALERT_START_DATE.
+DISCORD_POSTS_ENABLED = "false"
 AI_PROVIDER = "openai"
 AI_MODEL = "gpt-6-luna"
 # No VIMEO_PROXY_URL / VIMEO_PROXY_FALLBACK_URL: Langford's video provider is eSCRIBE (ISI Live).

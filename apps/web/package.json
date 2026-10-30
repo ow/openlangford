@@ -12,7 +12,8 @@
     "deploy": "pnpm run build && wrangler deploy",
     "deploy:preview": "pnpm run build && wrangler versions upload",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "discord:post": "node scripts/discord-post.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
