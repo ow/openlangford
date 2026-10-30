@@ -56,7 +56,10 @@ Each bullet has `text` (the sentence) and `links`: 0 to 3 short noun phrases cop
 (a place, facility, project or topic, e.g. "2609 Sooke Road", "Jacklin Road", "the 2026–2030 budget"), each with the `agenda_item_id` of the agenda item
 (from `agenda_items_for_context_only` or a decision's `agenda_item_id`) that the phrase is about. Link only where the item clearly matches; no links is fine.
 Never link a whole sentence or a verb, and link each agenda item only once across all bullets (its first mention).
-If no outcome is recorded (the inputs only say what was scheduled or on the agenda), return an empty `bullets` list and an empty `description`;
+When `decisions` is empty, the existing summary is the record: its past-tense outcomes ("Recommended…", "Approved…", "Gave first reading…",
+"Heard a presentation…") are outcomes to write up, the same as recorded decisions.
+Only if nothing happened beyond scheduling and housekeeping (the summary says what "will" be or was "scheduled", or only approves the agenda,
+minutes and adjournment), return an empty `bullets` list and an empty `description`;
 never write a bullet saying nothing was decided or recorded.
 
 Style rules (from the site's writing guide):
@@ -374,7 +377,8 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
             stage="extraction", schema=Highlights, system=SYSTEM,
         )
         remaining = problems(_texts(revised))
-        if len(remaining) <= len(issues):
+        # An empty revision has no problems but says nothing: keep the draft that does.
+        if revised.bullets and len(remaining) <= len(issues):
             result, issues = revised, remaining
     if issues:
         print(f"  [Highlights] meeting {meeting_id}: kept with warnings: {'; '.join(issues)}")

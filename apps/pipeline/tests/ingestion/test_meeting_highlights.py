@@ -139,6 +139,16 @@ def test_write_none_removes_only_the_highlights_key():
     assert table.update.call_args.args[0] == {"meta": {"poster": {"url": "p.png"}}}
 
 
+def test_an_empty_revision_never_replaces_a_draft_with_bullets(monkeypatch):
+    meeting = {"id": 1, "status": "Completed", "summary": "- Approved X.", "meeting_date": "2009-07-20"}
+    monkeypatch.setattr(mh, "_load", lambda sb, mid: (meeting, [], {}, [{"id": 5, "title": "X"}]))
+    long_draft = H(["Approved " + "x " * 30 + "for Desmond Drive."], "Council approved X.")
+    drafts = iter([long_draft, H([], ""), H([], "")])
+    monkeypatch.setattr(mh.ai, "json", lambda *a, **k: next(drafts))
+    out = mh.generate(MagicMock(), 1)
+    assert out and out["bullets"][0].startswith("Approved")
+
+
 def test_write_retries_when_meta_changed_underneath():
     sb, table = _supabase({}, ["t1", "t2"], [[], [{"id": 7}]])
     assert mh.write_highlights(sb, 7, {"bullets": ["a."]})
