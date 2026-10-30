@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useFetcher, useRouteLoaderData } from "react-router";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/utils";
+import { AdminOnly } from "./ui/admin-only";
 
 interface IntelligenceSectionProps {
   itemId: number;
@@ -86,7 +87,7 @@ export function IntelligenceSection({
   return (
     <div>
       {!intelligence && !isAdmin ? null : !intelligence ? (
-        <div className="flex flex-wrap items-center gap-3">
+        <AdminOnly className="flex-wrap gap-3 py-1">
           <button
             type="button"
             onClick={generateIntelligence}
@@ -100,7 +101,7 @@ export function IntelligenceSection({
               AI summary of arguments, questions and tone
             </span>
           )}
-        </div>
+        </AdminOnly>
       ) : (
         <button
           type="button"

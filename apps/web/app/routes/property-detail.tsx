@@ -1,5 +1,6 @@
 import { Link, useFetcher, useRouteLoaderData } from "react-router";
 import { requireAdmin } from "../lib/auth.server";
+import { AdminOnly } from "../components/ui/admin-only";
 import { FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
@@ -71,14 +72,16 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 function Unlink({ field, id, isStreet }: { field: "matter_id" | "agenda_item_id"; id: number; isStreet: boolean }) {
   const fetcher = useFetcher<typeof action>();
-  if (fetcher.state !== "idle" || (fetcher.data as any)?.ok) return <span className="text-xs text-zinc-400">Removed</span>;
+  if (fetcher.state !== "idle" || (fetcher.data as any)?.ok) return <AdminOnly><span className="text-xs text-zinc-500">Removed</span></AdminOnly>;
   return (
-    <fetcher.Form method="post" className="shrink-0">
-      <input type="hidden" name={field} value={id} />
-      <button type="submit" className="py-1 text-xs font-medium text-zinc-400 hover:text-red-700 hover:underline">
-        Remove from this {isStreet ? "street" : "address"}
-      </button>
-    </fetcher.Form>
+    <AdminOnly>
+      <fetcher.Form method="post">
+        <input type="hidden" name={field} value={id} />
+        <button type="submit" className="text-xs font-medium text-amber-900 hover:text-red-700 hover:underline">
+          Remove from this {isStreet ? "street" : "address"}
+        </button>
+      </fetcher.Form>
+    </AdminOnly>
   );
 }
 

@@ -96,6 +96,7 @@ import {
   getDocumentTypeColor,
   getDocumentTypeLabel,
 } from "../lib/document-types";
+import { AdminOnly } from "../components/ui/admin-only";
 
 
 export function HydrateFallback() {
@@ -544,14 +545,15 @@ function MeetingDetailContent({ loaderData }: any) {
                   Timeline explorer
                 </Link>
               )}
-              {user && meeting.video_url && (
-                <Link
-                  to={`/speaker-alias?meetingId=${meeting.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-surface px-3 py-1 text-sm font-medium text-zinc-600 transition-colors hover:border-brand-300 hover:text-brand-700"
-                >
-                  <Mic className="h-3.5 w-3.5" />
-                  Aliases
-                </Link>
+              {meeting.video_url && (
+                <AdminOnly className="rounded-full pr-1">
+                  <Link
+                    to={`/speaker-alias?meetingId=${meeting.id}`}
+                    className="inline-flex items-center rounded-full bg-surface px-2.5 py-0.5 text-sm font-medium text-amber-900 hover:text-brand-700"
+                  >
+                    Speaker aliases
+                  </Link>
+                </AdminOnly>
               )}
             </>
           }
