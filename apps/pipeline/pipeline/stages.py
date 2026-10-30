@@ -38,6 +38,7 @@ from typing import Any, Callable, Iterable, Literal
 from pipeline.ai.usage import usage_context
 from pipeline.ingestion.matter_images import IMAGES_VERSION
 from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
+from pipeline.ingestion.meeting_highlights import HIGHLIGHTS_VERSION
 from pipeline.ingestion.motion_headlines import HEADLINE_VERSION
 from pipeline.ingestion.participation_minutes import MINUTES_VERSION as MINUTES_PARTICIPATION_VERSION
 from pipeline.ingestion.participation_person_links import LINKS_VERSION as PARTICIPATION_LINKS_VERSION
@@ -680,6 +681,60 @@ def run_motion_headlines(ctx: StageContext):
     return {"meetings": len(ids), "headlines": done}
 
 
+def _meeting_highlight_stamps(ctx: StageContext) -> list[dict]:
+    """Held meetings with a summary, with their highlights stamp."""
+    from pipeline.ingestion.meeting_highlights import SKIP_STATUSES
+
+    def q():
+        query = (ctx.supabase.table("meetings")
+                 .select("id, status, stamp:meta->highlights->>version")
+                 .not_.is_("summary", "null")
+                 .order("id"))
+        if ctx.since:
+            query = query.gte("meeting_date", ctx.since)
+        return query
+
+    return [{"id": r["id"], "highlights_version": r.get("stamp")}
+            for r in _paginate(q) if (r.get("status") or "") not in SKIP_STATUSES]
+
+
+def stale_meeting_highlights(ctx: StageContext) -> list[int]:
+    return select_stale(_meeting_highlight_stamps(ctx), "highlights_version", HIGHLIGHTS_VERSION)
+
+
+def run_meeting_highlights(ctx: StageContext):
+    from pipeline.ingestion.meeting_highlights import highlight_meeting
+
+    def missing() -> list[int]:
+        return sorted(r["id"] for r in _meeting_highlight_stamps(ctx) if ctx.force or r["highlights_version"] is None)
+
+    ids = _choose(ctx, "meeting-highlights", from_meetings=lambda: list(ctx.meeting_ids or []), backfill=missing)
+    if ctx.dry_run:
+        _preview("meetings to write plain-language highlights for", ids)
+        return None
+
+    def one(meeting_id: int) -> bool:
+        with usage_context(job="meeting-highlights", meeting_id=meeting_id):
+            try:
+                return bool(highlight_meeting(ctx.supabase, meeting_id))
+            except OSError:  # transient socket errors (EAGAIN) under concurrency: one retry
+                time.sleep(2)
+                return bool(highlight_meeting(ctx.supabase, meeting_id))
+
+    done = failed = 0
+    with ThreadPoolExecutor(max_workers=4 if len(ids) > 1 else 1) as pool:
+        futures = {meeting_id: pool.submit(one, meeting_id) for meeting_id in ids}
+        for meeting_id, future in futures.items():
+            try:  # one meeting failing shouldn't skip the rest
+                done += future.result()
+            except Exception as e:
+                failed += 1
+                print(f"  [!] Highlights for meeting {meeting_id} failed: {e}")
+    if ids:
+        print(f"  [Highlights] {done} meeting(s) written, {failed} failed, {len(ids) - done - failed} with nothing to highlight")
+    return {"meetings": len(ids), "written": done, "failed": failed}
+
+
 def run_other_documents(ctx: StageContext):
     import os
     from pipeline.paths import BASE_DIR
@@ -1183,6 +1238,13 @@ STAGES: list[Stage] = [
         description="Short newspaper-style headline per decided, non-procedural motion (home page lead). --target is a meeting id.",
         run=run_motion_headlines, when="post_ingest", scope="meeting", version=HEADLINE_VERSION,
         stale=stale_motion_headlines,
+    ),
+    Stage(
+        name="meeting-highlights",
+        description="2-4 plain-language outcome bullets and a <=155-char description per meeting (meetings.meta.highlights; "
+                    "never touches meetings.summary). --target is a meeting id; --since DATE.",
+        run=run_meeting_highlights, when="post_ingest", scope="meeting", version=HIGHLIGHTS_VERSION,
+        depends_on=("motion-headlines",), stale=stale_meeting_highlights,
     ),
     Stage(
         name="matter-images",

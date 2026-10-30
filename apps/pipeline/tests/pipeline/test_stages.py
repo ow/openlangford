@@ -30,7 +30,7 @@ class TestRegistry:
     def test_post_ingest_order_matches_the_previous_hardcoded_sequence(self):
         assert _names(stages.post_ingest_stages(exclude=("embeddings", "profile-refresh"))) == [
             "escribe-attachments", "document-relink", "other-documents", "written-submissions", "matter-history", "matter-summaries", "agenda-alignment",
-            "speaker-names", "participation-summaries", "participation-from-minutes", "participation-names", "participation-person-links", "motion-headlines", "matter-images", "matter-links", "properties", "property-summaries",
+            "speaker-names", "participation-summaries", "participation-from-minutes", "participation-names", "participation-person-links", "motion-headlines", "meeting-highlights", "matter-images", "matter-links", "properties", "property-summaries",
             "video-posters", "share-cards",
         ]
         assert _names(stages.post_ingest_stages())[0] == "embeddings"
@@ -214,3 +214,20 @@ class TestMotionHeadlinesStale:
         monkeypatch.setattr(stages, "_paginate", lambda build: rows)
         monkeypatch.setattr(stages, "HEADLINE_VERSION", "1")
         assert stages.stale_motion_headlines(StageContext(supabase=MagicMock())) == [1, 3]
+
+
+class TestMeetingHighlightsStale:
+    def test_missing_or_old_stamps_are_stale_and_unheld_meetings_are_skipped(self, monkeypatch):
+        rows = [
+            {"id": 1, "status": "Completed", "stamp": None},
+            {"id": 2, "status": "Completed", "stamp": "1"},
+            {"id": 3, "status": "Occurred", "stamp": "0"},
+            {"id": 4, "status": "Cancelled", "stamp": None},
+            {"id": 5, "status": "Planned", "stamp": None},
+        ]
+        monkeypatch.setattr(stages, "_paginate", lambda build: rows)
+        monkeypatch.setattr(stages, "HIGHLIGHTS_VERSION", "1")
+        assert stages.stale_meeting_highlights(StageContext(supabase=MagicMock())) == [1, 3]
+
+    def test_runs_after_motion_headlines(self):
+        assert "motion-headlines" in stages.get_stage("meeting-highlights").depends_on
