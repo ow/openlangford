@@ -153,6 +153,33 @@ class NameIndex:
         self.roster = _Tier(roster)
         self.extras = _Tier(extras)
 
+        self.shadowed: set[str] = set()
+
+    def shadow_namesakes(self, text: str) -> set[str]:
+        """Surnames that someone else in the recording also carries.
+
+        "App user Shelley King, please unmute" means a bare "Ms. King" later may
+        not be committee member Nadine King. A first name or initial before a
+        candidate's surname that disagrees with theirs shadows that surname: from
+        then on only a call that includes the right first name resolves to them.
+        """
+        by_surname = defaultdict(list)
+        for c in self.candidates:
+            by_surname[c.surname].append(c)
+        for m in re.finditer(rf"\b([A-Z][a-z]+|[A-Z]\.?)\s+({WORD})\b", text):
+            surname = _norm(m.group(2))
+            if surname not in by_surname:
+                continue
+            given = _norm(m.group(1))
+            if not given or given in NOT_GIVEN or re.fullmatch(TITLE, m.group(1).rstrip("."), re.I):
+                continue
+            if any(c.first == given or (len(given) == 1 and c.initial == given)
+                   or (c.first and len(given) >= 3 and SequenceMatcher(None, given, c.first).ratio() >= 0.8)
+                   or (not c.first and c.initial == given[:1]) for c in by_surname[surname]):
+                continue
+            self.shadowed.add(surname)
+        return self.shadowed
+
     def resolve(self, tokens: list[str], titled: bool) -> Candidate | None:
         words = [w for w in (_norm(t) for t in tokens) if w]
         if not words:
@@ -160,14 +187,15 @@ class NameIndex:
         hit = self.roster.exact(words, allow_first=True)
         if hit is False:
             return None
-        if hit:
-            return hit
-        if titled:
+        if not hit and titled:
             hit = self.roster.fuzzy(words)
-            if hit:
-                return hit
-        hit = self.extras.exact(words, allow_first=False)
-        return hit or None
+        if not hit:
+            hit = self.extras.exact(words, allow_first=False) or None
+        if hit and hit.surname in self.shadowed:
+            given = words[0] if len(words) >= 2 else None
+            if not (given and (given == hit.first or (not hit.first and given[:1] == hit.initial))):
+                return None
+        return hit
 
 
 # ── turns ────────────────────────────────────────────────────────────────
@@ -207,6 +235,12 @@ def _words(text: str) -> list[str]:
 
 
 CALL_RE = re.compile(rf"(?:\b(?P<title>{TITLE})\s+)?(?P<n1>{WORD})(?:\s+(?P<n2>{WORD}))?", re.I)
+NOT_GIVEN = {
+    "thank", "thanks", "okay", "ok", "yes", "yeah", "hi", "hello", "sorry", "good", "great", "dear", "and", "but",
+    "so", "go", "ahead", "the", "member", "members", "committee", "sergeant", "inspector", "staff", "constable",
+    "corporal", "superintendent", "sir", "user", "with", "from", "to", "for", "of", "in", "on", "by", "is", "as",
+    "app", "please", "now", "next", "also", "well", "right", "all", "uh", "um", "i", "a", "that", "this", "it",
+}
 STOP = {
     "the", "and", "a", "to", "of", "for", "you", "your", "i", "we", "it", "is", "that", "this", "on", "in",
     "go", "ahead", "please", "yes", "no", "okay", "ok", "all", "right", "thank", "thanks", "very", "much",
@@ -528,6 +562,7 @@ def identify_meeting(
     cands = candidates_from_people(attendees)
     extras = candidates_from_people(known_people or [], on_roster=False)
     index = NameIndex(cands, extras)
+    index.shadow_namesakes(" ".join(s.get("text_content") or "" for s in segments))
     chair = next((c for c in index.candidates if c.id == chair_person_id), None) or chair_from_minutes(minutes, index)
     turns = build_turns(segments)
     ev = text_evidence(turns, index, chair, motions)

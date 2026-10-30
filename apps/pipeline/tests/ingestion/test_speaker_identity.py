@@ -152,3 +152,21 @@ def test_unit_rejects_bad_vectors():
     assert si._unit([0.0] * 192) is None
     assert si._unit([1.0] * 10) is None
     assert si._unit([math.nan] + [1.0] * 191) is None
+
+
+def test_a_namesake_in_the_room_shadows_a_bare_surname():
+    roster = [{"id": 186, "name": "Nadine King"}, {"id": 2, "name": "Brandy Gordon"}]
+    segs = [
+        seg(1, "Speaker_9", 0, "App user Shelley King, please unmute yourself and provide your name."),
+        seg(2, "Speaker_10", 10, "S. King, Fire Hall Creek Road. Can you hear me?"),
+        seg(3, "Speaker_2", 20, "We apologize for that, Miss King."),
+        seg(4, "Speaker_10", 30, "I'm just wondering about the zero setback for the parkade behind our homes."),
+        seg(5, "Speaker_2", 40, "Is that adequate, Miss King?"),
+        seg(6, "Speaker_10", 50, "Yeah, I guess what I'm asking is whether the parkade goes right up to the fence."),
+    ]
+    res = si.identify_meeting(segs, roster)
+    assert res["labels"]["Speaker_10"].get("person_id") is None
+    idx = si.NameIndex(si.candidates_from_people(roster))
+    idx.shadow_namesakes("App user Shelley King, please unmute.")
+    assert idx.resolve(["King"], True) is None
+    assert idx.resolve(["Nadine", "King"], True).id == 186
