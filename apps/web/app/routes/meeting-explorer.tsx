@@ -145,16 +145,21 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
   const videoUnavailable = media.status === "unavailable" || videoFailed;
   const canSeek = hasVideo && !videoUnavailable;
   const seekTo = videoPlayer.seekTo;
-  const watchAt = useCallback((seconds: number) => seekTo(seconds), [seekTo]);
-
-  // ?t=123 deep links start the video there.
-  const appliedInitialTime = useRef(false);
-  useEffect(() => {
-    if (appliedInitialTime.current || !media.directVideoUrl) return;
+  const streamReady = Boolean(media.directVideoUrl) && !videoFailed;
+  // A jump requested before the stream URL arrives (or a ?t=123 deep link) waits for it.
+  const [pendingSeek, setPendingSeek] = useState<number | null>(() => {
     const t = Number(searchParams.get("t"));
-    appliedInitialTime.current = true;
-    if (Number.isFinite(t) && t > 0) seekTo(t);
-  }, [media.directVideoUrl, searchParams, seekTo]);
+    return Number.isFinite(t) && t > 0 ? t : null;
+  });
+  useEffect(() => {
+    if (pendingSeek == null || !streamReady) return;
+    seekTo(pendingSeek);
+    setPendingSeek(null);
+  }, [pendingSeek, streamReady, seekTo]);
+  const watchAt = useCallback(
+    (seconds: number) => (streamReady ? seekTo(seconds) : setPendingSeek(seconds)),
+    [streamReady, seekTo],
+  );
 
   const handleTabChange = (value: string) => {
     setSearchParams(
