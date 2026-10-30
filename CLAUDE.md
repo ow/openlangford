@@ -86,6 +86,10 @@ Every model call goes through one client per app; never call a provider SDK dire
 ### Pipeline stages
 `pipeline/stages.py` registers every post-ingest/enrichment stage (name, function, `post_ingest`|`backfill_only`, scope, version, dependencies) in run order. After ingestion the orchestrator runs the `post_ingest` stages in order, each isolated. Run one on demand with `main.py --stage NAME [--target ID] [--since DATE] [--stale] [--force] [--dry-run]` (`--stages` lists them). Stages that write AI output stamp a version (`matters.meta.summary_version`, `matters.meta.images_version`, `agenda_items.meta.participation_version`, `agenda_items.meta.participation_minutes_version` for the transcript-less `participation-from-minutes` stage); bump the module's `*_VERSION` after a prompt change and run `--stage X --stale`. Add new enrichment steps to the registry, not as new one-off flags.
 
+## Writing style
+
+All public text (page copy, notes stored in the database, and AI prompts that write summaries, headlines or descriptions) follows `docs/writing-style.md`: plain language for residents, outcomes first, no codes or database words ("matters", "records"), provenance in `meta` not visible text. Read it before writing or changing any of these.
+
 ## Environment Variables
 
 Public vars live in `wrangler.toml [vars]` (parsed at build time by `vite.config.ts`). Secrets must be set as:
