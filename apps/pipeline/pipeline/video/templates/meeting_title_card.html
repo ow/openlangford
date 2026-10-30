@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Meeting title card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=block">
+<style>
+  /* Same overlay as the on-page player poster (components/meeting/VideoWithSidebar.tsx PosterTitle),
+     scaled to 1280x720: frame, left-and-bottom scrim, brand accent bar, label / title / date. */
+  :root {
+    --brand-300: oklch(0.82 0.08 197);
+    --brand-400: oklch(0.71 0.1 198);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 720px; overflow: hidden; background: #0b1213; }
+  body { font-family: "Inter", system-ui, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; }
+  .card { position: relative; width: 1280px; height: 720px; overflow: hidden; background: #0b1213; }
+  .frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .scrim {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(6, 13, 14, 0.82) 0%, rgba(6, 13, 14, 0.5) 45%, rgba(6, 13, 14, 0.1) 100%),
+      linear-gradient(0deg, rgba(6, 13, 14, 0.75) 0%, rgba(6, 13, 14, 0) 55%);
+  }
+  .accent { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--brand-400); }
+  .label { position: absolute; left: 0; bottom: 0; max-width: 85%; padding: 0 64px 60px 72px; }
+  .eyebrow {
+    display: block; font-size: 20px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--brand-300);
+  }
+  .title {
+    display: block; margin-top: 8px; font-size: 68px; line-height: 1.05; font-weight: 800; letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .title.long { font-size: 56px; }
+  .date { display: block; margin-top: 12px; font-size: 28px; font-weight: 500; color: rgba(255, 255, 255, 0.8); }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <img class="frame" id="frame" alt="">
+  <div class="scrim"></div>
+  <div class="accent"></div>
+  <div class="label">
+    <span class="eyebrow" id="eyebrow"></span>
+    <span class="title" id="title"></span>
+    <span class="date" id="date"></span>
+  </div>
+</div>
+<script id="card-data" type="application/json">{"title":"Regular Council","eyebrow":"Council","date":"May 19, 2026","frame":null}</script>
+<script>
+// Wrapped so re-rendering into the same page never redeclares bindings.
+(() => {
+  const d = JSON.parse(document.getElementById("card-data").textContent);
+  const $ = (id) => document.getElementById(id);
+  $("title").textContent = d.title;
+  if (d.title.length > 30) $("title").classList.add("long");
+  if (d.eyebrow) $("eyebrow").textContent = d.eyebrow; else $("eyebrow").remove();
+  $("date").textContent = d.date || "";
+  // The renderer waits for data-ready (fonts loaded and the frame decoded, or failed).
+  const frameReady = new Promise((resolve) => {
+    if (!d.frame) return resolve("none");
+    $("frame").src = d.frame;
+    $("frame").decode().then(() => resolve("ok"), () => resolve("error"));
+  });
+  Promise.all([document.fonts.ready, frameReady]).then(([, frame]) => { document.body.dataset.ready = frame; });
+})();
+</script>
+</body>
+</html>

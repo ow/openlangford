@@ -46,7 +46,7 @@ from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
 from pipeline.ingestion.property_summaries import PROPERTY_SUMMARY_VERSION
 from pipeline.ingestion.speaker_identity import IDENTITY_VERSION as SPEAKER_IDENTITY_VERSION
 from pipeline.video.posters import POSTER_VERSION
-from pipeline.video.share_cards import CARD_VERSION as SHARE_CARD_VERSION
+from pipeline.video.share_cards import CARD_VERSION as SHARE_CARD_VERSION, TITLE_CARD_VERSION
 
 When = Literal["post_ingest", "backfill_only"]
 Scope = Literal["meeting", "matter", "global"]
@@ -1121,6 +1121,64 @@ def run_share_cards(ctx: StageContext):
     return {"meetings": len(ids), "made": made, "failed": failed}
 
 
+TITLE_CARD_SELECT = ("id, title, meeting_date, poster:meta->poster, title_key:meta->title_card->>key, "
+                     "organization:organizations(name)")
+
+
+def _title_card_rows(ctx: StageContext, meeting_ids: list[int] | None = None) -> list[dict]:
+    """Meetings with a poster frame (title cards need one)."""
+    def q():
+        query = (ctx.supabase.table("meetings").select(TITLE_CARD_SELECT)
+                 .not_.is_("meta->poster->>url", "null").order("id"))
+        if meeting_ids is not None:
+            query = query.in_("id", meeting_ids)
+        if ctx.since:
+            query = query.gte("meeting_date", ctx.since)
+        return query
+
+    if meeting_ids is not None and not meeting_ids:
+        return []
+    return _paginate(q)
+
+
+def stale_title_cards(ctx: StageContext) -> list[int]:
+    from pipeline.video.share_cards import title_card_key
+
+    return sorted(r["id"] for r in _title_card_rows(ctx) if r.get("title_key") != title_card_key(r))
+
+
+def run_title_cards(ctx: StageContext):
+    from pipeline.video.posters import save_meta_key
+    from pipeline.video.share_cards import make_title_card, title_card_key, title_renderer
+
+    def changed(rows: list[dict]) -> list[int]:
+        return [r["id"] for r in rows if ctx.force or r.get("title_key") != title_card_key(r)]
+
+    ids = _choose(ctx, "title-cards", from_meetings=lambda: changed(_title_card_rows(ctx, ctx.meeting_ids)),
+                  backfill=lambda: changed(_title_card_rows(ctx)))
+    if ctx.dry_run:
+        _preview("meetings to render title cards for", ids)
+        return None
+    if not ids:
+        return {"meetings": 0, "made": 0, "failed": []}
+    rows = {r["id"]: r for r in _title_card_rows(ctx, ids)}
+    made, failed = 0, []
+    with title_renderer() as renderer:
+        for mid in ids:
+            row = rows.get(mid)
+            try:
+                if row is None:
+                    raise ValueError("not found or no poster")
+                card = make_title_card(row, renderer)
+                save_meta_key(mid, "title_card", card)
+                made += 1
+                print(f"  [Title card] meeting {mid}: {card['url']}")
+            except Exception as e:  # CardError or upload/DB failure; one bad card never stops the rest
+                failed.append(mid)
+                print(f"  [!] Title card for meeting {mid} failed: {e}")
+    return {"meetings": len(ids), "made": made, "failed": failed}
+
+
 def councillors_for_meetings(supabase, meeting_ids: list[int]) -> list[int]:
     people: set[int] = set()
     for table in ("attendance", "key_statements"):
@@ -1299,6 +1357,14 @@ STAGES: list[Stage] = [
                     "(any meeting via --target); --stale re-renders when highlights, poster or template change.",
         run=run_share_cards, when="post_ingest", scope="meeting", version=SHARE_CARD_VERSION,
         depends_on=("video-posters",), stale=stale_share_cards,
+    ),
+    Stage(
+        name="title-cards",
+        description="1280x720 title card per meeting with a poster (meetings.meta.title_card): the poster frame "
+                    "with the player's label/title/date overlay, no summary (Discord embeds). --stale re-renders "
+                    "when the poster, title, date, label or template change.",
+        run=run_title_cards, when="post_ingest", scope="meeting", version=TITLE_CARD_VERSION,
+        depends_on=("video-posters",), stale=stale_title_cards,
     ),
     Stage(
         name="profile-refresh",

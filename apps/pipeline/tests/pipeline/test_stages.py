@@ -31,7 +31,7 @@ class TestRegistry:
         assert _names(stages.post_ingest_stages(exclude=("embeddings", "profile-refresh"))) == [
             "escribe-attachments", "document-relink", "other-documents", "written-submissions", "matter-history", "matter-summaries", "agenda-alignment",
             "speaker-names", "participation-summaries", "participation-from-minutes", "participation-names", "participation-person-links", "motion-headlines", "meeting-highlights", "matter-images", "matter-links", "properties", "property-summaries",
-            "video-posters", "share-cards",
+            "video-posters", "share-cards", "title-cards",
         ]
         assert _names(stages.post_ingest_stages())[0] == "embeddings"
         assert _names(stages.post_ingest_stages())[-1] == "profile-refresh"

@@ -91,15 +91,23 @@ def fill_template(data: dict, template: str | None = None) -> str:
 
 
 class CardRenderer:
-    """One headless Chromium page reused for every card."""
+    """One headless Chromium page reused for every card (share card by default; title cards
+    pass their own template and size)."""
+
+    def __init__(self, template_path: Path | None = None, width: int = 1200, height: int = 630):
+        self._template_path = template_path or TEMPLATE_PATH
+        self.width, self.height = width, height
+
+    def _new_page(self):
+        return self._browser.new_page(viewport={"width": self.width, "height": self.height}, device_scale_factor=1)
 
     def __enter__(self):
         from playwright.sync_api import sync_playwright
 
         self._pw = sync_playwright().start()
         self._browser = self._pw.chromium.launch()
-        self._page = self._browser.new_page(viewport={"width": 1200, "height": 630}, device_scale_factor=1)
-        self._template = TEMPLATE_PATH.read_text()
+        self._page = self._new_page()
+        self._template = self._template_path.read_text()
         return self
 
     def __exit__(self, *exc):
@@ -107,14 +115,14 @@ class CardRenderer:
         self._pw.stop()
 
     def render(self, data: dict, attempts: int = 2) -> bytes:
-        """JPEG bytes of the 1200x630 card; retries on a fresh page, raises CardError if still bad."""
+        """JPEG bytes of the card; retries on a fresh page, raises CardError if still bad."""
         if not data.get("title") or not data.get("date"):
             raise CardError("missing title or date")
         last: Exception | None = None
         for attempt in range(attempts):
             if attempt:
                 self._page.close()
-                self._page = self._browser.new_page(viewport={"width": 1200, "height": 630}, device_scale_factor=1)
+                self._page = self._new_page()
             try:
                 return self._render_once(data)
             except Exception as e:  # noqa: BLE001 - retried, then surfaced
@@ -135,7 +143,7 @@ class CardRenderer:
         problems = check_dom(data, dom)
         if problems:
             raise CardError("; ".join(problems))
-        png = page.screenshot(clip={"x": 0, "y": 0, "width": 1200, "height": 630})
+        png = page.screenshot(clip={"x": 0, "y": 0, "width": self.width, "height": self.height})
         problems = check_pixels(png, framed=bool(data.get("frame")))
         if problems:
             raise CardError("; ".join(problems))
@@ -174,7 +182,8 @@ def check_pixels(png: bytes, *, framed: bool) -> list[str]:
     problems = []
     if ImageStat.Stat(img).stddev[0] < 12:
         problems.append("output is near-uniform")
-    if framed and ImageStat.Stat(img.crop((850, 0, 1200, 630))).stddev[0] < 8:
+    w, h = img.size
+    if framed and ImageStat.Stat(img.crop((int(w * 0.7), 0, w, h))).stddev[0] < 8:
         problems.append("frame area is blank")
     return problems
 
@@ -193,3 +202,54 @@ def make_card(meeting: dict, renderer: CardRenderer, *, store=None) -> dict:
     url = store(r2_key(meeting["id"], key), jpg, "image/jpeg")
     return {"url": url, "key": key, "version": CARD_VERSION, "source": key.split("|")[1],
             "width": 1200, "height": 630, "bytes": len(jpg)}
+
+
+# ── title cards ──────────────────────────────────────────────────────────
+# The poster frame with the on-page player's overlay (label, title, date, scrim) and nothing
+# else: 1280x720 (16:9, what Discord shows large). Stored as meetings.meta.title_card.
+
+TITLE_CARD_VERSION = "1"
+TITLE_TEMPLATE_PATH = Path(__file__).parent / "templates" / "meeting_title_card.html"
+TITLE_R2_PREFIX = "meeting-title-cards"
+TITLE_WIDTH, TITLE_HEIGHT = 1280, 720
+
+
+def title_card_data(meeting: dict) -> tuple[dict, str] | None:
+    """Template data and content key, or None when the meeting has no poster frame."""
+    poster = (_meta(meeting).get("poster") or meeting.get("poster") or {}).get("url")
+    if not poster:
+        return None
+    d = date.fromisoformat(str(meeting["meeting_date"])[:10])
+    title = meeting.get("title") or "Council meeting"
+    org = (meeting.get("organization") or {}).get("name") or ""
+    data = {
+        "title": title,
+        "eyebrow": org if org and org != title else None,  # as on the player poster
+        "date": f"{d:%B} {d.day}, {d.year}",
+        "frame": poster,
+    }
+    return data, f"t{TITLE_CARD_VERSION}|{poster}|{title}|{data['date']}|{data['eyebrow'] or ''}"
+
+
+def title_card_key(meeting: dict) -> str | None:
+    built = title_card_data(meeting)
+    return built[1] if built else None
+
+
+def title_renderer() -> CardRenderer:
+    return CardRenderer(TITLE_TEMPLATE_PATH, TITLE_WIDTH, TITLE_HEIGHT)
+
+
+def make_title_card(meeting: dict, renderer: CardRenderer, *, store=None) -> dict:
+    """Render + upload one title card; returns the meta.title_card value (not yet saved)."""
+    from pipeline.video import posters
+
+    built = title_card_data(meeting)
+    if not built:
+        raise CardError("no poster frame")
+    data, key = built
+    jpg = renderer.render(data)
+    url = (store or posters.upload)(
+        f"{TITLE_R2_PREFIX}/{meeting['id']}/{hashlib.sha1(key.encode()).hexdigest()[:12]}.jpg", jpg, "image/jpeg")
+    return {"url": url, "version": TITLE_CARD_VERSION, "key": key,
+            "width": TITLE_WIDTH, "height": TITLE_HEIGHT, "bytes": len(jpg)}

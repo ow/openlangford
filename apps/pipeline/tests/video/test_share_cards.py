@@ -108,3 +108,55 @@ class TestStage:
         monkeypatch.setattr(posters, "save_meta_key", lambda *a: saved.append(a))
         out = stages.run_share_cards(StageContext(supabase=MagicMock(), meeting_ids=[4]))
         assert out == {"meetings": 1, "made": 0, "failed": [4]} and not saved
+
+
+class TestTitleCards:
+    def test_data_matches_player_overlay(self):
+        data, key = sc.title_card_data(BASE)
+        assert data == {"title": "Regular Council", "eyebrow": "Council", "date": "May 19, 2026", "frame": POSTER["url"]}
+        assert "points" not in data
+        assert key.startswith(f"t{sc.TITLE_CARD_VERSION}|{POSTER['url']}|")
+        same = {**BASE, "organization": {"name": "Regular Council"}}
+        assert sc.title_card_data(same)[0]["eyebrow"] is None  # label hidden when it repeats the title
+
+    def test_needs_a_poster(self):
+        assert sc.title_card_data({**BASE, "poster": None}) is None
+        assert sc.title_card_key({**BASE, "poster": None}) is None
+
+    def test_key_tracks_poster_and_title(self):
+        k = sc.title_card_key(BASE)
+        assert k != sc.title_card_key({**BASE, "poster": {"url": "https://cdn.example/new.webp"}})
+        assert k != sc.title_card_key({**BASE, "title": "Special Council"})
+        assert k == sc.title_card_key({**BASE, "summary": "changed"})  # text below the title doesn't matter
+
+    def test_make_title_card_uploads_jpeg_at_16_9(self):
+        class R:
+            def render(self, data):
+                assert data["title"] and data["date"] and data["frame"]
+                return b"jpg"
+
+        stored = {}
+        card = sc.make_title_card({**BASE}, R(), store=lambda k, d, t: stored.setdefault(k, (d, t)) and f"https://cdn/{k}")
+        [(key, (data, ctype))] = stored.items()
+        assert key.startswith("meeting-title-cards/7/") and ctype == "image/jpeg"
+        assert card["url"] == f"https://cdn/{key}" and (card["width"], card["height"]) == (1280, 720)
+        assert card["version"] == sc.TITLE_CARD_VERSION
+
+    def test_stage_selects_changed_and_saves(self, monkeypatch):
+        fresh = {**BASE, "id": 1}
+        fresh["title_key"] = sc.title_card_key(fresh)
+        moved = {**BASE, "id": 2, "title_key": "t0|old"}
+        monkeypatch.setattr(stages, "_title_card_rows", lambda ctx, ids=None: [r for r in (fresh, moved) if ids is None or r["id"] in ids])
+        assert stages.stale_title_cards(StageContext(supabase=MagicMock())) == [2]
+
+        class R:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+
+        saved = []
+        from pipeline.video import posters
+        monkeypatch.setattr(sc, "title_renderer", lambda: R())
+        monkeypatch.setattr(sc, "make_title_card", lambda row, r: {"url": "u", "version": "1"})
+        monkeypatch.setattr(posters, "save_meta_key", lambda mid, k, v: saved.append((mid, k)))
+        out = stages.run_title_cards(StageContext(supabase=MagicMock(), meeting_ids=[1, 2]))
+        assert out == {"meetings": 1, "made": 1, "failed": []} and saved == [(2, "title_card")]
