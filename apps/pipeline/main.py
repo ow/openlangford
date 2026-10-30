@@ -133,6 +133,13 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--discover",
+        action="store_true",
+        help="Discover source meetings and sync their documents (no audio, ingestion or AI). "
+             "With --dry-run: print the plan (linked / new / blocked) and write nothing.",
+    )
+
+    parser.add_argument(
         "--check-updates",
         action="store_true",
         help="Check CivicWeb and Vimeo for new content without processing. "
@@ -286,7 +293,7 @@ if __name__ == "__main__":
 
     cli_job = args.stage or next(
         (name for name in (
-            "classify_topics", "check_updates", "update_mode", "generate_stances", "generate_highlights",
+            "classify_topics", "discover", "check_updates", "update_mode", "generate_stances", "generate_highlights",
             "detect_key_votes", "generate_profiles", "ingest_only", "embed_only", "reextract_images",
             "extract_documents", "backfill_sections", "process_only", "rediarize",
         ) if getattr(args, name)),
@@ -306,7 +313,7 @@ if __name__ == "__main__":
         # Use centralized ARCHIVE_ROOT as default
         output_dir = args.input_dir if args.input_dir else ARCHIVE_ROOT
 
-        app = Archiver(municipality=municipality)
+        app = Archiver(municipality=municipality, initialize_diarizer=not args.discover)
 
         if args.classify_topics:
             print("\n--- Classifying Agenda Items into Topics ---")
@@ -319,6 +326,13 @@ if __name__ == "__main__":
             else:
                 sb = create_sb_client(pipeline_config.SUPABASE_URL, sb_key)
                 classify_topics(sb)
+        elif args.discover:
+            print(f"\n--- Source discovery{' (dry run)' if args.dry_run else ''} ---")
+            plan = app._sync_documents(limit=args.limit, dry_run=args.dry_run)
+            for entry in sorted(plan.values(), key=lambda e: (e["action"], e["date"])):
+                if entry["action"] != "linked":
+                    print(f"  {entry['action']:<7} {entry['date']} {entry['title']} -> "
+                          f"{entry.get('conflicts') or entry['archive_root']}")
         elif args.check_updates:
             print("\n--- Update Check (Dry Run) ---")
             app.run_update_check()

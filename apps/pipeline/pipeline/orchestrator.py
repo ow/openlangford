@@ -18,6 +18,15 @@ from pipeline.ops import (
 from pipeline.paths import ARCHIVE_ROOT, BASE_DIR, get_municipality_archive_root
 from pipeline.scrapers import get_scraper, MunicipalityConfig
 from pipeline.scrapers.civicweb import CivicWebScraper
+from pipeline.scrapers.escribe_bodies import escribe_body
+from pipeline.source_identity import (
+    DuplicateGuard,
+    folder_source_ids,
+    gap_fill_documents,
+    is_foreign_folder,
+    known_folder_ids,
+    select_video,
+)
 
 from .local_diarizer import LocalDiarizer
 from .video import get_video_client
@@ -116,15 +125,63 @@ class Archiver:
             except Exception as e:
                 print(f"[!] Failed to initialize LocalDiarizer: {e}")
 
-    def discover_source_meetings(self, limit=None):
-        """Discover source meetings and record them in the ops inventory."""
+    def discover_source_meetings(self, limit=None, dry_run=False):
+        """Discover source meetings and record them in the ops inventory.
+
+        With ``dry_run`` nothing is written: the plan (see ``plan_source_sync``) is
+        computed from read-only lookups and returned on ``self.source_sync_plan``.
+        """
         meetings = self.scraper.discover_meetings()
         if limit:
             meetings = meetings[:limit]
 
         self._pin_known_archive_paths(meetings)
-        self._record_source_meetings(meetings)
+        self.source_sync_plan = self.plan_source_sync(meetings)
+        if not dry_run:
+            self._record_source_meetings(meetings)
         return meetings
+
+    def plan_source_sync(self, meetings):
+        """Per discovered meeting: where its documents go, or why they must not be synced.
+
+        action: 'linked'  — ID already linked to a meeting we hold; sync into that folder
+                            (gap-fill only when the folder came from another source)
+                'new'     — not held; a new folder (and later a new meeting) for it
+                'blocked' — not linked, but we hold an unlinked meeting of the same body,
+                            kind and date; record its eSCRIBE ID before syncing
+        """
+        source_type = self.municipality.source_config.get("type") if self.municipality else None
+        plan = {}
+        pinned = getattr(self, "_pinned_archive_paths", {})
+        unpinned = [m for m in meetings if m.source_id not in pinned]
+        guard = None
+        if source_type == "escribe" and unpinned:
+            supabase = self._get_admin_supabase()
+            if supabase:
+                guard = DuplicateGuard(supabase, self.municipality.id).load(
+                    m.date.isoformat() for m in unpinned
+                )
+        for meeting in meetings:
+            root = self._meeting_archive_root(meeting)
+            entry = {"source_id": meeting.source_id, "date": meeting.date.isoformat(),
+                     "title": meeting.title, "archive_root": root}
+            if meeting.source_id in pinned:
+                entry.update(action="linked", foreign_folder=is_foreign_folder(root, meeting.source_id))
+            elif guard is not None and (conflicts := guard.conflicts(meeting)):
+                entry.update(action="blocked", conflicts=[c["id"] for c in conflicts],
+                             reason="unlinked meeting(s) of the same body and date already held")
+            else:
+                entry.update(action="new", folder_exists=os.path.isdir(root))
+            plan[meeting.source_id] = entry
+        return plan
+
+    def download_source_documents(self, meeting, target_dir):
+        """Download a source meeting's documents without duplicating another source's copies."""
+        if is_foreign_folder(target_dir, meeting.source_id) and os.path.isdir(target_dir):
+            meeting, existing = gap_fill_documents(meeting, target_dir)
+            downloaded = self.scraper.download_documents(meeting, target_dir)
+            return existing + [p for p in downloaded or [] if p not in existing]
+        return self.scraper.download_documents(meeting, target_dir)
 
     def _pin_known_archive_paths(self, meetings):
         """Keep the archive folder (and DB archive_path) of already-ingested eSCRIBE
@@ -159,6 +216,19 @@ class Archiver:
                     pinned[row["source_id"]] = row["archive_path"]
         self._pinned_archive_paths = {**getattr(self, "_pinned_archive_paths", {}), **pinned}
 
+    def _known_folder_ids(self):
+        """Archive folder -> eSCRIBE IDs recorded in source_meetings ({} when unavailable)."""
+        if not self.municipality or self.municipality.source_config.get("type") != "escribe":
+            return {}
+        supabase = self._get_admin_supabase()
+        if not supabase:
+            return {}
+        try:
+            return known_folder_ids(supabase, self.municipality.id, BASE_DIR)
+        except Exception as e:
+            print(f"  [!] Could not load source IDs for archive folders: {e}")
+            return {}
+
     def _get_admin_supabase(self):
         supabase_key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
         if not config.SUPABASE_URL or not supabase_key:
@@ -177,8 +247,14 @@ class Archiver:
             pinned = getattr(self, "_pinned_archive_paths", {}).get(meeting.source_id)
             if pinned:
                 return pinned if os.path.isabs(pinned) else os.path.join(BASE_DIR, pinned)
+            raw = meeting.meta.get("escribe_meeting", {}) if meeting.meta else {}
+            body = escribe_body(raw.get("MeetingType") or meeting.title)
             top_level = utils.normalize_top_level(meeting_type or meeting.title)
-            if "committee of the whole" in (meeting_type or "").lower():
+            if body:
+                # Committees and boards: one folder tree and title per body, as the
+                # imported history files them ("<body>" / "<body> – Special").
+                top_level, meeting_type = body.name, body.title
+            elif "committee of the whole" in (meeting_type or "").lower():
                 top_level = "Committee of the Whole"
             elif "public hearing" in (meeting_type or "").lower():
                 top_level = "Public Hearing"
@@ -187,7 +263,6 @@ class Archiver:
 
             year = meeting.date.strftime("%Y")
             month = meeting.date.strftime("%m")
-            raw = meeting.meta.get("escribe_meeting", {}) if meeting.meta else {}
             meeting_time = (raw.get("MeetingTime") or raw.get("TimeShort") or "").strip()
             time_slug = ""
             if meeting_time:
@@ -233,12 +308,17 @@ class Archiver:
             return
 
         source_type = self.municipality.source_config.get("type", "unknown")
+        plan = getattr(self, "source_sync_plan", None) or {}
         records = [
             meeting_source_record(
                 self.municipality,
                 source_type,
                 meeting,
-                archive_path=self._meeting_archive_path_for_db(meeting),
+                # A blocked meeting gets no folder: a job for it could otherwise
+                # ingest a duplicate of the meeting we already hold.
+                archive_path=None
+                if (plan.get(meeting.source_id) or {}).get("action") == "blocked"
+                else self._meeting_archive_path_for_db(meeting),
                 status=status,
             )
             for meeting in meetings
@@ -336,6 +416,7 @@ class Archiver:
             archive_root=self.archive_root,
             scraper=self.scraper,
             vimeo_client=self.video_client,
+            known_folder_ids=self._known_folder_ids(),
         )
 
         report = detector.detect_all_changes(supabase=supabase)
@@ -451,18 +532,38 @@ class Archiver:
         from pipeline.notifier import send_update_notification
         send_update_notification(report, processed_count=processed, test=test)
 
-    def _sync_documents(self, limit=None):
-        """Sync meeting documents from the configured source into archive layout."""
-        if hasattr(self.scraper, "scrape_recursive"):
-            self.scraper.scrape_recursive()
-            return
+    def _sync_documents(self, limit=None, dry_run=False):
+        """Sync meeting documents from the configured source into archive layout.
 
-        meetings = self.discover_source_meetings(limit=limit)
+        Returns the sync plan (source_id -> decision). With ``dry_run`` nothing is
+        downloaded or written.
+        """
+        if hasattr(self.scraper, "scrape_recursive"):
+            if dry_run:
+                raise ValueError("Dry-run discovery is not supported for recursive scrapers")
+            self.scraper.scrape_recursive()
+            return {}
+
+        meetings = self.discover_source_meetings(limit=limit, dry_run=dry_run)
+        plan = self.source_sync_plan
+        counts = {}
+        for entry in plan.values():
+            counts[entry["action"]] = counts.get(entry["action"], 0) + 1
+        print(f"  [sync] plan: {counts}")
+        for entry in plan.values():
+            if entry["action"] == "blocked":
+                print(f"  [!] Blocked {entry['date']} {entry['title']} ({entry['source_id']}): "
+                      f"already hold meeting(s) {entry['conflicts']} without this eSCRIBE ID")
+        if dry_run:
+            return plan
 
         for meeting in meetings:
+            if plan[meeting.source_id]["action"] == "blocked":
+                continue
             meeting_root = self._meeting_archive_root(meeting)
-            self.scraper.download_documents(meeting, meeting_root)
+            self.download_source_documents(meeting, meeting_root)
             self._record_source_meetings([meeting], status="documents_downloaded")
+        return plan
 
     def _download_video_content(
         self,
@@ -474,95 +575,53 @@ class Archiver:
     ):
         output_dir = output_dir or self.archive_root
         matches = 0
+        known = self._known_folder_ids()
+        folders = []
         for root, dirs, files in os.walk(output_dir):
+            date_key = utils.extract_date_from_string(os.path.basename(root))
+            if date_key and date_key in video_map and ("Agenda" in dirs or "Minutes" in dirs or "Audio" in dirs or "Video" in dirs):
+                folders.append((root, date_key, folder_source_ids(root, known)))
+        for root, date_key, ids in folders:
             folder_name = os.path.basename(root)
-            date_key = utils.extract_date_from_string(folder_name)
+            videos = video_map[date_key]
+            # Match by the folder's own meeting ID; ID-less folders never take a
+            # video another folder that day owns (see pipeline.source_identity).
+            claimed = set().union(*(other for r, d, other in folders if d == date_key and r != root))
+            video_data = select_video(root, videos, ids, claimed)
 
-            if date_key and date_key in video_map:
-                videos = video_map[date_key]
+            if not video_data:
+                continue
 
-                # Intelligent matching:
-                # If there's only one video for this date, use it.
-                # If there are multiple, try to match the folder type with the video title.
-                video_data = None
-                if len(videos) == 1:
-                    video_data = videos[0]
-                else:
-                    # Match based on keywords
-                    folder_lower = folder_name.lower()
-                    if "public hearing" in folder_lower:
-                        video_data = next(
-                            (
-                                v
-                                for v in videos
-                                if "public hearing" in v["title"].lower()
-                            ),
-                            None,
-                        )
-                    elif (
-                        "committee of the whole" in folder_lower
-                        or "cow" in folder_lower
-                    ):
-                        video_data = next(
-                            (
-                                v
-                                for v in videos
-                                if "committee of the whole" in v["title"].lower()
-                                or "cow" in v["title"].lower()
-                            ),
-                            None,
-                        )
-                    elif "council" in folder_lower:
-                        # For Council, try to avoid matching Public Hearing if it's separate
-                        video_data = next(
-                            (
-                                v
-                                for v in videos
-                                if "council" in v["title"].lower()
-                                and "public hearing" not in v["title"].lower()
-                            ),
-                            None,
-                        )
-                        # Fallback to any council video if specific one not found
-                        if not video_data:
-                            video_data = next(
-                                (v for v in videos if "council" in v["title"].lower()),
-                                None,
-                            )
+            # Determine subfolder
+            if include_video:
+                subfolder = "Video"
+            else:
+                subfolder = "Audio"
 
-                if not video_data:
-                    continue
+            target_dir = os.path.join(root, subfolder)
 
-                # Determine subfolder
-                if include_video:
-                    subfolder = "Video"
-                else:
-                    subfolder = "Audio"
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
 
-                target_dir = os.path.join(root, subfolder)
+            parts = []
+            if include_video:
+                parts.append("Video")
+            if download_audio:
+                parts.append("Audio")
 
-                if not os.path.exists(target_dir):
-                    os.makedirs(target_dir)
+            msg = " + ".join(parts)
+            print(
+                f"[Match] {date_key}: Syncing {msg} from '{video_data['title']}' to '{folder_name}/{subfolder}'"
+            )
 
-                parts = []
-                if include_video:
-                    parts.append("Video")
-                if download_audio:
-                    parts.append("Audio")
+            new_audio_path = self.video_client.download_video(
+                video_data,
+                target_dir,
+                include_video=include_video,
+                download_audio=download_audio,
+            )
 
-                msg = " + ".join(parts)
-                print(
-                    f"[Match] {date_key}: Syncing {msg} from '{video_data['title']}' to '{folder_name}/{subfolder}'"
-                )
-
-                new_audio_path = self.video_client.download_video(
-                    video_data,
-                    target_dir,
-                    include_video=include_video,
-                    download_audio=download_audio,
-                )
-
-                matches += 1
+            matches += 1
 
     def _collect_audio_files(self, output_dir=None, rediarize=False):
         """Collect audio files that need processing."""

@@ -630,7 +630,10 @@ class MeetingIngester:
 
         # Advisory committees often have the type in their name
         if m_type == "Advisory Committee":
-            # This is a fallback; usually the title has the specific committee name
+            # A named committee is its own organization; bare "Advisory Committee" is the fallback.
+            name = utils.committee_name(title)
+            if name and name.lower() != "advisory committee":
+                return name, "Committee"
             return "Advisory Committee", "Advisory Committee"
 
         return m_type, "Committee"
@@ -1367,6 +1370,13 @@ class MeetingIngester:
         # 1. Organization & Meeting Upsert
         # Initial guess from filename metadata
         m_type_guess = utils.infer_meeting_type(meta["meeting_type"] or meta["title"])
+        if not canonical_cached_refresh and not dry_run:
+            # The source's own meeting type names the body (committee, Board of Variance).
+            from pipeline.source_identity import source_body
+            body = source_body(self.supabase, self.municipality_id, normalized_path)
+            if body:
+                meta = {**meta, "title": body.title}
+                m_type_guess = body.meeting_type
         org_name, classification = self.map_type_to_org(m_type_guess or "Council", meta["title"])
 
         if canonical_cached_refresh:

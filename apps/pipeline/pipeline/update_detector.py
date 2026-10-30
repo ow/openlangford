@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 
 from pipeline import utils
 from pipeline.ingestion.audit import check_disk_documents, find_meetings_needing_reingest
+from pipeline.source_identity import folder_source_ids, select_video
 
 
 @dataclass
@@ -64,10 +65,13 @@ class UpdateDetector:
         vimeo_client: VimeoClient instance for checking Vimeo video availability.
     """
 
-    def __init__(self, archive_root: str, scraper=None, vimeo_client=None):
+    def __init__(self, archive_root: str, scraper=None, vimeo_client=None, known_folder_ids=None):
         self.archive_root = archive_root
         self.scraper = scraper
         self.vimeo_client = vimeo_client
+        # Archive folder -> source meeting IDs (from source_meetings), so video is
+        # matched to a folder by meeting ID rather than by date alone.
+        self.known_folder_ids = known_folder_ids or {}
 
     def detect_document_changes(self, supabase=None) -> list[MeetingChange]:
         """Detect meetings where disk has documents the DB doesn't know about.
@@ -138,15 +142,22 @@ class UpdateDetector:
 
         changes: list[MeetingChange] = []
 
+        folders = []
         for root, dirs, files in os.walk(self.archive_root):
             # Only consider meeting folders (those with Agenda or other content dirs)
             if "Agenda" not in dirs and "Minutes" not in dirs:
                 continue
+            date_key = utils.extract_date_from_string(os.path.basename(root))
+            if date_key and date_key in video_map:
+                folders.append((root, date_key, folder_source_ids(root, self.known_folder_ids)))
 
+        for root, date_key, ids in folders:
             folder_name = os.path.basename(root)
-            date_key = utils.extract_date_from_string(folder_name)
-
-            if not date_key or date_key not in video_map:
+            # The one recording that is this folder's meeting (by meeting ID; never
+            # another same-day meeting's video).
+            claimed = set().union(*(other for r, d, other in folders if d == date_key and r != root))
+            video = select_video(root, video_map[date_key], ids, claimed)
+            if video is None:
                 continue
 
             # Check if audio already exists
@@ -184,8 +195,8 @@ class UpdateDetector:
             if has_audio or has_transcript:
                 continue
 
-            # Meeting has Vimeo video but no local audio/transcript
-            videos = video_map[date_key]
+            # Meeting has video but no local audio/transcript
+            videos = [video]
             video_titles = [v["title"] for v in videos]
             meeting_type = utils.infer_meeting_type(folder_name) or "Unknown"
 
@@ -249,14 +260,25 @@ class UpdateDetector:
         if not disk_folders:
             return []
 
-        # Fetch all known archive_paths from DB in one query
-        result = (
-            supabase.table("meetings")
-            .select("archive_path")
-            .not_.is_("archive_path", "null")
-            .execute()
-        )
-        known_paths = {row["archive_path"] for row in (result.data or [])}
+        # Fetch all known archive_paths (paged: PostgREST caps a response at
+        # 1000 rows, and a missed path would be ingested again as a new meeting).
+        known_paths = set()
+        start = 0
+        while True:
+            rows = (
+                supabase.table("meetings")
+                .select("archive_path")
+                .not_.is_("archive_path", "null")
+                .order("id")
+                .range(start, start + 999)
+                .execute()
+                .data
+                or []
+            )
+            known_paths.update(row["archive_path"] for row in rows)
+            if len(rows) < 1000:
+                break
+            start += 1000
 
         changes: list[MeetingChange] = []
         for abs_path, normalized in disk_folders:

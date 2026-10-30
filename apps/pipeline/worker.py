@@ -294,7 +294,8 @@ def _ensure_source_documents(supabase, archiver: Archiver, source: dict, target_
         documents=docs,
         meta=raw,
     )
-    downloaded = archiver.scraper.download_documents(meeting, target_folder)
+    # Linked folders from another source (Glyphdex imports) are only gap-filled.
+    downloaded = archiver.download_source_documents(meeting, target_folder)
     # Downloads can fail individually. Do not advance a transcript-only meeting
     # to AI refinement when its advertised official decision sources are absent.
     expected_categories = {doc.category for doc in docs if doc.category in {"Agenda", "Minutes"}}

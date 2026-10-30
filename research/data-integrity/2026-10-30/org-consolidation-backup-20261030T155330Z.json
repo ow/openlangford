@@ -1,0 +1,1323 @@
+{
+ "note": "meetings rows before org/type/title consolidation; memberships on affected orgs (unchanged)",
+ "changes": [
+  {
+   "meeting": {
+    "id": 898,
+    "meeting_date": "2025-11-10",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/11/2025-11-10 700pm Sustainable Development Advisory Committee [gx-14d5d472]",
+    "status": "Completed",
+    "slug": "2025-11-10-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 897,
+    "meeting_date": "2025-08-11",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/08/2025-08-11 700pm Sustainable Development Advisory Committee [gx-98c7af93]",
+    "status": "Completed",
+    "slug": "2025-08-11-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 978,
+    "meeting_date": "2026-08-31",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2026/08/2026-08-31 700pm Sustainable Development Advisory Committee [1dc02658]",
+    "status": "Completed",
+    "slug": "2026-08-31-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 871,
+    "meeting_date": "2023-06-12",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2023/06/2023-06-12 700pm Sustainable Development Advisory Committee [gx-a285878a]",
+    "status": "Completed",
+    "slug": "2023-06-12-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 166,
+    "meeting_date": "2024-04-30",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2024/04/2024-04-30 700pm Advisory Committee [98f5cbfc]",
+    "status": "Completed",
+    "slug": "2024-04-30-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 282,
+    "meeting_date": "2023-06-27",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2023/06/2023-06-27 700pm Advisory Committee [39f882f8]",
+    "status": "Completed",
+    "slug": "2023-06-27-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 872,
+    "meeting_date": "2023-07-10",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2023/07/2023-07-10 700pm Sustainable Development Advisory Committee [gx-9fcb27ae]",
+    "status": "Completed",
+    "slug": "2023-07-10-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 895,
+    "meeting_date": "2026-01-19",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2026/01/2026-01-19 700pm Sustainable Development Advisory Committee [gx-df9645e8]",
+    "status": "Completed",
+    "slug": "2026-01-19-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 314,
+    "meeting_date": "2024-11-26",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2024/11/2024-11-27 700pm Advisory Committee [ab1bab00]",
+    "status": "Completed",
+    "slug": "2024-11-26-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 355,
+    "meeting_date": "2025-09-29",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/09/2025-09-29 700pm Advisory Committee [512c74c3]",
+    "status": "Completed",
+    "slug": "2025-09-29-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 865,
+    "meeting_date": "2023-07-11",
+    "title": "Community Advisory Committee \u2013 Special",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Community Advisory Committee/2023/07/2023-07-11 700pm Community Advisory Committee \u2013 Special [gx-dee08514]",
+    "status": "Completed",
+    "slug": "2023-07-11-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 188,
+    "meeting_date": "2025-02-25",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/02/2025-02-26 700pm Advisory Committee [74b1cd2d]",
+    "status": "Completed",
+    "slug": "2025-02-25-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 209,
+    "meeting_date": "2024-10-29",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2024/10/2024-10-29 700pm Advisory Committee [9bd4a30c]",
+    "status": "Completed",
+    "slug": "2024-10-29-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 195,
+    "meeting_date": "2025-04-29",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/04/2025-04-29 700pm Advisory Committee [c93ec923]",
+    "status": "Completed",
+    "slug": "2025-04-29-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 874,
+    "meeting_date": "2023-10-16",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2023/10/2023-10-16 700pm Sustainable Development Advisory Committee [gx-dccdbfb9]",
+    "status": "Completed",
+    "slug": "2023-10-16-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 231,
+    "meeting_date": "2024-08-27",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2024/08/2024-08-27 700pm Advisory Committee [1a6f8d00]",
+    "status": "Completed",
+    "slug": "2024-08-27-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 36,
+    "meeting_date": "2025-01-28",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/01/2025-01-29 700pm Advisory Committee [5805203a]",
+    "status": "Completed",
+    "slug": "2025-01-28-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 893,
+    "meeting_date": "2025-09-08",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/09/2025-09-08 700pm Sustainable Development Advisory Committee [gx-09308295]",
+    "status": "Completed",
+    "slug": "2025-09-08-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 241,
+    "meeting_date": "2026-01-27",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2026/01/2026-01-28 700pm Advisory Committee [2e0a9e87]",
+    "status": "Completed",
+    "slug": "2026-01-27-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 198,
+    "meeting_date": "2024-05-28",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2024/05/2024-05-28 700pm Advisory Committee [e5841e98]",
+    "status": "Completed",
+    "slug": "2024-05-28-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 894,
+    "meeting_date": "2025-02-24",
+    "title": "Sustainable Development Advisory Committee \u2013 Special",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/02/2025-02-24 700pm Sustainable Development Advisory Committee \u2013 Special [gx-73f6da3e]",
+    "status": "Completed",
+    "slug": "2025-02-24-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 876,
+    "meeting_date": "2023-11-14",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2023/11/2023-11-14 700pm Sustainable Development Advisory Committee [gx-469a7ba7]",
+    "status": "Completed",
+    "slug": "2023-11-14-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 242,
+    "meeting_date": "2023-07-25",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2023/07/2023-07-25 700pm Advisory Committee [16ff0159]",
+    "status": "Completed",
+    "slug": "2023-07-25-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 317,
+    "meeting_date": "2023-11-02",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2023/11/2023-11-02 700pm Advisory Committee [520d72b6]",
+    "status": "Completed",
+    "slug": "2023-11-02-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 877,
+    "meeting_date": "2023-12-11",
+    "title": "Sustainable Development Advisory Committee \u2013 Special",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2023/12/2023-12-11 700pm Sustainable Development Advisory Committee \u2013 Special [gx-c21d3905]",
+    "status": "Completed",
+    "slug": "2023-12-11-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 234,
+    "meeting_date": "2025-11-25",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/11/2025-11-26 700pm Advisory Committee [c8b8f527]",
+    "status": "Completed",
+    "slug": "2025-11-25-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 336,
+    "meeting_date": "2024-02-27",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2024/02/2024-02-28 700pm Advisory Committee [772ad305]",
+    "status": "Completed",
+    "slug": "2024-02-27-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 873,
+    "meeting_date": "2023-07-26",
+    "title": "Board of Variance",
+    "type": "Regular Council",
+    "organization_id": 1,
+    "archive_path": "archive/langford/Board of Variance/2023/07/2023-07-26 300pm Board of Variance [gx-bfdb55e0]",
+    "status": "Completed",
+    "slug": "2023-07-26-regular-council"
+   },
+   "update": {
+    "organization_id": 37,
+    "type": "Board of Variance"
+   },
+   "via": "title",
+   "from_org": "Council"
+  },
+  {
+   "meeting": {
+    "id": 875,
+    "meeting_date": "2023-08-14",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2023/08/2023-08-14 700pm Sustainable Development Advisory Committee [gx-db4de828]",
+    "status": "Completed",
+    "slug": "2023-08-14-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 878,
+    "meeting_date": "2024-01-08",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/01/2024-01-08 700pm Sustainable Development Advisory Committee [gx-326a9007]",
+    "status": "Completed",
+    "slug": "2024-01-08-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 880,
+    "meeting_date": "2024-03-11",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/03/2024-03-11 700pm Sustainable Development Advisory Committee [gx-ad82848f]",
+    "status": "Completed",
+    "slug": "2024-03-11-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 879,
+    "meeting_date": "2024-04-08",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/04/2024-04-08 700pm Sustainable Development Advisory Committee [gx-a1781449]",
+    "status": "Completed",
+    "slug": "2024-04-08-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 883,
+    "meeting_date": "2024-04-22",
+    "title": "Sustainable Development Advisory Committee \u2013 Special",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/04/2024-04-22 700pm Sustainable Development Advisory Committee \u2013 Special [gx-0fd43530]",
+    "status": "Completed",
+    "slug": "2024-04-22-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 881,
+    "meeting_date": "2024-04-24",
+    "title": "Sustainable Development Advisory Committee \u2013 Special",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/04/2024-04-24 700pm Sustainable Development Advisory Committee \u2013 Special [gx-86d6b474]",
+    "status": "Completed",
+    "slug": "2024-04-24-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 885,
+    "meeting_date": "2024-05-13",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/05/2024-05-13 700pm Sustainable Development Advisory Committee [gx-c2b14e54]",
+    "status": "Completed",
+    "slug": "2024-05-13-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 882,
+    "meeting_date": "2024-06-10",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/06/2024-06-10 700pm Sustainable Development Advisory Committee [gx-0e507e5c]",
+    "status": "Completed",
+    "slug": "2024-06-10-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 887,
+    "meeting_date": "2024-07-08",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/07/2024-07-08 700pm Sustainable Development Advisory Committee [gx-41cf2184]",
+    "status": "Completed",
+    "slug": "2024-07-08-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 888,
+    "meeting_date": "2024-09-09",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/09/2024-09-09 700pm Sustainable Development Advisory Committee [gx-e0e9ec80]",
+    "status": "Completed",
+    "slug": "2024-09-09-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 299,
+    "meeting_date": "2023-08-29",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2023/08/2023-08-29 700pm Advisory Committee [1c8c9510]",
+    "status": "Completed",
+    "slug": "2023-08-29-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 886,
+    "meeting_date": "2024-10-15",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/10/2024-10-15 700pm Sustainable Development Advisory Committee [gx-ca3f8632]",
+    "status": "Completed",
+    "slug": "2024-10-15-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 71,
+    "meeting_date": "2026-05-26",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2026/05/2026-05-26 700pm Advisory Committee [65967817]",
+    "status": "Completed",
+    "slug": "2026-05-26-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 17,
+    "meeting_date": "2026-03-31",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2026/03/2026-03-31 700pm Advisory Committee [ea6a8e9c]",
+    "status": "Completed",
+    "slug": "2026-03-31-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 283,
+    "meeting_date": "2024-03-26",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2024/03/2024-03-26 700pm Advisory Committee [e7e066ce]",
+    "status": "Completed",
+    "slug": "2024-03-26-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 16,
+    "meeting_date": "2026-04-28",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2026/04/2026-04-28 700pm Advisory Committee [f1e84b9e]",
+    "status": "Completed",
+    "slug": "2026-04-28-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 203,
+    "meeting_date": "2025-03-25",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/03/2025-03-25 700pm Advisory Committee [407956d2]",
+    "status": "Completed",
+    "slug": "2025-03-25-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 147,
+    "meeting_date": "2025-06-24",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/06/2025-06-24 700pm Advisory Committee [718600b4]",
+    "status": "Completed",
+    "slug": "2025-06-24-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 278,
+    "meeting_date": "2025-08-26",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2025/08/2025-08-26 700pm Advisory Committee [d4098bcf]",
+    "status": "Completed",
+    "slug": "2025-08-26-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 13,
+    "meeting_date": "2026-02-24",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2026/02/2026-02-25 700pm Advisory Committee [d469895c]",
+    "status": "Completed",
+    "slug": "2026-02-24-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 890,
+    "meeting_date": "2024-11-12",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/11/2024-11-12 700pm Sustainable Development Advisory Committee [gx-c582220c]",
+    "status": "Completed",
+    "slug": "2024-11-12-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 393,
+    "meeting_date": "2026-07-28",
+    "title": "Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Joint Advisory Committee/2026/07/2026-07-28 700pm Advisory Committee [e83b1927]",
+    "status": "Completed",
+    "slug": "2026-07-28-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9,
+    "title": "Community Advisory Committee"
+   },
+   "via": "escribe type",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 973,
+    "meeting_date": "2026-03-09",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2026/03/2026-03-09 700pm Sustainable Development Advisory Committee [a882e6e2]",
+    "status": "Completed",
+    "slug": "2026-03-09-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 884,
+    "meeting_date": "2024-08-12",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2024/08/2024-08-12 700pm Sustainable Development Advisory Committee [gx-c6ab067d]",
+    "status": "Completed",
+    "slug": "2024-08-12-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 891,
+    "meeting_date": "2025-03-10",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/03/2025-03-10 700pm Sustainable Development Advisory Committee [gx-55a3ad04]",
+    "status": "Completed",
+    "slug": "2025-03-10-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 974,
+    "meeting_date": "2026-04-13",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2026/04/2026-04-13 700pm Sustainable Development Advisory Committee [8ffb0d52]",
+    "status": "Completed",
+    "slug": "2026-04-13-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 975,
+    "meeting_date": "2026-07-07",
+    "title": "Community Advisory Committee \u2013 Special",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Community Advisory Committee/2026/07/2026-07-07 700pm Community Advisory Committee \u2013 Special [f9e319c7]",
+    "status": "Completed",
+    "slug": "2026-07-07-advisory-committee"
+   },
+   "update": {
+    "organization_id": 9
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 892,
+    "meeting_date": "2025-07-14",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/07/2025-07-14 700pm Sustainable Development Advisory Committee [gx-4a0067f4]",
+    "status": "Completed",
+    "slug": "2025-07-14-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 976,
+    "meeting_date": "2026-07-13",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2026/07/2026-07-13 700pm Sustainable Development Advisory Committee [3f9b15bc]",
+    "status": "Completed",
+    "slug": "2026-07-13-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 977,
+    "meeting_date": "2026-08-10",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2026/08/2026-08-10 700pm Sustainable Development Advisory Committee [d056d18c]",
+    "status": "Completed",
+    "slug": "2026-08-10-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 889,
+    "meeting_date": "2025-01-21",
+    "title": "Sustainable Development Advisory Committee \u2013 Special",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/01/2025-01-21 700pm Sustainable Development Advisory Committee \u2013 Special [gx-0648927b]",
+    "status": "Completed",
+    "slug": "2025-01-21-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 896,
+    "meeting_date": "2025-04-14",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2025/04/2025-04-14 700pm Sustainable Development Advisory Committee [gx-6534315f]",
+    "status": "Completed",
+    "slug": "2025-04-14-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  },
+  {
+   "meeting": {
+    "id": 870,
+    "meeting_date": "2023-06-01",
+    "title": "Sustainable Development Advisory Committee",
+    "type": "Advisory Committee",
+    "organization_id": 28,
+    "archive_path": "archive/langford/Sustainable Development Advisory Committee/2023/06/2023-06-01 700pm Sustainable Development Advisory Committee [gx-4205e26b]",
+    "status": "Completed",
+    "slug": "2023-06-01-advisory-committee"
+   },
+   "update": {
+    "organization_id": 18
+   },
+   "via": "title",
+   "from_org": "Advisory Committee"
+  }
+ ],
+ "memberships": [
+  {
+   "id": 12,
+   "person_id": 41,
+   "organization_id": 9,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:30.306434+00:00",
+   "updated_at": "2026-05-27T01:13:30.306434+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 13,
+   "person_id": 42,
+   "organization_id": 9,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:30.624015+00:00",
+   "updated_at": "2026-05-27T01:13:30.624015+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 14,
+   "person_id": 43,
+   "organization_id": 9,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:30.987363+00:00",
+   "updated_at": "2026-05-27T01:13:30.987363+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 15,
+   "person_id": 44,
+   "organization_id": 9,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:31.349324+00:00",
+   "updated_at": "2026-05-27T01:13:31.349324+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 16,
+   "person_id": 45,
+   "organization_id": 9,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:31.665845+00:00",
+   "updated_at": "2026-05-27T01:13:31.665845+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 17,
+   "person_id": 35,
+   "organization_id": 18,
+   "role": "Council Representative",
+   "start_date": "2022-11-01",
+   "end_date": "2026-05-02",
+   "meta": null,
+   "created_at": "2026-05-27T01:13:32.031151+00:00",
+   "updated_at": "2026-05-27T01:13:32.031151+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 18,
+   "person_id": 22,
+   "organization_id": 18,
+   "role": "Council Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:32.39852+00:00",
+   "updated_at": "2026-05-27T01:13:32.39852+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 19,
+   "person_id": 23,
+   "organization_id": 18,
+   "role": "Council Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:32.709295+00:00",
+   "updated_at": "2026-05-27T01:13:32.709295+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 20,
+   "person_id": 49,
+   "organization_id": 18,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:33.077043+00:00",
+   "updated_at": "2026-05-27T01:13:33.077043+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 21,
+   "person_id": 50,
+   "organization_id": 18,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:33.452846+00:00",
+   "updated_at": "2026-05-27T01:13:33.452846+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 22,
+   "person_id": 51,
+   "organization_id": 18,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:33.969005+00:00",
+   "updated_at": "2026-05-27T01:13:33.969005+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 23,
+   "person_id": 52,
+   "organization_id": 18,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:34.28338+00:00",
+   "updated_at": "2026-05-27T01:13:34.28338+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 24,
+   "person_id": 53,
+   "organization_id": 18,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:34.650028+00:00",
+   "updated_at": "2026-05-27T01:13:34.650028+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 25,
+   "person_id": 54,
+   "organization_id": 18,
+   "role": "Citizen Representative",
+   "start_date": "2022-11-01",
+   "end_date": null,
+   "meta": null,
+   "created_at": "2026-05-27T01:13:35.023407+00:00",
+   "updated_at": "2026-05-27T01:13:35.023407+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 10,
+   "person_id": 20,
+   "organization_id": 9,
+   "role": "Council Representative",
+   "start_date": "2023-02-21",
+   "end_date": null,
+   "meta": {
+    "committee_appointment_date_correction": {
+     "method": "explicit_official_council_appointment_resolution",
+     "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5137",
+     "verified_on": "2026-10-18",
+     "source_quote": "9.6    Committee Terms of Reference\n\n             MOVED BY: SZPAK\n             SECONDED: GUIRY\n\n             THAT Council approve the proposed terms of reference in form and content included with\n             this report, excepting minor changes;\n\n             AND\n\n             That Council appoint Councillor Wagner, Councillor Szpak, and Councillor Guiry, to the\n             Sustainable Development Advisory Committee;\n\n             AND\n\n             That Council appoint Councillor Morley, Councillor Yacucha, and Councillor Harder, to the\n             Community Advisory Committee;\n\n             AND\n\n             That Council direct staff to post the committee positions to the City's website and in the\n             Goldstream Gazette for interested members of the community to apply.\n\n                                                                                            Motion CARRIED.",
+     "source_sha256": "0534e98a95a3eed0b375a969c2c8d6fbb34c65f711f0ae6f966b91d445e0081a",
+     "original_start_date": "2022-11-01"
+    }
+   },
+   "created_at": "2026-05-27T01:13:29.578837+00:00",
+   "updated_at": "2026-10-19T05:25:25.009574+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 9,
+   "person_id": 21,
+   "organization_id": 9,
+   "role": "Council Representative",
+   "start_date": "2023-02-21",
+   "end_date": null,
+   "meta": {
+    "committee_appointment_date_correction": {
+     "method": "explicit_official_council_appointment_resolution",
+     "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5137",
+     "verified_on": "2026-10-18",
+     "source_quote": "9.6    Committee Terms of Reference\n\n             MOVED BY: SZPAK\n             SECONDED: GUIRY\n\n             THAT Council approve the proposed terms of reference in form and content included with\n             this report, excepting minor changes;\n\n             AND\n\n             That Council appoint Councillor Wagner, Councillor Szpak, and Councillor Guiry, to the\n             Sustainable Development Advisory Committee;\n\n             AND\n\n             That Council appoint Councillor Morley, Councillor Yacucha, and Councillor Harder, to the\n             Community Advisory Committee;\n\n             AND\n\n             That Council direct staff to post the committee positions to the City's website and in the\n             Goldstream Gazette for interested members of the community to apply.\n\n                                                                                            Motion CARRIED.",
+     "source_sha256": "0534e98a95a3eed0b375a969c2c8d6fbb34c65f711f0ae6f966b91d445e0081a",
+     "original_start_date": "2022-11-01"
+    }
+   },
+   "created_at": "2026-05-27T01:13:29.266387+00:00",
+   "updated_at": "2026-10-19T05:25:25.009574+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 8,
+   "person_id": 34,
+   "organization_id": 9,
+   "role": "Council Representative",
+   "start_date": "2023-02-21",
+   "end_date": null,
+   "meta": {
+    "committee_appointment_date_correction": {
+     "method": "explicit_official_council_appointment_resolution",
+     "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=5137",
+     "verified_on": "2026-10-18",
+     "source_quote": "9.6    Committee Terms of Reference\n\n             MOVED BY: SZPAK\n             SECONDED: GUIRY\n\n             THAT Council approve the proposed terms of reference in form and content included with\n             this report, excepting minor changes;\n\n             AND\n\n             That Council appoint Councillor Wagner, Councillor Szpak, and Councillor Guiry, to the\n             Sustainable Development Advisory Committee;\n\n             AND\n\n             That Council appoint Councillor Morley, Councillor Yacucha, and Councillor Harder, to the\n             Community Advisory Committee;\n\n             AND\n\n             That Council direct staff to post the committee positions to the City's website and in the\n             Goldstream Gazette for interested members of the community to apply.\n\n                                                                                            Motion CARRIED.",
+     "source_sha256": "0534e98a95a3eed0b375a969c2c8d6fbb34c65f711f0ae6f966b91d445e0081a",
+     "original_start_date": "2022-11-01"
+    }
+   },
+   "created_at": "2026-05-27T01:13:28.893364+00:00",
+   "updated_at": "2026-10-19T05:25:25.009574+00:00",
+   "council_term_id": null
+  },
+  {
+   "id": 11,
+   "person_id": 40,
+   "organization_id": 9,
+   "role": "Citizen Representative",
+   "start_date": "2024-07-15",
+   "end_date": "2026-12-31",
+   "meta": {
+    "committee_appointment_date_correction": {
+     "method": "explicit_official_council_appointment_resolution",
+     "source_url": "https://pub-langford.escribemeetings.com/FileStream.ashx?DocumentId=11478",
+     "verified_on": "2026-10-18",
+     "source_quote": "THAT Council appoint Jacquie Whiteway to the Community Advisory Committee\n                        for a term ending on December 31, 2026.",
+     "source_sha256": "23264d755e2067195b7288faecdaf7163ebcbfd4a10f1178805e44d240b940df",
+     "original_start_date": "2022-11-01"
+    }
+   },
+   "created_at": "2026-05-27T01:13:29.948866+00:00",
+   "updated_at": "2026-10-19T05:25:25.009574+00:00",
+   "council_term_id": null
+  }
+ ],
+ "bov_source_rows_before": []
+}
