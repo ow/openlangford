@@ -267,11 +267,25 @@ export async function action({ request }: { request: Request }) {
           // Check if person already has a fingerprint
           const { data: existingFp } = await supabaseAdmin
             .from("voice_fingerprints")
-            .select("id")
+            .select("id, source")
             .eq("person_id", personId)
             .maybeSingle();
 
-          if (!existingFp) {
+          if (existingFp?.source === "aggregate") {
+            // A manual mapping is the strongest anchor: it replaces the pipeline's
+            // evidence-built fingerprint (the speaker-names stage then keeps it).
+            await supabaseAdmin
+              .from("voice_fingerprints")
+              .update({
+                embedding: centroid,
+                source_meeting_id: meetingId,
+                confidence: 1.0,
+                source: "manual",
+                exemplar_count: null,
+                meeting_count: null,
+              })
+              .eq("id", existingFp.id);
+          } else if (!existingFp) {
             // Create new fingerprint
             const { data: newFp, error: fpError } = await supabaseAdmin
               .from("voice_fingerprints")

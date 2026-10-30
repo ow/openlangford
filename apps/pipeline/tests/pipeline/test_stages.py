@@ -30,7 +30,7 @@ class TestRegistry:
     def test_post_ingest_order_matches_the_previous_hardcoded_sequence(self):
         assert _names(stages.post_ingest_stages(exclude=("embeddings", "profile-refresh"))) == [
             "escribe-attachments", "document-relink", "other-documents", "written-submissions", "matter-history", "matter-summaries", "agenda-alignment",
-            "participation-summaries", "participation-from-minutes", "participation-names", "participation-person-links", "motion-headlines", "matter-images", "matter-links", "properties", "property-summaries",
+            "speaker-names", "participation-summaries", "participation-from-minutes", "participation-names", "participation-person-links", "motion-headlines", "matter-images", "matter-links", "properties", "property-summaries",
         ]
         assert _names(stages.post_ingest_stages())[0] == "embeddings"
         assert _names(stages.post_ingest_stages())[-1] == "profile-refresh"
@@ -38,6 +38,11 @@ class TestRegistry:
     def test_backfill_only_stages_never_run_post_ingest(self):
         assert stages.get_stage("matter-resolver-audit").when == "backfill_only"
         assert "matter-resolver-audit" not in _names(stages.post_ingest_stages())
+
+    def test_speaker_names_runs_post_ingest_and_fingerprint_rebuild_does_not(self):
+        assert stages.get_stage("speaker-names").when == "post_ingest"
+        assert stages.get_stage("voice-fingerprints").when == "backfill_only"
+        assert "voice-fingerprints" not in _names(stages.post_ingest_stages())
 
     def test_relink_now_runs_post_ingest(self):
         assert stages.get_stage("document-relink").when == "post_ingest"

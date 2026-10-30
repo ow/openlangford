@@ -43,6 +43,7 @@ from pipeline.ingestion.participation_minutes import MINUTES_VERSION as MINUTES_
 from pipeline.ingestion.participation_person_links import LINKS_VERSION as PARTICIPATION_LINKS_VERSION
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
 from pipeline.ingestion.property_summaries import PROPERTY_SUMMARY_VERSION
+from pipeline.ingestion.speaker_identity import IDENTITY_VERSION as SPEAKER_IDENTITY_VERSION
 
 When = Literal["post_ingest", "backfill_only"]
 Scope = Literal["meeting", "matter", "global"]
@@ -456,6 +457,59 @@ def run_agenda_alignment(ctx: StageContext):
     n = sum(len(v) for v in results.values())
     print(f"  {'Would set' if ctx.dry_run else 'Set'} times on {n} item(s) across {len(results)} meeting(s)")
     return results
+
+
+def _speaker_targets(ctx: StageContext) -> list[int]:
+    """--target is one meeting id or a comma-separated list; post-ingest: those meetings;
+    --since DATE: meetings from then; otherwise (or --stale) every meeting not at the current version.
+    Oldest first, so fingerprints learned from earlier meetings help later ones."""
+    from pipeline.ingestion.speaker_names import stale_meetings
+
+    if ctx.target not in (None, ""):
+        return [int(x) for x in str(ctx.target).split(",") if x.strip()]
+    if ctx.post_ingest:
+        ids = list(ctx.meeting_ids or [])
+    else:
+        wanted = set(stale_meetings(ctx.supabase)) if (ctx.stale or not ctx.force) else None
+
+        def query():
+            q = ctx.supabase.table("meetings").select("id, meeting_date").eq("has_transcript", True)
+            if ctx.since:
+                q = q.gte("meeting_date", ctx.since)
+            return q.order("meeting_date").order("id")
+
+        return [r["id"] for r in _paginate(query) if wanted is None or r["id"] in wanted]
+    if not ids:
+        return []
+    rows = ctx.supabase.table("meetings").select("id, meeting_date").in_("id", ids).execute().data or []
+    return [r["id"] for r in sorted(rows, key=lambda r: (r["meeting_date"] or "", r["id"]))]
+
+
+def run_speaker_names(ctx: StageContext):
+    from pipeline.ingestion.speaker_names import name_meetings
+
+    ids = _speaker_targets(ctx)
+    if not ids:
+        return {"meetings": 0}
+    # Post-ingest runs always re-evaluate: the transcript is new.
+    summary = name_meetings(ctx.supabase, ids, dry_run=ctx.dry_run, force=ctx.force or ctx.post_ingest)
+    done = [r for r in summary["results"] if r["status"] in ("named", "dry_run")]
+    print(f"  [Speakers] {'would name' if ctx.dry_run else 'named'} {sum(r['rows_named'] for r in done)} row(s) "
+          f"across {len(done)}/{len(ids)} meeting(s); fingerprints refreshed: {summary['fingerprints_refreshed']}")
+    return summary
+
+
+def run_voice_fingerprints(ctx: StageContext):
+    from pipeline.ingestion.speaker_names import rebuild_exemplars
+
+    people = [int(x) for x in str(ctx.target).split(",")] if ctx.target not in (None, "") else None
+    return rebuild_exemplars(ctx.supabase, people, dry_run=ctx.dry_run)
+
+
+def _stale_speaker_names(ctx: StageContext) -> list[int]:
+    from pipeline.ingestion.speaker_names import stale_meetings
+
+    return stale_meetings(ctx.supabase)
 
 
 def run_participation_summaries(ctx: StageContext):
@@ -961,6 +1015,14 @@ STAGES: list[Stage] = [
         run=run_agenda_alignment, when="post_ingest", scope="meeting", version="1",
     ),
     Stage(
+        name="speaker-names",
+        description="Name diarized transcript speakers from evidence: chair call-outs, self-introductions, minutes "
+                    "motions (mover/seconder), the chair, and voice fingerprints; grows fingerprints from what it names "
+                    "(no AI; --target is a meeting id or comma list; --force re-evaluates named meetings).",
+        run=run_speaker_names, when="post_ingest", scope="meeting", version=SPEAKER_IDENTITY_VERSION,
+        stale=_stale_speaker_names,
+    ),
+    Stage(
         name="participation-summaries",
         description="Per-speaker bullets for public participation / delegation items (--target is a meeting id).",
         run=run_participation_summaries, when="post_ingest", scope="meeting", version=PARTICIPATION_VERSION,
@@ -1020,6 +1082,12 @@ STAGES: list[Stage] = [
         name="profile-refresh",
         description="Councillor key votes, stances and a new overview draft for review (--target is a person id).",
         run=run_profile_refresh, when="post_ingest", scope="meeting", version="1",
+    ),
+    Stage(
+        name="voice-fingerprints",
+        description="Rebuild voice exemplars and fingerprints from stored text-evidenced speaker names only "
+                    "(--target PERSON_ID[,..] for one person after a correction; manual mappings are kept).",
+        run=run_voice_fingerprints, when="backfill_only", scope="global", version="1",
     ),
     Stage(
         name="bylaws",
