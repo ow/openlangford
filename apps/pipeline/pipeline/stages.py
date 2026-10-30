@@ -966,7 +966,8 @@ def run_video_posters(ctx: StageContext):
         if row is None:
             return mid, None, "no video_url"
         try:
-            res = make_poster(row)
+            with usage_context(job="video-posters", meeting_id=mid):
+                res = make_poster(row)
             if res.poster:
                 save_poster(mid, res.poster)
             return mid, res.poster, res.error
@@ -978,7 +979,7 @@ def run_video_posters(ctx: StageContext):
         for mid, poster, err in pool.map(one, ids):
             if poster:
                 made += 1
-                print(f"  [Poster] meeting {mid}: {poster['offset_s']}s "
+                print(f"  [Poster] meeting {mid}: {poster['offset_s']}s {poster.get('shot', '')} "
                       f"({poster['usable']}/{poster['candidates']} usable) {poster['url']}")
             else:
                 failed.append(mid)

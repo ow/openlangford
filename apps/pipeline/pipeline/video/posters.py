@@ -5,9 +5,11 @@ of a black box. For each meeting with a ``video_url`` we resolve the direct
 media URL (eSCRIBE ISI player page -> video.isilive.ca mp4; anything else via
 yt-dlp), grab a handful of candidate frames straight from the stream with
 ffmpeg (``-ss`` before ``-i``, so only a few range requests, no download), drop
-near-black or uniform frames (title cards, dead air), prefer shots of the room
-over shared-screen slides, and pick one at random,
-seeded by the meeting id so the choice is stable across runs. The chosen frame
+near-black or uniform frames (title cards, dead air), and classify the rest with
+the Decisions API (one cheap image question per frame): council at the dais
+first, then other room shots, then slides, and a member of the public at the
+podium only when nothing else is usable. Within the best group the frame is
+picked at random, seeded by the meeting id so the choice is stable across runs. The chosen frame
 is scaled to 1280 wide, encoded as WebP and uploaded to the public R2 bucket
 the document images already use.
 
@@ -26,11 +28,11 @@ from typing import Any, Callable
 from urllib.parse import urlparse
 
 # Bump when frame selection or encoding changes; stamped in meetings.meta.poster.version.
-POSTER_VERSION = "2"  # 2: prefer room shots over shared-screen slides
+POSTER_VERSION = "3"  # 2: prefer room shots over slides; 3: classify shots, prefer council, avoid the public podium
 
 FIRST_OFFSET_S = 150          # meeting has started, past any title card / black lead-in
-SPREAD_FRACTIONS = (0.2, 0.4, 0.6, 0.8)
-FALLBACK_OFFSETS_S = (150, 600, 1200, 2400, 3600)  # when the duration is unknown
+SPREAD_FRACTIONS = (0.15, 0.3, 0.45, 0.6, 0.75, 0.9)
+FALLBACK_OFFSETS_S = (150, 600, 1200, 1800, 2400, 3600, 4800)  # when the duration is unknown
 END_MARGIN_S = 10
 WIDTH = 1280
 WEBP_QUALITY = 70
@@ -43,6 +45,63 @@ MIN_MEAN, MAX_MEAN, MIN_STDDEV = 20, 240, 14
 SLIDE_BRIGHT_FRACTION, SLIDE_FLAT_FRACTION = 0.45, 0.65
 
 R2_PREFIX = "meeting-posters"
+
+# Shot kinds, best first. A member of the public at the podium is never the face of a
+# meeting while any other usable frame exists.
+SHOT_ORDER = ("council_wide", "council_member", "staff", "other", "empty_room", "slide", "podium_public")
+CLASSIFY_WIDTH = 640
+
+
+def shot_question() -> dict:
+    from pipeline import ai
+
+    return ai.choice(
+        "shot",
+        "This is a still frame from a recorded City of Langford council or committee meeting video. "
+        "What does the frame mainly show?",
+        [
+            ("council_wide", "A wide or medium shot of the council or committee members seated at the curved dais "
+                             "or meeting table (several members visible)."),
+            ("council_member", "A close-up of one or two council or committee members, or the chair, seated at the "
+                               "dais or table."),
+            ("podium_public", "A person standing or seated at the public podium or lectern facing council: a "
+                              "delegation, presenter or member of the public speaking."),
+            ("staff", "City staff seated at a staff table or presenting from it."),
+            ("slide", "A shared screen, slide presentation, document, map or video conference grid filling most "
+                      "of the frame."),
+            ("empty_room", "An empty or nearly empty room, wall or chairs with no meeting participants clearly "
+                           "visible."),
+            ("other", "Anything else (title card, test pattern, blurry or unclear)."),
+        ],
+    )
+
+
+def _small_jpeg(jpeg: bytes) -> bytes:
+    from PIL import Image
+
+    img = Image.open(io.BytesIO(jpeg)).convert("RGB")
+    img.thumbnail((CLASSIFY_WIDTH, CLASSIFY_WIDTH))
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=80)
+    return buf.getvalue()
+
+
+def classify_frames(frames: dict[int, bytes]) -> dict[int, str]:
+    """Shot kind per offset via the Decisions API; frames that fail to classify come back "other"."""
+    from pipeline import ai
+
+    offsets = list(frames)
+    if not offsets:
+        return {}
+    q = shot_question()
+    items = [("Classify this meeting video frame.", [q], [{"data": _small_jpeg(frames[o]), "mime_type": "image/jpeg"}])
+             for o in offsets]
+    out: dict[int, str] = {}
+    for o, res in zip(offsets, ai.decide_many(items, workers=4)):
+        ans = None if isinstance(res, Exception) else res.get("shot")
+        kind = getattr(ans, "choice", None)
+        out[o] = kind if kind in SHOT_ORDER else "other"
+    return out
 
 
 @dataclass
@@ -244,6 +303,8 @@ def make_poster(
     grab: Callable[[str, int], bytes | None] = grab_frame,
     usable: Callable[[bytes | None], bool] = is_usable,
     slide: Callable[[bytes], bool] = looks_like_slide,
+    classify: Callable[[dict[int, bytes]], dict[int, str]] | None = classify_frames,
+    offsets_for: Callable[[float | None], list[int]] = candidate_offsets,
     store: Callable[[str, bytes], str] | None = upload,
     dry_run: bool = False,
 ) -> PosterResult:
@@ -253,18 +314,24 @@ def make_poster(
     if not media:
         return PosterResult(mid, None, "could not resolve media URL")
     duration = probe(media) or meeting.get("video_duration_seconds") or None
-    offsets = candidate_offsets(duration)
+    offsets = offsets_for(duration)
     frames = {o: grab(media, o) for o in offsets}
     good = [o for o, f in frames.items() if usable(f)]
     if not good:
         got = sum(1 for f in frames.values() if f)
         return PosterResult(mid, None, f"no usable frame ({got}/{len(offsets)} grabbed, all dark/uniform)" if got
                             else "no frames grabbed", candidates=len(offsets))
-    rooms = [o for o in good if not slide(frames[o])]
-    chosen = pick(mid, rooms or good)
+    kinds = (classify or (lambda fs: {o: "other" for o in fs}))({o: frames[o] for o in good})
+    for o in good:  # the pixel heuristic backs up the classifier on obvious slides
+        if kinds.get(o, "other") in ("other", "empty_room") and slide(frames[o]):
+            kinds[o] = "slide"
+    best = min(SHOT_ORDER.index(kinds.get(o, "other")) for o in good)
+    tier = [o for o in good if SHOT_ORDER.index(kinds.get(o, "other")) == best]
+    chosen = pick(mid, tier)
     webp, w, h = encode_webp(frames[chosen])
     poster = {"offset_s": chosen, "version": POSTER_VERSION, "width": w, "height": h,
-              "bytes": len(webp), "candidates": len(offsets), "usable": len(good), "slides": len(good) - len(rooms)}
+              "bytes": len(webp), "candidates": len(offsets), "usable": len(good), "shot": kinds.get(chosen, "other"),
+              "shots": {o: kinds.get(o, "other") for o in good}}
     if dry_run or store is None:
         poster["url"] = None
     else:

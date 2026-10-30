@@ -34,7 +34,7 @@ GREY = _jpeg((128, 128, 128))
 
 class TestOffsets:
     def test_starts_150s_in_then_spreads(self):
-        assert posters.candidate_offsets(10_000) == [150, 2000, 4000, 6000, 8000]
+        assert posters.candidate_offsets(10_000) == [150, 1500, 3000, 4500, 6000, 7500, 9000]
 
     def test_clamped_to_short_video(self):
         offs = posters.candidate_offsets(100)
@@ -86,6 +86,7 @@ class TestResolve:
 
 class TestMakePoster:
     def _run(self, frames, **kw):
+        kw.setdefault("classify", None)  # no AI in unit tests unless a fake is passed
         stored = {}
 
         def store(key, data):
@@ -95,7 +96,7 @@ class TestMakePoster:
         res = posters.make_poster(
             {"id": 7, "video_url": "https://x/p"},
             resolve=lambda u: "https://x/v.mp4", probe=lambda u: 10_000,
-            grab=lambda u, o: frames.get(o), store=store, **kw,
+            grab=lambda u, o: frames.get(o), offsets_for=lambda d: sorted(frames), store=store, **kw,
         )
         return res, stored
 
@@ -112,9 +113,35 @@ class TestMakePoster:
         slide = _jpeg((250, 250, 250))
         frames = {150: slide, 2000: SCENE, 4000: slide}
         res, _ = self._run(frames, usable=lambda f: f is not None, slide=lambda f: f is slide)
-        assert res.poster["offset_s"] == 2000 and res.poster["slides"] == 2
+        assert res.poster["offset_s"] == 2000 and res.poster["shot"] == "other"
         res, _ = self._run({150: slide}, usable=lambda f: f is not None, slide=lambda f: True)
-        assert res.poster["offset_s"] == 150  # slide only when nothing else is usable
+        assert res.poster["offset_s"] == 150 and res.poster["shot"] == "slide"  # only when nothing else
+
+    def test_council_first_public_podium_last(self):
+        frames = {150: SCENE, 2000: SCENE, 4000: SCENE, 6000: SCENE}
+        kinds = {150: "podium_public", 2000: "slide", 4000: "council_wide", 6000: "staff"}
+        res, _ = self._run(frames, classify=lambda fs: {o: kinds[o] for o in fs}, slide=lambda f: False)
+        assert res.poster["offset_s"] == 4000 and res.poster["shot"] == "council_wide"
+        assert res.poster["shots"] == kinds
+
+        kinds = {150: "podium_public", 2000: "slide", 4000: "podium_public", 6000: "empty_room"}
+        res, _ = self._run(frames, classify=lambda fs: {o: kinds[o] for o in fs}, slide=lambda f: False)
+        assert res.poster["offset_s"] == 6000  # empty room beats the public podium
+
+        kinds = {150: "podium_public", 2000: "podium_public", 4000: "podium_public", 6000: "slide"}
+        res, _ = self._run(frames, classify=lambda fs: {o: kinds[o] for o in fs}, slide=lambda f: False)
+        assert res.poster["offset_s"] == 6000  # even a slide beats the podium
+
+    def test_ties_within_best_tier_are_seeded_by_meeting(self):
+        frames = {150: SCENE, 2000: SCENE, 4000: SCENE}
+        both = lambda fs: {150: "council_wide", 2000: "podium_public", 4000: "council_wide"}
+        res, _ = self._run(frames, classify=both, slide=lambda f: False)
+        assert res.poster["offset_s"] == posters.pick(7, [150, 4000])
+
+    def test_classifier_failures_fall_back_to_other(self, monkeypatch):
+        from pipeline import ai
+        monkeypatch.setattr(ai, "decide_many", lambda items, workers=4: [RuntimeError("down")] * len(list(items)))
+        assert posters.classify_frames({150: SCENE, 300: SCENE}) == {150: "other", 300: "other"}
 
     def test_slide_detector(self):
         white_slide = Image.new("RGB", (1280, 720), (245, 245, 245))
