@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { personPath, personSlug } from "./people-paths";
 import { throwIfFailed } from "./loader-errors";
 
-export type ResolvedPerson = { id: number; name: string; slug: string | null };
+export type ResolvedPerson = { id: number; name: string; slug: string | null; image_url?: string | null };
 
 /**
  * Resolve a `/people/:id` route param (slug or legacy numeric id).
@@ -32,7 +32,7 @@ export async function resolvePersonParam(
 
   const { data: bySlug, error } = await supabase
     .from("people")
-    .select("id, name, slug")
+    .select("id, name, slug, image_url")
     .eq("slug", slug)
     .maybeSingle();
   throwIfFailed(error);
@@ -43,7 +43,7 @@ export async function resolvePersonParam(
   const pattern = `%${slug.split("-").filter(Boolean).join("%")}%`;
   const { data: candidates, error: candidatesError } = await supabase
     .from("people")
-    .select("id, name, slug")
+    .select("id, name, slug, image_url")
     .ilike("name", pattern)
     .order("id")
     .limit(50);

@@ -33,7 +33,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
       `Search every ${municipalityName} council meeting, decision, vote, bylaw and development application, with plain-language summaries, video and the original records.`,
       "/",
       "website",
-      { image: ogImageUrl("Council Meeting Intelligence") },
+      { image: ogImageUrl("Langford council meetings, decisions and bylaws in plain language") },
     ),
     websiteGraph(),
   ];

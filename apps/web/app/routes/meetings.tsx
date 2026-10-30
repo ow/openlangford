@@ -25,7 +25,7 @@ export const meta: Route.MetaFunction = ({ data, matches, location }) => {
     : `Every ${shortName} council and committee meeting: agendas, minutes, video, plain-language summaries, decisions and recorded votes, searchable by year.`;
   return [
     ...pageMeta(title, description, meetingsYearPath(yearView), "website", {
-      image: ogImageUrl(yearView ? `${yearView} Council Meetings` : "Council Meetings", { type: "meeting" }),
+      image: ogImageUrl(yearView ? `Council meetings in ${yearView}` : "Council meetings", { subtitle: "Agendas, video, plain-language summaries and recorded votes", type: "meeting" }),
     }),
     jsonLd(breadcrumbList(yearView ? [["Meetings", "/meetings"], [String(yearView), meetingsYearPath(yearView)]] : [["Meetings", "/meetings"]])),
   ];

@@ -20,7 +20,7 @@ export const meta: Route.MetaFunction = () => {
     { property: "og:description", content: `Historical election results and candidate data for ${DEFAULT_MUNICIPALITY.short_name}` },
     { property: "og:type", content: "website" },
     { property: "og:url", content: ogUrl("/elections") },
-    { property: "og:image", content: ogImageUrl("Elections Archive", { type: "election" }) },
+    { property: "og:image", content: ogImageUrl("Elections", { subtitle: "Langford municipal election results and candidates", type: "election" }) },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },

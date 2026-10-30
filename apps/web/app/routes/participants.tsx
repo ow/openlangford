@@ -37,7 +37,7 @@ export const meta: Route.MetaFunction = ({ matches }) => {
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: ogUrl("/participants") },
-    { property: "og:image", content: ogImageUrl("Public Participants", { type: "person" }) },
+    { property: "og:image", content: ogImageUrl("People who spoke at council", { subtitle: `Residents and groups who addressed ${shortName} council meetings`, type: "council" }) },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },

@@ -3,7 +3,7 @@ import type { Route } from "./+types/bylaw-detail";
 import { getBylawById } from "../services/bylaws";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Link } from "react-router";
-import { ogImageUrl } from "../lib/og";
+import { firstSentence, ogImageUrl } from "../lib/og";
 import { fitTitle, metaDescription, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, bylawLegislation, jsonLd } from "../lib/structured-data";
 import { bylawPath, matterPath } from "../lib/paths";
@@ -26,7 +26,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   return [
     ...pageMeta(label, description, bylawPath(b), "article", {
       fullTitle: fitTitle(label, "Langford Bylaw"),
-      image: ogImageUrl(label, { subtitle: status, type: "bylaw" }),
+      image: ogImageUrl(displayTitle(b.title), { subtitle: firstSentence(bylawLead(b.plain_english_summary)) || status, type: "bylaw" }),
     }),
     jsonLd(
       bylawLegislation({ ...b, title: displayTitle(b.title) }, bylawPath(b), metaDescription(description)),

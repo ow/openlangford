@@ -26,7 +26,7 @@ export const meta: Route.MetaFunction = () => {
     { property: "og:description", content: `See how ${DEFAULT_MUNICIPALITY.short_name} council members vote together — alignment matrix and trends` },
     { property: "og:type", content: "website" },
     { property: "og:url", content: ogUrl("/alignment") },
-    { property: "og:image", content: ogImageUrl("Voting Alignment", { type: "person" }) },
+    { property: "og:image", content: ogImageUrl("How council members vote together", { subtitle: "How often each pair of council members voted the same way", type: "council" }) },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },

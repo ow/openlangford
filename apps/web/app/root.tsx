@@ -60,11 +60,11 @@ export const meta: Route.MetaFunction = ({ matches, error }) => {
     { property: "og:type", content: "website" },
     { property: "og:url", content: "https://openlangford.ca" },
     { property: "og:site_name", content: `${SITE_NAME}` },
-    { property: "og:image", content: ogImageUrl("Council Meeting Intelligence") },
+    { property: "og:image", content: ogImageUrl("Langford council meetings, decisions and bylaws in plain language") },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:image", content: ogImageUrl("Council Meeting Intelligence") },
+    { name: "twitter:image", content: ogImageUrl("Langford council meetings, decisions and bylaws in plain language") },
   ];
 };
 

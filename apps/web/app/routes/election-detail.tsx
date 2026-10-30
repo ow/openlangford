@@ -22,7 +22,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
     { property: "og:description", content: description },
     { property: "og:type", content: "article" },
     { property: "og:url", content: ogUrl(electionPath(e)) },
-    { property: "og:image", content: ogImageUrl(e.name, { subtitle: e.election_date, type: "election" }) },
+    { property: "og:image", content: ogImageUrl(e.name, { subtitle: recordDate(e.election_date), type: "election" }) },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },

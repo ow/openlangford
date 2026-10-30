@@ -71,6 +71,10 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "~": path.resolve(__dirname, "./app"),
+        // Share-image wasm (app/services/og): the Workers module plugin can't resolve these
+        // package subpaths itself, so point it at the files.
+        "yoga-wasm-web/dist/yoga.wasm": path.resolve(__dirname, "node_modules/yoga-wasm-web/dist/yoga.wasm"),
+        "@resvg/resvg-wasm/index_bg.wasm": path.resolve(__dirname, "node_modules/@resvg/resvg-wasm/index_bg.wasm"),
       },
     },
     // Replace process.env.* references at build time so server code works

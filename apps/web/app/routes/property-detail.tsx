@@ -15,7 +15,7 @@ import { displayTitle, matterTitle } from "../lib/display-text";
 import { matterStatusVariant } from "../lib/matter-status";
 import { matterPath, meetingPath } from "../lib/paths";
 import { SITE_NAME } from "../lib/site-name";
-import { ogImageUrl } from "../lib/og";
+import { firstSentence, ogImageUrl } from "../lib/og";
 import { metaDescription, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd, propertyPlace } from "../lib/structured-data";
 import { formatDate } from "../lib/utils";
@@ -39,7 +39,10 @@ export const meta: Route.MetaFunction = ({ data }) => {
   const path = propertyPath(property);
   return [
     ...pageMeta(`${property.address}, Langford`, description, path, "article", {
-      image: ogImageUrl(property.address, { subtitle: isStreet ? "Street" : "Property", type: "matter" }),
+      image: ogImageUrl(property.address, {
+        subtitle: firstSentence(summary) || matters.slice(0, 2).map((m: any) => matterTitle(m)).join(" · ") || undefined,
+        type: isStreet ? "street" : "property",
+      }),
     }),
     // Nothing on the page, or only a resident's home address from public input (see getPropertyBySlug).
     ...(data.noindex ? [{ name: "robots", content: "noindex, follow" }] : []),
