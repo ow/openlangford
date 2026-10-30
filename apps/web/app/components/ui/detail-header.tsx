@@ -1,12 +1,11 @@
-import { ChevronLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "~/lib/utils";
 
 interface DetailHeaderProps {
-  /** Parent page; rendered as the first item of the eyebrow line. */
+  /** Parent page; the breadcrumb trail is Home / parent. */
   back?: { to: string; label: string };
-  /** Short facts shown after the back link (date, length, term…). */
+  /** Short facts shown on a quiet line under the title (date, length, term…). */
   meta?: ReactNode[];
   title: ReactNode;
   /** Inline next to the title (status badges). */
@@ -19,8 +18,8 @@ interface DetailHeaderProps {
 }
 
 /**
- * Header for detail pages: one eyebrow line (back link · meta) above the
- * title, so context and facts never take two separate rows.
+ * Header for detail pages: a breadcrumb trail (Home / parent) above the title,
+ * then the page's facts on their own quiet line under it.
  */
 export function DetailHeader({
   back,
@@ -36,20 +35,32 @@ export function DetailHeader({
     <header className={cn("mb-8", className)}>
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
-          {(back || items.length > 0) && (
-            <p className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-              {back && (
-                <Link
-                  to={back.to}
-                  className="-ml-1 inline-flex items-center font-medium text-zinc-600 hover:text-brand-700"
-                >
-                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                  {back.label}
-                </Link>
-              )}
+          {back && (
+            <nav aria-label="Breadcrumb" className="mb-2 text-sm">
+              <ol className="flex flex-wrap items-center gap-x-1.5 text-zinc-500">
+                <li>
+                  <Link to="/" className="hover:text-brand-700">Home</Link>
+                </li>
+                <li aria-hidden="true" className="text-zinc-300">/</li>
+                <li>
+                  <Link to={back.to} className="font-medium text-zinc-700 hover:text-brand-700">
+                    {back.label}
+                  </Link>
+                </li>
+              </ol>
+            </nav>
+          )}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">
+              {title}
+            </h1>
+            {badges}
+          </div>
+          {items.length > 0 && (
+            <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
               {items.map((item, i) => (
                 <span key={i} className="inline-flex items-center gap-2">
-                  {(back || i > 0) && (
+                  {i > 0 && (
                     <span aria-hidden="true" className="text-zinc-300">
                       ·
                     </span>
@@ -59,14 +70,8 @@ export function DetailHeader({
               ))}
             </p>
           )}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">
-              {title}
-            </h1>
-            {badges}
-          </div>
           {description && (
-            <p className="mt-2 max-w-3xl text-base leading-relaxed text-zinc-600">
+            <p className="mt-3 max-w-3xl text-base leading-relaxed text-zinc-600">
               {description}
             </p>
           )}
