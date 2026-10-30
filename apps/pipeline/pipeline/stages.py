@@ -44,6 +44,7 @@ from pipeline.ingestion.participation_person_links import LINKS_VERSION as PARTI
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
 from pipeline.ingestion.property_summaries import PROPERTY_SUMMARY_VERSION
 from pipeline.ingestion.speaker_identity import IDENTITY_VERSION as SPEAKER_IDENTITY_VERSION
+from pipeline.video.posters import POSTER_VERSION
 
 When = Literal["post_ingest", "backfill_only"]
 Scope = Literal["meeting", "matter", "global"]
@@ -921,6 +922,69 @@ def run_matter_resolver_audit(ctx: StageContext):
     return {"clusters": len(clusters), "queued": queued}
 
 
+def _poster_rows(ctx: StageContext, meeting_ids: list[int] | None = None) -> list[dict]:
+    """Meetings with video, with their poster stamp."""
+    def q():
+        query = (ctx.supabase.table("meetings")
+                 .select("id, video_url, video_duration_seconds, meeting_date, stamp:meta->poster->>version, "
+                         "poster_url:meta->poster->>url")
+                 .not_.is_("video_url", "null").order("id"))
+        if meeting_ids is not None:
+            query = query.in_("id", meeting_ids)
+        if ctx.since:
+            query = query.gte("meeting_date", ctx.since)
+        return query
+
+    if meeting_ids is not None and not meeting_ids:
+        return []
+    return [{**r, "poster_version": r.get("stamp")} for r in _paginate(q)]
+
+
+def stale_video_posters(ctx: StageContext) -> list[int]:
+    return select_stale(_poster_rows(ctx), "poster_version", POSTER_VERSION)
+
+
+def run_video_posters(ctx: StageContext):
+    from pipeline.video.posters import make_poster, save_poster
+
+    def from_meetings() -> list[int]:
+        return [r["id"] for r in _poster_rows(ctx, ctx.meeting_ids) if ctx.force or not r.get("poster_url")]
+
+    def missing() -> list[int]:
+        return [r["id"] for r in _poster_rows(ctx) if ctx.force or not r.get("poster_url")]
+
+    ids = _choose(ctx, "video-posters", from_meetings=from_meetings, backfill=missing)
+    if ctx.dry_run:
+        _preview("meetings to make poster frames for", ids)
+        return None
+    rows = {r["id"]: r for r in _poster_rows(ctx, ids)}
+    workers = int(ctx.options.get("workers") or 4)
+
+    def one(mid: int):
+        row = rows.get(mid)
+        if row is None:
+            return mid, None, "no video_url"
+        try:
+            res = make_poster(row)
+            if res.poster:
+                save_poster(mid, res.poster)
+            return mid, res.poster, res.error
+        except Exception as e:
+            return mid, None, f"{type(e).__name__}: {e}"
+
+    made, failed = 0, []
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for mid, poster, err in pool.map(one, ids):
+            if poster:
+                made += 1
+                print(f"  [Poster] meeting {mid}: {poster['offset_s']}s "
+                      f"({poster['usable']}/{poster['candidates']} usable) {poster['url']}")
+            else:
+                failed.append(mid)
+                print(f"  [!] Poster for meeting {mid} failed: {err}")
+    return {"meetings": len(ids), "made": made, "failed": failed}
+
+
 def councillors_for_meetings(supabase, meeting_ids: list[int]) -> list[int]:
     people: set[int] = set()
     for table in ("attendance", "key_statements"):
@@ -1077,6 +1141,13 @@ STAGES: list[Stage] = [
                     "--target PROPERTY_ID[,ID...]; --stale re-runs changed record sets.",
         run=run_property_summaries, when="post_ingest", scope="global", version=PROPERTY_SUMMARY_VERSION,
         depends_on=("properties",), stale=stale_property_summaries,
+    ),
+    Stage(
+        name="video-posters",
+        description="Poster frame per meeting video (meetings.meta.poster): a few ffmpeg frames from the stream, "
+                    "skip dark/uniform ones, pick one seeded by meeting id, WebP to R2. --stale re-picks old versions.",
+        run=run_video_posters, when="post_ingest", scope="meeting", version=POSTER_VERSION,
+        stale=stale_video_posters,
     ),
     Stage(
         name="profile-refresh",

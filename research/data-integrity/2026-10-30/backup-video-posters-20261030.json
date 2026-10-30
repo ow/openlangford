@@ -1,0 +1,2819 @@
+{
+ "taken_at": "2026-10-30T09:01:49-0700",
+ "purpose": "meetings with video before video-posters backfill; the backfill only adds meta.poster (jsonb merge). Full meta backup kept off-repo (contains private speaker data).",
+ "rows": [
+  {
+   "id": 1,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 6,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 10,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 11,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 12,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 13,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 14,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 15,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 16,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 17,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 18,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 19,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 20,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 21,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 22,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 23,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 24,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 25,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 27,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 29,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 35,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 36,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 37,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 38,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 42,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "history_catchup_receipts",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 44,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 49,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 50,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 71,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 143,
+   "meta_keys": [
+    "motion_source_ingestion",
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 145,
+   "meta_keys": [
+    "motion_source_ingestion",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 147,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 154,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 156,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 158,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 159,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 161,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 162,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 164,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 166,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 167,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 169,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 170,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 171,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 172,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 173,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 174,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 175,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 177,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 179,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 181,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 182,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 184,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 185,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 186,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 188,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 189,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 190,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 192,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 193,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 194,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 195,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 197,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 198,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 199,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 200,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 202,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 203,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 204,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "history_catchup_receipts"
+   ],
+   "poster": null
+  },
+  {
+   "id": 205,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 206,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 207,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 208,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 209,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 211,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 212,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 213,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 215,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "history_catchup_receipts",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 216,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 217,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 218,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "key_statement_classifications",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 219,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 220,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 221,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 223,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "history_catchup_receipts",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 224,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 225,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 226,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 227,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 229,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 230,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 231,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 232,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 233,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 234,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 235,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 236,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 237,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 238,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 239,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 240,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "key_statement_classifications",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 241,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 242,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 243,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 247,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "key_statement_classifications",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 248,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 249,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 251,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 252,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 253,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 254,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 255,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 258,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 259,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 260,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 261,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 262,
+   "meta_keys": [
+    "history_catchup_receipts",
+    "key_statement_evidence",
+    "motion_source_ingestion",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 263,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 264,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 265,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 267,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 268,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 269,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 270,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "history_catchup_receipts",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 271,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 273,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 274,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 276,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 278,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 281,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 282,
+   "meta_keys": [
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 283,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 284,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 285,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 288,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 289,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 293,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 294,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 295,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 296,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 297,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 299,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 300,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 304,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 307,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 308,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 309,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 310,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 311,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 312,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 313,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 314,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 315,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 317,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 318,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 321,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 322,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 323,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 324,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 325,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 326,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 327,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 328,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 330,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles"
+   ],
+   "poster": null
+  },
+  {
+   "id": 332,
+   "meta_keys": [
+    "cached_transcript_backfill"
+   ],
+   "poster": null
+  },
+  {
+   "id": 333,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 336,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 337,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 338,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 342,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 344,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 346,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 348,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read",
+    "written_unplaced"
+   ],
+   "poster": null
+  },
+  {
+   "id": 354,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 355,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 357,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 358,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 382,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 388,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "written_placements",
+    "written_rev",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 389,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 390,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 391,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 392,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 393,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "participant_roles",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 394,
+   "meta_keys": [
+    "cached_transcript_backfill",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 402,
+   "meta_keys": [
+    "motion_source_ingestion",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 593,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read",
+    "written_unplaced"
+   ],
+   "poster": null
+  },
+  {
+   "id": 602,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 607,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 610,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 615,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 616,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 620,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 622,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 623,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 627,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 631,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 632,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read",
+    "written_unplaced"
+   ],
+   "poster": null
+  },
+  {
+   "id": 638,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 639,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 640,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read",
+    "written_unplaced"
+   ],
+   "poster": null
+  },
+  {
+   "id": 642,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 643,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 644,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 645,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 646,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 647,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 648,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 649,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 650,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 651,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 652,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 653,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 654,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 655,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read",
+    "written_unplaced"
+   ],
+   "poster": null
+  },
+  {
+   "id": 656,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 657,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 658,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read",
+    "written_unplaced"
+   ],
+   "poster": null
+  },
+  {
+   "id": 659,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 660,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 661,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 662,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 663,
+   "meta_keys": [
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 865,
+   "meta_keys": [
+    "key_statement_evidence",
+    "motion_source_ingestion",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 870,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 871,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 872,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 873,
+   "meta_keys": [
+    "motion_source_ingestion",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 874,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 875,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 876,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 877,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 878,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 879,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 880,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 881,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 882,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 883,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 884,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 885,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 886,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 887,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 888,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 889,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 890,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 891,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 892,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 893,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 894,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 895,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 896,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 897,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 898,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 967,
+   "meta_keys": [
+    "key_statement_evidence",
+    "motion_source_ingestion",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 968,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at"
+   ],
+   "poster": null
+  },
+  {
+   "id": 969,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 970,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 971,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 972,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "vimeo_cache_invalidated_at",
+    "vimeo_direct_audio_url",
+    "vimeo_direct_url",
+    "vimeo_direct_url_updated_at",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 973,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 974,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 975,
+   "meta_keys": [
+    "key_statement_evidence",
+    "motion_source_ingestion",
+    "speaker_centroids",
+    "speaker_samples",
+    "written_submissions_read"
+   ],
+   "poster": null
+  },
+  {
+   "id": 976,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 977,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  },
+  {
+   "id": 978,
+   "meta_keys": [
+    "key_statement_evidence",
+    "speaker_centroids",
+    "speaker_samples"
+   ],
+   "poster": null
+  }
+ ]
+}
