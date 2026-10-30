@@ -2,6 +2,9 @@ import math
 import random
 
 from pipeline.ingestion import speaker_identity as si
+from datetime import date
+
+from pipeline.ingestion import speaker_names as sn
 from pipeline.ingestion.speaker_names import VoiceBank, recover_labels
 
 ROSTER = [
@@ -178,3 +181,68 @@ def test_strong_voice_names_staff_the_minutes_roster_omits():
     weak = {"person_id": 6, "similarity": 0.84, "margin": 0.09}
     assert si.decide([], weak, roster={1, 22}) is None
     assert si.decide([], weak, roster={6})["person_id"] == 6
+
+
+class _Table:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def select(self, *_):
+        return self
+
+    def in_(self, col, values):
+        self.rows = [r for r in self.rows if r[col] in values]
+        return self
+
+    def execute(self):
+        return type("R", (), {"data": self.rows})()
+
+
+class _Sb:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def table(self, _):
+        return _Table(list(self.rows))
+
+
+def test_admin_anonymous_public_speakers_are_never_named():
+    people = [{"id": 70, "name": "R. Sansom"}, {"id": 6, "name": "K. Balzer"}, {"id": 5, "name": "Wendy Hobbs"}]
+    sb = _Sb([
+        {"transcribed_name": "Rachel Sansom", "display_name": None, "status": "anonymous"},
+        {"transcribed_name": "Wendy Bowers", "display_name": None, "status": "review"},
+        {"transcribed_name": "Kim Balzer", "display_name": "K. Balzer", "status": "published"},
+    ])
+    withheld = sn.withheld_people(sb, people)
+    assert withheld == {70: "anonymous"}  # initial + surname match; other surname / published ignored
+    labels = {"Speaker_3": {"person_id": 70, "name": "R. Sansom"}, "Speaker_4": {"person_id": 6, "name": "K. Balzer"}}
+    assert sn.hold_withheld(labels, roster_ids={6}, withheld=withheld) == 1
+    assert "person_id" not in labels["Speaker_3"] and labels["Speaker_3"]["held"] == "public_name_withheld"
+    assert labels["Speaker_4"]["person_id"] == 6
+    # On the minutes roster at this meeting, they attended officially: still named.
+    labels = {"Speaker_3": {"person_id": 70, "name": "R. Sansom"}}
+    assert sn.hold_withheld(labels, roster_ids={70}, withheld=withheld) == 0
+
+
+def test_minutes_roles_become_spoken_role_calls():
+    minutes = ("D. Kiedyk, Chief Administrative Officer B. Hutchins, Deputy Chief Administrative Officer "
+               "K. Balzer, Director of Engineering and Public Works K. Bowbyes, Deputy Director of Engineering")
+    parsed = sn.si.parse_roles(minutes)
+    keys = {k: s for i, s, r in parsed for k in si.role_keys(r)}
+    assert keys["cao"] == "Kiedyk" and keys["deputy cao"] == "Hutchins"
+    assert keys["director of engineering"] == "Balzer" and keys["deputy director of engineering"] == "Bowbyes"
+    cands = {c.surname: c for c in si.candidates_from_people(
+        [{"id": 2, "name": "D. Kiedyk"}, {"id": 3, "name": "B. Hutchins"}, {"id": 6, "name": "K. Balzer"}, {"id": 9, "name": "K. Bowbyes"}])}
+    roles = {"cao": cands["kiedyk"], "deputy cao": cands["hutchins"],
+             "director of engineering": cands["balzer"], "deputy director of engineering": cands["bowbyes"]}
+    assert si.role_call("Any questions? Let's go to our Director of Engineering.", roles)[0].id == 6
+    assert si.role_call("Over to the deputy director of engineering, please.", roles)[0].id == 9
+    assert si.role_call("Deputy CAO, go ahead.", roles)[0].id == 3
+    assert si.role_call("Thank you to the director of engineering.", roles) is None
+
+
+def test_roles_for_takes_the_holder_nearest_the_meeting():
+    directory = {"director of engineering": [(date(2022, 3, 1), 11), (date(2025, 12, 1), 6)]}
+    assert sn.roles_for(directory, "2026-09-28") == {"director of engineering": 6}
+    assert sn.roles_for(directory, "2022-04-01") == {"director of engineering": 11}
+    assert sn.roles_for(directory, "2018-01-01") == {}

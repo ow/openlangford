@@ -37,7 +37,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 
-IDENTITY_VERSION = "2"
+IDENTITY_VERSION = "3"
 ATTRIBUTION_SOURCE = "SPEAKER_EVIDENCE"
 # Rows the stage may name. Anything else (manual, verified, legacy-named) is left alone.
 UNNAMED_SOURCES = ("UNIDENTIFIED_DIARIZATION", "CACHED_TRANSCRIPT_BACKFILL", "AI_DIARIZATION")
@@ -69,7 +69,7 @@ TITLE = (
     r"mayor|chair(?:person|man|woman)?|director|manager|chief|mr|mrs|ms|miss|dr|madam|commissioner|trustee)\.?"
 )
 WORD = r"[A-Za-z][A-Za-z'\-]+"
-WEIGHTS = {"called": 1.0, "introduced": 2.0, "chair": 1.0, "moved": 1.0, "seconded": 0.5, "voice": 3.0}
+WEIGHTS = {"called": 1.0, "introduced": 2.0, "chair": 1.0, "moved": 1.0, "seconded": 0.5, "role": 1.0, "voice": 3.0}
 
 
 # ── names ────────────────────────────────────────────────────────────────
@@ -294,6 +294,59 @@ def floor_call(text: str, index: NameIndex) -> tuple[Candidate, str] | None:
     return last
 
 
+# ── staff roles from minutes ("K. Balzer, Director of Engineering and Public Works") ──
+
+ROLE_LINE = re.compile(
+    r"\b([A-Z])\.\s?([A-Z][A-Za-z'\-]+),\s+((?:Acting\s+|Interim\s+)?(?:Chief|Deputy|Director|Corporate|Fire|General)"
+    r"[A-Za-z &]*?)(?=\s+[A-Z]\.\s?[A-Z]|\s*[,\n;]|\s+(?:Meeting|Regrets|Absent|Also|Staff)\b|$)"
+)
+
+
+def role_keys(role: str) -> list[str]:
+    """Spoken forms of a minutes role, most specific first."""
+    r = " ".join(re.sub(r"[^a-z& ]", " ", role.casefold()).split())
+    r = re.sub(r"^(?:acting|interim) ", "", r)
+    if r.startswith("deputy chief administrative officer"):
+        return ["deputy chief administrative officer", "deputy cao"]
+    if r.startswith("chief administrative officer"):
+        return ["chief administrative officer", "cao"]
+    if r.startswith("corporate officer"):
+        return ["corporate officer"]
+    if r.startswith("fire chief"):
+        return ["fire chief"]
+    m = re.match(r"(deputy )?director of ([a-z]+)", r)
+    if m and m.group(2) not in ("the", "and"):
+        return [f"{m.group(1) or ''}director of {m.group(2)}"]
+    return []
+
+
+def parse_roles(minutes: str) -> list[tuple[str, str, str]]:
+    """(initial, surname, role) for staff listed with a role in the minutes header."""
+    return [(m.group(1), m.group(2), m.group(3).strip()) for m in ROLE_LINE.finditer(minutes or "")]
+
+
+def role_call(text: str, roles: dict) -> tuple | None:
+    """A turn that ends by handing the floor to a role ("... Director of Engineering?")."""
+    if not roles:
+        return None
+    words = list(re.finditer(r"\S+", text))
+    tail = text[words[-14].start():] if len(words) > 14 else text
+    low = " ".join(re.sub(r"[^a-z& ]", " ", tail.casefold()).split())
+    best = None
+    for key in sorted(roles, key=len, reverse=True):
+        for m in re.finditer(rf"\b{re.escape(key)}\b", low):
+            if not key.startswith("deputy") and low[:m.start()].rstrip().endswith("deputy"):
+                continue
+            before = low[max(0, m.start() - 30):m.start()]
+            if re.search(r"thank(?:s| you)(?: very much)?(?: to)?(?: the| our)?\s*$", before):
+                continue
+            if len(low[m.end():].split()) > 10 or low[m.end():m.end() + 2] == "s ":
+                continue
+            if best is None or m.start() > best[0]:
+                best = (m.start(), roles[key], key)
+    return (best[1], best[2]) if best else None
+
+
 INTRO_RE = re.compile(
     rf"\b(?:my\s+name\s+is|my\s+name's|i\s+am|i'm|this\s+is)\s+(?:(?P<title>{TITLE})\s+)?(?P<n1>{WORD})(?:\s+(?P<n2>{WORD}))?",
     re.I,
@@ -405,7 +458,7 @@ def motion_evidence(turns: list[Turn], motions: list[dict], index: NameIndex) ->
 
 
 def text_evidence(turns: list[Turn], index: NameIndex, chair: Candidate | None,
-                  motions: list[dict] | None = None) -> dict[str, list[dict]]:
+                  motions: list[dict] | None = None, roles: dict | None = None) -> dict[str, list[dict]]:
     """label -> evidence events {kind, person_id, at, quote}."""
     ev: dict[str, list[dict]] = defaultdict(list)
 
@@ -421,6 +474,10 @@ def text_evidence(turns: list[Turn], index: NameIndex, chair: Candidate | None,
             call = floor_call(prev.text, index)
             if call:
                 add(turn.label, "called", call[0], turn, call[1])
+            else:
+                rc = role_call(prev.text, roles or {})
+                if rc:
+                    add(turn.label, "role", rc[0], turn, rc[1])
         intro = self_introduction(turn.text, index)
         if intro:
             add(turn.label, "introduced", intro[0], turn, intro[1])
@@ -564,6 +621,7 @@ def identify_meeting(
     meeting_id: int | None = None,
     motions: list[dict] | None = None,
     person_means: dict | None = None,
+    roles: dict[str, int] | None = None,
 ) -> dict:
     """Return {"labels": {label: decision+evidence}, "chair": person_id|None}. Pure; no I/O."""
     cands = candidates_from_people(attendees)
@@ -572,7 +630,9 @@ def identify_meeting(
     index.shadow_namesakes(" ".join(s.get("text_content") or "" for s in segments))
     chair = next((c for c in index.candidates if c.id == chair_person_id), None) or chair_from_minutes(minutes, index)
     turns = build_turns(segments)
-    ev = text_evidence(turns, index, chair, motions)
+    by_id = {c.id: c for c in index.candidates}
+    role_cands = {k: by_id[pid] for k, pid in (roles or {}).items() if pid in by_id}
+    ev = text_evidence(turns, index, chair, motions, role_cands)
     roster = {c.id for c in cands}
     names = {c.id: c.name for c in index.candidates}
     names.update({p["id"]: p["name"] for p in (known_people or []) + attendees})

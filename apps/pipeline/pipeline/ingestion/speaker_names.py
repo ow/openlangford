@@ -50,7 +50,10 @@ from pipeline.paths import BASE_DIR
 
 ARCHIVE_BASE = Path(os.environ.get("ARCHIVE_BASE_DIR") or BASE_DIR)
 TRANSCRIPT_EXCLUDED = ("_raw_transcript", "_segments", "_benchmark", "_gemini_speakers")
-TEXT_KINDS = {"called", "introduced", "chair", "moved", "seconded"}
+TEXT_KINDS = {"called", "introduced", "chair", "moved", "seconded", "role"}
+# public_speaker_names decisions that withhold a name: an admin chose "Keep anonymous", or has not decided yet.
+WITHHELD_STATUSES = ("anonymous", "review")
+ROLE_MAX_DAYS = 400
 
 
 def _pages(build, size: int = 1000) -> list[dict]:
@@ -144,6 +147,94 @@ def meeting_inputs(sb, meeting_id: int) -> dict:
         "minutes": minutes_text(meeting.get("archive_path")), "centroids": centroids,
         "recovered": recover_labels(rows, transcript),
     }
+
+
+def withheld_people(sb, people: list[dict]) -> dict[int, str]:
+    """People whose name an admin withheld (or has yet to decide) as a public speaker.
+
+    Matched by surname plus first name or initial against the transcribed and
+    display names; such a person is never named here unless the minutes roster
+    lists them at that meeting in an official capacity.
+    """
+    from pipeline.ingestion.participation_validation import folded
+
+    rows = sb.table("public_speaker_names").select("transcribed_name, display_name, status").in_(
+        "status", list(WITHHELD_STATUSES)).execute().data or []
+    out = {}
+    for row in rows:
+        for name in {row.get("transcribed_name"), row.get("display_name")} - {None, ""}:
+            words = folded(name)
+            if len(words) < 2:
+                continue
+            given, surname = words[0], words[-1]
+            for p in people:
+                pw = folded(p.get("name") or "")
+                if len(pw) < 2 or pw[-1] != surname:
+                    continue
+                if pw[0] == given or (len(pw[0]) == 1 and pw[0] == given[:1]) or (len(given) == 1 and given == pw[0][:1]):
+                    out[p["id"]] = row["status"]
+    return out
+
+
+def hold_withheld(labels: dict, roster_ids: set, withheld: dict) -> int:
+    """Unname labels whose person an admin kept anonymous (or hasn't decided), unless the
+    minutes list them at this meeting (then they spoke in an official capacity)."""
+    n = 0
+    for entry in labels.values():
+        pid = entry.get("person_id")
+        if pid and pid not in roster_ids and pid in withheld:
+            entry["held"] = "public_name_withheld"
+            entry.pop("person_id")
+            n += 1
+    return n
+
+
+def role_directory(people: list[dict]) -> dict[str, list[tuple]]:
+    """Spoken role key -> [(meeting date, person id)] from every archived minutes header."""
+    import re
+    from datetime import date
+
+    by_initial = defaultdict(list)
+    for p in people:
+        words = (p.get("name") or "").replace(".", ". ").split()
+        if len(words) >= 2:
+            by_initial[(words[0][0].upper(), words[-1].casefold())].append(p["id"])
+    out = defaultdict(list)
+    root = ARCHIVE_BASE / "archive"
+    for path in root.glob("*/*/*/*/*/minutes.md") if root.exists() else []:
+        m = re.search(r"(\d{4})-(\d{2})-(\d{2})", path.parent.name)
+        if not m:
+            continue
+        try:
+            when = date(int(m[1]), int(m[2]), int(m[3]))
+            text = path.read_text()
+        except (OSError, ValueError):
+            continue
+        for initial, surname, role in si.parse_roles(text):
+            ids = by_initial.get((initial, surname.casefold()), [])
+            if len(ids) != 1:
+                continue
+            for key in si.role_keys(role):
+                out[key].append((when, ids[0]))
+    return dict(out)
+
+
+def roles_for(directory: dict, meeting_date) -> dict[str, int]:
+    """Who held each role nearest the meeting date (within ROLE_MAX_DAYS); ties between people drop the role."""
+    from datetime import date
+
+    if not directory or not meeting_date:
+        return {}
+    d = date.fromisoformat(str(meeting_date)[:10])
+    out = {}
+    for key, entries in directory.items():
+        dist = min(abs((w - d).days) for w, _ in entries)
+        if dist > ROLE_MAX_DAYS:
+            continue
+        holders = {pid for w, pid in entries if abs((w - d).days) == dist}
+        if len(holders) == 1:
+            out[key] = holders.pop()
+    return out
 
 
 def known_people(sb) -> list[dict]:
@@ -290,7 +381,7 @@ def _revert(sb, meeting_id: int, previous: dict, dry_run: bool) -> int:
 
 
 def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dry_run: bool = False,
-                 force: bool = False) -> dict:
+                 force: bool = False, withheld: dict | None = None, roles_dir: dict | None = None) -> dict:
     data = meeting_inputs(sb, meeting_id)
     meeting, rows = data["meeting"], data["rows"]
     meta = meeting.get("meta") or {}
@@ -317,8 +408,10 @@ def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dr
         chair_person_id=meeting.get("chair_person_id"), centroids=data["centroids"],
         fingerprints=voice_rows, meeting_id=meeting_id, motions=data["motions"],
         person_means=VoiceBank(voice_rows).reference_means() if voice_rows else None,
+        roles=roles_for(roles_dir or {}, meeting.get("meeting_date")),
     )
     labels = result["labels"]
+    hold_withheld(labels, {a["id"] for a in data["attendees"]}, withheld or {})
     for label, entry in labels.items():
         prior = legacy.get(label)
         if entry.get("person_id") and prior:
@@ -423,10 +516,12 @@ def name_meetings(sb, meeting_ids: list[int], *, dry_run: bool = False, force: b
     bank = VoiceBank.load(sb, required=not dry_run)
     import_manual_fingerprints(sb, bank, dry_run)
     people = known_people(sb)
+    withheld = withheld_people(sb, people)
+    roles_dir = role_directory(people)
     results, touched = [], set()
     for mid in meeting_ids:
         try:
-            res = name_meeting(sb, mid, bank, people, dry_run=dry_run, force=force)
+            res = name_meeting(sb, mid, bank, people, dry_run=dry_run, force=force, withheld=withheld, roles_dir=roles_dir)
         except Exception as e:  # one meeting failing shouldn't stop the rest
             log(f"  [!] speaker-names failed for meeting {mid}: {e}")
             results.append({"meeting_id": mid, "status": "error", "error": str(e)})
