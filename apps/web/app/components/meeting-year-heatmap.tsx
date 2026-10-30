@@ -51,7 +51,10 @@ export function MeetingYearHeatmap({ year, meetings, statsMap }: { year: number;
   const meetingCount = meetingDays.reduce((n, d) => n + d.meetings.length, 0);
   const busiest = totals.reduce((a, b) => (b.meetings > a.meetings ? b : a));
   const width = LEFT + weeks * STEP;
-  const height = TOP + 7 * STEP;
+  // Council doesn't meet on weekends; keep those rows only in a year that had a weekend meeting.
+  const showWeekends = meetingDays.some((d) => d.row >= 5);
+  const shown = showWeekends ? days : days.filter((d) => d.row < 5);
+  const height = TOP + (showWeekends ? 7 : 5) * STEP;
 
   return (
     <figure className="mb-6 rounded-2xl border border-zinc-200 bg-surface px-4 py-3 shadow-sm">
@@ -80,7 +83,7 @@ export function MeetingYearHeatmap({ year, meetings, statsMap }: { year: number;
               {label}
             </text>
           ))}
-          {days.map((d) => {
+          {shown.map((d) => {
             const rect = (
               <rect
                 x={LEFT + d.col * STEP}
