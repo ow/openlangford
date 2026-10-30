@@ -40,7 +40,7 @@ export const TYPE_OPTIONS: Array<{
   value: ContentType;
   label: string;
 }> = [
-  { value: "matter", label: "Matters" },
+  { value: "matter", label: "Decisions" },
   { value: "motion", label: "Motions" },
   { value: "key_statement", label: "Key Statements" },
   { value: "document_section", label: "Documents" },

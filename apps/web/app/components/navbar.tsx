@@ -168,7 +168,7 @@ export function Navbar() {
               icon={Landmark}
               isActive={isLinkActive("/matters") || isLinkActive("/properties") || isLinkActive("/bylaws")}
               items={[
-                { name: "Matters", href: "/matters", icon: Tag },
+                { name: "Decisions", href: "/matters", icon: Tag },
                 { name: "Properties", href: "/properties", icon: MapPin },
                 { name: "Bylaws", href: "/bylaws", icon: Book },
               ]}
@@ -267,7 +267,7 @@ export function Navbar() {
               isActive={isLinkActive("/meetings")}
             />
             <MobileNavLink
-              name="Matters"
+              name="Decisions"
               href="/matters"
               icon={Tag}
               isActive={isLinkActive("/matters")}

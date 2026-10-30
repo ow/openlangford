@@ -680,7 +680,7 @@ function MeetingDetailContent({ loaderData }: any) {
               ) : (
                 <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
                   {isPast
-                    ? "A summary will appear here once the meeting records have been processed."
+                    ? "A summary will appear here once the minutes and video have been processed."
                     : "This meeting hasn't happened yet."}
                 </div>
               )}

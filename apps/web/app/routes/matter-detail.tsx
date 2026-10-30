@@ -29,7 +29,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
       imageWidth: lead?.url ? lead.width : undefined,
       imageHeight: lead?.url ? lead.height : undefined,
     }),
-    jsonLd(breadcrumbList([["Matters", "/matters"], [name, matterPath(m)]])),
+    jsonLd(breadcrumbList([["Decisions", "/matters"], [name, matterPath(m)]])),
   ];
 };
 import {
@@ -496,7 +496,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
         <header className="mb-10">
           <DetailHeader
             className="mb-0"
-            back={{ to: "/matters", label: "Matters" }}
+            back={{ to: "/matters", label: "Decisions" }}
             meta={[
               matter.category || "General",
               matter.identifier ? (

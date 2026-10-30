@@ -490,7 +490,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                 </div>
               ) : (
                 <p className="text-sm text-zinc-500">
-                  A summary will appear here once the meeting records have been processed.
+                  A summary will appear here once the minutes and video have been processed.
                 </p>
               )}
             </section>
