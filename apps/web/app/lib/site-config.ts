@@ -9,6 +9,12 @@ export const DEFAULT_MUNICIPALITY = {
   province: "BC",
   /** Nominatim viewbox (minLon,minLat,maxLon,maxLat) used to bias geocoding. */
   geocodeViewBox: "-123.62,48.39,-123.45,48.50",
+  /** Where residents find the official agendas, minutes and video. */
+  meetingPortalUrl: "https://pub-langford.escribemeetings.com",
+  /** Where council meets; used as the default meeting location. */
+  cityHall: { name: "Langford City Hall", streetAddress: "877 Goldstream Avenue", locality: "Langford", region: "BC" },
+  /** IANA time zone for meeting dates and times. */
+  timezone: "America/Vancouver",
 } as const;
 
 /**

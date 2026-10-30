@@ -22,15 +22,15 @@ export default function Terms() {
         <p>
           {name} is an independent platform. While we strive for 100%
           accuracy, our data is processed using AI and automated tools. It
-          should be used for informational purposes only. For official legal
-          records, please consult the
+          should be used for informational purposes only. The official
+          agendas, minutes and meeting videos are on the
           <a
-            href="https://viewroyalbc.civicweb.net/portal/"
+            href={DEFAULT_MUNICIPALITY.meetingPortalUrl}
             className="text-brand-600 ml-1"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Official {shortName} CivicWeb Portal
+            {shortName} council meetings website
           </a>
           .
         </p>
