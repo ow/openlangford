@@ -20,7 +20,7 @@ from pathlib import Path
 import psycopg2
 from psycopg2.extras import RealDictCursor, Json, execute_values
 
-from pipeline import config, parser
+from pipeline import config, db, parser
 from pipeline.paths import BASE_DIR
 
 ROOT = Path(BASE_DIR)
@@ -78,20 +78,25 @@ def apply_plan(connection, plans):
     if any(row[1] is not None for plan in plans for row in plan.get('rows', [])):
         raise ValueError("Legacy speaker identities are retired. Recover cached transcripts with NULL person_id and raw labels; use the regular strict identity producer for source-proved bounded-turn links. Existing linked rows must remain unchanged.")
     counts = collections.Counter()
+    def apply_one(cur, plan):
+        mid = plan['meeting_id']
+        cur.execute('SELECT id FROM meetings WHERE id=%s AND municipality_id=1 FOR UPDATE', (mid,))
+        if cur.fetchone() is None:
+            raise RuntimeError(f'Meeting {mid} disappeared')
+        if plan['rows']:
+            cur.execute('SELECT 1 FROM transcript_segments WHERE meeting_id=%s LIMIT 1', (mid,))
+            if cur.fetchone() is None:
+                execute_values(cur, 'INSERT INTO transcript_segments (meeting_id,person_id,speaker_name,start_time,end_time,text_content,attribution_source) VALUES %s', plan['rows'], page_size=300)
+                cur.execute("UPDATE meetings SET has_transcript=true,meta=coalesce(meta,'{}'::jsonb)||jsonb_build_object('cached_transcript_backfill',%s::jsonb) WHERE id=%s", (Json(plan['transcript_evidence']), mid))
+                return len(plan['rows'])
+        return 0
+
     for index, plan in enumerate(plans, 1):
-        with connection:
-            with connection.cursor() as cur:
-                mid = plan['meeting_id']
-                cur.execute('SELECT id FROM meetings WHERE id=%s AND municipality_id=1 FOR UPDATE', (mid,))
-                if cur.fetchone() is None:
-                    raise RuntimeError(f'Meeting {mid} disappeared')
-                if plan['rows']:
-                    cur.execute('SELECT 1 FROM transcript_segments WHERE meeting_id=%s LIMIT 1', (mid,))
-                    if cur.fetchone() is None:
-                        execute_values(cur, 'INSERT INTO transcript_segments (meeting_id,person_id,speaker_name,start_time,end_time,text_content,attribution_source) VALUES %s', plan['rows'], page_size=300)
-                        cur.execute("UPDATE meetings SET has_transcript=true,meta=coalesce(meta,'{}'::jsonb)||jsonb_build_object('cached_transcript_backfill',%s::jsonb) WHERE id=%s", (Json(plan['transcript_evidence']), mid))
-                        counts['transcript_meetings'] += 1
-                        counts['transcript_segments'] += len(plan['rows'])
+        # One read-write transaction per meeting (db.run_write); counted only once committed.
+        segments = db.run_write(lambda cur: apply_one(cur, plan), connection)
+        if segments:
+            counts['transcript_meetings'] += 1
+            counts['transcript_segments'] += segments
         if index % 10 == 0 or index == len(plans):
             print(json.dumps({'completed_meetings': index, 'total_meetings': len(plans), 'applied': dict(counts)}), flush=True)
     return dict(counts)

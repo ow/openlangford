@@ -19,6 +19,8 @@ import psycopg2
 from dotenv import load_dotenv
 import numpy as np
 
+from pipeline import db
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
@@ -176,7 +178,11 @@ def queue_missing_transcripts(connection, rows: list[dict], name: str) -> list[i
     missing = [row for row in rows if row["audio_path"] and not row["local_transcript"]]
     if not missing:
         return []
-    with connection.cursor() as cursor:
+    # End the read transaction the caller's loads opened; the queueing then runs in its
+    # own read-write transaction (db.run_write).
+    connection.commit()
+
+    def enqueue(cursor) -> list[int]:
         cursor.execute(
             """
             SELECT (args->>'meeting_id')::bigint
@@ -205,8 +211,9 @@ def queue_missing_transcripts(connection, rows: list[dict], name: str) -> list[i
                 ),
             )
             job_ids.append(cursor.fetchone()[0])
-    connection.commit()
-    return job_ids
+        return job_ids
+
+    return db.run_write(enqueue, connection)
 
 
 def local_turns_from_segments(

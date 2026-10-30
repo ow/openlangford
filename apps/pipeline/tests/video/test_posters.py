@@ -185,8 +185,8 @@ def test_save_poster_merges_only_the_poster_key():
     conn.commit.assert_called_once()
 
 
-def test_save_retries_read_only_sessions(monkeypatch):
-    from pipeline.ingestion import embed
+def test_save_writes_through_the_shared_read_write_helper(monkeypatch):
+    from pipeline import db
 
     class ReadOnlySqlTransaction(Exception):
         pass
@@ -196,15 +196,18 @@ def test_save_retries_read_only_sessions(monkeypatch):
     def connect():
         conn = MagicMock()
         cur = conn.cursor.return_value.__enter__.return_value
-        if len(conns) < 2:
-            cur.execute.side_effect = ReadOnlySqlTransaction("read-only")
+        if not conns:
+            cur.execute.side_effect = [None, ReadOnlySqlTransaction("read-only")]
         conns.append(conn)
         return conn
 
-    monkeypatch.setattr(embed, "get_db_connection", connect)
-    monkeypatch.setattr(posters.time, "sleep", lambda s: None)
+    monkeypatch.setattr(db, "connect", connect)
     posters.save_poster(5, {"url": "u"})
-    assert len(conns) == 3 and conns[2].commit.called and all(c.close.called for c in conns)
+    first, second = conns
+    assert first.rollback.called and not first.commit.called
+    cur = second.cursor.return_value.__enter__.return_value
+    assert cur.execute.call_args_list[0].args == ("SET TRANSACTION READ WRITE",)
+    assert second.commit.called and all(c.close.called for c in conns)
 
 
 class TestStage:

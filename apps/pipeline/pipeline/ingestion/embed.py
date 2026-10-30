@@ -16,15 +16,11 @@ import time
 
 from dotenv import load_dotenv
 
-from pipeline import ai
+from pipeline import ai, db
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 load_dotenv()
-
-DATABASE_URL = os.environ.get("DATABASE_URL")
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
 # Table -> (text_columns, select_columns)
 TABLE_CONFIG = {
@@ -85,56 +81,8 @@ DEFAULT_MIN_WORDS = {
 }
 
 
-POOLER_REGION = os.environ.get("SUPABASE_POOLER_REGION", "us-east-2")
-
-
-def _extract_project_id(url: str) -> str | None:
-    """Extract Supabase project ID from a DATABASE_URL or SUPABASE_URL."""
-    import re
-    m = re.search(r"([a-z]{20})\.supabase", url)
-    return m.group(1) if m else None
-
-
-def _make_session_pooler_url(project_id: str, password: str) -> str:
-    """Build a session-mode pooler URL (IPv4-accessible, supports named cursors)."""
-    from urllib.parse import quote_plus
-    return (
-        f"postgresql://postgres.{project_id}:{quote_plus(password)}"
-        f"@aws-1-{POOLER_REGION}.pooler.supabase.com:5432/postgres"
-    )
-
-
-def get_db_connection():
-    """Get a psycopg2 connection. Falls back to session pooler (IPv4) if direct connection fails."""
-    import psycopg2
-    from urllib.parse import urlparse
-
-    if DATABASE_URL:
-        try:
-            conn = psycopg2.connect(DATABASE_URL, connect_timeout=5)
-            return conn
-        except psycopg2.OperationalError:
-            # Direct connection is IPv6-only; try the session pooler (IPv4)
-            parsed = urlparse(DATABASE_URL)
-            project_id = _extract_project_id(DATABASE_URL)
-            if project_id and parsed.password:
-                pooler_url = _make_session_pooler_url(project_id, parsed.password)
-                print("  Direct connection failed (IPv6), trying session pooler (IPv4)...")
-                return psycopg2.connect(pooler_url, connect_timeout=10)
-            raise
-
-    # Derive from Supabase URL: https://PROJECT_ID.supabase.co
-    if SUPABASE_URL:
-        project_id = _extract_project_id(SUPABASE_URL)
-        db_password = os.environ.get("SUPABASE_DB_PASSWORD")
-        if project_id and db_password:
-            return psycopg2.connect(
-                _make_session_pooler_url(project_id, db_password), connect_timeout=10
-            )
-
-    raise RuntimeError(
-        "Set DATABASE_URL or both SUPABASE_URL + SUPABASE_DB_PASSWORD in .env"
-    )
+# Connections live in pipeline.db (shared by every direct-Postgres writer).
+get_db_connection = db.connect
 
 
 MAX_EMBED_CHARS = 8000  # text-embedding-3-small handles ~8k tokens; truncate input
@@ -247,36 +195,36 @@ def update_embeddings_batch(conn, table: str, updates: list):
         return
 
     dims = ai.resolve("embedding").dimensions
-    cur = conn.cursor()
 
-    # Create temp table
-    cur.execute(f"""
-        CREATE TEMP TABLE IF NOT EXISTS _embed_tmp (
-            id INTEGER PRIMARY KEY,
-            embedding halfvec({dims})
-        ) ON COMMIT DROP
-    """)
-    cur.execute("TRUNCATE _embed_tmp")
+    def write(cur):
+        # Create temp table
+        cur.execute(f"""
+            CREATE TEMP TABLE IF NOT EXISTS _embed_tmp (
+                id INTEGER PRIMARY KEY,
+                embedding halfvec({dims})
+            ) ON COMMIT DROP
+        """)
+        cur.execute("TRUNCATE _embed_tmp")
 
-    # Use COPY for fast bulk insert into temp table
-    buf = io.StringIO()
-    for row_id, embedding in updates:
-        vec_str = "[" + ",".join(str(v) for v in embedding) + "]"
-        buf.write(f"{row_id}\t{vec_str}\n")
-    buf.seek(0)
+        # Use COPY for fast bulk insert into temp table
+        buf = io.StringIO()
+        for row_id, embedding in updates:
+            vec_str = "[" + ",".join(str(v) for v in embedding) + "]"
+            buf.write(f"{row_id}\t{vec_str}\n")
+        buf.seek(0)
 
-    cur.copy_from(buf, "_embed_tmp", columns=("id", "embedding"))
+        cur.copy_from(buf, "_embed_tmp", columns=("id", "embedding"))
 
-    # Bulk update from temp table
-    cur.execute(f"""
-        UPDATE {table} t
-        SET embedding = e.embedding
-        FROM _embed_tmp e
-        WHERE t.id = e.id
-    """)
-    updated = cur.rowcount
-    conn.commit()
-    return updated
+        # Bulk update from temp table
+        cur.execute(f"""
+            UPDATE {table} t
+            SET embedding = e.embedding
+            FROM _embed_tmp e
+            WHERE t.id = e.id
+        """)
+        return cur.rowcount
+
+    return db.run_write(write, conn)
 
 
 def embed_table(table: str, force: bool = False, min_words: int = None):
@@ -321,6 +269,10 @@ def embed_table(table: str, force: bool = False, min_words: int = None):
     else:
         # Standard fetch returns a cursor + text_fn
         row_cursor, text_fn = fetch_rows_needing_embeddings(conn, table, force)
+
+    # Rows are fully fetched (client-side cursor / list), so end the read transaction:
+    # each batch write then opens its own read-write transaction via db.run_write.
+    conn.commit()
 
     # Process in batches
     batch_ids = []

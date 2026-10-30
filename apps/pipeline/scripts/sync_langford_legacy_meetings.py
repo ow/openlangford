@@ -385,6 +385,8 @@ def insert_jobs(config, rows: list[dict]) -> int:
     import psycopg2
     from psycopg2.extras import Json, execute_values
 
+    from pipeline import db
+
     values = [
         (
             row["municipality_id"],
@@ -395,17 +397,18 @@ def insert_jobs(config, rows: list[dict]) -> int:
         )
         for row in rows
     ]
-    with psycopg2.connect(config.DATABASE_URL) as conn:
-        with conn.cursor() as cur:
-            execute_values(
-                cur,
-                """
-                INSERT INTO pipeline_jobs
-                    (municipality_id, job_type, args, priority, requested_by)
-                VALUES %s
-                """,
-                values,
-            )
+    db.run_write(
+        lambda cur: execute_values(
+            cur,
+            """
+            INSERT INTO pipeline_jobs
+                (municipality_id, job_type, args, priority, requested_by)
+            VALUES %s
+            """,
+            values,
+        ),
+        opener=lambda: psycopg2.connect(config.DATABASE_URL),
+    )
     return len(rows)
 
 

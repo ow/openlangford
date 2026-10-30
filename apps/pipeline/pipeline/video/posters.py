@@ -23,7 +23,6 @@ import json
 import os
 import random
 import subprocess
-import time
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -262,40 +261,11 @@ MERGE_SQL = (
 def save_meta_key(meeting_id: int, key: str, value: dict, conn: Any = None) -> None:
     """Merge one top-level key into meetings.meta without touching any other key.
 
-    A new connection sometimes lands in a read-only session (seen during the 2026-10-30
-    backfill); that write is retried on a fresh connection."""
-    if conn is not None:
-        _merge(conn, meeting_id, key, value)
-        return
-    from pipeline.ingestion.embed import get_db_connection
+    Goes through db.run_write: an explicitly read-write transaction, retried once on a
+    fresh connection if a pooled backend still reports read-only."""
+    from pipeline import db
 
-    for attempt in range(READ_ONLY_RETRIES):
-        conn = get_db_connection()
-        try:
-            _merge(conn, meeting_id, key, value)
-            return
-        except Exception as e:
-            if type(e).__name__ != "ReadOnlySqlTransaction" or attempt == READ_ONLY_RETRIES - 1:
-                raise
-            time.sleep(1 + attempt)
-        finally:
-            conn.close()
-
-
-READ_ONLY_RETRIES = 5
-
-
-def _merge(conn: Any, meeting_id: int, key: str, value: dict) -> None:
-    try:
-        with conn.cursor() as cur:
-            # Pooled sessions can arrive with default_transaction_read_only left on by another
-            # client; this write's own transaction is explicitly read-write.
-            cur.execute("set transaction read write")
-            cur.execute(MERGE_SQL, (key, json.dumps(value), meeting_id))
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        raise
+    db.run_write(lambda cur: cur.execute(MERGE_SQL, (key, json.dumps(value), meeting_id)), conn)
 
 
 def save_poster(meeting_id: int, poster: dict, conn: Any = None) -> None:
