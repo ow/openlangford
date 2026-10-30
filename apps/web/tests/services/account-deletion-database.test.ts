@@ -1,7 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { vector } from "@electric-sql/pglite/vector";
 import { readFileSync } from "node:fs";
-import { afterAll, afterEach, beforeAll, beforeEach, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 const migration = (name: string) => readFileSync(new URL(`../../../../supabase/migrations/${name}`, import.meta.url), "utf8");
 const fixture = (name: string) => readFileSync(new URL(`../fixtures/${name}`, import.meta.url), "utf8");
@@ -26,6 +26,7 @@ beforeAll(async () => {
     ALTER TABLE subscriptions ADD CONSTRAINT subscriptions_user FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
   `);
   await db.exec(migration("20261030200000_account_deletion.sql"));
+  await db.exec(migration("20261030201000_privacy_retention.sql"));
 }, 30000);
 afterAll(async () => {
   await db?.close();
@@ -92,4 +93,42 @@ it("can't be called by visitors or signed-in accounts", async () => {
       await db.exec("ROLLBACK TO r");
     }
   }
+});
+
+describe("12-month retention", () => {
+  beforeEach(async () => {
+    await db.exec(`
+      UPDATE email_messages SET created_at = now() - interval '13 months' WHERE id = 'aaaaaaaa-0000-4000-8000-000000000003';
+      INSERT INTO contact_messages(email,message,client_ip,created_at) VALUES ('old@example.test','old','203.0.113.1',now() - interval '13 months');
+    `);
+  });
+
+  it("counts without changing anything on a dry run", async () => {
+    const [{ summary }] = await rows<{ summary: any }>("SELECT apply_privacy_retention(true) summary");
+    expect(summary).toEqual({ dry_run: true, contact_messages_deleted: 1, email_messages_anonymized: 1 });
+    expect(await rows("SELECT count(*)::int n FROM contact_messages")).toEqual([{ n: 2 }]);
+  });
+
+  it("deletes old contact messages and strips addresses from old email logs, keeping recent ones", async () => {
+    const [{ summary }] = await rows<{ summary: any }>("SELECT apply_privacy_retention(false) summary");
+    expect(summary).toEqual({ dry_run: false, contact_messages_deleted: 1, email_messages_anonymized: 1 });
+    expect(await rows("SELECT email FROM contact_messages")).toEqual([{ email: "someone@example.test" }]);
+    const mail = await rows("SELECT recipient, status FROM email_messages ORDER BY id");
+    expect(mail).toEqual([
+      { recipient: "reader@example.test", status: "delivered" },
+      { recipient: "reader@example.test", status: "queued" },
+      { recipient: "removed", status: "delivered" },
+    ]);
+    const [{ summary: again }] = await rows<{ summary: any }>("SELECT apply_privacy_retention(false) summary");
+    expect(again).toEqual({ dry_run: false, contact_messages_deleted: 0, email_messages_anonymized: 0 });
+  });
+
+  it("can't be called by visitors or signed-in accounts", async () => {
+    for (const role of ["anon", "authenticated"]) {
+      await db.exec("SAVEPOINT r");
+      await db.exec(`SET LOCAL ROLE ${role}`);
+      await expect(db.query("SELECT apply_privacy_retention(false)")).rejects.toThrow(/permission denied/);
+      await db.exec("ROLLBACK TO r");
+    }
+  });
 });

@@ -1,5 +1,5 @@
-import { expect, it } from "vitest";
-import { purgeExpiredQuestions } from "../../workers/retention";
+import { expect, it, vi } from "vitest";
+import { applyPrivacyRetention, purgeExpiredQuestions } from "../../workers/retention";
 
 function fakeClient(result: { count: number | null; error: { message: string } | null }) {
   const calls: Array<{ table: string; column: string; value: string; opts: unknown }> = [];
@@ -29,4 +29,13 @@ it("deletes expired shared answers and question traces older than 30 days", asyn
 it("reports a failed purge so the cron logs it", async () => {
   const { client } = fakeClient({ count: null, error: { message: "offline" } });
   await expect(purgeExpiredQuestions(client)).rejects.toThrow("offline");
+});
+
+it("runs the 12-month contact and email retention through the database function", async () => {
+  const summary = { dry_run: false, contact_messages_deleted: 2, email_messages_anonymized: 5 };
+  const rpc = vi.fn().mockResolvedValue({ data: summary, error: null });
+  expect(await applyPrivacyRetention({ rpc } as any)).toEqual(summary);
+  expect(rpc).toHaveBeenCalledWith("apply_privacy_retention", { p_dry_run: false });
+  rpc.mockResolvedValue({ data: null, error: { message: "offline" } });
+  await expect(applyPrivacyRetention({ rpc } as any)).rejects.toThrow("offline");
 });

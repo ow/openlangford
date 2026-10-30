@@ -14,7 +14,7 @@ import { negotiateMarkdown } from "./markdown-negotiation";
 import { publicMeetingCache } from "./public-meeting-cache";
 import { contentVersion } from "./content-version";
 import { canonicalRedirect } from "./canonical-redirect";
-import { purgeExpiredQuestions } from "./retention";
+import { applyPrivacyRetention, purgeExpiredQuestions } from "./retention";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -101,6 +101,9 @@ export default {
       ctx.waitUntil(purgeExpiredQuestions(getSupabaseAdminClient()).then(summary => {
         console.log("[Retention]", JSON.stringify(summary));
       }).catch(() => { console.error("[Retention] Purge failed; will retry next run"); }));
+      ctx.waitUntil(applyPrivacyRetention(getSupabaseAdminClient()).then(summary => {
+        console.log("[Retention]", JSON.stringify(summary));
+      }).catch(() => { console.error("[Retention] Contact and email retention failed; will retry next run"); }));
       ctx.waitUntil(syncCalendar(getSupabaseAdminClient(), "cron").then(result => {
         console.log("[Calendar]", JSON.stringify("result" in result ? result.result : result));
       }).catch(error => { console.error("[Calendar] Sync failed; previous schedule retained"); throw error; }));
