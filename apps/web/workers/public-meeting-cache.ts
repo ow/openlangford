@@ -72,7 +72,10 @@ function cacheKey(request: Request, { deploy, posthogKey }: PublicMeetingCacheCo
 
   const isData = match ? !!match[3] : url.pathname.endsWith(".data");
   const accept = request.headers.get("accept") || "";
-  if (isData ? !["", "*/*", "text/x-script"].includes(accept) : !accept.includes("text/html") || /markdown|json/i.test(accept)) return null;
+  // A page asked for with no preference (curl, many crawlers and link previewers send */* or
+  // nothing) gets the same HTML as a browser, so it shares the HTML entry.
+  const html = (accept.includes("text/html") || accept === "" || accept === "*/*") && !/markdown|json/i.test(accept);
+  if (isData ? !["", "*/*", "text/x-script"].includes(accept) : !html) return null;
   // React Router uses _routes to request only the loaders it needs. Never
   // conflate that with a full navigation payload, or with another route.
   const allowedRoute = page?.route ?? (match![2]?.startsWith("/documents/") ? "routes/document-viewer" : match![2] ? "routes/meeting-documents" : "routes/meeting-detail");

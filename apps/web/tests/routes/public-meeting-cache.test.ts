@@ -158,6 +158,13 @@ it.each(["text/markdown", "text/html, text/markdown", "application/json"])("pres
   expect(await negotiated.text()).toBe("negotiated content");
 });
 
+it.each(["*/*", ""])("serves the shared HTML page to an anonymous request with Accept %j", async (accept) => {
+  await serve(request(), async () => html()); await settle();
+  const headers: Record<string, string> = accept ? { Accept: accept } : {};
+  const hit = await serve(new Request(request().url, { headers }), async () => new Response("rendered again"));
+  expect(hit.headers.get("X-Public-Meeting-Cache")).toBe("HIT");
+});
+
 it.each([
   { status: 500 }, { status: 404 }, { status: 302, headers: { Location: "/login" } },
   { headers: { "Set-Cookie": "session=renewed" } }, { headers: { "Cache-Control": "private" } },
