@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { cn } from "../../lib/utils";
 import type { AgendaItem, TranscriptSegment } from "../../lib/types";
 import {
@@ -47,6 +47,20 @@ export function EnhancedVideoScrubber({
   className,
 }: EnhancedVideoScrubberProps) {
   const [hovered, setHovered] = useState<HoverInfo | null>(null);
+  // Centred on the hovered point, then nudged so it never runs past the card's edges.
+  const tipRef = useRef<HTMLDivElement>(null);
+  const [tipShift, setTipShift] = useState(0);
+  useLayoutEffect(() => {
+    const tip = tipRef.current;
+    const box = tip?.offsetParent?.getBoundingClientRect();
+    if (!tip || !box) return;
+    const rect = tip.getBoundingClientRect();
+    const left = rect.left - tipShift;
+    const right = rect.right - tipShift;
+    const gutter = 8;
+    const next = left < box.left + gutter ? box.left + gutter - left : right > box.right - gutter ? box.right - gutter - right : 0;
+    if (Math.abs(next - tipShift) > 0.5) setTipShift(next);
+  }, [hovered?.x, hovered?.label, tipShift]);
 
   const agendaBlocks = useMemo(() => getAgendaBlocksWithMotions(agendaItems), [agendaItems]);
 
@@ -75,8 +89,9 @@ export function EnhancedVideoScrubber({
       {/* Tooltip */}
       {hovered && (
         <div
+          ref={tipRef}
           className="pointer-events-none absolute bottom-full z-50 mb-1"
-          style={{ left: `${Math.min(Math.max(hovered.x, 12), 88)}%`, transform: "translateX(-50%)" }}
+          style={{ left: `${hovered.x}%`, transform: `translateX(calc(-50% + ${tipShift}px))` }}
         >
           <div className="max-w-xs rounded-lg bg-zinc-900 px-3 py-2 text-sm text-white shadow-lg">
             <div className="font-medium leading-snug">{hovered.label}</div>
