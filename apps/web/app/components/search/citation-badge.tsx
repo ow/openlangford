@@ -23,6 +23,7 @@ import {
 } from "../ui/drawer";
 import { useMediaQuery } from "../../lib/use-media-query";
 import { SourcePreviewContent } from "./source-preview-content";
+import { SpeakerName } from "../ui/speaker-name";
 
 // ---------------------------------------------------------------------------
 // Source type helpers
@@ -109,7 +110,7 @@ export function CitationBadge({
         </div>
         {source?.speaker_name && (
           <p className="text-xs font-semibold text-zinc-700 mb-0.5">
-            {source.speaker_name}
+            <SpeakerName name={source.speaker_name} />
           </p>
         )}
         <p className="text-xs text-zinc-600 line-clamp-3">

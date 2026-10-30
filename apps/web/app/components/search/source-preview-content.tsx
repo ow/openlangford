@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { SourceIcon, SOURCE_TYPE_LABEL } from "./citation-badge";
 import { SourceMarkdownPreview } from "./source-markdown-preview";
+import { SpeakerName } from "../ui/speaker-name";
 
 interface SourcePreviewContentProps {
   sources: any[];
@@ -77,7 +78,7 @@ function SourceTypeContent({ source }: { source: any }) {
         <div>
           {source.speaker_name && (
             <p className="text-xs font-semibold text-zinc-700 mb-0.5">
-              {source.speaker_name}
+              <SpeakerName name={source.speaker_name} />
             </p>
           )}
           {source.content ? (
@@ -161,7 +162,7 @@ function SourceTypeContent({ source }: { source: any }) {
         <div>
           {source.speaker_name && (
             <p className="text-xs font-semibold text-zinc-700 mb-0.5">
-              {source.speaker_name}
+              <SpeakerName name={source.speaker_name} />
             </p>
           )}
           {source.content ? (

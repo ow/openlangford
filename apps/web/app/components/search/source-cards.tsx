@@ -4,6 +4,7 @@ import { FileText, ChevronDown, ExternalLink } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { SourceIcon, SOURCE_TYPE_LABEL } from "./citation-badge";
 import { SourceMarkdownPreview } from "./source-markdown-preview";
+import { SpeakerName } from "../ui/speaker-name";
 
 interface SourceCardsProps {
   sources: any[];
@@ -76,7 +77,7 @@ function SourceCard({ source, index }: { source: any; index: number }) {
       {/* Speaker name */}
       {source?.speaker_name && (
         <p className="text-xs font-semibold text-zinc-700 mb-0.5">
-          {source.speaker_name}
+          <SpeakerName name={source.speaker_name} />
         </p>
       )}
 

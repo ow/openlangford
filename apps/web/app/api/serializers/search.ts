@@ -17,6 +17,8 @@ function truncateAtWord(text: string, maxLen: number): string {
   return (lastSpace > maxLen * 0.5 ? truncated.slice(0, lastSpace) : truncated) + "...";
 }
 
+import { formatSpeakerName } from "~/lib/speaker-labels";
+
 /**
  * Serialize a search result row from any content type into the
  * unified search result shape.
@@ -67,7 +69,7 @@ export function serializeSearchResult(
       // key_statements don't have slugs -- use meeting slug for linking
       slug = meetingInfo?.slug ?? null;
       title = row.speaker_name
-        ? `${row.speaker_name}: ${truncateAtWord(row.statement_text ?? "", 100)}`
+        ? `${formatSpeakerName(row.speaker_name)}: ${truncateAtWord(row.statement_text ?? "", 100)}`
         : row.statement_text
           ? truncateAtWord(row.statement_text, 120)
           : null;

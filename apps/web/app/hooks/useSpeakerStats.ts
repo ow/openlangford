@@ -1,4 +1,5 @@
 import { membershipIsActiveOn } from "../lib/council-terms";
+import { UNKNOWN_SPEAKER } from "~/lib/speaker-labels";
 import { useMemo } from "react";
 import { isNamedParticipant } from "../lib/participant-identity";
 import { documentedParticipantRole } from "../lib/participant-roles";
@@ -76,7 +77,7 @@ export function useSpeakerStats({ transcript, attendance, meetingDate, resolveSp
   const segmentId = (segment: TranscriptSegment) => segment.person_id;
   const segmentName = (segment: TranscriptSegment) => {
     const person = segmentPerson(segment);
-    return person ? resolveSpeakerName({ ...segment, person }) : "Unknown Speaker";
+    return person ? resolveSpeakerName({ ...segment, person }) : UNKNOWN_SPEAKER;
   };
   const positiveDuration = (segment: TranscriptSegment) => Number.isFinite(segment.start_time) && Number.isFinite(segment.end_time) && Number.isFinite(segment.end_time - segment.start_time) && segment.end_time > segment.start_time;
 

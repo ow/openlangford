@@ -1,4 +1,5 @@
 import { searchMotionContext } from "./motion-search.server";
+import { formatSpeakerName } from "~/lib/speaker-labels";
 import { SPOKEN_STATEMENT_FILTER, isSpokenStatementCandidate } from "~/lib/key-statement-evidence";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -1696,7 +1697,7 @@ ${history.join("\n\n") || "(none)"}`;
   const numberedEvidence = uniqueSources
     .map(
       (s, i) =>
-        `[${i + 1}] (${s.type}, ${s.meeting_date}${s.speaker_name ? `, ${s.speaker_name}` : ""}) ${s.title}` +
+        `[${i + 1}] (${s.type}, ${s.meeting_date}${s.speaker_name ? `, ${formatSpeakerName(s.speaker_name)}` : ""}) ${s.title}` +
         // Include the source text so the answer can actually use it, not just the title.
         (s.content && s.content.length > s.title.length ? `\n    ${s.content.replace(/\s+/g, " ")}` : ""),
     )

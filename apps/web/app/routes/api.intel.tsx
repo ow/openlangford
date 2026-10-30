@@ -1,4 +1,5 @@
 import type { Route } from "./+types/api.intel";
+import { formatSpeakerName } from "~/lib/speaker-labels";
 import { requireAdmin } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getAiClient } from "../services/ai/index.server";
@@ -89,7 +90,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     // 4. Construct Transcript Text
     const transcriptText = segments
       .map((s) => {
-        const name = aliasMap[s.speaker_name || ""] || s.speaker_name || "Unknown";
+        const name = formatSpeakerName(aliasMap[s.speaker_name || ""] || s.speaker_name);
         return `${name}: ${s.text_content}`;
       })
       .join("\n");

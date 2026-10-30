@@ -6,6 +6,7 @@ import { formatDate } from "../../lib/utils";
 import type { UnifiedSearchResult } from "../../services/hybrid-search.server";
 import { MotionOutcomeBadge } from "../motion-outcome-badge";
 import { trackEvent } from "../../lib/analytics";
+import { SpeakerName } from "../ui/speaker-name";
 
 // ---------------------------------------------------------------------------
 // Query highlighting
@@ -139,7 +140,7 @@ export function ResultCard({ result, query, position }: ResultCardProps) {
           {result.speaker_name && (
             <>
               <span aria-hidden="true">·</span>
-              <span className="font-medium text-zinc-700">{result.speaker_name}</span>
+              <SpeakerName name={result.speaker_name} className="font-medium text-zinc-700" />
             </>
           )}
           {result.meeting_date && (

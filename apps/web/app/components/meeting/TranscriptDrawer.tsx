@@ -9,6 +9,7 @@ import {
   splitTranscript,
   findCurrentSubSegment,
 } from "../../lib/transcript-utils";
+import { SpeakerName } from "../ui/speaker-name";
 
 interface TranscriptDrawerProps {
   isOpen: boolean;
@@ -266,9 +267,7 @@ export function TranscriptDrawer({
                             SPEAKER_COLORS[colorIdx]
                           )}
                         />
-                        <span className="truncate text-xs font-medium text-zinc-700">
-                          {speakerName}
-                        </span>
+                        <SpeakerName name={speakerName} className="truncate text-xs font-medium text-zinc-700" />
                         <span className="ml-auto shrink-0 text-xs tabular-nums text-zinc-400">
                           {formatTimestamp(sub.start_time)}
                         </span>

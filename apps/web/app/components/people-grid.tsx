@@ -7,6 +7,7 @@ import { SPEAKER_COLORS, getSpeakerColorIndex } from "../lib/colors";
 import { FilterBar } from "./ui/filter-bar";
 import { SearchField } from "./ui/search-field";
 import { NativeSelect } from "./ui/native-select";
+import { SpeakerName } from "./ui/speaker-name";
 
 type Group = "council" | "staff" | "others";
 
@@ -212,10 +213,10 @@ export function PeopleGrid({
                           to={personPath({ id: p.person_id, name: p.person?.name || p.resolvedName, slug: (p.person as any)?.slug })}
                           className="block truncate text-sm font-medium text-zinc-900 hover:text-brand-700"
                         >
-                          {p.resolvedName}
+                          <SpeakerName name={p.resolvedName} />
                         </Link>
                       ) : (
-                        <span className="block truncate text-sm font-medium text-zinc-900">{p.resolvedName}</span>
+                        <SpeakerName name={p.resolvedName} className="block truncate text-sm font-medium text-zinc-900" />
                       )}
                       <span className="block truncate text-xs text-zinc-500">
                         {role}

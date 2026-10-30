@@ -10,6 +10,7 @@
  */
 
 import { embedQuery } from "./ai/index.server";
+import { formatSpeakerName } from "~/lib/speaker-labels";
 import { attachSourceSlugs } from "./source-slugs.server";
 import { identifierMatches, matterRecencyBoost, matterStatusBoost } from "../lib/matter-rank";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
@@ -332,7 +333,7 @@ async function ftsSearchTranscriptSegments(
       id: row.id,
       type: "transcript_segment" as const,
       title: row.speaker_name
-        ? `${row.speaker_name}: ${(row.text_content || "").slice(0, 80)}`
+        ? `${formatSpeakerName(row.speaker_name)}: ${(row.text_content || "").slice(0, 80)}`
         : (row.text_content || "").slice(0, 100),
       content: (row.text_content || "").slice(0, 200),
       meeting_id: row.meeting_id,
@@ -383,7 +384,7 @@ async function searchTranscriptSpeakers(
     return {
       id: row.id,
       type: "transcript_segment" as const,
-      title: `${row.speaker_name}: ${(row.text_content || "").slice(0, 80)}`,
+      title: `${formatSpeakerName(row.speaker_name)}: ${(row.text_content || "").slice(0, 80)}`,
       content: (row.text_content || "").slice(0, 200),
       meeting_id: row.meeting_id,
       meeting_date: meeting?.meeting_date || null,

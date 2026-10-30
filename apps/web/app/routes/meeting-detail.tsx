@@ -80,6 +80,7 @@ import {
 } from "../lib/colors";
 import { useMeetingTranscript } from "../hooks/useMeetingTranscript";
 import { useVideoPlayer } from "../hooks/useVideoPlayer";
+import { formatSpeakerName } from "../lib/speaker-labels";
 import { useSpeakerStats } from "../hooks/useSpeakerStats";
 import { getMeetingDuration } from "../lib/timeline-utils";
 import { AgendaOverview } from "../components/meeting/AgendaOverview";
@@ -421,11 +422,9 @@ function MeetingDetailContent({ loaderData }: any) {
     speaker_name?: string | null;
   }) => {
     if (seg.person?.name) return seg.person.name;
-    const label = seg.speaker_name;
-    if (!label) return "Unknown Speaker";
     // Meeting-wide aliases can belong to an older diarization run. A durable
     // segment person link is required before presenting a confirmed identity.
-    return label;
+    return formatSpeakerName(seg.speaker_name);
   };
 
   // Speaker stats hook

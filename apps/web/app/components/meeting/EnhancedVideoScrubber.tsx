@@ -11,6 +11,7 @@ import {
 } from "../../lib/timeline-utils";
 import { normalizeMotionResult, OUTCOME_LABELS } from "../../lib/motion-utils";
 import { displayTitle } from "../../lib/display-text";
+import { SpeakerName } from "../ui/speaker-name";
 
 interface EnhancedVideoScrubberProps {
   duration: number;
@@ -166,7 +167,7 @@ export function EnhancedVideoScrubber({
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {activeSegment && (
-            <span className="font-medium text-zinc-700">{resolveSpeakerName(activeSegment)}</span>
+            <SpeakerName name={resolveSpeakerName(activeSegment)} className="font-medium text-zinc-700" />
           )}
           {activeSegment && <span aria-hidden="true">·</span>}
           <span className="tabular-nums">
