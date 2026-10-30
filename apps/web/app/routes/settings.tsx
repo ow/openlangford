@@ -4,7 +4,8 @@ import { NEIGHBORHOODS } from "../lib/site-config";
 import { useState } from "react";
 import { Form, redirect, useActionData, Link } from "react-router";
 import type { Route } from "./+types/settings";
-import { createSupabaseServerClient } from "../lib/supabase.server";
+import { createSupabaseServerClient, getSupabaseAdminClient } from "../lib/supabase.server";
+import { deleteAccount } from "../services/account-deletion.server";
 import {
   getUserProfile,
   upsertUserProfile,
@@ -27,6 +28,9 @@ import type {
   Subscription,
   Topic,
 } from "../lib/types";
+
+/** What a person types to confirm, so a stray click can't delete an account. */
+const DELETE_CONFIRMATION = "delete";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { supabase, headers } = createSupabaseServerClient(request);
@@ -57,11 +61,29 @@ export async function action({ request }: Route.ActionArgs) {
     throw redirect("/login?redirectTo=/settings", { headers });
   }
 
-  if (emailAlertsAvailable() && request.headers.get("Origin") !== new URL(request.url).origin) {
+  const sameOrigin = request.headers.get("Origin") === new URL(request.url).origin;
+  if (emailAlertsAvailable() && !sameOrigin) {
     return { error: "Submit email preferences from this site." };
   }
   const formData = await request.formData();
   const intent = formData.get("intent") as string;
+
+  if (intent === "delete_account") {
+    if (!sameOrigin) return { error: "Delete your account from this site." };
+    const typed = String(formData.get("confirm") || "").trim().toLowerCase();
+    if (typed !== DELETE_CONFIRMATION) {
+      return { error: `To delete your account, type "${DELETE_CONFIRMATION}" in the box.`, deleteError: true };
+    }
+    try {
+      await deleteAccount(getSupabaseAdminClient(), user.id);
+    } catch (error) {
+      console.error("[Account] Deletion failed:", error instanceof Error ? error.message : "unknown error");
+      return { error: "We couldn't delete your account. Please try again, or contact us.", deleteError: true };
+    }
+    // The sign-in no longer exists: clear this browser's session cookies without calling Supabase.
+    await supabase.auth.signOut({ scope: "local" }).catch(() => {});
+    throw redirect("/", { headers });
+  }
 
   if (intent === "update_profile") {
     const display_name = (formData.get("display_name") as string) || undefined;
@@ -841,8 +863,49 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
               </Button>
             </div>
           </section>
+
+          <DeleteAccount
+            email={user.email || ""}
+            failed={!!actionData && "deleteError" in actionData && !!actionData.deleteError}
+          />
         </div>
       </div>
     </div>
+  );
+}
+
+function DeleteAccount({ email, failed }: { email: string; failed: boolean }) {
+  const [open, setOpen] = useState(failed);
+  return (
+    <section>
+      <SectionHeading title="Delete your account" />
+      <div className={cn(CARD, "p-5")}>
+        <p className="text-sm text-zinc-600">
+          This deletes your sign-in, your saved address, the things you follow, your alert settings and any API keys. It can't be undone.
+          Our record of alert emails we sent you keeps only whether each one was delivered, not your email address.
+        </p>
+        {!open ? (
+          <Button type="button" variant="outline" className="mt-4 h-10 border-red-200 text-red-700 hover:bg-red-50" onClick={() => setOpen(true)}>
+            Delete my account
+          </Button>
+        ) : (
+          <Form method="post" className="mt-4 space-y-3 rounded-xl border border-red-200 bg-red-50/60 p-4">
+            <input type="hidden" name="intent" value="delete_account" />
+            <label htmlFor="delete-confirm" className="block text-sm font-medium text-red-800">
+              Type "{DELETE_CONFIRMATION}" to delete {email ? <span className="break-all">{email}</span> : "your account"}
+            </label>
+            <Input id="delete-confirm" name="confirm" autoComplete="off" required className="max-w-xs bg-surface" />
+            <div className="flex flex-wrap gap-2">
+              <Button type="submit" className="h-10 bg-red-600 text-white hover:bg-red-700">
+                Delete my account for good
+              </Button>
+              <Button type="button" variant="ghost" className="h-10" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </Form>
+        )}
+      </div>
+    </section>
   );
 }
