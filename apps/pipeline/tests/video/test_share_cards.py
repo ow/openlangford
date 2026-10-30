@@ -37,6 +37,8 @@ class TestText:
         assert data["eyebrow"] == "Council" and data["frame"] == POSTER["url"]
         assert data["duration"] == "2h 13m"
         assert key == f"v{sc.CARD_VERSION}|summary|{POSTER['url']}"
+        assert data["video"] is True
+        assert sc.card_data({**BASE, "poster": None, "video_url": None})[0]["video"] is False
 
 
 class TestKey:

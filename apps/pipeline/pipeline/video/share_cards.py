@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 # Bump when the template or the text selection changes.
-CARD_VERSION = "1"
+CARD_VERSION = "2"  # 2: "Read the meeting summary" instead of "Watch" when there is no video
 TEMPLATE_PATH = Path(__file__).parent / "templates" / "meeting_card.html"
 R2_PREFIX = "meeting-cards"
 MAX_POINTS = 3
@@ -74,6 +74,7 @@ def card_data(meeting: dict) -> tuple[dict, str]:
         "frame": poster,
         "points": points,
         "duration": _duration(meeting.get("video_duration_seconds")),
+        "video": bool(meeting.get("video_url") or poster),
     }
     return data, f"v{CARD_VERSION}|{source}|{poster or 'no-frame'}"
 

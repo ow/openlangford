@@ -1056,7 +1056,7 @@ def run_video_posters(ctx: StageContext):
     return {"meetings": len(ids), "made": made, "failed": failed}
 
 
-CARD_SELECT = ("id, title, meeting_date, summary, video_duration_seconds, poster:meta->poster, "
+CARD_SELECT = ("id, title, meeting_date, summary, video_url, video_duration_seconds, poster:meta->poster, "
                "highlights:meta->highlights, card_key:meta->share_card->>key, organization:organizations(name)")
 
 

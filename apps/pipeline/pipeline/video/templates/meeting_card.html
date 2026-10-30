@@ -122,7 +122,13 @@
   for (const p of pts) { const li = document.createElement("li"); li.textContent = p; $("points").appendChild(li); }
   if (pts.length === 3 && d.title.length > 34) $("points").classList.add("tight");
   if (!pts.length) $("points").remove();
-  $("play-label").textContent = d.duration ? `Watch the meeting · ${d.duration}` : "Watch the meeting";
+  if (d.video === false) {  // no recording: point to the summary instead of a video
+    $("play").querySelector("svg").remove();
+    $("play").style.paddingLeft = "14px";
+    $("play-label").textContent = "Read the meeting summary";
+  } else {
+    $("play-label").textContent = d.duration ? `Watch the meeting · ${d.duration}` : "Watch the meeting";
+  }
   // The renderer waits for data-ready (fonts loaded and the frame decoded, or failed).
   const fontsReady = document.fonts.ready;
   const frameReady = new Promise((resolve) => {
