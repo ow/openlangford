@@ -39,6 +39,16 @@ describe("property pages", () => {
     expect(value(tags, "description")).not.toMatch(/matters|records/i);
   });
 
+  it("charts mentions per year in plain words", async () => {
+    const { renderToString } = await import("react-dom/server");
+    const { createElement } = await import("react");
+    const { RecordsSparkline } = await import("../../app/components/records-sparkline");
+    const html = renderToString(createElement(RecordsSparkline, { data: [{ year: 2014, count: 11 }, { year: 2015, count: 1 }] }));
+    expect(html).toContain("2014: mentioned 11 times");
+    expect(html).toContain("2015: mentioned once");
+    expect(html).not.toMatch(/records?\b/i);
+  });
+
   it("recognizes public input by category or title", () => {
     expect(isPublicInput({ title: "Mr. A Resident, of 848 Walfred Rd", category: "Public Input" })).toBe(true);
     expect(residentOnly([{ agenda_items: { title: "PUBLIC PARTICIPATION" } }])).toBe(true);

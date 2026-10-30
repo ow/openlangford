@@ -77,9 +77,15 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   const lotCounts = new Map<number, number>();
   const lotMentions = new Map<number, number>();
   const lotResidentOnly = new Set<number>();
-  // Each record's meeting dates (for the per-year sparkline); a street page adds every lot's.
+  // Each record is a matter, or an agenda item outside any matter (what the lists on the page show).
   const recordKey = (l: any) => (l.matter_id ? `m${l.matter_id}` : `i${l.agenda_item_id}`);
-  const recordDates: RecordDate[] = (links || []).map((l: any) => ({ key: recordKey(l), date: l.agenda_items?.meetings?.meeting_date }));
+  // Each mention is one agenda item that named the address (or a matter named only in its title).
+  // The per-year chart counts mentions, like the summary's "Mentioned in council meetings N times"
+  // and "Mentioned N times" beside each address; a street page adds every lot's.
+  const mentionKey = (l: any) => (l.agenda_item_id ? `i${l.agenda_item_id}` : `m${l.matter_id}`);
+  const mentionDates: (RecordDate & { matter?: number | null })[] = (links || []).map((l: any) => ({
+    key: mentionKey(l), date: l.agenda_items?.meetings?.meeting_date, matter: l.matter_id,
+  }));
   if (isStreet && neighbours?.length) {
     const lotIds = neighbours.map((n) => n.id);
     for (let i = 0; i < lotIds.length; i += 300) {
@@ -90,10 +96,10 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
       for (const l of (data || []) as any[]) {
         const set = seen.get(l.property_id) || new Set<string>();
         set.add(recordKey(l));
-        recordDates.push({ key: recordKey(l), date: l.agenda_items?.meetings?.meeting_date });
+        mentionDates.push({ key: mentionKey(l), date: l.agenda_items?.meetings?.meeting_date });
         seen.set(l.property_id, set);
         const mentions = mentioned.get(l.property_id) || new Set<string>();
-        mentions.add(l.agenda_item_id ? `i${l.agenda_item_id}` : `m${l.matter_id}`);
+        mentions.add(mentionKey(l));
         mentioned.set(l.property_id, mentions);
         (byLot.get(l.property_id) || byLot.set(l.property_id, []).get(l.property_id)!).push(l);
       }
@@ -108,8 +114,8 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
     : (await supabase.from("properties").select("slug").eq("slug", slugOfStreet).maybeSingle()).data?.slug ?? null;
   // Hidden or merged matters drop out; a matter link without a dated agenda item falls back to first_seen.
   const hiddenMatters = new Set((matters || []).filter((m) => !visible(m)).map((m) => `m${m.id}`));
-  const dated = new Set(recordDates.filter((r) => r.date).map((r) => r.key));
-  for (const m of (matters || []).filter(visible)) if (!dated.has(`m${m.id}`)) recordDates.push({ key: `m${m.id}`, date: m.first_seen });
+  const dated = new Set(mentionDates.filter((r) => r.date && r.matter).map((r) => `m${r.matter}`));
+  for (const m of (matters || []).filter(visible)) if (!dated.has(`m${m.id}`)) mentionDates.push({ key: `m${m.id}`, date: m.first_seen });
   // Links to a hidden or merged matter are not on the page.
   const shownLinks = (links || []).filter((l) => !l.matter_id || !hiddenMatters.has(`m${l.matter_id}`));
   const ownRecords = (matters || []).filter(visible).length + looseItemIds.length;
@@ -125,7 +131,7 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
     noindex,
     isStreet,
     streetSlug,
-    activity: recordsPerYear(recordDates.filter((r) => !hiddenMatters.has(r.key))),
+    activity: recordsPerYear(mentionDates.filter((r) => !(r.matter && hiddenMatters.has(`m${r.matter}`)) && !hiddenMatters.has(r.key))),
     lots: isStreet
       ? (neighbours || [])
           .map((n) => ({ ...n, records: lotCounts.get(n.id) || 0, mentions: lotMentions.get(n.id) || 0 }))
@@ -293,7 +299,8 @@ export function propertyPath(property: { slug: string }) {
 }
 
 /** `years`: the years Council considered the address (newest first), for the map's year filter. */
-export type PropertyIndexEntry = { slug: string; address: string; records: number; years: number[]; geo: { lat: number; lng: number } | null };
+/** `mentions`: how many times the place came up in council meetings (as on its page); `records` decides whether it has a page entry. */
+export type PropertyIndexEntry = { slug: string; address: string; records: number; mentions: number; years: number[]; geo: { lat: number; lng: number } | null };
 export type RecentPropertyItem = {
   key: string;
   href: string;
@@ -337,11 +344,15 @@ export async function getPropertiesIndex(supabase: SupabaseClient, recentCount =
     ),
   ]);
   const records = new Map<number, Set<string>>();
+  const mentions = new Map<number, Set<string>>();
   const years = new Map<number, Set<number>>();
   for (const l of links) {
     const set = records.get(l.property_id) || new Set<string>();
     set.add(l.matter_id ? `m${l.matter_id}` : `i${l.agenda_item_id}`);
     records.set(l.property_id, set);
+    const named = mentions.get(l.property_id) || new Set<string>();
+    named.add(l.agenda_item_id ? `i${l.agenda_item_id}` : `m${l.matter_id}`);
+    mentions.set(l.property_id, named);
     const date = l.agenda_items?.meetings?.meeting_date;
     if (date) years.set(l.property_id, (years.get(l.property_id) || new Set<number>()).add(Number(date.slice(0, 4))));
   }
@@ -351,10 +362,11 @@ export async function getPropertiesIndex(supabase: SupabaseClient, recentCount =
     slug: p.slug,
     address: p.address,
     records: records.get(p.id)?.size || 0,
+    mentions: mentions.get(p.id)?.size || 0,
     years: [...(years.get(p.id) || [])].sort((a, b) => b - a),
     geo: p.geo?.lat != null && p.geo?.lng != null ? { lat: round(p.geo.lat), lng: round(p.geo.lng) } : null,
   });
-  const byRecords = (a: PropertyIndexEntry, b: PropertyIndexEntry) => b.records - a.records || a.address.localeCompare(b.address);
+  const byRecords = (a: PropertyIndexEntry, b: PropertyIndexEntry) => b.mentions - a.mentions || b.records - a.records || a.address.localeCompare(b.address);
   const lotRows = properties.filter((p) => p.civic_number !== "" && records.has(p.id));
   const lots = lotRows.map(entry).sort(byRecords);
   const lotsPerStreet = new Map<string, number>();
