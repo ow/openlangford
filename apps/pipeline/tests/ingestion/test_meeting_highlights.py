@@ -88,6 +88,17 @@ def test_write_merges_only_the_highlights_key_guarded_by_updated_at():
     table.update.return_value.eq.return_value.eq.assert_called_with("updated_at", "t1")
 
 
+def test_clean_drops_nothing_happened_bullets():
+    out = mh.clean(Highlights(bullets=["No decisions were recorded."], description=""), "2021-02-09")
+    assert out["bullets"] == [] and out["description"] == ""
+
+
+def test_write_none_removes_only_the_highlights_key():
+    sb, table = _supabase({"poster": {"url": "p.png"}, "highlights": {"bullets": ["x."]}}, ["t1"], [[{"id": 7}]])
+    assert mh.write_highlights(sb, 7, None)
+    assert table.update.call_args.args[0] == {"meta": {"poster": {"url": "p.png"}}}
+
+
 def test_write_retries_when_meta_changed_underneath():
     sb, table = _supabase({}, ["t1", "t2"], [[], [{"id": 7}]])
     assert mh.write_highlights(sb, 7, {"bullets": ["a."]})

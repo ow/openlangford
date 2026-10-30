@@ -46,6 +46,8 @@ Write:
    group them in one bullet: "Moved the 2026 budget and tax rates, City Centre parking rules (passed 6–1) and stronger noise rules one step from final approval."
    A grouped bullet names at most 3 items: drop the minor ones. Keep normal grammar with articles ("the 2026 budget", not "budget"). Otherwise vary the wording.
 2. `description`: one sentence that sums up the whole meeting for a search result or share card.
+If no outcome is recorded (the inputs only say what was scheduled or on the agenda), return an empty `bullets` list and an empty `description`;
+never write a bullet saying nothing was decided or recorded.
 
 Style rules (from the site's writing guide):
 - Style rule 1, "Say what happened, not what was on the agenda." "Council approved 47 homes on Latoria Road", not "Consider bringing Bylaw 2278 forward".
@@ -228,8 +230,11 @@ def problems(bullets: list[str]) -> list[str]:
     return found
 
 
+_NOTHING = re.compile(r"\bno (?:decisions?|outcomes?|business)\b|\b(?:not|were|was) recorded\b", re.I)
+
+
 def clean(result: Highlights, meeting_date: Any) -> dict:
-    bullets = [b for b in (_clean_line(x) for x in result.bullets) if b][:4]
+    bullets = [b for b in (_clean_line(x) for x in result.bullets) if b and not _NOTHING.search(b)][:4]
     prefix = f"{format_date(meeting_date)}: "
     sentence = _clean_line(result.description)
     description = prefix + _shorten(sentence, DESCRIPTION_MAX - len(prefix)) if sentence else ""
@@ -315,13 +320,19 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
     return out if out["bullets"] else None
 
 
-def write_highlights(supabase: Client, meeting_id: int, highlights: dict, *, attempts: int = 4) -> bool:
-    """Replace only ``meta.highlights``, guarded by ``updated_at`` so concurrent meta writers are never lost."""
+def write_highlights(supabase: Client, meeting_id: int, highlights: dict | None, *, attempts: int = 4) -> bool:
+    """Replace only ``meta.highlights`` (None removes it), guarded by ``updated_at`` so concurrent meta writers are never lost."""
     for _ in range(attempts):
         rows = supabase.table("meetings").select("meta, updated_at").eq("id", meeting_id).execute().data or []
         if not rows:
             return False
-        meta = {**(rows[0].get("meta") or {}), "highlights": highlights}
+        meta = dict(rows[0].get("meta") or {})
+        if highlights is None:
+            if "highlights" not in meta:
+                return True
+            meta.pop("highlights")
+        else:
+            meta["highlights"] = highlights
         query = supabase.table("meetings").update({"meta": meta}).eq("id", meeting_id)
         if rows[0].get("updated_at"):
             query = query.eq("updated_at", rows[0]["updated_at"])
@@ -332,7 +343,7 @@ def write_highlights(supabase: Client, meeting_id: int, highlights: dict, *, att
 
 def highlight_meeting(supabase: Client, meeting_id: int, *, dry_run: bool = False) -> dict | None:
     highlights = generate(supabase, meeting_id)
-    if highlights and not dry_run:
-        if not write_highlights(supabase, meeting_id, highlights):
+    if not dry_run:  # nothing to highlight clears an older entry so pages fall back to the summary
+        if not write_highlights(supabase, meeting_id, highlights or None):
             raise RuntimeError("meta changed underneath on every attempt; not written")
     return highlights
