@@ -55,13 +55,18 @@ All pipeline commands run from `apps/pipeline/` (where `pyproject.toml` and `pyt
 
 ### Data Flow
 ```
-CivicWeb PDFs + Vimeo Video → Python Pipeline (5 phases) → Supabase → Web App
+Meeting documents (eSCRIBE / CivicWeb) + meeting video (video provider) → Python Pipeline (5 phases) → Supabase → Web App
 ```
 
 Pipeline phases: scrape → download audio → diarize → AI refine + ingest → embed → post-ingest stages (registry)
 
 ### Web App Routing
-Flat file routes in `apps/web/app/routes/`. Server loaders fetch from Supabase, components render with SSR. API routes (`api.ask.tsx`, `api.vimeo-url.ts`) handle server actions.
+Flat file routes in `apps/web/app/routes/`. Server loaders fetch from Supabase, components render with SSR. API routes (`api.ask.tsx`, `api.video-source.ts`) handle server actions.
+
+### Video providers
+Each municipality's meeting video comes from one provider, set by `municipalities.source_config.video_source.type` (`isilive` = eSCRIBE/ISI Live for Langford, `vimeo` upstream). When unset, or when a URL belongs to another provider, the provider is detected from the URL host.
+- **Web** `app/services/video/`: `catalog.ts` (browser-safe: label, deep link, privacy wording, URL ownership), `index.server.ts` (registry, setting lookup, `resolveVideoSource`), one `*.server.ts` per provider (`vimeo.server.ts` incl. the `apps/vimeo-proxy` worker fallback; `escribe-isi.server.ts`). `/api/video-source` resolves a stored `video_url` to a playable stream (`/api/vimeo-url` is an alias); `/api/report-video-failure` asks the provider to drop its cached stream. Pages use `hooks/useMeetingMedia.ts`.
+- **Pipeline** `pipeline/video/providers.py`: the same registry in Python (`get_video_client`, `resolve_media_url`).
 
 ### Supabase Client Initialization
 Three clients exist — use the right one:
