@@ -25,7 +25,7 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <header className={cn("flex flex-col gap-4 pb-8", className)}>
+    <header className={cn("flex flex-col gap-4 pb-4 md:pb-8", className)}>
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="flex min-w-0 items-start gap-4">
           {Icon && (

@@ -81,7 +81,7 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-xl px-4 py-12">
+      <div className="container mx-auto max-w-xl px-4 pt-6 pb-12 md:pt-10">
         <PageHeader title="Contact" />
         <div className="rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8">
           {result?.ok ? (

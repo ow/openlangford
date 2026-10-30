@@ -77,7 +77,7 @@ export default function PeopleList({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto flex max-w-5xl flex-col gap-8 px-4 py-12">
+      <div className="container mx-auto flex max-w-5xl flex-col gap-8 px-4 pt-6 pb-12 md:pt-10">
         <PageHeader
           className="pb-0"
           title={`${shortName} Council`}

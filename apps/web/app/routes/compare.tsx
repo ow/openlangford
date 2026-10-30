@@ -278,7 +278,7 @@ function SelectionMode({
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-5xl px-4 py-12">
+      <div className="container mx-auto max-w-5xl px-4 pt-6 pb-12 md:pt-10">
         <PageHeader
           title="Compare councillors"
           description="Pick two councillors to see how often they vote together, where their policy stances differ, and how active they are."
@@ -514,7 +514,7 @@ function ComparisonMode({ data }: { data: CompareModeData }) {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-5xl px-4 py-12">
+      <div className="container mx-auto max-w-5xl px-4 pt-6 pb-12 md:pt-10">
         <PageHeader
           title="Compare councillors"
           description={`${personA.name} and ${personB.name}, side by side.`}

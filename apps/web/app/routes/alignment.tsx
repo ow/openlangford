@@ -218,7 +218,7 @@ export default function VotingAlignment({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-6xl px-4 py-12">
+      <div className="container mx-auto max-w-6xl px-4 pt-6 pb-12 md:pt-10">
         <PageHeader
           title="Council alignment"
           description="How often council members vote the same way, measured across each council term."

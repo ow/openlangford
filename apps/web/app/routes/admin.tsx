@@ -20,7 +20,7 @@ export async function action({ request }: { request: Request }) {
 export default function Admin() {
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-3xl px-4 py-12">
+      <div className="container mx-auto max-w-3xl px-4 pt-6 pb-12 md:pt-10">
         <PageHeader title="Admin area" description="Review council records and manage processing." />
         <ul className="grid gap-4 sm:grid-cols-2">
           {[

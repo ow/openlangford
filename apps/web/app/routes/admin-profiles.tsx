@@ -182,7 +182,7 @@ export default function AdminProfiles({ loaderData, actionData }: Route.Componen
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-6xl px-4 py-12">
+      <div className="container mx-auto max-w-6xl px-4 pt-6 pb-12 md:pt-10">
         <PageHeader
           title="Profile review"
           description="AI-drafted councillor overviews and policy positions. Nothing is public until you approve it; the published version stays live while a newer draft waits."

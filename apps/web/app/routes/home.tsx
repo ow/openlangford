@@ -114,7 +114,7 @@ export default function Home({ loaderData }: any) {
       />
       <IncomingCouncilSection council={incomingCouncil} />
 
-      <div className="container mx-auto max-w-6xl px-4 py-12">
+      <div className="container mx-auto max-w-6xl px-4 pt-6 pb-12 md:pt-10">
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-3">
           <div className="space-y-12 lg:col-span-2">
             <RecentMeetingSection

@@ -260,7 +260,7 @@ export default function AdminNames({ loaderData, actionData }: Route.ComponentPr
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-4xl px-4 py-12">
+      <div className="container mx-auto max-w-4xl px-4 pt-6 pb-12 md:pt-10">
         <DetailHeader
           back={{ to: "/admin", label: "Admin" }}
           meta={[

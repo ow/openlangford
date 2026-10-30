@@ -151,7 +151,7 @@ export default function ApiKeysPage({
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-2xl px-4 py-12">
+      <div className="container mx-auto max-w-2xl px-4 pt-6 pb-12 md:pt-10">
         <Link
           to="/settings"
           className="mb-4 inline-block text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-800"
