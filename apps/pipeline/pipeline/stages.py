@@ -821,7 +821,7 @@ def stale_property_summaries(ctx: StageContext) -> list[int]:
 
 
 def run_property_summaries(ctx: StageContext):
-    """Plain-language overview per property with 2+ records. Post-ingest and --stale: only properties
+    """Plain-language lead per eligible property (see property_summaries.eligible). Post-ingest and --stale: only properties
     whose records changed (or prompt version). Default: those without a summary; --force: every one."""
     from pipeline.ingestion.property_summaries import (
         clear_summaries, eligible, load_properties, needs_clearing, summarize_properties,
@@ -839,7 +839,7 @@ def run_property_summaries(ctx: StageContext):
         chosen = [by_id[i] for i in wanted if i in by_id and eligible(by_id[i])]
         skipped = [i for i in wanted if i in by_id and not eligible(by_id[i])]
         if skipped:
-            print(f"  [Properties] Skipping {skipped}: fewer than 2 records")
+            print(f"  [Properties] Skipping {skipped}: not eligible (too few records, or a resident's home)")
     else:
         if ctx.post_ingest or ctx.stale:
             ids = set(stale_property_summaries(ctx))
@@ -849,8 +849,8 @@ def run_property_summaries(ctx: StageContext):
         clear = [p for p in props if needs_clearing(p)]
     if ctx.dry_run:
         _preview("properties to summarize", [p["id"] for p in chosen])
-        _preview("properties to clear (now fewer than 2 records)", [p["id"] for p in clear])
-        print(f"  [dry-run] {sum(1 for p in props if eligible(p))} of {len(props)} properties have 2+ records")
+        _preview("properties to clear (no longer eligible)", [p["id"] for p in clear])
+        print(f"  [dry-run] {sum(1 for p in props if eligible(p))} of {len(props)} properties are eligible")
         return {"properties": len(chosen), "clear": len(clear)}
     cleared = clear_summaries(ctx.supabase, clear) if clear else 0
     done = summarize_properties(ctx.supabase, chosen) if chosen else {}
@@ -1265,7 +1265,7 @@ STAGES: list[Stage] = [
     ),
     Stage(
         name="property-summaries",
-        description="One- or two-sentence plain-language overview per property with 2+ records (properties.meta.summary). "
+        description="Plain-language lead per address with 2+ records and per street (the road and its busiest addresses), ending in a mention count (properties.meta.summary; also the page description). "
                     "--target PROPERTY_ID[,ID...]; --stale re-runs changed record sets.",
         run=run_property_summaries, when="post_ingest", scope="global", version=PROPERTY_SUMMARY_VERSION,
         depends_on=("properties",), stale=stale_property_summaries,
