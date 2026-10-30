@@ -69,14 +69,14 @@ export async function action({ request, params }: Route.ActionArgs) {
   return error ? { error: error.message } : { ok: true };
 }
 
-function Unlink({ field, id }: { field: "matter_id" | "agenda_item_id"; id: number }) {
+function Unlink({ field, id, isStreet }: { field: "matter_id" | "agenda_item_id"; id: number; isStreet: boolean }) {
   const fetcher = useFetcher<typeof action>();
   if (fetcher.state !== "idle" || (fetcher.data as any)?.ok) return <span className="text-xs text-zinc-400">Removed</span>;
   return (
     <fetcher.Form method="post" className="shrink-0">
       <input type="hidden" name={field} value={id} />
       <button type="submit" className="py-1 text-xs font-medium text-zinc-400 hover:text-red-700 hover:underline">
-        Not at this address
+        Remove from this {isStreet ? "street" : "address"}
       </button>
     </fetcher.Form>
   );
@@ -177,7 +177,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                       </Link>
                       {isAdmin && (
                         <div className="-mt-2 px-5 pb-3">
-                          <Unlink field="matter_id" id={m.id} />
+                          <Unlink field="matter_id" id={m.id} isStreet={isStreet} />
                         </div>
                       )}
                     </li>
@@ -204,7 +204,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                     </Link>
                     {isAdmin && (
                       <div className="-mt-2 px-5 pb-3">
-                        <Unlink field="agenda_item_id" id={item.id} />
+                        <Unlink field="agenda_item_id" id={item.id} isStreet={isStreet} />
                       </div>
                     )}
                   </li>
