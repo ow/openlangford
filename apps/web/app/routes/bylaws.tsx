@@ -29,7 +29,7 @@ export const meta: Route.MetaFunction = () => {
       `${DEFAULT_MUNICIPALITY.short_name} bylaws and council policies, from zoning and development to fees, parks, purchasing and traffic: plain-language summaries, full text, amendments and the council matters behind each.`,
       "/bylaws",
       "website",
-      { image: ogImageUrl("Bylaws & Policies", { type: "bylaw" }) },
+      { image: ogImageUrl("Bylaws and policies", { subtitle: "Langford's rules in plain language, with full text and amendments", type: "council" }) },
     ),
     jsonLd(breadcrumbList([["Bylaws", "/bylaws"]])),
   ];

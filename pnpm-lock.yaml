@@ -92,6 +92,9 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@resvg/resvg-wasm':
+        specifier: 2.4.0
+        version: 2.4.0
       '@supabase/ssr':
         specifier: ^0.8.0
         version: 0.8.0(@supabase/supabase-js@2.97.0)
@@ -161,15 +164,18 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      satori:
+        specifier: 0.15.2
+        version: 0.15.2
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.5.0
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      workers-og:
-        specifier: ^0.0.27
-        version: 0.0.27
+      yoga-wasm-web:
+        specifier: 0.3.3
+        version: 0.3.3
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -3493,9 +3499,6 @@ packages:
     resolution: {integrity: sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ==}
     engines: {node: '>=0.10.0'}
 
-  just-camel-case@6.2.0:
-    resolution: {integrity: sha512-ICenRLXwkQYLk3UyvLQZ+uKuwFVJ3JHFYFn7F2782G2Mv2hW8WPePqgdhpnjGaqkYtSVWnyCESZhGXUmY3/bEg==}
-
   katex@0.16.33:
     resolution: {integrity: sha512-q3N5u+1sY9Bu7T4nlXoiRBXWfwSefNGoKeOwekV+gw0cAXQlz2Ww6BLcmBxVDeXBMUDQv6fK5bcNaJLxob3ZQA==}
     hasBin: true
@@ -4718,9 +4721,6 @@ packages:
     resolution: {integrity: sha512-FhNdC8cenMDllI6bTktFgxP5Bn5ZEnGtofgKipY6pW9jtq708D1DeGI6vGad78KQLBGaDwFy1eThjCoLYgFfog==}
     engines: {node: '>=16'}
     hasBin: true
-
-  workers-og@0.0.27:
-    resolution: {integrity: sha512-QvwptQ0twmouQHiITUi3kYxEPCLdueC/U4msQ2xMz2iktd+iseSs7zlREw3T1dAsPxPw73FQlw8cXFsfANZPlw==}
 
   wrangler@4.68.0:
     resolution: {integrity: sha512-DCjl2ZfjwWV10iH4Zn+97isitPkb7BYxpbt4E/Okd/QKLFTp9xdwoa999UN9lugToqPm5Zz/UsRu6hpKZuT8BA==}
@@ -8125,8 +8125,6 @@ snapshots:
 
   jsonpointer@5.0.1: {}
 
-  just-camel-case@6.2.0: {}
-
   katex@0.16.33:
     dependencies:
       commander: 8.3.0
@@ -9816,13 +9814,6 @@ snapshots:
       '@cloudflare/workerd-linux-64': 1.20260302.0
       '@cloudflare/workerd-linux-arm64': 1.20260302.0
       '@cloudflare/workerd-windows-64': 1.20260302.0
-
-  workers-og@0.0.27:
-    dependencies:
-      '@resvg/resvg-wasm': 2.4.0
-      just-camel-case: 6.2.0
-      satori: 0.15.2
-      yoga-wasm-web: 0.3.3
 
   wrangler@4.68.0(@cloudflare/workers-types@4.20260302.0):
     dependencies:

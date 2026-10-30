@@ -27,7 +27,7 @@ export const meta: Route.MetaFunction = () => {
     { property: "og:description", content: "About Open Langford — an independent project making Langford council meetings easier to follow" },
     { property: "og:type", content: "website" },
     { property: "og:url", content: ogUrl("/about") },
-    { property: "og:image", content: ogImageUrl("About Open Langford") },
+    { property: "og:image", content: ogImageUrl("About Open Langford", { subtitle: "An independent project making Langford council meetings easier to follow" }) },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },

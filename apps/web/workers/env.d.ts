@@ -10,6 +10,8 @@ declare namespace Cloudflare {
 		AI: Ai;
 		/** Global second tier for public data caches; optional so tests/local dev work without it. */
 		PUBLIC_CACHE?: KVNamespace;
+		/** Static files from public/ ([assets] binding); the share-image route reads portraits. */
+		ASSETS?: Fetcher;
 		CF_VERSION_METADATA: { id: string; tag: string; timestamp: string };
 		AI_GATEWAY_ID: "langford-open-a-i";
 		AI_SEARCH_DAILY_LIMIT: "1000";

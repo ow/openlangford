@@ -1,69 +1,89 @@
-import { SITE_NAME } from "../lib/site-name";
-import { ImageResponse } from "workers-og";
+import type { AppLoadContext } from "react-router";
+import { OG_VERSION } from "../lib/og";
+import { ogCardInput } from "../services/og/card";
+import { renderOgPng } from "../services/og/render.server";
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+// Share images (og:image) for pages without their own. Each distinct URL renders once: the PNG is
+// kept in the colo cache (Cache API) and in KV (PUBLIC_CACHE) so other colos reuse it. URLs from
+// ogImageUrl carry OG_VERSION and all card text, so a change gives a new URL; those are immutable.
+
+const IMMUTABLE = "public, max-age=31536000, immutable";
+/** Unversioned (pre-v2) URLs still render, but may change when the design does. */
+const LEGACY = "public, max-age=86400";
+const KV_TTL_SECONDS = 60 * 60 * 24 * 180;
+
+type Env = Partial<Pick<Cloudflare.Env, "PUBLIC_CACHE" | "API_RATE_LIMITER">> & { ASSETS?: Fetcher };
+
+async function cacheKey(url: URL): Promise<string> {
+  const input = ogCardInput(url.searchParams);
+  const canonical = JSON.stringify([OG_VERSION, input.label, input.title, input.subtitle || "", input.imagePath || ""]);
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
+  const hex = [...new Uint8Array(digest)].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `og:${OG_VERSION}:${hex}`;
 }
 
-function typeLabel(type: string): string {
-  switch (type) {
-    case "meeting":
-      return "Council Meeting";
-    case "person":
-      return "Council Member";
-    case "search":
-      return "Search Result";
-    case "bylaw":
-      return "Bylaw";
-    case "matter":
-      return "Council Matter";
-    case "election":
-      return "Election";
-    default:
-      return `${SITE_NAME}`;
+function png(body: ArrayBuffer | Uint8Array, cacheControl: string, status = "hit"): Response {
+  return new Response(body as BodyInit, {
+    headers: { "Content-Type": "image/png", "Cache-Control": cacheControl, "X-Og-Cache": status, "Content-Length": String(body.byteLength) },
+  });
+}
+
+function toBase64(bytes: Uint8Array): string {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(binary);
+}
+
+/** A site portrait as a data: URI, read from the static assets. Missing or failed: no portrait. */
+async function portrait(env: Env, url: URL, path: string | undefined): Promise<string | undefined> {
+  if (!path || !env.ASSETS) return undefined;
+  try {
+    const response = await env.ASSETS.fetch(new URL(path, url.origin).toString());
+    const type = response.headers.get("Content-Type") || "";
+    if (!response.ok || !/^image\/(jpeg|png)/.test(type)) return undefined;
+    return `data:${type.split(";")[0]};base64,${toBase64(new Uint8Array(await response.arrayBuffer()))}`;
+  } catch {
+    return undefined;
   }
 }
 
-export async function loader({ request }: { request: Request }) {
+export async function loader({ request, context }: { request: Request; context?: AppLoadContext }) {
+  const env: Env = (context?.cloudflare?.env as Env | undefined) ?? {};
+  const waitUntil = (promise: Promise<unknown>) => context?.cloudflare?.ctx?.waitUntil(promise.catch(() => {}));
   const url = new URL(request.url);
-  const title = url.searchParams.get("title") || `${SITE_NAME}`;
-  const subtitle = url.searchParams.get("subtitle") || "";
-  const type = url.searchParams.get("type") || "default";
+  const versioned = url.searchParams.get("v") === OG_VERSION;
+  const cacheControl = versioned ? IMMUTABLE : LEGACY;
+  const key = await cacheKey(url);
+  const edgeKey = new Request(`https://og-cache.internal/${key}`);
+  const edge = typeof caches !== "undefined" ? (caches as unknown as { default?: Cache }).default : undefined;
 
-  const fontSize = title.length > 60 ? 42 : 56;
+  const cached = await edge?.match(edgeKey).catch(() => undefined);
+  if (cached) return png(await cached.arrayBuffer(), cacheControl);
+  const stored = await env.PUBLIC_CACHE?.get(key, "arrayBuffer").catch(() => null);
+  if (stored && stored.byteLength) {
+    if (edge) waitUntil(edge.put(edgeKey, png(stored, IMMUTABLE)));
+    return png(stored, cacheControl);
+  }
 
-  const html = `
-    <div style="display: flex; flex-direction: column; width: 1200px; height: 630px; background: linear-gradient(135deg, #18181b 0%, #27272a 100%); padding: 60px; justify-content: space-between; font-family: 'Inter', sans-serif;">
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="background: #00747a; color: white; font-size: 14px; font-weight: 800; padding: 6px 16px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.1em;">
-            ${escapeHtml(typeLabel(type))}
-          </div>
-        </div>
-        <div style="color: white; font-size: ${fontSize}px; font-weight: 900; line-height: 1.1; max-width: 1000px; overflow: hidden;">
-          ${escapeHtml(title)}
-        </div>
-        ${subtitle ? `<div style="color: #a1a1aa; font-size: 24px; font-weight: 600;">${escapeHtml(subtitle)}</div>` : ""}
-      </div>
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="color: #2bb3b8; font-size: 28px; font-weight: 900;">${SITE_NAME}</div>
-          <div style="color: #52525b; font-size: 18px; font-weight: 500;">Council Meeting Intelligence</div>
-        </div>
-      </div>
-    </div>
-  `;
+  // Rendering costs CPU; cap misses per visitor (crawlers fetch a handful of images, not hundreds).
+  const ip = request.headers.get("cf-connecting-ip") || "unknown";
+  if (env.API_RATE_LIMITER && !(await env.API_RATE_LIMITER.limit({ key: `og:${ip}` })).success) {
+    return Response.redirect(new URL("/og-image.png", url.origin).toString(), 302);
+  }
 
-  return new ImageResponse(html, {
-    width: 1200,
-    height: 630,
-    headers: {
-      "Cache-Control": "public, max-age=86400, s-maxage=604800",
-    },
-  });
+  const input = ogCardInput(url.searchParams);
+  let body: Uint8Array;
+  try {
+    body = await renderOgPng({ ...input, image: await portrait(env, url, input.imagePath) });
+  } catch (error) {
+    console.error("og-image render failed", error);
+    // Never an empty 200: send the static brand card, briefly cached so a fix shows quickly.
+    return new Response(null, {
+      status: 302,
+      headers: { Location: new URL("/og-image.png", url.origin).toString(), "Cache-Control": "public, max-age=300" },
+    });
+  }
+  if (edge) waitUntil(edge.put(edgeKey, png(body, IMMUTABLE)));
+  if (versioned && env.PUBLIC_CACHE) waitUntil(env.PUBLIC_CACHE.put(key, body, { expirationTtl: KV_TTL_SECONDS }));
+  return png(body, cacheControl, "miss");
 }

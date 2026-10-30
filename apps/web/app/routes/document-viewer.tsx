@@ -52,7 +52,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   return [
     ...pageMeta(ed.title || "Document", description, path, "article", {
       fullTitle: title,
-      image: ogImageUrl(ed.title, { subtitle: meeting ? `${meeting.title} · ${date}` : undefined, type: "default" }),
+      image: ogImageUrl(ed.title || "Council document", { subtitle: meeting ? `${meeting.title}, ${date}` : undefined, type: "document" }),
     }),
     ...(meeting ? [markdownAlternate(documentPath(meeting, ed.id, "/content.md"))] : []),
   ];

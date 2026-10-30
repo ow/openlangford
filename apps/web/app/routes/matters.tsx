@@ -41,7 +41,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   const description = `${total ? `${total.toLocaleString("en-CA")} ` : ""}${DEFAULT_MUNICIPALITY.short_name} council decisions and applications: rezonings, development permits, bylaws and recurring items, each followed through every meeting and vote.${page > 1 ? ` Page ${page} of ${pageCount}.` : ""}`;
   return [
     ...pageMeta(`Langford Council Decisions and Applications${page > 1 ? ` — Page ${page}` : ""}`, description, mattersPagePath(page), "website", {
-      image: ogImageUrl("Council Decisions and Applications", { type: "matter" }),
+      image: ogImageUrl("Council decisions and applications", { subtitle: "Rezonings, development permits and bylaws, followed through every meeting and vote", type: "council" }),
     }),
     ...(page > 1 ? [{ tagName: "link", rel: "prev", href: ogUrl(mattersPagePath(page - 1)) }] : []),
     ...(page < pageCount ? [{ tagName: "link", rel: "next", href: ogUrl(mattersPagePath(page + 1)) }] : []),

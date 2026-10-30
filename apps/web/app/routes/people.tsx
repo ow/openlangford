@@ -20,7 +20,7 @@ export const meta: Route.MetaFunction = ({ matches }) => {
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: ogUrl("/people") },
-    { property: "og:image", content: ogImageUrl("Council Members", { type: "person" }) },
+    { property: "og:image", content: ogImageUrl("Council members", { subtitle: `Votes, attendance and motions for every ${shortName} council member`, type: "council" }) },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { name: "twitter:card", content: "summary_large_image" },

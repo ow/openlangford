@@ -23,7 +23,7 @@ const MATCHES = 100;
 
 export const meta: Route.MetaFunction = () => [
   ...pageMeta("Langford Properties and Streets", DESCRIPTION, "/properties", "website", {
-    image: ogImageUrl("Properties", { subtitle: "Addresses in council meetings", type: "matter" }),
+    image: ogImageUrl("Properties and streets", { subtitle: "What council decided about addresses across Langford", type: "council" }),
   }),
   jsonLd(breadcrumbList([["Properties", "/properties"]])),
 ];

@@ -11,7 +11,7 @@ import { parseRelatedAddresses } from "../lib/addresses";
 import { documentImageUrl } from "../lib/document-images.server";
 import { Link, redirect } from "react-router";
 import { SubscribeButton } from "../components/subscribe-button";
-import { ogImageUrl } from "../lib/og";
+import { firstSentence, ogImageUrl } from "../lib/og";
 import { fitTitle, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd } from "../lib/structured-data";
 
@@ -25,7 +25,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   return [
     ...pageMeta(name, description, matterPath(m), "article", {
       fullTitle: fitTitle(name, "Langford Council"),
-      image: lead?.url || ogImageUrl(m.title, { subtitle: m.status, type: "matter" }),
+      image: lead?.url || ogImageUrl(name, { subtitle: firstSentence(m.plain_english_summary) || firstSentence(m.description), type: "decision" }),
       imageWidth: lead?.url ? lead.width : undefined,
       imageHeight: lead?.url ? lead.height : undefined,
     }),
