@@ -197,18 +197,6 @@ export function findTranscriptSegmentForTime(
 }
 
 /**
- * Generates a Vimeo URL with timestamp
- */
-export function getVimeoTimeUrl(videoUrl: string, seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const timeStr = `${h > 0 ? h + "h" : ""}${m}m${s}s`;
-  const baseUrl = videoUrl.split("#")[0];
-  return `${baseUrl}#t=${timeStr}`;
-}
-
-/**
  * Formats seconds to MM:SS or HH:MM:SS
  */
 export function formatTimestamp(seconds: number): string {

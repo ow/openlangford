@@ -1,13 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Loader2,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Badge } from "../ui/badge";
 import { Drawer, DrawerContent, DrawerTitle } from "../ui/drawer";
@@ -22,32 +14,18 @@ import {
 import { displayTitle, lastName } from "../../lib/display-text";
 import { EnhancedVideoScrubber } from "./EnhancedVideoScrubber";
 import { MotionOutcomeBadge } from "../motion-outcome-badge";
+import { MeetingVideo, type MeetingVideoControls, type PosterLabel } from "./MeetingVideo";
+import { SpeakerName } from "../ui/speaker-name";
 
 interface VideoWithSidebarProps {
-  videoPlayer: {
-    videoRef: React.RefObject<HTMLVideoElement | null>;
-    audioRef: React.RefObject<HTMLAudioElement | null>;
-    videoEnabled: boolean;
-    setVideoEnabled: (enabled: boolean) => void;
-    currentTime: number;
-    duration: number;
-    isPlaying: boolean;
-    isLoading: boolean;
-    volume: number;
-    playbackRate: number;
-    togglePlay: () => void;
-    toggleMute: () => void;
-    seekTo: (time: number) => void;
-    setVolume: (volume: number) => void;
-    setPlaybackRate: (rate: number) => void;
-  };
+  videoPlayer: MeetingVideoControls;
   directVideoUrl?: string | null;
   directAudioUrl?: string | null;
   meeting: { id: number; video_url?: string };
   /** Still frame from the recording (meetings.meta.poster.url), shown until playback starts. */
   posterUrl?: string | null;
   /** Meeting name/date laid over the poster (HTML, not baked in) until playback starts. */
-  posterLabel?: { title: string; date: string; eyebrow?: string | null } | null;
+  posterLabel?: PosterLabel | null;
   agendaItems: AgendaItem[];
   transcript: TranscriptSegment[];
   meetingDuration: number;
@@ -81,39 +59,6 @@ function getTimedItemIds(items: AgendaItem[]): Set<number> {
   }
   if (zeros.length === 1) ids.add(zeros[0].id);
   return ids;
-}
-
-const RATES = [1, 1.5, 2];
-
-/**
- * Meeting name and date over the poster frame, in the share card's style: a scrim
- * heavy at the bottom-left where the text sits, opening up toward the room.
- */
-function PosterTitle({ label }: { label?: VideoWithSidebarProps["posterLabel"] }) {
-  if (!label) return null;
-  return (
-    <>
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(6,13,14,0.82)_0%,rgba(6,13,14,0.5)_45%,rgba(6,13,14,0.1)_100%),linear-gradient(0deg,rgba(6,13,14,0.75)_0%,rgba(6,13,14,0)_55%)]"
-      />
-      <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-brand-400" />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-0 max-w-[85%] p-3 text-left sm:p-6 lg:p-8"
-      >
-        {label.eyebrow && (
-          <span className="hidden text-xs font-bold tracking-[0.12em] text-brand-300 uppercase sm:block">
-            {label.eyebrow}
-          </span>
-        )}
-        <span className="mt-1 block text-base leading-tight font-extrabold tracking-tight text-balance text-white sm:text-3xl lg:text-4xl">
-          {label.title}
-        </span>
-        <span className="mt-0.5 block text-xs font-medium text-white/80 sm:mt-1 sm:text-base">{label.date}</span>
-      </span>
-    </>
-  );
 }
 
 export function VideoWithSidebar({
@@ -242,11 +187,6 @@ export function VideoWithSidebar({
     }
   };
 
-  const cycleRate = () => {
-    const nextIdx = (RATES.indexOf(videoPlayer.playbackRate) + 1) % RATES.length;
-    videoPlayer.setPlaybackRate(RATES[nextIdx]);
-  };
-
   if (!meeting.video_url) {
     return null;
   }
@@ -284,163 +224,18 @@ export function VideoWithSidebar({
             sidebarCollapsed ? "flex-1" : "lg:w-2/3",
           )}
         >
-          <div className="group relative aspect-video bg-black lg:absolute lg:inset-0 lg:aspect-auto">
-            {/* Video Loading State */}
-            {!directVideoUrl && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-zinc-900">
-                {posterUrl && (
-                  <>
-                    <img src={posterUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                    <PosterTitle label={posterLabel} />
-                  </>
-                )}
-                <div className={cn("relative flex flex-col items-center gap-3", posterUrl && "rounded-xl bg-black/50 px-4 py-3 backdrop-blur-sm")}>
-                  <Loader2 className={cn("h-6 w-6 animate-spin", posterUrl ? "text-zinc-300" : "text-zinc-500")} aria-hidden="true" />
-                  <span className={cn("text-sm", posterUrl ? "text-zinc-200" : "text-zinc-400")}>Connecting to video…</span>
-                </div>
-              </div>
-            )}
-
-            <video
-              key={directVideoUrl}
-              ref={videoPlayer.videoRef}
-              src={directVideoUrl || undefined}
-              poster={posterUrl || undefined}
-              className="h-full w-full"
-              onClick={videoPlayer.togglePlay}
-              playsInline
-              preload="auto"
-              muted={!!directAudioUrl || videoPlayer.volume === 0}
-              onError={() => {
-                if (!directVideoUrl) return;
-                console.error("Video failed to load.");
-                onVideoError?.();
-              }}
-            />
-
-            {directAudioUrl && (
-              <audio
-                ref={videoPlayer.audioRef}
-                src={directAudioUrl}
-                className="hidden"
-                preload="auto"
-                muted={videoPlayer.volume === 0}
-              />
-            )}
-
-            {/* Play overlay */}
-            {directVideoUrl && !videoPlayer.videoEnabled && (
-              <button
-                type="button"
-                aria-label={posterLabel ? `Play video: ${posterLabel.title}, ${posterLabel.date}` : "Play meeting video"}
-                className={cn(
-                  "group/play absolute inset-0 z-10 flex items-center justify-center transition-colors",
-                  posterUrl && posterLabel ? "bg-transparent" : "bg-black/30 hover:bg-black/20",
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  videoPlayer.setVideoEnabled(true);
-                  setTimeout(() => videoPlayer.togglePlay(), 100);
-                }}
-              >
-                {posterUrl && <PosterTitle label={posterLabel} />}
-                <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-surface/90 text-zinc-900 shadow-lg transition-transform group-hover/play:scale-105">
-                  <Play className="ml-1 h-7 w-7 fill-current" />
-                </span>
-              </button>
-            )}
-
-            {/* Loading Spinner */}
-            {videoPlayer.isLoading && videoPlayer.videoEnabled && (
-              <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-                <div className="rounded-full bg-black/50 p-3 backdrop-blur-sm">
-                  <Loader2 className="h-7 w-7 animate-spin text-white" />
-                </div>
-              </div>
-            )}
-
-            {/* Captions */}
-            {showCaption && currentSubSegment && videoPlayer.videoEnabled && (
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center p-2 lg:bottom-16 lg:p-4">
-                <div className="max-w-2xl rounded-lg bg-black/75 px-3 py-1.5 text-center backdrop-blur-sm lg:px-5 lg:py-2.5">
-                  <div className="mb-0.5 flex items-center justify-center gap-1.5">
-                    <span
-                      className={cn(
-                        "h-1.5 w-1.5 shrink-0 rounded-full",
-                        SPEAKER_COLORS[getSpeakerColorIndex(captionSpeaker)],
-                      )}
-                    />
-                    <span className="text-xs font-medium text-white/70">{captionSpeaker}</span>
-                  </div>
-                  <p className="text-xs leading-snug text-white sm:text-sm lg:text-base">
-                    {currentSubSegment.text_content}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Video Controls - Desktop (hover) */}
-            {videoPlayer.videoEnabled && directVideoUrl && (
-              <div className="absolute inset-x-0 bottom-0 z-30 hidden bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 lg:block">
-                <div className="flex items-center justify-between text-white">
-                  <div className="flex items-center gap-3">
-                    <PlayPauseButton isPlaying={videoPlayer.isPlaying} onClick={videoPlayer.togglePlay} />
-                    <div className="flex items-center gap-2">
-                      <MuteButton muted={videoPlayer.volume === 0} onClick={videoPlayer.toggleMute} />
-                      <input
-                        type="range"
-                        min={0}
-                        max={1}
-                        step={0.1}
-                        value={videoPlayer.volume}
-                        aria-label="Volume"
-                        onChange={(e) => videoPlayer.setVolume(parseFloat(e.target.value))}
-                        className="h-1 w-20 cursor-pointer accent-white"
-                      />
-                    </div>
-                    <span className="text-xs tabular-nums text-white/80">
-                      {formatTimestamp(videoPlayer.currentTime)} / {formatTimestamp(totalDuration)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CaptionButton on={showCaption} onClick={() => setShowCaption(!showCaption)} />
-                    <RateButton rate={videoPlayer.playbackRate} onClick={cycleRate} />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Controls - Always visible */}
-          {videoPlayer.videoEnabled && directVideoUrl && (
-            <div className="bg-zinc-900 px-3 pb-2 pt-1 text-white lg:hidden">
-              {totalDuration > 0 && (
-                <input
-                  type="range"
-                  min={0}
-                  max={totalDuration}
-                  step={1}
-                  value={Math.min(videoPlayer.currentTime, totalDuration)}
-                  aria-label="Seek"
-                  onChange={(e) => videoPlayer.seekTo(parseFloat(e.target.value))}
-                  className="block h-1 w-full cursor-pointer accent-brand-500"
-                />
-              )}
-              <div className="mt-1.5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <PlayPauseButton isPlaying={videoPlayer.isPlaying} onClick={videoPlayer.togglePlay} />
-                  <MuteButton muted={videoPlayer.volume === 0} onClick={videoPlayer.toggleMute} />
-                  <span className="text-xs tabular-nums text-zinc-400">
-                    {formatTimestamp(videoPlayer.currentTime)} / {formatTimestamp(totalDuration)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CaptionButton on={showCaption} onClick={() => setShowCaption(!showCaption)} />
-                  <RateButton rate={videoPlayer.playbackRate} onClick={cycleRate} />
-                </div>
-              </div>
-            </div>
-          )}
+          <MeetingVideo
+            videoPlayer={videoPlayer}
+            directVideoUrl={directVideoUrl}
+            directAudioUrl={directAudioUrl}
+            posterUrl={posterUrl}
+            posterLabel={posterLabel}
+            caption={currentSubSegment ? { speaker: captionSpeaker, text: currentSubSegment.text_content } : null}
+            showCaption={showCaption}
+            setShowCaption={setShowCaption}
+            totalDuration={totalDuration}
+            onVideoError={onVideoError}
+          />
         </div>
 
         {/* Sidebar - Desktop only */}
@@ -534,68 +329,6 @@ export function VideoWithSidebar({
         />
       )}
     </div>
-  );
-}
-
-// ── Player controls ──────────────────────────────────────────────────────
-
-function PlayPauseButton({ isPlaying, onClick }: { isPlaying: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={isPlaying ? "Pause" : "Play"}
-      className="rounded p-0.5 transition-colors hover:text-brand-300"
-    >
-      {isPlaying ? <Pause className="h-5 w-5 fill-current" /> : <Play className="h-5 w-5 fill-current" />}
-    </button>
-  );
-}
-
-function MuteButton({ muted, onClick }: { muted: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={muted ? "Unmute" : "Mute"}
-      className="rounded p-0.5 transition-colors hover:text-brand-300"
-    >
-      {muted ? <VolumeX className="h-4 w-4 text-zinc-400" /> : <Volume2 className="h-4 w-4" />}
-    </button>
-  );
-}
-
-function CaptionButton({ on, onClick }: { on: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={on}
-      aria-label={on ? "Hide captions" : "Show captions"}
-      title={on ? "Hide captions" : "Show captions"}
-      className={cn(
-        "rounded border px-1.5 py-0.5 text-xs font-semibold leading-none transition-colors",
-        on
-          ? "border-surface bg-surface text-zinc-900"
-          : "border-surface/40 text-white/60 hover:border-surface hover:text-white",
-      )}
-    >
-      CC
-    </button>
-  );
-}
-
-function RateButton({ rate, onClick }: { rate: number; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={`Playback speed ${rate}x`}
-      title="Playback speed"
-      className="min-w-9 rounded px-1.5 py-0.5 text-xs font-semibold tabular-nums text-white/80 transition-colors hover:bg-surface/10 hover:text-white"
-    >
-      {rate}x
-    </button>
   );
 }
 
@@ -894,7 +627,7 @@ function TranscriptSidebarContent({
               {showSpeaker && (
                 <div className="mb-0.5 flex items-center gap-2">
                   <span className={cn("h-2 w-2 shrink-0 rounded-full", SPEAKER_COLORS[colorIdx])} />
-                  <span className="truncate text-xs font-medium text-zinc-700">{speakerName}</span>
+                  <SpeakerName name={speakerName} className="truncate text-xs font-medium text-zinc-700" />
                   <span className="ml-auto shrink-0 text-xs tabular-nums text-zinc-400">
                     {formatTimestamp(sub.start_time)}
                   </span>

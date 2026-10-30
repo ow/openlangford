@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { trackEvent } from "../lib/analytics";
-// import Player from "@vimeo/player"; // No longer needed with dynamic import
 
 interface UseVideoPlayerOptions {
   directVideoUrl?: string | null;

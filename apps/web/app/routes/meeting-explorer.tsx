@@ -7,7 +7,7 @@ import type { Route } from "./+types/meeting-explorer";
 import { getMeetingById } from "../services/meetings";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { useSearchParams } from "react-router";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
 import { DetailHeader } from "../components/ui/detail-header";
 import { SearchField } from "../components/ui/search-field";
@@ -20,10 +20,11 @@ import { PeopleGrid } from "../components/people-grid";
 import { MeetingTimeline } from "../components/meeting-timeline";
 import { MeetingSummary } from "../components/meeting/MeetingSummary";
 import { MeetingFacts } from "../components/meeting/MeetingSidebar";
-import {
-  MeetingPlayer,
-  type MeetingPlayerHandle,
-} from "../components/meeting-player";
+import { MeetingVideo } from "../components/meeting/MeetingVideo";
+import { useVideoPlayer } from "../hooks/useVideoPlayer";
+import { useMeetingMedia } from "../hooks/useMeetingMedia";
+import { splitTranscript, findCurrentSubSegment } from "../lib/transcript-utils";
+import { formatSpeakerName, isUnidentifiedSpeaker, UNIDENTIFIED_SPEAKER_CLASS, UNKNOWN_SPEAKER } from "../lib/speaker-labels";
 import { getSpeakerColorIndex, SPEAKER_TEXT_COLORS } from "../lib/colors";
 import type { Person, Membership } from "../lib/types";
 
@@ -43,7 +44,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const supabase = getSupabaseAdminClient();
     const resolved = await resolveSlugParam(supabase, "meetings", params.id, request, (m) => meetingPath(m, "/explorer"), "Meeting Not Found");
     const data = await getMeetingById(supabase, String(resolved.id));
-    return data;
+    // meetings.meta also holds pipeline-private data (voice centroids, cached media
+    // URLs); the explorer only reads the poster frame.
+    const poster = data.meeting?.meta?.poster;
+    const meeting = data.meeting && { ...data.meeting, meta: poster ? { poster } : {} };
+    return { ...data, meeting };
   } catch (error: any) {
     if (error instanceof Response) throw error;
     if (error.message === "Meeting Not Found") {
@@ -121,7 +126,33 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") || "agenda";
-  const playerRef = useRef<MeetingPlayerHandle>(null);
+
+  // Video: same resolution and player as the meeting page (eSCRIBE/ISI stream
+  // played in a <video> element), so seeking works from every timestamp here.
+  const hasVideo = Boolean(rawMeeting.video_url);
+  const media = useMeetingMedia(rawMeeting.video_url, rawMeeting.id);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const handleVideoError = useCallback(() => setVideoFailed(true), []);
+  const videoPlayer = useVideoPlayer({
+    directVideoUrl: videoFailed ? null : media.directVideoUrl,
+    directAudioUrl: videoFailed ? null : media.directAudioUrl,
+    meetingId: rawMeeting.id,
+    onError: handleVideoError,
+  });
+  const [showCaption, setShowCaption] = useState(true);
+  const videoUnavailable = media.status === "unavailable" || videoFailed;
+  const canSeek = hasVideo && !videoUnavailable;
+  const seekTo = videoPlayer.seekTo;
+  const watchAt = useCallback((seconds: number) => seekTo(seconds), [seekTo]);
+
+  // ?t=123 deep links start the video there.
+  const appliedInitialTime = useRef(false);
+  useEffect(() => {
+    if (appliedInitialTime.current || !media.directVideoUrl) return;
+    const t = Number(searchParams.get("t"));
+    appliedInitialTime.current = true;
+    if (Number.isFinite(t) && t > 0) seekTo(t);
+  }, [media.directVideoUrl, searchParams, seekTo]);
 
   const handleTabChange = (value: string) => {
     setSearchParams(
@@ -165,7 +196,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
   const resolveSpeakerName = (segment: any) => {
     if (segment.person?.name) return segment.person.name;
     const label = segment.speaker_name;
-    return speakerMap[label] || label || "Unknown Speaker";
+    return formatSpeakerName(speakerMap[label] || label);
   };
 
   const getPersonRole = (person?: Person) => {
@@ -187,13 +218,15 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
     return { stats, totalTime };
   }, [transcript, speakerMap]);
 
+  const meetingSeconds: number =
+    meeting.video_duration_seconds ||
+    (transcript.length > 0 ? transcript[transcript.length - 1].end_time : 0);
+
   const stats = useMemo(() => {
     const motions = agendaItems.flatMap((item: any) => item.motions || []);
     const carried = motions.filter((m: any) => normalizeMotionResult(m.result) === "passed").length;
     const defeated = motions.filter((m: any) => normalizeMotionResult(m.result) === "failed").length;
-    const seconds =
-      meeting.video_duration_seconds ||
-      (transcript.length > 0 ? transcript[transcript.length - 1].end_time : 0);
+    const seconds = meetingSeconds;
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const duration = seconds ? (h > 0 ? `${h}h ${m.toString().padStart(2, "0")}m` : `${m}m`) : null;
@@ -276,7 +309,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
       } else if (
         !personId &&
         !seenNames.has(name) &&
-        name !== "Unknown Speaker"
+        name !== UNKNOWN_SPEAKER
       ) {
         seenNames.add(name);
         groups.others.push({
@@ -300,25 +333,32 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
     );
   }, [transcript, transcriptSearch]);
 
-  const getVimeoTimeUrl = (seconds: number) => {
-    if (!meeting.video_url) return "#";
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    const timeStr = `${h > 0 ? h + "h" : ""}${m}m${s}s`;
-    return `${meeting.video_url.split("#")[0]}#t=${timeStr}`;
-  };
+  // Captions and "now playing" highlights follow the video's current time.
+  const subSegments = useMemo(() => splitTranscript(transcript), [transcript]);
+  const currentSubSegment = videoPlayer.videoEnabled
+    ? findCurrentSubSegment(subSegments, videoPlayer.currentTime)
+    : null;
+  const playingSegmentId = useMemo(() => {
+    if (!videoPlayer.videoEnabled) return null;
+    const t = videoPlayer.currentTime;
+    return transcript.find((s: any) => t >= s.start_time && t < s.end_time)?.id ?? null;
+  }, [transcript, videoPlayer.videoEnabled, videoPlayer.currentTime]);
+
+  // Keep the playing transcript segment in view while the video runs.
+  useEffect(() => {
+    if (!playingSegmentId || !videoPlayer.isPlaying || currentTab !== "transcript") return;
+    const el = transcriptRefs.current[playingSegmentId];
+    const container = el?.closest(".overflow-y-auto");
+    if (!el || !container) return;
+    const c = container.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (r.top < c.top || r.bottom > c.bottom) {
+      container.scrollTo({ top: container.scrollTop + r.top - c.top - c.height / 3, behavior: "smooth" });
+    }
+  }, [playingSegmentId, videoPlayer.isPlaying, currentTab]);
 
   const toggleItem = (id: number) => {
     setExpandedItems((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const openInVimeo = (startTime: number) => {
-    if (playerRef.current) {
-      playerRef.current.seekTo(startTime);
-    } else {
-      window.open(getVimeoTimeUrl(startTime), "_blank");
-    }
   };
 
   const facts = [
@@ -341,12 +381,10 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
 
   const orgName = meeting.organization?.name;
   const showOrg = orgName && !meeting.title.toLowerCase().includes(orgName.toLowerCase());
-  const hasVideo = Boolean(meeting.video_url);
-
   const sourceLinks = [
     meeting.agenda_url && { href: meeting.agenda_url, label: "Agenda PDF" },
     meeting.minutes_url && { href: meeting.minutes_url, label: "Minutes PDF" },
-    meeting.video_url && { href: meeting.video_url.split("#")[0], label: "Vimeo" },
+    meeting.video_url && { href: meeting.video_url, label: "Official video" },
   ].filter(Boolean) as { href: string; label: string }[];
 
   const tabTrigger =
@@ -390,13 +428,45 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
 
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* Left column: video, summary, facts */}
-          <div className="space-y-6 lg:sticky lg:top-20 lg:col-span-5">
+          {/* On phones the column dissolves into the page grid so the playing video
+              can stay pinned under the nav while the timeline and transcript scroll. */}
+          <div className="max-lg:contents lg:sticky lg:top-20 lg:col-span-5 lg:space-y-6">
             {hasVideo ? (
-              <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
-                <MeetingPlayer
-                  ref={playerRef}
-                  videoUrl={meeting.video_url}
-                  agendaItems={agendaItems}
+              <div
+                className={cn(
+                  "overflow-hidden rounded-2xl border border-zinc-200 bg-black shadow-sm",
+                  videoPlayer.videoEnabled && "max-lg:sticky max-lg:top-16 max-lg:z-30 max-lg:-mx-4 max-lg:rounded-none max-lg:border-x-0",
+                )}
+              >
+                <MeetingVideo
+                  controls="bar"
+                  videoPlayer={videoPlayer}
+                  directVideoUrl={videoFailed ? null : media.directVideoUrl}
+                  directAudioUrl={videoFailed ? null : media.directAudioUrl}
+                  posterUrl={meeting.meta?.poster?.url}
+                  posterLabel={{
+                    title: meeting.title,
+                    date: recordDate(meeting.meeting_date),
+                    eyebrow: showOrg ? orgName : null,
+                  }}
+                  caption={
+                    currentSubSegment
+                      ? { speaker: resolveSpeakerName(currentSubSegment), text: currentSubSegment.text_content }
+                      : null
+                  }
+                  showCaption={showCaption}
+                  setShowCaption={setShowCaption}
+                  totalDuration={meetingSeconds}
+                  onVideoError={handleVideoError}
+                  unavailable={
+                    videoUnavailable
+                      ? {
+                          message: "This video can't be played here right now.",
+                          href: meeting.video_url,
+                          linkLabel: "Watch on the City's site",
+                        }
+                      : null
+                  }
                 />
               </div>
             ) : (
@@ -448,11 +518,11 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                   <MeetingTimeline
                     transcript={transcript}
                     agendaItems={agendaItems}
-                    videoUrl={meeting.video_url}
                     speakerMap={speakerMap}
                     onSegmentHover={handleSegmentHover}
-                    activeSegmentId={activeSegmentId}
-                    onSeek={hasVideo ? openInVimeo : undefined}
+                    activeSegmentId={activeSegmentId ?? playingSegmentId}
+                    currentTime={videoPlayer.videoEnabled ? videoPlayer.currentTime : undefined}
+                    onSeek={canSeek ? watchAt : undefined}
                   />
                 ) : (
                   <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
@@ -475,7 +545,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                           item={item}
                           isExpanded={!!expandedItems[item.id]}
                           onToggle={() => toggleItem(item.id)}
-                          onWatchVideo={hasVideo ? openInVimeo : undefined}
+                          onWatchVideo={canSeek ? watchAt : undefined}
                           resolveSpeakerName={resolveSpeakerName}
                         />
                       ))}
@@ -487,7 +557,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
               <TabsContent value="motions" className="mt-0 outline-none">
                 <MotionsList
                   agendaItems={agendaItems}
-                  onWatchVideo={hasVideo ? openInVimeo : undefined}
+                  onWatchVideo={canSeek ? watchAt : undefined}
                 />
               </TabsContent>
 
@@ -506,12 +576,12 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                     No transcript is available for this meeting yet.
                   </div>
                 ) : (
-                  <div className="flex h-[75vh] min-h-[480px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
+                  <div className="flex h-[60vh] min-h-[420px] flex-col lg:h-[75vh] lg:min-h-[480px] overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                     <div className="flex flex-col gap-3 border-b border-zinc-100 p-4 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-sm text-zinc-500">
                         <span className="font-semibold tabular-nums text-zinc-900">{filteredTranscript.length}</span>
-                        {transcriptSearch ? ` of ${transcript.length}` : ""} segments
-                        {hasVideo && " · select one to jump the video there"}
+                        {transcriptSearch ? ` of ${transcript.length}` : ""} passages
+                        {canSeek && " · select one to jump the video there"}
                       </p>
                       <SearchField
                         value={transcriptSearch}
@@ -535,17 +605,25 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
                                   transcriptRefs.current[segment.id] = el;
                                 }}
                                 className={cn(
-                                  "px-4 py-3 transition-colors",
-                                  hasVideo && "cursor-pointer hover:bg-zinc-50",
+                                  "border-l-2 border-transparent px-4 py-3 transition-colors",
+                                  canSeek && "cursor-pointer hover:bg-zinc-50",
                                   activeSegmentId === segment.id && "bg-brand-50/70",
+                                  playingSegmentId === segment.id && "border-brand-600 bg-brand-50",
                                 )}
-                                onClick={hasVideo ? () => openInVimeo(segment.start_time) : undefined}
+                                aria-current={playingSegmentId === segment.id ? "true" : undefined}
+                                onClick={canSeek ? () => watchAt(segment.start_time) : undefined}
                                 onMouseEnter={() => setActiveSegmentId(segment.id)}
                                 onMouseLeave={() => setActiveSegmentId(null)}
                               >
                                 <div className="mb-0.5 flex items-baseline justify-between gap-3">
                                   <span className="min-w-0 truncate text-sm">
-                                    <span className={cn("font-semibold", SPEAKER_TEXT_COLORS[colorIdx])}>
+                                    <span
+                                      className={cn(
+                                        "font-semibold",
+                                        SPEAKER_TEXT_COLORS[colorIdx],
+                                        isUnidentifiedSpeaker(speakerName) && UNIDENTIFIED_SPEAKER_CLASS,
+                                      )}
+                                    >
                                       {speakerName}
                                     </span>
                                     {role && <span className="text-xs text-zinc-500"> · {role}</span>}

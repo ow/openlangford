@@ -5,6 +5,8 @@ import { MotionOutcomeBadge } from "./motion-outcome-badge";
 import { normalizeMotionResult } from "../lib/motion-utils";
 import { formatTimestamp } from "../lib/timeline-utils";
 import { displayTitle, lastName } from "../lib/display-text";
+import { formatSpeakerName } from "../lib/speaker-labels";
+import { SpeakerName } from "./ui/speaker-name";
 import {
   getSpeakerColorIndex,
   SPEAKER_COLORS,
@@ -55,12 +57,13 @@ type TimelineEvent = SpeechEvent | MotionEvent | AgendaEvent;
 interface MeetingTimelineProps {
   transcript: TranscriptSegment[];
   agendaItems: AgendaItem[];
-  videoUrl?: string;
   onSegmentHover?: (segmentId: number | null) => void;
   activeSegmentId?: number | null;
   speakerMap?: Record<string, string>;
-  /** Seek the page's video player. Falls back to a Vimeo link when absent. */
+  /** Seek the page's video player. Without it the timeline is read-only. */
   onSeek?: (seconds: number) => void;
+  /** Playback position of the page's video, drawn as a playhead. */
+  currentTime?: number;
 }
 
 function cleanOrder(order?: string) {
@@ -83,11 +86,11 @@ function motionDotClass(result?: string) {
 export function MeetingTimeline({
   transcript,
   agendaItems,
-  videoUrl,
   onSegmentHover,
   activeSegmentId,
   speakerMap,
   onSeek,
+  currentTime,
 }: MeetingTimelineProps) {
   const [hoveredEvent, setHoveredEvent] = useState<TimelineEvent | null>(null);
   const [hoveredSegment, setHoveredSegment] = useState<SegmentInfo | null>(
@@ -129,15 +132,15 @@ export function MeetingTimeline({
         motionPositions.set(segment.motion_id, segment.start_time);
       }
 
-      let speaker =
-        segment.person?.name || segment.speaker_name || "Unknown Speaker";
+      let speaker = segment.person?.name || segment.speaker_name;
 
       if (!segment.person?.name && segment.speaker_name && speakerMap) {
         const label = segment.speaker_name;
         const normalized = label.toUpperCase().replace(/\s+/g, "_");
         speaker =
-          speakerMap[normalized] || speakerMap[label.toUpperCase()] || label;
+          speakerMap[label] || speakerMap[normalized] || speakerMap[label.toUpperCase()] || label;
       }
+      speaker = formatSpeakerName(speaker);
 
       const lastSpeech = speechEvents[speechEvents.length - 1];
 
@@ -229,15 +232,6 @@ export function MeetingTimeline({
     return Math.max(...all.map((e) => e.end)) + 60; // Add buffer
   }, [events]);
 
-  const getVimeoTimeUrl = (seconds: number) => {
-    if (!videoUrl) return "#";
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    const timeStr = `${h > 0 ? h + "h" : ""}${m}m${s}s`;
-    return `${videoUrl.split("#")[0]}#t=${timeStr}`;
-  };
-
   // Group events into rows to prevent overlap
   const rows: SpeechEvent[][] = [[]];
   events.speech.forEach((event) => {
@@ -254,11 +248,8 @@ export function MeetingTimeline({
   });
 
   const pct = (seconds: number) => (seconds / totalDuration) * 100;
-  const seek = (seconds: number) => {
-    if (onSeek) onSeek(seconds);
-    else if (videoUrl) window.open(getVimeoTimeUrl(seconds), "_blank", "noopener");
-  };
-  const canSeek = Boolean(onSeek || videoUrl);
+  const seek = (seconds: number) => onSeek?.(seconds);
+  const canSeek = Boolean(onSeek);
   const durationMinutes = Math.round((totalDuration - 60) / 60);
   const tickCount = 4;
 
@@ -299,6 +290,17 @@ export function MeetingTimeline({
             </div>
           ))}
         </div>
+
+        {/* Playhead */}
+        {currentTime != null && currentTime >= 0 && currentTime <= totalDuration && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 top-6 z-10 w-0.5 -translate-x-1/2 bg-zinc-900/70"
+            style={{ left: `${pct(currentTime)}%` }}
+          >
+            <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-zinc-900" />
+          </div>
+        )}
 
         {/* Agenda item starts */}
         <div className="relative mb-2 h-4">
@@ -434,11 +436,13 @@ export function MeetingTimeline({
                       aria-hidden="true"
                     />
                   )}
-                  {hoveredEvent.type === "motion"
-                    ? "Motion"
-                    : hoveredEvent.type === "agenda"
-                      ? `${cleanOrder(hoveredEvent.item_order) ? cleanOrder(hoveredEvent.item_order) + " · " : ""}${displayTitle(hoveredEvent.title)}`
-                      : hoveredEvent.speaker}
+                  {hoveredEvent.type === "motion" ? (
+                    "Motion"
+                  ) : hoveredEvent.type === "agenda" ? (
+                    `${cleanOrder(hoveredEvent.item_order) ? cleanOrder(hoveredEvent.item_order) + " · " : ""}${displayTitle(hoveredEvent.title)}`
+                  ) : (
+                    <SpeakerName name={hoveredEvent.speaker} />
+                  )}
                   {hoveredEvent.type === "motion" && <MotionOutcomeBadge result={hoveredEvent.result} />}
                 </h3>
               </div>
