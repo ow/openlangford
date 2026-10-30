@@ -492,7 +492,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-4xl px-4 py-12">
+      <div className="container mx-auto max-w-4xl px-4 pt-6 pb-12 md:pt-10">
         <header className="mb-10">
           <DetailHeader
             className="mb-0"

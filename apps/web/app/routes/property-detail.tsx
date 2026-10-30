@@ -104,7 +104,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-4xl px-4 py-12">
+      <div className="container mx-auto max-w-4xl px-4 pt-6 pb-12 md:pt-10">
         <DetailHeader
           back={{ to: "/properties", label: "Properties" }}
           meta={[
@@ -117,6 +117,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             ) : null,
           ]}
           title={property.address}
+          className="mb-6"
           actions={activity.length > 1 ? <RecordsSparkline data={activity} /> : undefined}
           description={
             summary ||
@@ -138,6 +139,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
               <div>
                 <MattersMap
                   compact
+                  bleed
                   fitToMarkers={isStreet}
                   matters={pins as any}
                   activeLocation={isStreet ? undefined : geo || undefined}

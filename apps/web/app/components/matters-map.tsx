@@ -44,6 +44,7 @@ export function MattersMap({
   compact = false,
   tall = false,
   fitToMarkers = false,
+  bleed = false,
 }: {
   matters: Matter[];
   /** Where a pin's links go; the property pages pin addresses rather than matters. */
@@ -55,6 +56,8 @@ export function MattersMap({
   tall?: boolean;
   /** Frame every pin on load (a street page) instead of the default town view. */
   fitToMarkers?: boolean;
+  /** Edge to edge on phones (cancels the page's px-4 gutter); a rounded card from sm up. */
+  bleed?: boolean;
   onMarkerClick?: (matter: Matter, address?: string) => void;
   activeLocation?: { lat: number; lng: number };
   selectedAddress?: string | null;
@@ -381,7 +384,7 @@ export function MattersMap({
   return (
     <div className="space-y-2">
       <div
-        className={`relative z-0 w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-sm ${tall ? "h-[420px] sm:h-[640px]" : compact ? "h-[360px] sm:h-[450px]" : "h-[360px] sm:h-[560px]"}`}
+        className={`relative z-0 overflow-hidden border-zinc-200 bg-zinc-100 ${bleed ? "-mx-4 w-[calc(100%+2rem)] border-y sm:mx-0 sm:w-full sm:rounded-2xl sm:border sm:shadow-sm" : "w-full rounded-2xl border shadow-sm"} ${tall ? "h-[420px] sm:h-[640px]" : compact ? "h-[360px] sm:h-[450px]" : "h-[360px] sm:h-[560px]"}`}
         role="region"
         aria-label={hrefFor === matterPath ? "Map of council matters" : "Map of addresses"}
         aria-busy={loading}
