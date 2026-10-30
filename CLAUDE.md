@@ -117,6 +117,8 @@ The `vite.config.ts` `define` block inlines all env vars at build time since `pr
 - Always verify columns exist in the actual database before adding them to `.select()` strings — TypeScript types in `app/lib/types.ts` can be aspirational/ahead of the schema.
 - Schema is bootstrapped from `sql/bootstrap.sql`. Uses pgvector extension for embeddings.
 - Migrations live in `supabase/migrations/` as `<UTC timestamp>_<name>.sql` (create with `npx supabase migration new <name>`). Merging to main applies new ones to production via `.github/workflows/supabase-migrations.yml` (`supabase db push`, recorded in `supabase_migrations.schema_migrations`), so a migration must be safe to run against live data the moment it merges. Never apply migrations by hand anymore; never rename an applied migration file.
+- When a table starts storing a new kind of data, re-check its RLS policies and grants in the same change. Why: `search_results_cache` kept the public-read policy it got when it held only public search results, and later stored residents' AI questions, which anyone with the publishable key could then list.
+- `properties.hidden` marks lots known only as a resident's home address (from public input). They have no page and must never be listed. The web reads properties with the admin client, which bypasses RLS, so every `properties` query (and embedded `properties(...)`) filters out hidden rows. The pipeline's properties stage keeps the flag current through `refresh_property_privacy()`.
 
 ## Known Issues
 
