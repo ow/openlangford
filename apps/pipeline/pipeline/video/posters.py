@@ -2,9 +2,9 @@
 
 The web player shows ``meetings.meta.poster.url`` behind the play button instead
 of a black box. For each meeting with a ``video_url`` we resolve the direct
-media URL (eSCRIBE ISI player page -> video.isilive.ca mp4; anything else via
-yt-dlp), grab a handful of candidate frames straight from the stream with
-ffmpeg (``-ss`` before ``-i``, so only a few range requests, no download), drop
+media URL through the municipality's video provider (eSCRIBE ISI player page ->
+video.isilive.ca mp4; anything else via yt-dlp), grab a handful of candidate
+frames straight from the stream with ffmpeg (``-ss`` before ``-i``, so only a few range requests, no download), drop
 near-black or uniform frames (title cards, dead air), and classify the rest with
 the Decisions API (one cheap image question per frame): council at the dais
 first, then other room shots, then slides, and a member of the public at the
@@ -26,7 +26,8 @@ import subprocess
 import time
 from dataclasses import dataclass
 from typing import Any, Callable
-from urllib.parse import urlparse
+
+from pipeline.video.providers import is_isi_player, resolve_media_url  # noqa: F401 (re-exported)
 
 # Bump when frame selection or encoding changes; stamped in meetings.meta.poster.version.
 POSTER_VERSION = "3"  # 2: prefer room shots over slides; 3: classify shots, prefer council, avoid the public podium
@@ -117,34 +118,8 @@ class PosterResult:
 # ── media URL ────────────────────────────────────────────────────────────
 
 
-def is_isi_player(url: str) -> bool:
-    p = urlparse(url)
-    return "escribemeetings.com" in p.netloc and "isistandaloneplayer" in p.path.lower()
-
-
-def resolve_media_url(video_url: str) -> str | None:
-    """Direct, ffmpeg-readable media URL for a meeting's ``video_url``."""
-    if not video_url:
-        return None
-    path = urlparse(video_url).path.lower()
-    if path.endswith((".mp4", ".m4v", ".mov", ".m3u8")):
-        return video_url
-    if is_isi_player(video_url):
-        from pipeline.video.isilive import ISILiveClient
-
-        p = urlparse(video_url)
-        client = ISILiveClient(base_url=f"{p.scheme}://{p.netloc}", client_id="")
-        url = client._resolve_media_url({"url": video_url})
-        # Without a client id the resolver yields ".../ /file"; treat as unresolved.
-        return url if url and "isilive.ca//" not in url else None
-    try:  # Vimeo and friends
-        import yt_dlp
-
-        with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "format": "best[vcodec!=none]/best"}) as ydl:
-            info = ydl.extract_info(video_url, download=False)
-        return info.get("url") or None
-    except Exception:
-        return None
+# ``resolve_media_url`` / ``is_isi_player`` come from the video provider registry
+# (pipeline.video.providers) and are re-exported here.
 
 
 # ── frames ───────────────────────────────────────────────────────────────

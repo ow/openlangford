@@ -232,7 +232,7 @@ class TestStage:
     def test_post_ingest_makes_and_saves(self, monkeypatch):
         saved = {}
         monkeypatch.setattr(posters, "make_poster",
-                            lambda row: posters.PosterResult(row["id"], {"url": "u", "offset_s": 150, "usable": 1, "candidates": 5}))
+                            lambda row, **kw: posters.PosterResult(row["id"], {"url": "u", "offset_s": 150, "usable": 1, "candidates": 5}))
         monkeypatch.setattr(posters, "save_poster", lambda mid, p: saved.setdefault(mid, p))
         ctx = self._ctx(monkeypatch, self.ROWS, meeting_ids=[1, 2])
         out = stages.run_video_posters(ctx)

@@ -34,6 +34,7 @@ from pipeline.ingestion.matter_matching import (
     is_valid_matter_identifier,
     matter_aliases_for_cluster,
 )
+from pipeline.video.providers import uses_provider
 from pipeline.video.vimeo import VimeoClient
 
 
@@ -129,9 +130,7 @@ class MeetingIngester:
         return self._municipality_source_config
 
     def _should_search_vimeo(self) -> bool:
-        source_config = self._get_municipality_source_config()
-        video_config = source_config.get("video_source") or {}
-        return video_config.get("type", "vimeo") == "vimeo"
+        return uses_provider(self._get_municipality_source_config(), "vimeo")
 
     @staticmethod
     def _read_archived_player_url(folder_path: str) -> str | None:

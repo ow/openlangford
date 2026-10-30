@@ -1000,8 +1000,21 @@ def stale_video_posters(ctx: StageContext) -> list[int]:
     return select_stale(_poster_rows(ctx), "poster_version", POSTER_VERSION)
 
 
+def _video_source_config(ctx: StageContext) -> dict | None:
+    """The municipality's source_config, for picking its video provider (None: detect from URL)."""
+    municipality = getattr(ctx.archiver, "municipality", None)
+    if municipality is not None:
+        return municipality.source_config or {}
+    try:
+        rows = ctx.supabase.table("municipalities").select("source_config").limit(2).execute().data or []
+    except Exception:
+        return None
+    return (rows[0].get("source_config") or {}) if len(rows) == 1 else None
+
+
 def run_video_posters(ctx: StageContext):
     from pipeline.video.posters import make_poster, save_poster
+    from pipeline.video.providers import resolve_media_url
 
     def from_meetings() -> list[int]:
         return [r["id"] for r in _poster_rows(ctx, ctx.meeting_ids) if ctx.force or not r.get("poster_url")]
@@ -1015,6 +1028,7 @@ def run_video_posters(ctx: StageContext):
         return None
     rows = {r["id"]: r for r in _poster_rows(ctx, ids)}
     workers = int(ctx.options.get("workers") or 4)
+    source_config = _video_source_config(ctx)
 
     def one(mid: int):
         row = rows.get(mid)
@@ -1022,7 +1036,7 @@ def run_video_posters(ctx: StageContext):
             return mid, None, "no video_url"
         try:
             with usage_context(job="video-posters", meeting_id=mid):
-                res = make_poster(row)
+                res = make_poster(row, resolve=lambda url: resolve_media_url(url, source_config))
             if res.poster:
                 save_poster(mid, res.poster)
             return mid, res.poster, res.error
