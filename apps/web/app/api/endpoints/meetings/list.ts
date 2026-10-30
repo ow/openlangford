@@ -74,6 +74,7 @@ export class ListMeetings extends OpenAPIRoute {
                   has_transcript: z.boolean(),
                   organization: z.string().nullable(),
                   summary: z.string().nullable(),
+                  highlights: z.array(z.string()).nullable().describe("Plain-language outcomes for residents, when generated"),
                 }),
               ),
               pagination: z.object({
@@ -108,7 +109,7 @@ export class ListMeetings extends OpenAPIRoute {
     let query = supabase
       .from("meetings")
       .select(
-        "id, slug, calendar_source_id, calendar:meta->calendar, status, title, meeting_date, type, has_agenda, has_minutes, has_transcript, summary, organization:organizations(name, slug)",
+        "id, slug, calendar_source_id, calendar:meta->calendar, status, title, meeting_date, type, has_agenda, has_minutes, has_transcript, summary, highlights:meta->highlights, organization:organizations(name, slug)",
       )
       .eq("municipality_id", muni.id)
       .or(PUBLIC_MEETING_FILTER);

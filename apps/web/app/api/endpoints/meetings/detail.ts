@@ -42,6 +42,7 @@ export class GetMeeting extends OpenAPIRoute {
                 has_transcript: z.boolean(),
                 organization: z.string().nullable(),
                 summary: z.string().nullable(),
+                highlights: z.array(z.string()).nullable().describe("Plain-language outcomes for residents, when generated"),
                 video_url: z.string().nullable(),
                 minutes_url: z.string().nullable(),
                 agenda_url: z.string().nullable(),
@@ -78,7 +79,7 @@ export class GetMeeting extends OpenAPIRoute {
     const fetchMeeting = (column: "id" | "slug", value: string | number) => supabase
       .from("meetings")
       .select(
-        "id, slug, calendar_source_id, calendar:meta->calendar, status, title, meeting_date, type, has_agenda, has_minutes, has_transcript, video_url, minutes_url, agenda_url, video_duration_seconds, summary, organization:organizations(name, slug), chair:people!meetings_chair_person_id_fkey(slug, name)",
+        "id, slug, calendar_source_id, calendar:meta->calendar, status, title, meeting_date, type, has_agenda, has_minutes, has_transcript, video_url, minutes_url, agenda_url, video_duration_seconds, summary, highlights:meta->highlights, organization:organizations(name, slug), chair:people!meetings_chair_person_id_fkey(slug, name)",
       )
       .eq(column, value)
       .eq("municipality_id", muni.id)

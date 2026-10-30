@@ -1,3 +1,4 @@
+import { meetingHighlights } from "../../lib/meeting-summary";
 /**
  * Meeting serializers.
  *
@@ -75,6 +76,7 @@ export function serializeMeetingSummary(row: any) {
     has_transcript: row.has_transcript ?? false,
     organization: row.organization?.name ?? null,
     summary: row.summary ?? null,
+    highlights: meetingHighlights(row),
   };
 }
 
@@ -103,6 +105,7 @@ export function serializeMeetingDetail(
     has_transcript: row.has_transcript ?? false,
     organization: row.organization?.name ?? null,
     summary: row.summary ?? null,
+    highlights: meetingHighlights(row),
 
     // Detail-only fields
     video_url: row.video_url ?? null,

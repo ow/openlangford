@@ -3,6 +3,7 @@ import { getSupabasePublicClient } from "../lib/supabase.server";
 import { documentPath, meetingPath } from "../lib/paths";
 import { SITE_ORIGIN } from "../lib/og";
 import { recordDate } from "../lib/page-meta";
+import { displaySummary } from "../lib/meeting-summary";
 import { findMeetingBySlugHistory } from "../lib/slug-params.server";
 
 // Deliberately smaller than an export API: one meeting overview or extracted
@@ -105,7 +106,8 @@ export async function publicMarkdown(request: Request, meetingParam?: string, do
         "## Official meeting sources",
         ...[["Agenda", meeting.agenda_url], ["Minutes", meeting.minutes_url], ["Video", meeting.video_url]]
           .map(([label, url]) => link(label, url)).filter(Boolean),
-        "## AI-processed summary", text(meeting.summary) || "No summary available.",
+        // Plain-language highlights when the meeting has them, as on the HTML page.
+        "## AI-processed summary", text(displaySummary(meeting)) || "No summary available.",
         "## Source documents", ...(docs || []).slice(0, MAX_DOCUMENTS).map(d =>
           `- ${link(d.title || "Document", d.source_url) || heading(d.title || "Source URL not recorded")}`),
         `Extracted reports and their Markdown links: ${link("Meeting documents", SITE_ORIGIN + meetingPath(meeting, "/documents"))}`,
