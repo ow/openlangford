@@ -2212,7 +2212,7 @@ class MeetingIngester:
         existing_motions = []
         old_votes = []
         if self.supabase:
-            existing_items = list(self.supabase.table("agenda_items").select("id,item_order,title,meta,updated_at").eq("meeting_id", meeting_id).execute().data)
+            existing_items = list(self.supabase.table("agenda_items").select("id,item_order,title,matter_id,meta,updated_at").eq("meeting_id", meeting_id).execute().data)
             existing_motions_result = self.supabase.table("motions").select("id,meeting_id,mover_id,seconder_id,agenda_item_id,text_content,result,meta,updated_at,plain_english_summary,disposition,time_offset_seconds,financial_cost,funding_source", count="exact").eq("meeting_id", meeting_id).execute()
             existing_motions = existing_motions_result.data
             if existing_motions_result.count and existing_motions_result.count > len(existing_motions):
@@ -2303,9 +2303,16 @@ class MeetingIngester:
                     # cached AI agenda title is not proof of a new agenda item.
                     item = {"item_order": "official-recorded-motions", "title": "Official recorded motions", "category": "procedural", "motions": item["motions"]}
                     retained_item = existing_agenda_item(item, existing_items, claimed_item_ids)
+            # The persisted row this item refreshes, resolved before matter linking.
+            matched_item = None if retained_item else existing_agenda_item(item, existing_items, claimed_item_ids)
             if retained_item:
                 matter_id = None  # Existing item enrichment is not written.
                 related_address = None
+            elif matched_item and matched_item.get("matter_id") is not None:
+                # A refresh re-resolves matters from a new AI rendering and would
+                # create or re-point matters; an existing link is kept as is.
+                matter_id = matched_item["matter_id"]
+                related_address = self.normalize_address_list(item.get("related_address"))
             else:
                 # Matter Linking Strategy:
                 # 1. Prefer a valid AI extracted identifier (e.g. "Bylaw 45")
@@ -2382,7 +2389,7 @@ class MeetingIngester:
 
             agenda_item_id = 200  # Placeholder for dry run
             if not dry_run:
-                old_item = retained_item or existing_agenda_item(item, existing_items, claimed_item_ids)
+                old_item = retained_item or matched_item
                 if retained_item:
                     agenda_item_id = retained_item["id"]
                 elif old_item:

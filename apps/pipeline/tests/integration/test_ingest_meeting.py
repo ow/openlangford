@@ -991,17 +991,22 @@ def test_reingest_reuses_renumbered_agenda_rows_without_inserting_duplicates(ing
     ing, tables = ingester
     _setup_supabase_responses(tables)
     existing = [
-        {'id': 41, 'item_order': '1.', 'title': 'CALL TO ORDER', 'meta': {}, 'updated_at': 't'},
-        {'id': 42, 'item_order': '2.', 'title': '2. APPROVAL OF THE AGENDA', 'meta': {}, 'updated_at': 't'},
-        {'id': 43, 'item_order': '5(1)', 'title': 'Public Participation – Traffic Concerns', 'meta': {}, 'updated_at': 't'},
+        {'id': 41, 'meeting_id': 693, 'item_order': '1.', 'title': 'CALL TO ORDER', 'meta': {}, 'updated_at': 't'},
+        {'id': 42, 'meeting_id': 693, 'item_order': '2.', 'title': '2. APPROVAL OF THE AGENDA', 'meta': {}, 'updated_at': 't'},
+        {'id': 43, 'meeting_id': 693, 'item_order': '5(1)', 'title': 'Public Participation – Traffic Concerns', 'matter_id': 77, 'meta': {}, 'updated_at': 't'},
     ]
     tables['agenda_items'].execute.return_value = MagicMock(data=existing, count=len(existing))
     with patch("pipeline.ingestion.ingester.VimeoClient"), \
          patch.object(ing, "_ingest_documents", return_value=0), \
          patch.object(ing, "_ingest_document_sections"), \
-         patch.object(ing, "_geocode_agenda_items", return_value=0):
+         patch.object(ing, "_geocode_agenda_items", return_value=0), \
+         patch("pipeline.ingestion.matter_lifecycle.refresh_meeting_matter_lifecycles"), \
+         patch.object(ing, "get_or_create_matter", return_value=9999) as new_matter:
         ing.process_meeting(str(populated_archive), precomputed_refinement=meeting_693_refinement)
     assert not tables['agenda_items'].insert.called
+    # A matched row keeps its existing matter; no matter is resolved or created for it.
+    assert not new_matter.called
+    assert {c.args[0].get('matter_id') for c in tables['agenda_items'].update.call_args_list} <= {None, 77}
     updated_ids = [c.args[1] for c in tables['agenda_items'].eq.call_args_list if c.args[0] == 'id']
     assert sorted(set(updated_ids)) == [41, 42, 43]
     for c in tables['agenda_items'].update.call_args_list:

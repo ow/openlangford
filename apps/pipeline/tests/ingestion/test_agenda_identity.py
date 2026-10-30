@@ -68,6 +68,11 @@ def test_header_extended_with_child_title_reuses_header():  # meeting 631
     assert match('3', 'ADOPTION OF THE MINUTES — Planning, Zoning & Affordable Housing Committee Meeting - May 3, 2021', existing) == 100
 
 
+def test_header_prefixed_child_title_reuses_child():  # meeting 648
+    existing = rows(('3', 'ADOPTION OF THE MINUTES'), ('3.a', 'Transportation and Public Works Committee Meeting - June 8th, 2021'))
+    assert match('3.a', 'ADOPTION OF THE MINUTES — Transportation and Public Works Committee Meeting - June 8th, 2021', existing) == 101
+
+
 def test_same_number_and_leading_identifier_reuses_original():  # meeting 262
     existing = rows(('11.', 'BYLAWS'), ('11.1', 'BYLAW NO. 1989 (SECOND AND THIRD READINGS)'))
     assert match('11.1', 'BYLAW NO. 1989 — Langford Official Community Plan Bylaw, Amendment No. 41', existing) == 101

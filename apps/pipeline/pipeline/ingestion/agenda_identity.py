@@ -13,7 +13,8 @@ with several candidates returns no match rather than guessing:
   2. same normalized title, the title being unique among the meeting's rows
      (siblings renumbered or swapped)
   3. same normalized order and a near-identical title (OCR typo, or one title
-     extends the other word-for-word, e.g. a header merged with its child, or
+     extends the other word-for-word at either end, e.g. a header merged with
+     its child title, or
      both start with the same numbered identifier such as "Bylaw No. 1989")
 Items whose order AND title both differ are never matched.
 """
@@ -70,7 +71,9 @@ def _near_title(a, b):
             and SequenceMatcher(None, a, b, autojunk=False).ratio() >= FUZZY_TITLE_RATIO):
         return True
     short, long_ = sorted((a.split(), b.split()), key=len)
-    if len(short) >= MIN_PREFIX_WORDS and long_[:len(short)] == short:
+    if len(short) >= MIN_PREFIX_WORDS and short in (long_[:len(short)], long_[-len(short):]):
+        # One title extends the other: a header merged with its child title,
+        # "ADOPTION OF THE MINUTES — <child>" under either number.
         return True
     # Same leading identifier, differently described: "Bylaw No. 1989 (Second and
     # Third Readings)" / "Bylaw No. 1989 — Langford OCP Amendment No. 41".
