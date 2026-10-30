@@ -110,7 +110,7 @@ export async function getMeetings(
   let query = supabase
     .from("meetings")
     .select(
-      "id, slug, calendar_source_id, calendar:meta->calendar, organization_id, title, meeting_date, type, status, video_url, minutes_url, agenda_url, video_duration_seconds, summary, has_agenda, has_minutes, has_transcript, created_at, updated_at, organization:organizations(*), agenda_item_count:agenda_items(count)",
+      "id, slug, calendar_source_id, calendar:meta->calendar, highlights:meta->highlights, organization_id, title, meeting_date, type, status, video_url, minutes_url, agenda_url, video_duration_seconds, summary, has_agenda, has_minutes, has_transcript, created_at, updated_at, organization:organizations(*), agenda_item_count:agenda_items(count)",
     )
     .eq("municipality_id", municipality.id);
 

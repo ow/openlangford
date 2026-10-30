@@ -36,6 +36,7 @@ import { meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 import { loaderFailure } from "../lib/loader-errors";
 import { meetingDescription } from "../lib/meeting-description";
+import { displaySummary } from "../lib/meeting-summary";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const m = data?.meeting;
@@ -50,7 +51,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
     jsonLd(
       meetingEvent({ ...m, title: `${m.title} — ${date}` }, meetingPath(m), metaDescription(description)),
       ...[meetingVideo(m, meetingPath(m), {
-        description: metaDescription(m.summary?.replace(/^\s*[-*•]\s+/gm, "").replace(/\s*\n+\s*/g, " ") || `Video recording of Langford’s ${m.title} meeting on ${date}, with a searchable transcript and agenda on this page.`),
+        description: metaDescription(description),
         thumbnailUrl: m.meta?.poster?.url || ogImageUrl(`${m.title}`, { subtitle: date, type: "meeting" }),
         // Many recordings have no stored length; the transcript's last timestamp is close.
         durationSeconds: m.video_duration_seconds || (data?.transcript?.length ? data.transcript[data.transcript.length - 1].end_time : null),
@@ -213,7 +214,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 }
 
 
-const PUBLIC_MEETING_META_KEYS = ["participant_roles", "calendar", "poster", "share_card"] as const;
+const PUBLIC_MEETING_META_KEYS = ["participant_roles", "calendar", "poster", "share_card", "highlights"] as const;
 
 function publicMeetingMeta(meta: Record<string, any> | null | undefined) {
   const out: Record<string, any> = {};
@@ -674,7 +675,7 @@ function MeetingDetailContent({ loaderData }: any) {
               <SectionHeading title="Summary" />
               {meeting.summary ? (
                 <div className="rounded-2xl border border-zinc-200 bg-surface p-5 text-[15px] shadow-sm sm:p-6">
-                  <MeetingSummary summary={meeting.summary} />
+                  <MeetingSummary summary={displaySummary(meeting) || meeting.summary} />
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">

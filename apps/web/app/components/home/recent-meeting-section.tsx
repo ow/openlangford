@@ -12,6 +12,7 @@ import {
 import { Badge } from "../ui/badge";
 import { SectionHeading } from "../ui/section-heading";
 import { MeetingSummary } from "../meeting/MeetingSummary";
+import { displaySummary } from "../../lib/meeting-summary";
 import { formatDate } from "../../lib/utils";
 import { normalizeMotionResult } from "../../lib/motion-utils";
 
@@ -65,8 +66,8 @@ export function RecentMeetingSection({
         </div>
 
         {/* AI Summary */}
-        {meeting.summary && (
-          <MeetingSummary summary={meeting.summary} limit={3} className="mb-5 text-[15px]" />
+        {displaySummary(meeting) && (
+          <MeetingSummary summary={displaySummary(meeting)!} limit={3} className="mb-5 text-[15px]" />
         )}
 
         {/* Stats Row */}

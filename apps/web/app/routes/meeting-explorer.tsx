@@ -19,6 +19,7 @@ import { MotionsList } from "../components/motions-list";
 import { PeopleGrid } from "../components/people-grid";
 import { MeetingTimeline } from "../components/meeting-timeline";
 import { MeetingSummary } from "../components/meeting/MeetingSummary";
+import { displaySummary } from "../lib/meeting-summary";
 import { MeetingFacts } from "../components/meeting/MeetingSidebar";
 import { MeetingVideo } from "../components/meeting/MeetingVideo";
 import { useVideoPlayer } from "../hooks/useVideoPlayer";
@@ -47,7 +48,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     // meetings.meta also holds pipeline-private data (voice centroids, cached media
     // URLs); the explorer only reads the poster frame.
     const poster = data.meeting?.meta?.poster;
-    const meeting = data.meeting && { ...data.meeting, meta: poster ? { poster } : {} };
+    const highlights = data.meeting?.meta?.highlights;
+    const meeting = data.meeting && { ...data.meeting, meta: { ...(poster ? { poster } : {}), ...(highlights ? { highlights } : {}) } };
     return { ...data, meeting };
   } catch (error: any) {
     if (error instanceof Response) throw error;
@@ -479,7 +481,7 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
               <h2 className="mb-2 text-sm font-semibold text-zinc-900">Summary</h2>
               {meeting.summary ? (
                 <div className="text-sm">
-                  <MeetingSummary summary={meeting.summary} />
+                  <MeetingSummary summary={displaySummary(meeting) || meeting.summary} />
                 </div>
               ) : (
                 <p className="text-sm text-zinc-500">

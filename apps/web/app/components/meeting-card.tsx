@@ -7,6 +7,7 @@ import { Badge } from "./ui/badge";
 import { ChevronRight, ClipboardList, FileText, Video } from "lucide-react";
 import { type TopicName, TOPICS } from "../lib/topic-utils";
 import { summaryPoints } from "./meeting/MeetingSummary";
+import { displaySummary } from "../lib/meeting-summary";
 
 export interface MeetingStats {
   motion_carried_count: number;
@@ -124,7 +125,7 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
 
         {meeting.summary && (
           <p className="mt-1 max-w-[72ch] text-sm leading-relaxed text-zinc-600 line-clamp-2">
-            {summaryPreview(meeting.summary)}
+            {summaryPreview(displaySummary(meeting as any) || meeting.summary)}
           </p>
         )}
 

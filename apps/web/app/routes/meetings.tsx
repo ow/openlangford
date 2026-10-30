@@ -173,6 +173,7 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
         const hit =
           m.title.toLowerCase().includes(q) ||
           m.summary?.toLowerCase().includes(q) ||
+          (m as any).highlights?.bullets?.some?.((b: string) => b.toLowerCase().includes(q)) ||
           m.organization?.name?.toLowerCase().includes(q);
         if (!hit) return false;
       }

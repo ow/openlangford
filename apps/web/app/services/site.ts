@@ -156,7 +156,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
       supabase
         .from("meetings")
         .select(
-          "id, slug, title, type, meeting_date, summary, video_duration_seconds, organizations(name)",
+          "id, slug, title, type, meeting_date, summary, highlights:meta->highlights, video_duration_seconds, organizations(name)",
         )
         .eq("municipality_id", municipalityId)
         .eq("has_transcript", true)

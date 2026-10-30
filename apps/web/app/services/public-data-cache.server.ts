@@ -6,7 +6,7 @@ import { anonymousPublicRequest, publicReadRequest } from "../lib/public-cache-a
  * Bump when the shape of any cached value changes. Data entries are keyed by this and the
  * content stamp only (not the deploy), so a deploy keeps every warm value.
  */
-export const PUBLIC_DATA_SCHEMA = "d1";
+export const PUBLIC_DATA_SCHEMA = "d2"; // d2: meeting lists carry highlights
 /** Stale entries (older content stamp or past their TTL) are served at most this long after they were stored. */
 export const MAX_STALE_SECONDS = 86400;
 
