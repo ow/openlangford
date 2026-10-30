@@ -19,7 +19,7 @@ import { MotionsList } from "../components/motions-list";
 import { PeopleGrid } from "../components/people-grid";
 import { MeetingTimeline } from "../components/meeting-timeline";
 import { MeetingSummary } from "../components/meeting/MeetingSummary";
-import { displaySummary } from "../lib/meeting-summary";
+import { displaySummary, highlightPoints } from "../lib/meeting-summary";
 import { MeetingFacts } from "../components/meeting/MeetingSidebar";
 import { MeetingVideo } from "../components/meeting/MeetingVideo";
 import { useVideoPlayer } from "../hooks/useVideoPlayer";
@@ -486,7 +486,11 @@ export default function MeetingExplorer({ loaderData }: Route.ComponentProps) {
               <h2 className="mb-2 text-sm font-semibold text-zinc-900">Summary</h2>
               {meeting.summary ? (
                 <div className="text-sm">
-                  <MeetingSummary summary={displaySummary(meeting) || meeting.summary} />
+                  <MeetingSummary
+                    summary={displaySummary(meeting) || meeting.summary}
+                    points={highlightPoints(meeting)}
+                    itemHref={(id) => meetingPath(meeting, `#item-${id}`)}
+                  />
                 </div>
               ) : (
                 <p className="text-sm text-zinc-500">

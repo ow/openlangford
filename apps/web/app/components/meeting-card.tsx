@@ -6,8 +6,8 @@ import { formatDate, cn } from "../lib/utils";
 import { Badge } from "./ui/badge";
 import { ChevronRight, ClipboardList, FileText, Video } from "lucide-react";
 import { type TopicName, TOPICS } from "../lib/topic-utils";
-import { summaryPoints } from "./meeting/MeetingSummary";
-import { displaySummary } from "../lib/meeting-summary";
+import { LinkedPoint, summaryPoints } from "./meeting/MeetingSummary";
+import { displaySummary, highlightPoints } from "../lib/meeting-summary";
 
 export interface MeetingStats {
   motion_carried_count: number;
@@ -70,14 +70,15 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
     { key: "video", label: "Video", icon: Video, on: !!(meeting.has_transcript || meeting.video_url) },
   ].filter((s) => s.on);
 
-  const Wrapper = hasContent && !meeting.calendar_source_id ? Link : "article";
-  const wrapperProps = hasContent && !meeting.calendar_source_id ? { to: meetingPath(meeting) } : {};
+  // The whole row opens the meeting through the title's stretched link (after:inset-0), which leaves
+  // room for highlight phrases to link straight to their agenda item (#item-{id}).
+  const linksToMeeting = hasContent && !meeting.calendar_source_id;
+  const firstPoint = highlightPoints(meeting as any)?.[0];
 
   return (
-    <Wrapper
-      {...(wrapperProps as any)}
+    <article
       className={cn(
-        "flex w-full gap-4 px-4 py-4 sm:px-5 transition-colors",
+        "relative flex w-full gap-4 px-4 py-4 sm:px-5 transition-colors",
         meeting.summary ? "items-start" : "items-center",
         hasContent && "group hover:bg-zinc-50/80",
       )}
@@ -113,7 +114,18 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
               isCancelled && "text-zinc-500 line-through",
             )}
           >
-            {meeting.calendar_source_id ? <Link to={meetingPath(meeting)} className="hover:underline">{meeting.title}</Link> : meeting.title}
+            {meeting.calendar_source_id ? (
+              <Link to={meetingPath(meeting)} className="hover:underline">{meeting.title}</Link>
+            ) : linksToMeeting ? (
+              <Link
+                to={meetingPath(meeting)}
+                className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-brand-600"
+              >
+                {meeting.title}
+              </Link>
+            ) : (
+              meeting.title
+            )}
           </h3>
           {showOrg && <span className="text-sm text-zinc-500">{org}</span>}
           {isUpcoming && !meeting.calendar_source_id && <Badge variant="brand">Upcoming</Badge>}
@@ -125,7 +137,14 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
 
         {meeting.summary && (
           <p className="mt-1 max-w-[72ch] text-sm leading-relaxed text-zinc-600 line-clamp-2">
-            {summaryPreview(displaySummary(meeting as any) || meeting.summary)}
+            {firstPoint ? (
+              <LinkedPoint
+                point={firstPoint}
+                itemHref={linksToMeeting ? (id) => meetingPath(meeting, `#item-${id}`) : undefined}
+              />
+            ) : (
+              summaryPreview(displaySummary(meeting as any) || meeting.summary)
+            )}
           </p>
         )}
 
@@ -171,6 +190,6 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
           </span>
         ) : null}
       </div>
-    </Wrapper>
+    </article>
   );
 }

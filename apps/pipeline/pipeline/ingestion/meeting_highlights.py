@@ -5,9 +5,15 @@ closely: exact bylaw stages, bylaw numbers, who opposed. This stage rewrites
 the meeting's outcomes for everyone else, from the summary plus the decided
 motions and agenda items, into ``meetings.meta.highlights``::
 
-    {"bullets": ["...", "..."], "description": "May 19, 2026: ...", "version": "1"}
+    {"bullets": ["...", "..."],
+     "links": [[{"text": "2609 Sooke Road", "agenda_item_id": 123}], []],
+     "description": "May 19, 2026: ...", "version": "2"}
 
-``bullets`` are 2–4 one-sentence outcomes, most significant first.
+``bullets`` are 2–4 one-sentence outcomes, most significant first (plain strings,
+so readers of version 1 keep working). ``links`` is aligned with ``bullets``:
+``links[i]`` lists phrases of ``bullets[i]`` (exact substrings, first occurrence,
+in reading order, non-overlapping, at most 3) and the agenda item of the same
+meeting each is about; the web turns them into ``#item-{id}`` anchors.
 ``description`` is one sentence of at most 155 characters for SEO and share cards.
 The summary is never touched (ingest rewrites it; it stays the source).
 
@@ -28,7 +34,7 @@ from supabase import Client
 
 from pipeline import ai
 
-HIGHLIGHTS_VERSION = "1"
+HIGHLIGHTS_VERSION = "2"
 DESCRIPTION_MAX = 155
 # Meetings that never happened (or haven't yet) get no highlights.
 SKIP_STATUSES = ("Planned", "Cancelled")
@@ -46,6 +52,10 @@ Write:
    group them in one bullet: "Moved the 2026 budget and tax rates, City Centre parking rules (passed 6–1) and stronger noise rules one step from final approval."
    A grouped bullet names at most 3 items: drop the minor ones. Keep normal grammar with articles ("the 2026 budget", not "budget"). Otherwise vary the wording.
 2. `description`: one sentence that sums up the whole meeting for a search result or share card.
+Each bullet has `text` (the sentence) and `links`: 0 to 3 short noun phrases copied character for character from that bullet's text
+(a place, facility, project or topic, e.g. "2609 Sooke Road", "Jacklin Road", "the 2026–2030 budget"), each with the `agenda_item_id` of the agenda item
+(from `agenda_items_for_context_only` or a decision's `agenda_item_id`) that the phrase is about. Link only where the item clearly matches; no links is fine.
+Never link a whole sentence or a verb, and link each agenda item only once across all bullets (its first mention).
 If no outcome is recorded (the inputs only say what was scheduled or on the agenda), return an empty `bullets` list and an empty `description`;
 never write a bullet saying nothing was decided or recorded.
 
@@ -79,6 +89,8 @@ Style rules (from the site's writing guide):
   Other examples: "Capped garbage collection fees at $280 a year.", "Made final the zoning for a health clinic on Happy Valley Road.", "Met privately to discuss a land purchase."
 - Style rule 9, "Concrete. Name the street, the facility, the dollar amount, the number of homes."
   Keep full street names ("Sooke Road", not "Sooke"); to save words, drop details, not street types.
+  Every bullet names the specific place, facility or thing when the inputs give it: not "Made the dedication of land as park final"
+  but "Made final the new park on Goldstream Avenue" (whatever the inputs say it is and where).
 - Style rule 10, "Never invent. If the records don't say how something ended, leave it out." No numbers, places, names or outcomes that are not in the inputs,
   and no characterizations they don't support (don't say "renewed" an agreement the inputs only say was approved or entered into). The description follows this too.
 - Style rule 11, "Never infer gender: no he/she unless the source states pronouns. Dissent only when it matters to the story, in plain words ("passed 6–1")." Do not name individual council members.
@@ -92,9 +104,23 @@ Description:
 - Same style rules: no codes, jargon or database words."""
 
 
+class Link(BaseModel):
+    text: str
+    agenda_item_id: int
+
+
+class Bullet(BaseModel):
+    text: str
+    links: list[Link]
+
+
 class Highlights(BaseModel):
-    bullets: list[str]
+    bullets: list[Bullet]
     description: str
+
+
+def _texts(result: Highlights) -> list[str]:
+    return [_clean_line(b.text) for b in result.bullets]
 
 
 # ── inputs ───────────────────────────────────────────────────────────────
@@ -133,6 +159,7 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
             if any((x.get("disposition") or "") != "Procedural" and x.get("result") for x in motions):
                 continue
         entry = {
+            "agenda_item_id": m.get("agenda_item_id") if m.get("agenda_item_id") in titles else None,
             "agenda_item": _trim(titles.get(m.get("agenda_item_id")), 160),
             "decision": _trim(m.get("plain_english_summary"), 400),
             "headline": (m.get("meta") or {}).get("headline") or "",
@@ -144,10 +171,12 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
         if tally and tally["against"]:
             entry["vote"] = f"{tally['for']}–{tally['against']}"
         decisions.append({k: v for k, v in entry.items() if v})
+    # Every titled item (with its id, for links); summaries only where they add something.
     items = [
-        {"title": _trim(a.get("title"), 160), "summary": _trim(a.get("plain_english_summary"), 300)}
+        {k: v for k, v in {"id": a["id"], "title": _trim(a.get("title"), 160),
+                           "summary": _trim(a.get("plain_english_summary"), 300)}.items() if v}
         for a in agenda_items
-        if a.get("title") and (a.get("plain_english_summary") or not decisions)
+        if a.get("title")
     ]
     return {
         "meeting": {
@@ -158,7 +187,7 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
         },
         "existing_summary": meeting.get("summary") or "",
         "decisions": decisions,
-        "agenda_items_for_context_only": items[:40],
+        "agenda_items_for_context_only": items[:60],
     }
 
 
@@ -233,12 +262,55 @@ def problems(bullets: list[str]) -> list[str]:
 _NOTHING = re.compile(r"\bno (?:decisions?|outcomes?|business)\b|\b(?:not|were|was) recorded\b", re.I)
 
 
-def clean(result: Highlights, meeting_date: Any) -> dict:
-    bullets = [b for b in (_clean_line(x) for x in result.bullets) if b and not _NOTHING.search(b)][:4]
+MAX_LINKS_PER_BULLET = 3
+MAX_LINK_WORDS = 8
+
+
+def valid_links(text: str, links: list[Link], item_ids: set[int], used: set[int] | None = None) -> tuple[list[dict], int]:
+    """Links whose text is an exact substring of the bullet (first occurrence, non-overlapping, short) and whose
+    agenda item belongs to the meeting. An item already linked (``used``, shared across a meeting's bullets) is
+    skipped silently so one item isn't linked over and over. Returns (links in reading order, number dropped as invalid)."""
+    used = used if used is not None else set()
+    kept: list[tuple[int, int, dict]] = []
+    dropped = 0
+    for link in links:
+        phrase = (link.text or "").strip()
+        start = text.find(phrase) if phrase else -1
+        end = start + len(phrase)
+        if link.agenda_item_id in used:
+            continue
+        if (start < 0 or link.agenda_item_id not in item_ids or len(phrase.split()) > MAX_LINK_WORDS
+                or len(phrase) >= len(text.rstrip(".!?")) or any(s < end and start < e for s, e, _ in kept)
+                or len(kept) >= MAX_LINKS_PER_BULLET):
+            dropped += 1
+            continue
+        used.add(link.agenda_item_id)
+        kept.append((start, end, {"text": phrase, "agenda_item_id": link.agenda_item_id}))
+    kept.sort(key=lambda k: k[0])
+    return [k for _, _, k in kept], dropped
+
+
+def clean(result: Highlights, meeting_date: Any, item_ids: set[int] | None = None) -> dict:
+    """Stored shape: ``bullets`` (strings, unchanged for older readers), ``links`` aligned with them
+    (``links[i]`` = [{text, agenda_item_id}] for ``bullets[i]``), ``description``, ``version``.
+    ``links_dropped`` counts invalid model links (diagnostic)."""
+    bullets: list[str] = []
+    links: list[list[dict]] = []
+    dropped = 0
+    used: set[int] = set()
+    for b in result.bullets:
+        text = _clean_line(b.text)
+        if not text or _NOTHING.search(text) or len(bullets) >= 4:
+            continue
+        kept, n = valid_links(text, b.links, item_ids or set(), used)
+        bullets.append(text)
+        links.append(kept)
+        dropped += n
     prefix = f"{format_date(meeting_date)}: "
     sentence = _clean_line(result.description)
     description = prefix + _shorten(sentence, DESCRIPTION_MAX - len(prefix)) if sentence else ""
-    return {"bullets": bullets, "description": description, "version": HIGHLIGHTS_VERSION}
+    return {"bullets": bullets, "links": links, "description": description, "version": HIGHLIGHTS_VERSION,
+            "links_dropped": dropped}
 
 
 # ── stage entry point ────────────────────────────────────────────────────
@@ -292,7 +364,7 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
     inputs = build_inputs(meeting, motions, votes, items)
     prompt = build_prompt(inputs)
     result = ai.json(prompt, stage="extraction", schema=Highlights, system=SYSTEM)
-    issues = problems([_clean_line(b) for b in result.bullets])
+    issues = problems(_texts(result))
     for _ in range(REVISION_PASSES):  # revise with the specific problems; keep whichever draft has fewer
         if not issues:
             break
@@ -301,7 +373,7 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
             + "\n\nFix these problems and return the full highlights again:\n- " + "\n- ".join(issues),
             stage="extraction", schema=Highlights, system=SYSTEM,
         )
-        remaining = problems([_clean_line(b) for b in revised.bullets])
+        remaining = problems(_texts(revised))
         if len(remaining) <= len(issues):
             result, issues = revised, remaining
     if issues:
@@ -316,7 +388,7 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
             stage="extraction", system=SYSTEM,
         ).strip()
         result = Highlights(bullets=result.bullets, description=shorter or result.description)
-    out = clean(result, meeting["meeting_date"])
+    out = clean(result, meeting["meeting_date"], {a["id"] for a in items})
     return out if out["bullets"] else None
 
 
@@ -342,8 +414,12 @@ def write_highlights(supabase: Client, meeting_id: int, highlights: dict | None,
 
 
 def highlight_meeting(supabase: Client, meeting_id: int, *, dry_run: bool = False) -> dict | None:
+    """Generate and store. Returns the generated highlights plus ``links_dropped`` (not stored)."""
     highlights = generate(supabase, meeting_id)
+    stored = {k: v for k, v in highlights.items() if k != "links_dropped"} if highlights else None
+    if highlights and highlights.get("links_dropped"):
+        print(f"  [Highlights] meeting {meeting_id}: dropped {highlights['links_dropped']} invalid link(s)")
     if not dry_run:  # nothing to highlight clears an older entry so pages fall back to the summary
-        if not write_highlights(supabase, meeting_id, highlights or None):
+        if not write_highlights(supabase, meeting_id, stored):
             raise RuntimeError("meta changed underneath on every attempt; not written")
     return highlights

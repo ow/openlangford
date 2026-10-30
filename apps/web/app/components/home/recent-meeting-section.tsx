@@ -12,7 +12,7 @@ import {
 import { Badge } from "../ui/badge";
 import { SectionHeading } from "../ui/section-heading";
 import { MeetingSummary } from "../meeting/MeetingSummary";
-import { displaySummary } from "../../lib/meeting-summary";
+import { displaySummary, highlightPoints } from "../../lib/meeting-summary";
 import { formatDate } from "../../lib/utils";
 import { normalizeMotionResult } from "../../lib/motion-utils";
 
@@ -39,10 +39,8 @@ export function RecentMeetingSection({
     <section>
       <SectionHeading title="Latest meeting" icon={PlayCircle} href="/meetings" />
 
-      <Link
-        to={meetingPath(meeting)}
-        className="block bg-surface rounded-2xl border border-zinc-200 shadow-sm overflow-hidden p-6 hover:border-brand-200 hover:shadow-md transition-all group"
-      >
+      {/* The title's link stretches over the whole card (after:inset-0), so highlight phrases can be their own links. */}
+      <article className="relative block bg-surface rounded-2xl border border-zinc-200 shadow-sm overflow-hidden p-6 hover:border-brand-200 hover:shadow-md transition-all group">
         {/* Header — only show the type when the title doesn't already say it */}
         {meeting.type && meeting.type !== meeting.title && (
           <Badge variant="brand" className="mb-2 text-[11px]">
@@ -50,7 +48,12 @@ export function RecentMeetingSection({
           </Badge>
         )}
         <h3 className="text-xl font-bold tracking-tight text-zinc-900 mb-1 group-hover:text-brand-700 transition-colors">
-          {meeting.title}
+          <Link
+            to={meetingPath(meeting)}
+            className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-brand-600"
+          >
+            {meeting.title}
+          </Link>
         </h3>
         <div className="flex items-center gap-3 text-sm text-zinc-500 mb-4">
           <div className="flex items-center gap-1">
@@ -67,7 +70,13 @@ export function RecentMeetingSection({
 
         {/* AI Summary */}
         {displaySummary(meeting) && (
-          <MeetingSummary summary={displaySummary(meeting)!} limit={3} className="mb-5 text-[15px]" />
+          <MeetingSummary
+            summary={displaySummary(meeting)!}
+            points={highlightPoints(meeting)}
+            itemHref={(id) => meetingPath(meeting, `#item-${id}`)}
+            limit={3}
+            className="mb-5 text-[15px]"
+          />
         )}
 
         {/* Stats Row */}
@@ -104,10 +113,10 @@ export function RecentMeetingSection({
         )}
 
         {/* CTA */}
-        <div className="inline-flex items-center gap-2 text-sm text-brand-700 font-semibold group-hover:text-brand-700 transition-colors">
+        <div aria-hidden="true" className="inline-flex items-center gap-2 text-sm text-brand-700 font-semibold group-hover:text-brand-700 transition-colors">
           Open meeting
         </div>
-      </Link>
+      </article>
     </section>
   );
 }

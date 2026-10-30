@@ -1,11 +1,17 @@
 from unittest.mock import MagicMock
 
 from pipeline.ingestion import meeting_highlights as mh
-from pipeline.ingestion.meeting_highlights import Highlights, problems
+from pipeline.ingestion.meeting_highlights import Bullet, Highlights, Link, problems
+
+
+def H(bullets, description, links=None):
+    links = links or [[] for _ in bullets]
+    return Highlights(bullets=[Bullet(text=b, links=[Link(**x) for x in l]) for b, l in zip(bullets, links)],
+                      description=description)
 
 
 def test_clean_strips_markers_adds_periods_caps_bullets_and_prefixes_the_date():
-    result = Highlights(
+    result = H(
         bullets=["- **Garbage fees** capped at $280", ' "Clinic cleared for Happy Valley Road." ', "  ", "a", "b", "c"],
         description="Council capped garbage fees",
     )
@@ -18,7 +24,7 @@ def test_clean_strips_markers_adds_periods_caps_bullets_and_prefixes_the_date():
 
 def test_overlong_description_is_cut_at_a_clause_within_the_limit():
     long = "Council approved a budget, " + ", ".join(f"rezoned lot {i} on Goldstream Avenue" for i in range(12))
-    out = mh.clean(Highlights(bullets=["x"], description=long), "2026-05-19")
+    out = mh.clean(H(["x"], long), "2026-05-19")
     assert len(out["description"]) <= mh.DESCRIPTION_MAX
     assert out["description"].startswith("May 19, 2026: Council approved a budget")
     assert out["description"].endswith(".")
@@ -54,7 +60,9 @@ def test_build_inputs_keeps_outcomes_and_notes_split_votes_only():
     assert [d["decision"] for d in decisions] == ["Gave 1st-3rd readings to parking.", "Gave 1st-3rd readings to budget."]
     assert decisions[0]["vote"] == "6–1" and decisions[0]["headline"] == "Parking minimums dropped"
     assert "vote" not in decisions[1]
-    assert inputs["agenda_items_for_context_only"] == [{"title": "Bylaws", "summary": "Bylaw readings."}]
+    assert inputs["agenda_items_for_context_only"] == [
+        {"id": 10, "title": "Agenda"}, {"id": 11, "title": "Bylaws", "summary": "Bylaw readings."}]
+    assert decisions[0]["agenda_item_id"] == 11
 
 
 def test_procedural_motions_are_kept_when_they_are_the_only_business():
@@ -89,8 +97,40 @@ def test_write_merges_only_the_highlights_key_guarded_by_updated_at():
 
 
 def test_clean_drops_nothing_happened_bullets():
-    out = mh.clean(Highlights(bullets=["No decisions were recorded."], description=""), "2021-02-09")
+    out = mh.clean(H(["No decisions were recorded."], ""), "2021-02-09")
     assert out["bullets"] == [] and out["description"] == ""
+
+
+def test_links_must_be_exact_substrings_of_items_in_the_meeting_and_not_overlap():
+    bullets = ["Asked staff to bring rezonings for 2609 Sooke Road and Jacklin Road back for a vote.", "Capped garbage fees at $280."]
+    links = [[
+        {"text": "Jacklin Road", "agenda_item_id": 2},
+        {"text": "2609 Sooke Road", "agenda_item_id": 1},
+        {"text": "Sooke Road", "agenda_item_id": 3},          # overlaps the first link
+        {"text": "Strathmore Road", "agenda_item_id": 4},     # not in the bullet
+        {"text": "a vote", "agenda_item_id": 99},             # item from another meeting
+    ], [{"text": "garbage fees", "agenda_item_id": 5}]]
+    out = mh.clean(H(bullets, "d", links), "2026-04-20", {1, 2, 3, 4, 5})
+    assert out["links"] == [
+        [{"text": "2609 Sooke Road", "agenda_item_id": 1}, {"text": "Jacklin Road", "agenda_item_id": 2}],
+        [{"text": "garbage fees", "agenda_item_id": 5}],
+    ]
+    assert out["links_dropped"] == 3
+    assert len(out["links"]) == len(out["bullets"])
+
+
+def test_an_item_is_linked_once_per_meeting():
+    out = mh.clean(H(["Cut the budget.", "Raised the budget for parks."], "d",
+                     [[{"text": "budget", "agenda_item_id": 7}], [{"text": "parks", "agenda_item_id": 7}]]), "2026-03-23", {7})
+    assert out["links"] == [[{"text": "budget", "agenda_item_id": 7}], []]
+    assert out["links_dropped"] == 0
+
+
+def test_links_stay_aligned_when_a_bullet_is_dropped():
+    out = mh.clean(H(["No decisions were recorded.", "Capped garbage fees."], "d",
+                     [[], [{"text": "garbage fees", "agenda_item_id": 5}]]), "2026-04-20", {5})
+    assert out["bullets"] == ["Capped garbage fees."]
+    assert out["links"] == [[{"text": "garbage fees", "agenda_item_id": 5}]]
 
 
 def test_write_none_removes_only_the_highlights_key():

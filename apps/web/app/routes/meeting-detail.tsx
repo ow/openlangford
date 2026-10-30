@@ -35,7 +35,7 @@ import { meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 import { loaderFailure } from "../lib/loader-errors";
 import { meetingDescription } from "../lib/meeting-description";
-import { displaySummary } from "../lib/meeting-summary";
+import { displaySummary, highlightPoints } from "../lib/meeting-summary";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const m = data?.meeting;
@@ -275,6 +275,8 @@ function MeetingDetailContent({ loaderData }: any) {
       })),
     [rawAgendaItems, people],
   );
+  // Highlight links only point at items this page renders (#item-{id} anchors in AgendaOverview).
+  const agendaItemIds = useMemo(() => new Set<number>(rawAgendaItems.map((item: any) => item.id)), [rawAgendaItems]);
 
   const [transcriptDrawerOpen, setTranscriptDrawerOpen] = useState(false);
   const [transcriptRequestedFor, setTranscriptRequestedFor] = useState<number | null>(null);
@@ -315,14 +317,18 @@ function MeetingDetailContent({ loaderData }: any) {
   const [showCaption, setShowCaption] = useState(true);
   const [searchParams] = useSearchParams();
 
-  // Links from matter timelines (#item-123) open and scroll to that agenda item.
+  // Links from matter timelines and summary highlights (#item-123) open and scroll to that agenda item.
+  // In-page clicks scroll smoothly unless the reader prefers reduced motion; arriving from another page jumps.
   useEffect(() => {
-    const openLinkedItem = () => {
+    const openLinkedItem = (event?: Event) => {
       const match = /^#item-(\d+)$/.exec(window.location.hash);
       if (!match) return;
       const itemId = Number(match[1]);
       setExpandedAgendaItemId(itemId);
-      requestAnimationFrame(() => document.getElementById(`item-${itemId}`)?.scrollIntoView({ block: "start" }));
+      const smooth = !!event && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      requestAnimationFrame(() =>
+        document.getElementById(`item-${itemId}`)?.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "auto" }),
+      );
     };
     openLinkedItem();
     window.addEventListener("hashchange", openLinkedItem);
@@ -657,7 +663,11 @@ function MeetingDetailContent({ loaderData }: any) {
               <SectionHeading title="Summary" />
               {meeting.summary ? (
                 <div className="rounded-2xl border border-zinc-200 bg-surface p-5 text-[15px] shadow-sm sm:p-6">
-                  <MeetingSummary summary={displaySummary(meeting) || meeting.summary} />
+                  <MeetingSummary
+                    summary={displaySummary(meeting) || meeting.summary}
+                    points={highlightPoints(meeting)}
+                    itemHref={(id) => (agendaItemIds.has(id) ? `#item-${id}` : null)}
+                  />
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 p-5 text-sm text-zinc-500">
