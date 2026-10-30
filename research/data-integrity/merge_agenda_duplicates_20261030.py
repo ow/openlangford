@@ -19,6 +19,7 @@ so the re-ingest inserted a second row beside the original. For each duplicate:
 The mapping is fixed below and re-derived at run time with the fixed matcher; any disagreement
 aborts. Dry run by default (prints the plan); --apply writes a JSON backup of every touched row to
 research/data-integrity/2026-10-30/ and applies everything in one transaction.
+--map DUP:ORIG,... runs the same procedure for other pairs.
 """
 import datetime
 import json
@@ -213,4 +214,9 @@ def main(apply):
 
 
 if __name__ == "__main__":
+    # --map DUP:ORIG[,DUP:ORIG] replaces the built-in mapping (used for a later 262 pair:
+    # 13272 [11.1] "BYLAW NO. 1989 — ..." was a second row for 4452 "BYLAW NO. 1989 (SECOND AND THIRD READINGS)").
+    if "--map" in sys.argv:
+        pairs = sys.argv[sys.argv.index("--map") + 1]
+        DUPLICATE_TO_ORIGINAL = {int(d): int(o) for d, o in (p.split(":") for p in pairs.split(","))}
     main("--apply" in sys.argv)

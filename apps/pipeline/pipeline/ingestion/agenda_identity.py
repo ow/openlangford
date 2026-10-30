@@ -13,7 +13,8 @@ with several candidates returns no match rather than guessing:
   2. same normalized title, the title being unique among the meeting's rows
      (siblings renumbered or swapped)
   3. same normalized order and a near-identical title (OCR typo, or one title
-     extends the other word-for-word, e.g. a header merged with its child)
+     extends the other word-for-word, e.g. a header merged with its child, or
+     both start with the same numbered identifier such as "Bylaw No. 1989")
 Items whose order AND title both differ are never matched.
 """
 from difflib import SequenceMatcher
@@ -69,7 +70,14 @@ def _near_title(a, b):
             and SequenceMatcher(None, a, b, autojunk=False).ratio() >= FUZZY_TITLE_RATIO):
         return True
     short, long_ = sorted((a.split(), b.split()), key=len)
-    return len(short) >= MIN_PREFIX_WORDS and long_[:len(short)] == short
+    if len(short) >= MIN_PREFIX_WORDS and long_[:len(short)] == short:
+        return True
+    # Same leading identifier, differently described: "Bylaw No. 1989 (Second and
+    # Third Readings)" / "Bylaw No. 1989 — Langford OCP Amendment No. 41".
+    shared = 0
+    while shared < len(short) and short[shared] == long_[shared]:
+        shared += 1
+    return shared >= MIN_PREFIX_WORDS and any(re.search(r'\d', word) for word in short[:shared])
 
 
 def existing_agenda_item(item, existing_items, claimed=()):

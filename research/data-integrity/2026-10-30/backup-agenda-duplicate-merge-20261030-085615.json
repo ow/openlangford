@@ -1,0 +1,539 @@
+{
+ "generated_at": "2026-10-30T15:56:15.161499+00:00",
+ "mapping": {
+  "13272": 4452
+ },
+ "agenda_items": [
+  {
+   "id": 4452,
+   "meeting_id": 262,
+   "matter_id": 1297,
+   "parent_id": null,
+   "item_order": "11.1",
+   "title": "BYLAW NO. 1989 (SECOND AND THIRD READINGS)",
+   "description": null,
+   "plain_english_summary": "Consideration of second and third readings for OCP amendment bylaw for Valemount Court properties.",
+   "category": "Legislative",
+   "is_consent_agenda": false,
+   "matter_status_snapshot": null,
+   "related_address": "[\"1253 Valemount Court\",\"1265 Valemount Court\",\"1277 Valemount Court\",\"1289 Valemount Court\",\"1300 Valemount Court\"]",
+   "neighborhood": null,
+   "debate_summary": null,
+   "is_controversial": true,
+   "discussion_start_time": 14899.35,
+   "discussion_end_time": 15297.8,
+   "financial_cost": null,
+   "funding_source": null,
+   "keywords": [
+    "bylaw",
+    "OCP",
+    "Valemount Court"
+   ],
+   "source_file": null,
+   "embedding": "[0.060150146,0.06604004,0.021224976,0.043029785,-0.042541504,0.12976074,-0.043060303,-0.09576416,-0.017333984,0.057159424,0.08325195,-0.059143066,0.0037784576,0.09814453,0.016662598,0.023742676,0.13183594,0.022476196,0.015144348,0.07208252,-0.018081665,0.043640137,-0.081604004,0.037231445,-0.06536865,-0.009933472,0.037994385,0.0048179626,0.019729614,-0.06689453,-0.01184845,-0.056610107,-0.02230835,0.0023231506,-0.07196045,0.053619385,-0.034576416,-0.04119873,0.018707275,-0.027267456,0.020751953,-0.034698486,0.06994629,0.018112183,-0.031188965,0.07208252,-0.008338928,-0.039794922,-0.09680176,-0.005832672,0.015792847,-0.02166748,0.0184021,-0.07543945,-0.058746338,-0.0038337708,-0.0070495605,0.04119873,0.0597229,0.050231934,0.032165527,-0.0703125,0.016433716,0.024154663,-0.08123779,0.042175293,0.0050697327,0.07147217,0.09765625,0.08630371,0.0051841736,0.019180298,0.008270264,-0.006832123,-0.018249512,-0.057678223,-0.05709839,0.007331848,-0.060577393,-0.0056648254,-0.0138168335,0.064208984,-0.012145996,0.10760498,0.015991211,-0.04034424,-0.07318115,0.036834717,-0.03692627,0.008094788,-0.038970947,0.049316406,-0.09851074,0.019073486,0.035339355,-0.028457642,-0.07861328,-0.0647583,0.030563354,-0.048553467,0.039276123,-0.11450195,-0.03111267,-0.008110046,0.095825195,0.012382507,-0.0061035156,0.020553589,0.016723633,-0.124816895,-0.15808105,-0.009063721,0.029846191,0.042907715,0.101135254,-0.034698486,-0.06323242,0.016189575,-0.007534027,-0.08520508,-0.026031494,-0.0066986084,-0.0340271,-0.048461914,0.027572632,0.0087890625,0.0024204254,-0.052703857,-0.06768799,-0.040283203,0.015899658,-0.029510498,0.07739258,-0.046020508,-0.094177246,-0.00349617,-0.025543213,-0.036834717,-0.026123047,-0.04385376,0.058258057,-0.009094238,0.023605347,-0.044677734,-0.043029785,-0.0036392212,0.017501831,-0.07659912,-0.034576416,0.020874023,-0.10180664,-0.0028591156,-0.018478394,0.005104065,-0.015975952,0.0078125,0.057495117,0.073791504,-0.005470276,0.02796936,-0.07006836,-0.06347656,0.026657104,-0.05331421,0.10095215,-0.022033691,-0.018249512,0.046661377,-0.12817383,-0.0027580261,0.07501221,0.07409668,-0.04043579,-0.06689453,-0.0031032562,-0.024475098,0.064697266,-0.034332275,-0.00045108795,-0.042877197,0.07116699,-0.028671265,-0.06530762,-0.014434814,0.0026988983,0.050201416,-0.012672424,0.07763672,-0.0061569214,0.016098022,0.033233643,-0.034362793,0.04550171,0.08905029,-0.0053367615,-0.00819397,-0.011878967,-0.001077652,0.014099121,-0.01852417,0.009780884,-0.049987793,0.064697266,-0.0020618439,-0.042785645,-0.04849243,0.0030918121,-0.0206604,-0.02848816,-0.037231445,0.029067993,0.007293701,-0.06048584,0.07739258,0.009460449,-0.049072266,-0.0012235641,-0.04559326,0.059661865,0.035491943,0.012825012,0.008216858,0.044311523,0.06488037,0.038909912,0.0871582,-0.09979248,0.020858765,0.059692383,-0.13195801,-0.014976501,-0.037078857,-0.057281494,0.008720398,0.046081543,0.018005371,0.052856445,0.04849243,-0.1149292,0.04626465,0.0067100525,0.09942627,-0.07550049,0.015197754,-0.0021572113,0.015914917,0.045959473,-0.06719971,0.060272217,0.07446289,0.011627197,0.029693604,-0.010368347,-0.028457642,-0.12036133,0.023986816,-0.015853882,-0.020324707,-0.010543823,-0.03933716,-0.0043029785,-0.0019521713,-0.022888184,-0.042297363,-0.0034046173,-0.0079422,0.1427002,-0.072143555,0.0748291,-0.03213501,-0.026565552,0.06173706,0.023803711,0.015640259,-0.050567627,0.037750244,0.020904541,0.02772522,0.08807373,0.021728516,0.077697754,0.06427002,-0.00687027,0.04385376,0.026809692,0.066345215,-0.053894043,0.015045166,0.0892334,-0.032104492,-0.019760132,-0.027664185,0.015037537,-0.0047187805,-0.0044403076,0.04071045,0.035003662,-0.07086182,0.02998352,0.050048828,0.059020996,0.12402344,0.0033721924,0.006504059,-0.0036506653,0.024230957,-0.036499023,-0.015792847,-0.013832092,-0.023986816,-0.0013418198,-0.049987793,-0.09387207,-0.12261963,0.031341553,-0.018966675,0.036346436,-0.0211792,0.0135650635,-0.053009033,0.03930664,-0.041534424,-0.027999878,-0.01914978,0.008132935,-0.031341553,0.031234741,0.049041748,0.055114746,0.037506104,-0.008293152,0.008262634,0.04232788,0.016052246,-0.09082031,0.06335449,-0.034179688,0.08886719,-0.0071029663,-0.027282715,-0.07543945,-0.0063934326,-0.055114746,-0.041503906,-0.0496521,-0.052215576,-0.07043457,-0.047088623,0.018798828,0.09460449,-0.030334473,-0.074157715,0.01902771,-0.061157227,0.0028324127,-0.013320923,0.09631348,-0.008796692,0.05328369,0.09210205,-0.038482666,-0.014587402,0.015411377,-0.015434265,-0.020324707,0.013671875,-0.10522461,0.024414062,-0.032806396,-0.023132324,-0.055023193,-0.05126953,-0.019226074,0.050598145,0.009994507,-0.011665344,-0.017288208,0.047790527,0.06719971,-0.093444824,-0.028411865,-0.0574646,-0.07232666,0.061157227]",
+   "text_search": "'1989':3 'amend':16 'bylaw':1,17 'consider':8 'court':20 'ocp':15 'properti':21 'read':7,13 'second':4,10 'third':6,12 'valemount':19",
+   "meta": {
+    "alignment": {
+     "score": 3.0,
+     "method": "announcement",
+     "aligned_at": "2026-10-30T04:38:12+00:00",
+     "confidence": "medium"
+    },
+    "key_quotes": []
+   },
+   "created_at": "2026-07-06 18:26:18.159570+00:00",
+   "updated_at": "2026-10-30 04:38:14.184378+00:00",
+   "slug": "262-111-bylaw-no-1989-second-and-third-readings",
+   "geo_location": null,
+   "meeting_date": "2022-02-22"
+  },
+  {
+   "id": 13272,
+   "meeting_id": 262,
+   "matter_id": 912,
+   "parent_id": null,
+   "item_order": "11.1",
+   "title": "BYLAW NO. 1989 \u2014 Langford Official Community Plan Bylaw, Amendment No. 45 (Valemount Court)",
+   "description": "Bylaw changes the OCP designation from Hillside or Shoreline to Business or Light Industrial.",
+   "plain_english_summary": "Gave second and third readings to redesignating Valemount Court properties for business or light industrial use.",
+   "category": "Land Use",
+   "is_consent_agenda": false,
+   "matter_status_snapshot": null,
+   "related_address": "[\"1253 Valemount Court\",\"1265 Valemount Court\",\"1277 Valemount Court\",\"1289 Valemount Court\",\"1300 Valemount Court\"]",
+   "neighborhood": null,
+   "debate_summary": null,
+   "is_controversial": false,
+   "discussion_start_time": 15135.92,
+   "discussion_end_time": 15137.92,
+   "financial_cost": null,
+   "funding_source": null,
+   "keywords": [
+    "official community plan",
+    "readings",
+    "business park"
+   ],
+   "source_file": null,
+   "embedding": null,
+   "text_search": "'1989':3 '45':11 'amend':9 'busi':25 'bylaw':1,8 'communiti':6 'court':13,22 'gave':14 'industri':28 'langford':4 'light':27 'offici':5 'plan':7 'properti':23 'read':18 'redesign':20 'second':15 'third':17 'use':29 'valemount':12,21",
+   "meta": {
+    "key_quotes": [],
+    "unverified_motion_proposals": [
+     {
+      "mover": "Denise Blackwell",
+      "votes": [],
+      "result": "CARRIED",
+      "seconder": "Roger Wade",
+      "timestamp": 15111.72,
+      "disposition": "Substantive",
+      "motion_text": "THAT Council give Bylaw No. 1989 second and third readings.",
+      "end_timestamp": 15121.72,
+      "financial_cost": null,
+      "funding_source": null,
+      "motion_source_quote": "THAT Council give Bylaw No. 1989 second and third readings.",
+      "outcome_source_quote": "Motion CARRIED.",
+      "plain_english_summary": "Gave second and third readings to the Valemount Court land-use designation change."
+     }
+    ]
+   },
+   "created_at": "2026-10-30 15:54:23.144871+00:00",
+   "updated_at": "2026-10-30 15:54:23.144871+00:00",
+   "slug": "262-111-bylaw-no-1989-langford-official-community-plan-bylaw-amendment-no-45-valemount-court",
+   "geo_location": null,
+   "meeting_date": "2022-02-22"
+  }
+ ],
+ "children": {},
+ "meeting_key_statement_evidence": {
+  "262": {
+   "041c069c09155b8709986f65a43cd7710605492027ac8a8489b06b632979fb18": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "9d3ecd5c3d3eeeb2d05baab3abc02c33db28b181d3c9419b334e773fb3aa3e32",
+    "statement_id": 2496,
+    "agenda_item_id": 4433,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181129
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "d1ed19c3335900f50440fa033385b2583a49dfee4565f56a7d53a6fba99992f2",
+    "source_segment_indexes": [
+     1321
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "1a0b55dd6a56fddce8aa4cdff287c79d40feb8859c300c7c85232c06ff988636": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "fa7877c36e4c625408c525f6ca5e0c3a8b66bb5875c891b00934572376a5168d",
+    "statement_id": 2483,
+    "agenda_item_id": 4429,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180805
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "f99f64c35df7f0a1a6de9f5611a009d88d005107fdfac1d265402ffd8f7df358",
+    "source_segment_indexes": [
+     73
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "28bd920a961ee5432be9dbd11913326f0b8467da2af9bfb6aea5d461fdd51ff4": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "f51af39b39b031b7f832e8c644402e5e3497a47d77ce60338320cb13b4a7b568",
+    "statement_id": 2486,
+    "agenda_item_id": 4430,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180842
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "e69b67c957830cfaf2601a6d6399e133d1b67e34e6b2ae866f0619d365e9133b",
+    "source_segment_indexes": [
+     212
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "31dd4d5217ca6244004013e283807912e09ca1cc909a0131a24460c701c84109": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "f6fec140f8d357ea40ecbf778f170bbffd426d52fb8d66d92c51d49b88db6db8",
+    "statement_id": 2497,
+    "agenda_item_id": 4434,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181143
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "35734a82ca3b8db56a36ebc8b73f68cb6d5a51516665dde578cf27b1f2ef41a0",
+    "source_segment_indexes": [
+     1365
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "32d3f1ed0fbbc4ccf4a09297e3893409b9f92dabeed9b0ece59fe69a07c7fbc1": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "e9e41d6e386e46499723f03e1512e7c5ce9d9bf1781bbd7696a06adaeb5e656e",
+    "statement_id": 2487,
+    "agenda_item_id": 4430,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180842
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "35abf00e102cb97f26c902aa33e321ad505258d2aafc3eac77286a286ddf4e26",
+    "source_segment_indexes": [
+     217
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "3b621aacd2b042a3bb94337ead0c7e3b6cbf289dfd470da23a76b04eb95b263c": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "6588f39c9fc1a8ff77f0f9590282d2b8929bf28f30cd6d95b58dde717065cd76",
+    "statement_id": 2502,
+    "agenda_item_id": 13264,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181359
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "0a8d84592b047d79c20fe7beac967a686e466b6a4b0d44269c45e36170e6e153",
+    "source_segment_indexes": [
+     2015
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "436324f873eb63c8142fdcb23ba52a6998159cff72fa85b59a1fb45e1c1de6a3": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "3db448818390a766dafce3440cd0066f14b942d747dc84fa5c2276a0d60a358d",
+    "statement_id": 2499,
+    "agenda_item_id": 4434,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181164
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "4192f8bbea9aeb3d2d7fdc5e12d8fc633f0c4cbc09fba7205f47eba4adb2ffb6",
+    "source_segment_indexes": [
+     1466
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "4eaac1245b69edc685fb5f825f842e09a2ed7d83c34aa90364e489e9678de485": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "b990b07767064119c3dfc4c57465e27fa6f88c2f939b8d2c401cdf529fbeaf9b",
+    "statement_id": 2494,
+    "agenda_item_id": 4432,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181113
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "b9fb4aa617038013a061b7c73e3b5178d06df023966babec65852915a77909b6",
+    "source_segment_indexes": [
+     1253
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "5bf1e7b3d92b0cc8405c0c5e2a48239ab5375a362594d6eb78b669110944527a": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "ee4f4dacac82c8003733ba3139c8364af58c72f774c98eb24430c603da5efd7c",
+    "statement_id": 2485,
+    "agenda_item_id": 4430,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180842
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "1c799c38ded686ec99e4d4067c97c9b8160b5055e02b4b0a334fe669b7fefc6b",
+    "source_segment_indexes": [
+     211
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "64695a63fd097b6ce6e736d2f88d6682649f603f24c83f5fa92fc1935ee30fee": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "ba29ee6258a13ce64635683adc477f1bed24ed68ebbbcff92cf01051d035253f",
+    "statement_id": 2500,
+    "agenda_item_id": 4435,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181204
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "2b0a69108fc9344edf1128fee9347408804cd8b6b3562cedabb8f7b54165fc5c",
+    "source_segment_indexes": [
+     1629
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "652108cc7d177eb4df97329aef44a374366afba68ff0602ebe9674f9778002c5": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "4014782336bdd2b5802932ac52ee7d0809d96d57db02574cad4e804fc40d3b63",
+    "statement_id": 2488,
+    "agenda_item_id": 4430,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180852
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "b86ca32f65bb07fa2c8f77d7e101cc8678897cd2b93502e54900f7d35880c198",
+    "source_segment_indexes": [
+     248
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "8395c1c1a97756bdc96b3af13247aeac04e1e009fbd53cb4c64a595e78050f84": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "2d9728a932be44d096996dcdacaa2367c05d8eea1a8c7a0ce8993cc550ccd4be",
+    "statement_id": 2492,
+    "agenda_item_id": 4431,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181235
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "8f03ffb96cc0509ff23d11ce6f8cca9b962216379f6dc310ed7133c1862135ba",
+    "source_segment_indexes": [
+     1710
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "a3abc8d1318ad99023d688c605d23dfa470761a3e70d428121d4d4c307db75d0": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "fef858a5742420e62a52f24549e17c9fc52c2b2cff8ce200c8d0bb21c2caacfe",
+    "statement_id": 2493,
+    "agenda_item_id": 4432,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181112
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "77bdd168beba6b8628cbf7a5c80833a5170ee6af78487f8ec61d3c66bb042b39",
+    "source_segment_indexes": [
+     1251
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "a95acc25f80ebeea015a371c016741de79535549794694eb51d6fec8b1460ede": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "6e82cabb26b5e0b982dc1f66e17d1eb62fbfb2f2c4ebc358ba3fd2d1eee75d37",
+    "statement_id": 2482,
+    "agenda_item_id": 4429,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180799
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "7a5abd831654cc5affcc008fb72d9871b2d570ff07bc98e222d7e3177c7bb23e",
+    "source_segment_indexes": [
+     48
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "b3c9022d9c0530d0036834a0afaaf7cefb149ad5b628dd6ccc5383910ec52591": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "f85350cd946cb80db60d8780200357c17d2da53a1c8f20da6c2aec95dc8031c2",
+    "statement_id": 2491,
+    "agenda_item_id": 4431,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181093
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "df83140e24fa8a912e20edf29185795d2a095f71ab2f4ee3c90af69a29afaa20",
+    "source_segment_indexes": [
+     1205
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "bf498025373e048a4021d9e4589507a83e3dbab910cb64483ab7bb727cd706cd": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "63a5af47eb313f25a8eee36e3b7e8bde117cdb55a53c6ff4dfc682c4232630e6",
+    "statement_id": 2489,
+    "agenda_item_id": 4430,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180955
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "15148856a908c3ca19d3eb1a6285e77b60dd4caf2a92976f5e0cf519c2a46595",
+    "source_segment_indexes": [
+     620
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "c5a68e13f5321f1f9474259dcb749702f438d5395c5a369924f4094210b3768e": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "eab0a7ed6ca89cc611539d2bcd4290d77c3511f522e6cbae535bc8d821309c8e",
+    "statement_id": 2498,
+    "agenda_item_id": 4434,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181149
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "a3f8454e41827d65c49b771be1fd2f8687e3fc22a21a01231bd7acf1dde948d3",
+    "source_segment_indexes": [
+     1409
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "cf7da817fd5e42ef54290a00d1c49f9cad721a0b8e13b3e4ecd4ae4c8a8c1b34": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "6b715dca294973e11a9cdb6f9aee9ebe58bebc9add0c810b7cfe2ab8cf7c72dd",
+    "statement_id": 2501,
+    "agenda_item_id": 4435,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181190
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "61417e697ce87ed6a884e45c5a7f9697530fa70526ce436f6ef5a230330a4953",
+    "source_segment_indexes": [
+     1555
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "d3365f380b3997146867689b8af943fc6be2dac20c5b5ee2d7209a118aa034c0": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "9c808cc4bd489c17892449f5d7ba16daa7d5f08ae06670d1f7ba8675454a62ff",
+    "statement_id": 2495,
+    "agenda_item_id": 4433,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181124
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "bd15a3e94a885b2948f1bc8f0d2780e2d68c75ae7551adbb507a5d688d401c3b",
+    "source_segment_indexes": [
+     1282
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "dc76aaa195b56871c4a797307356a9fd102a7c6a4153332729de6af795374847": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "923ba720a6212d6112716a0cd4faca05ccd7e5a46dcdf28cfea65a80b616023f",
+    "statement_id": 2484,
+    "agenda_item_id": 4430,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     180817
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "06345abe95f7cbc8060921852ee2b856f7b36a1b8c8bbf46bf3726317dd740f4",
+    "source_segment_indexes": [
+     107
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "dcd7b75397b4741e18b6044434f56462b117fb090ea3bb4e09b5e83f8fb3ed4c": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "9546f051f9fbd95a08aba36bcef000d376ed89cf843475e6f3aa8ff1a89fa658",
+    "statement_id": 2490,
+    "agenda_item_id": 4431,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181056
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "cf2c437b73192deca31d2c3240f38a612306ea491420de15918f9c6c614a120f",
+    "source_segment_indexes": [
+     1011
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   },
+   "f29b475105e1ebb6e90f4c899a0a40566eb75cbab5b9073afdd358da452b77e3": {
+    "person_id": null,
+    "meeting_id": 262,
+    "input_sha256": "03a03c1f17d88ab5ec1f23ead7feb0c64b393266d21fcde7cd6170596bca3606",
+    "statement_id": 2503,
+    "agenda_item_id": 4450,
+    "validator_sha256": "48ec59631940f1eb8fd1d7b01bdd0ff21c566724b70dffad91c85b7fe90e2795",
+    "validator_version": "source-bound-key-statements-v2",
+    "source_segment_ids": [
+     181243
+    ],
+    "receipt_hash_format": "postgres-jsonb-text-sha256-v1",
+    "source_quote_sha256": "242e16a685318e4194d3ef7968fe9ac511cf4a1f933c3936a9973140f34144d7",
+    "source_segment_indexes": [
+     1746
+    ],
+    "identity_receipt_sha256s": [],
+    "transcript_source_sha256": "912c770c10b344da7872a29f91c41c2c71ec20ca95cdfaff2ead19db3a70777d"
+   }
+  }
+ },
+ "plan": [],
+ "fills": {
+  "13272": {
+   "columns": [
+    "description"
+   ],
+   "meta_keys": [
+    "unverified_motion_proposals"
+   ]
+  }
+ }
+}

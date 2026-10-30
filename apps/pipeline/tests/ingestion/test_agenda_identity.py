@@ -68,6 +68,16 @@ def test_header_extended_with_child_title_reuses_header():  # meeting 631
     assert match('3', 'ADOPTION OF THE MINUTES — Planning, Zoning & Affordable Housing Committee Meeting - May 3, 2021', existing) == 100
 
 
+def test_same_number_and_leading_identifier_reuses_original():  # meeting 262
+    existing = rows(('11.', 'BYLAWS'), ('11.1', 'BYLAW NO. 1989 (SECOND AND THIRD READINGS)'))
+    assert match('11.1', 'BYLAW NO. 1989 — Langford Official Community Plan Bylaw, Amendment No. 41', existing) == 101
+    # The identifier must be shared, and the number must match too.
+    assert match('11.2', 'BYLAW NO. 1989 — Langford Official Community Plan Bylaw, Amendment No. 41', existing) is None
+    assert match('11.1', 'BYLAW NO. 1990 — Langford Zoning Bylaw, Amendment No. 630', existing) is None
+    # A shared leading run without a number is not an identifier.
+    assert match('11.1', 'BYLAW NO. ONE — something else', rows(('11.1', 'BYLAW NO. ONE readings'))) is None
+
+
 def test_clearly_different_items_never_match():
     existing = rows(('4.a', 'Bylaw No. 1998 - Application to Rezone 2619 Sooke Road'), ('5', 'REPORTS'))
     # Same number, different bylaw: a near-identical string is still another item.
