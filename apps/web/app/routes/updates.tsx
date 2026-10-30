@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, data as routeData } from "react-router";
-import { FileText, History, Mic } from "lucide-react";
+import { FileText, History, Mic, Sparkles } from "lucide-react";
 import type { Route } from "./+types/updates";
 import { PageHeader } from "../components/ui/page-header";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
@@ -30,7 +30,7 @@ export async function loader() {
     const supabase = getSupabaseAdminClient();
     const municipality = await getMunicipality(supabase);
     const updates = await publicData(
-      `recent-updates:${municipality.id}`,
+      `recent-updates:v2:${municipality.id}`,
       () => getRecentUpdates(supabase, municipality),
       () => true,
       RECENT_PUBLIC_TTL,
@@ -50,9 +50,17 @@ export async function loader() {
 }
 
 const KIND_LABEL = {
-  transcript: { label: "Transcript added", icon: Mic, className: "bg-brand-50 text-brand-700 ring-brand-100" },
-  documents: { label: "Agenda & minutes processed", icon: FileText, className: "bg-zinc-100 text-zinc-700 ring-zinc-200" },
+  transcript: { label: "Transcript", icon: Mic, className: "bg-brand-50 text-brand-700 ring-brand-100" },
+  documents: { label: "Agenda & minutes", icon: FileText, className: "bg-zinc-100 text-zinc-700 ring-zinc-200" },
 } as const;
+
+const BADGE = "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1";
+
+function updateSummary(update: RecentUpdate) {
+  const parts = update.kinds.map((kind) => KIND_LABEL[kind].label.toLowerCase());
+  const what = parts.length ? parts.join(" and ") : "records";
+  return update.isNew ? `Added with ${what}` : `${what.charAt(0).toUpperCase()}${what.slice(1)} ${update.kinds.length === 1 && update.kinds[0] === "transcript" ? "added" : "processed"}`;
+}
 
 const DAY_PREVIEW = 8;
 
@@ -66,8 +74,6 @@ function dayHeading(day: string) {
 }
 
 function UpdateRow({ update }: { update: RecentUpdate }) {
-  const kind = KIND_LABEL[update.kind];
-  const Icon = kind.icon;
   return (
     <li className="flex flex-col gap-1.5 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <div className="min-w-0">
@@ -82,12 +88,23 @@ function UpdateRow({ update }: { update: RecentUpdate }) {
           {update.type && update.type !== update.title ? ` · ${update.type}` : ""}
         </div>
       </div>
-      <span
-        className={`inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ${kind.className}`}
-      >
-        <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-        {kind.label}
-      </span>
+      <div className="flex shrink-0 flex-wrap items-center gap-1.5" aria-label={updateSummary(update)}>
+        {update.isNew && (
+          <span className={`${BADGE} bg-amber-50 text-amber-800 ring-amber-200`}>
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+            New
+          </span>
+        )}
+        {update.kinds.map((kind) => {
+          const { label, icon: Icon, className } = KIND_LABEL[kind];
+          return (
+            <span key={kind} className={`${BADGE} ${className}`}>
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+              {label}
+            </span>
+          );
+        })}
+      </div>
     </li>
   );
 }
@@ -96,14 +113,16 @@ function DayGroup({ group }: { group: UpdateDay }) {
   const [expanded, setExpanded] = useState(false);
   const visible = expanded ? group.updates : group.updates.slice(0, DAY_PREVIEW);
   const hidden = group.updates.length - visible.length;
-  const transcripts = group.updates.filter((u) => u.kind === "transcript").length;
+  const transcripts = group.updates.filter((u) => u.kinds.includes("transcript")).length;
+  const added = group.updates.filter((u) => u.isNew).length;
   return (
     <section className="relative pl-8">
       <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-brand-600 ring-4 ring-brand-100" aria-hidden="true" />
       <h2 className="text-sm font-bold uppercase tracking-wide text-zinc-900">{dayHeading(group.day)}</h2>
       <p className="mt-0.5 text-sm text-zinc-500">
         {group.updates.length} {group.updates.length === 1 ? "meeting" : "meetings"}
-        {transcripts > 0 && transcripts < group.updates.length ? ` · ${transcripts} with new transcripts` : ""}
+        {added > 0 ? ` · ${added} new` : ""}
+        {transcripts > 0 ? ` · ${transcripts} ${transcripts === 1 ? "transcript" : "transcripts"}` : ""}
       </p>
       <ul className="mt-2 divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface px-4">
         {visible.map((update) => (
