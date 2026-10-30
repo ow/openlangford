@@ -23,6 +23,7 @@ import json
 import os
 import random
 import subprocess
+import time
 from dataclasses import dataclass
 from typing import Any, Callable
 from urllib.parse import urlparse
@@ -175,6 +176,17 @@ def candidate_offsets(duration: float | None) -> list[int]:
     return out
 
 
+COUNCIL_SHOTS = ("council_wide", "council_member")
+
+
+def second_round_offsets(offsets: list[int], duration: float | None) -> list[int]:
+    """Midpoints between the first-round offsets, and one past the last (inside the video)."""
+    first = sorted(offsets)
+    last = int(duration) - END_MARGIN_S if duration else first[-1] + 1200
+    mids = [(a + b) // 2 for a, b in zip(first, first[1:])] + [(first[-1] + last) // 2]
+    return [o for o in mids if 0 <= o <= last and o not in first]
+
+
 def grab_frame(media_url: str, offset_s: int) -> bytes | None:
     """One JPEG frame at ``offset_s`` read straight from the stream (input seeking)."""
     try:
@@ -273,19 +285,42 @@ MERGE_SQL = (
 
 
 def save_meta_key(meeting_id: int, key: str, value: dict, conn: Any = None) -> None:
-    """Merge one top-level key into meetings.meta without touching any other key."""
-    own = conn is None
-    if own:
-        from pipeline.ingestion.embed import get_db_connection
+    """Merge one top-level key into meetings.meta without touching any other key.
 
+    A new connection sometimes lands in a read-only session (seen during the 2026-10-30
+    backfill); that write is retried on a fresh connection."""
+    if conn is not None:
+        _merge(conn, meeting_id, key, value)
+        return
+    from pipeline.ingestion.embed import get_db_connection
+
+    for attempt in range(READ_ONLY_RETRIES):
         conn = get_db_connection()
+        try:
+            _merge(conn, meeting_id, key, value)
+            return
+        except Exception as e:
+            if type(e).__name__ != "ReadOnlySqlTransaction" or attempt == READ_ONLY_RETRIES - 1:
+                raise
+            time.sleep(1 + attempt)
+        finally:
+            conn.close()
+
+
+READ_ONLY_RETRIES = 5
+
+
+def _merge(conn: Any, meeting_id: int, key: str, value: dict) -> None:
     try:
         with conn.cursor() as cur:
+            # Pooled sessions can arrive with default_transaction_read_only left on by another
+            # client; this write's own transaction is explicitly read-write.
+            cur.execute("set transaction read write")
             cur.execute(MERGE_SQL, (key, json.dumps(value), meeting_id))
         conn.commit()
-    finally:
-        if own:
-            conn.close()
+    except Exception:
+        conn.rollback()
+        raise
 
 
 def save_poster(meeting_id: int, poster: dict, conn: Any = None) -> None:
@@ -316,15 +351,28 @@ def make_poster(
     duration = probe(media) or meeting.get("video_duration_seconds") or None
     offsets = offsets_for(duration)
     frames = {o: grab(media, o) for o in offsets}
-    good = [o for o, f in frames.items() if usable(f)]
+    kinds: dict[int, str] = {}
+    classify_fn = classify or (lambda fs: {o: "other" for o in fs})
+
+    def judge(offs: list[int]) -> None:
+        fresh = [o for o in offs if o not in kinds and usable(frames.get(o))]
+        kinds.update(classify_fn({o: frames[o] for o in fresh}))
+        for o in fresh:  # the pixel heuristic backs up the classifier on obvious slides
+            if kinds.get(o, "other") in ("other", "empty_room") and slide(frames[o]):
+                kinds[o] = "slide"
+
+    judge(offsets)
+    if classify and not any(k in COUNCIL_SHOTS for k in kinds.values()):
+        # No council shot yet (long presentations, a podium-heavy meeting): try the midpoints.
+        extra = [o for o in second_round_offsets(offsets, duration) if o not in frames]
+        frames.update({o: grab(media, o) for o in extra})
+        offsets = offsets + extra
+        judge(extra)
+    good = [o for o in offsets if usable(frames.get(o))]
     if not good:
         got = sum(1 for f in frames.values() if f)
         return PosterResult(mid, None, f"no usable frame ({got}/{len(offsets)} grabbed, all dark/uniform)" if got
                             else "no frames grabbed", candidates=len(offsets))
-    kinds = (classify or (lambda fs: {o: "other" for o in fs}))({o: frames[o] for o in good})
-    for o in good:  # the pixel heuristic backs up the classifier on obvious slides
-        if kinds.get(o, "other") in ("other", "empty_room") and slide(frames[o]):
-            kinds[o] = "slide"
     best = min(SHOT_ORDER.index(kinds.get(o, "other")) for o in good)
     tier = [o for o in good if SHOT_ORDER.index(kinds.get(o, "other")) == best]
     chosen = pick(mid, tier)

@@ -96,7 +96,7 @@ class TestMakePoster:
         res = posters.make_poster(
             {"id": 7, "video_url": "https://x/p"},
             resolve=lambda u: "https://x/v.mp4", probe=lambda u: 10_000,
-            grab=lambda u, o: frames.get(o), offsets_for=lambda d: sorted(frames), store=store, **kw,
+            grab=lambda u, o: frames.get(o), store=store, **{"offsets_for": lambda d: sorted(frames), **kw},
         )
         return res, stored
 
@@ -131,6 +131,17 @@ class TestMakePoster:
         kinds = {150: "podium_public", 2000: "podium_public", 4000: "podium_public", 6000: "slide"}
         res, _ = self._run(frames, classify=lambda fs: {o: kinds[o] for o in fs}, slide=lambda f: False)
         assert res.poster["offset_s"] == 6000  # even a slide beats the podium
+
+    def test_second_round_when_no_council_shot(self):
+        # first round: 150 / 2000 (podium, slide); midpoints 1075 and 6000 get grabbed next
+        frames = {150: SCENE, 2000: SCENE, 1075: SCENE, 6000: SCENE}
+        kinds = {150: "podium_public", 2000: "slide", 1075: "council_wide", 6000: "podium_public"}
+        res, _ = self._run(frames, classify=lambda fs: {o: kinds[o] for o in fs}, slide=lambda f: False,
+                           offsets_for=lambda d: [150, 2000])
+        assert res.poster["offset_s"] == 1075 and res.poster["candidates"] == 4
+
+    def test_second_round_offsets(self):
+        assert posters.second_round_offsets([150, 1500, 3000], 4000) == [825, 2250, 3495]
 
     def test_ties_within_best_tier_are_seeded_by_meeting(self):
         frames = {150: SCENE, 2000: SCENE, 4000: SCENE}
@@ -172,6 +183,28 @@ def test_save_poster_merges_only_the_poster_key():
     assert "meta = coalesce(meta, '{}'::jsonb) || jsonb_build_object(%s::text, %s::jsonb)" in sql
     assert params[0] == "poster" and json.loads(params[1]) == {"url": "u", "offset_s": 150} and params[2] == 5
     conn.commit.assert_called_once()
+
+
+def test_save_retries_read_only_sessions(monkeypatch):
+    from pipeline.ingestion import embed
+
+    class ReadOnlySqlTransaction(Exception):
+        pass
+
+    conns = []
+
+    def connect():
+        conn = MagicMock()
+        cur = conn.cursor.return_value.__enter__.return_value
+        if len(conns) < 2:
+            cur.execute.side_effect = ReadOnlySqlTransaction("read-only")
+        conns.append(conn)
+        return conn
+
+    monkeypatch.setattr(embed, "get_db_connection", connect)
+    monkeypatch.setattr(posters.time, "sleep", lambda s: None)
+    posters.save_poster(5, {"url": "u"})
+    assert len(conns) == 3 and conns[2].commit.called and all(c.close.called for c in conns)
 
 
 class TestStage:
