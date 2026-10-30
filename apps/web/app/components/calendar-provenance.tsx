@@ -1,4 +1,5 @@
 import { formatDate } from "../lib/utils";
+import { civicToday } from "../lib/council-terms";
 
 export function CalendarProvenance({ meeting, compact = false }: { compact?: boolean; meeting: { calendar_source_id?: number | null; calendar?: any; meeting_date: string; status?: string; has_agenda?: boolean; has_minutes?: boolean; has_transcript?: boolean; summary?: string; meta?: any } }) {
   const calendar = meeting.calendar_source_id && (meeting.calendar ?? meeting.meta?.calendar);
@@ -17,7 +18,7 @@ export function CalendarProvenance({ meeting, compact = false }: { compact?: boo
     : missingAgenda ? "Agenda not yet published" : null;
   return <p className="mt-2 text-xs leading-relaxed text-zinc-500">
     <a href={source.href} target="_blank" rel="noopener noreferrer" aria-label={`${label} — official source (opens in new tab)`} className="font-semibold underline underline-offset-2 hover:text-brand-700">{label}</a>
-    {!compact && Number.isFinite(checked.getTime()) && <> · Schedule checked {formatDate(checked.toISOString().slice(0, 10))}</>}
+    {!compact && Number.isFinite(checked.getTime()) && <> · Schedule checked {formatDate(civicToday(checked))}</>}
     {calendar.start_time && ` · ${calendar.start_time} (Langford time)`}
     {missingDetails && ` · ${missingDetails}`}
     {stale && " · Schedule check overdue"}

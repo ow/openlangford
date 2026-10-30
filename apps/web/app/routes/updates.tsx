@@ -131,6 +131,7 @@ export default function Updates({ loaderData }: Route.ComponentProps) {
         <PageHeader
           title="Recent updates"
           icon={History}
+          className="lg:-ml-7"
           description="Meetings in the order we finished processing them. Older meetings show up here too when they gain a transcript or their agenda and minutes are reprocessed."
         />
         {loadError ? (

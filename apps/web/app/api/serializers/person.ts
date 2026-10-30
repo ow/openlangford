@@ -6,6 +6,8 @@
  * included (never omitted).
  */
 
+import { civicToday } from "../../lib/council-terms";
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -28,7 +30,7 @@ function deriveIsCurrentCouncillor(row: any): boolean {
   if (row.is_councillor === true) return true;
   if (!row.memberships || !Array.isArray(row.memberships)) return false;
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = civicToday();
   return row.memberships.some(
     (m: any) => !m.end_date || m.end_date >= today,
   );

@@ -12,6 +12,7 @@ import {
   isAiError,
   type AiUsageHook,
 } from "./ai/index.server";
+import { civicToday } from "../lib/council-terms";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY =
@@ -917,7 +918,7 @@ function compactArgs(args: Record<string, unknown>): Record<string, unknown> {
 }
 
 function getOrchestratorSystemPrompt(municipalityName: string = DEFAULT_MUNICIPALITY.name) {
-  const todayDate = new Date().toISOString().split("T")[0];
+  const todayDate = civicToday();
 
   return `You are a research agent for the ${municipalityName}, British Columbia. Citizens ask you questions about their municipal council and you gather evidence from council records to answer them.
 

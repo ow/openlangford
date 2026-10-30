@@ -848,7 +848,7 @@ export async function get_person_by_role(
     return `Error: Council organization not found.`;
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = civicToday();
 
   const { data: membership, error } = await supabase
     .from("memberships")
