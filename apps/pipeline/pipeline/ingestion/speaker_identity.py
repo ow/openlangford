@@ -37,7 +37,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 
-IDENTITY_VERSION = "1"
+IDENTITY_VERSION = "2"
 ATTRIBUTION_SOURCE = "SPEAKER_EVIDENCE"
 # Rows the stage may name. Anything else (manual, verified, legacy-named) is left alone.
 UNNAMED_SOURCES = ("UNIDENTIFIED_DIARIZATION", "CACHED_TRANSCRIPT_BACKFILL", "AI_DIARIZATION")
@@ -49,6 +49,9 @@ MIN_SHARE = 0.75  # winner's share of all weighted events for the label
 VOICE_MIN_MEETINGS = 3
 VOICE_MIN_SIMILARITY = 0.80
 VOICE_MIN_MARGIN = 0.08
+# Enough on its own for someone the minutes roster doesn't list (e.g. staff at council).
+VOICE_STRONG_SIMILARITY = 0.90
+VOICE_STRONG_MARGIN = 0.12
 FINGERPRINT_MIN_SECONDS = 60.0  # a label must speak this long to seed a fingerprint or be voice-checked
 # A text-named label whose voice is this far from the person's evidenced voice is held
 # (same-person exemplars sit at p1 0.78 / p50 0.98 against their own mean).
@@ -522,7 +525,11 @@ def decide(events: list[dict], voice: dict | None, roster: set[int], ignore: fro
         if set(k) == {"chair"} and k["chair"] < 3:
             return None
     else:
-        if top < MIN_SCORE + 1 or len(k) < 2:
+        strong_voice = bool(voice and voice["person_id"] == pid and voice["similarity"] >= VOICE_STRONG_SIMILARITY
+                            and voice["margin"] >= VOICE_STRONG_MARGIN)
+        # Staff and others the minutes omit: two kinds of evidence, or a voice heard
+        # unmistakably at earlier meetings (exemplars only ever hold roster officials).
+        if not strong_voice and (top < MIN_SCORE + 1 or len(k) < 2):
             return None
     return {"person_id": pid, "score": top, "share": round(top / total, 3), "kinds": dict(k),
             "on_roster": on_roster}

@@ -170,3 +170,11 @@ def test_a_namesake_in_the_room_shadows_a_bare_surname():
     idx.shadow_namesakes("App user Shelley King, please unmute.")
     assert idx.resolve(["King"], True) is None
     assert idx.resolve(["Nadine", "King"], True).id == 186
+
+
+def test_strong_voice_names_staff_the_minutes_roster_omits():
+    voice = {"person_id": 6, "similarity": 0.96, "margin": 0.17}
+    assert si.decide([], voice, roster={1, 22})["person_id"] == 6
+    weak = {"person_id": 6, "similarity": 0.84, "margin": 0.09}
+    assert si.decide([], weak, roster={1, 22}) is None
+    assert si.decide([], weak, roster={6})["person_id"] == 6
