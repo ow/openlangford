@@ -127,5 +127,5 @@ export function bylawLegislation(b: { title: string; bylaw_number?: string | nul
 }
 
 export function councilPerson(p: { name: string; image_url?: string | null }, jobTitle: string, path: string, description?: string): Thing {
-  return compact({ "@type": "Person", name: p.name, jobTitle, image: p.image_url, url: abs(path), description, worksFor: CITY_OF_LANGFORD });
+  return compact({ "@type": "Person", name: p.name, jobTitle, image: p.image_url ? abs(p.image_url) : null, url: abs(path), description, worksFor: CITY_OF_LANGFORD });
 }

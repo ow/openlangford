@@ -13,13 +13,21 @@ const tables: Record<string, any[]> = {
     { id: 10, slug: "2140-caribou-drive", street: "Caribou Drive", civic_number: "2140", updated_at: "2026-10-27T18:00:00+00:00" },
     { id: 11, slug: "caribou-drive", street: "Caribou Drive", civic_number: "", updated_at: "2026-10-27T18:00:00+00:00" },
     { id: 12, slug: "9-nowhere-road", street: "Nowhere Road", civic_number: "9", updated_at: "2026-10-27T18:00:00+00:00" },
+    // Known only because a resident gave it as their home address: kept out, and so is its street.
+    { id: 13, slug: "848-walfred-road", street: "Walfred Road", civic_number: "848", updated_at: "2026-10-27T18:00:00+00:00" },
+    { id: 14, slug: "walfred-road", street: "Walfred Road", civic_number: "", updated_at: "2026-10-27T18:00:00+00:00" },
   ],
   property_links: [
     { id: 1, property_id: 10, agenda_items: { meetings: { meeting_date: "2024-03-18" } }, matters: null },
     { id: 2, property_id: 10, agenda_items: null, matters: { last_seen: "2025-01-20" } },
+    { id: 3, property_id: 13, agenda_items: { title: "Mr. A Resident, of 848 Walfred Rd", category: "Public Input", meetings: { meeting_date: "2025-03-03" } }, matters: null },
   ],
-  meetings: [{ id: 7, slug: "2027-01-11-regular-council", meeting_date: "2027-01-11", updated_at: "2026-10-20T03:00:00+00:00" }],
-  documents: [], extracted_documents: [], bylaws: [], people: [], elections: [],
+  meetings: [
+    { id: 7, slug: "2027-01-11-regular-council", meeting_date: "2027-01-11", updated_at: "2026-10-20T03:00:00+00:00" },
+    { id: 8, slug: "2025-06-02-regular-council", meeting_date: "2025-06-02", updated_at: "2026-10-27T18:00:00+00:00", has_transcript: true },
+  ],
+  documents: [{ meeting_id: 8 }],
+  extracted_documents: [], bylaws: [], people: [], elections: [],
 };
 const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
   const table = new URL(String(input)).pathname.split("/").pop()!;
@@ -50,7 +58,15 @@ it("gives the index each section's newest real date, never a future one, and non
   const lastmod = (section: string) => index.find((s) => s.path === `/sitemaps/${section}.xml`)?.lastmod;
   expect(lastmod("matters")).toBe("2026-09-08");
   expect(lastmod("properties")).toBe("2025-01-20");
-  // The only meeting is scheduled; its updated_at (03:00 UTC) is the 19th in Langford.
-  expect(lastmod("meetings")).toBe("2026-10-19");
+  // The newest meeting is scheduled (no lastmod); the past one's date, not its backfilled updated_at.
+  expect(lastmod("meetings")).toBe("2025-06-02");
   expect(lastmod("pages")).toBeNull();
+});
+
+it("lists meeting pages (dated by the meeting) and past years' lists, not their documents or explorer views", async () => {
+  expect(await sitemapEntries(client, "meetings")).toEqual([
+    expect.objectContaining({ path: "/meetings/2027-01-11-regular-council", lastmod: null }),
+    expect.objectContaining({ path: "/meetings/2025-06-02-regular-council", lastmod: "2025-06-02" }),
+    expect.objectContaining({ path: "/meetings?year=2025", lastmod: "2025-06-02" }),
+  ]);
 });

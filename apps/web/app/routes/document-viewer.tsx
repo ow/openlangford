@@ -1,4 +1,4 @@
-import { markdownAlternate } from "../lib/page-meta";
+import { fitTitle, markdownAlternate, pageMeta, recordDate } from "../lib/page-meta";
 import { SITE_NAME } from "../lib/site-name";
 import { documentPath, meetingDocumentsPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
@@ -42,18 +42,19 @@ export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.extractedDoc)
     return [{ title: `Document | ${SITE_NAME}` }];
   const ed = data.extractedDoc as ExtractedDocument;
-  const description = ed.summary || `Document: ${ed.title}`;
+  const meeting = data.meeting as { id: number; slug: string; title: string; meeting_date: string } | null;
+  const date = meeting ? recordDate(meeting.meeting_date) : "";
+  // "Staff report: … | Regular Council, May 19, 2026 | Open Langford" when it fits.
+  const title = fitTitle(ed.title || "Document", meeting ? `${meeting.title}, ${date}` : undefined);
+  const description = (ed.summary || "").trim()
+    || (meeting ? `${ed.title}, from Langford’s ${meeting.title} meeting on ${date}.` : `${ed.title}, a Langford council document.`);
+  const path = meeting ? documentPath(meeting, ed.id) : "";
   return [
-    ...(data.meeting ? [markdownAlternate(documentPath(data.meeting, ed.id, "/content.md"))] : []),
-    { title: `${ed.title} | ${SITE_NAME}` },
-    { name: "description", content: description },
-    { property: "og:title", content: ed.title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "article" },
-    { property: "og:image", content: ogImageUrl(ed.title, { type: "default" }) },
-    { property: "og:image:width", content: "1200" },
-    { property: "og:image:height", content: "630" },
-    { name: "twitter:card", content: "summary_large_image" },
+    ...pageMeta(ed.title || "Document", description, path, "article", {
+      fullTitle: title,
+      image: ogImageUrl(ed.title, { subtitle: meeting ? `${meeting.title} · ${date}` : undefined, type: "default" }),
+    }),
+    ...(meeting ? [markdownAlternate(documentPath(meeting, ed.id, "/content.md"))] : []),
   ];
 };
 

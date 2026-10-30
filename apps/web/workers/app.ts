@@ -13,6 +13,7 @@ import { enqueueEnabled, enqueueMeetingEmails } from "./email-enqueue";
 import { negotiateMarkdown } from "./markdown-negotiation";
 import { publicMeetingCache } from "./public-meeting-cache";
 import { contentVersion } from "./content-version";
+import { canonicalRedirect } from "./canonical-redirect";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -61,6 +62,8 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, url: UR
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     const url = new URL(request.url);
+    const redirect = canonicalRedirect(request, url);
+    if (redirect) return redirect;
     // AI usage rows are written via ctx.waitUntil, labelled with the route and request id.
     const aiContext = {
       gateway: env.AI_GATEWAY_ID ? env.AI.gateway(env.AI_GATEWAY_ID) : undefined,

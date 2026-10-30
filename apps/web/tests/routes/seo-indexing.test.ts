@@ -179,7 +179,7 @@ describe("matters list pagination", () => {
   });
   it("links prev/next pages in the head", () => {
     const meta = mattersMeta({ data: { page: 2, pageCount: 3, total: 119 } } as any) as any[];
-    expect(title(meta)).toBe("Langford Council Matters — Page 2 | Open Langford");
+    expect(title(meta)).toBe("Langford Council Decisions and Applications — Page 2 | Open Langford");
     expect(value(meta, "og:url")).toBe("https://openlangford.ca/matters?page=2");
     expect(meta.filter((m) => m.tagName === "link").map((m) => [m.rel, m.href])).toEqual([
       ["prev", "https://openlangford.ca/matters"],

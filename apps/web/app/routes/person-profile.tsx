@@ -66,7 +66,7 @@ import { cn, formatDate } from "../lib/utils";
 import { AskQuestion } from "../components/ask-question";
 import { SectionHeading } from "../components/ui/section-heading";
 import { displayTitle } from "../lib/display-text";
-import { ogImageUrl } from "../lib/og";
+import { ogImageUrl, ogUrl } from "../lib/og";
 import { metaDescription, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, councilPerson, jsonLd } from "../lib/structured-data";
 
@@ -88,7 +88,8 @@ export const meta: Route.MetaFunction = ({ data, matches }) => {
   const lead = `${p.name}: ${role} for the ${municipalityName}${service ? ` (${service})` : ""}.`;
   const description = p.bio ? `${lead} ${p.bio}` : `${lead} Voting record, attendance, motions and speaking time on Langford Council.`;
   const path = personPath(p);
-  const image = p.image_url || ogImageUrl(p.name, { subtitle: role, type: "person" });
+  // og:image must be absolute; portraits are stored as site paths ("/images/people/…").
+  const image = p.image_url ? (p.image_url.startsWith("http") ? p.image_url : ogUrl(p.image_url)) : ogImageUrl(p.name, { subtitle: role, type: "person" });
   return [
     ...pageMeta(`${p.name} — ${role}`, description, path, "profile", { image }),
     jsonLd(

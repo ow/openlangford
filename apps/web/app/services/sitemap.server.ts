@@ -1,12 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SitemapEntry } from "../lib/sitemap";
 import { latestDate, sitemapDate } from "../lib/sitemap";
-import { bylawPath, documentPath, electionPath, matterPath, meetingDocumentsPath, meetingPath } from "../lib/paths";
+import { bylawPath, documentPath, electionPath, matterPath, meetingPath } from "../lib/paths";
 import { propertyPath } from "./properties";
 import { participantPath, personPath } from "../lib/people-paths";
 import { getMunicipality } from "./municipality";
 import { getPublicParticipantsIndex } from "./participant-statements.server";
 import { publicData } from "./public-data-cache.server";
+import { residentOnly } from "../lib/public-input";
 
 /**
  * URL lists for /sitemap.xml, one section per content type. Each mirrors the
@@ -33,7 +34,7 @@ async function publicMeetings(supabase: SupabaseClient, municipalityId: number) 
   return pageAll<any>((from, to) =>
     supabase
       .from("meetings")
-      .select("id, slug, meeting_date, updated_at, has_transcript")
+      .select("id, slug, meeting_date")
       .eq("municipality_id", municipalityId)
       .or(PUBLIC_READY_FILTER)
       .order("id")
@@ -89,22 +90,29 @@ async function buildSitemapEntries(
       ];
 
     case "meetings": {
+      // Meeting pages only: the documents list and timeline explorer are views of the same
+      // meeting (linked from it), not pages worth a search result of their own.
       const meetings = await publicMeetings(supabase, municipality.id);
-      const docMeetings = new Set<number>();
-      for (let i = 0; i < meetings.length; i += 300) {
-        const ids = meetings.slice(i, i + 300).map((m) => m.id);
-        const rows = await pageAll<any>((from, to) => supabase.from("documents").select("meeting_id").in("meeting_id", ids).range(from, to));
-        for (const r of rows) docMeetings.add(r.meeting_id);
-      }
       const today = sitemapDate(new Date().toISOString())!;
-      return meetings.flatMap((m) => {
-        // A scheduled meeting's date is when it happens, not when its page changed.
-        const lastmod = latestDate(m.updated_at, m.meeting_date <= today ? m.meeting_date : null);
-        const out: SitemapEntry[] = [{ path: meetingPath(m), lastmod, changefreq: "monthly", priority: 0.7 }];
-        if (docMeetings.has(m.id)) out.push({ path: meetingDocumentsPath(m), lastmod, changefreq: "monthly", priority: 0.4 });
-        if (m.has_transcript) out.push({ path: meetingPath(m, "/explorer"), lastmod, changefreq: "monthly", priority: 0.3 });
-        return out;
-      });
+      const thisYear = Number(today.slice(0, 4));
+      // updated_at moves with every backfill; the meeting date is stable. A meeting's page is
+      // essentially complete once it has happened, so that is its lastmod (none while scheduled).
+      const out: SitemapEntry[] = meetings.map((m) => ({
+        path: meetingPath(m),
+        lastmod: m.meeting_date <= today ? latestDate(m.meeting_date) : null,
+        changefreq: "monthly" as const,
+        priority: 0.7,
+      }));
+      // Each past year's list (/meetings?year=YYYY, self-canonical); the bare /meetings is this year.
+      const lastByYear = new Map<number, string>();
+      for (const m of meetings) {
+        const year = Number(String(m.meeting_date).slice(0, 4));
+        if (year && year !== thisYear && m.meeting_date <= today) lastByYear.set(year, latestDate(lastByYear.get(year), m.meeting_date)!);
+      }
+      for (const [year, lastmod] of [...lastByYear].sort((a, b) => b[0] - a[0])) {
+        out.push({ path: `/meetings?year=${year}`, lastmod, changefreq: "yearly", priority: 0.5 });
+      }
+      return out;
     }
 
     case "documents": {
@@ -141,8 +149,9 @@ async function buildSitemapEntries(
     }
 
     case "properties": {
-      // Only pages with something on them: an address with a visible record, or a
-      // street with one itself or at any of its addresses (hidden links leave thin pages).
+      // Only indexable pages (the same rule as the page's robots tag, services/properties.ts): an
+      // address with a visible record that isn't only a resident's home named in public input,
+      // or a street with a record itself or at any such address (hidden links leave thin pages).
       const [properties, links] = await Promise.all([
         pageAll<any>((from, to) =>
           supabase.from("properties").select("id, slug, street, civic_number").eq("municipality_id", municipality.id).order("id").range(from, to),
@@ -150,7 +159,7 @@ async function buildSitemapEntries(
         pageAll<any>((from, to) =>
           supabase
             .from("property_links")
-            .select("id, property_id, agenda_items(meetings(meeting_date)), matters(last_seen)")
+            .select("id, property_id, agenda_items(title, category, meetings(meeting_date)), matters(last_seen)")
             .eq("hidden", false)
             .order("id")
             .range(from, to),
@@ -158,7 +167,12 @@ async function buildSitemapEntries(
       ]);
       // lastmod = the latest meeting that considered the address (properties.updated_at is a backfill stamp).
       const latest = new Map<number, string | null>();
-      for (const l of links) latest.set(l.property_id, latestDate(latest.get(l.property_id), l.agenda_items?.meetings?.meeting_date, l.matters?.last_seen));
+      const byProperty = new Map<number, any[]>();
+      for (const l of links) {
+        latest.set(l.property_id, latestDate(latest.get(l.property_id), l.agenda_items?.meetings?.meeting_date, l.matters?.last_seen));
+        (byProperty.get(l.property_id) || byProperty.set(l.property_id, []).get(l.property_id)!).push(l);
+      }
+      for (const p of properties) if (p.civic_number !== "" && residentOnly(byProperty.get(p.id) || [])) latest.delete(p.id);
       const streetLatest = new Map<string, string | null>();
       for (const p of properties) {
         if (!latest.has(p.id)) continue;

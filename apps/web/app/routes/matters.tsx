@@ -38,14 +38,14 @@ export const meta: Route.MetaFunction = ({ data }) => {
   const page = data?.page || 1;
   const pageCount = data?.pageCount || 1;
   const total = data?.total || 0;
-  const description = `${total ? `${total.toLocaleString("en-CA")} ` : ""}${DEFAULT_MUNICIPALITY.short_name} council matters: rezonings, development permits, bylaws and recurring items, each traced through every meeting, motion and vote.${page > 1 ? ` Page ${page} of ${pageCount}.` : ""}`;
+  const description = `${total ? `${total.toLocaleString("en-CA")} ` : ""}${DEFAULT_MUNICIPALITY.short_name} council decisions and applications: rezonings, development permits, bylaws and recurring items, each followed through every meeting and vote.${page > 1 ? ` Page ${page} of ${pageCount}.` : ""}`;
   return [
-    ...pageMeta(`Langford Council Matters${page > 1 ? ` — Page ${page}` : ""}`, description, mattersPagePath(page), "website", {
-      image: ogImageUrl("Council Matters", { type: "matter" }),
+    ...pageMeta(`Langford Council Decisions and Applications${page > 1 ? ` — Page ${page}` : ""}`, description, mattersPagePath(page), "website", {
+      image: ogImageUrl("Council Decisions and Applications", { type: "matter" }),
     }),
     ...(page > 1 ? [{ tagName: "link", rel: "prev", href: ogUrl(mattersPagePath(page - 1)) }] : []),
     ...(page < pageCount ? [{ tagName: "link", rel: "next", href: ogUrl(mattersPagePath(page + 1)) }] : []),
-    jsonLd(breadcrumbList([["Matters", "/matters"]])),
+    jsonLd(breadcrumbList([["Council decisions and applications", "/matters"]])),
   ];
 };
 
@@ -311,7 +311,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
       >
         <PageHeader
           className={showMapView ? "pb-0 lg:col-span-12" : undefined}
-          title="Matters"
+          title="Council decisions and applications"
           icon={Tag}
           description="Bylaws, development applications and recurring items, tracked as they move through council."
           actions={
