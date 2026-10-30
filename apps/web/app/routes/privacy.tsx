@@ -2,15 +2,27 @@ import { pageMeta } from "../lib/page-meta";
 export const meta = () => pageMeta("Privacy policy", "How Open Langford collects and uses public records and personal information, including analytics and your privacy choices.", "/privacy");
 
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
-import { Link, useRouteLoaderData } from "react-router";
+import { Link, useLoaderData, useRouteLoaderData } from "react-router";
+import { createSupabaseServerClient } from "../lib/supabase.server";
+import { getConfiguredVideoProviderId } from "../services/video/index.server";
+import { VIDEO_PROVIDERS, type VideoProviderId } from "../services/video/catalog";
 import type { Municipality } from "../lib/types";
 import { siteName } from "../lib/site-name";
 import { PageHeader } from "../components/ui/page-header";
 
+export async function loader({ request }: { request: Request }) {
+  const { supabase } = createSupabaseServerClient(request);
+  // Default to Vimeo wording (the upstream project's provider) when nothing is configured.
+  const videoProvider: VideoProviderId = (await getConfiguredVideoProviderId(supabase)) ?? "vimeo";
+  return { videoProvider };
+}
+
 export default function Privacy() {
+  const { videoProvider } = useLoaderData<typeof loader>();
   const rootData = useRouteLoaderData("root") as { municipality?: Municipality } | undefined;
   const municipalityName = rootData?.municipality?.name || DEFAULT_MUNICIPALITY.name;
   const name = siteName(rootData?.municipality);
+  const videoPrivacy = VIDEO_PROVIDERS[videoProvider].privacy(municipalityName);
   return (
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-3xl px-4 py-12">
@@ -34,10 +46,11 @@ export default function Privacy() {
 
         <h2>3. Third Parties</h2>
         <p>
-          We use Supabase for data storage and authentication, Vimeo for
-          video hosting, and PostHog for anonymous usage statistics such as
-          page views and search questions. Please refer to their respective privacy policies for
-          more information.
+          We use Supabase for data storage and authentication
+          {videoPrivacy.weUse ? `, ${videoPrivacy.weUse}, and ` : " and "}PostHog for anonymous usage
+          statistics such as page views and search questions.
+          {videoPrivacy.note ? ` ${videoPrivacy.note}` : ""} Please refer to their respective privacy
+          policies for more information.
         </p>
 
         <div className="not-prose mt-8 rounded-xl border border-dashed border-zinc-300 p-4">
