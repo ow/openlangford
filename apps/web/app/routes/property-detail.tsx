@@ -22,22 +22,27 @@ import { formatDate } from "../lib/utils";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.property) return [{ title: `Property | ${SITE_NAME}` }];
-  const { property, matters } = data;
-  // The pipeline's property-summaries stage writes a plain-language overview for addresses with 2+ records.
+  const { property, matters, isStreet } = data;
+  // The page's lead is its search description too: the pipeline's property-summaries stage
+  // writes it (what happened there, then how often it came up); the title carries "Langford".
   const summary: string | undefined = (property as any).meta?.summary || undefined;
   const description = summary
-    ? `${property.address}, Langford: ${summary}`
+    ? summary
+    : isStreet
+    ? `Road work, developments and other council decisions on ${property.address}, Langford, newest first.`
     : matters.length
-    ? `${matters.length} council ${matters.length === 1 ? "matter" : "matters"} about ${property.address}, Langford: ${matters
+    ? `Council decisions and projects at ${property.address}, Langford: ${matters
         .slice(0, 3)
         .map((m: any) => matterTitle(m))
         .join("; ")}.`
-    : `Council records that mention ${property.address}, Langford.`;
+    : `Council meetings that mentioned ${property.address}, Langford.`;
   const path = propertyPath(property);
   return [
     ...pageMeta(`${property.address}, Langford`, description, path, "article", {
-      image: ogImageUrl(property.address, { subtitle: data.isStreet ? "Street" : "Property", type: "matter" }),
+      image: ogImageUrl(property.address, { subtitle: isStreet ? "Street" : "Property", type: "matter" }),
     }),
+    // Nothing on the page, or only a resident's home address from public input (see getPropertyBySlug).
+    ...(data.noindex ? [{ name: "robots", content: "noindex, follow" }] : []),
     jsonLd(
       // A lot pinned only to its street has no coordinates of its own.
       propertyPlace({ address: property.address, geo: property.civic_number && (property.geo as any)?.precision === "street" ? null : (property.geo as any) }, path, metaDescription(description)),
@@ -114,7 +119,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             <span key="kind">{isStreet ? "Street" : "Property"}</span>,
             dates.length > 0 ? (
               <span key="dates" className="tabular-nums">
-                In council records {String(dates[0]).slice(0, 4)}
+                In council meetings {String(dates[0]).slice(0, 4)}
                 {String(dates.at(-1)).slice(0, 4) !== String(dates[0]).slice(0, 4) ? `–${String(dates.at(-1)).slice(0, 4)}` : ""}
               </span>
             ) : null,
@@ -125,14 +130,10 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           description={
             summary ||
             (isStreet
-              ? `${lots.length} ${lots.length === 1 ? "address" : "addresses"} on ${property.address} in council records${
-                  matters.length || items.length ? `, plus ${matters.length + items.length} about the street itself` : ""
-                }.`
+              ? `What Council has decided about ${property.address} and the addresses on it, from road work to new homes.`
               : matters.length > 0
-              ? `Everything Council considered about this lot: ${matters.length} ${matters.length === 1 ? "matter" : "matters"}${
-                  items.length ? ` and ${items.length} other agenda ${items.length === 1 ? "item" : "items"}` : ""
-                }. Developments that span several lots also appear on each lot's page.`
-              : "Agenda items that named this address.")
+              ? "Everything Council has decided about this address, newest first. Developments that cover several lots appear on each lot's page."
+              : "Council meetings that mentioned this address.")
           }
         />
 
@@ -155,9 +156,9 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           {matters.length > 0 && (
             <section>
               <SectionHeading
-                title={isStreet ? "About the street" : "Matters"}
+                title={isStreet ? "About the street" : "Council decisions and projects"}
                 icon={Landmark}
-                description={isStreet ? "Road works, closures and other matters about the street itself." : "Applications, permits and bylaws for this address, most recent first."}
+                description={isStreet ? "Road work, closures and other decisions about the street itself." : "Rezonings, permits and other decisions for this address, newest first."}
               />
               <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {matters.map((m: any) => {
@@ -192,7 +193,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
 
           {items.length > 0 && (
             <section>
-              <SectionHeading title="Other mentions" icon={FileText} description="Agenda items that named this address outside any matter." />
+              <SectionHeading title="Other mentions" icon={FileText} description="Other times this address came up in council meetings." />
               <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {items.map((item: any) => (
                   <li key={item.id}>
@@ -226,7 +227,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                       {l.address}
                     </Link>
                     <span className="shrink-0 tabular-nums text-xs text-zinc-500">
-                      {l.records} {l.records === 1 ? "record" : "records"}
+                      {l.mentions === 1 ? "Mentioned once" : `Mentioned ${l.mentions} times`}
                     </span>
                   </li>
                 ))}

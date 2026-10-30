@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { recordsPerYear, type RecordDate } from "../lib/activity-charts";
+import { PUBLIC_INPUT, residentOnly } from "../lib/public-input";
 
 /**
  * Properties: one civic address (one lot) and every matter and agenda item that
@@ -49,7 +50,7 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   if (!property) return null;
   const { data: links, error: linksError } = await supabase
     .from("property_links")
-    .select("agenda_item_id, matter_id, agenda_items(meetings(meeting_date))")
+    .select("agenda_item_id, matter_id, agenda_items(title, category, meetings(meeting_date))")
     .eq("property_id", property.id)
     .eq("hidden", false);
   if (linksError) throw linksError;
@@ -70,23 +71,35 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   if (itemsError) throw itemsError;
   const isStreet = property.civic_number === "";
   const number = parseInt(property.civic_number, 10);
-  // How many matters each lot on a street page has, for "3 matters" beside each address.
+  // How many records each lot on a street page has (its sort order and whether it's listed), how
+  // many times it came up in council meetings (shown beside it), and whether it is only a
+  // resident's home (named in public input).
   const lotCounts = new Map<number, number>();
+  const lotMentions = new Map<number, number>();
+  const lotResidentOnly = new Set<number>();
   // Each record's meeting dates (for the per-year sparkline); a street page adds every lot's.
   const recordKey = (l: any) => (l.matter_id ? `m${l.matter_id}` : `i${l.agenda_item_id}`);
   const recordDates: RecordDate[] = (links || []).map((l: any) => ({ key: recordKey(l), date: l.agenda_items?.meetings?.meeting_date }));
   if (isStreet && neighbours?.length) {
     const lotIds = neighbours.map((n) => n.id);
     for (let i = 0; i < lotIds.length; i += 300) {
-      const { data } = await supabase.from("property_links").select("property_id, matter_id, agenda_item_id, agenda_items(meetings(meeting_date))").in("property_id", lotIds.slice(i, i + 300)).eq("hidden", false);
+      const { data } = await supabase.from("property_links").select("property_id, matter_id, agenda_item_id, agenda_items(title, category, meetings(meeting_date))").in("property_id", lotIds.slice(i, i + 300)).eq("hidden", false);
       const seen = new Map<number, Set<string>>();
+      const mentioned = new Map<number, Set<string>>();
+      const byLot = new Map<number, any[]>();
       for (const l of (data || []) as any[]) {
         const set = seen.get(l.property_id) || new Set<string>();
         set.add(recordKey(l));
         recordDates.push({ key: recordKey(l), date: l.agenda_items?.meetings?.meeting_date });
         seen.set(l.property_id, set);
+        const mentions = mentioned.get(l.property_id) || new Set<string>();
+        mentions.add(l.agenda_item_id ? `i${l.agenda_item_id}` : `m${l.matter_id}`);
+        mentioned.set(l.property_id, mentions);
+        (byLot.get(l.property_id) || byLot.set(l.property_id, []).get(l.property_id)!).push(l);
       }
       for (const [id, set] of seen) lotCounts.set(id, set.size);
+      for (const [id, set] of mentioned) lotMentions.set(id, set.size);
+      for (const [id, ls] of byLot) if (residentOnly(ls)) lotResidentOnly.add(id);
     }
   }
   const slugOfStreet = property.street.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -97,13 +110,25 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   const hiddenMatters = new Set((matters || []).filter((m) => !visible(m)).map((m) => `m${m.id}`));
   const dated = new Set(recordDates.filter((r) => r.date).map((r) => r.key));
   for (const m of (matters || []).filter(visible)) if (!dated.has(`m${m.id}`)) recordDates.push({ key: `m${m.id}`, date: m.first_seen });
+  // Links to a hidden or merged matter are not on the page.
+  const shownLinks = (links || []).filter((l) => !l.matter_id || !hiddenMatters.has(`m${l.matter_id}`));
+  const ownRecords = (matters || []).filter(visible).length + looseItemIds.length;
+  /**
+   * Kept out of search results (the page still works and links stay): a page with nothing on it,
+   * and a lot known only because residents gave it as their home address while speaking or
+   * writing to Council (a street made up only of such lots, too).
+   */
+  const noindex = isStreet
+    ? !ownRecords && ![...lotCounts.keys()].some((id) => !lotResidentOnly.has(id))
+    : !ownRecords || residentOnly(shownLinks as any[]);
   return {
+    noindex,
     isStreet,
     streetSlug,
     activity: recordsPerYear(recordDates.filter((r) => !hiddenMatters.has(r.key))),
     lots: isStreet
       ? (neighbours || [])
-          .map((n) => ({ ...n, records: lotCounts.get(n.id) || 0 }))
+          .map((n) => ({ ...n, records: lotCounts.get(n.id) || 0, mentions: lotMentions.get(n.id) || 0 }))
           .sort((a, b) => parseInt(a.civic_number, 10) - parseInt(b.civic_number, 10))
       : [],
     property,
@@ -281,8 +306,7 @@ export type RecentPropertyItem = {
   properties: { slug: string; address: string }[];
 };
 
-// Public input items are left out of "recent": their addresses are often residents' homes.
-const PUBLIC_INPUT = /public\s+(?:participation|input|comment|hearing\s+submission)|correspondence|delegation|written\s+submission|petition/i;
+// Public input items (lib/public-input.ts) are left out of "recent": their addresses are often residents' homes.
 
 /**
  * Every address and street with at least one visible record (a matter, or an agenda
