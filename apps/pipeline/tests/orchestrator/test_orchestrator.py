@@ -12,12 +12,12 @@ from pipeline.scrapers.base import MunicipalityConfig
 # ── Helpers ─────────────────────────────────────────────────────────────
 
 
-def _make_municipality(slug="view-royal", source_type="civicweb"):
+def _make_municipality(slug="test-town", source_type="civicweb"):
     return MunicipalityConfig(
         id=1,
         slug=slug,
-        name="Town of View Royal",
-        short_name="View Royal",
+        name="Town of Test",
+        short_name="Test",
         source_config={"type": source_type, "base_url": "https://test.civicweb.net"},
     )
 
@@ -26,12 +26,13 @@ def _make_municipality(slug="view-royal", source_type="civicweb"):
 # has module-level side effects (register_scraper, imports from local_diarizer, etc.)
 
 @pytest.fixture
-def mock_orchestrator_deps():
+def mock_orchestrator_deps(tmp_path):
     """Patch all heavy external dependencies that orchestrator imports at module level."""
     with patch("pipeline.orchestrator.create_client") as mock_create, \
          patch("pipeline.orchestrator.LocalDiarizer") as mock_diarizer_cls, \
          patch("pipeline.orchestrator.get_video_client") as mock_vimeo_cls, \
-         patch("pipeline.orchestrator.CivicWebScraper") as mock_scraper_cls:
+         patch("pipeline.orchestrator.get_municipality_archive_root", return_value=str(tmp_path)), \
+         patch("pipeline.orchestrator.get_scraper") as mock_scraper_cls:
 
         mock_diarizer = MagicMock()
         mock_diarizer_cls.return_value = mock_diarizer
@@ -69,7 +70,7 @@ class TestArchiverInit:
             mock_config.SUPABASE_URL = "https://test.supabase.co"
             mock_config.SUPABASE_SECRET_KEY = "secret"
             mock_config.SUPABASE_KEY = "publishable"
-            Archiver()
+            Archiver(municipality=_make_municipality())
 
         mock_orchestrator_deps["create_client"].assert_called_once_with("https://test.supabase.co", "secret")
         mock_orchestrator_deps["diarizer_cls"].assert_called_once_with(
@@ -79,22 +80,25 @@ class TestArchiverInit:
 
 
 class TestArchiverInit:
-    def test_default_init_no_municipality(self, mock_orchestrator_deps):
+    def test_init_without_municipality_fails_instead_of_defaulting(self, mock_orchestrator_deps):
+        """No silent fallback to another town's sources (it used to be View Royal)."""
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
-        assert archiver.municipality is None
+        with pytest.raises(ValueError, match="needs a municipality"):
+            Archiver()
+        mock_orchestrator_deps["scraper_cls"].assert_not_called()
+        mock_orchestrator_deps["vimeo_cls"].assert_not_called()
 
     def test_init_with_municipality(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
         cfg = _make_municipality()
         archiver = Archiver(municipality=cfg)
         assert archiver.municipality is cfg
-        assert archiver.municipality.slug == "view-royal"
+        assert archiver.municipality.slug == "test-town"
 
     def test_diarizer_failure_disables_ai(self, mock_orchestrator_deps):
         mock_orchestrator_deps["diarizer_cls"].side_effect = Exception("No MLX")
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         assert archiver.ai_enabled is False
 
 
@@ -104,7 +108,7 @@ class TestArchiverInit:
 class TestArchiverRun:
     def test_run_default_calls_all_phases(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
 
@@ -118,7 +122,7 @@ class TestArchiverRun:
 
     def test_run_skip_docs(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
 
@@ -130,7 +134,7 @@ class TestArchiverRun:
 
     def test_run_skip_ingest(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
 
@@ -142,7 +146,7 @@ class TestArchiverRun:
 
     def test_run_skip_embed(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
 
@@ -154,7 +158,7 @@ class TestArchiverRun:
 
     def test_run_rediarize_skips_scrape_and_download(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
         archiver._process_audio_files = MagicMock(return_value=set())
@@ -175,7 +179,7 @@ class TestArchiverRun:
 class TestCollectAudioFiles:
     def test_collect_audio_files(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver.archive_root = str(tmp_path)
 
         # Create audio files
@@ -189,7 +193,7 @@ class TestCollectAudioFiles:
 
     def test_skip_already_processed(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver.archive_root = str(tmp_path)
 
         audio_dir = tmp_path / "Audio"
@@ -203,7 +207,7 @@ class TestCollectAudioFiles:
 
     def test_rediarize_includes_already_processed(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver.archive_root = str(tmp_path)
 
         audio_dir = tmp_path / "Audio"
@@ -221,7 +225,7 @@ class TestCollectAudioFiles:
 class TestResolveTarget:
     def test_resolve_directory_path(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         target_dir = tmp_path / "some_meeting"
         target_dir.mkdir()
         result = archiver._resolve_target(str(target_dir))
@@ -229,13 +233,13 @@ class TestResolveTarget:
 
     def test_resolve_invalid_path_raises(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         with pytest.raises(ValueError, match="Not a directory"):
             archiver._resolve_target("/nonexistent/path")
 
     def test_resolve_db_id(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         mock_supabase = MagicMock()
         mock_supabase.table.return_value.select.return_value.eq.return_value.single.return_value.execute.return_value = MagicMock(
@@ -255,7 +259,7 @@ class TestResolveTarget:
 class TestBackfillProgress:
     def test_load_fresh_progress(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         with patch("pipeline.orchestrator.BACKFILL_PROGRESS_FILE", str(tmp_path / "progress.json")):
             progress = archiver._load_backfill_progress()
@@ -264,7 +268,7 @@ class TestBackfillProgress:
 
     def test_load_existing_progress(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         progress_file = tmp_path / "progress.json"
         progress_file.write_text(json.dumps({
@@ -280,7 +284,7 @@ class TestBackfillProgress:
 
     def test_force_clears_progress(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         progress_file = tmp_path / "progress.json"
         progress_file.write_text(json.dumps({
@@ -297,7 +301,7 @@ class TestBackfillProgress:
 
     def test_save_and_reload_progress(self, mock_orchestrator_deps, tmp_path):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         progress_file = tmp_path / "progress.json"
         progress_file.write_text(json.dumps({
@@ -321,7 +325,7 @@ class TestBackfillProgress:
 class TestGenerateStances:
     def test_generate_stances_calls_module(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         with patch("pipeline.orchestrator.config") as mock_config:
             mock_config.SUPABASE_URL = "https://test.supabase.co"
@@ -334,7 +338,7 @@ class TestGenerateStances:
 
     def test_generate_stances_no_credentials(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         with patch("pipeline.orchestrator.config") as mock_config:
             mock_config.SUPABASE_URL = None
@@ -347,7 +351,7 @@ class TestGenerateStances:
 class TestGenerateHighlights:
     def test_generate_highlights_calls_module(self, mock_orchestrator_deps):
         from pipeline.orchestrator import Archiver
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         with patch("pipeline.orchestrator.config") as mock_config:
             mock_config.SUPABASE_URL = "https://test.supabase.co"
@@ -367,7 +371,7 @@ class TestRunUpdateCheck:
         from pipeline.orchestrator import Archiver
         from pipeline.update_detector import MeetingChange, ChangeReport
 
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
 
         mock_report = ChangeReport(
             meetings_with_new_docs=[
@@ -418,7 +422,7 @@ class TestRunUpdateMode:
         from pipeline.orchestrator import Archiver
         from pipeline.update_detector import MeetingChange, ChangeReport
 
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
         archiver._process_audio_files = MagicMock(return_value=set())
@@ -499,7 +503,7 @@ class TestRunUpdateMode:
         from pipeline.orchestrator import Archiver
         from pipeline.update_detector import ChangeReport
 
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
 
@@ -525,7 +529,7 @@ class TestRunUpdateMode:
         from pipeline.orchestrator import Archiver
         from pipeline.update_detector import MeetingChange, ChangeReport
 
-        archiver = Archiver()
+        archiver = Archiver(municipality=_make_municipality())
         archiver._ingest_meetings = MagicMock()
         archiver._embed_new_content = MagicMock()
 
@@ -557,3 +561,29 @@ class TestRunUpdateMode:
 
             archiver._ingest_meetings.assert_called_once()
             archiver._embed_new_content.assert_not_called()
+
+
+# ── Which municipality main.py runs for ────────────────────────────────
+
+
+class TestConfiguredMunicipality:
+    def test_defaults_to_configured_slug(self):
+        from pipeline import orchestrator
+        cfg = _make_municipality(slug="langford", source_type="escribe")
+        with patch.object(orchestrator.config, "MUNICIPALITY_SLUG", "langford"), \
+             patch("pipeline.orchestrator.load_municipality", return_value=cfg) as load:
+            assert orchestrator.load_configured_municipality() is cfg
+        load.assert_called_once_with("langford")
+
+    def test_explicit_slug_wins(self):
+        from pipeline import orchestrator
+        with patch("pipeline.orchestrator.load_municipality") as load:
+            orchestrator.load_configured_municipality("test-town")
+        load.assert_called_once_with("test-town")
+
+    def test_fails_loudly_when_it_cannot_load(self):
+        from pipeline import orchestrator
+        with patch("pipeline.orchestrator.load_municipality",
+                   side_effect=ValueError("Municipality not found: nowhere")):
+            with pytest.raises(SystemExit, match="Could not load municipality 'nowhere'(.|\n)*MUNICIPALITY_SLUG"):
+                orchestrator.load_configured_municipality("nowhere")

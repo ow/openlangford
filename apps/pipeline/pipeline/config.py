@@ -9,6 +9,9 @@ load_dotenv()  # Run this
 CIVICWEB_BASE_URL = "https://viewroyalbc.civicweb.net"
 VIMEO_PROFILE_URL = "https://vimeo.com/viewroyal"
 
+# Which municipality the pipeline works on when --municipality isn't given.
+MUNICIPALITY_SLUG = os.environ.get("MUNICIPALITY_SLUG") or "langford"
+
 # API Credentials
 VIMEO_ACCESS_TOKEN = os.environ.get("VIMEO_TOKEN")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")

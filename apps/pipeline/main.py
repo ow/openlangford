@@ -3,17 +3,17 @@ import os
 from datetime import datetime
 from pipeline import config
 from pipeline import ai
-from pipeline.paths import ARCHIVE_ROOT
-from pipeline.orchestrator import Archiver, load_municipality
+from pipeline.orchestrator import Archiver, load_configured_municipality
 from pipeline.lockfile import PipelineLock
 from pipeline.logging_config import setup_logging
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Municipal CivicWeb & Vimeo Archiver")
+    parser = argparse.ArgumentParser(description="Municipal meeting archiver")
 
     parser.add_argument(
         "--municipality", type=str, default=None,
-        help="Municipality slug (e.g. 'view-royal'). Loads config from DB.",
+        help="Municipality slug (e.g. 'langford'). Loads config from DB. "
+        "Defaults to MUNICIPALITY_SLUG, else 'langford'.",
     )
 
     parser.add_argument(
@@ -304,16 +304,14 @@ if __name__ == "__main__":
     with PipelineLock(), usage_context(job=cli_job):
         print(f"[*] Pipeline started at {datetime.now().isoformat()}")
 
-        # Load municipality config if specified
-        municipality = None
-        if args.municipality:
-            municipality = load_municipality(args.municipality)
-            print(f"[*] Municipality: {municipality.name} ({municipality.slug})")
-
-        # Use centralized ARCHIVE_ROOT as default
-        output_dir = args.input_dir if args.input_dir else ARCHIVE_ROOT
+        # Always run for a named municipality; exits loudly if it can't be loaded.
+        municipality = load_configured_municipality(args.municipality)
+        print(f"[*] Municipality: {municipality.name} ({municipality.slug})")
 
         app = Archiver(municipality=municipality, initialize_diarizer=not args.discover)
+
+        # The municipality's archive unless --input-dir says otherwise.
+        output_dir = args.input_dir if args.input_dir else app.archive_root
 
         if args.classify_topics:
             print("\n--- Classifying Agenda Items into Topics ---")

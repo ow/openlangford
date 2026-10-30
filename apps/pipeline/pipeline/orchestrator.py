@@ -15,9 +15,8 @@ from pipeline.ops import (
     meeting_source_record,
     upsert_source_meetings,
 )
-from pipeline.paths import ARCHIVE_ROOT, BASE_DIR, get_municipality_archive_root
+from pipeline.paths import BASE_DIR, get_municipality_archive_root
 from pipeline.scrapers import get_scraper, MunicipalityConfig
-from pipeline.scrapers.civicweb import CivicWebScraper
 from pipeline.scrapers.escribe_bodies import escribe_body
 from pipeline.source_identity import (
     DuplicateGuard,
@@ -58,6 +57,22 @@ def load_municipality(slug: str) -> MunicipalityConfig:
     return MunicipalityConfig.from_db_row(result.data)
 
 
+def load_configured_municipality(slug: str | None = None) -> MunicipalityConfig:
+    """The municipality to run for: --municipality, else MUNICIPALITY_SLUG (default "langford").
+
+    Exits with a clear message when it can't be loaded, rather than running against
+    another town's sources.
+    """
+    slug = slug or config.MUNICIPALITY_SLUG
+    try:
+        return load_municipality(slug)
+    except Exception as e:
+        raise SystemExit(
+            f"[!] Could not load municipality '{slug}': {e}\n"
+            "    Pass --municipality SLUG or set MUNICIPALITY_SLUG, and check SUPABASE_URL/keys."
+        ) from e
+
+
 def load_municipality_by_id(municipality_id: int) -> MunicipalityConfig:
     """Load municipality config from Supabase by id."""
     supabase_key = config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY
@@ -85,20 +100,19 @@ class Archiver:
         municipality: MunicipalityConfig | None = None,
         initialize_diarizer: bool = True,
     ):
+        if municipality is None:
+            # There is no default town: a missing municipality used to fall back to
+            # View Royal's CivicWeb and Vimeo sources.
+            raise ValueError(
+                "Archiver needs a municipality (see load_configured_municipality)"
+            )
         # Meetings ingested during this run; their councillors' profiles are
         # refreshed (as drafts) once embeddings are done.
         self._ingested_meeting_ids: list[int] = []
-        if municipality is None:
-            # Backward compat: default to View Royal with hardcoded defaults
-            self.municipality = None
-            self.archive_root = ARCHIVE_ROOT
-            self.scraper = CivicWebScraper()
-            self.video_client = get_video_client()
-        else:
-            self.municipality = municipality
-            self.archive_root = get_municipality_archive_root(municipality.slug)
-            self.scraper = get_scraper(municipality)
-            self.video_client = get_video_client(municipality)
+        self.municipality = municipality
+        self.archive_root = get_municipality_archive_root(municipality.slug)
+        self.scraper = get_scraper(municipality)
+        self.video_client = get_video_client(municipality)
 
         self.ai_enabled = False
         self.diarizer = None
@@ -339,8 +353,7 @@ class Archiver:
         skip_ingest=False,
         skip_embed=False,
     ):
-        label = self.municipality.name if self.municipality else "View Royal"
-        print(f"=== {label} Archiver ===")
+        print(f"=== {self.municipality.name} Archiver ===")
         print(f"Archive Root: {self.archive_root}")
 
         # Phase 1: Documents
