@@ -305,3 +305,24 @@ def test_clean(text, expected):
         text = "x" * 150 + " " + text  # put the sentence end past the halfway mark
         expected = "x" * 150 + " " + expected
     assert ps.clean(text) == expected
+
+
+def test_street_input_names_the_two_most_considered_addresses():
+    db = _db()
+    data = ps.load_inputs(db, [p for p in ps.load_properties(db) if p["id"] == 3])[3]
+    assert data["most_considered"] == ["100", "200"]
+
+
+def test_a_lead_that_drops_the_size_gets_one_more_try(fake_ai):
+    data = {"kind": "lot", "council_decisions_and_projects": [{"title": "Subdivision", "summary": "Up to 47 lots."}]}
+    fake_ai.queue("generate", _summary("Council approved a subdivision in 2015."),
+                  _summary("Council approved a 47-lot subdivision in 2015."))
+    assert ps.summarize(data, "Mentioned once in council meetings, in 2015.") == \
+        "Council approved a 47-lot subdivision in 2015. Mentioned once in council meetings, in 2015."
+    assert len(fake_ai.calls) == 2
+
+
+def test_no_retry_when_the_inputs_give_no_size(fake_ai):
+    fake_ai.queue("generate", _summary("Council closed part of the road in 2019."))
+    ps.summarize({"kind": "lot", "council_decisions_and_projects": [{"title": "Road closure", "summary": ""}]})
+    assert len(fake_ai.calls) == 1
