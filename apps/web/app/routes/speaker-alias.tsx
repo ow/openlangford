@@ -39,6 +39,7 @@ import { cn } from "../lib/utils";
 import { getVideoSourceSetting, resolveVideoSource } from "../services/video/index.server";
 import { getMunicipality } from "../services/municipality";
 import { getMeetingById } from "../services/meetings";
+import { mayStoreVoiceFingerprint } from "../services/voice-fingerprint-policy.server";
 import { useVideoPlayer } from "../hooks/useVideoPlayer";
 
 // Types
@@ -266,9 +267,14 @@ export async function action({ request }: { request: Request }) {
 
     if (updateError) throw updateError;
 
-    // 3. Save voice fingerprint if centroid provided
+    // 3. Save voice fingerprint if centroid provided, only for officials (council, staff, or on
+    // this meeting's attendance roster). A resident's name mapping is kept without their voice.
     const centroidJson = formData.get("centroid") as string;
-    if (centroidJson && personId) {
+    const storeVoice = !!centroidJson && !!personId && await mayStoreVoiceFingerprint(supabaseAdmin, String(personId), String(meetingId));
+    if (centroidJson && personId && !storeVoice) {
+      return { success: true, fingerprint: "skipped" as const };
+    }
+    if (storeVoice) {
       try {
         const centroid = JSON.parse(centroidJson);
         if (Array.isArray(centroid) && centroid.length === 192) {
@@ -839,7 +845,7 @@ function SpeakerRow({
   const status = assignedPerson
     ? personHasFingerprint
       ? { dot: "bg-emerald-500", text: "Assigned, voice fingerprint saved" }
-      : { dot: "bg-brand-500", text: "Assigned, no fingerprint yet" }
+      : { dot: "bg-brand-500", text: "Assigned, no voice fingerprint (kept for officials only)" }
     : { dot: "bg-zinc-300", text: "Unassigned" };
 
   return (
