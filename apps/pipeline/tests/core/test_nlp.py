@@ -25,8 +25,8 @@ def test_clean_person_name():
 def test_normalize_person_name():
     # Verify that clean + canonical works together
     assert utils.normalize_person_name("Mayor David Screech") == "David Screech"
-    assert utils.normalize_person_name("M a y o r  H i l l") == "Graham Hill"
-    assert utils.normalize_person_name("Councillor matson") == "Ron Mattson"
+    # No hardcoded roster: surnames are not expanded to a particular town's people.
+    assert utils.normalize_person_name("Councillor Anderson") == "Anderson"
 
 def test_extract_roles_from_name():
     # Simple Council

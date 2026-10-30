@@ -3,7 +3,6 @@ from typing import List, Optional, Literal
 from pydantic import BaseModel, Field, field_validator
 
 from pipeline import ai
-from pipeline.names import COUNCIL_NAMES
 from pipeline.ingestion.summary_format import normalize_meeting_summary
 
 # --- Schemas ---
@@ -11,7 +10,7 @@ from pipeline.ingestion.summary_format import normalize_meeting_summary
 
 class SpeakerAlias(BaseModel):
     label: str  # e.g. "Speaker_01"
-    name: str  # e.g. "Mayor Tobias"
+    name: str  # e.g. "Mayor Lee"
 
 
 class VoteRecord(BaseModel):
@@ -104,7 +103,7 @@ class AgendaItemRecord(BaseModel):
     )
     related_address: list[str] | None = Field(
         None,
-        description="Specific physical property addresses mentioned (e.g. ['157 View Royal Ave']). Avoid generic streets like 'Island Highway' or regions like 'Thetis Lake' unless they are the primary specific subject.",
+        description="Specific physical property addresses mentioned (e.g. ['123 Example Road']). Avoid highways, parks or whole neighbourhoods unless they are the primary specific subject.",
     )
     description: str | None
     category: str = Field(
@@ -207,8 +206,8 @@ You are a City Council Data Analyst. Your goal is to create a perfect, relationa
    - Use canonical person names from KNOWN ATTENDEES / active Council members. For example, "Mayor Goodmanson" should be returned as the known attendee/council name, not as a new person.
 6. **Speaker Mapping**:
    - Identify every generic label in the transcript (e.g., `Speaker_01`, `Speaker_02`, `Chair`) and map it to a real name from the Known Attendees or Minutes.
-   - Example: `Speaker_01` -> `Sid Tobias`.
-   - Use `COUNCIL_NAMES` list for validation.
+   - Example: `Speaker_01` -> `Jordan Lee`.
+   - Use the ACTIVE COUNCIL MEMBERS list, when given, for validation.
 7. **Enrichment**:
    - `debate_summary`: Summarize arguments (leave NULL for procedural items with no discussion).
    - `key_quotes`: Extract verbatim quotes (leave empty for procedural items).
@@ -230,9 +229,9 @@ You are a City Council Data Analyst. Your goal is to create a perfect, relationa
    - Use the measured start time of the actual supporting transcript segment for timestamp. Do not invent offsets; persisted source indexes will be validated independently.
    - Skip procedural items. Do NOT extract statements for items with no discussion.
 9. **Transcript Corrections (Spelling & Names)**:
-   - Scan the TRANSCRIPT for misspellings of proper nouns, locations (e.g. "Esquimalt", "Helmcken"), organization names, and attendee names.
+   - Scan the TRANSCRIPT for misspellings of proper nouns, locations (street and place names), organization names, and attendee names.
    - Use the AGENDA, MINUTES, and KNOWN ATTENDEES as the source of truth for correct spellings.
-   - Example: "Helmakin Road" → "Helmcken Road", "Mayor Screech" → correct name from attendees.
+   - Example: a misheard street name → the spelling in the agenda; "Mayor" followed by a misheard surname → correct name from attendees.
    - Return `transcript_corrections` with `original_text` (exact snippet) and `corrected_text` (the fix).
 
 **VALIDATION RULES**:
@@ -282,10 +281,7 @@ def build_refinement_prompt(
             f"\n**ACTIVE COUNCIL MEMBERS (VALIDATION)**:\n{council_str}\n"
         )
         context_section += "CRITICAL: Only these individuals are active Council members for this meeting. Any other 'Councillor' or 'Mayor' in the text is likely a hallucination or a former member speaking as public.\n"
-    else:
-        # Fallback to historical list if no date-specific list provided
-        council_str = ", ".join(COUNCIL_NAMES)
-        context_section += f"\n**KNOWN COUNCIL MEMBERS (HISTORICAL)**:\n{council_str}\n"
+    # No date-specific council list: say nothing rather than guess a roster.
 
     # Check if transcript is present
     has_transcript = transcript_text and len(transcript_text.strip()) > 0
@@ -293,7 +289,7 @@ def build_refinement_prompt(
     if has_transcript:
         task_instructions = """
     **INSTRUCTIONS**:
-    1. Fill `scratchpad_speaker_map`: Analyze the transcript. List every unique Speaker label (e.g. `Speaker_01`, `Speaker_02`, `Chair`) and identify who they are based on context clues (e.g. "Thank you, Councillor Mattson").
+    1. Fill `scratchpad_speaker_map`: Analyze the transcript. List every unique Speaker label (e.g. `Speaker_01`, `Speaker_02`, `Chair`) and identify who they are based on context clues (e.g. "Thank you, Councillor Lee").
     2. Fill `speaker_aliases`: Based on your analysis in step 1, create a list of mapping objects.
     3. Fill `scratchpad_timeline`: Scan the transcript for "Item [X] is now before us" or similar transitions. List the start/end times for each item.
     4. Fill `transcript_corrections`: Scan the transcript for misspelled names, places, and terms. Compare against AGENDA/MINUTES for correct spellings.

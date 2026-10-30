@@ -14,7 +14,6 @@ from pipeline.supabase_client import create_client
 import pipeline.parser as parser
 from pipeline import utils
 from pipeline.alignment import align_meeting_items
-from pipeline.names import CANONICAL_NAMES
 from pipeline.speaker_evidence import label_key
 from pipeline.ingestion.ai_refiner import refine_meeting_data
 from pipeline.ingestion.roster_attendance import find_original_minutes_pdf, minutes_source_url, roster_attendance
@@ -75,7 +74,8 @@ class MeetingIngester:
         """Load canonical names for this municipality from the DB.
 
         Fetches all known people associated with this municipality's organizations.
-        Falls back to hardcoded CANONICAL_NAMES for View Royal (municipality_id=1).
+        If they can't be loaded, returns no names (with a warning) rather than another
+        town's, and tries again next time.
         """
         if self._canonical_names is not None:
             return self._canonical_names
@@ -104,12 +104,12 @@ class MeetingIngester:
                 if names:
                     self._canonical_names = names
                     return self._canonical_names
+            print(f"  [!] No known people for municipality {self.municipality_id}; "
+                  "speaker names will not be matched to people")
         except Exception as e:
-            print(f"  [!] Failed to load canonical names from DB: {e}")
-
-        # Fallback to hardcoded list for View Royal
-        self._canonical_names = CANONICAL_NAMES
-        return self._canonical_names
+            print(f"  [!] Failed to load known people from DB ({e}); "
+                  "speaker names will not be matched to people")
+        return []
 
     def _get_municipality_source_config(self) -> dict:
         if self._municipality_source_config is not None:
