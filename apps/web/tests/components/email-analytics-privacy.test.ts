@@ -28,7 +28,15 @@ it("drops analytics events containing unsubscribe capabilities or admin URLs bef
     const publicEvent = {
       properties: { $current_url: "https://openlangford.ca/meetings" },
     };
-    expect(before(publicEvent)).toBe(publicEvent);
+    expect(before(publicEvent)).toEqual({
+      properties: { $current_url: "https://openlangford.ca/meetings", $process_person_profile: false, $geoip_disable: true, $ip: null },
+    });
+    // Anonymous: no person profiles, no long-lived cookie, no session recording.
+    expect(mocks.init.mock.calls[0][1]).toMatchObject({
+      person_profiles: "never",
+      persistence: "sessionStorage",
+      disable_session_recording: true,
+    });
   } finally {
     await act(async () => root.unmount());
     vi.unstubAllEnvs();
