@@ -159,7 +159,6 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
   const [agentSteps, setAgentSteps] = useState<AgentEvent[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [traceId, setTraceId] = useState<string | null>(null);
   const [cachedAt, setCachedAt] = useState<string | null>(null);
   const [suggestedFollowups, setSuggestedFollowups] = useState<string[]>([]);
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -259,7 +258,6 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
     setAgentSteps([]);
     setCopied(false);
     setSuggestedFollowups([]);
-    setTraceId(null);
     setCachedAt(null);
 
     const context = opts.followUp ? buildConversationContext() : undefined;
@@ -295,9 +293,6 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
           break;
         case "suggested_followups":
           setSuggestedFollowups(data.followups || []);
-          break;
-        case "trace_id":
-          setTraceId(data.traceId);
           break;
         case "cached":
           setCachedAt(data.created_at);
@@ -528,7 +523,6 @@ function SearchPage({ loaderData }: Route.ComponentProps) {
               sourceCount={sources.length}
               onCopy={handleCopy}
               copied={copied}
-              traceId={traceId}
               cachedAt={cachedAt}
               onRefresh={aiSearchAvailable ? () => startAiStream(activeAnswerQuestion.current, { fresh: true }) : undefined}
             />

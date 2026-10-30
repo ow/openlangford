@@ -30,8 +30,6 @@ describe("public AI search budget", () => {
     ["normal search", () => search(args(new Request("https://example.com/api/search?q=What+changed&mode=ai")))],
     ["cache bypass", () => search(args(new Request("https://example.com/api/search?q=What+changed&mode=ai&fresh=1")))],
     ["follow-up", () => search(args(new Request("https://example.com/api/search?q=What+changed&mode=ai&context=Previous+answer")))],
-    ["legacy GET", () => askGet(args(new Request("https://example.com/api/ask?q=What+changed")))],
-    ["legacy POST", () => askPost(args(new Request("https://example.com/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: "What changed" }) })))],
   ])("stops %s before any model work when the shared budget is exhausted", async (_, run) => {
     const response = await run();
     expect(response.headers.get("Content-Type")).toBe("text/event-stream");
@@ -54,6 +52,15 @@ describe("public AI search budget", () => {
     const response = await search(args(new Request("https://example.com/api/search?q=What+changed&mode=ai")));
     expect(await response.text()).toContain('"type":"budget_exhausted"');
     expect(mocks.agent).not.toHaveBeenCalled();
+  });
+
+  it("retired /api/ask answers 410 without model work, budget or logging", async () => {
+    for (const response of [askGet(), askPost()]) {
+      expect(response.status).toBe(410);
+      expect(await response.json()).toMatchObject({ error: expect.stringContaining("/search?mode=ai") });
+    }
+    expect(mocks.agent).not.toHaveBeenCalled();
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
   it("allows the deployment to disable generation with a zero limit", async () => {

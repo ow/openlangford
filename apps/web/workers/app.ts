@@ -14,6 +14,7 @@ import { negotiateMarkdown } from "./markdown-negotiation";
 import { publicMeetingCache } from "./public-meeting-cache";
 import { contentVersion } from "./content-version";
 import { canonicalRedirect } from "./canonical-redirect";
+import { purgeExpiredQuestions } from "./retention";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -32,9 +33,9 @@ const requestHandler = createRequestHandler(
 type CacheVersion = { deploy?: string; stamp?: string };
 
 async function handle(request: Request, env: Env, ctx: ExecutionContext, url: URL, { deploy, stamp }: CacheVersion) {
-  // Cover paid generation and embedding-backed keyword search, including the
-  // legacy endpoint. The database quota separately enforces the global day cap.
-  if (url.pathname === "/api/search" || url.pathname === "/api/ask") {
+  // Cover paid generation and embedding-backed keyword search. The database
+  // quota separately enforces the global day cap.
+  if (url.pathname === "/api/search") {
     const ip = request.headers.get("cf-connecting-ip") || "unknown";
     if (env.API_RATE_LIMITER && !(await env.API_RATE_LIMITER.limit({ key: `search:${ip}` })).success) {
       return new Response("Too many searches. Please try again in a minute.", {
@@ -97,6 +98,9 @@ export default {
       return;
     }
     if (controller.cron === CALENDAR_CRON) {
+      ctx.waitUntil(purgeExpiredQuestions(getSupabaseAdminClient()).then(summary => {
+        console.log("[Retention]", JSON.stringify(summary));
+      }).catch(() => { console.error("[Retention] Purge failed; will retry next run"); }));
       ctx.waitUntil(syncCalendar(getSupabaseAdminClient(), "cron").then(result => {
         console.log("[Calendar]", JSON.stringify("result" in result ? result.result : result));
       }).catch(error => { console.error("[Calendar] Sync failed; previous schedule retained"); throw error; }));

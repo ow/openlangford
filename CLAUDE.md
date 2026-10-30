@@ -68,7 +68,7 @@ Meeting documents (eSCRIBE / CivicWeb) + meeting video (video provider) → Pyth
 Pipeline phases: scrape → download audio → diarize → AI refine + ingest → embed → post-ingest stages (registry)
 
 ### Web App Routing
-Flat file routes in `apps/web/app/routes/`. Server loaders fetch from Supabase, components render with SSR. API routes (`api.ask.tsx`, `api.video-source.ts`) handle server actions.
+Flat file routes in `apps/web/app/routes/`. Server loaders fetch from Supabase, components render with SSR. API routes (`api.search.tsx`, `api.video-source.ts`) handle server actions.
 
 ### Video providers
 Each municipality's meeting video comes from one provider, set by `municipalities.source_config.video_source.type` (`isilive` = eSCRIBE/ISI Live for Langford, `vimeo` upstream). When unset, or when a URL belongs to another provider, the provider is detected from the URL host.
