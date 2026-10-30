@@ -4,7 +4,7 @@
  * Plain Hono handlers (not chanfana OpenAPIRoute classes) since OCD endpoints
  * have their own specification and don't need OpenAPI generation.
  *
- * View Royal has exactly 1 municipality, so the list always returns 1 item.
+ * Each URL names exactly 1 municipality, so the list always returns 1 item.
  */
 
 import type { Context } from "hono";

@@ -28,6 +28,7 @@ export interface ApiEnv {
       name: string;
       short_name: string;
       ocd_id: string | null;
+      meta?: Record<string, unknown> | null;
     };
   };
 }

@@ -4,8 +4,8 @@
  * Plain Hono handlers (not chanfana OpenAPIRoute classes) since OCD endpoints
  * have their own specification and don't need OpenAPI generation.
  *
- * Events map from meetings. View Royal has ~737 meetings, so the reverse-
- * lookup for detail endpoints scans the full set.
+ * Events map from meetings. A municipality has hundreds of meetings, so the
+ * reverse-lookup for detail endpoints scans the full set.
  */
 
 import type { Context } from "hono";
@@ -18,6 +18,7 @@ import { ocdListResponse, ocdDetailResponse } from "../lib/ocd-envelope";
 import {
   serializeEventSummary,
   serializeEventDetail,
+  eventVenue,
 } from "../serializers/event";
 
 /**
@@ -69,7 +70,7 @@ export async function listEvents(c: Context<ApiEnv>) {
   const meetingOcdIds = await ocdIds("event", meetingPks);
 
   const results = meetings.map((meeting: any) =>
-    serializeEventSummary(meeting, meetingOcdIds.get(meeting.id)!),
+    serializeEventSummary(meeting, meetingOcdIds.get(meeting.id)!, eventVenue(muni)),
   );
 
   const pagination = computePagination(total, page, perPage);
@@ -149,7 +150,7 @@ export async function getEvent(c: Context<ApiEnv>) {
     agendaItems: agendaRes.data ?? [],
     attendance: attendanceRes.data ?? [],
     attendeeOcdIds,
-  });
+  }, eventVenue(muni));
 
   return ocdDetailResponse(c, result);
 }

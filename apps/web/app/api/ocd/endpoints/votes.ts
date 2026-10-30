@@ -4,7 +4,7 @@
  * Plain Hono handlers (not chanfana OpenAPIRoute classes) since OCD endpoints
  * have their own specification and don't need OpenAPI generation.
  *
- * Votes map from motions. View Royal has ~10536 motions, so the reverse-
+ * Votes map from motions. A municipality has ~10k motions, so the reverse-
  * lookup for detail endpoints is the heaviest of all OCD entity types.
  */
 

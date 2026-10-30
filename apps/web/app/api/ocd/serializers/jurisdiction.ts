@@ -14,7 +14,7 @@ import { ocdJurisdictionId } from "../lib/ocd-ids";
  *
  * @param municipality - Row from the municipalities table
  * @param organizations - Array of organization rows (currently unused but
- *   reserved for legislative_sessions if View Royal ever formalizes them)
+ *   reserved for legislative_sessions if a municipality ever formalizes them)
  * @param divisionId - OCD division ID (e.g. "ocd-division/country:ca/csd:5917047")
  */
 export function serializeJurisdiction(

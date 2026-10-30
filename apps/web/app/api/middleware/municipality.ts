@@ -19,7 +19,7 @@ export const municipality = createMiddleware<ApiEnv>(async (c, next) => {
   const supabase = getSupabaseAdminClient();
   const { data, error } = await supabase
     .from("municipalities")
-    .select("id, slug, name, short_name, ocd_id")
+    .select("id, slug, name, short_name, ocd_id, meta")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -36,7 +36,7 @@ export const municipality = createMiddleware<ApiEnv>(async (c, next) => {
     throw new ApiError(
       404,
       "MUNICIPALITY_NOT_FOUND",
-      `Municipality "${slug}" not found. Use a valid municipality slug (e.g., "view-royal").`,
+      `Municipality "${slug}" not found. Use a valid municipality slug (e.g., "langford").`,
     );
   }
 

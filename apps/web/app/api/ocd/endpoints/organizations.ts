@@ -4,7 +4,7 @@
  * Plain Hono handlers (not chanfana OpenAPIRoute classes) since OCD endpoints
  * have their own specification and don't need OpenAPI generation.
  *
- * View Royal has ~10 organizations, so list returns all and detail lookups
+ * A municipality has ~10 organizations, so list returns all and detail lookups
  * can scan the full set to reverse-map OCD IDs.
  */
 

@@ -4,7 +4,7 @@
  * Plain Hono handlers (not chanfana OpenAPIRoute classes) since OCD endpoints
  * have their own specification and don't need OpenAPI generation.
  *
- * Bills map from matters. View Royal has ~1727 matters, so the reverse-
+ * Bills map from matters. A municipality has thousands of matters, so the reverse-
  * lookup for detail endpoints scans the full set.
  */
 

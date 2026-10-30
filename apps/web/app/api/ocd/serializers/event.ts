@@ -10,6 +10,29 @@
  * and minutes PDFs), and links.
  */
 
+import { DEFAULT_MUNICIPALITY } from "~/lib/site-config";
+import { zonedMidnightIso } from "~/lib/civic-time";
+
+/** Where and in which time zone a municipality's meetings happen. */
+export interface EventVenue {
+  name: string;
+  timezone: string;
+}
+
+/**
+ * The municipality's meeting venue: `meta.city_hall` / `meta.timezone` on its row when set,
+ * otherwise the fork default (Langford City Hall, America/Vancouver).
+ */
+export function eventVenue(municipality?: { meta?: any } | null): EventVenue {
+  const hall = municipality?.meta?.city_hall;
+  const fallback = DEFAULT_MUNICIPALITY.cityHall;
+  const name = typeof hall === "string" ? hall
+    : hall?.name ? [hall.name, hall.address ?? hall.street_address].filter(Boolean).join(", ")
+    : `${fallback.name}, ${fallback.streetAddress}`;
+  const timezone = typeof municipality?.meta?.timezone === "string" ? municipality.meta.timezone : DEFAULT_MUNICIPALITY.timezone;
+  return { name, timezone };
+}
+
 /**
  * Map internal meeting type strings to OCD Event classification values.
  *
@@ -41,23 +64,24 @@ export function mapMeetingTypeToClassification(type: string | null): string {
  *
  * @param meeting - Row from the meetings table
  * @param ocdId - Pre-computed OCD ID for this event
+ * @param venue - Meeting location and time zone (see eventVenue)
  */
-export function serializeEventSummary(meeting: any, ocdId: string) {
+export function serializeEventSummary(meeting: any, ocdId: string, venue: EventVenue = eventVenue()) {
   return {
     id: ocdId,
     name: meeting.title ?? null,
     description: meeting.summary ?? "",
     classification: mapMeetingTypeToClassification(meeting.type),
     start_time: meeting.meeting_date
-      ? `${meeting.meeting_date}T00:00:00-08:00`
+      ? zonedMidnightIso(meeting.meeting_date, venue.timezone)
       : null,
-    timezone: "America/Vancouver",
+    timezone: venue.timezone,
     end_time: null as string | null,
     all_day: false,
     status: "passed",
     location: {
       url: null as string | null,
-      name: "View Royal Town Hall",
+      name: venue.name,
       coordinates: null as { latitude: number; longitude: number } | null,
     },
     sources: [
@@ -86,6 +110,7 @@ export function serializeEventDetail(
     attendance: any[];
     attendeeOcdIds: Map<number, string>;
   },
+  venue: EventVenue = eventVenue(),
 ) {
   // Build media array from video_url
   const media: any[] = meeting.video_url
@@ -166,15 +191,15 @@ export function serializeEventDetail(
     description: meeting.summary ?? "",
     classification: mapMeetingTypeToClassification(meeting.type),
     start_time: meeting.meeting_date
-      ? `${meeting.meeting_date}T00:00:00-08:00`
+      ? zonedMidnightIso(meeting.meeting_date, venue.timezone)
       : null,
-    timezone: "America/Vancouver",
+    timezone: venue.timezone,
     end_time: null as string | null,
     all_day: false,
     status: "passed",
     location: {
       url: null as string | null,
-      name: "View Royal Town Hall",
+      name: venue.name,
       coordinates: null as { latitude: number; longitude: number } | null,
     },
     sources: [
