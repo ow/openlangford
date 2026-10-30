@@ -13,6 +13,7 @@ import {
   Timer,
   MessageSquare,
   Github,
+  History,
 } from "lucide-react";
 import { getPublicAboutStats } from "../services/site";
 import aboutContent from "../content/about.md?raw";
@@ -123,6 +124,23 @@ export default function About() {
                   className="text-sm text-zinc-500 hover:text-brand-600 transition-colors"
                 >
                   Send a message
+                </Link>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-zinc-100 rounded-full">
+                <History className="h-5 w-5 text-zinc-600" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-zinc-900">
+                  What's new?
+                </div>
+                <Link
+                  to="/updates"
+                  className="text-sm text-zinc-500 hover:text-brand-600 transition-colors"
+                >
+                  Recently processed meetings
                 </Link>
               </div>
             </div>
