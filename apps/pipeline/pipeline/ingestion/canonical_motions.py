@@ -14,6 +14,7 @@ import re
 from .native_transcriptions import bound_transcription
 from .source_claims import build_claim_inventory, valid_inventory
 from .vote_evidence import normalize_text, _OCR_MOVED_START
+from .agenda_identity import existing_agenda_item  # noqa: F401  (re-exported)
 from .ballot_reconstruction import validate_roster_entries
 from .source_occurrences import text_occurrence_unique, own_formal_envelopes, matching_formal_envelopes, unparsed_formal_envelopes, matching_envelopes_all_parsed
 
@@ -339,14 +340,6 @@ def canonical_motion_plan(items, context, existing_motions):
                    'adjournment_narration_preserved_legacy_ids': sorted(claim_id for claim_id, entry in documentary_preservations.items()
                        if entry['type']=='reviewed_adjournment_narration_preservation'),
                    'mapped_motions': sum(len(item['motions']) for item in items)}
-
-
-def existing_agenda_item(item, existing_items):
-    """Only a unique exact order/title can retain an agenda ID automatically."""
-    candidates = [old for old in existing_items if str(old.get('item_order') or '') == str(item.get('item_order') or '') and normalize_text(old.get('title')) == normalize_text(item.get('title'))]
-    if len(candidates) > 1:
-        raise RuntimeError('Ambiguous existing agenda identity; no agenda refresh applied')
-    return candidates[0] if candidates else None
 
 
 def _receipt_digest(value):

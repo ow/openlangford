@@ -2274,12 +2274,14 @@ class MeetingIngester:
         key_statement_context = None
         key_statement_validation = Counter()
         key_statement_evidence = []
+        # Rows already bound to an earlier refined item of this run.
+        claimed_item_ids = set()
         for item in refined["items"]:
             retained_item = None
             if canonical_cached_refresh:
                 if not item.get("motions"):
                     continue
-                retained_item = existing_agenda_item(item, existing_items)
+                retained_item = existing_agenda_item(item, existing_items, claimed_item_ids)
                 old_parents = [motion["_existing_motion"]["agenda_item_id"] for motion in item["motions"] if motion.get("_existing_motion")]
                 if not retained_item and len(old_parents) == len(item["motions"]):
                     # Each old motion retains its own original parent below;
@@ -2289,7 +2291,7 @@ class MeetingIngester:
                     # A genuinely new source motion needs a parent, but a
                     # cached AI agenda title is not proof of a new agenda item.
                     item = {"item_order": "official-recorded-motions", "title": "Official recorded motions", "category": "procedural", "motions": item["motions"]}
-                    retained_item = existing_agenda_item(item, existing_items)
+                    retained_item = existing_agenda_item(item, existing_items, claimed_item_ids)
             if retained_item:
                 matter_id = None  # Existing item enrichment is not written.
                 related_address = None
@@ -2369,13 +2371,17 @@ class MeetingIngester:
 
             agenda_item_id = 200  # Placeholder for dry run
             if not dry_run:
-                old_item = retained_item or existing_agenda_item(item, existing_items)
+                old_item = retained_item or existing_agenda_item(item, existing_items, claimed_item_ids)
                 if retained_item:
                     agenda_item_id = retained_item["id"]
                 elif old_item:
                     # A missing enrichment value is not a request to erase a
                     # previously populated agenda field during refresh.
                     item_data = {key: value for key, value in item_data.items() if value is not None}
+                    # A re-run may render the same item as "4(a)" vs "4a" or with a
+                    # retyped title; the persisted identity (and its unique slug) stays.
+                    for identity_key in ("slug", "item_order", "title"):
+                        item_data.pop(identity_key, None)
                     item_data["meta"] = {**(old_item.get("meta") or {}), **{key: value for key, value in item_data["meta"].items() if value is not None}}
                     query = self.supabase.table("agenda_items").update(item_data).eq("id", old_item["id"])
                     if old_item.get("updated_at"):
@@ -2388,6 +2394,7 @@ class MeetingIngester:
                     res = self.supabase.table("agenda_items").insert(item_data).execute()
                     agenda_item_id = res.data[0]["id"]
                     existing_items.append({**item_data, "id": agenda_item_id})
+                claimed_item_ids.add(agenda_item_id)
                 # Track for geocoding pass
                 item["_db_id"] = agenda_item_id
 
