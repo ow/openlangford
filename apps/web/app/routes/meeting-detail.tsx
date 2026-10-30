@@ -35,18 +35,20 @@ import {
 import { meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 import { loaderFailure } from "../lib/loader-errors";
+import { meetingDescription } from "../lib/meeting-description";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const m = data?.meeting;
   if (!m) return [{ title: `Meeting | ${SITE_NAME}` }];
   const date = recordDate(m.meeting_date);
-  const description = `Read the meeting summary and available council records for Langford’s ${m.title} meeting on ${date}.`;
+  // The meeting's own highlights or summary, not boilerplate (lib/meeting-description.ts).
+  const description = meetingDescription(m);
   return [
     // Rendered share card (frame + highlights) when the pipeline has made one; else the generated card.
     ...pageMeta(`${m.title} — ${date}`, description, meetingPath(m, ""), "article", { image: m.meta?.share_card?.url }),
     markdownAlternate(meetingPath(m, "/summary.md")),
     jsonLd(
-      meetingEvent(m, meetingPath(m), description),
+      meetingEvent({ ...m, title: `${m.title} — ${date}` }, meetingPath(m), metaDescription(description)),
       ...[meetingVideo(m, meetingPath(m), {
         description: metaDescription(m.summary?.replace(/^\s*[-*•]\s+/gm, "").replace(/\s*\n+\s*/g, " ") || `Video recording of Langford’s ${m.title} meeting on ${date}, with a searchable transcript and agenda on this page.`),
         thumbnailUrl: m.meta?.poster?.url || ogImageUrl(`${m.title}`, { subtitle: date, type: "meeting" }),
@@ -543,7 +545,7 @@ function MeetingDetailContent({ loaderData }: any) {
             showOrg ? orgName : null,
             councilTerm?.name,
           ]}
-          title={meeting.title}
+          title={<>{meeting.title}<span className="sr-only"> — {recordDate(meeting.meeting_date)}</span></>}
           badges={isPast && !meeting.summary ? <Badge variant="muted">Summary pending</Badge> : undefined}
           actions={
             <>

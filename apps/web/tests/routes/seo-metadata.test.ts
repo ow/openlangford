@@ -15,6 +15,20 @@ it.each([
   ["meeting", meetingMeta], ["documents", documentsMeta], ["explorer", explorerMeta],
 ])("%s distinguishes meeting dates without copying summary bullets", (_name, meta) => {
   const render = (date: string) => meta({ data: { meeting: { id: 1, slug: `${date}-regular-council`, title: "Regular Council", meeting_date: date, summary: "- A long bullet list\n- More details" } } } as any) as any[];
+  if (_name === "meeting") {
+    // The meeting page speaks in its own words: highlights first, else its summary as sentences.
+    const withSummary = render("2026-05-19");
+    expect(value(withSummary, "description")).toBe("May 19, 2026: A long bullet list. More details.");
+    const adopted = meta({ data: { meeting: { id: 1, slug: "2026-05-19-regular-council", title: "Regular Council", meeting_date: "2026-05-19",
+      summary: "- Adopted garbage collection rules with a $280 maximum fee (Bylaw 2299).\n- Advanced rezoning at 953 Walfred Road." } } } as any) as any[];
+    expect(value(adopted, "description")).toBe("May 19, 2026: Council adopted garbage collection rules with a $280 maximum fee. Advanced rezoning at 953 Walfred Road.");
+    const highlighted = meta({ data: { meeting: { id: 1, slug: "2026-05-19-regular-council", title: "Regular Council", meeting_date: "2026-05-19",
+      summary: "- x", meta: { highlights: { description: "May 19, 2026: Council approved a new 911 dispatch deal." } } } } } as any) as any[];
+    expect(value(highlighted, "description")).toBe("May 19, 2026: Council approved a new 911 dispatch deal.");
+    const event = highlighted.find((m) => m["script:ld+json"])["script:ld+json"]["@graph"].find((t: any) => t["@type"] === "Event");
+    expect(event.name).toBe("Regular Council — May 19, 2026");
+    return;
+  }
   const may = render("2026-05-19");
   expect(may.find(m => m.title)?.title).toContain("May 19, 2026");
   expect(render("2026-04-20").find(m => m.title)?.title).toContain("April 20, 2026");
