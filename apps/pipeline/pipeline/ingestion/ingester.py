@@ -915,7 +915,8 @@ class MeetingIngester:
                     "source_url": source_url,
                     "file_path": rel_path,
                     "file_hash": file_hash,
-                    "full_text": scrub_emails(full_text.strip()) if full_text else None,
+                    # Postgres text cannot hold NUL; some scanned packages extract with it.
+                    "full_text": scrub_emails(full_text.replace("\x00", "").strip()) if full_text else None,
                     "page_count": page_count,
                     "municipality_id": self.municipality_id,
                 }
