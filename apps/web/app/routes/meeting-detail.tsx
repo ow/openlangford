@@ -42,13 +42,14 @@ export const meta: Route.MetaFunction = ({ data }) => {
   const date = recordDate(m.meeting_date);
   const description = `Read the meeting summary and available council records for Langford’s ${m.title} meeting on ${date}.`;
   return [
-    ...pageMeta(`${m.title} — ${date}`, description, meetingPath(m, ""), "article"),
+    // Rendered share card (frame + highlights) when the pipeline has made one; else the generated card.
+    ...pageMeta(`${m.title} — ${date}`, description, meetingPath(m, ""), "article", { image: m.meta?.share_card?.url }),
     markdownAlternate(meetingPath(m, "/summary.md")),
     jsonLd(
       meetingEvent(m, meetingPath(m), description),
       ...[meetingVideo(m, meetingPath(m), {
         description: metaDescription(m.summary?.replace(/^\s*[-*•]\s+/gm, "").replace(/\s*\n+\s*/g, " ") || `Video recording of Langford’s ${m.title} meeting on ${date}, with a searchable transcript and agenda on this page.`),
-        thumbnailUrl: ogImageUrl(`${m.title}`, { subtitle: date, type: "meeting" }),
+        thumbnailUrl: m.meta?.poster?.url || ogImageUrl(`${m.title}`, { subtitle: date, type: "meeting" }),
         // Many recordings have no stored length; the transcript's last timestamp is close.
         durationSeconds: m.video_duration_seconds || (data?.transcript?.length ? data.transcript[data.transcript.length - 1].end_time : null),
       })].filter((thing): thing is NonNullable<typeof thing> => thing !== null),
@@ -199,12 +200,23 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       getPropertiesForItems(supabase, (data.agendaItems || []).map((it: any) => it.id)),
       getMatterLinks(supabase, (data.agendaItems || []).map((it: any) => it.matter_id)),
     ]));
-    return { ...data, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties, itemMatters };
+    // meetings.meta also holds pipeline-private data (speaker voice centroids/samples, cached
+    // direct media URLs); ship only the keys the page reads.
+    const meeting = data.meeting && { ...data.meeting, meta: publicMeetingMeta(data.meeting.meta) };
+    return { ...data, meeting, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties, itemMatters };
   } catch (error) {
     throw loaderFailure(error, "Meeting Not Found");
   }
 }
 
+
+const PUBLIC_MEETING_META_KEYS = ["participant_roles", "calendar", "poster", "share_card"] as const;
+
+function publicMeetingMeta(meta: Record<string, any> | null | undefined) {
+  const out: Record<string, any> = {};
+  for (const key of PUBLIC_MEETING_META_KEYS) if (meta?.[key] != null) out[key] = meta[key];
+  return out;
+}
 
 export default function MeetingDetail(props: any) {
   // React Router reuses this route across meeting URLs. Playback, deep links and
@@ -635,6 +647,12 @@ function MeetingDetailContent({ loaderData }: any) {
                 directVideoUrl={directVideoUrl}
                 directAudioUrl={directAudioUrl}
                 meeting={meeting}
+                posterUrl={meeting.meta?.poster?.url}
+                posterLabel={{
+                  title: meeting.title,
+                  date: recordDate(meeting.meeting_date),
+                  eyebrow: meeting.organization?.name && meeting.organization.name !== meeting.title ? meeting.organization.name : null,
+                }}
                 agendaItems={agendaItems}
                 transcript={transcript}
                 onTranscriptOpen={() => setTranscriptRequestedFor(rawMeeting.id)}

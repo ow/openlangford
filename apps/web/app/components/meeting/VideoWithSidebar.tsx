@@ -44,6 +44,10 @@ interface VideoWithSidebarProps {
   directVideoUrl?: string | null;
   directAudioUrl?: string | null;
   meeting: { id: number; video_url?: string };
+  /** Still frame from the recording (meetings.meta.poster.url), shown until playback starts. */
+  posterUrl?: string | null;
+  /** Meeting name/date laid over the poster (HTML, not baked in) until playback starts. */
+  posterLabel?: { title: string; date: string; eyebrow?: string | null } | null;
   agendaItems: AgendaItem[];
   transcript: TranscriptSegment[];
   meetingDuration: number;
@@ -81,11 +85,44 @@ function getTimedItemIds(items: AgendaItem[]): Set<number> {
 
 const RATES = [1, 1.5, 2];
 
+/**
+ * Meeting name and date over the poster frame, in the share card's style: a scrim
+ * heavy at the bottom-left where the text sits, opening up toward the room.
+ */
+function PosterTitle({ label }: { label?: VideoWithSidebarProps["posterLabel"] }) {
+  if (!label) return null;
+  return (
+    <>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(6,13,14,0.82)_0%,rgba(6,13,14,0.5)_45%,rgba(6,13,14,0.1)_100%),linear-gradient(0deg,rgba(6,13,14,0.75)_0%,rgba(6,13,14,0)_55%)]"
+      />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-brand-400" />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 left-0 max-w-[85%] p-3 text-left sm:p-6 lg:p-8"
+      >
+        {label.eyebrow && (
+          <span className="hidden text-xs font-bold tracking-[0.12em] text-brand-300 uppercase sm:block">
+            {label.eyebrow}
+          </span>
+        )}
+        <span className="mt-1 block text-base leading-tight font-extrabold tracking-tight text-balance text-white sm:text-3xl lg:text-4xl">
+          {label.title}
+        </span>
+        <span className="mt-0.5 block text-xs font-medium text-white/80 sm:mt-1 sm:text-base">{label.date}</span>
+      </span>
+    </>
+  );
+}
+
 export function VideoWithSidebar({
   videoPlayer,
   directVideoUrl,
   directAudioUrl,
   meeting,
+  posterUrl,
+  posterLabel,
   agendaItems,
   transcript,
   meetingDuration,
@@ -251,9 +288,15 @@ export function VideoWithSidebar({
             {/* Video Loading State */}
             {!directVideoUrl && (
               <div className="absolute inset-0 z-10 flex items-center justify-center bg-zinc-900">
-                <div className="flex flex-col items-center gap-3">
-                  <Loader2 className="h-6 w-6 animate-spin text-zinc-500" aria-hidden="true" />
-                  <span className="text-sm text-zinc-400">Connecting to video…</span>
+                {posterUrl && (
+                  <>
+                    <img src={posterUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                    <PosterTitle label={posterLabel} />
+                  </>
+                )}
+                <div className={cn("relative flex flex-col items-center gap-3", posterUrl && "rounded-xl bg-black/50 px-4 py-3 backdrop-blur-sm")}>
+                  <Loader2 className={cn("h-6 w-6 animate-spin", posterUrl ? "text-zinc-300" : "text-zinc-500")} aria-hidden="true" />
+                  <span className={cn("text-sm", posterUrl ? "text-zinc-200" : "text-zinc-400")}>Connecting to video…</span>
                 </div>
               </div>
             )}
@@ -262,6 +305,7 @@ export function VideoWithSidebar({
               key={directVideoUrl}
               ref={videoPlayer.videoRef}
               src={directVideoUrl || undefined}
+              poster={posterUrl || undefined}
               className="h-full w-full"
               onClick={videoPlayer.togglePlay}
               playsInline
@@ -288,15 +332,19 @@ export function VideoWithSidebar({
             {directVideoUrl && !videoPlayer.videoEnabled && (
               <button
                 type="button"
-                aria-label="Play meeting video"
-                className="group/play absolute inset-0 z-10 flex items-center justify-center bg-black/30 transition-colors hover:bg-black/20"
+                aria-label={posterLabel ? `Play video: ${posterLabel.title}, ${posterLabel.date}` : "Play meeting video"}
+                className={cn(
+                  "group/play absolute inset-0 z-10 flex items-center justify-center transition-colors",
+                  posterUrl && posterLabel ? "bg-transparent" : "bg-black/30 hover:bg-black/20",
+                )}
                 onClick={(e) => {
                   e.stopPropagation();
                   videoPlayer.setVideoEnabled(true);
                   setTimeout(() => videoPlayer.togglePlay(), 100);
                 }}
               >
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface/90 text-zinc-900 shadow-lg transition-transform group-hover/play:scale-105">
+                {posterUrl && <PosterTitle label={posterLabel} />}
+                <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-surface/90 text-zinc-900 shadow-lg transition-transform group-hover/play:scale-105">
                   <Play className="ml-1 h-7 w-7 fill-current" />
                 </span>
               </button>
