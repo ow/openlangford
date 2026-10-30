@@ -312,10 +312,18 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
     orphans = [pid for slug, pid in ids.items() if pid not in linked]
     for start in range(0, len(orphans), 200):
         supabase.table("properties").delete().in_("id", orphans[start:start + 200]).execute()
+    privacy = refresh_property_privacy(supabase)
     geocoded = geocode_missing(supabase, limit=geocode_limit)
     mark_shared_points(supabase)
     return {**stats, "inserted": len(inserts), "removed": len(stale), "updated": len(updates),
-            "orphans_removed": len(orphans), "geocoded": geocoded}
+            "orphans_removed": len(orphans), "hidden": privacy.get("hidden", 0), "geocoded": geocoded}
+
+
+def refresh_property_privacy(supabase, *, dry_run: bool = False) -> dict:
+    """Hide lots known only because a resident gave them as their home address in public input
+    (no page, not on street pages, maps, search or sitemaps). New rows start hidden in the
+    database, so this is what makes a newly found lot public once Council business names it."""
+    return supabase.rpc("refresh_property_privacy", {"p_dry_run": dry_run}).execute().data or {}
 
 
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
@@ -404,10 +412,10 @@ def geocode_missing(supabase, *, limit: int | None = None, sleep=None) -> int:
 
     sleep = sleep or time.sleep
     cutoff = (datetime.now(timezone.utc) - timedelta(days=RETRY_AFTER_DAYS)).isoformat()
-    missing = _pages(lambda: supabase.table("properties").select("id,address,civic_number,geo").is_("geo", "null")
+    missing = _pages(lambda: supabase.table("properties").select("id,address,civic_number,geo").is_("geo", "null").eq("hidden", False)
                      .or_(f"geocode_attempted_at.is.null,geocode_attempted_at.lt.{cutoff}").order("id"))
     upgrade = [row for row in _pages(lambda: supabase.table("properties").select("id,address,civic_number,geo")
-                                     .neq("civic_number", "").not_.is_("geo", "null").order("id"))
+                                     .neq("civic_number", "").eq("hidden", False).not_.is_("geo", "null").order("id"))
                if not (row["geo"] or {}).get("bc_tried") and (row["geo"] or {}).get("source") != "bc"]
     found = 0
     for row in (missing + upgrade)[:limit] if limit else missing + upgrade:

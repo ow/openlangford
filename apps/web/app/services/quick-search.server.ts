@@ -121,7 +121,7 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
           .limit(3),
     // Lots ("2750 leigh") and streets ("leigh road"); spelling of the street type varies, so match the start.
     q.length >= 4
-      ? supabase.from("properties").select("id, slug, address, civic_number").ilike("address", `${q.replace(/[%_]/g, "").replace(/\s+(rd|road|ave|avenue|dr|drive|st|street|pl|place|pkwy|parkway|cres|crescent|way|hwy|highway)\.?$/, "")}%`).limit(5)
+      ? supabase.from("properties").select("id, slug, address, civic_number").eq("hidden", false).ilike("address", `${q.replace(/[%_]/g, "").replace(/\s+(rd|road|ave|avenue|dr|drive|st|street|pl|place|pkwy|parkway|cres|crescent|way|hwy|highway)\.?$/, "")}%`).limit(5)
       : Promise.resolve({ data: [] as any[] }),
   ]);
 

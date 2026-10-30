@@ -1,4 +1,4 @@
-from pipeline.ingestion.properties import display, parse_addresses, resolve, slug_of
+from pipeline.ingestion.properties import display, parse_addresses, refresh_property_privacy, resolve, slug_of
 
 
 def keys(text, need_type=False):
@@ -118,3 +118,19 @@ def test_years_and_spacing_variants():
                for a in parse_addresses(text, need_type=False)]
     assert list(resolve(sources)) == [("4342", "west shore", "Parkway")]
     assert display(("116", "mccallum", "Road")) == "116 McCallum Road"
+
+
+def test_refresh_property_privacy_runs_the_database_rule():
+    calls = []
+
+    class Query:
+        def execute(self):
+            return type("Result", (), {"data": {"dry_run": False, "hidden": 3, "changed": 1}})()
+
+    class Client:
+        def rpc(self, name, params):
+            calls.append((name, params))
+            return Query()
+
+    assert refresh_property_privacy(Client())["hidden"] == 3
+    assert calls == [("refresh_property_privacy", {"p_dry_run": False})]

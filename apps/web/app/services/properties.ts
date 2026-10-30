@@ -24,7 +24,7 @@ export async function getPropertiesForMatter(supabase: SupabaseClient, matterId:
   }
   const propertyIds = [...new Set(own.map((l) => l.property_id))];
   const [{ data: properties }, { data: links }] = await Promise.all([
-    supabase.from("properties").select("id, slug, address, civic_number, geo").in("id", propertyIds),
+    supabase.from("properties").select("id, slug, address, civic_number, geo").in("id", propertyIds).eq("hidden", false),
     supabase.from("property_links").select("property_id, matter_id").in("property_id", propertyIds).not("matter_id", "is", null).neq("matter_id", matterId).eq("hidden", false),
   ]);
   const otherIds = [...new Set((links || []).map((l) => l.matter_id as number))];
@@ -45,7 +45,8 @@ export async function getPropertiesForMatter(supabase: SupabaseClient, matterId:
 
 /** One property: its matters (newest activity first) and agenda items that named it outside any matter. */
 export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) {
-  const { data: property, error } = await supabase.from("properties").select("id, slug, address, civic_number, street, geo, meta").eq("slug", slug).maybeSingle();
+  // A hidden lot (a resident's home known only from public input) has no page: same as no lot at all.
+  const { data: property, error } = await supabase.from("properties").select("id, slug, address, civic_number, street, geo, meta").eq("slug", slug).eq("hidden", false).maybeSingle();
   if (error) throw error;
   if (!property) return null;
   const { data: links, error: linksError } = await supabase
@@ -65,7 +66,7 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
           .in("id", looseItemIds)
       : Promise.resolve({ data: [] as any[], error: null }),
     // Lots on the same street (a street page lists them all; a lot shows its nearest neighbours).
-    supabase.from("properties").select("id, slug, address, civic_number, geo").ilike("street", property.street).neq("civic_number", "").neq("id", property.id).limit(1000),
+    supabase.from("properties").select("id, slug, address, civic_number, geo").ilike("street", property.street).neq("civic_number", "").neq("id", property.id).eq("hidden", false).limit(1000),
   ]);
   if (mattersError) throw mattersError;
   if (itemsError) throw itemsError;
@@ -122,7 +123,9 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
   /**
    * Kept out of search results (the page still works and links stay): a page with nothing on it,
    * and a lot known only because residents gave it as their home address while speaking or
-   * writing to Council (a street made up only of such lots, too).
+   * writing to Council (a street made up only of such lots, too). Such lots are normally hidden
+   * (properties.hidden, set by refresh_property_privacy) and have no page at all; this covers the
+   * moment between new links and the pipeline's refresh.
    */
   const noindex = isStreet
     ? !ownRecords && ![...lotCounts.keys()].some((id) => !lotResidentOnly.has(id))
@@ -180,6 +183,7 @@ async function getNearbyMatters(
         .from("properties")
         .select("id, slug, address, geo")
         .neq("civic_number", "")
+        .eq("hidden", false)
         .not("geo", "is", null)
         .order("id")
         .range(start, start + 999);
@@ -243,7 +247,7 @@ export async function getPropertyPinsByMatter(supabase: SupabaseClient, matterId
     for (let i = 0; i < matterIds.length; i += 300) {
       const { data, error } = await supabase
         .from("property_links")
-        .select("matter_id, properties(address, civic_number, geo)")
+        .select("matter_id, properties(address, civic_number, geo, hidden)")
         .in("matter_id", matterIds.slice(i, i + 300))
         .eq("hidden", false);
       if (error) throw error;
@@ -253,7 +257,7 @@ export async function getPropertyPinsByMatter(supabase: SupabaseClient, matterId
     for (let start = 0; ; start += 1000) {
       const { data, error } = await supabase
         .from("property_links")
-        .select("matter_id, properties(address, civic_number, geo)")
+        .select("matter_id, properties(address, civic_number, geo, hidden)")
         .not("matter_id", "is", null)
         .eq("hidden", false)
         .order("id")
@@ -264,7 +268,7 @@ export async function getPropertyPinsByMatter(supabase: SupabaseClient, matterId
     }
   }
   for (const row of rows) {
-    const pin = row.properties ? propertyPin(row.properties) : null;
+    const pin = row.properties && !(row.properties as any).hidden ? propertyPin(row.properties) : null;
     if (!pin || !row.matter_id) continue;
     const list = pins.get(row.matter_id) || [];
     if (!list.some((p) => p.address === pin.address)) list.push(pin);
@@ -279,7 +283,7 @@ export async function getPropertiesForItems(supabase: SupabaseClient, itemIds: n
   if (!itemIds.length) return byItem;
   const { data, error } = await supabase
     .from("property_links")
-    .select("agenda_item_id, properties(slug, address, civic_number)")
+    .select("agenda_item_id, properties(slug, address, civic_number, hidden)")
     .in("agenda_item_id", itemIds)
     .eq("hidden", false);
   if (error) {
@@ -288,7 +292,7 @@ export async function getPropertiesForItems(supabase: SupabaseClient, itemIds: n
   }
   for (const row of data || []) {
     const p = row.properties as any;
-    if (!p || row.agenda_item_id == null) continue;
+    if (!p || p.hidden || row.agenda_item_id == null) continue;
     (byItem[row.agenda_item_id] ||= []).push({ slug: p.slug, address: p.address });
   }
   return byItem;
@@ -333,7 +337,7 @@ export async function getPropertiesIndex(supabase: SupabaseClient, recentCount =
     return [first, ...rest].flatMap((page) => page.data || []);
   };
   const [properties, links] = await Promise.all([
-    pageAll<any>((from, to) => supabase.from("properties").select("id, slug, address, civic_number, street, geo", { count: "exact" }).order("id").range(from, to)),
+    pageAll<any>((from, to) => supabase.from("properties").select("id, slug, address, civic_number, street, geo", { count: "exact" }).eq("hidden", false).order("id").range(from, to)),
     pageAll<any>((from, to) =>
       supabase
         .from("property_links")

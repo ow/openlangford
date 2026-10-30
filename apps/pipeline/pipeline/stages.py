@@ -798,7 +798,8 @@ def run_properties(ctx: StageContext):
 
     stats = build_properties(ctx.supabase, dry_run=ctx.dry_run)
     print(f"  [Properties] {stats['properties']} properties, {stats['links']} links, {stats['matters']} matters; "
-          f"{stats['multi_matter_properties']} properties with 2+ matters; geocoded {stats.get('geocoded', 0)}")
+          f"{stats['multi_matter_properties']} properties with 2+ matters; {stats.get('hidden', 0)} residents' homes hidden; "
+          f"geocoded {stats.get('geocoded', 0)}")
     for key in stats.get("sample", []):
         print(f"    {key}")
     return stats

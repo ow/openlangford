@@ -152,7 +152,7 @@ def closing_line(mentions: int, first: int | None, last: int | None, this_year: 
 def load_properties(supabase, this_year: int | None = None) -> list[dict]:
     """Every property with its visible record keys, its span and mention count (as the page shows
     them), whether it is a resident's home known only from public input, and a street's lots."""
-    properties = _pages(lambda: supabase.table("properties").select("id, slug, address, civic_number, street, meta").order("id"))
+    properties = _pages(lambda: supabase.table("properties").select("id, slug, address, civic_number, street, meta, hidden").order("id"))
     links = _pages(lambda: supabase.table("property_links")
                    .select("property_id, matter_id, agenda_item_id, hidden, agenda_items(title, category, meetings(meeting_date))")
                    .eq("hidden", False).order("id"))
@@ -180,11 +180,11 @@ def load_properties(supabase, this_year: int | None = None) -> list[dict]:
         shown = [l for l in ls if not l.get("matter_id") or l["matter_id"] in visible]
         keys = record_keys(ls, visible)
         out.append({**p, "street": p.get("street") or "", "meta": p.get("meta") or {}, "records": keys,
-                    "links": shown, "resident_only": p.get("civic_number") != "" and resident_only(shown),
+                    "links": shown, "resident_only": p.get("civic_number") != "" and (bool(p.get("hidden")) or resident_only(shown)),
                     "mentions": mentions_of(shown), "lots": []})
     lots_by_street: dict[str, list[dict]] = {}
     for p in out:
-        if p["civic_number"] != "" and p["records"]:
+        if p["civic_number"] != "" and p["records"] and not p.get("hidden"):  # hidden lots aren't on street pages
             lots_by_street.setdefault(p["street"].lower(), []).append(p)
     for p in out:
         if p["civic_number"] == "":

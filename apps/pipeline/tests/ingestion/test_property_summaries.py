@@ -150,6 +150,16 @@ class TestSelection:
         # ...and never feeds its street's summary.
         assert [lot["id"] for lot in ps.summary_lots(props[3])] == [1, 2, 4]
 
+    def test_a_hidden_lot_is_off_its_street_page_and_out_of_its_counts(self):
+        db = _db()
+        before = _props(db)[3]["mention_count"]
+        for p in db.rows["properties"]:
+            p["hidden"] = p["id"] == 5
+        props = _props(db)
+        assert props[5]["resident_only"] and not ps.eligible(props[5])
+        assert [lot["id"] for lot in props[3]["lots"]] == [1, 2, 4]
+        assert props[3]["mention_count"] == before - 2  # its two public-input mentions
+
     def test_street_with_two_addresses_is_eligible_without_records_of_its_own(self):
         db = _db()
         db.rows["property_links"] = [l for l in db.rows["property_links"] if l["property_id"] != 3]

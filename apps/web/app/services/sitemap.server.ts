@@ -154,7 +154,7 @@ async function buildSitemapEntries(
       // or a street with a record itself or at any such address (hidden links leave thin pages).
       const [properties, links] = await Promise.all([
         pageAll<any>((from, to) =>
-          supabase.from("properties").select("id, slug, street, civic_number").eq("municipality_id", municipality.id).order("id").range(from, to),
+          supabase.from("properties").select("id, slug, street, civic_number").eq("municipality_id", municipality.id).eq("hidden", false).order("id").range(from, to),
         ),
         pageAll<any>((from, to) =>
           supabase
