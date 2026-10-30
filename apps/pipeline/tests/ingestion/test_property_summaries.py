@@ -322,6 +322,14 @@ def test_a_lead_that_drops_the_size_gets_one_more_try(fake_ai):
     assert len(fake_ai.calls) == 2
 
 
+def test_a_lead_with_database_words_gets_one_more_try(fake_ai):
+    fake_ai.queue("generate", _summary("A 2014 variance matter involved homes on the street."),
+                  _summary("In 2014 Council allowed a variance for homes on the street."))
+    assert ps.summarize({"kind": "street", "council_decisions_and_projects": []}) == \
+        "In 2014 Council allowed a variance for homes on the street."
+    assert len(fake_ai.calls) == 2
+
+
 def test_no_retry_when_the_inputs_give_no_size(fake_ai):
     fake_ai.queue("generate", _summary("Council closed part of the road in 2019."))
     ps.summarize({"kind": "lot", "council_decisions_and_projects": [{"title": "Road closure", "summary": ""}]})

@@ -371,6 +371,8 @@ def compose(narrative: str, closing: str) -> str:
 
 SIZE = re.compile(r"\b(?:\d[\d,.]*|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s*(?:-\s*)?(?:homes?|lots?|units?|storeys?|stories|townhomes?|townhouses?|apartments?|dwellings?|suites?)\b", re.I)
 
+DATABASE_WORDS = re.compile(r"\b(?:matters?|records?|agenda items?|the link is unclear)\b", re.I)
+
 
 def _sizes_given(data: dict) -> bool:
     """The inputs state how big something is (homes, lots, units, storeys)."""
@@ -383,15 +385,25 @@ def _sizes_given(data: dict) -> bool:
 def summarize(data: dict, closing: str = "") -> str:
     result = ai.json(prompt(data), stage=STAGE, schema=PropertySummary, system=SYSTEM)
     text = result.summary
-    # A lead that drops the size of the project ("a subdivision" for "a 47-lot subdivision") gets one more try.
-    if _sizes_given(data) and not SIZE.search(text or ""):
+    # Up to two more tries for a lead that drops the size of the project ("a subdivision" for "a
+    # 47-lot subdivision") or uses database words ("matter", "record") or hedges about the records.
+    for _ in range(2):
+        problems = []
+        if _sizes_given(data) and not SIZE.search(text or ""):
+            problems.append("it leaves out how big the projects are; keep the number of homes, lots, units or storeys the inputs give")
+        if DATABASE_WORDS.search(text or ""):
+            problems.append('it uses database words ("matter", "record", "agenda item") or talks about the records; '
+                            "say only what Council did, and leave out anything the inputs don't make clear")
+        if not problems:
+            break
         try:
-            retry = ai.json(prompt(data) + "\n\nYour last draft left out how big the projects are: \"" + (text or "") +
-                            "\". Rewrite it keeping the number of homes, lots, units or storeys the inputs give.",
+            retry = ai.json(prompt(data) + "\n\nRewrite your last draft: \"" + (text or "") + "\". Problems: " +
+                            "; ".join(problems) + ".",
                             stage=STAGE, schema=PropertySummary, system=SYSTEM)
             text = retry.summary or text
-        except Exception as e:  # the first draft is still usable
-            print(f"  [!] Property summary retry failed, keeping the first draft: {e}", flush=True)
+        except Exception as e:  # the last draft is still usable
+            print(f"  [!] Property summary retry failed, keeping the last draft: {e}", flush=True)
+            break
     return compose(text, closing)
 
 
