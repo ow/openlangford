@@ -25,7 +25,7 @@ sql/                   # Database bootstrap (bootstrap.sql)
 ```bash
 pnpm dev              # Vite dev server (localhost:5173)
 pnpm build            # Build for Cloudflare Workers
-pnpm deploy           # Build + wrangler deploy
+pnpm deploy           # Manual build + wrangler deploy: emergencies only, with the owner's OK (see Deploying)
 pnpm typecheck        # React Router typegen + tsc
 ```
 
@@ -42,6 +42,13 @@ uv run pytest                            # All tests
 uv run pytest tests/core/test_parser.py -v  # Single test file
 ```
 All pipeline commands run from `apps/pipeline/` (where `pyproject.toml` and `pytest.ini` live).
+
+## Deploying
+
+Production (openlangford.ca) deploys automatically when commits land on `main`: Cloudflare builds and deploys every push. To ship, `git pull --rebase origin main`, then `git push origin main` (if SSH to GitHub times out, push over HTTPS with the gh credentials).
+- Never run `wrangler deploy` / `pnpm deploy` yourself, even if wrangler is logged in. A manual deploy skips the normal build, uses whatever is in your local `.env`, and can ship code that isn't on `main`. Only do it if the owner explicitly asks.
+- Don't sit in a loop waiting for a deploy to go live. Push, carry on, and check production once later.
+- Migrations in `supabase/migrations/` apply automatically on merge too (see Database Gotchas).
 
 ## Tech Stack
 
