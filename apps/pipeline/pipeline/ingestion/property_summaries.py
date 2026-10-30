@@ -67,13 +67,13 @@ Rules from the site's writing guide:
 - "No internal codes." No bylaw, file, permit or policy numbers.
 - "No database words." Never "matters", "records", "agenda items" or "mentions".
 - "Short sentences, active voice." About 20 words at most per sentence. Council is the subject.
-- "Concrete." Name the development, the facility, the dollar amount, the number of homes when the inputs give them.
+- "Concrete." Name the development, the facility and the dollar amount. Whenever the inputs give the number of homes, lots, units or storeys for a project you mention, keep that number ("a 47-lot subdivision", "a six-storey building with 93 homes").
 - "Never invent." If the inputs don't say how something ended, leave the outcome out. Don't open with what is missing.
 - "Write so it stays true." No "currently" or "recently"; give the year instead.
 - Canadian spelling.
 
 For a lot (kind "lot"): say what has been proposed or decided there. Example: "A subdivision of up to 47 homes, approved in 2015 after changes to the official community plan and zoning."
-For a street (kind "street"): cover both the road itself (roadworks, closures, traffic, grants; newest first) and the biggest developments at addresses on it (the addresses Council considered most often and the largest in scale first; "times_considered" says how often). Example: "In 2024 Council backed grant applications for walking and cycling upgrades on Latoria Road. Earlier: a 47-lot subdivision at 935 and the 501-home McCormick Meadows plan at 940." Refer to an address on the street by its number alone ("a 47-lot subdivision at 935"), since the street is the page.
+For a street (kind "street"): cover both the road itself (roadworks, closures, traffic, grants; newest first) and the developments at addresses on it. Name the projects at the addresses in "most_considered" (the ones Council considered most often) first; add one other, larger project only if it fits. Example: "In 2024 Council backed grant applications for walking and cycling upgrades on Latoria Road. Earlier: a 47-lot subdivision at 935 and the 501-home McCormick Meadows plan at 940." Refer to an address on the street by its number alone ("a 47-lot subdivision at 935"), since the street is the page.
 Never mention people's names, applicants, companies, or residents' personal details. Never start with "This address", "This street" or the address itself."""
 
 
@@ -344,6 +344,7 @@ def build_input(p: dict, matters: dict[int, dict], items: dict[int, dict]) -> di
         "kind": "street",
         "the_street_itself": {"council_decisions_and_projects": own_matters, "other_mentions": own_items},
         "addresses_on_the_street": [r["row"] for r in chosen],
+        "most_considered": [r["row"]["number"] for r in busiest[:2]],
         "addresses_in_total": len(lots),
     }
 
@@ -368,9 +369,30 @@ def compose(narrative: str, closing: str) -> str:
     return f"{narrative} {closing}".strip()
 
 
+SIZE = re.compile(r"\b(?:\d[\d,.]*|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s*(?:-\s*)?(?:homes?|lots?|units?|storeys?|stories|townhomes?|townhouses?|apartments?|dwellings?|suites?)\b", re.I)
+
+
+def _sizes_given(data: dict) -> bool:
+    """The inputs state how big something is (homes, lots, units, storeys)."""
+    rows = list(data.get("council_decisions_and_projects") or [])
+    for address in data.get("addresses_on_the_street") or []:
+        rows += address.get("council_decisions_and_projects") or []
+    return any(SIZE.search(f"{r.get('title', '')} {r.get('summary', '')}") for r in rows[:8])
+
+
 def summarize(data: dict, closing: str = "") -> str:
     result = ai.json(prompt(data), stage=STAGE, schema=PropertySummary, system=SYSTEM)
-    return compose(result.summary, closing)
+    text = result.summary
+    # A lead that drops the size of the project ("a subdivision" for "a 47-lot subdivision") gets one more try.
+    if _sizes_given(data) and not SIZE.search(text or ""):
+        try:
+            retry = ai.json(prompt(data) + "\n\nYour last draft left out how big the projects are: \"" + (text or "") +
+                            "\". Rewrite it keeping the number of homes, lots, units or storeys the inputs give.",
+                            stage=STAGE, schema=PropertySummary, system=SYSTEM)
+            text = retry.summary or text
+        except Exception as e:  # the first draft is still usable
+            print(f"  [!] Property summary retry failed, keeping the first draft: {e}", flush=True)
+    return compose(text, closing)
 
 
 def summarize_properties(supabase, props: list[dict], *, write: bool = True, workers: int = 4) -> dict[int, str]:
