@@ -23,8 +23,6 @@ declare namespace Cloudflare {
 		EMAIL_ALERT_START_DATE?: string; // YYYY-MM-DD go-live meeting date; empty disables Worker enqueue
 		AI_PROVIDER: "openai";
 		AI_MODEL: "gpt-6-luna";
-		VIMEO_PROXY_URL: "https://vimeo-proxy.kpeatt.workers.dev";
-		VIMEO_PROXY_FALLBACK_URL: "https://vimeo-proxy.onrender.com";
 		VITE_SUPABASE_URL: "https://zxcvifwkaxtdfpanlwtl.supabase.co";
 		VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: "sb_publishable_KL1VPqvqcoPOgLqCG2o-Mw_n4htEdbc";
 		VITE_POSTHOG_KEY: "phc_qfeuUwiF7HDB6c86rVFLpHSN8iZ9G79FQDVhYiVyBceg";
@@ -36,5 +34,5 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "AI_GATEWAY_ID" | "AI_SEARCH_DAILY_LIMIT" | "ADMIN_EMAILS" | "ENABLE_SIGNUPS" | "PUBLIC_SIGNUP_LINKS" | "EMAIL_ALERTS_AVAILABLE" | "AI_PROVIDER" | "AI_MODEL" | "VIMEO_PROXY_URL" | "VIMEO_PROXY_FALLBACK_URL" | "VITE_SUPABASE_URL" | "VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY" | "VITE_POSTHOG_KEY" | "DOCUMENT_IMAGE_PUBLIC_BASE_URL">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "AI_GATEWAY_ID" | "AI_SEARCH_DAILY_LIMIT" | "ADMIN_EMAILS" | "ENABLE_SIGNUPS" | "PUBLIC_SIGNUP_LINKS" | "EMAIL_ALERTS_AVAILABLE" | "AI_PROVIDER" | "AI_MODEL" | "VITE_SUPABASE_URL" | "VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY" | "VITE_POSTHOG_KEY" | "DOCUMENT_IMAGE_PUBLIC_BASE_URL">> {}
 }

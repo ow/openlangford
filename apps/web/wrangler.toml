@@ -35,8 +35,8 @@ EMAIL_ALERT_DISPATCH_ENABLED = "true"
 EMAIL_ALERT_START_DATE = "2026-10-29"
 AI_PROVIDER = "openai"
 AI_MODEL = "gpt-6-luna"
-VIMEO_PROXY_URL = "https://vimeo-proxy.kpeatt.workers.dev"
-VIMEO_PROXY_FALLBACK_URL = "https://vimeo-proxy.onrender.com"
+# No VIMEO_PROXY_URL / VIMEO_PROXY_FALLBACK_URL: Langford's video provider is eSCRIBE (ISI Live).
+# A Vimeo deployment sets them here or in source_config.video_source.proxy_url / proxy_fallback_url.
 VITE_SUPABASE_URL = "https://zxcvifwkaxtdfpanlwtl.supabase.co"
 VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY = "sb_publishable_KL1VPqvqcoPOgLqCG2o-Mw_n4htEdbc"
 VITE_POSTHOG_KEY = "phc_qfeuUwiF7HDB6c86rVFLpHSN8iZ9G79FQDVhYiVyBceg"

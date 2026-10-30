@@ -102,7 +102,9 @@ export default {
       }).catch(error => { console.error("[Calendar] Sync failed; previous schedule retained"); throw error; }));
       return;
     }
-    const baseUrl = (env.VIMEO_PROXY_FALLBACK_URL as string) || "https://vimeo-proxy.onrender.com";
+    // Keeps a Vimeo fallback proxy warm, only for deployments that configure one (not Langford).
+    const baseUrl = (env as unknown as { VIMEO_PROXY_FALLBACK_URL?: string }).VIMEO_PROXY_FALLBACK_URL;
+    if (!baseUrl) return;
     const url = `${baseUrl}/health`;
     console.log(`[Cron] Pinging Render fallback: ${url}`);
     ctx.waitUntil(

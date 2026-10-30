@@ -25,8 +25,8 @@ pnpm dev               # http://localhost:5173
 | `RERANK_AI_PROVIDER` / `RERANK_AI_MODEL` | Optional override for search-result reranking |
 | `EXTRACTION_AI_PROVIDER` / `EXTRACTION_AI_MODEL` | Optional override for agenda intelligence extraction |
 | `VIMEO_TOKEN` | Vimeo API token (optional, for direct API access) |
-| `VIMEO_PROXY_URL` | Primary vimeo-proxy Worker URL |
-| `VIMEO_PROXY_FALLBACK_URL` | Fallback proxy URL |
+| `VIMEO_PROXY_URL` | Vimeo provider only: primary vimeo-proxy Worker URL (or `source_config.video_source.proxy_url`) |
+| `VIMEO_PROXY_FALLBACK_URL` | Vimeo provider only: fallback proxy URL (or `source_config.video_source.proxy_fallback_url`) |
 | `VIMEO_PROXY_API_KEY` | Auth key for primary proxy |
 | `VIMEO_PROXY_FALLBACK_API_KEY` | Auth key for fallback proxy |
 | `DOCUMENT_IMAGE_PUBLIC_BASE_URL` / `R2_PUBLIC_URL` | Public base URL for R2 document images; `document_images.r2_key` is appended to this |
