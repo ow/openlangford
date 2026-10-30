@@ -1,6 +1,6 @@
 import { data, type ActionFunctionArgs } from "react-router";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
-import { clearVimeoCache } from "../services/vimeo.server";
+import { getConfiguredVideoProviderId, getVideoProvider } from "../services/video/index.server";
 import { isRateLimited, tooManyRequests } from "../lib/rate-limit.server";
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -24,22 +24,25 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const supabaseAdmin = getSupabaseAdminClient();
 
   try {
-    // One atomic UPDATE (jsonb merge) so concurrent meta writes from the pipeline aren't lost.
-    const { data: rows, error: rpcError } = await supabaseAdmin.rpc("invalidate_meeting_vimeo_cache", {
-      p_meeting_id: meetingId,
-    });
-    if (rpcError) throw rpcError;
-    const meeting = (rows as { video_url: string | null }[] | null)?.[0];
+    const { data: meeting, error } = await supabaseAdmin
+      .from("meetings")
+      .select("video_url")
+      .eq("id", meetingId)
+      .maybeSingle();
+    if (error) throw error;
     if (!meeting) {
       return data({ error: "Meeting not found" }, { status: 404 });
     }
 
-    // Clear this isolate's in-memory cache too.
-    if (meeting.video_url) {
-      clearVimeoCache(meeting.video_url);
+    // Each provider clears its own cache (Vimeo: the URLs cached in meetings.meta, atomically).
+    const configured = await getConfiguredVideoProviderId(supabaseAdmin);
+    const provider = getVideoProvider(meeting.video_url, configured);
+    if (provider) {
+      const found = await provider.invalidate(meetingId, meeting.video_url);
+      if (!found) return data({ error: "Meeting not found" }, { status: 404 });
     }
 
-    console.log(`[Video Failure] Invalidated cache for meeting ${meetingId}`);
+    console.log(`[Video Failure] Invalidated ${provider?.id ?? "no"} video cache for meeting ${meetingId}`);
     return data({ success: true });
   } catch (error) {
     console.error("[Video Failure] Error:", error);

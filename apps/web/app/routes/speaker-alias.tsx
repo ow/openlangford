@@ -36,7 +36,8 @@ import {
   DialogFooter,
 } from "../components/ui/dialog";
 import { cn } from "../lib/utils";
-import { getVimeoVideoData } from "../services/vimeo.server";
+import { getVideoSourceSetting, resolveVideoSource } from "../services/video/index.server";
+import { getMunicipality } from "../services/municipality";
 import { getMeetingById } from "../services/meetings";
 import { useVideoPlayer } from "../hooks/useVideoPlayer";
 
@@ -151,13 +152,20 @@ export async function loader({ request }: { request: Request }) {
       }
 
       if (currentMeeting.video_url) {
-        const vData = await getVimeoVideoData(
-          currentMeeting.video_url,
-          currentMeeting.id,
-        );
-        if (vData) {
-          (currentMeeting as any).direct_video_url = vData.direct_url;
-          (currentMeeting as any).direct_audio_url = vData.direct_audio_url;
+        try {
+          const setting = await getVideoSourceSetting(serverClient);
+          const municipality = await getMunicipality(serverClient).catch(() => null);
+          const resolved = await resolveVideoSource(currentMeeting.video_url, {
+            meetingId: currentMeeting.id,
+            websiteUrl: municipality?.website_url,
+            setting,
+          });
+          if (resolved?.source) {
+            (currentMeeting as any).direct_video_url = resolved.source.url;
+            (currentMeeting as any).direct_audio_url = resolved.source.audioUrl;
+          }
+        } catch (e) {
+          console.error("Error resolving meeting video:", e);
         }
       }
     }

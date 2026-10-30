@@ -1,7 +1,29 @@
-import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { getSupabaseAdminClient } from "../../lib/supabase.server";
+import { vimeoInfo } from "./catalog";
+import { guessSourceKind, type VideoProvider } from "./types";
 
 const VIMEO_TOKEN = process.env.VIMEO_TOKEN;
-// VIMEO_PROXY_URL and VIMEO_PROXY_API_KEY are accessed dynamically inside functions
+
+/**
+ * The vimeo-proxy worker (apps/vimeo-proxy) that extracts stream URLs for
+ * domain-restricted videos. Its URLs are part of the Vimeo provider's config
+ * (`source_config.video_source.proxy_url` / `proxy_fallback_url`), falling back
+ * to the VIMEO_PROXY_URL / VIMEO_PROXY_FALLBACK_URL env vars. The API keys stay
+ * Worker secrets (VIMEO_PROXY_API_KEY / VIMEO_PROXY_FALLBACK_API_KEY).
+ * Municipalities on another provider never reach this code.
+ */
+export interface VimeoProxyConfig {
+  url?: string | null;
+  fallbackUrl?: string | null;
+}
+
+export function vimeoProxyConfig(providerConfig?: Record<string, unknown> | null): VimeoProxyConfig {
+  const str = (v: unknown) => (typeof v === "string" && v.startsWith("https://") ? v.replace(/\/+$/, "") : null);
+  return {
+    url: str(providerConfig?.proxy_url) ?? (process.env.VIMEO_PROXY_URL || null),
+    fallbackUrl: str(providerConfig?.proxy_fallback_url) ?? (process.env.VIMEO_PROXY_FALLBACK_URL || null),
+  };
+}
 
 export interface VimeoVideoData {
   name: string;
@@ -133,6 +155,7 @@ export async function getVimeoVideoData(
   videoUrl: string,
   meetingId?: number | string,
   websiteUrl?: string,
+  proxy: VimeoProxyConfig = vimeoProxyConfig(),
 ): Promise<VimeoVideoData | null> {
   try {
     const supabaseAdmin = getSupabaseAdminClient();
@@ -264,7 +287,7 @@ export async function getVimeoVideoData(
 
     if (!VIMEO_TOKEN) {
       console.log("[Vimeo] No VIMEO_TOKEN, using fallback methods...");
-      const fallback = await getDirectUrlFallback(videoUrl, websiteUrl).catch((e) => {
+      const fallback = await getDirectUrlFallback(videoUrl, websiteUrl, proxy).catch((e) => {
         console.warn(`[Vimeo] Fallback failed: ${e}`);
         return null;
       });
@@ -342,7 +365,7 @@ export async function getVimeoVideoData(
         console.warn(
           `[Vimeo] API returned ${response.status}, trying fallback`,
         );
-        const fallback = await getDirectUrlFallback(videoUrl, websiteUrl).catch(() => null);
+        const fallback = await getDirectUrlFallback(videoUrl, websiteUrl, proxy).catch(() => null);
         if (fallback) {
           return {
             name: "Fallback Video",
@@ -390,7 +413,7 @@ export async function getVimeoVideoData(
       // If Vimeo API didn't return direct URLs (domain-restricted), use fallback
       if (!directUrl) {
         console.log(`[Vimeo] API returned no direct URLs, trying fallback`);
-        const fallback = await getDirectUrlFallback(videoUrl, websiteUrl).catch(() => null);
+        const fallback = await getDirectUrlFallback(videoUrl, websiteUrl, proxy).catch(() => null);
         if (fallback) {
           const fallbackResult: VimeoVideoData = {
             ...data,
@@ -570,11 +593,11 @@ async function getDirectUrlViaPlayerConfig(
 
 async function getDirectUrlViaProxy(
   videoUrl: string,
-  proxyUrlOverride?: string,
-  apiKeyOverride?: string,
+  proxyUrl: string | null | undefined,
+  apiKey: string | undefined,
 ): Promise<{ video: string; audio?: string } | null> {
-  const VIMEO_PROXY_URL = proxyUrlOverride || process.env.VIMEO_PROXY_URL;
-  const VIMEO_PROXY_API_KEY = apiKeyOverride || process.env.VIMEO_PROXY_API_KEY;
+  const VIMEO_PROXY_URL = proxyUrl;
+  const VIMEO_PROXY_API_KEY = apiKey;
 
   if (!VIMEO_PROXY_URL) {
     return null;
@@ -679,13 +702,14 @@ async function getDirectUrlViaYtDlp(
 /**
  * Attempts to get direct URLs using available methods in priority order:
  * 1. Vimeo player config endpoint (works for non-Turnstile-protected videos)
- * 2. Primary proxy service - Cloudflare Browser Rendering (VIMEO_PROXY_URL)
- * 3. Fallback proxy service - Render (VIMEO_PROXY_FALLBACK_URL)
+ * 2. Primary proxy service - Cloudflare Browser Rendering (proxy.url)
+ * 3. Fallback proxy service - Render (proxy.fallbackUrl)
  * 4. Local yt-dlp (Node.js local dev only)
  */
 async function getDirectUrlFallback(
   videoUrl: string,
-  websiteUrl?: string,
+  websiteUrl: string | undefined,
+  proxy: VimeoProxyConfig,
 ): Promise<{ video: string; audio?: string } | null> {
   try {
     // Race player config and primary proxy in parallel for speed.
@@ -694,7 +718,9 @@ async function getDirectUrlFallback(
     const configPromise = getDirectUrlViaPlayerConfig(videoUrl, websiteUrl).catch(
       () => null,
     );
-    const proxyPromise = getDirectUrlViaProxy(videoUrl).catch(() => null);
+    const proxyPromise = getDirectUrlViaProxy(videoUrl, proxy.url, process.env.VIMEO_PROXY_API_KEY).catch(
+      () => null,
+    );
 
     // Wait for player config first (fast path, <1s when it works)
     const configResult = await configPromise;
@@ -711,7 +737,7 @@ async function getDirectUrlFallback(
     }
 
     // Try fallback proxy service (Render)
-    const fallbackProxyUrl = process.env.VIMEO_PROXY_FALLBACK_URL;
+    const fallbackProxyUrl = proxy.fallbackUrl;
     if (fallbackProxyUrl) {
       console.log(`[Vimeo] Primary proxy failed, trying fallback proxy`);
       const fallbackApiKey = process.env.VIMEO_PROXY_FALLBACK_API_KEY;
@@ -732,3 +758,43 @@ async function getDirectUrlFallback(
     return null;
   }
 }
+
+/** Vimeo CDN URLs carry their expiry as `exp=<unix seconds>`. */
+function vimeoExpiry(url: string): string | null {
+  const match = url.match(/[?&~]exp=(\d{9,11})/);
+  return match ? new Date(Number(match[1]) * 1000).toISOString() : null;
+}
+
+/** Vimeo provider: the logic above (API, player config, vimeo-proxy worker, yt-dlp), unchanged. */
+export const vimeoProvider: VideoProvider = {
+  ...vimeoInfo,
+  async resolveSource(videoUrl, ctx = {}) {
+    if (!vimeoInfo.matchesUrl(videoUrl)) return null;
+    const data = await getVimeoVideoData(
+      videoUrl,
+      ctx.meetingId,
+      ctx.websiteUrl ?? undefined,
+      vimeoProxyConfig(ctx.providerConfig),
+    );
+    if (!data?.direct_url) return null;
+    return {
+      url: data.direct_url,
+      audioUrl: data.direct_audio_url || null,
+      kind: guessSourceKind(data.direct_url),
+      expiresAt: vimeoExpiry(data.direct_url),
+    };
+  },
+  async invalidate(meetingId, videoUrl) {
+    // One atomic UPDATE (jsonb merge) so concurrent meta writes from the pipeline aren't lost.
+    const { data: rows, error } = await getSupabaseAdminClient().rpc("invalidate_meeting_vimeo_cache", {
+      p_meeting_id: meetingId,
+    });
+    if (error) throw error;
+    const meeting = (rows as { video_url: string | null }[] | null)?.[0];
+    if (!meeting) return false;
+    // Clear this isolate's in-memory cache too.
+    const url = meeting.video_url ?? videoUrl;
+    if (url) clearVimeoCache(url);
+    return true;
+  },
+};

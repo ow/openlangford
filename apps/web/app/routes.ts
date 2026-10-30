@@ -67,6 +67,7 @@ export default [
   route("api/report-video-failure", "routes/api.report-video-failure.ts"),
   route("api/bylaws/:id/download", "routes/api.bylaws.$id.download.tsx"),
   route("api/intel/:id", "routes/api.intel.tsx"),
+  route("api/video-source", "routes/api.video-source.ts"),
   route("api/vimeo-url", "routes/api.vimeo-url.ts"),
   route("api/search", "routes/api.search.tsx"),
   route("api/quick-search", "routes/api.quick-search.tsx"),
