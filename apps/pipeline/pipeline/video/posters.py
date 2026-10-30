@@ -193,7 +193,7 @@ def r2_key(meeting_id: int, offset_s: int) -> str:
     return f"{R2_PREFIX}/{meeting_id}/{offset_s}-v{POSTER_VERSION}.webp"
 
 
-def upload(key: str, data: bytes) -> str:
+def upload(key: str, data: bytes, content_type: str = "image/webp") -> str:
     from pipeline.ingestion.image_extractor import get_r2_client
 
     client = get_r2_client()
@@ -201,20 +201,20 @@ def upload(key: str, data: bytes) -> str:
         raise RuntimeError("R2 is not configured (R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_ENDPOINT_URL)")
     client.put_object(
         Bucket=os.environ.get("R2_BUCKET_NAME", "viewroyal-document-images"),
-        Key=key, Body=data, ContentType="image/webp",
+        Key=key, Body=data, ContentType=content_type,
         CacheControl="public, max-age=31536000, immutable",
     )
     return f"{public_base()}/{key}"
 
 
 MERGE_SQL = (
-    "update meetings set meta = coalesce(meta, '{}'::jsonb) || jsonb_build_object('poster', %s::jsonb) "
+    "update meetings set meta = coalesce(meta, '{}'::jsonb) || jsonb_build_object(%s::text, %s::jsonb) "
     "where id = %s"
 )
 
 
-def save_poster(meeting_id: int, poster: dict, conn: Any = None) -> None:
-    """Merge ``poster`` into meetings.meta without touching any other key."""
+def save_meta_key(meeting_id: int, key: str, value: dict, conn: Any = None) -> None:
+    """Merge one top-level key into meetings.meta without touching any other key."""
     own = conn is None
     if own:
         from pipeline.ingestion.embed import get_db_connection
@@ -222,11 +222,15 @@ def save_poster(meeting_id: int, poster: dict, conn: Any = None) -> None:
         conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute(MERGE_SQL, (json.dumps(poster), meeting_id))
+            cur.execute(MERGE_SQL, (key, json.dumps(value), meeting_id))
         conn.commit()
     finally:
         if own:
             conn.close()
+
+
+def save_poster(meeting_id: int, poster: dict, conn: Any = None) -> None:
+    save_meta_key(meeting_id, "poster", poster, conn)
 
 
 # ── one meeting ──────────────────────────────────────────────────────────

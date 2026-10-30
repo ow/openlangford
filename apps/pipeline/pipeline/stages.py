@@ -45,6 +45,7 @@ from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
 from pipeline.ingestion.property_summaries import PROPERTY_SUMMARY_VERSION
 from pipeline.ingestion.speaker_identity import IDENTITY_VERSION as SPEAKER_IDENTITY_VERSION
 from pipeline.video.posters import POSTER_VERSION
+from pipeline.video.share_cards import CARD_VERSION as SHARE_CARD_VERSION
 
 When = Literal["post_ingest", "backfill_only"]
 Scope = Literal["meeting", "matter", "global"]
@@ -985,6 +986,70 @@ def run_video_posters(ctx: StageContext):
     return {"meetings": len(ids), "made": made, "failed": failed}
 
 
+CARD_SELECT = ("id, title, meeting_date, summary, video_duration_seconds, poster:meta->poster, "
+               "highlights:meta->highlights, card_key:meta->share_card->>key, organization:organizations(name)")
+
+
+def _card_rows(ctx: StageContext, meeting_ids: list[int] | None = None, *, highlights_only: bool = True) -> list[dict]:
+    """Meetings for share cards. Cards use plain-language highlights, so only meetings that have them
+    are selected unless an explicit --target asks for a summary-based card."""
+    def q():
+        query = ctx.supabase.table("meetings").select(CARD_SELECT).order("id")
+        if highlights_only:
+            query = query.not_.is_("meta->highlights", "null")
+        if meeting_ids is not None:
+            query = query.in_("id", meeting_ids)
+        if ctx.since:
+            query = query.gte("meeting_date", ctx.since)
+        return query
+
+    if meeting_ids is not None and not meeting_ids:
+        return []
+    return _paginate(q)
+
+
+def stale_share_cards(ctx: StageContext) -> list[int]:
+    from pipeline.video.share_cards import card_key
+
+    return sorted(r["id"] for r in _card_rows(ctx) if r.get("card_key") != card_key(r))
+
+
+def run_share_cards(ctx: StageContext):
+    from pipeline.video.posters import save_meta_key
+    from pipeline.video.share_cards import CardRenderer, card_key, make_card
+
+    def from_meetings() -> list[int]:
+        return [r["id"] for r in _card_rows(ctx, ctx.meeting_ids) if ctx.force or r.get("card_key") != card_key(r)]
+
+    def missing() -> list[int]:
+        return [r["id"] for r in _card_rows(ctx) if ctx.force or not r.get("card_key")]
+
+    ids = _choose(ctx, "share-cards", from_meetings=from_meetings, backfill=missing)
+    if ctx.dry_run:
+        _preview("meetings to render share cards for", ids)
+        return None
+    if not ids:
+        return {"meetings": 0, "made": 0, "failed": []}
+    rows = {r["id"]: r for r in _card_rows(ctx, ids, highlights_only=ctx.target_id() is None)}
+    made, failed = 0, []
+    with CardRenderer() as renderer:
+        for mid in ids:
+            row = rows.get(mid)
+            if row is None:
+                failed.append(mid)
+                print(f"  [!] Share card for meeting {mid}: not found or no highlights")
+                continue
+            try:
+                card = make_card(row, renderer)
+                save_meta_key(mid, "share_card", card)
+                made += 1
+                print(f"  [Card] meeting {mid}: {card['source']} {card['url']}")
+            except Exception as e:  # CardError or upload/DB failure; one bad card never stops the rest
+                failed.append(mid)
+                print(f"  [!] Share card for meeting {mid} failed: {e}")
+    return {"meetings": len(ids), "made": made, "failed": failed}
+
+
 def councillors_for_meetings(supabase, meeting_ids: list[int]) -> list[int]:
     people: set[int] = set()
     for table in ("attendance", "key_statements"):
@@ -1148,6 +1213,14 @@ STAGES: list[Stage] = [
                     "skip dark/uniform ones, pick one seeded by meeting id, WebP to R2. --stale re-picks old versions.",
         run=run_video_posters, when="post_ingest", scope="meeting", version=POSTER_VERSION,
         stale=stale_video_posters,
+    ),
+    Stage(
+        name="share-cards",
+        description="1200x630 og:image per meeting (meetings.meta.share_card): poster frame + title, date and "
+                    "plain-language highlights, rendered with Playwright to R2. Only meetings with meta.highlights "
+                    "(any meeting via --target); --stale re-renders when highlights, poster or template change.",
+        run=run_share_cards, when="post_ingest", scope="meeting", version=SHARE_CARD_VERSION,
+        depends_on=("video-posters",), stale=stale_share_cards,
     ),
     Stage(
         name="profile-refresh",

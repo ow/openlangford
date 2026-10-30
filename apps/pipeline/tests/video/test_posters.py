@@ -142,8 +142,8 @@ def test_save_poster_merges_only_the_poster_key():
     conn.cursor.return_value.__enter__.return_value = cur
     posters.save_poster(5, {"url": "u", "offset_s": 150}, conn=conn)
     sql, params = cur.execute.call_args.args
-    assert "meta = coalesce(meta, '{}'::jsonb) || jsonb_build_object('poster'" in sql
-    assert json.loads(params[0]) == {"url": "u", "offset_s": 150} and params[1] == 5
+    assert "meta = coalesce(meta, '{}'::jsonb) || jsonb_build_object(%s::text, %s::jsonb)" in sql
+    assert params[0] == "poster" and json.loads(params[1]) == {"url": "u", "offset_s": 150} and params[2] == 5
     conn.commit.assert_called_once()
 
 
