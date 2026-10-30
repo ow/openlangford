@@ -73,6 +73,8 @@ export type DigestMeetingRow = {
   highlights?: { bullets?: unknown; links?: unknown; description?: unknown; version?: unknown } | null;
   /** The meeting's still image without text; preferred over the share card, which repeats the bullets. */
   poster?: { url?: unknown } | null;
+  /** Poster with the frame, label, title and date (no bullets); preferred over the plain poster. */
+  title_card?: { url?: unknown; version?: unknown } | null;
   share_card?: { url?: unknown } | null;
   organization?: { name?: string | null } | null;
 };
@@ -213,7 +215,7 @@ export function buildMeetingDigest(meeting: DigestMeetingRow, motions: DigestMot
     moreDecisions: Math.max(0, decisions.length - MAX_DECISIONS),
     decisionsUrl: absolute(meetingPath(ref, "#decisions")),
     videoUrl: hasVideo ? absolute(meetingPath(ref, "?t=0")) : null,
-    imageUrl: safeUrl(meeting.poster?.url) ?? safeUrl(meeting.share_card?.url),
+    imageUrl: safeUrl(meeting.title_card?.url) ?? safeUrl(meeting.poster?.url) ?? safeUrl(meeting.share_card?.url),
     footer: DIGEST_FOOTER,
   };
 }
@@ -229,7 +231,7 @@ export function hasPostableContent(digest: MeetingDigest): boolean {
 export type DigestDb = { from: (table: string) => any };
 
 export const DIGEST_MEETING_SELECT =
-  "id,slug,title,meeting_date,status,summary,video_url,has_minutes,has_transcript,highlights:meta->highlights,poster:meta->poster,share_card:meta->share_card,organization:organizations(name)";
+  "id,slug,title,meeting_date,status,summary,video_url,has_minutes,has_transcript,highlights:meta->highlights,title_card:meta->title_card,poster:meta->poster,share_card:meta->share_card,organization:organizations(name)";
 const DIGEST_MOTION_SELECT =
   "id,agenda_item_id,result,disposition,text_content,time_offset_seconds,headline:meta->>headline,coverage:meta->>individual_vote_coverage,votes(person_id,vote)";
 

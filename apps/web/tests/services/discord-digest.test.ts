@@ -71,6 +71,12 @@ describe("buildMeetingDigest", () => {
     expect(d.imageUrl).toBe("https://pub.example.r2.dev/meeting-cards/6/a.jpg");
     const withPoster = buildMeetingDigest({ ...meeting, poster: { url: "https://pub.example.r2.dev/meeting-posters/6/p.webp" } });
     expect(withPoster.imageUrl).toBe("https://pub.example.r2.dev/meeting-posters/6/p.webp");
+    const withTitleCard = buildMeetingDigest({
+      ...meeting,
+      poster: { url: "https://pub.example.r2.dev/meeting-posters/6/p.webp" },
+      title_card: { url: "https://pub.example.r2.dev/meeting-title-cards/6/t.jpg", version: "1" },
+    });
+    expect(withTitleCard.imageUrl).toBe("https://pub.example.r2.dev/meeting-title-cards/6/t.jpg");
     expect(d.videoUrl).toBe(`${MEETING_URL}?t=0`);
     expect(d.footer).toBe("Open Langford");
   });
