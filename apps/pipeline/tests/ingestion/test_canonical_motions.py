@@ -250,6 +250,16 @@ def test_old_worker_receipt_describes_loaded_code_even_when_python_file_is_repla
     assert loaded_ballot_guard_digest() == baseline
 
 
+def test_guard_is_stable_across_first_use_of_policy_helpers():
+    """Meeting 967: a lazily filled upper-case cache changed the guard mid-ingest,
+    so the final validation never matched the first one in a fresh worker."""
+    from pipeline.ingestion import official_ballots
+    from pipeline.ingestion.canonical_motions import loaded_ballot_guard_digest
+    baseline = loaded_ballot_guard_digest()
+    assert official_ballots.bylaw_819_rule()['rule_id'] == 'langford_819_recorded_dissent_deemed_affirmative'
+    assert loaded_ballot_guard_digest() == baseline
+
+
 @pytest.mark.parametrize('native_actor,expected_id', [('Colby Harder', 21), ('IVIORLEY', None)])
 def test_recovered_native_header_cannot_erase_existing_actor(tmp_path, native_actor, expected_id):
     from pipeline.ingestion.vote_evidence import minutes_motion_blocks

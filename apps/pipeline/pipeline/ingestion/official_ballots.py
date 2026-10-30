@@ -23,14 +23,14 @@ from .vote_evidence import minutes_motion_blocks, normalize_text, named_votes, n
 from .ballot_reconstruction import validate_roster_entries, physical_presence_events, voters_before_vote, resolve_people
 
 
-_BYLAW_819 = None
+# Loaded at import, not lazily: loaded_ballot_guard_digest hashes upper-case module
+# values, so a cache filled mid-ingest (None -> policy) changed the guard between a
+# run's first and final validation and refused every fresh-process receipt.
+_BYLAW_819 = json.loads((Path(__file__).parent/'policies'/'langford-voting-819.json').read_text())
 
 
 def bylaw_819_rule():
     """Frozen historical rule (repealed bylaw, no refresh); see the policy file."""
-    global _BYLAW_819
-    if _BYLAW_819 is None:
-        _BYLAW_819 = json.loads((Path(__file__).parent/'policies'/'langford-voting-819.json').read_text())
     return _BYLAW_819
 
 
