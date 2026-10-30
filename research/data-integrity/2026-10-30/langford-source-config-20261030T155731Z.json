@@ -1,0 +1,52 @@
+{
+ "municipality_id": 1,
+ "source_config_before": {
+  "type": "escribe",
+  "base_url": "https://pub-langford.escribemeetings.com",
+  "verify_ssl": false,
+  "video_source": {
+   "type": "isilive",
+   "client_id": "langford"
+  },
+  "meeting_types": [
+   "Council Meeting",
+   "Special Council Meeting",
+   "Committee of the Whole Meeting",
+   "Public Hearing",
+   "Community Advisory Committee"
+  ]
+ },
+ "source_config_after": {
+  "type": "escribe",
+  "base_url": "https://pub-langford.escribemeetings.com",
+  "verify_ssl": false,
+  "video_source": {
+   "type": "isilive",
+   "client_id": "langford"
+  },
+  "meeting_types": [
+   "Council Meeting",
+   "Special Council Meeting",
+   "Committee of the Whole Meeting",
+   "Public Hearing",
+   "Community Advisory Committee",
+   "Administration and Finance Committee",
+   "Board of Variance",
+   "Capital West Accessibility Advisory Committee",
+   "Inaugural Council Meeting",
+   "Parks, Recreation, Culture and Beautification Committee",
+   "Parks, Recreation, Environment, Culture, and Beautification Committee",
+   "Planning Zoning and Affordable Housing Committee",
+   "Planning, Zoning and Affordable Housing Committee Meeting",
+   "Protective Services Committee",
+   "Special Administration and Finance Committee",
+   "Special Capital West Accessibility Advisory Committee",
+   "Special Community Advisory Committee",
+   "Special Inaugural Council Meeting",
+   "Special Planning, Zoning and Affordable Housing Committee",
+   "Special Sustainable Development Advisory Committee",
+   "Sustainable Development Advisory Committee",
+   "Transportation and Public Works Committee"
+  ]
+ }
+}
