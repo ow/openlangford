@@ -110,7 +110,7 @@ export default function About() {
             </ReactMarkdown>
           </article>
 
-          <div className="mt-12 pt-12 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="mt-12 pt-12 border-t border-zinc-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-zinc-100 rounded-full">
                 <Mail className="h-5 w-5 text-zinc-600" />
