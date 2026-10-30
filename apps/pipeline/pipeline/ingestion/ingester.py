@@ -64,7 +64,7 @@ class MeetingIngester:
             raise ValueError("Supabase credentials required")
 
         self.supabase: Client = create_client(supabase_url, supabase_key)
-        self.municipality_id = municipality_id or 1  # Default to View Royal
+        self.municipality_id = municipality_id or 1  # 1 = Langford, the only municipality row
 
         self.matcher = MatterMatcher(self.supabase, municipality_id=self.municipality_id)
         self._canonical_names = None  # Lazy-loaded per municipality
