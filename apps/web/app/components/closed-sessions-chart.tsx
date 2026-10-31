@@ -32,7 +32,7 @@ function describeYear(y: YearSummary, through: string) {
   return `${head} · ${aboutDuration(y.closedHours * 60)} closed${y.closedShare != null ? ` · ${Math.round(y.closedShare * 100)}% of meeting time` : ""}`;
 }
 
-/** Closed sessions per year, with council terms shaded behind the bars. */
+/** Closed sessions per year, with council terms marked by dashed lines at their start. */
 export function ClosedSessionsChart({ years, terms, through }: { years: YearSummary[]; terms: TermSummary[]; through: string }) {
   if (!years.length) return null;
   const y0 = years[0].year;
@@ -56,19 +56,15 @@ export function ClosedSessionsChart({ years, terms, through }: { years: YearSumm
           <span className="font-semibold text-zinc-900">Closed sessions each year</span>, {y0}–{y1}
           {String(y1) === through.slice(0, 4) && <> ({y1} so far)</>}
         </span>
-        <span className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="inline-block h-2.5 w-4 rounded-[2px] bg-zinc-100 ring-1 ring-zinc-200" />
-          Shaded bands are council terms
-        </span>
       </figcaption>
       <div className="-mx-1 overflow-x-auto px-1 pb-1">
         <svg viewBox={`0 0 ${width} ${height}`} className="block h-auto w-full min-w-[560px] text-[10px]" aria-hidden="true">
-          {ordered.map((t, i) => {
+          {/* Each council term starts at a dashed line, labelled with its years. */}
+          {ordered.map((t) => {
             const x = xOfDate(t.start_date);
-            const x2 = xOfDate(t.end_date);
             return (
               <g key={t.name}>
-                {i % 2 === 0 && <rect x={x} y={TOP - 18} width={Math.max(0, x2 - x)} height={PLOT + 18} className="fill-zinc-100" />}
+                {x > LEFT && <line x1={x} x2={x} y1={TOP - 18} y2={TOP + PLOT} className="stroke-zinc-400" strokeWidth={0.75} strokeDasharray="3 3" />}
                 <text x={x + 4} y={TOP - 7} className="fill-zinc-500">{shortTerm(t.name)}</text>
               </g>
             );
