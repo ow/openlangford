@@ -95,6 +95,7 @@ import { MeetingDecisions } from "../components/meeting/MeetingDecisions";
 import { MeetingAttendance, MeetingDocuments, MeetingFacts } from "../components/meeting/MeetingSidebar";
 import { SectionHeading } from "../components/ui/section-heading";
 import { DetailHeader } from "../components/ui/detail-header";
+import { closedSessionSentence } from "../lib/closed-sessions";
 import { MeetingSummary } from "../components/meeting/MeetingSummary";
 import { ProvenanceBadges } from "../components/meeting/ProvenanceBadges";
 import {
@@ -214,7 +215,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 }
 
 
-const PUBLIC_MEETING_META_KEYS = ["participant_roles", "calendar", "poster", "share_card", "highlights"] as const;
+const PUBLIC_MEETING_META_KEYS = ["participant_roles", "calendar", "poster", "share_card", "highlights", "closed_session"] as const;
 
 function publicMeetingMeta(meta: Record<string, any> | null | undefined) {
   const out: Record<string, any> = {};
@@ -504,6 +505,10 @@ function MeetingDetailContent({ loaderData }: any) {
     participantCount > 0 && { label: "Participants", value: participantCount },
   ].filter(Boolean) as { label: string; value: React.ReactNode }[];
 
+  const closedSentence = closedSessionSentence(
+    meeting.meta?.closed_session,
+    meeting.organization?.classification === "Council" ? "Council" : "The committee",
+  );
   const meetingYear = meeting.meeting_date?.slice(0, 4);
   const isPast = meeting.meeting_date < new Date().toLocaleDateString("en-CA");
   const orgName = meeting.organization?.name;
@@ -513,6 +518,7 @@ function MeetingDetailContent({ loaderData }: any) {
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-6xl px-4 pt-8 pb-16">
         <DetailHeader
+          className={closedSentence ? "mb-3" : undefined}
           back={{ to: meetingYear ? `/meetings?year=${meetingYear}` : "/meetings", label: "Meetings" }}
           meta={[
             formatDate(meeting.meeting_date, {
@@ -553,6 +559,14 @@ function MeetingDetailContent({ loaderData }: any) {
         />
 
         <CalendarProvenance meeting={meeting} />
+
+        {closedSentence && (
+          <p className="mt-1 mb-8 text-sm text-zinc-600">
+            <Link to="/meetings/closed" className="underline decoration-zinc-300 underline-offset-2 hover:text-brand-700 hover:decoration-brand-300">
+              {closedSentence}
+            </Link>
+          </p>
+        )}
 
         {/* How to attend (upcoming meetings) */}
         {attendanceInfo && (

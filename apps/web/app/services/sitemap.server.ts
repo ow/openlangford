@@ -76,6 +76,7 @@ async function buildSitemapEntries(
       return [
         { path: "/", changefreq: "daily", priority: 1 },
         { path: "/meetings", changefreq: "daily", priority: 0.9 },
+        { path: "/meetings/closed", changefreq: "weekly", priority: 0.5 },
         { path: "/matters", changefreq: "daily", priority: 0.9 },
         { path: "/properties", changefreq: "weekly", priority: 0.8 },
         { path: "/bylaws", changefreq: "weekly", priority: 0.8 },

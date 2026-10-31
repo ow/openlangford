@@ -549,6 +549,10 @@ export default function Meetings({ loaderData }: Route.ComponentProps) {
             ))}
           </nav>
         )}
+        <p className="mt-3 px-1 text-sm text-zinc-500">
+          How often Council met privately, and why:{" "}
+          <Link to="/meetings/closed" className="font-medium text-brand-700 hover:underline">Closed meetings</Link>
+        </p>
       </div>
     </div>
   );

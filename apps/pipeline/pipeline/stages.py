@@ -36,6 +36,7 @@ from datetime import date, timedelta
 from typing import Any, Callable, Iterable, Literal
 
 from pipeline.ai.usage import usage_context
+from pipeline.ingestion.closed_sessions import CLOSED_SESSIONS_VERSION
 from pipeline.ingestion.matter_images import IMAGES_VERSION
 from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
 from pipeline.ingestion.meeting_highlights import HIGHLIGHTS_VERSION
@@ -681,6 +682,41 @@ def run_motion_headlines(ctx: StageContext):
     return {"meetings": len(ids), "headlines": done}
 
 
+def _closed_session_rows(ctx: StageContext, meeting_ids: list[int] | None = None) -> list[dict]:
+    from pipeline.ingestion.closed_sessions import MEETING_SELECT
+
+    if meeting_ids is not None and not meeting_ids:
+        return []
+
+    def q():
+        query = ctx.supabase.table("meetings").select(MEETING_SELECT).order("id")
+        if meeting_ids is not None:
+            query = query.in_("id", meeting_ids)
+        if ctx.since:
+            query = query.gte("meeting_date", ctx.since)
+        return query
+
+    return _paginate(q)
+
+
+def stale_closed_sessions(ctx: StageContext) -> list[int]:
+    return select_stale(_closed_session_rows(ctx), "stamp", CLOSED_SESSIONS_VERSION)
+
+
+def run_closed_sessions(ctx: StageContext):
+    """Deterministic (regex over minutes, notices and decisions; no AI)."""
+    from pipeline.ingestion.closed_sessions import run
+
+    ids = _choose(ctx, "closed-sessions", from_meetings=lambda: list(ctx.meeting_ids or []),
+                  backfill=lambda: [r["id"] for r in _closed_session_rows(ctx)
+                                    if ctx.force or r.get("stamp") is None])
+    rows = _closed_session_rows(ctx, ids)
+    result = run(ctx.supabase, rows, dry_run=ctx.dry_run)
+    print(f"  [Closed] {'Would write' if ctx.dry_run else 'Wrote'} {len(rows)} meeting(s): "
+          f"{result['with_closed_session']} with a closed session, {result['timed']} of them timed")
+    return result
+
+
 def _meeting_highlight_stamps(ctx: StageContext) -> list[dict]:
     """Held meetings with a summary, with their highlights stamp."""
     from pipeline.ingestion.meeting_highlights import SKIP_STATUSES
@@ -1318,6 +1354,14 @@ STAGES: list[Stage] = [
                     "never touches meetings.summary). --target is a meeting id; --since DATE.",
         run=run_meeting_highlights, when="post_ingest", scope="meeting", version=HIGHLIGHTS_VERSION,
         depends_on=("motion-headlines",), stale=stale_meeting_highlights,
+    ),
+    Stage(
+        name="closed-sessions",
+        description="Closed (in-camera) sessions per meeting from the minutes: section 90 reasons, close and adjournment "
+                    "times, estimated closed and open minutes (meetings.meta.closed_session; regex, no AI). "
+                    "--target is a meeting id; --since DATE; --stale after a version bump.",
+        run=run_closed_sessions, when="post_ingest", scope="meeting", version=CLOSED_SESSIONS_VERSION,
+        stale=stale_closed_sessions,
     ),
     Stage(
         name="matter-images",
