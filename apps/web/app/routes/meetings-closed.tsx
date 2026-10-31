@@ -10,7 +10,7 @@ import { DEGRADED_HEADERS, forwardCacheControl } from "../lib/degraded-response"
 import { civicToday } from "../lib/council-terms";
 import { DetailHeader } from "../components/ui/detail-header";
 import { ClosedSessionsChart } from "../components/closed-sessions-chart";
-import { aboutDuration, closedSessionSentence, type TermSummary } from "../lib/closed-sessions";
+import { REASON_EXPLAINERS, aboutDuration, closedSessionSentence, type TermSummary } from "../lib/closed-sessions";
 import { meetingPath } from "../lib/paths";
 import { formatDate } from "../lib/utils";
 import { pageMeta } from "../lib/page-meta";
@@ -111,6 +111,7 @@ export default function ClosedMeetings({ loaderData }: Route.ComponentProps) {
   const { data, loadError } = loaderData;
   const terms = data?.terms ?? [];
   const latest = terms.find((t) => t.sessions > 0);
+  const reasons = [...new Set(terms.flatMap((t) => t.topReasons.map((r) => r.label)))].filter((r) => REASON_EXPLAINERS[r]);
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -133,6 +134,11 @@ export default function ClosedMeetings({ loaderData }: Route.ComponentProps) {
               It has to vote in public to do that, and the vote names the reasons.
             </p>
 
+            <section aria-labelledby="by-year">
+              <h2 id="by-year" className="mb-4 text-sm font-semibold text-zinc-600">By year</h2>
+              <ClosedSessionsChart years={data.years} terms={terms} through={data.through} />
+            </section>
+
             <section aria-labelledby="by-term">
               <h2 id="by-term" className="mb-4 text-sm font-semibold text-zinc-600">By council term</h2>
               <div className="flex flex-col gap-4">
@@ -145,10 +151,19 @@ export default function ClosedMeetings({ loaderData }: Route.ComponentProps) {
               </div>
             </section>
 
-            <section aria-labelledby="by-year">
-              <h2 id="by-year" className="mb-4 text-sm font-semibold text-zinc-600">By year</h2>
-              <ClosedSessionsChart years={data.years} terms={terms} through={data.through} />
-            </section>
+            {reasons.length > 0 && (
+              <section aria-labelledby="reasons" className="max-w-3xl">
+                <h2 id="reasons" className="mb-3 text-sm font-semibold text-zinc-600">What the reasons mean</h2>
+                <dl className="space-y-3 text-sm leading-relaxed text-zinc-600">
+                  {reasons.map((r) => (
+                    <div key={r}>
+                      <dt className="font-semibold text-zinc-900">{r[0].toUpperCase() + r.slice(1)}</dt>
+                      <dd>{REASON_EXPLAINERS[r]}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )}
 
             {data.recent.length > 0 && (
               <section aria-labelledby="recent">

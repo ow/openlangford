@@ -27,7 +27,7 @@ def test_close_time_to_adjournment():
     assert len(r["sessions"]) == 1
     s = r["sessions"][0]
     assert (s["closed_at"], s["position"], s["reasons"]) == ("20:38", "end", ["1e", "1k"])
-    assert s["reason_labels"] == ["land", "early talks on a City service"]
+    assert s["reason_labels"] == ["land", "negotiating a possible new City service"]
     assert (r["called_at"], r["adjourned_at"]) == ("19:00", "21:33")
     assert (r["est_closed_minutes"], r["open_minutes"]) == (55, 98)
     assert (r["method"], r["confidence"]) == ("minutes", "high")

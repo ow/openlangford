@@ -26,11 +26,11 @@ get the key; others get ``{"sessions": [], ...}`` so a re-run can tell "checked,
 from "never checked")::
 
     {"sessions": [{"closed_at": "20:38", "reconvened_at": null, "reasons": ["1e", "1k"],
-                   "reason_labels": ["land", "early talks on a City service"],
+                   "reason_labels": ["land", "negotiating a possible new City service"],
                    "source": "minutes", "position": "end"}],
      "called_at": "19:00", "adjourned_at": "21:33",
      "est_closed_minutes": 55, "open_minutes": 98,
-     "method": "minutes", "confidence": "high", "version": "1"}
+     "method": "minutes", "confidence": "high", "version": "2"}
 
 ``method`` is how ``est_closed_minutes`` was found: ``minutes`` (stated close time to
 adjournment or reopening), ``video`` (video length), ``transcript`` (agenda item offset),
@@ -44,7 +44,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Iterable
 
-CLOSED_SESSIONS_VERSION = "1"
+CLOSED_SESSIONS_VERSION = "2"
 
 # Community Charter s.90, in plain words. (1) = council may close; (2) = council must close.
 REASON_LABELS: dict[str, str] = {
@@ -58,7 +58,7 @@ REASON_LABELS: dict[str, str] = {
     "1h": "tribunal hearings",
     "1i": "legal advice",
     "1j": "confidential business information",
-    "1k": "early talks on a City service",
+    "1k": "negotiating a possible new City service",
     "1l": "annual report goals",
     "1m": "matters another law lets Council keep private",
     "1n": "whether to close a meeting",

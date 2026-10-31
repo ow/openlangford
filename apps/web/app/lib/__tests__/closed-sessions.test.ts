@@ -4,7 +4,7 @@ import { aboutDuration, closedSessionSentence, summariseTerms, summariseYears, t
 const session = (labels: string[]) => ({ closed_at: null, reconvened_at: null, reasons: [], reason_labels: labels, source: "minutes" as const, position: "end" as const });
 const meta = (closed: number | null, open: number | null, labels: string[][] = [["land"]]): ClosedSessionMeta => ({
   sessions: labels.map(session), called_at: "19:00", adjourned_at: null, est_closed_minutes: closed, open_minutes: open,
-  method: closed == null ? "none" : "minutes", confidence: closed == null ? "none" : "high", version: "1",
+  method: closed == null ? "none" : "minutes", confidence: closed == null ? "none" : "high", version: "2",
 });
 const row = (meeting_date: string, closed: ClosedSessionMeta | null, id = 1): ClosedRow => ({ id, slug: null, title: "Council", meeting_date, closed });
 

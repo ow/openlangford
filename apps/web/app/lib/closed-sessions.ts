@@ -163,6 +163,9 @@ export function summariseYears(rows: ClosedRow[]): YearSummary[] {
     const y = +r.meeting_date.slice(0, 4);
     years.set(y, [...(years.get(y) ?? []), r]);
   }
+  // A first year our records only partly cover (they start December 2008) would read as a near-empty bar.
+  const first = rows.length ? rows.reduce((a, b) => (a.meeting_date < b.meeting_date ? a : b)).meeting_date : null;
+  if (first && first.slice(5) > "01-31") years.delete(+first.slice(0, 4));
   return [...years.keys()].sort((a, b) => a - b).map((year) => {
     const s = tally(years.get(year)!);
     return { year, sessions: s.sessions, measurable: s.measurable, closedHours: s.closedHours, closedShare: s.closedShare };
@@ -176,3 +179,19 @@ export function recentClosed(rows: ClosedRow[], limit = 12): ClosedRow[] {
     .sort((a, b) => b.meeting_date.localeCompare(a.meeting_date))
     .slice(0, limit);
 }
+
+/** Plain explanations of the section 90 reasons, keyed by the stored label. */
+export const REASON_EXPLAINERS: Record<string, string> = {
+  "land": "Buying, selling or leasing land or buildings, when talking in public could hurt the City's position.",
+  "legal advice": "Advice from the City's lawyers, which is confidential the same way it is for anyone else.",
+  "staff and appointments": "Hiring, firing or appointing people, including to boards and committees.",
+  "negotiating a possible new City service": "Early, confidential negotiations about a service the City might start providing, such as a new facility or a partnership to run one. The law lets Council keep these private while talking about them in public could harm the City's interests.",
+  "labour relations": "Bargaining and other matters with City employees and their unions.",
+  "lawsuits": "Lawsuits the City is part of, or might be.",
+  "confidential business information": "Information a business gave the City in confidence, such as financial details.",
+  "awards and honours": "Choosing people for City awards and honours.",
+  "annual report goals": "Planning the goals that go in the City's annual report, before they are published.",
+  "confidential talks with other governments": "Negotiations with the province or federal government that they asked to keep private.",
+  "security of City property": "Keeping City property secure.",
+  "law enforcement": "Policing and law enforcement, when talking in public could harm an investigation.",
+};

@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   MapPin,
   Vote,
+  Lock,
 } from "lucide-react";
 import { siteName } from "../lib/site-name";
 import { useSiteFlags } from "../lib/use-site-flags";
@@ -161,7 +162,7 @@ export function Navbar() {
               name="Meetings"
               href="/meetings"
               icon={Calendar}
-              isActive={isLinkActive("/meetings")}
+              isActive={isLinkActive("/meetings") && !isLinkActive("/meetings/closed")}
             />
             <NavDropdown
               label="Records"
@@ -181,7 +182,8 @@ export function Navbar() {
                 isLinkActive("/participants") ||
                 isLinkActive("/alignment") ||
                 isLinkActive("/compare") ||
-                isLinkActive("/elections")
+                isLinkActive("/elections") ||
+                isLinkActive("/meetings/closed")
               }
               items={[
                 { name: "Members", href: "/people", icon: Users },
@@ -189,6 +191,7 @@ export function Navbar() {
                 { name: "Alignment", href: "/alignment", icon: Scale },
                 { name: "Compare", href: "/compare", icon: ArrowLeftRight },
                 { name: "Elections", href: "/elections", icon: Vote },
+                { name: "Closed meetings", href: "/meetings/closed", icon: Lock },
               ]}
             />
             <NavLink
@@ -264,7 +267,7 @@ export function Navbar() {
               name="Meetings"
               href="/meetings"
               icon={Calendar}
-              isActive={isLinkActive("/meetings")}
+              isActive={isLinkActive("/meetings") && !isLinkActive("/meetings/closed")}
             />
             <MobileNavLink
               name="Decisions"
@@ -313,6 +316,12 @@ export function Navbar() {
               href="/elections"
               icon={Vote}
               isActive={isLinkActive("/elections")}
+            />
+            <MobileNavLink
+              name="Closed meetings"
+              href="/meetings/closed"
+              icon={Lock}
+              isActive={isLinkActive("/meetings/closed")}
             />
             <MobileNavLink
               name="About"
