@@ -54,7 +54,7 @@ async function exactCount(query: any, applyFilters?: (query: any) => any) {
  * failed jobs, the later successes of the same types, and the meetings they
  * target; the rule itself stays a pure function.
  */
-async function getFailureResolutions(
+export async function getFailureResolutions(
   supabase: SupabaseClient,
   municipalityId: number,
 ): Promise<Map<number, Resolution>> {

@@ -6,7 +6,7 @@ Last updated: November 1, 2026
 - These records name councillors, City staff and some residents who spoke or wrote to council. You can ask us to correct a name, or replace a resident's name with "a resident".
 - You don't need an account to use the site. If you create one, we keep your email, your settings and anything you choose to save, such as your address for local alerts. You can delete your account at any time.
 - We use PostHog to see how the site is used, including the searches and questions people type. We don't send it your IP address or anything that identifies you.
-- We also use Google Analytics, which sets cookies to count visits and returning visitors.
+- PostHog and Google Analytics each set a cookie with a random ID so we can count visits and returning visitors.
 - Questions you ask are sent to OpenAI so it can write an answer.
 - We don't sell your information, we don't show ads, and we don't use your activity for marketing.
 
@@ -52,7 +52,7 @@ If you are named on the site and want something corrected, or you are a resident
 
 You don't need an account. When you visit, we and the services we use collect:
 
-- **Usage analytics (PostHog).** The pages you view, including the web address; links and buttons you click; searches you run; and when you play, pause or skip through meeting video. PostHog gets a random ID that lasts only while your browser tab is open, so it can tell visits apart. It uses no cookie. We've set PostHog to discard IP addresses, we don't send it your account or email, and we don't record your screen.
+- **Usage analytics (PostHog).** The pages you view, including the web address; links and buttons you click; searches you run; and when you play, pause or skip through meeting video. PostHog sets a cookie with a random ID so it can tell visits and returning visitors apart. We've set PostHog to discard IP addresses, we don't send it your account or email, and we don't record your screen.
 - **Usage analytics (Google Analytics).** The pages you view (with any sign-in codes removed from the web address), the page you came from, links you click, your device and browser type, and your general location (city or region), which Google works out from your IP address. Google Analytics sets two cookies so it can tell visits and returning visitors apart. It doesn't run on admin pages or email unsubscribe links. We don't send it your account or email, and we haven't turned on Google's advertising features. See [how Google uses this information](https://policies.google.com/technologies/partner-sites).
 - **Server and security logs (Cloudflare).** Our hosting provider, Cloudflare, handles every request. It sees your IP address, the page you asked for and your browser type, and uses them to deliver the site and block abuse. We use your IP address for a moment to limit how many searches or messages can come from one place, and don't store it for that.
 - **Your theme choice.** If you pick light or dark mode, your browser remembers it. This stays on your device.
@@ -88,12 +88,12 @@ We collect your name (optional), your email address, your message and the IP add
 |---|---|---|---|
 | `sb-…-auth-token` (may be split into several cookies) | Open Langford (Supabase) | Keeps you signed in | Up to 400 days, or until you sign out |
 | `onboarding_notice` | Open Langford | Shows a one-time "you're all set" message after setup | 2 minutes |
-| PostHog visit ID (browser storage, not a cookie) | PostHog | A random ID that tells visits apart | Until you close the tab |
+| `ph_…_posthog` (and the same in browser storage) | PostHog | A random ID that tells visits and returning visitors apart | 1 year |
 | `_ga`, `_ga_78T8YKCH1Y` | Google Analytics | A random ID that tells visits and returning visitors apart | 2 years |
 | Theme setting (browser storage) | Open Langford | Remembers light or dark mode | Until you clear it |
 | `__cf_bm` (only sometimes) | Cloudflare | Bot protection | 30 minutes |
 
-We don't use advertising cookies. The Google Analytics cookies are the only analytics cookies. You can block analytics with a tracker-blocking extension or [Google's opt-out add-on](https://tools.google.com/dlpage/gaoptout), and the site still works.
+We don't use advertising cookies. The PostHog and Google Analytics cookies are the only analytics cookies. You can block analytics with a tracker-blocking extension or [Google's opt-out add-on](https://tools.google.com/dlpage/gaoptout), and the site still works.
 
 ## Who we share information with
 

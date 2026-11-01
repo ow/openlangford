@@ -1,11 +1,13 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/admin";
 import { adminRead, adminReadOnlyAction } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { DetailHeader } from "../components/ui/detail-header";
+import { AreaChart, BarChart, BarList, Sparkline, type Point } from "../components/admin/charts";
 import { cn, formatDate, formatRelativeTime } from "../lib/utils";
 import { formatCost } from "../lib/job-usage";
-import { getAdminOverview, type AdminOverview, type ActionItem } from "../services/admin-overview.server";
+import { getAdminOverview, type AdminOverview } from "../services/admin-overview.server";
 
 export const meta = () => [
   { title: "Admin | Open Langford" },
@@ -23,289 +25,319 @@ const card = "rounded-2xl border border-zinc-200 bg-surface shadow-sm";
 const n = (value: number) => value.toLocaleString();
 const SHORT_DATE: Intl.DateTimeFormatOptions = { weekday: "short", month: "short", day: "numeric" };
 
-const TOOLS: { heading: string; links: [string, string, string][] }[] = [
-  {
-    heading: "Residents",
-    links: [
-      ["/admin/contact", "Contact messages", "Read and answer the contact form."],
-      ["/admin/users", "Accounts", "Registered accounts and their alerts."],
-      ["/admin/emails", "Email activity", "Alert emails and delivery events."],
-    ],
-  },
-  {
-    heading: "Review",
-    links: [
-      ["/admin/names", "Speaker names", "Confirm residents' name spellings."],
-      ["/admin/letters", "Letter placement", "Match letters to agenda items."],
-      ["/admin/matters", "Duplicate issues", "Review proposed merges."],
-      ["/admin/profiles", "Councillor profiles", "Approve generated profile drafts."],
-      ["/speaker-alias", "Speaker aliases", "Correct speaker identities."],
-      ["/admin/reviews", "Page reviews", "Pages you've checked, and ones that need work."],
-    ],
-  },
-  {
-    heading: "Site data",
-    links: [
-      ["/admin/people", "People and memberships", "Council and staff records."],
-    ],
-  },
-];
+const sum = (points: Point[]) => points.reduce((total, p) => total + p.value, 0);
+const weeks = (points: Point[]) => ({ current: sum(points.slice(-7)), previous: sum(points.slice(-14, -7)) });
+
+function change(current: number, previous: number) {
+  if (previous === 0) return current > 0 ? "None the week before" : "None in two weeks";
+  const pct = Math.round(((current - previous) / previous) * 100);
+  return pct === 0 ? "Same as last week" : `${pct > 0 ? "+" : "−"}${Math.abs(pct)}% vs last week`;
+}
+
+type ToolStatus = { text: string; tone: "waiting" | "urgent" | "neutral" | "clear" } | null;
+type Tool = { to: string; title: string; status: ToolStatus };
+
+function waiting(count: number | null | undefined, noun: string, tone: "waiting" | "urgent" = "waiting"): ToolStatus {
+  if (count == null) return { text: "Couldn't check", tone: "neutral" };
+  return count > 0 ? { text: `${n(count)} ${noun}`, tone } : { text: "Clear", tone: "clear" };
+}
+
+function tools(data: AdminOverview): { heading: string; links: Tool[] }[] {
+  const q = data.queues;
+  return [
+    {
+      heading: "Residents",
+      links: [
+        { to: "/admin/contact", title: "Contact messages", status: waiting(q.contact?.count, "open", "urgent") },
+        {
+          to: "/admin/users",
+          title: "Accounts",
+          status: data.audience ? { text: `${n(data.audience.total)} total`, tone: "neutral" } : null,
+        },
+        {
+          to: "/admin/emails",
+          title: "Email activity",
+          status: !data.email
+            ? null
+            : data.email.problems7 > 0
+              ? { text: `${n(data.email.problems7)} failed`, tone: "urgent" }
+              : { text: `${n(data.email.sent7)} this week`, tone: "neutral" },
+        },
+      ],
+    },
+    {
+      heading: "Review",
+      links: [
+        { to: "/admin/names", title: "Speaker names", status: waiting(q.names, "to confirm") },
+        { to: "/admin/letters", title: "Letter placement", status: waiting(q.letters?.letters, "to place") },
+        { to: "/admin/matters", title: "Duplicate issues", status: waiting(q.merges, "to review") },
+        { to: "/admin/profiles", title: "Councillor profiles", status: waiting(q.profiles, q.profiles === 1 ? "draft" : "drafts") },
+        { to: "/admin/reviews?show=needs_work", title: "Page reviews", status: waiting(q.pages, "need work") },
+        { to: "/speaker-alias", title: "Speaker aliases", status: null },
+      ],
+    },
+    {
+      heading: "Site data",
+      links: [
+        { to: "/admin/pipeline", title: "Pipeline", status: waiting(q.failedJobs, "failed", "urgent") },
+        { to: "/admin/people", title: "People and memberships", status: null },
+      ],
+    },
+  ];
+}
 
 export default function Admin({ loaderData }: Route.ComponentProps) {
   const data = loaderData as unknown as AdminOverview;
-  const waiting = data.actions.filter((a) => (a.count ?? 0) > 0);
-  const clear = data.actions.filter((a) => a.count === 0);
-  const unknown = data.actions.filter((a) => a.count == null);
+  const groups = tools(data);
+  const busy = groups.flatMap((g) => g.links).filter((t) => t.status?.tone === "waiting" || t.status?.tone === "urgent").length;
+  const traffic = data.traffic.available ? data.traffic : null;
+  const trafficReason = data.traffic.available ? null : data.traffic.reason;
+  const signups = data.audience?.signups ?? [];
+  const alertsAdded = data.audience?.alertsAdded ?? [];
+  const questions = data.questions ?? [];
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <div className="container mx-auto max-w-6xl px-4 pt-6 pb-12 md:pt-10">
+      <div className="container mx-auto max-w-7xl px-4 pt-6 pb-12 md:pt-10">
         <DetailHeader
           title="Admin"
           meta={[
-            <span key="waiting">
-              {waiting.length === 0 ? "Nothing waiting on you" : `${waiting.length} ${waiting.length === 1 ? "thing needs" : "things need"} you`}
-            </span>,
+            <span key="busy">{busy === 0 ? "Nothing waiting on you" : `${busy} ${busy === 1 ? "tool has" : "tools have"} work waiting`}</span>,
             <span key="updated">Updated {formatRelativeTime(data.generatedAt)}</span>,
           ]}
         />
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-          <section aria-labelledby="needs-heading">
-            <SectionHeading id="needs-heading">Needs you</SectionHeading>
-            {waiting.length === 0 ? (
-              <p className={cn(card, "px-5 py-4 text-sm text-zinc-600")}>Every queue is clear.</p>
-            ) : (
-              <ul className={cn(card, "divide-y divide-zinc-100")}>
-                {waiting.map((item) => (
-                  <ActionRow key={item.key} item={item} />
-                ))}
-              </ul>
-            )}
-            {(clear.length > 0 || unknown.length > 0) && (
-              <p className="mt-3 text-sm text-zinc-500">
-                {clear.length > 0 && <>Clear: {clear.map((a) => a.label.toLowerCase()).join(", ")}.</>}
-                {unknown.length > 0 && (
-                  <span className="text-amber-800"> Couldn't check: {unknown.map((a) => a.label.toLowerCase()).join(", ")}.</span>
-                )}
-              </p>
-            )}
-          </section>
-
-          <section aria-labelledby="calendar-heading">
-            <SectionHeading id="calendar-heading">Council calendar</SectionHeading>
-            <Calendar content={data.content} />
-          </section>
-        </div>
-
-        <section aria-labelledby="pulse-heading" className="mt-10">
-          <SectionHeading id="pulse-heading">Last 7 days</SectionHeading>
-          <div className={cn(card, "grid grid-cols-2 gap-px overflow-hidden bg-zinc-200 md:grid-cols-3 xl:grid-cols-6")}>
-            <Stat
-              label="Visits"
-              value={data.traffic.available ? n(data.traffic.visits7) : "—"}
-              detail={
-                data.traffic.available
-                  ? `${trend(data.traffic.visits7, data.traffic.visitsPrev7)} · ${n(data.traffic.views7)} page views`
-                  : data.traffic.reason === "error"
-                    ? "PostHog didn't answer"
-                    : "Not connected"
-              }
-            />
-            <Stat
-              label="Accounts"
-              value={data.audience ? n(data.audience.total) : "—"}
-              detail={data.audience ? `${n(data.audience.new7)} new · ${n(data.audience.active7)} signed in` : "Couldn't read"}
-            />
-            <Stat
-              label="Following something"
-              value={data.audience ? n(data.audience.subscribers) : "—"}
-              detail={
-                data.audience
-                  ? `${n(data.audience.subscriptions)} alerts · ${n(data.audience.subscriptions7)} added`
-                  : "Couldn't read"
-              }
-            />
-            <Stat
-              label="Questions asked"
-              value={data.ask ? n(data.ask.asked7) : "—"}
-              detail={data.ask ? `${n(data.ask.asked30)} in 30 days` : "Couldn't read"}
-            />
-            <Stat
-              label="Emails sent"
-              value={data.email ? n(data.email.total) : "—"}
-              tone={data.email && data.email.problems > 0 ? "danger" : "default"}
-              detail={
-                !data.email
-                  ? "Couldn't read"
-                  : data.email.problems > 0
-                    ? `${n(data.email.problems)} failed or bounced`
-                    : data.email.total > 0
-                      ? `${n(data.email.delivered)} delivered`
-                      : data.email.lastSentAt
-                        ? `last ${formatRelativeTime(data.email.lastSentAt)}`
-                        : "None yet"
-              }
-            />
-            <Stat
-              label="Ask cost"
-              value={data.ai ? formatCost(data.ai.windows[0]?.costUsd ?? 0) : "—"}
-              tone={data.ai && data.ai.recentFailures > 0 ? "danger" : "default"}
-              detail={
-                !data.ai
-                  ? "Couldn't read"
-                  : data.ai.recentFailures > 0
-                    ? `${n(data.ai.recentFailures)} failed answers`
-                    : `${formatCost(data.ai.windows[1]?.costUsd ?? 0)} in 30 days`
-              }
-            />
-          </div>
+        <section aria-label="Last 7 days" className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+          <Stat
+            label="Visitors"
+            value={traffic ? n(traffic.visitors7) : "—"}
+            detail={traffic ? change(traffic.visitors7, traffic.visitorsPrev7) : trafficReason === "error" ? "PostHog didn't answer" : "PostHog not connected"}
+            series={traffic?.visitors}
+          />
+          <Stat
+            label="Page views"
+            value={traffic ? n(traffic.views7) : "—"}
+            detail={traffic ? change(traffic.views7, traffic.viewsPrev7) : "PostHog not connected"}
+            series={traffic?.views}
+          />
+          <Stat
+            label="New accounts"
+            value={data.audience ? n(weeks(signups).current) : "—"}
+            detail={data.audience ? `${n(data.audience.total)} in all · ${n(data.audience.signedIn7)} signed in` : "Couldn't read"}
+            series={signups}
+          />
+          <Stat
+            label="Alerts added"
+            value={data.audience ? n(weeks(alertsAdded).current) : "—"}
+            detail={data.audience ? `${n(data.audience.followers)} people follow ${n(data.audience.alerts)}` : "Couldn't read"}
+            series={alertsAdded}
+          />
+          <Stat
+            label="Questions asked"
+            value={data.questions ? n(weeks(questions).current) : "—"}
+            detail={
+              data.questions
+                ? `${change(weeks(questions).current, weeks(questions).previous)}${data.askCost7 != null ? ` · ${formatCost(data.askCost7)}` : ""}`
+                : "Couldn't read"
+            }
+            series={questions}
+          />
         </section>
+        <p className="mt-2 text-xs text-zinc-500">Numbers are for the last 7 days. Trend lines show 30 days.</p>
 
-        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <section aria-labelledby="traffic-heading">
-            <SectionHeading id="traffic-heading">Visits</SectionHeading>
-            <Traffic traffic={data.traffic} />
-          </section>
-          <section aria-labelledby="accounts-heading">
-            <SectionHeading id="accounts-heading" link={{ to: "/admin/users", label: "All accounts" }}>
-              Newest accounts
-            </SectionHeading>
-            <NewestAccounts audience={data.audience} />
-          </section>
-        </div>
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:grid-rows-[auto_1fr]">
+          <ToolsPanel groups={groups} contact={data.queues.contact} />
 
-        <section aria-labelledby="tools-heading" className="mt-10">
-          <SectionHeading id="tools-heading">Tools</SectionHeading>
-          <div className="grid gap-6 md:grid-cols-3">
-            {TOOLS.map((group) => (
-              <div key={group.heading}>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">{group.heading}</h3>
-                <ul className={cn(card, "divide-y divide-zinc-100")}>
-                  {group.links.map(([to, title, description]) => (
-                    <li key={to}>
-                      <Link
-                        to={to}
-                        className="block px-4 py-3 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
-                      >
-                        <span className="block text-sm font-medium text-zinc-900">{title}</span>
-                        <span className="block text-sm text-zinc-500">{description}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+          <div className="min-w-0 space-y-6 lg:col-start-1 lg:row-span-2 lg:row-start-1">
+            <Panel title="Visitors" subtitle="People per day, last 30 days">
+              {traffic ? <AreaChart data={traffic.visitors} unit="visitors" label="Visitors per day" /> : <TrafficSetup reason={trafficReason ?? "not_configured"} />}
+            </Panel>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <Panel title="New accounts" subtitle={`${n(sum(signups))} in 30 days`}>
+                <BarChart data={signups} unit="accounts" label="New accounts per day" />
+              </Panel>
+              <Panel title="Alerts added" subtitle={`${n(sum(alertsAdded))} in 30 days`}>
+                <BarChart data={alertsAdded} unit="alerts" label="Alerts added per day" />
+              </Panel>
+              <Panel title="Questions asked" subtitle={`${n(sum(questions))} in 30 days`}>
+                <BarChart data={questions} unit="questions" label="Questions asked per day" />
+              </Panel>
+            </div>
+
+            {traffic && (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <Panel title="Most viewed pages" subtitle="Page views, last 7 days">
+                  {traffic.topPages.length ? (
+                    <BarList
+                      items={traffic.topPages}
+                      renderLabel={(path) => (
+                        <Link to={path} className="hover:text-brand-700">
+                          {path}
+                        </Link>
+                      )}
+                    />
+                  ) : (
+                    <Empty>No page views this week.</Empty>
+                  )}
+                </Panel>
+                <Panel title="Where visitors come from" subtitle="Other sites, last 7 days">
+                  {traffic.referrers.length ? <BarList items={traffic.referrers} /> : <Empty>Everyone came directly or from search.</Empty>}
+                </Panel>
               </div>
-            ))}
+            )}
           </div>
-        </section>
+
+          <aside className="min-w-0 space-y-6 lg:col-start-2 lg:row-start-2">
+            <Panel title="Council calendar" flush>
+              <Calendar calendar={data.calendar} />
+            </Panel>
+
+            <Panel title="Newest accounts" flush action={{ to: "/admin/users", label: "All" }}>
+              <NewestAccounts audience={data.audience} />
+            </Panel>
+          </aside>
+        </div>
       </div>
     </div>
   );
 }
 
-function SectionHeading({ id, children, link }: { id: string; children: React.ReactNode; link?: { to: string; label: string } }) {
+function ToolsPanel({ groups, contact }: { groups: { heading: string; links: Tool[] }[]; contact: AdminOverview["queues"]["contact"] }) {
   return (
-    <div className="mb-3 flex items-baseline justify-between gap-4">
-      <h2 id={id} className="text-lg font-semibold text-zinc-900">
-        {children}
-      </h2>
-      {link && (
-        <Link to={link.to} className="text-sm font-medium text-brand-700 hover:text-brand-800">
-          {link.label}
-        </Link>
+    <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+      <Panel title="Tools" flush>
+        {groups.map((group) => (
+          <div key={group.heading} className="border-t border-zinc-100 first:border-t-0">
+            <h3 className="px-5 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">{group.heading}</h3>
+            <ul className="pb-2">
+              {group.links.map((tool) => (
+                <li key={tool.to}>
+                  <Link
+                    to={tool.to}
+                    className="flex items-baseline justify-between gap-3 px-5 py-1.5 text-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                  >
+                    <span className="min-w-0 truncate font-medium text-zinc-800">{tool.title}</span>
+                    {tool.status && (
+                      <span
+                        className={cn(
+                          "shrink-0 tabular-nums",
+                          tool.status.tone === "urgent" && "font-semibold text-red-700",
+                          tool.status.tone === "waiting" && "font-semibold text-amber-800",
+                          tool.status.tone === "neutral" && "text-zinc-500",
+                          tool.status.tone === "clear" && "text-zinc-400",
+                        )}
+                      >
+                        {tool.status.text}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        {contact?.oldest && (contact.count ?? 0) > 0 && (
+          <p className="border-t border-zinc-100 px-5 py-2.5 text-xs text-zinc-500">
+            Oldest open contact message: {formatRelativeTime(contact.oldest)}.
+          </p>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+function Panel({
+  title,
+  subtitle,
+  action,
+  flush,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  action?: { to: string; label: string };
+  flush?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <section className={card}>
+      <div className="flex items-baseline justify-between gap-3 px-5 pt-4 pb-3">
+        <div className="min-w-0">
+          <h2 className="font-semibold text-zinc-900">{title}</h2>
+          {subtitle && <p className="text-xs text-zinc-500">{subtitle}</p>}
+        </div>
+        {action && (
+          <Link to={action.to} className="shrink-0 text-sm font-medium text-brand-700 hover:text-brand-800">
+            {action.label}
+          </Link>
+        )}
+      </div>
+      <div className={flush ? "" : "px-5 pb-5"}>{children}</div>
+    </section>
+  );
+}
+
+function Stat({ label, value, detail, series }: { label: string; value: string; detail: string; series?: Point[] }) {
+  return (
+    <div className={cn(card, "flex min-w-0 flex-col px-4 pt-4 pb-3")}>
+      <div className="text-sm font-medium text-zinc-600">{label}</div>
+      <div className="mt-1 text-3xl font-semibold tabular-nums tracking-tight text-zinc-950">{value}</div>
+      <div className="mt-0.5 truncate text-xs text-zinc-500" title={detail}>
+        {detail}
+      </div>
+      <div className="mt-auto pt-3">{series ? <Sparkline data={series} /> : <div className="h-8 border-b border-dashed border-zinc-200" />}</div>
+    </div>
+  );
+}
+
+function Empty({ children }: { children: ReactNode }) {
+  return <p className="text-sm text-zinc-500">{children}</p>;
+}
+
+function TrafficSetup({ reason }: { reason: "not_configured" | "error" }) {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-8 border-zinc-300 bg-zinc-50 px-6 text-center text-sm text-zinc-600">
+      {reason === "error" ? (
+        <p>PostHog didn't answer. Visitors will show again on the next load.</p>
+      ) : (
+        <p className="max-w-md">
+          Visitor numbers come from PostHog. Add the Worker secrets <code className="text-xs">POSTHOG_PERSONAL_API_KEY</code> (a
+          personal key with query access) and <code className="text-xs">POSTHOG_PROJECT_ID</code> to show them here.
+        </p>
       )}
     </div>
   );
 }
 
-function ActionRow({ item }: { item: ActionItem }) {
+function Calendar({ calendar }: { calendar: AdminOverview["calendar"] }) {
+  if (!calendar) return <p className="px-5 pb-4 text-sm text-zinc-500">Couldn't read meetings.</p>;
   return (
-    <li>
-      <Link
-        to={item.href}
-        className="grid grid-cols-[3.5rem_minmax(0,1fr)] items-baseline gap-3 px-5 py-3.5 transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
-      >
-        <span
-          className={cn(
-            "text-2xl font-semibold tabular-nums tracking-tight",
-            item.tone === "urgent" ? "text-red-700" : "text-zinc-950",
-          )}
-        >
-          {n(item.count ?? 0)}
-        </span>
-        <span className="min-w-0">
-          <span className="block font-medium text-zinc-900">{item.label}</span>
-          {item.detail && (
-            <span className="block text-sm text-zinc-500">
-              {item.key === "contact" && item.detail.startsWith("oldest from ")
-                ? `Oldest ${formatRelativeTime(item.detail.slice("oldest from ".length))}`
-                : item.detail[0].toUpperCase() + item.detail.slice(1)}
-            </span>
-          )}
-        </span>
-      </Link>
-    </li>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  detail,
-  tone = "default",
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  tone?: "default" | "danger";
-}) {
-  return (
-    <div className="min-w-0 bg-surface px-5 py-4">
-      <div className="text-sm font-medium text-zinc-600">{label}</div>
-      <div className="mt-1 text-3xl font-semibold tabular-nums tracking-tight text-zinc-950">{value}</div>
-      <div className={cn("mt-1 truncate text-sm", tone === "danger" ? "text-red-700" : "text-zinc-500")}>{detail}</div>
-    </div>
-  );
-}
-
-function trend(current: number, previous: number) {
-  if (previous === 0) return current > 0 ? "new this week" : "no visits";
-  const change = Math.round(((current - previous) / previous) * 100);
-  if (change === 0) return "same as last week";
-  return `${change > 0 ? "up" : "down"} ${Math.abs(change)}% on last week`;
-}
-
-function Calendar({ content }: { content: AdminOverview["content"] }) {
-  if (!content) return <p className={cn(card, "px-5 py-4 text-sm text-zinc-500")}>Couldn't read meetings.</p>;
-  const latest = content.latestMeeting;
-  return (
-    <div className={cn(card, "divide-y divide-zinc-100")}>
-      <div className="px-5 py-3.5">
+    <div className="pb-3">
+      <div className="px-5">
         <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Latest on the site</div>
-        {latest ? (
-          <>
-            <Link to={`/meetings/${latest.slug ?? latest.id}`} className="mt-1 block font-medium text-zinc-900 hover:text-brand-700">
-              {latest.title}
-            </Link>
-            <div className="text-sm text-zinc-500">
-              {formatDate(latest.date)}
-              {latest.hasSummary ? "" : " · no summary yet"}
-            </div>
-          </>
+        {calendar.latest ? (
+          <Link to={`/meetings/${calendar.latest.slug ?? calendar.latest.id}`} className="mt-0.5 block text-sm hover:text-brand-700">
+            <span className="font-medium text-zinc-900">{calendar.latest.title}</span>
+            <span className="block text-zinc-500">
+              {formatDate(calendar.latest.date, SHORT_DATE)}
+              {calendar.latest.hasSummary ? "" : " · no summary yet"}
+            </span>
+          </Link>
         ) : (
-          <p className="mt-1 text-sm text-zinc-500">No meetings yet.</p>
+          <p className="mt-0.5 text-sm text-zinc-500">No meetings yet.</p>
         )}
       </div>
-      <div className="px-5 py-3.5">
+      <div className="mt-3 border-t border-zinc-100 px-5 pt-3">
         <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Coming up</div>
-        {content.upcoming.length === 0 ? (
-          <p className="mt-1 text-sm text-zinc-500">Nothing scheduled.</p>
+        {calendar.upcoming.length === 0 ? (
+          <p className="mt-0.5 text-sm text-zinc-500">Nothing scheduled.</p>
         ) : (
           <ul className="mt-1 space-y-1">
-            {content.upcoming.map((m) => (
+            {calendar.upcoming.map((m) => (
               <li key={m.id} className="flex items-baseline justify-between gap-3 text-sm">
                 <span className="min-w-0 truncate text-zinc-800">{m.title}</span>
-                <span className="shrink-0 tabular-nums text-zinc-500">{formatDate(m.date, SHORT_DATE)}</span>
+                <span className="shrink-0 tabular-nums text-zinc-500">{formatDate(m.date, { month: "short", day: "numeric" })}</span>
               </li>
             ))}
           </ul>
@@ -315,102 +347,38 @@ function Calendar({ content }: { content: AdminOverview["content"] }) {
   );
 }
 
-function Traffic({ traffic }: { traffic: AdminOverview["traffic"] }) {
-  if (!traffic.available) {
-    return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-surface/60 px-5 py-4 text-sm text-zinc-600">
-        {traffic.reason === "error" ? (
-          "PostHog didn't answer. Visits will show again on the next load."
-        ) : (
-          <>
-            Visits come from PostHog. Add the Worker secrets <code className="text-xs">POSTHOG_PERSONAL_API_KEY</code> (a
-            personal key with query access) and <code className="text-xs">POSTHOG_PROJECT_ID</code> to show them here.
-          </>
-        )}
-      </div>
-    );
-  }
-  const max = Math.max(1, ...traffic.daily.map((d) => d.visits));
-  const label = (day: string) => formatDate(day, SHORT_DATE);
-  return (
-    <div className={cn(card, "px-5 py-4")}>
-      <div className="text-sm text-zinc-600">Visits per day, last 14 days</div>
-      <div
-        role="img"
-        aria-label={`Visits per day: ${traffic.daily.map((d) => `${label(d.day)} ${d.visits}`).join(", ")}`}
-        className="mt-3 flex h-24 items-end gap-[2px]"
-      >
-        {traffic.daily.map((d) => (
-          <div key={d.day} className="group relative flex h-full flex-1 items-end">
-            <div
-              className="w-full rounded-t-[4px] bg-brand-600 group-hover:bg-brand-700"
-              style={{ height: `${Math.max(2, (d.visits / max) * 100)}%` }}
-            />
-            <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-zinc-900 px-2 py-1 text-xs text-white group-hover:block">
-              {label(d.day)}: {n(d.visits)}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="mt-1 flex justify-between text-xs text-zinc-400">
-        <span>{traffic.daily[0] && label(traffic.daily[0].day)}</span>
-        <span>{traffic.daily.at(-1) && label(traffic.daily.at(-1)!.day)}</span>
-      </div>
-      {traffic.topPages.length > 0 && (
-        <>
-          <div className="mt-5 text-sm text-zinc-600">Most viewed pages</div>
-          <ol className="mt-2 space-y-1 text-sm">
-            {traffic.topPages.map((p) => (
-              <li key={p.path} className="flex items-baseline justify-between gap-3">
-                <Link to={p.path} className="min-w-0 truncate text-zinc-800 hover:text-brand-700">
-                  {p.path}
-                </Link>
-                <span className="shrink-0 tabular-nums text-zinc-500">{n(p.views)}</span>
-              </li>
-            ))}
-          </ol>
-        </>
-      )}
-    </div>
-  );
-}
-
-function NewestAccounts({ audience }: { audience: AdminOverview["audience"] }) {
-  if (!audience) return <p className={cn(card, "px-5 py-4 text-sm text-zinc-500")}>Couldn't read accounts.</p>;
-  if (audience.recent.length === 0) return <p className={cn(card, "px-5 py-4 text-sm text-zinc-500")}>No accounts yet.</p>;
-  return (
-    <div className={card}>
-      <ul className="divide-y divide-zinc-100">
-        {audience.recent.map((u) => (
-          <li key={u.id}>
-            <Link
-              to={`/admin/users/${u.id}`}
-              className="flex items-baseline justify-between gap-3 px-5 py-2.5 text-sm transition-colors hover:bg-zinc-50"
-            >
-              <span className="min-w-0 truncate text-zinc-800">
-                {u.email ?? "No email"}
-                {!u.confirmed && <span className="ml-2 text-amber-800">unconfirmed</span>}
-              </span>
-              <span className="shrink-0 text-zinc-500">{formatRelativeTime(u.createdAt)}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {audience.subscriptionTypes.length > 0 && (
-        <p className="border-t border-zinc-100 px-5 py-3 text-sm text-zinc-500">
-          Alerts by kind:{" "}
-          {audience.subscriptionTypes.map(([type, count]) => `${ALERT_KINDS[type] ?? type} ${n(count)}`).join(" · ")}
-        </p>
-      )}
-    </div>
-  );
-}
-
 const ALERT_KINDS: Record<string, string> = {
-  digest: "meeting digest",
+  digest: "digest",
   topic: "topics",
   neighborhood: "near a place",
   matter: "issues",
   person: "people",
   keyword: "keywords",
 };
+
+function NewestAccounts({ audience }: { audience: AdminOverview["audience"] }) {
+  if (!audience) return <p className="px-5 pb-4 text-sm text-zinc-500">Couldn't read accounts.</p>;
+  if (audience.recent.length === 0) return <p className="px-5 pb-4 text-sm text-zinc-500">No accounts yet.</p>;
+  return (
+    <>
+      <ul className="pb-2">
+        {audience.recent.map((u) => (
+          <li key={u.id}>
+            <Link to={`/admin/users/${u.id}`} className="flex items-baseline justify-between gap-3 px-5 py-1.5 text-sm transition-colors hover:bg-zinc-50">
+              <span className="min-w-0 truncate text-zinc-800">
+                {u.email ?? "No email"}
+                {!u.confirmed && <span className="ml-1.5 text-xs text-amber-800">unconfirmed</span>}
+              </span>
+              <span className="shrink-0 text-xs text-zinc-500">{formatRelativeTime(u.createdAt)}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {audience.alertTypes.length > 0 && (
+        <p className="border-t border-zinc-100 px-5 py-2.5 text-xs text-zinc-500">
+          Alerts: {audience.alertTypes.map(([type, count]) => `${ALERT_KINDS[type] ?? type} ${n(count)}`).join(" · ")}
+        </p>
+      )}
+    </>
+  );
+}

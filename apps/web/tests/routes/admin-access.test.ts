@@ -75,11 +75,23 @@ it.each([
   expect(mocks.adminClient).not.toHaveBeenCalled();
 });
 
-it("opens the registered admin directory for an existing admin without running any processing", async () => {
+it("opens the admin overview for an existing admin with reads only", async () => {
   mocks.user.mockResolvedValue({ data: { user: { id: "admin", email: "admin@example.com", email_confirmed_at: "2026-01-01T00:00:00Z" } } });
+  // A query builder that answers every read with nothing and records each method called.
+  const calls: string[] = [];
+  const empty = { data: [], count: 0, error: null };
+  const builder: any = new Proxy(() => {}, {
+    get: (_t, key) => (key === "then" ? (resolve: any) => resolve(empty) : (...args: any[]) => (calls.push(String(key)), builder)),
+    apply: () => builder,
+  });
+  mocks.adminClient.mockReturnValue({
+    from: (table: string) => (calls.push(`from:${table}`), builder),
+    rpc: () => Promise.resolve({ data: [], error: null }),
+    auth: { admin: { listUsers: () => Promise.resolve({ data: { users: [], total: 0 }, error: null }) } },
+  });
   const page = await handler.query(new Request("https://openlangford.ca/admin"));
   expect((page as any).statusCode).toBe(200);
-  expect(mocks.adminClient).not.toHaveBeenCalled();
+  expect(calls.some((c) => ["insert", "update", "upsert", "delete"].includes(c))).toBe(false);
 });
 
 it("denies an allowlisted email that has not been confirmed", async () => {

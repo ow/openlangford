@@ -31,10 +31,10 @@ it("drops analytics events containing unsubscribe capabilities or admin URLs bef
     expect(before(publicEvent)).toEqual({
       properties: { $current_url: "https://openlangford.ca/meetings", $process_person_profile: false, $geoip_disable: true, $ip: null },
     });
-    // Anonymous: no person profiles, no long-lived cookie, no session recording.
+    // Anonymous: no person profiles and no session recording; the random id persists so returning visits count.
     expect(mocks.init.mock.calls[0][1]).toMatchObject({
       person_profiles: "never",
-      persistence: "sessionStorage",
+      persistence: "localStorage+cookie",
       disable_session_recording: true,
     });
   } finally {
