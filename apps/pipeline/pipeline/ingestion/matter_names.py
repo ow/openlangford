@@ -72,17 +72,52 @@ def _norm(text: str | None) -> str:
 SPELLINGS = {"centre": "center", "center": "centre", "theatre": "theater", "theater": "theatre"}
 
 
+# An address's street type is written both ways: "977 Langford Parkway" is "101-977 Langford Pkwy" in 2023's agenda.
+STREET_TYPES = {"parkway": "pkwy", "road": "rd", "street": "st", "avenue": "ave", "drive": "dr", "boulevard": "blvd",
+                "highway": "hwy", "crescent": "cres", "place": "pl", "court": "ct", "terrace": "terr"}
+STREET_TYPES.update({short: full for full, short in list(STREET_TYPES.items())})
+
+
+def _alternates(name: str) -> list[list[str]]:
+    """Each word's spellings: centre/center anywhere, and an address's last word in full and abbreviated."""
+    words = name.split()
+    out = []
+    for i, w in enumerate(words):
+        key = w.lower().rstrip(".")
+        forms = [w]
+        if key in SPELLINGS:
+            forms.append(SPELLINGS[key])
+        if i == len(words) - 1 and i > 0 and re.match(r"^\d", name) and key in STREET_TYPES:
+            forms = [key, STREET_TYPES[key]]
+        out.append(forms)
+    return out
+
+
 def name_pattern(name: str) -> re.Pattern:
-    """Case-insensitive whole-word match that tolerates line breaks, doubled spaces and centre/center."""
-    words = [f"(?:{re.escape(w)}|{re.escape(SPELLINGS[w.lower()])})" if w.lower() in SPELLINGS else re.escape(w)
-             for w in name.split()]
-    return re.compile(r"(?<![\w])" + r"\s+".join(words) + r"(?![\w])", re.I)
+    """Case-insensitive whole-word match that tolerates line breaks, doubled spaces, centre/center and an
+    address's abbreviated street type ("Pkwy", "Pkwy.")."""
+    parts = []
+    for forms in _alternates(name):
+        alts = [re.escape(f) + (r"\.?" if f.lower() in STREET_TYPES and len(forms) > 1 else "") for f in forms]
+        parts.append(alts[0] if len(alts) == 1 else f"(?:{'|'.join(alts)})")
+    return re.compile(r"(?<![\w])" + r"\s+".join(parts) + r"(?![\w])", re.I)
 
 
 def tsquery_variants(name: str) -> list[str]:
-    """The name and its other spelling, for phrase search (the index stems 'centre' and 'center' differently)."""
-    other = " ".join(SPELLINGS.get(w.lower(), w) for w in name.split())
-    return [name] if other.lower() == name.lower() else [name, other]
+    """The name and its other spellings, for phrase search (the index stems 'centre' and 'center' differently,
+    and 'Pkwy' is a different word from 'Parkway')."""
+    from itertools import product
+
+    return list(dict.fromkeys(" ".join(words) for words in product(*_alternates(name))))
+
+
+# Planning file numbers name one application across every agenda that handles it: "TUP20-0002", "DVP14-0015",
+# "Z-07-34", "RZ-01-11". (Bylaw numbers and numeric records-file numbers are shared too widely to use.)
+FILE_NUMBER = re.compile(r"\b[A-Z]{1,5}-?\d{2}-\d{2,5}[A-Z]?\b")
+
+
+def file_numbers(identifier: str | None) -> list[str]:
+    return list(dict.fromkeys(FILE_NUMBER.findall(identifier or "")))
 
 
 def keep_name(name: str, source_text: str) -> bool:
@@ -115,7 +150,7 @@ def excerpt(text: str, name: str, width: int = 320) -> str:
 
 def load_matters(cur) -> list[dict]:
     cur.execute("""
-        select m.id, m.title, m.plain_english_summary, m.meta, m.first_seen, m.last_seen,
+        select m.id, m.title, m.plain_english_summary, m.meta, m.first_seen, m.last_seen, m.identifier,
                coalesce((select json_agg(a.title order by a.id) from agenda_items a where a.matter_id = m.id), '[]'),
                coalesce((select json_agg(distinct p.address) from property_links pl join properties p on p.id = pl.property_id
                          where pl.matter_id = m.id and not pl.hidden and not p.hidden and p.civic_number is not null), '[]')
@@ -123,10 +158,10 @@ def load_matters(cur) -> list[dict]:
         where m.meta->>'canonical_matter_id' is null and coalesce(m.meta->>'hidden', '') <> 'container'
         order by m.id""")
     out = []
-    for mid, title, summary, meta, first, last, items, addresses in cur.fetchall():
+    for mid, title, summary, meta, first, last, identifier, items, addresses in cur.fetchall():
         meta = meta or {}
         out.append({"id": mid, "title": meta.get("display_title") or title, "raw_title": title, "summary": summary or "",
-                    "meta": meta, "first_seen": first, "last_seen": last, "item_titles": items or [],
+                    "meta": meta, "first_seen": first, "last_seen": last, "item_titles": items or [], "file_numbers": file_numbers(identifier),
                     "addresses": [a for a in (addresses or []) if a]})
     return out
 
@@ -214,20 +249,21 @@ def save_names(names: dict[int, list[str]], conn=None) -> None:
 def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
     """Agenda items (by their own text or an attached report section) and annual-report pages using ``name``."""
     pat = name_pattern(name)
-    spell = (tsquery_variants(name) * 2)[:2]
+    variants = tsquery_variants(name)
+    any_variant = lambda col: "(" + " or ".join(f"{col} @@ phraseto_tsquery('english', %s)" for _ in variants) + ")"
     meeting_filter = " and a.meeting_id = any(%s)" if meeting_ids else ""
     extra = [meeting_ids] if meeting_ids else []
     items: dict[int, dict] = {}
     cur.execute(f"""select a.id, a.matter_id, mt.meeting_date, a.title, coalesce(a.plain_english_summary, '') || ' ' || coalesce(a.debate_summary, '')
                     from agenda_items a join meetings mt on mt.id = a.meeting_id
-                    where a.text_search @@ phraseto_tsquery('english', %s){meeting_filter}""", [name, *extra])
+                    where {any_variant("a.text_search")}{meeting_filter}""", [*variants, *extra])
     for iid, matter_id, day, title, body in cur.fetchall():
         text = f"{title}. {body}"
         if pat.search(text):
             items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name)}
     cur.execute(f"""select a.id, a.matter_id, mt.meeting_date, a.title, ds.section_text
                     from document_sections ds join agenda_items a on a.id = ds.agenda_item_id join meetings mt on mt.id = a.meeting_id
-                    where ds.text_search @@ phraseto_tsquery('english', %s){meeting_filter}""", [name, *extra])
+                    where {any_variant("ds.text_search")}{meeting_filter}""", [*variants, *extra])
     for iid, matter_id, day, title, text in cur.fetchall():
         if iid not in items and pat.search(text or ""):
             items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name)}
@@ -241,16 +277,16 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
                                     and t.start_time >= a.discussion_start_time
                                     and t.start_time < coalesce(a.discussion_end_time, a.discussion_start_time + 1800)
                                   order by a.discussion_start_time desc limit 1) a on true
-                    where (t.text_search @@ phraseto_tsquery('english', %s) or t.text_search @@ phraseto_tsquery('english', %s)){segment_filter}""", [*spell, *extra])
+                    where {any_variant("t.text_search")}{segment_filter}""", [*variants, *extra])
     for iid, matter_id, day, title, text in cur.fetchall():
         if iid not in items and pat.search(text or ""):
             items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title,
                           "excerpt": excerpt(text, name), "spoken": True}
     pages = []
     if not meeting_ids:
-        cur.execute("""select p.report_id, p.page, r.year, r.title, p.content from public_report_pages p
+        cur.execute(f"""select p.report_id, p.page, r.year, r.title, p.content from public_report_pages p
                        join public_reports r on r.id = p.report_id
-                       where p.text_search @@ phraseto_tsquery('english', %s)""", [name])
+                       where {any_variant("p.text_search")}""", variants)
         for report_id, page, year, title, content in cur.fetchall():
             if pat.search(content):
                 pages.append({"report_id": report_id, "page": page, "year": year, "title": title, "excerpt": excerpt(content, name)})
@@ -447,6 +483,8 @@ def run(*, matter_ids: list[int] | None = None, meeting_ids: list[int] | None = 
         names = extract_names(wanted, save=not dry_run) if wanted else {}
         all_names = {m["id"]: m["meta"].get("anchor_names") or [] for m in matters}
         all_names.update(names)
+        for m in matters:  # file numbers come from the matter's own identifier, not the model
+            all_names[m["id"]] = [*all_names[m["id"]], *(f for f in m["file_numbers"] if f not in all_names[m["id"]])]
         scope = {mid: n for mid, n in all_names.items() if n and (not matter_ids or mid in matter_ids or meeting_ids)}
         found = judge(matters, scope, cur, meeting_ids=meeting_ids, existing=existing_links(cur), all_names=all_names)
         conn.rollback()

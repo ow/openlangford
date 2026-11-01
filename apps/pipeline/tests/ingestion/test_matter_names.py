@@ -1,4 +1,4 @@
-from pipeline.ingestion.matter_names import central_name, excerpt, keep_name, name_pattern, tsquery_variants
+from pipeline.ingestion.matter_names import central_name, excerpt, file_numbers, keep_name, name_pattern, tsquery_variants
 
 SALE = "Disposition of the North Langford Recreation Centre at 1997 Country Club Way, as per the purchase agreement."
 
@@ -46,3 +46,20 @@ def test_excerpt_keeps_whole_words():
     long = "Members raised " + "many different points about parks and fields " * 6 + "and the North Langford Recreation Centre sale."
     quote = excerpt(long, "North Langford Recreation Centre")
     assert quote.startswith("…") and quote[1] != " " and quote.split()[0][1:] in long.split()
+
+
+def test_addresses_match_abbreviated_street_types():
+    pat = name_pattern("977 Langford Parkway")
+    assert pat.search("TUP20-0002 - Flight Cannabis Co. - 101-977 Langford Pkwy")
+    assert pat.search("at 977 Langford Pkwy. on Monday")
+    assert not pat.search("977 Langford Parkways")
+    assert tsquery_variants("977 Langford Parkway") == ["977 Langford parkway", "977 Langford pkwy"]
+    assert tsquery_variants("Goldstream Avenue Park") == ["Goldstream Avenue Park"]  # not an address
+
+
+def test_file_numbers_from_identifier():
+    assert file_numbers("TUP20-0002") == ["TUP20-0002"]
+    assert file_numbers("Bylaw No. 1981; Z21-0006; DVP21-0006") == ["Z21-0006", "DVP21-0006"]
+    assert file_numbers("File No. 3910-02; RZ-01-11") == ["RZ-01-11"]
+    assert file_numbers("Bylaw No. 1289; File No. 3900-1289") == []
+    assert file_numbers(None) == []
