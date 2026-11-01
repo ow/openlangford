@@ -34,7 +34,7 @@ import requests
 API = "https://gspr.emc2.build/api"
 ARCHIVE_URL = "https://gspr.emc2.build/documents/{id}"
 USER_AGENT = "OpenLangford/1.0 (openlangford.ca; civic records backfill)"
-TITLE = re.compile(r"^(?P<body>.+?) (?P<y>\d{4}) (?P<m>\d{2}) (?P<d>\d{2}) (?P<time>\d{4}) (?P<kind>Regular|Special|In Camera)"
+TITLE = re.compile(r"^(?P<body>.+?) (?P<y>\d{4}) (?P<m>\d{2}) (?P<d>\d{2}) (?P<time>\d{4}) (?P<kind>Regular|Special|Inaugural|In Camera)"
                    r"\b.*?(?P<part>Minutes|Agenda|Notice)", re.I)
 
 
@@ -74,7 +74,9 @@ def folder_for(meeting: dict, archive_root: str) -> str:
     hour, minute = int(meeting["time"][:2]), meeting["time"][2:]
     clock = f"{hour % 12 or 12}{minute}{'am' if hour < 12 else 'pm'}"
     first = (meeting["minutes"] or meeting["agenda"])[0]["id"]
-    if meeting["body"] == "Council":
+    if meeting["body"] == "Council" and meeting["kind"] == "Inaugural":
+        title = "Inauguration"  # the city's own name (and our meeting type) for the first meeting of a new council
+    elif meeting["body"] == "Council":
         title = f"{meeting['kind']} Council"  # "Regular Council" / "Special Council", like the city's own folders
     else:
         title = meeting["body"] + (" – Special" if meeting["kind"] == "Special" else "")
@@ -164,7 +166,7 @@ def _our_filing(meeting: dict) -> dict | None:
     """Organizations/types our database uses for a Glyphdex body, or None for bodies we have no mapping for."""
     body, kind = meeting["body"].lower(), meeting["kind"].lower()
     if body == "council":
-        return {"orgs": {"council"}, "types": {f"{kind} council"}}
+        return {"orgs": {"council"}, "types": {"inauguration"} if kind == "inaugural" else {f"{kind} council"}}
     if body == "committee of the whole":
         return {"orgs": {"council"}, "types": {"committee of the whole"}}
     if body == "community advisory committee":

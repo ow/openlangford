@@ -33,6 +33,15 @@ def test_in_camera_notice_is_filed_as_the_agenda():
     assert (meeting["kind"], len(meeting["agenda"]), len(meeting["minutes"])) == ("Special", 1, 0)
     assert folder_for(meeting, "/a").endswith("Council/2015/08/2015-08-28 900am Special Council [gx-fb4c99e0]")
 
+
+def test_inaugural_meeting_is_an_inauguration():
+    docs = [{"doc_type": "council_minutes", "source_kind": "pdf", "id": "8735ef6b-cd3a", "title": "Council 2014 12 01 1900 Inaugural Minutes (Signed)(1)"}]
+    [meeting] = group_meetings(docs)
+    assert folder_for(meeting, "/a").endswith("Council/2014/12/2014-12-01 700pm Inauguration [gx-8735ef6b]")
+    ours = [{"meeting_date": "2014-12-01", "title": "Inauguration", "type": "Inauguration", "organization": {"name": "Council"}}]
+    assert matches_existing(meeting, ours)
+    assert not matches_existing(meeting, [{**ours[0], "title": "Regular Council", "type": "Regular Council"}])
+
 # --- already_ingested matching: real 2023-2026 examples (SHA-256-verified, see research/glyphdex/2023-2026-overlap.md) ---
 
 def _gx(body, date, kind="Regular"):
