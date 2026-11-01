@@ -24,6 +24,12 @@ We've done our best to improve the accuracy of the data through AI-assisted proc
 
 Regardless, AI is not magic, and makes mistakes—just like humans. Check the City's original records for anything you're relying on. If you find errors, mistakes, or something that's outright wrong, [let us know](/contact).
 
+### Why doesn't the site go back further?
+
+The site starts in 2008 because that's as far back as the City publishes council meetings online. Earlier agendas, minutes, and videos aren't available on the City's website, and it's unclear whether the City still has them all.
+
+If you have older agendas, minutes, or meeting videos, or want to request them through a freedom of information (FOI) request so we can publish them, [let us know](/contact).
+
 ### What is the data used for?
 
 The data is used to help understand the council's activities and decisions. It can be used to analyze trends, identify patterns, and make informed decisions about the future of the community. This project will never have advertising, and does not sell or use your viewing habits for marketing. You can read more in the [privacy policy](/privacy) and [terms of use](/terms).
