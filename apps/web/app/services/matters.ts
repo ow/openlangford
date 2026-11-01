@@ -302,10 +302,14 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
       if ((result.data || []).length < 500) return { data, error: null };
     }
   };
-  const empty = { related: [] as any[], mentions: [] as any[], background: [] as any[] };
-  const { data: links, error } = await rows(() => supabase.from("matter_links")
-    .select("kind, matter_id, related_matter_id, agenda_item_id, confidence")
-    .eq("hidden", false).or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`).order("id"));
+  const empty = { related: [] as any[], mentions: [] as any[], background: [] as any[], reports: [] as any[] };
+  const [{ data: links, error }, reports] = await Promise.all([
+    rows(() => supabase.from("matter_links")
+      .select("kind, matter_id, related_matter_id, agenda_item_id, confidence, source, quote")
+      .eq("hidden", false).or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`).order("id")),
+    getMatterReportMentions(supabase, matterId, municipalityId),
+  ]);
+  empty.reports = reports;
   if (error) { console.error("Error fetching matter links:", error); return empty; }
   const relatedIds = [...new Set((links || []).filter(l => l.kind === "related_matter")
     .map(l => l.matter_id === matterId ? l.related_matter_id : l.matter_id))]
@@ -326,29 +330,50 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
   }
   const related = (relatedResult.data || []).filter(r => r.meta?.hidden !== "container")
     .sort((a, b) => String(a.first_seen).localeCompare(String(b.first_seen)));
-  const mentions = mentionsResult.data || [];
+  // Links found by name carry the passage that names the matter, and say whether the item was about it
+  // ("name") or only referred to it ("name_mention").
+  const linkFor = new Map((links || []).filter(l => l.kind === "mention" && l.matter_id === matterId).map(l => [l.agenda_item_id, l]));
+  const mentions = (mentionsResult.data || []).map(item => {
+    const link = linkFor.get(item.id);
+    return { ...item, linkSource: link?.source ?? null, linkQuote: link?.quote ?? null };
+  });
   const verifiedIds = related.map(r => r.id);
-  if (!verifiedIds.length) return { related, mentions, background: [] as any[] };
+  if (!verifiedIds.length) return { related, mentions, background: [] as any[], reports };
 
   // One hop only: a related matter's direct records/mentions are background,
   // never the current matter's decisions. Do not traverse its related matters.
   const relatedMentions = await rows(() => supabase.from("matter_links").select("matter_id, agenda_item_id")
     .in("matter_id", verifiedIds).eq("kind", "mention").eq("hidden", false).order("id"));
-  if (relatedMentions.error) { console.error("Error fetching background mentions:", relatedMentions.error); return { related, mentions, background: [] as any[] }; }
+  if (relatedMentions.error) { console.error("Error fetching background mentions:", relatedMentions.error); return { related, mentions, background: [] as any[], reports }; }
   const backgroundIds = [...new Set((relatedMentions.data || []).map(l => l.agenda_item_id))]
     .filter(id => Number.isSafeInteger(id) && id > 0);
   const clauses = [`matter_id.in.(${verifiedIds.join(",")})`];
   if (backgroundIds.length) clauses.push(`id.in.(${backgroundIds.join(",")})`);
   const records = await rows(() => supabase.from("agenda_items").select(selection).or(clauses.join(","))
     .eq("meetings.municipality_id", municipalityId).order("id"));
-  if (records.error) { console.error("Error fetching background records:", records.error); return { related, mentions, background: [] as any[] }; }
+  if (records.error) { console.error("Error fetching background records:", records.error); return { related, mentions, background: [] as any[], reports }; }
   const directIds = new Set(mentions.map(item => item.id));
   const background = (records.data || []).filter(item => item.matter_id !== matterId && !directIds.has(item.id)).map(item => {
     const ownerId = verifiedIds.includes(item.matter_id) ? item.matter_id
       : (relatedMentions.data || []).find(link => link.agenda_item_id === item.id)?.matter_id;
     return { ...item, relatedMatter: related.find(r => r.id === ownerId) };
   }).filter(item => item.relatedMatter);
-  return { related, mentions, background };
+  return { related, mentions, background, reports };
+}
+
+export type ReportMention = { id: number; year: number; title: string; page: number; quote: string; url: string | null };
+
+/** Pages of the City's annual reports that describe a matter (pipeline matter_names step), oldest first. */
+export async function getMatterReportMentions(supabase: SupabaseClient, matterId: number, municipalityId = 1): Promise<ReportMention[]> {
+  const { data, error } = await supabase.from("matter_report_mentions")
+    .select("id, page, quote, public_reports!inner(year, title, source_url, municipality_id)")
+    .eq("matter_id", matterId).eq("hidden", false).eq("public_reports.municipality_id", municipalityId);
+  if (error) { console.error("Error fetching annual report mentions:", error); return []; }
+  return (data || []).map((row: any) => {
+    const report = Array.isArray(row.public_reports) ? row.public_reports[0] : row.public_reports;
+    return { id: row.id, year: report.year, title: report.title, page: row.page, quote: row.quote,
+             url: report.source_url ? `${report.source_url}#page=${row.page}` : null };
+  }).sort((a, b) => a.year - b.year || a.page - b.page);
 }
 
 export type MatterLink = { id: number; slug: string | null; title: string };

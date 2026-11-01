@@ -33,6 +33,14 @@ ANSWER = re.compile(rf"^\W*{OPENER}{LEAD}(?P<name>{NAME})\b")
 MY_NAME = re.compile(rf"\b(?i:my\s+name\s+is)\s+(?P<name>{NAME})\b")
 # The chair hands the floor to a named guest: "... with James Bridge. Welcome." / "Welcome, Ken Caruska."
 GUEST_CALL = re.compile(rf"(?i:\bwith|\bfrom|\bwelcome,?|\bover\s+to|\binvite)\s+(?P<name>{NAME})[\s.,!]*(?i:welcome|go\s+ahead|the\s+floor\s+is\s+yours|please)?[\s.,!]*$")
+# "I'm S. Perry from Glen Lake Road" / "this is Lori Plomp on Winfield Terrace"
+I_AM = re.compile(rf"\b(?i:i'm|i\s+am|this\s+is)\s+(?P<name>{NAME})\s*,?\s+(?i:from|at|on|of|and\s+i\s+live)\b")
+# "S. Costello, Roboli Place." / "S Cyfert Walford Road" / "Wendy Haas, 3442 Luxton Road": a name, then where they live.
+STREET_WORD = r"(?:road|rd|avenue|ave|street|st|drive|dr|way|parkway|place|pl|crescent|boulevard|blvd|lane|terrace|court|close|trail|highway)"
+NAME_STREET = re.compile(rf"^\W*{OPENER}(?P<name>(?:[A-Z]\.?\s+)?{NAME}|[A-Z]\s+[A-Z][a-z'’\-]+)\s*,?\s+(?:\d[\w-]*\s+)?(?:[A-Z][a-z]+\s+){{1,3}}(?i:{STREET_WORD})\b")
+# The moderator reads the caller's screen name: "App user S. Perry, please unmute yourself ..."
+NAMED_REQUEST = re.compile(rf"(?i:app\s+user|caller|next\s+speaker\s+is|we\s+have)\s+(?P<name>{NAME})\s*,?\s+(?i:please|you\s+can|go\s+ahead)")
+REQUEST_LOOKBACK = 3  # turns: "Hi, can you hear me?" / "Yes, go ahead" often come between the request and the name
 NOT_A_NAME = re.compile(r"(?i)^(?:mayor|council|councillor|madam|chair|langford|city|thank|good|the|and|item|your|hi|hello)\b|\b(?:worship|there|number)$")
 
 
@@ -70,10 +78,26 @@ def introductions(turns, items: list[dict]) -> list[dict]:
         prev = turns[i - 1] if i else None
         spoken, source = None, None
         head = " ".join(turn.text.split()[:30])
-        if prev and prev.label != turn.label and ASKS_NAME.search(prev.text[-200:]):
+        # The latest name request by someone else in the last few turns, if this label hasn't answered it yet.
+        request = None
+        for j in range(i - 1, max(-1, i - 1 - REQUEST_LOOKBACK), -1):
+            if turns[j].label == turn.label:
+                if any(_name(p.search(" ".join(turns[j].text.split()[:30]))) for p in (ANSWER, I_AM, NAME_STREET, MY_NAME)):
+                    break  # already introduced
+                continue
+            if ASKS_NAME.search(turns[j].text[-260:]):
+                request = turns[j]
+                break
+        if request:
             spoken, source = _name(ANSWER.search(head)), head
-        if not spoken:
-            spoken, source = _name(MY_NAME.search(head)), head
+        for pattern in (MY_NAME, I_AM, NAME_STREET):
+            if not spoken:
+                spoken, source = _name(pattern.search(head)), head
+        if not spoken and request and len(turn.text.split()) >= 12:
+            # The caller never says it, but the moderator read their screen name when asking.
+            named = NAMED_REQUEST.search(request.text[-260:])
+            if named:
+                spoken, source = _name(named), request.text[-260:]
         if not spoken and prev and prev.label != turn.label and len(turn.text.split()) >= 40:
             # A guest introduced by the chair, who then speaks at length.
             spoken, source = _name(GUEST_CALL.search(prev.text[-160:])), prev.text[-160:]

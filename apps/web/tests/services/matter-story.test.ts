@@ -46,3 +46,38 @@ it("reconstructs one-hop background with provenance, preserving cities, hidden l
   expect(story.background).toHaveLength(504);
   expect(story.background.at(-1)?.id).toBe(10500);
 });
+
+it("carries a name-found link's quote and the annual-report pages, hiding hidden ones", async () => {
+  const meeting = { municipality_id: 1, meeting_date: "2024-12-16", slug: "2024-12-16-regular-council" };
+  const tables: Record<string, any[]> = {
+    matter_links: [
+      { kind: "mention", matter_id: 374, agenda_item_id: 50, hidden: false, source: "name_mention", quote: "the quiet sale of the North Langford Recreation Center" },
+      { kind: "mention", matter_id: 374, agenda_item_id: 51, hidden: false, source: "resolver", quote: null },
+    ],
+    agenda_items: [{ id: 50, matter_id: 9, meeting_id: 7, title: "Potential Purchase of Westhills Aquatic Centre", meetings: meeting },
+      { id: 51, matter_id: null, meeting_id: 7, title: "PUBLIC PARTICIPATION", meetings: meeting }],
+    matter_report_mentions: [
+      { id: 2, matter_id: 374, page: 24, quote: "The City acquired and completed a $500,000 renovation", hidden: false,
+        public_reports: { year: 2015, title: "Annual Report 2015", source_url: "https://gspr.emc2.build/documents/abc", municipality_id: 1 } },
+      { id: 3, matter_id: 374, page: 25, quote: "hidden", hidden: true,
+        public_reports: { year: 2015, title: "Annual Report 2015", source_url: null, municipality_id: 1 } },
+    ],
+  };
+  const ids = (value: string) => value.slice(value.indexOf("(") + 1, -1).split(",").map(Number);
+  const client = createClient("https://example.supabase.co", "synthetic-test-key", { auth: { persistSession: false }, global: { fetch: async input => {
+    const url = new URL(String(input));
+    let rows = tables[url.pathname.split("/").pop()!] || [];
+    for (const [key, value] of url.searchParams) {
+      const field = (row: any) => key.includes(".") ? key.split(".").reduce((o, k) => o?.[k], row) : row[key];
+      if (value.startsWith("eq.")) rows = rows.filter(row => String(field(row)) === value.slice(3));
+      if (value.startsWith("in.(")) rows = rows.filter(row => ids(value).includes(row[key]));
+      if (key === "or") rows = rows.filter(row => row.matter_id === 374);
+    }
+    return Response.json(rows);
+  } } });
+  const story = await getMatterStory(client, 374);
+  expect(story.mentions.map(m => [m.id, m.linkSource, m.linkQuote])).toEqual([
+    [50, "name_mention", "the quiet sale of the North Langford Recreation Center"], [51, "resolver", null]]);
+  expect(story.reports).toEqual([{ id: 2, year: 2015, title: "Annual Report 2015", page: 24,
+    quote: "The City acquired and completed a $500,000 renovation", url: "https://gspr.emc2.build/documents/abc#page=24" }]);
+});

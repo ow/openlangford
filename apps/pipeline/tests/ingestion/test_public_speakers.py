@@ -73,3 +73,16 @@ def test_fillers_and_common_words_are_not_names():
     assert ps._name(ps.ANSWER.search("Um Joanne, can you speak out, please?")) is None  # one word once "Um" goes
     assert ps._name(ps.ANSWER.search("Here Lavac, 926 Greystone Place.")) is None
     assert ps._name(ps.ANSWER.search("Uh Wendy Haas, 3442 Luxton Road.")) == "Wendy Haas"
+
+
+def test_budget_meeting_introductions():
+    # 2023-04-03 Committee of the Whole: the name comes a turn after the request, or with no request at all.
+    turns = si.build_turns([
+        seg(1, "Speaker_2", 10, "App user S. Perry, please unmute yourself, provide your first initial last name and street name for the record."),
+        seg(2, "Speaker_5", 20, "Hi, can you hear me?"),
+        seg(3, "Speaker_2", 25, "Yes, we can. Go ahead, please."),
+        seg(4, "Speaker_5", 30, "Hi, I'm S. Perry from Glen Lake Road. I'm speaking to the budget and report."),
+        seg(5, "Speaker_3", 90, "Is there anyone from the gallery that would like to come forward?"),
+        seg(6, "Speaker_4", 100, "S. Costello, Roboli Place. Um, I sent an email this morning about the budget."),
+    ])
+    assert [(i["label"], i["spoken"]) for i in ps.introductions(turns, [ITEM])] == [("Speaker_5", "S. Perry"), ("Speaker_4", "S. Costello")]

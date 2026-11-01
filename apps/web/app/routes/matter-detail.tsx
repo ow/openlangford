@@ -5,6 +5,7 @@ import {
   getDocumentsForAgendaItems,
   getMatterEvidence,
   getMatterStory,
+  type ReportMention,
 } from "../services/matters";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { parseRelatedAddresses } from "../lib/addresses";
@@ -92,6 +93,18 @@ function mentionLabel(title: string | null | undefined) {
   if (t.includes("delegation")) return "Delegation";
   if (t.includes("correspondence") || t.includes("petition")) return "Correspondence";
   return "Also discussed";
+}
+
+/** A stored passage as plain words: source documents are markdown ("**$105,000**", stray "#"). */
+function cleanQuote(value: string) {
+  return value.replace(/\*\*|__/g, "").replace(/(^|\s)#+(?=\s|$)/g, "$1").replace(/\s+/g, " ").trim();
+}
+
+/** A passage that is just the item's own title adds nothing under that title. */
+function quoteIsTitle(quote: string, title: string | null | undefined) {
+  const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const q = norm(cleanQuote(quote));
+  return !!title && (q === norm(title) || norm(title).includes(q));
 }
 
 function cleanEvidenceText(value: string | null | undefined) {
@@ -448,6 +461,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     ...(story.background || [])
       .filter((item: any) => !primaryAgendaItemIds.has(item.id) && !story.mentions.some((direct: any) => direct.id === item.id))
       .map((item: any) => ({ kind: "mention" as const, key: `background-${item.id}`, date: item.meetings?.meeting_date, item, relatedMatter: item.relatedMatter })),
+    // An annual report covers its year, so it sits at the year's end.
+    ...(story.reports || []).map((report: ReportMention) => ({ kind: "report" as const, key: `report-${report.id}`, date: `${report.year}-12-31`, report })),
   ].sort(
     (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime(),
   );
@@ -689,7 +704,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             <SectionHeading
               title="Timeline"
               icon={Clock}
-              description="Every time this matter appeared in council records, newest first."
+              description="Every time this came up at council or in the City's annual reports, newest first."
             />
 
             {timelineEntries.length === 0 ? (
@@ -700,6 +715,26 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               <>
                 <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-zinc-200">
                   {timelineEntries.map((entry: any) => {
+                    if (entry.kind === "report") {
+                      const report: ReportMention = entry.report;
+                      return (
+                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
+                          <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
+                          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
+                            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
+                              <span className="tabular-nums">{report.year}</span>
+                              <span className="text-zinc-300">·</span>
+                              {report.url ? (
+                                <a href={report.url} target="_blank" rel="noopener noreferrer" className="hover:text-brand-700">
+                                  City annual report, page {report.page}
+                                </a>
+                              ) : <span>City annual report, page {report.page}</span>}
+                            </div>
+                            <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(report.quote)}”</blockquote>
+                          </div>
+                        </li>
+                      );
+                    }
                     if (entry.kind === "mention") {
                       const item = entry.item;
                       return (
@@ -713,10 +748,13 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               <span className="text-zinc-300">·</span>
                               {entry.relatedMatter ? (
                                 <Link to={matterPath(entry.relatedMatter)} className="hover:text-brand-700">Background · {matterTitle(entry.relatedMatter)}</Link>
-                              ) : <span>{mentionLabel(item.title)}</span>}
+                              ) : <span>{item.linkSource === "name_mention" && mentionLabel(item.title) === "Also discussed" ? "Mentioned" : mentionLabel(item.title)}</span>}
                             </div>
-                            {entry.relatedMatter && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
-                            {(() => {
+                            {(entry.relatedMatter || item.linkQuote) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
+                            {item.linkQuote && !quoteIsTitle(item.linkQuote, item.title) ? (
+                              // Found by name: the passage that names this matter, not the item's own summary.
+                              <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(item.linkQuote)}”</blockquote>
+                            ) : (() => {
                               const about = speakersAbout(item.meta?.participation, `${matterTitle(matter)} ${matter.plain_english_summary || ""}`);
                               return about.length > 0 ? (
                                 <ParticipationList speakers={about} note={notes.speaker} className="mt-1" />

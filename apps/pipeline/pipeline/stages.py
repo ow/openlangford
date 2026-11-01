@@ -966,6 +966,28 @@ def run_matter_links(ctx: StageContext):
     return res
 
 
+def run_matter_names(ctx: StageContext):
+    """Timeline entries found by a matter's exact names (see pipeline/ingestion/matter_names.py).
+    ``--hidden`` writes new links unpublished, for review."""
+    from pipeline.ingestion.matter_names import run
+
+    hidden = bool(ctx.options.get("hidden"))
+    if ctx.post_ingest:
+        touched = ctx.matters_for_meetings()
+        results = [run(matter_ids=touched, dry_run=ctx.dry_run, hidden=hidden)] if touched else []
+        results.append(run(meeting_ids=ctx.meeting_ids, dry_run=ctx.dry_run, hidden=hidden))
+    else:
+        target = ctx.target_id()
+        results = [run(matter_ids=[target] if target is not None else None, stale=ctx.stale or ctx.force,
+                       dry_run=ctx.dry_run, hidden=hidden)]
+    changed = sorted({mid for r in results for mid in r["changed"]})
+    if changed and not hidden:
+        from pipeline.ingestion.matter_summaries import refresh_matter_summaries
+        refresh_matter_summaries(ctx.supabase, changed, context_only=True)
+    return {"changed": len(changed), "mentions": sum(len(r["mentions"]) for r in results),
+            "related": sum(len(r["related"]) for r in results), "report_pages": sum(len(r["pages"]) for r in results)}
+
+
 def bylaw_stage_selection(ctx: StageContext) -> tuple[str, list[str] | None]:
     """(source, only) for the bylaws stage: ``--all`` (optionally ``--source
     directory|media``) or ``--target <bylaw number>``; one of them is required."""
@@ -1374,6 +1396,14 @@ STAGES: list[Stage] = [
         description="Link related matters (same initiative) and mentions in mixed-topic items.",
         run=run_matter_links, when="post_ingest", scope="matter", version="1",
         depends_on=("matter-summaries",),
+    ),
+    Stage(
+        name="matter-names",
+        description="Timeline entries by name: items, spoken comments and annual-report pages that name a matter's place or "
+                    "project, with no limit on years (matters.meta.anchor_names; matter_links source name/name_mention; "
+                    "matter_report_mentions). --hidden writes them unpublished for review.",
+        run=run_matter_names, when="post_ingest", scope="matter", version="1",
+        depends_on=("matter-links",),
     ),
     Stage(
         name="properties",

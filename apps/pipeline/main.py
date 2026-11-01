@@ -250,6 +250,11 @@ if __name__ == "__main__":
         help="With --stage bylaws: every bylaw (directory + media library). Unchanged PDFs are skipped unless --force.",
     )
     parser.add_argument(
+        "--hidden",
+        action="store_true",
+        help="With --stage matter-names: write new timeline links unpublished, for review before they appear.",
+    )
+    parser.add_argument(
         "--source",
         choices=("all", "directory", "media"),
         default="all",
@@ -357,7 +362,7 @@ if __name__ == "__main__":
                 stale=args.stale,
                 force=args.force,
                 archiver=app,
-                options={"align_ai": args.align_ai, "all": args.all, "source": args.source},
+                options={"align_ai": args.align_ai, "all": args.all, "source": args.source, "hidden": args.hidden},
             )
             try:
                 stage_registry.run_stage(stage, ctx, raise_errors=True)
