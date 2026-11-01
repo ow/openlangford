@@ -302,8 +302,8 @@ function TrafficSetup({ reason }: { reason: "not_configured" | "error" }) {
         <p>PostHog didn't answer. Visitors will show again on the next load.</p>
       ) : (
         <p className="max-w-md">
-          Visitor numbers come from PostHog. Add the Worker secrets <code className="text-xs">POSTHOG_PERSONAL_API_KEY</code> (a
-          personal key with query access) and <code className="text-xs">POSTHOG_PROJECT_ID</code> to show them here.
+          Visitor numbers come from PostHog. Set the Worker secret <code className="text-xs">POSTHOG_PERSONAL_API_KEY</code> (a
+          personal key with query access) and <code className="text-xs">POSTHOG_PROJECT_ID</code> in wrangler.toml to show them here.
         </p>
       )}
     </div>

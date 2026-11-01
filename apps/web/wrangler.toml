@@ -47,6 +47,8 @@ AI_MODEL = "gpt-6-luna"
 VITE_SUPABASE_URL = "https://zxcvifwkaxtdfpanlwtl.supabase.co"
 VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY = "sb_publishable_KL1VPqvqcoPOgLqCG2o-Mw_n4htEdbc"
 VITE_POSTHOG_KEY = "phc_qfeuUwiF7HDB6c86rVFLpHSN8iZ9G79FQDVhYiVyBceg"
+# PostHog project the site reports to; the admin overview reads visitors from it (with the POSTHOG_PERSONAL_API_KEY secret).
+POSTHOG_PROJECT_ID = "675253"
 DOCUMENT_IMAGE_PUBLIC_BASE_URL = "https://pub-62dc9711e31a49c39b0544c981bf613e.r2.dev/viewroyal-document-images"
 
 [[ratelimits]]

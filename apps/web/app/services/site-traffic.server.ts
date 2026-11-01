@@ -1,8 +1,8 @@
 /**
  * Visitors and page views for the admin overview, read from PostHog's query API.
  *
- * Needs two runtime secrets: POSTHOG_PERSONAL_API_KEY (a personal key with query:read on the
- * project) and POSTHOG_PROJECT_ID. Without them the overview says traffic isn't connected.
+ * Needs the POSTHOG_PERSONAL_API_KEY Worker secret (a personal key with query:read on the project)
+ * and POSTHOG_PROJECT_ID from wrangler.toml [vars]. Without them the overview says traffic isn't connected.
  *
  * Visitors are distinct random ids (components/posthog-provider.tsx keeps one in a cookie for a
  * year). Before November 2026 the id lasted only for a browser tab, so older days count tabs.
