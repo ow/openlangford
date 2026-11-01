@@ -342,7 +342,7 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
 
   // One hop only: a related matter's direct records/mentions are background,
   // never the current matter's decisions. Do not traverse its related matters.
-  const relatedMentions = await rows(() => supabase.from("matter_links").select("matter_id, agenda_item_id")
+  const relatedMentions = await rows(() => supabase.from("matter_links").select("matter_id, agenda_item_id, source, quote")
     .in("matter_id", verifiedIds).eq("kind", "mention").eq("hidden", false).order("id"));
   if (relatedMentions.error) { console.error("Error fetching background mentions:", relatedMentions.error); return { related, mentions, background: [] as any[], reports }; }
   const backgroundIds = [...new Set((relatedMentions.data || []).map(l => l.agenda_item_id))]
@@ -354,9 +354,12 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
   if (records.error) { console.error("Error fetching background records:", records.error); return { related, mentions, background: [] as any[], reports }; }
   const directIds = new Set(mentions.map(item => item.id));
   const background = (records.data || []).filter(item => item.matter_id !== matterId && !directIds.has(item.id)).map(item => {
-    const ownerId = verifiedIds.includes(item.matter_id) ? item.matter_id
-      : (relatedMentions.data || []).find(link => link.agenda_item_id === item.id)?.matter_id;
-    return { ...item, relatedMatter: related.find(r => r.id === ownerId) };
+    const link = verifiedIds.includes(item.matter_id) ? null
+      : (relatedMentions.data || []).find(link => link.agenda_item_id === item.id);
+    const ownerId = link ? link.matter_id : item.matter_id;
+    // Found by name for the related matter: its passage says why the item belongs, where the item's own
+    // summary ("Public hearings were held") often doesn't.
+    return { ...item, relatedMatter: related.find(r => r.id === ownerId), linkSource: link?.source ?? null, linkQuote: link?.quote ?? null };
   }).filter(item => item.relatedMatter);
   return { related, mentions, background, reports };
 }

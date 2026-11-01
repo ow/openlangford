@@ -747,7 +747,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               </Link>
                               <span className="text-zinc-300">·</span>
                               {entry.relatedMatter ? (
-                                <Link to={matterPath(entry.relatedMatter)} className="hover:text-brand-700">Background · {matterTitle(entry.relatedMatter)}</Link>
+                                <span>Part of <Link to={matterPath(entry.relatedMatter)} className="font-medium text-zinc-700 hover:text-brand-700">{matterTitle(entry.relatedMatter)}</Link></span>
                               ) : item.linkSource === "name_mention" ? (
                                 // Only mentioned here: the other item is context, the quote is the entry.
                                 <span>
