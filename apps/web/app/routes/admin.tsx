@@ -46,7 +46,6 @@ const TOOLS: { heading: string; links: [string, string, string][] }[] = [
   {
     heading: "Site data",
     links: [
-      ["/admin/pipeline", "Pipeline", "Processing status, jobs and AI usage."],
       ["/admin/people", "People and memberships", "Council and staff records."],
     ],
   },
@@ -150,14 +149,14 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
               }
             />
             <Stat
-              label="AI spend"
+              label="Ask cost"
               value={data.ai ? formatCost(data.ai.windows[0]?.costUsd ?? 0) : "—"}
               tone={data.ai && data.ai.recentFailures > 0 ? "danger" : "default"}
               detail={
                 !data.ai
                   ? "Couldn't read"
                   : data.ai.recentFailures > 0
-                    ? `${n(data.ai.recentFailures)} failed calls`
+                    ? `${n(data.ai.recentFailures)} failed answers`
                     : `${formatCost(data.ai.windows[1]?.costUsd ?? 0)} in 30 days`
               }
             />
@@ -293,13 +292,6 @@ function Calendar({ content }: { content: AdminOverview["content"] }) {
               {formatDate(latest.date)}
               {latest.hasSummary ? "" : " · no summary yet"}
             </div>
-            {content.recentNotOnSite > 0 && (
-              <Link to="/admin/pipeline" className="mt-1 block text-sm text-amber-800 hover:text-amber-900">
-                {content.recentNotOnSite === 1
-                  ? "1 meeting from the last month isn't on the site yet"
-                  : `${n(content.recentNotOnSite)} meetings from the last month aren't on the site yet`}
-              </Link>
-            )}
           </>
         ) : (
           <p className="mt-1 text-sm text-zinc-500">No meetings yet.</p>

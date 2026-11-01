@@ -1,9 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { DONE_STATUSES, NOT_HELD_STATUSES, todayKey } from "../lib/pipeline-status";
+import { NOT_HELD_STATUSES, todayKey } from "../lib/pipeline-status";
 import type { UnplacedDocument } from "../lib/written";
 import { getAiUsageDashboard } from "./ai-usage-admin.server";
 import { getMunicipality } from "./municipality";
-import { getFailureResolutions } from "./pipeline-admin.server";
 import { getSiteTraffic } from "./site-traffic.server";
 
 const DAY = 86_400_000;
@@ -36,7 +35,7 @@ export type ActionItem = {
 
 async function getActions(supabase: SupabaseClient, municipalityId: number | null): Promise<ActionItem[]> {
   const head = { count: "exact" as const, head: true };
-  const [contact, names, letters, merges, profiles, jobs, pageReviews] = await Promise.all([
+  const [contact, names, letters, merges, profiles, pageReviews] = await Promise.all([
     section(async () => {
       const { data, count, error } = await supabase
         .from("contact_messages")
@@ -77,11 +76,6 @@ async function getActions(supabase: SupabaseClient, municipalityId: number | nul
       return (data ?? []).length;
     }),
     section(async () => {
-      if (municipalityId == null) return null;
-      const resolutions = await getFailureResolutions(supabase, municipalityId);
-      return [...resolutions.values()].filter((r) => !r.resolved).length;
-    }),
-    section(async () => {
       const { count, error } = await supabase.from("page_reviews").select("path", head).eq("status", "needs_work");
       // Page reviews are newer than this overview; until the table exists, leave the row out.
       if (error?.code === "PGRST205" || error?.code === "42P01") return undefined;
@@ -100,7 +94,6 @@ async function getActions(supabase: SupabaseClient, municipalityId: number | nul
       detail: contact?.oldest ? `oldest from ${contact.oldest}` : undefined,
       tone: "urgent",
     },
-    { key: "jobs", label: "Failed pipeline jobs", count: jobs, href: "/admin/pipeline", tone: "urgent" },
     { key: "names", label: "Speaker names to confirm", count: names, href: "/admin/names", tone: "review" },
     {
       key: "letters",
@@ -191,23 +184,13 @@ async function getContent(supabase: SupabaseClient, municipalityId: number | nul
     const q = supabase.from("source_meetings").select("id, title, meeting_date, status");
     return municipalityId == null ? q : q.eq("municipality_id", municipalityId);
   };
-  const monthAgo = todayKey(new Date(Date.now() - 30 * DAY));
-  const [latest, upcoming, waiting] = await Promise.all([
+  const [latest, upcoming] = await Promise.all([
     supabase.from("meetings").select("id, slug, title, meeting_date, summary").lte("meeting_date", today).order("meeting_date", { ascending: false }).limit(1),
     sources()
       .gte("meeting_date", today)
       .not("status", "in", `(${NOT_HELD_STATUSES.join(",")})`)
       .order("meeting_date")
       .limit(12),
-    // Held in the last month but not on the site yet (still waiting for documents or processing).
-    count(
-      (municipalityId == null
-        ? supabase.from("source_meetings").select("id", { count: "exact", head: true })
-        : supabase.from("source_meetings").select("id", { count: "exact", head: true }).eq("municipality_id", municipalityId))
-        .gte("meeting_date", monthAgo)
-        .lt("meeting_date", today)
-        .not("status", "in", `(${[...DONE_STATUSES, ...NOT_HELD_STATUSES].join(",")})`),
-    ),
   ]);
   if (latest.error) throw latest.error;
   if (upcoming.error) throw upcoming.error;
@@ -229,7 +212,6 @@ async function getContent(supabase: SupabaseClient, municipalityId: number | nul
       ? { id: meeting.id, slug: meeting.slug, title: meeting.title, date: meeting.meeting_date, hasSummary: Boolean(meeting.summary) }
       : null,
     upcoming: next.map((m) => ({ id: m.id, title: m.title, date: m.meeting_date })),
-    recentNotOnSite: waiting,
   };
 }
 
@@ -271,10 +253,14 @@ export async function getAdminOverview(
     email,
     content,
     ask,
+    // Only what residents' questions and searches cost; pipeline spend lives on /admin/pipeline.
     ai: ai.available
       ? {
-          windows: ai.windows.map((w) => ({ days: w.days, calls: w.totals.calls, failures: w.totals.failures, costUsd: w.totals.costUsd })),
-          recentFailures: ai.failures.filter((f) => new Date(f.created_at).getTime() >= now.getTime() - 7 * DAY).length,
+          windows: ai.windows.map((w) => ({
+            days: w.days,
+            costUsd: w.stages.filter((st) => st.source === "web").reduce((sum, st) => sum + (st.costUsd ?? 0), 0),
+          })),
+          recentFailures: ai.failures.filter((f) => f.source === "web" && new Date(f.created_at).getTime() >= now.getTime() - 7 * DAY).length,
         }
       : null,
     traffic,
