@@ -748,9 +748,15 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               <span className="text-zinc-300">·</span>
                               {entry.relatedMatter ? (
                                 <Link to={matterPath(entry.relatedMatter)} className="hover:text-brand-700">Background · {matterTitle(entry.relatedMatter)}</Link>
-                              ) : <span>{item.linkSource === "name_mention" && mentionLabel(item.title) === "Also discussed" ? "Mentioned" : mentionLabel(item.title)}</span>}
+                              ) : item.linkSource === "name_mention" ? (
+                                // Only mentioned here: the other item is context, the quote is the entry.
+                                <span>
+                                  {mentionLabel(item.title) === "Also discussed" ? "Mentioned" : mentionLabel(item.title)}
+                                  {!/^public participation$/i.test((item.title || "").trim()) && <> during <span className="italic">{displayTitle(item.title)}</span></>}
+                                </span>
+                              ) : <span>{mentionLabel(item.title)}</span>}
                             </div>
-                            {(entry.relatedMatter || item.linkQuote) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
+                            {(entry.relatedMatter || (item.linkQuote && item.linkSource !== "name_mention")) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
                             {item.linkQuote && !quoteIsTitle(item.linkQuote, item.title) ? (
                               // Found by name: the passage that names this matter, not the item's own summary.
                               <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(item.linkQuote)}”</blockquote>
