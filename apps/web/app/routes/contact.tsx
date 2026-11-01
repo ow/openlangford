@@ -31,7 +31,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const message = String(form.get("message") || "").trim().slice(0, 5000);
 
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-    return { ok: false as const, error: "Please enter a valid email so I can reply." };
+    return { ok: false as const, error: "Please enter a valid email so we can reply." };
   }
   if (message.length < 5) {
     return { ok: false as const, error: "Please write a message." };
@@ -85,7 +85,7 @@ export default function Contact() {
         <PageHeader title="Contact" />
         <div className="rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8">
           {result?.ok ? (
-            <p className="text-zinc-700">Thanks, your message was sent. I'll reply by email.</p>
+            <p className="text-zinc-700">Thanks, your message was sent. We'll reply by email.</p>
           ) : (
             <Form method="post" className="space-y-4">
               <p className="text-sm text-zinc-500">
