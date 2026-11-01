@@ -56,7 +56,6 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
   const waiting = data.actions.filter((a) => (a.count ?? 0) > 0);
   const clear = data.actions.filter((a) => a.count === 0);
   const unknown = data.actions.filter((a) => a.count == null);
-  const hasPageReviews = data.actions.some((a) => a.key === "pages");
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -183,7 +182,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
               <div key={group.heading}>
                 <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">{group.heading}</h3>
                 <ul className={cn(card, "divide-y divide-zinc-100")}>
-                  {group.links.filter(([to]) => to !== "/admin/reviews" || hasPageReviews).map(([to, title, description]) => (
+                  {group.links.map(([to, title, description]) => (
                     <li key={to}>
                       <Link
                         to={to}

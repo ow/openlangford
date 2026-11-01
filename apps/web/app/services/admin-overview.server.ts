@@ -33,7 +33,7 @@ export type ActionItem = {
   tone: "urgent" | "review";
 };
 
-async function getActions(supabase: SupabaseClient, municipalityId: number | null): Promise<ActionItem[]> {
+async function getActions(supabase: SupabaseClient): Promise<ActionItem[]> {
   const head = { count: "exact" as const, head: true };
   const [contact, names, letters, merges, profiles, pageReviews] = await Promise.all([
     section(async () => {
@@ -75,13 +75,7 @@ async function getActions(supabase: SupabaseClient, municipalityId: number | nul
       if (error) throw error;
       return (data ?? []).length;
     }),
-    section(async () => {
-      const { count, error } = await supabase.from("page_reviews").select("path", head).eq("status", "needs_work");
-      // Page reviews are newer than this overview; until the table exists, leave the row out.
-      if (error?.code === "PGRST205" || error?.code === "42P01") return undefined;
-      if (error) throw error;
-      return count ?? 0;
-    }),
+    section(() => count(supabase.from("page_reviews").select("path", head).eq("status", "needs_work"))),
   ]);
 
   const plural = (n: number, one: string, many = `${one}s`) => `${n.toLocaleString()} ${n === 1 ? one : many}`;
@@ -105,9 +99,7 @@ async function getActions(supabase: SupabaseClient, municipalityId: number | nul
     },
     { key: "merges", label: "Possible duplicate issues", count: merges, href: "/admin/matters", tone: "review" },
     { key: "profiles", label: "Councillor profile drafts", count: profiles, href: "/admin/profiles", tone: "review" },
-    ...(pageReviews === undefined
-      ? []
-      : [{ key: "pages", label: "Pages marked as needing work", count: pageReviews, href: "/admin/reviews?show=needs_work", tone: "review" as const }]),
+    { key: "pages", label: "Pages marked as needing work", count: pageReviews, href: "/admin/reviews?show=needs_work", tone: "review" },
   ];
 }
 
@@ -238,7 +230,7 @@ export async function getAdminOverview(
 ) {
   const municipalityId = await section(async () => (await getMunicipality(supabase)).id as number);
   const [actions, audience, email, content, ask, ai, traffic] = await Promise.all([
-    getActions(supabase, municipalityId),
+    getActions(supabase),
     section(() => getAudience(supabase, now)),
     section(() => getEmail(supabase, now)),
     section(() => getContent(supabase, municipalityId)),
