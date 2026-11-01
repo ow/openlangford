@@ -18,6 +18,8 @@ This is not an official City of Langford service, and the City's own records sho
 
 Absolutely not. Open Langford is intended as a tool to make city decisions more transparent and accountable. It tries to be as neutral as possible, presenting facts, data, and other information based on what is said and done by the city.
 
+The project is also open source. All of the code, including the instructions we give the AI models to write summaries, is [public on GitHub](https://github.com/ow/openlangford), so anyone can check how the site works and what it's told to do.
+
 ### Can I trust the accuracy of the data?
 
 We've done our best to improve the accuracy of the data through AI-assisted processing, cross-checks, and manual checks of selected records. That doesn't mean every meeting, transcript, summary, or speaker identity has been independently reviewed or manually verified. Coverage is still incomplete, and summaries can miss context or get details wrong.
