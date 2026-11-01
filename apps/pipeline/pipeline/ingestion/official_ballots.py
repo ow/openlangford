@@ -99,7 +99,7 @@ def _native_header_date(header):
     # only accept the noisy suffix when the printed weekday independently fits.
     pattern = re.compile(
         r'\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[ \t]*,?[ \t]*('
-        + months + r')\s+(\d{1,2})((?<=\d\d)[17]H[ \t,]*|[ \t,stndrh^*"\'’`°º™0Oo]{1,12})\s*(20\d{2})\b', re.I,
+        + months + r')\s+(\d{1,2})((?<=\d\d)[17]H[ \t,]*|[ \t,stndrhg^*"\'’`°º™0Oo]{1,12})\s*(20\d{2})\b', re.I,
     )
     candidates = []
     for match in pattern.finditer(header):

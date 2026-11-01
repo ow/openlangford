@@ -136,6 +136,8 @@ def meeting_inputs(sb, meeting_id: int) -> dict:
         if t is None:
             t = (mo.get("agenda_items") or {}).get("discussion_start_time")
         motions.append({**mo, "time": t})
+    items = sb.table("agenda_items").select("id, title, discussion_start_time, discussion_end_time") \
+        .eq("meeting_id", meeting_id).execute().data or []
     meta = meeting.get("meta") or {}
     centroids = meta.get("speaker_centroids") or {}
     need_json = not centroids or any(r["person_id"] and not si.is_diarized_label(r["speaker_name"]) for r in rows)
@@ -145,7 +147,7 @@ def meeting_inputs(sb, meeting_id: int) -> dict:
     return {
         "meeting": meeting, "rows": rows, "attendees": attendees, "motions": motions,
         "minutes": minutes_text(meeting.get("archive_path")), "centroids": centroids,
-        "recovered": recover_labels(rows, transcript),
+        "recovered": recover_labels(rows, transcript), "items": items,
     }
 
 
@@ -380,8 +382,99 @@ def _revert(sb, meeting_id: int, previous: dict, dry_run: bool) -> int:
     return n
 
 
+PUBLIC_SOURCE = "PUBLIC_INTRODUCTION"
+
+
+def public_context(sb) -> dict:
+    """Run-wide inputs for naming residents and guests: registry, statement names, published names, admin decisions."""
+    from pipeline.ingestion.participation_validation import load_name_evidence
+
+    registry, statements = load_name_evidence(sb)
+    names = _pages(lambda: sb.table("public_speaker_names")
+                   .select("agenda_item_id, name_key, display_name, status, decided_at").order("id"))
+    decisions = defaultdict(dict)
+    for r in names:
+        if r["decided_at"]:
+            decisions[r["agenda_item_id"]][r["name_key"]] = {"status": r["status"], "display_name": r["display_name"]}
+    return {"registry": registry, "statements": statements, "names": names, "decisions": decisions}
+
+
+def minutes_speakers(sb, meeting_id: int) -> list[dict]:
+    from pipeline.ingestion.participation_names import parse_minutes_speakers
+
+    docs = [d["id"] for d in sb.table("documents").select("id, category").eq("meeting_id", meeting_id).execute().data or []
+            if (d.get("category") or "").lower().startswith("minutes")]
+    if not docs:
+        return []
+    return parse_minutes_speakers(_pages(lambda: sb.table("document_sections").select("id, section_title, section_text")
+                                         .in_("document_id", docs).order("id")))
+
+
+def name_public_speakers(sb, meeting_id: int, data: dict, evidence_rows: list[dict], rows: list[dict], skip_labels: set,
+                         ctx: dict, people: list[dict], ours_public: set, *, dry_run: bool) -> tuple[list[dict], int]:
+    """Residents and guests who introduce themselves (see public_speakers). Returns (records, rows written)."""
+    from pipeline.ingestion import public_speakers as ps
+
+    turns = si.build_turns(evidence_rows)
+    intros = [i for i in ps.introductions(turns, data["items"]) if i["label"] not in skip_labels]
+    if not intros:
+        return [], 0
+    officials = si.candidates_from_people(data["attendees"] + [p for p in people if p.get("is_councillor")])
+    minutes = minutes_speakers(sb, meeting_id) + ps.title_names(data["items"])
+    published = sorted({r["display_name"] for r in ctx["names"] if r["status"] == "published" and r["display_name"]})
+    resolved = ps.resolve(intros, people=ctx["registry"], statement_names=ctx["statements"], minutes=minutes,
+                          published=published, decisions=ctx["decisions"], officials=officials)
+    by_id = {r["id"]: r for r in rows}
+    records, written, claimed = [], 0, set()
+    for r in resolved:
+        rec, item = r["record"], r["item"]
+        segs = [sid for j in ps.span(turns, r["turn"], r["label"], item) for sid in turns[j].segment_ids]
+        targets = [sid for sid in segs if sid not in claimed and by_id.get(sid)
+                   and not by_id[sid].get("is_verified") and not by_id[sid].get("person_id")
+                   and (sid in ours_public or by_id[sid].get("attribution_source") in si.UNNAMED_SOURCES)]
+        if not dry_run:
+            sb.table("public_speaker_names").upsert({
+                "meeting_id": meeting_id, "agenda_item_id": item["id"], "name_key": rec["key"],
+                "transcribed_name": rec["transcribed"], "display_name": rec.get("display"), "status": rec["status"],
+                "basis": rec["basis"], "conflict": rec.get("conflict") or {}, "source_segment_ids": turns[r["turn"]].segment_ids,
+                "start_time": turns[r["turn"]].start,
+            }, on_conflict="agenda_item_id,name_key", ignore_duplicates=True).execute()
+        shown = rec["status"] == "published" and rec.get("display")
+        entry = {"label": r["label"], "agenda_item_id": item["id"], "key": rec["key"], "status": rec["status"],
+                 "basis": rec["basis"], "display": rec.get("display"), "segment_ids": targets if shown else [],
+                 "previous_source": Counter(("UNIDENTIFIED_DIARIZATION" if sid in ours_public else by_id[sid]["attribution_source"])
+                                            for sid in targets).most_common(1)[0][0] if targets else None}
+        records.append(entry)
+        if not shown or not targets:
+            continue
+        claimed.update(targets)
+        written += len(targets)
+        if dry_run:
+            continue
+        for i in range(0, len(targets), 200):
+            sb.table("transcript_segments").update({"speaker_name": rec["display"], "attribution_source": PUBLIC_SOURCE}) \
+                .in_("id", targets[i:i + 200]).eq("meeting_id", meeting_id).is_("person_id", "null").execute()
+    return records, written
+
+
+def _revert_public(sb, meeting_id: int, previous: dict, dry_run: bool) -> int:
+    """Put rows named from introductions back to their diarization label."""
+    n = 0
+    for entry in previous.get("public") or []:
+        ids = entry.get("segment_ids") or []
+        n += len(ids)
+        if dry_run or not ids:
+            continue
+        for i in range(0, len(ids), 200):
+            sb.table("transcript_segments").update({
+                "speaker_name": entry["label"], "attribution_source": entry.get("previous_source") or "UNIDENTIFIED_DIARIZATION",
+            }).in_("id", ids[i:i + 200]).eq("meeting_id", meeting_id).eq("attribution_source", PUBLIC_SOURCE).execute()
+    return n
+
+
 def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dry_run: bool = False,
-                 force: bool = False, withheld: dict | None = None, roles_dir: dict | None = None) -> dict:
+                 force: bool = False, withheld: dict | None = None, roles_dir: dict | None = None,
+                 public_ctx: dict | None = None) -> dict:
     data = meeting_inputs(sb, meeting_id)
     meeting, rows = data["meeting"], data["rows"]
     meta = meeting.get("meta") or {}
@@ -394,6 +487,10 @@ def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dr
     # Evidence sees rows with their raw label, including rows named before (legacy or by us).
     ours = {i for e in (previous.get("labels") or {}).values() for i in (e.get("segment_ids") or [])}
     prev_label = {i: label for label, e in (previous.get("labels") or {}).items() for i in (e.get("segment_ids") or [])}
+    ours_public = {i for e in (previous.get("public") or []) for i in (e.get("segment_ids") or [])}
+    ours |= {i for e in (previous.get("turns") or []) for i in (e.get("segment_ids") or [])}
+    prev_label.update({i: e["label"] for e in (previous.get("turns") or []) for i in (e.get("segment_ids") or [])})
+    prev_label.update({i: e["label"] for e in (previous.get("public") or []) for i in (e.get("segment_ids") or [])})
     evidence_rows = []
     legacy = defaultdict(Counter)  # label -> person ids already named by an older method
     for r in rows:
@@ -408,7 +505,7 @@ def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dr
         chair_person_id=meeting.get("chair_person_id"), centroids=data["centroids"],
         fingerprints=voice_rows, meeting_id=meeting_id, motions=data["motions"],
         person_means=VoiceBank(voice_rows).reference_means() if voice_rows else None,
-        roles=roles_for(roles_dir or {}, meeting.get("meeting_date")),
+        roles=roles_for(roles_dir or {}, meeting.get("meeting_date")), items=data.get("items"),
     )
     labels = result["labels"]
     hold_withheld(labels, {a["id"] for a in data["attendees"]}, withheld or {})
@@ -426,11 +523,14 @@ def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dr
         mine = r["id"] in ours
         if r.get("is_verified") or (r["person_id"] and not mine):
             continue
-        if not mine and r.get("attribution_source") not in si.UNNAMED_SOURCES:
+        if not mine and r["id"] not in ours_public and r.get("attribution_source") not in si.UNNAMED_SOURCES:
             continue
         by_label[er["speaker_name"]].append(r)
 
     reverted = _revert(sb, meeting_id, previous, dry_run) if previous.get("labels") else 0
+    reverted += _revert_public(sb, meeting_id, previous, dry_run) if previous.get("public") else 0
+    for e in previous.get("turns") or []:
+        reverted += _revert(sb, meeting_id, {"labels": {e["label"]: e}}, dry_run)
     written, named_labels = 0, {}
     for label, entry in labels.items():
         pid = entry.get("person_id")
@@ -452,6 +552,36 @@ def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dr
             sb.table("transcript_segments").update({
                 "person_id": pid, "speaker_name": entry["name"], "attribution_source": si.ATTRIBUTION_SOURCE,
             }).in_("id", ids[i:i + 200]).eq("meeting_id", meeting_id).is_("person_id", "null").execute()
+
+    # Single turns of labels that hold several people (a presenter and the staff who answer later).
+    by_id = {r["id"]: r for r in rows}
+    turn_records, claimed = [], set()
+    council = {p["id"] for p in people if p.get("is_councillor")}
+    for sp in si.turn_names(result["turns"], labels, result["roster"], council):
+        ids = [sid for j in sp["turns"] for sid in result["turns"][j].segment_ids
+               if by_id.get(sid) and not by_id[sid].get("is_verified")
+               and (sid in ours or (not by_id[sid].get("person_id") and by_id[sid].get("attribution_source") in si.UNNAMED_SOURCES))]
+        if not ids:
+            continue
+        name = result["names"].get(sp["person_id"], str(sp["person_id"]))
+        sources = Counter("UNIDENTIFIED_DIARIZATION" if i in ours else by_id[i]["attribution_source"] for i in ids)
+        turn_records.append({"label": sp["label"], "person_id": sp["person_id"], "name": name, "kinds": sp["kinds"],
+                             "quote": sp["quote"], "segment_ids": ids, "previous_source": sources.most_common(1)[0][0]})
+        claimed.update(ids)
+        written += len(ids)
+        if dry_run:
+            continue
+        for i in range(0, len(ids), 200):
+            sb.table("transcript_segments").update({
+                "person_id": sp["person_id"], "speaker_name": name, "attribution_source": si.ATTRIBUTION_SOURCE,
+            }).in_("id", ids[i:i + 200]).eq("meeting_id", meeting_id).is_("person_id", "null").execute()
+
+    public, public_written = ([], 0)
+    if public_ctx is not None:
+        claimed_rows = [r for r in rows if r["id"] not in claimed]
+        public, public_written = name_public_speakers(
+            sb, meeting_id, data, evidence_rows, claimed_rows, set(named_labels), public_ctx, people, ours_public, dry_run=dry_run)
+        written += public_written
 
     # Grow fingerprints from officials named here.
     exemplar_log, touched = {}, set()
@@ -486,22 +616,32 @@ def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dr
         bank.add(ex)
         touched.add(pid)
 
+    total = sum(max(0.0, (r["end_time"] or 0) - (r["start_time"] or 0)) for r in rows)
+    # The meeting's lines as they stand after this run: named by an older method (kept), or named here.
+    named_ids = {r["id"] for r in rows if (r["person_id"] or r.get("attribution_source") == PUBLIC_SOURCE)
+                 and r["id"] not in ours and r["id"] not in ours_public}
+    named_ids |= {i for e in named_labels.values() for i in e["segment_ids"]}
+    named_ids |= {i for e in public + turn_records for i in e["segment_ids"]}
+    named_secs = sum(max(0.0, (r["end_time"] or 0) - (r["start_time"] or 0)) for r in rows if r["id"] in named_ids)
     held = {label: e["held"] for label, e in labels.items() if e.get("held")}
     record = {
         "version": si.IDENTITY_VERSION, "run_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "chair": result.get("chair"), "labels": named_labels, "held": held, "exemplars": exemplar_log,
         "unnamed_labels": sorted(l for l, e in labels.items() if not e.get("person_id")),
+        "public": public, "turns": turn_records,
+        # Share of the meeting's speech with a name (officials, single turns, residents and guests).
+        "named_share": round(named_secs / total, 3) if total else None,
     }
     if not dry_run:
         fresh = sb.table("meetings").select("meta").eq("id", meeting_id).execute().data[0].get("meta") or {}
         fresh["speaker_identity"] = record
         sb.table("meetings").update({"meta": fresh}).eq("id", meeting_id).execute()
-    total = sum(max(0.0, (r["end_time"] or 0) - (r["start_time"] or 0)) for r in rows)
-    named_secs = sum(e.get("seconds", 0) for e in named_labels.values())
     return {"meeting_id": meeting_id, "status": "dry_run" if dry_run else "named", "labels_named": len(named_labels),
             "labels": len(labels), "rows_named": written, "rows_reverted": reverted, "held": held,
             "named_seconds_share": round(named_secs / total, 3) if total else 0.0, "touched_people": sorted(touched),
-            "decisions": {l: (e["name"], e.get("kinds")) for l, e in named_labels.items()}}
+            "decisions": {l: (e["name"], e.get("kinds")) for l, e in named_labels.items()},
+            "public": [(e["label"], e["display"] or e["key"], e["status"], e["basis"], len(e["segment_ids"])) for e in public],
+            "turns": [(e["label"], e["name"], e["kinds"], len(e["segment_ids"])) for e in turn_records]}
 
 
 # ── stage entry points ───────────────────────────────────────────────────
@@ -518,10 +658,12 @@ def name_meetings(sb, meeting_ids: list[int], *, dry_run: bool = False, force: b
     people = known_people(sb)
     withheld = withheld_people(sb, people)
     roles_dir = role_directory(people)
+    public_ctx = public_context(sb)
     results, touched = [], set()
     for mid in meeting_ids:
         try:
-            res = name_meeting(sb, mid, bank, people, dry_run=dry_run, force=force, withheld=withheld, roles_dir=roles_dir)
+            res = name_meeting(sb, mid, bank, people, dry_run=dry_run, force=force, withheld=withheld, roles_dir=roles_dir,
+                               public_ctx=public_ctx)
         except Exception as e:  # one meeting failing shouldn't stop the rest
             log(f"  [!] speaker-names failed for meeting {mid}: {e}")
             results.append({"meeting_id": mid, "status": "error", "error": str(e)})

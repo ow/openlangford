@@ -17,6 +17,8 @@ agreement against legacy names on 149 older meetings (October 2026):
   mover; the next "I'll second" names the minutes' seconder. Minutes and audio
   disagree on the seconder often enough that it carries half weight.
 - ``introduced`` (0.86): "My name is Melissa Miles" near the start of a turn.
+- ``presented``: an agenda item names its presenter (a staff role in its title, "... - Director of Finance",
+  or a roster name in a presentation's title) and the label does most of the talking during that item.
 - ``voice``: the label's voice centroid matches one person's exemplars from at
   least ``VOICE_MIN_MEETINGS`` other meetings, clear of everyone else.
 
@@ -37,7 +39,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 
-IDENTITY_VERSION = "3"
+IDENTITY_VERSION = "4"
 ATTRIBUTION_SOURCE = "SPEAKER_EVIDENCE"
 # Rows the stage may name. Anything else (manual, verified, legacy-named) is left alone.
 UNNAMED_SOURCES = ("UNIDENTIFIED_DIARIZATION", "CACHED_TRANSCRIPT_BACKFILL", "AI_DIARIZATION")
@@ -52,6 +54,7 @@ VOICE_MIN_MARGIN = 0.08
 # Enough on its own for someone the minutes roster doesn't list (e.g. staff at council).
 VOICE_STRONG_SIMILARITY = 0.90
 VOICE_STRONG_MARGIN = 0.12
+STRONG_VOICE_MIN_SHARE = 0.5  # with a strong voice match, the winner's share of the weighted evidence
 FINGERPRINT_MIN_SECONDS = 60.0  # a label must speak this long to seed a fingerprint or be voice-checked
 # A text-named label whose voice is this far from the person's evidenced voice is held
 # (same-person exemplars sit at p1 0.78 / p50 0.98 against their own mean).
@@ -69,7 +72,12 @@ TITLE = (
     r"mayor|chair(?:person|man|woman)?|director|manager|chief|mr|mrs|ms|miss|dr|madam|commissioner|trustee)\.?"
 )
 WORD = r"[A-Za-z][A-Za-z'\-]+"
-WEIGHTS = {"called": 1.0, "introduced": 2.0, "chair": 1.0, "moved": 1.0, "seconded": 0.5, "role": 1.0, "voice": 3.0}
+WEIGHTS = {"called": 1.0, "introduced": 2.0, "chair": 1.0, "moved": 1.0, "seconded": 0.5, "role": 1.0, "presented": 1.0,
+           "voice": 3.0}
+# Presenter evidence: the agenda item names who presents it; the label doing most of the talking during the item is them.
+PRESENTER_MIN_SECONDS = 45.0
+PRESENTER_MIN_SHARE = 0.5
+PRESENTATION_CUE = re.compile(r"(?i)\b(?:presentation|presenter|presented by|update|overview|report from|delegation)\b")
 
 
 # ── names ────────────────────────────────────────────────────────────────
@@ -77,6 +85,25 @@ WEIGHTS = {"called": 1.0, "introduced": 2.0, "chair": 1.0, "moved": 1.0, "second
 
 def _norm(s: str) -> str:
     return re.sub(r"[^a-z]", "", (s or "").casefold())
+
+
+def sound_key(word: str) -> str:
+    """Consonant skeleton of a surname as heard, not spelled: doubled letters, silent "gh" and vowels dropped
+    ("Dillabaugh" -> "dlb", ASR's "Dilable" -> "dlbl")."""
+    w = re.sub(r"(.)\1+", r"\1", _norm(word))
+    w = re.sub(r"gh(?=[^aeiou]|$)", "", w).replace("ph", "f").replace("ck", "k")
+    return w[:1] + re.sub(r"[aeiouyhw]", "", w[1:])
+
+
+def name_similarity(heard: str, surname: str) -> float:
+    """How alike a spoken surname is to a roster surname: spelling, or spelling and sound together (speech-to-text
+    spells unfamiliar names by sound: "Dilable" for Dillabaugh scores 0.59 on spelling alone)."""
+    spelling = SequenceMatcher(None, heard, surname).ratio()
+    a, b = sound_key(heard), sound_key(surname)
+    # Heard from the start: how much of the longer skeleton the two share before they part ("dlbl"/"dlb": 3 of 4).
+    shared = next((i for i, (x, y) in enumerate(zip(a, b)) if x != y), min(len(a), len(b)))
+    sound = shared / max(len(a), len(b), 1)
+    return max(spelling, 0.4 * spelling + 0.6 * sound)
 
 
 @dataclass
@@ -133,7 +160,7 @@ class _Tier:
     def fuzzy(self, words: list[str]) -> Candidate | None:
         scores = []
         for c in self.by_surname.values():
-            r = max((SequenceMatcher(None, w, c.surname).ratio() for w in words[:2] if len(w) >= 4), default=0.0)
+            r = max((name_similarity(w, c.surname) for w in words[:2] if len(w) >= 4), default=0.0)
             scores.append((r, c.id, c))
         scores.sort(reverse=True)
         if scores and scores[0][0] >= 0.66 and (len(scores) == 1 or scores[0][0] - scores[1][0] >= 0.12):
@@ -237,7 +264,9 @@ def _words(text: str) -> list[str]:
     return re.findall(r"[A-Za-z][A-Za-z'\-]*|\d+|[?.!,]", text)
 
 
-CALL_RE = re.compile(rf"(?:\b(?P<title>{TITLE})\s+)?(?P<n1>{WORD})(?:\s+(?P<n2>{WORD}))?", re.I)
+# A title is never part of a name: in "Uh Mr. Dilable" the match must restart at "Mr." so the title is seen.
+_NOT_TITLE = rf"(?!(?:{TITLE})(?![A-Za-z]))"
+CALL_RE = re.compile(rf"(?:\b(?P<title>{TITLE})\s+)?(?P<n1>{_NOT_TITLE}{WORD})(?:\s+(?P<n2>{_NOT_TITLE}{WORD}))?", re.I)
 NOT_GIVEN = {
     "thank", "thanks", "okay", "ok", "yes", "yeah", "hi", "hello", "sorry", "good", "great", "dear", "and", "but",
     "so", "go", "ahead", "the", "member", "members", "committee", "sergeant", "inspector", "staff", "constable",
@@ -457,14 +486,57 @@ def motion_evidence(turns: list[Turn], motions: list[dict], index: NameIndex) ->
 # ── evidence ─────────────────────────────────────────────────────────────
 
 
+def item_presenter(title: str, index: NameIndex, roles: dict) -> tuple[Candidate, str] | None:
+    """Who an agenda item says presents it: a staff role in its title ("Five Year Financial Plan - Director of
+    Finance"), or a roster name in a presentation's title ("Presentation by M. Dillabaugh")."""
+    low = " ".join(re.sub(r"[^a-z& ]", " ", (title or "").casefold()).split())
+    for key in sorted(roles or {}, key=len, reverse=True):
+        m = re.search(rf"\b{re.escape(key)}\b", low)
+        if m and (key.startswith("deputy") or not low[:m.start()].rstrip().endswith("deputy")):
+            return roles[key], key
+    if PRESENTATION_CUE.search(title or ""):
+        found = {c.id: (c, q) for _, _, c, titled, q in _name_mentions(title, index) if c.on_roster}
+        if len(found) == 1:
+            return next(iter(found.values()))
+    return None
+
+
+def presenter_evidence(turns: list[Turn], items: list[dict], index: NameIndex, roles: dict) -> list[tuple]:
+    """(label, "presented", candidate, turn, quote) for agenda items that name their presenter, given to the label that
+    does most of the talking during the item (at least half of it, and PRESENTER_MIN_SECONDS)."""
+    out = []
+    for it in items or []:
+        start, end = it.get("discussion_start_time"), it.get("discussion_end_time")
+        if start is None or end is None or end <= start:
+            continue
+        who = item_presenter(it.get("title") or "", index, roles)
+        if not who:
+            continue
+        talk: Counter = Counter()
+        first: dict[str, Turn] = {}
+        for t in turns:
+            overlap = min(t.end, end) - max(t.start, start)
+            if overlap > 0 and t.label:
+                talk[t.label] += overlap
+                first.setdefault(t.label, t)
+        if not talk:
+            continue
+        (label, secs), total = talk.most_common(1)[0], sum(talk.values())
+        if secs >= PRESENTER_MIN_SECONDS and secs / total >= PRESENTER_MIN_SHARE:
+            out.append((label, "presented", who[0], first[label], f"{it.get('title')}"[:160], end))
+    return out
+
+
 def text_evidence(turns: list[Turn], index: NameIndex, chair: Candidate | None,
-                  motions: list[dict] | None = None, roles: dict | None = None) -> dict[str, list[dict]]:
+                  motions: list[dict] | None = None, roles: dict | None = None,
+                  items: list[dict] | None = None) -> dict[str, list[dict]]:
     """label -> evidence events {kind, person_id, at, quote}."""
     ev: dict[str, list[dict]] = defaultdict(list)
 
-    def add(label, kind, cand, turn, quote):
+    def add(label, kind, cand, turn, quote, until=None):
         if is_diarized_label(label):
-            ev[label].append({"kind": kind, "person_id": cand.id, "at": round(turn.start, 1), "quote": quote[:160]})
+            ev[label].append({"kind": kind, "person_id": cand.id, "at": round(turn.start, 1), "quote": quote[:160],
+                              **({"until": round(until, 1)} if until is not None else {})})
 
     for i, turn in enumerate(turns):
         if not turn.text:
@@ -489,6 +561,8 @@ def text_evidence(turns: list[Turn], index: NameIndex, chair: Candidate | None,
                 add(prev.label, "chair", chair, prev, turn.text[:60])
     for label, kind, cand, turn, quote in motion_evidence(turns, motions or [], index):
         add(label, kind, cand, turn, quote)
+    for label, kind, cand, turn, quote, until in presenter_evidence(turns, items or [], index, roles or {}):
+        add(label, kind, cand, turn, quote, until)
     return ev
 
 
@@ -568,7 +642,10 @@ def decide(events: list[dict], voice: dict | None, roster: set[int], ignore: fro
     total = sum(score.values())
     if voice and "voice" not in ignore and voice["person_id"] != pid:
         return None
-    if top / total < MIN_SHARE:
+    strong_voice = bool(voice and "voice" not in ignore and voice["person_id"] == pid
+                        and voice["similarity"] >= VOICE_STRONG_SIMILARITY and voice["margin"] >= VOICE_STRONG_MARGIN)
+    # A voice heard unmistakably at other meetings outweighs one stray call or chair cue pointing elsewhere.
+    if top / total < (STRONG_VOICE_MIN_SHARE if strong_voice else MIN_SHARE):
         return None
     k = kinds[pid]
     on_roster = pid in roster
@@ -582,8 +659,6 @@ def decide(events: list[dict], voice: dict | None, roster: set[int], ignore: fro
         if set(k) == {"chair"} and k["chair"] < 3:
             return None
     else:
-        strong_voice = bool(voice and voice["person_id"] == pid and voice["similarity"] >= VOICE_STRONG_SIMILARITY
-                            and voice["margin"] >= VOICE_STRONG_MARGIN)
         # Staff and others the minutes omit: two kinds of evidence, or a voice heard
         # unmistakably at earlier meetings (exemplars only ever hold roster officials).
         if not strong_voice and (top < MIN_SCORE + 1 or len(k) < 2):
@@ -622,6 +697,7 @@ def identify_meeting(
     motions: list[dict] | None = None,
     person_means: dict | None = None,
     roles: dict[str, int] | None = None,
+    items: list[dict] | None = None,
 ) -> dict:
     """Return {"labels": {label: decision+evidence}, "chair": person_id|None}. Pure; no I/O."""
     cands = candidates_from_people(attendees)
@@ -632,7 +708,7 @@ def identify_meeting(
     turns = build_turns(segments)
     by_id = {c.id: c for c in index.candidates}
     role_cands = {k: by_id[pid] for k, pid in (roles or {}).items() if pid in by_id}
-    ev = text_evidence(turns, index, chair, motions, role_cands)
+    ev = text_evidence(turns, index, chair, motions, role_cands, items)
     roster = {c.id for c in cands}
     names = {c.id: c.name for c in index.candidates}
     names.update({p["id"]: p["name"] for p in (known_people or []) + attendees})
@@ -651,7 +727,8 @@ def identify_meeting(
         if vec is not None and fingerprints:
             voice = voice_match(vec, fingerprints, exclude_meeting=meeting_id)
         decision = decide(ev.get(label, []), voice, roster, ignore)
-        entry = {"seconds": round(seconds[label], 1), "evidence": ev.get(label, [])[:12], "voice": voice}
+        entry = {"seconds": round(seconds[label], 1), "evidence": ev.get(label, [])[:12], "voice": voice,
+                 "all_evidence": ev.get(label, [])}
         if decision and vec is not None and person_means and seconds[label] >= FINGERPRINT_MIN_SECONDS:
             mean, u = person_means.get(decision["person_id"]), _unit(vec)
             if mean is not None and u is not None:
@@ -663,9 +740,67 @@ def identify_meeting(
         if decision:
             entry.update(decision, name=names.get(decision["person_id"], str(decision["person_id"])))
         labels[label] = entry
-    return {"labels": labels, "chair": chair.id if chair else None}
+    return {"labels": labels, "chair": chair.id if chair else None, "turns": turns, "roster": roster, "names": names}
 
 
 def label_number(label: str | None) -> int | None:
     m = re.fullmatch(r"(?i)speaker[_ ]?0*(\d+)", label or "")
     return int(m[1]) if m else None
+
+
+# ── turns of labels that hold several people ─────────────────────────────
+
+TURN_SPAN_SECONDS = 300.0  # a floor handed by title covers the answer and follow-ups for up to five minutes
+_TITLED_CALL = re.compile(rf"^(?i:{TITLE})\s")
+
+
+COUNCIL_TITLE = re.compile(r"^(?i:deputy\s+mayor|acting\s+mayor|councill?or|counsell?or|council(?:man|woman)?|mayor)\b")
+
+
+def turn_names(turns: list[Turn], labels: dict, roster: set[int], council: set[int] = frozenset()) -> list[dict]:
+    """Name single turns of labels left unnamed, where the turn itself says who is speaking.
+
+    Diarization sometimes merges voices (a presenter and the staff who answer questions later), so the label's
+    evidence points at several people and ``decide`` rightly names no one. The turns can still be named:
+    - ``presented``: the label's turns during an agenda item that names its presenter;
+    - ``called``/``role`` by title or role ("Mr. Double, go ahead", "... Director of Engineering?"): the answering
+      turn and the label's next turns, until the floor is handed again or TURN_SPAN_SECONDS pass.
+    Only roster people; a council member only when called by a council title (the chair says "Councillor Morley";
+    "Ms. Murrell" sounding like Morley is someone else). A turn two people claim is left unnamed.
+    Returns [{label, person_id, kind, quote, turns}], one per (label, person).
+    """
+    start_index = {round(t.start, 1): i for i, t in enumerate(turns)}
+    claims: dict[int, set] = defaultdict(set)
+    spans = []
+    for label, entry in labels.items():
+        if entry.get("person_id") or entry.get("held"):
+            continue
+        events = sorted(entry.get("all_evidence") or [], key=lambda e: e["at"])
+        for k, e in enumerate(events):
+            if e["person_id"] not in roster:
+                continue
+            i = start_index.get(e["at"])
+            if i is None:
+                continue
+            if e["kind"] == "presented":
+                end = e.get("until") or turns[i].end
+                idx = [j for j in range(i, len(turns)) if turns[j].start < end and turns[j].label == label]
+            elif e["kind"] == "role" or (e["kind"] == "called" and _TITLED_CALL.search(e["quote"])
+                                         and (e["person_id"] not in council or COUNCIL_TITLE.search(e["quote"]))):
+                next_at = next((x["at"] for x in events[k + 1:] if x["kind"] in ("called", "role")), float("inf"))
+                limit = min(next_at, turns[i].start + TURN_SPAN_SECONDS)
+                idx = [j for j in range(i, len(turns)) if turns[j].start < limit and turns[j].label == label]
+            else:
+                continue
+            spans.append({"label": label, "person_id": e["person_id"], "kind": e["kind"], "quote": e["quote"], "turns": idx})
+            for j in idx:
+                claims[j].add(e["person_id"])
+    merged: dict[tuple, dict] = {}
+    for sp in spans:
+        keep = [j for j in sp["turns"] if len(claims[j]) == 1]
+        if not keep:
+            continue
+        m = merged.setdefault((sp["label"], sp["person_id"]), {**sp, "turns": [], "kinds": []})
+        m["turns"] = sorted(set(m["turns"]) | set(keep))
+        m["kinds"].append(sp["kind"])
+    return list(merged.values())

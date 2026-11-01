@@ -43,6 +43,8 @@ import {
   sourceMeetingState,
 } from "../lib/pipeline-status";
 import { getAiUsageDashboard } from "../services/ai-usage-admin.server";
+import { getSpeakerNamingDashboard } from "../services/speaker-naming-admin.server";
+import { SpeakerNamingSection } from "../components/admin/speaker-naming-section";
 import { AiUsageSection } from "../components/admin/ai-usage-section";
 import { DiscordPostsSection } from "../components/admin/discord-posts-section";
 import { getDiscordAdmin, postDiscordNow } from "../services/channels/discord-admin.server";
@@ -59,7 +61,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page") || "1");
   const q = url.searchParams.get("q") || "";
-  const [dashboard, aiUsage, discord] = await Promise.all([
+  const [dashboard, aiUsage, discord, speakerNaming] = await Promise.all([
     getPipelineDashboard(supabase, {
       page: Number.isFinite(page) ? page : 1,
       search: q,
@@ -67,8 +69,9 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     }),
     getAiUsageDashboard(supabase),
     getDiscordAdmin(discordEnv(context), supabase, url.searchParams.get("discord_preview")),
+    getSpeakerNamingDashboard(supabase),
   ]);
-  return { ...dashboard, aiUsage, discord };
+  return { ...dashboard, aiUsage, discord, speakerNaming };
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
@@ -601,6 +604,7 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
     events,
     aiUsage,
     discord,
+    speakerNaming,
   } = loaderData;
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
@@ -894,6 +898,8 @@ export default function AdminPipeline({ loaderData }: Route.ComponentProps) {
         <DiscordPostsSection discord={discord} isSubmitting={isSubmitting} />
 
         <AiUsageSection usage={aiUsage} />
+
+        <SpeakerNamingSection naming={speakerNaming} />
       </div>
     </div>
   );

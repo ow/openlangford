@@ -17,10 +17,12 @@ from pipeline.ingestion.official_ballots import _native_header_date
     ('Tuesday, March 11™, 2014 @ 4:30 p.m.', '2014-03-11'),
     ('Monday, December 20t0, 2010 at 7:00 pm', '2010-12-20'),
     ('Tuesday, March 117H, 2014', '2014-03-11'),
+    ('Monday, December 1g, 2014 @7:00 p.m.', '2014-12-01'),  # 2014 inaugural: "1st" read as "1g"
     # Weekday does not match: never guess.
     ('Wednesday, March 11™, 2014', None),
     ('Wednesday, December 20t0, 2010', None),
     ('Monday, March 117H, 2014', None),
+    ('Friday, December 1g, 2014', None),
     # Noisy form without a weekday: never guess.
     ('March 11™, 2014', None),
     ('December 20t0, 2010', None),

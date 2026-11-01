@@ -246,3 +246,31 @@ def test_roles_for_takes_the_holder_nearest_the_meeting():
     assert sn.roles_for(directory, "2026-09-28") == {"director of engineering": 6}
     assert sn.roles_for(directory, "2022-04-01") == {"director of engineering": 11}
     assert sn.roles_for(directory, "2018-01-01") == {}
+
+
+STAFF = ROSTER + [{"id": 55, "name": "M. Dillabaugh"}, {"id": 10, "name": "K. Dube"}]
+
+
+def test_sound_alike_surnames_match_after_a_title():
+    # 2023-04-03: speech-to-text wrote "Dilable" for Dillabaugh (0.59 on spelling alone); Dube must not win.
+    idx = si.NameIndex(si.candidates_from_people(STAFF), [])
+    assert si.floor_call("Number four, 4.1. Uh Mr. Dilable, you have a presentation for us.", idx)[0].id == 55
+    assert si.floor_call("Mr. Double, did you want to answer that?", idx)[0].id == 10
+    assert si.name_similarity("dilable", "dillabaugh") > si.name_similarity("dilable", "dube") + 0.12
+    assert si.name_similarity("harder", "hartman") < 0.66  # different names stay apart
+
+
+def test_presenter_named_in_the_agenda_is_the_label_doing_the_talking():
+    idx = si.NameIndex(si.candidates_from_people(STAFF), [])
+    roles = {"director of finance": next(c for c in idx.candidates if c.id == 55)}
+    items = [{"title": "Summary of Proposed 2023-2027 Five Year Financial Plan - Director of Finance",
+              "discussion_start_time": 140, "discussion_end_time": 230},
+             {"title": "Deputy Director of Finance remarks", "discussion_start_time": 300, "discussion_end_time": 400}]
+    segments = [seg(1, "Speaker_3", 140, "Mr. Dilable, you have a presentation for us.")] + \
+               [seg(10 + i, "Speaker_1", 146 + 5 * i, "budget slide") for i in range(15)]
+    ev = si.text_evidence(si.build_turns(segments), idx, None, roles=roles, items=items)
+    assert [(e["kind"], e["person_id"]) for e in ev["Speaker_1"]] == [("called", 55), ("presented", 55)]
+    # Called and presenting: two kinds of evidence name a roster official.
+    assert si.decide(ev["Speaker_1"], None, {55})["person_id"] == 55
+    # "Deputy director of finance" never reads as the director.
+    assert si.item_presenter("Deputy Director of Finance remarks", idx, roles) is None
