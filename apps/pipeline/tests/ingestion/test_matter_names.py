@@ -63,3 +63,9 @@ def test_file_numbers_from_identifier():
     assert file_numbers("File No. 3910-02; RZ-01-11") == ["RZ-01-11"]
     assert file_numbers("Bylaw No. 1289; File No. 3900-1289") == []
     assert file_numbers(None) == []
+
+
+def test_table_rows_are_not_mentions():
+    from pipeline.ingestion.matter_names import table_row
+    assert table_row("…| DVP-17-20 | 8-Aug-17 | 2-Oct-17 | 2207 Millstream Rd | Waive of Fee |")
+    assert not table_row("TUP20-0002 - Flight Cannabis Co. - 101-977 Langford Pkwy")

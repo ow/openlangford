@@ -246,6 +246,12 @@ def save_names(names: dict[int, list[str]], conn=None) -> None:
 
 # --- candidates --------------------------------------------------------------------------------------
 
+def table_row(excerpt: str) -> bool:
+    """A row of a table (an application log, a supplier list): a name there is one line of many, and the quote
+    reads as "| DVP-17-20 | 8-Aug-17 | …"."""
+    return excerpt.count("|") >= 4
+
+
 def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
     """Agenda items (by their own text or an attached report section) and annual-report pages using ``name``."""
     pat = name_pattern(name)
@@ -282,6 +288,7 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
         if iid not in items and pat.search(text or ""):
             items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title,
                           "excerpt": excerpt(text, name), "spoken": True}
+    items = {iid: it for iid, it in items.items() if not table_row(it["excerpt"])}
     pages = []
     if not meeting_ids:
         cur.execute(f"""select p.report_id, p.page, r.year, r.title, p.content from public_report_pages p
