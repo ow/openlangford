@@ -35,7 +35,7 @@ API = "https://gspr.emc2.build/api"
 ARCHIVE_URL = "https://gspr.emc2.build/documents/{id}"
 USER_AGENT = "OpenLangford/1.0 (openlangford.ca; civic records backfill)"
 TITLE = re.compile(r"^(?P<body>.+?) (?P<y>\d{4}) (?P<m>\d{2}) (?P<d>\d{2}) (?P<time>\d{4}) (?P<kind>Regular|Special|In Camera)"
-                   r"\b.*?(?P<part>Minutes|Agenda)", re.I)
+                   r"\b.*?(?P<part>Minutes|Agenda|Notice)", re.I)
 
 
 def list_documents(session=None, pause: float = 0.3) -> list[dict]:
@@ -52,7 +52,8 @@ def list_documents(session=None, pause: float = 0.3) -> list[dict]:
 
 
 def group_meetings(docs: list[dict]) -> list[dict]:
-    """Agenda packages and minutes grouped per meeting (body, date, time, regular/special)."""
+    """Agenda packages and minutes grouped per meeting (body, date, time, regular/special). A notice of a
+    closed meeting is filed with the agenda: for a meeting held entirely in camera it is the only public record."""
     meetings: dict[tuple, dict] = {}
     for doc in docs:
         if doc.get("doc_type") != "council_minutes" or doc.get("source_kind") != "pdf":

@@ -52,8 +52,19 @@ def to_seconds(val):
     return None
 
 
-def motion_hold_applies(is_planned_meeting, classification, ballot_context):
-    """True when a non-Council body's ballot rules are unvalidated, so AI motions are held as unverified."""
+def notice_only(folder_path) -> bool:
+    """A meeting held entirely in camera: no minutes, and its only documents are notices of the closed meeting."""
+    if glob.glob(os.path.join(glob.escape(folder_path), "Minutes", "*")):
+        return False
+    files = [f for f in glob.glob(os.path.join(glob.escape(folder_path), "Agenda", "*")) if not f.endswith((".url", ".sha256"))]
+    return bool(files) and all("notice" in os.path.basename(f).lower() for f in files)
+
+
+def motion_hold_applies(is_planned_meeting, classification, ballot_context, closed_only=False):
+    """True when AI motions are held as unverified: a non-Council body's ballot rules are unvalidated, or the
+    meeting was held entirely in camera, so no public minutes will ever exist to check them against."""
+    if not is_planned_meeting and closed_only:
+        return True
     return (not is_planned_meeting and classification not in ("Council", "Committee of the Whole")
             and (ballot_context or {}).get("status") == "committee_membership_rules_need_validation")
 
@@ -2233,7 +2244,8 @@ class MeetingIngester:
         # membership or minutes rules yet. Keyed on the ballot context status, not on body names: bodies
         # with validated rules (Community Advisory Committee) get status "available" and stay canonical.
         # Ingest items and documents and hold every AI motion reading as unverified.
-        committee_hold = motion_hold_applies(is_planned_meeting, classification, ballot_context)
+        closed_only = notice_only(folder_path)
+        committee_hold = motion_hold_applies(is_planned_meeting, classification, ballot_context, closed_only)
         canonical_enabled = not is_planned_meeting and not committee_hold and (
             ballot_context.get("status") == "available" or "archive/langford/" in normalized_path.replace("\\", "/")
         )
@@ -2241,7 +2253,8 @@ class MeetingIngester:
             for item in refined.get("items", []):
                 item["_unverified_motion_proposals"] = item.pop("motions", None) or []
                 item["motions"] = []
-            print(f"  [i] {classification}: motions held as unverified proposals (no validated ballot rules for this body yet)")
+            why = "held in camera; no public minutes" if closed_only else "no validated ballot rules for this body yet"
+            print(f"  [i] {classification}: motions held as unverified proposals ({why})")
         if canonical_enabled:
             if not valid_inventory(initial_claim_inventory, meeting_id):
                 raise RuntimeError("Complete current motion claims required before source writes")

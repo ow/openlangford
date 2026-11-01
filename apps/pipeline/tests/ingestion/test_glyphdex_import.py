@@ -25,6 +25,14 @@ def test_group_and_folder_names():
     assert folder_for(meetings[1], "/a").endswith("2019-07-08 530pm Planning, Zoning & Affordable Housing Committee [gx-abcdef12]")
 
 
+
+def test_in_camera_notice_is_filed_as_the_agenda():
+    # 2015-08-28: a special meeting held entirely in camera, whose only public record is its notice.
+    docs = [{"doc_type": "council_minutes", "source_kind": "pdf", "id": "fb4c99e0-fba9", "title": "Council 2015 08 28 0900 Special Notice of In Camera Meeting"}]
+    [meeting] = group_meetings(docs)
+    assert (meeting["kind"], len(meeting["agenda"]), len(meeting["minutes"])) == ("Special", 1, 0)
+    assert folder_for(meeting, "/a").endswith("Council/2015/08/2015-08-28 900am Special Council [gx-fb4c99e0]")
+
 # --- already_ingested matching: real 2023-2026 examples (SHA-256-verified, see research/glyphdex/2023-2026-overlap.md) ---
 
 def _gx(body, date, kind="Regular"):
