@@ -6,6 +6,7 @@ import { getSupabaseAdminClient } from "../app/lib/supabase.server";
 import { runWithAiRequestContext } from "../app/services/ai/usage-sink.server";
 import { withPublicDataCache } from "../app/services/public-data-cache.server";
 import { timed, withServerTiming } from "../app/lib/server-timing.server";
+import { setPageRenderer } from "../app/lib/page-render.server";
 import publicContent from "../public-content-version.json";
 
 import { EMAIL_DISPATCH_CRON, dispatchEmailAlerts } from "./email-dispatch";
@@ -64,6 +65,8 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, url: UR
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     const url = new URL(request.url);
+    // Page checks render a page as a signed-out visitor, without the caches (no cookies are passed on).
+    setPageRenderer((pageRequest) => requestHandler(pageRequest, { cloudflare: { env, ctx } }));
     const redirect = canonicalRedirect(request, url);
     if (redirect) return redirect;
     // AI usage rows are written via ctx.waitUntil, labelled with the route and request id.

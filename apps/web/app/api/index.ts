@@ -22,6 +22,7 @@ import { ListBylaws } from "./endpoints/bylaws/list";
 import { GetBylaw } from "./endpoints/bylaws/detail";
 import { SearchEndpoint } from "./endpoints/search";
 import ocdApp from "./ocd/router";
+import adminPageChecks from "./admin-page-checks";
 
 // Create the base Hono app
 const app = new Hono<ApiEnv>();
@@ -133,6 +134,9 @@ openapi.registry.registerComponent("schemas", "ApiError", {
   },
   required: ["error"],
 });
+
+// Admin-only page checks for agents (not in the public docs)
+app.route("/api/v1/admin/page-checks", adminPageChecks);
 
 // Health endpoint (no municipality scope)
 openapi.get("/api/v1/health", HealthEndpoint);

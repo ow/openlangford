@@ -1,0 +1,41 @@
+import { describe, expect, it } from "vitest";
+import { checkPrompt, readPage } from "../../app/services/page-check.server";
+
+const html = `<html><head><title>Flight Cannabis | Open Langford</title>
+<meta name="description" content="A store&#x27;s permit, renewed twice."></head><body><main>
+<h1>Flight Cannabis at <span>977 Langford Parkway</span></h1>
+<ol>
+<li id="timeline-agenda-1" class="relative"><div><a>July 17, 2023</a><p>Public Hearings</p><blockquote>&ldquo;TUP20-0002 Purpose&rdquo;</blockquote></div></li>
+<li id="timeline-background-2"><div><span>Part of <a>Renewal</a></span><p>Minutes &amp; more</p><svg><text>icon</text></svg></div></li>
+</ol></main></body></html>`;
+
+describe("readPage", () => {
+  it("reads the title, heading, description and each timeline entry by its key", () => {
+    const page = readPage(html);
+    expect(page.title).toBe("Flight Cannabis | Open Langford");
+    expect(page.heading).toBe("Flight Cannabis at 977 Langford Parkway");
+    expect(page.description).toBe("A store's permit, renewed twice.");
+    expect(page.entries.map(e => e.key)).toEqual(["agenda-1", "background-2"]);
+    expect(page.entries[0].text).toBe("July 17, 2023 Public Hearings · “TUP20-0002 Purpose”");
+    expect(page.entries[1].text).toBe("Part of Renewal Minutes & more");
+    expect(page.body).toBe("");
+  });
+
+  it("falls back to the main text on pages without a timeline", () => {
+    const page = readPage("<main><h1>About</h1><p>We made this.</p></main>");
+    expect(page.entries).toEqual([]);
+    expect(page.body).toBe("About · We made this.");
+  });
+});
+
+describe("checkPrompt", () => {
+  it("lists entries by key and carries rated flags as calibration", () => {
+    const prompt = checkPrompt(readPage(html), [
+      { problem: "generic_text", reason: "Says nothing about the store.", excerpt: "Public Hearings", verdict: "agree" },
+      { problem: "unclear_why", reason: "Minutes adoption.", excerpt: "Minutes", verdict: "disagree" },
+    ]);
+    expect(prompt).toContain("[agenda-1] July 17, 2023");
+    expect(prompt).toContain("AGREED generic_text: Says nothing about the store.");
+    expect(prompt).toContain("REJECTED unclear_why: Minutes adoption.");
+  });
+});
