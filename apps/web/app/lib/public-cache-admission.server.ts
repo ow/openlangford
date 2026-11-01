@@ -5,12 +5,18 @@ function postHogCookieName(key: string | undefined) {
   return key ? `ph_${key.replace(/\+/g, "PL").replace(/\//g, "SL").replace(/=/g, "EQ")}_posthog` : null;
 }
 
-function onlyPostHogCookie(header: string, key: string | undefined) {
-  const name = postHogCookieName(key);
-  if (!name) return false;
+// Google Analytics' two first-party cookies for this site's one measurement id (components/google-analytics.tsx).
+const GOOGLE_ANALYTICS_COOKIES = new Set(["_ga", "_ga_78T8YKCH1Y"]);
+
+/** The configured analytics cookies (PostHog's and Google Analytics'), by exact name: nothing else. */
+function isAnalyticsCookie(name: string, key: string | undefined) {
+  return name === postHogCookieName(key) || GOOGLE_ANALYTICS_COOKIES.has(name);
+}
+
+function onlyAnalyticsCookies(header: string, key: string | undefined) {
   return header.split(";").every((part) => {
     const separator = part.indexOf("=");
-    return separator > 0 && part.slice(0, separator).trim() === name;
+    return separator > 0 && isAnalyticsCookie(part.slice(0, separator).trim(), key);
   });
 }
 
@@ -18,7 +24,7 @@ const UNCACHED_HEADERS = ["authorization", "range", "if-none-match", "if-modifie
 
 export function anonymousPublicRequest(request: Request, posthogKey?: string): boolean {
   const cookie = request.headers.get("cookie");
-  return (cookie === null || onlyPostHogCookie(cookie, posthogKey)) && publicReadRequest(request);
+  return (cookie === null || onlyAnalyticsCookies(cookie, posthogKey)) && publicReadRequest(request);
 }
 
 /**
@@ -36,21 +42,20 @@ const SUPABASE_SESSION_COOKIE = /^sb-[a-z0-9]+-auth-token(?:\.\d+)?$/;
 
 /**
  * A signed-in visitor whose only cookies are the Supabase session (plus the configured analytics
- * cookie), on a plain public GET. Only for responses whose loaders read no session at all
+ * cookies), on a plain public GET. Only for responses whose loaders read no session at all
  * (route-only navigation data), always rendered from a cookie-free request. Any other cookie
  * (a flash notice, a PKCE verifier, anything unknown) fails closed.
  */
 export function signedInPublicRequest(request: Request, posthogKey?: string): boolean {
   const cookie = request.headers.get("cookie");
   if (!cookie || !publicReadRequest(request)) return false;
-  const analytics = postHogCookieName(posthogKey);
   let session = false;
   for (const part of cookie.split(";")) {
     const separator = part.indexOf("=");
     if (separator <= 0) return false;
     const name = part.slice(0, separator).trim();
     if (SUPABASE_SESSION_COOKIE.test(name)) session = true;
-    else if (name !== analytics) return false;
+    else if (!isAnalyticsCookie(name, posthogKey)) return false;
   }
   return session;
 }

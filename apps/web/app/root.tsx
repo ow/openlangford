@@ -33,6 +33,7 @@ import "./app.css";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { PostHogProvider } from "./components/posthog-provider";
+import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { isAdminUser } from "./lib/auth.server";
 
 export const meta: Route.MetaFunction = ({ matches, error }) => {
@@ -167,12 +168,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
         <link rel="help" type="text/markdown" href={`${SITE_ORIGIN}/agents.md`} title="Public Markdown records" />
+        {gaEnabledFor(pathname) && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
+            <script dangerouslySetInnerHTML={{ __html: GA_INIT_SCRIPT }} />
+          </>
+        )}
       </head>
       <body className="bg-surface text-zinc-900 antialiased">
         {children}
         <ScrollRestoration />
         <Scripts />
         {!pathname.startsWith("/email/unsubscribe/") && <PostHogProvider />}
+        <GoogleAnalyticsPageViews />
       </body>
     </html>
   );

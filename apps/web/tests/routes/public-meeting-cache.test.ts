@@ -93,7 +93,7 @@ it.each([
   "sb-project-auth-token=session",
   "sb-project-auth-token.0=chunk; sb-project-auth-token.1=chunk",
   "sb-project-auth-token-code-verifier=pkce",
-  "unknown=personalized", "cookieconsent=accepted", "ph_anotherproject_posthog=person",
+  "unknown=personalized", "cookieconsent=accepted", "ph_anotherproject_posthog=person", "_ga_OTHERPROPERTY=GS1.1.1", "_gid=GA1.1.2",
   `${analyticsName}_extra=person`, `${analyticsName}%3Bsb-project-auth-token=person`,
   "malformed", "", // malformed/empty cookie headers also fail closed
 ])("does not let valid analytics hide a session/unknown cookie: %s", async (otherCookie) => {
@@ -323,4 +323,15 @@ it("never caches without a content stamp", async () => {
   await publicMeetingCache(request(), { deploy: "deploy-a", posthogKey }, ctx, render); await settle();
   await publicMeetingCache(request(), { deploy: "deploy-a", posthogKey }, ctx, render);
   expect(render).toHaveBeenCalledTimes(2); expect(entries.size).toBe(0);
+});
+
+
+it("shares a response for Google Analytics' own cookies too, rendered without them", async () => {
+  const cookie = `_ga=GA1.1.123.456; _ga_78T8YKCH1Y=GS1.1.789; ${analyticsName}=analytics`;
+  const render = vi.fn(async (original: Request) => {
+    expect(original.headers.has("cookie")).toBe(false);
+    return html("shared");
+  });
+  const response = await serve(request("", { headers: { Accept: "text/html", Cookie: cookie } }), render);
+  expect(await response.text()).toBe("shared");
 });

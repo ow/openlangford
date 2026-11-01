@@ -14,6 +14,11 @@ export const ANONYMOUS_EVENT_PROPERTIES = {
 /** Pages whose events are never sent: opt-out bearer links and admin pages (account emails). */
 const PRIVATE_PATHS = ["/email/unsubscribe/", "/admin"];
 
+/** True for pages no analytics may see (PostHog and Google Analytics alike). */
+export function isPrivatePath(pathname: string): boolean {
+  return PRIVATE_PATHS.some((path) => pathname.includes(path));
+}
+
 /** Query and hash parameters that can carry a sign-in code, token or email address. */
 const SECRET_PARAMS = /^(code|token|token_hash|access_token|refresh_token|email)$/i;
 
