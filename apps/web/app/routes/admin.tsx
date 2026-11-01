@@ -27,6 +27,7 @@ export default function Admin() {
             ["/admin/contact", "Contact messages", "Read and answer messages sent through the contact form."],
             ["/admin/users", "Users", "Inspect registered accounts and saved subscriptions."],
             ["/admin/emails", "Email activity", "Review recorded application alert attempts and delivery events."],
+            ["/admin/reviews", "Page reviews", "Pages you've looked over, and the ones marked as needing work."],
             ["/admin/matters", "Matter merge review", "Review proposed matches between matters."],
             ["/admin/pipeline", "Pipeline operations", "Inspect processing status and queued jobs."],
             ["/admin/names", "Speaker names", "Confirm spellings of residents who introduced themselves."],

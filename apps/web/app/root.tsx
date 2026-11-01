@@ -16,6 +16,7 @@ import {
   useNavigation,
   useLocation,
   useRouteError,
+  useRouteLoaderData,
 } from "react-router";
 import type { ShouldRevalidateFunctionArgs } from "react-router";
 import { createSupabaseServerClient } from "./lib/supabase.server";
@@ -35,6 +36,7 @@ import { Footer } from "./components/footer";
 import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { isAdminUser } from "./lib/auth.server";
+import { PageReviewBar } from "./components/admin/page-review-bar";
 
 export const meta: Route.MetaFunction = ({ matches, error }) => {
   // Error pages (404s, 503s) are never indexed.
@@ -202,6 +204,8 @@ function NavigationProgress() {
 }
 
 export default function App() {
+  const root = useRouteLoaderData<typeof loader>("root");
+  const { pathname } = useLocation();
   return (
     <div className="min-h-screen flex flex-col">
       <NavigationProgress />
@@ -215,6 +219,7 @@ export default function App() {
         <Outlet />
       </main>
       <Footer />
+      {root?.isAdmin && !pathname.startsWith("/admin") && <PageReviewBar />}
     </div>
   );
 }

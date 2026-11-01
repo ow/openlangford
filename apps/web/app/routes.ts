@@ -55,6 +55,7 @@ export default [
   route("admin/names", "routes/admin-names.tsx"),
   route("admin/letters", "routes/admin-letters.tsx"),
   route("admin/contact", "routes/admin-contact.tsx"),
+  route("admin/reviews", "routes/admin-reviews.tsx"),
   route("admin/pipeline/jobs/:id", "routes/admin-pipeline-job.tsx"),
 
   route("email/unsubscribe/:token", "routes/email-unsubscribe.tsx"),
@@ -62,6 +63,7 @@ export default [
 
   // API routes
   route("api/ask", "routes/api.ask.tsx"),
+  route("api/page-review", "routes/api.page-review.ts"),
   route("api/geocode", "routes/api.geocode.tsx"),
   route("api/digest", "routes/api.digest.tsx"),
   route("api/subscribe", "routes/api.subscribe.tsx"),
