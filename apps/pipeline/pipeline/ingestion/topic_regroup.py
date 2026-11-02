@@ -217,18 +217,109 @@ def describe(report: dict) -> str:
     return "\n".join(out)
 
 
-def apply(supabase, plan_path: str, *, dry_run: bool = True, backup_dir: str | None = None, log=print) -> dict[str, Any]:
-    """Carry out a saved plan. Backs up every row first; dry_run (the default) only reports."""
+def refile(supabase, entries: list[dict], *, dry_run: bool = True, log=print) -> list[dict]:
+    """File each entry ({item, from, override_lock?}) the way ingest files an item, never back onto the topic it was
+    taken off. Earliest first, so the first entry of an application founds its topic and the later ones (matched by
+    permit number or, through the address registered here, by address) join it. A staff lock is respected unless the
+    entry says to override it, and is then moved to the new topic."""
+    from pipeline.ingestion.matter_matching import extract_addresses, is_matter_eligible, normalize_address
+    from pipeline.ingestion.topic_tidy import _Filer
+
+    rows = {}
+    ids = [e["item"] for e in entries]
+    for start in range(0, len(ids), 200):
+        for r in supabase.table("agenda_items").select("id, title, related_address, plain_english_summary, matter_id, meta, meetings(meeting_date)") \
+                .in_("id", ids[start:start + 200]).execute().data or []:
+            rows[r["id"]] = r
+    filer = _Filer(supabase, 1)
+    matcher = filer.matcher
+    rebuild = lambda: (matcher._build_identifier_index(), matcher._build_address_index(), matcher._build_entity_cluster_index())
+    date_of = lambda r: str(((r.get("meetings") or {}) if not isinstance(r.get("meetings"), list) else r["meetings"][0]).get("meeting_date"))
+    planned = sorted((e for e in entries if e["item"] in rows), key=lambda e: date_of(rows[e["item"]]))
+    results, fake = [], 0
+    now = datetime.now(timezone.utc).isoformat()
+    for e in planned:
+        row = rows[e["item"]]
+        lock = staff_matter(row.get("meta"))
+        if lock and not e.get("override_lock"):
+            results.append({**e, "title": row["title"], "to": None, "reason": "skipped: placed by staff"})
+            continue
+        if row["matter_id"] not in (e["from"], None):
+            results.append({**e, "title": row["title"], "to": None, "reason": "skipped: changed since the plan"})
+            continue
+        addrs = row.get("related_address") or []
+        if isinstance(addrs, str):
+            try:
+                addrs = json.loads(addrs)
+            except ValueError:
+                addrs = [addrs]
+        item = {"title": row["title"], "related_address": addrs}
+        eligible, why = is_matter_eligible(identifier=None, title=row["title"], related_addresses=addrs,
+                                           summary=row.get("plain_english_summary"))
+        if not eligible:  # a heading or procedural entry: it stays off every topic, as ingest would leave it
+            results.append({**e, "title": row["title"], "to": None, "reason": f"not a topic entry ({why})"})
+            if not dry_run:
+                supabase.table("agenda_items").update({"matter_id": None, "meta": {**(row.get("meta") or {}),
+                    "matter_match": {"reason": f"not_eligible:{why}", "from": e["from"], "at": now}}}).eq("id", e["item"]).execute()
+                supabase.table("property_links").update({"matter_id": None}).eq("agenda_item_id", e["item"]).execute()
+            continue
+        source = [m for m in matcher.matters if m["id"] == e["from"]]
+        matcher.matters = [m for m in matcher.matters if m["id"] != e["from"]]
+        rebuild()
+        count = len(matcher.matters)
+        target = filer.file(item, date_of(row), dry_run)
+        created = len(matcher.matters) > count or target == 777
+        if dry_run and target == 777:
+            fake += 1
+            target = f"new-{fake}"
+            from pipeline.ingestion.matter_names import file_numbers
+            from pipeline.ingestion.matter_matching import identifying_identifier
+            numbers = file_numbers(row["title"])
+            matcher._add_matter_to_indices({"id": target, "title": row["title"], "meta": {},
+                                            "identifier": identifying_identifier(numbers[0]) if numbers else None,
+                                            "category": "Development" if re.search(r"Permit|DVP|DP|Rezoning|REZ", row["title"] or "") else "General"})
+        reason = (filer.last_matter_match or {}).get("reason") if not (dry_run and created) else "new_topic"
+        # Register the entry's addresses on the topic it joined, so a later entry for the same place finds it.
+        keys = {normalize_address(a) for a in addrs if a} | set(extract_addresses(row["title"] or ""))
+        for m in matcher.matters:
+            if m["id"] == target:
+                m["_addresses"] = set(m.get("_addresses") or set()) | keys
+        matcher.matters += source
+        rebuild()
+        to_title = next((m.get("title") for m in matcher.matters if m["id"] == target), None)
+        results.append({**e, "title": row["title"], "to": target, "to_title": to_title, "reason": reason, "new": created})
+        if dry_run or not target:
+            continue
+        meta = {**(row.get("meta") or {}), "matter_match": {**(filer.last_matter_match or {}), "from": e["from"], "refiled": True}}
+        if lock:
+            meta["staff_matter"] = {**lock, "matter_id": target, "refiled_at": now, "refiled_by": "topic-regroup"}
+        supabase.table("agenda_items").update({"matter_id": target, "meta": meta}).eq("id", e["item"]).execute()
+        supabase.table("property_links").update({"matter_id": target}).eq("agenda_item_id", e["item"]).execute()
+    for r in results:
+        log(f"  [refile] {str(r['title']).splitlines()[0][:70]} | {r['from']} -> {r['to']} {r.get('to_title') or ''} ({r['reason']})")
+    return results
+
+
+def apply(supabase, plan_path: str, *, dry_run: bool = True, backup_dir: str | None = None, extra: list[dict] | None = None,
+          log=print) -> dict[str, Any]:
+    """Carry out a saved plan: moves into existing topics and off every topic as planned; entries the plan would have
+    put in new topics are re-filed the way ingest files an item (see refile), along with any extra entries
+    ({item, from, override_lock?}). Backs up every row first; dry_run (the default) only reports."""
     from pipeline.ingestion.ingester import _match_note
     from pipeline.ingestion.matter_summaries import refresh_matter_summaries
 
     report = json.loads(Path(plan_path).read_text())
     moves = report["moves"]
-    item_ids = [m["item"] for m in moves]
-    topic_ids = sorted({m["from"] for m in moves} | {m["to"] for m in moves if m["to"]} | {i["topic"] for i in report["identifiers"]})
-    log(f"  [regroup] {len(moves)} move(s), {len(report['identifiers'])} identifier change(s)" + (" (dry run)" if dry_run else ""))
+    extra = extra or []
+    to_refile = [{"item": m["item"], "from": m["from"]} for m in moves if not m["to"] and not m["unfile"]] + extra
+    item_ids = [m["item"] for m in moves] + [e["item"] for e in extra]
+    topic_ids = sorted({m["from"] for m in moves} | {m["to"] for m in moves if m["to"]} | {e["from"] for e in extra if e["from"]}
+                       | {i["topic"] for i in report["identifiers"]})
+    log(f"  [regroup] {len(moves)} move(s), {len(to_refile)} to re-file, {len(report['identifiers'])} identifier change(s)"
+        + (" (dry run)" if dry_run else ""))
     if dry_run:
-        return {"moves": len(moves), "identifiers": len(report["identifiers"]), "dry_run": True}
+        results = refile(supabase, to_refile, dry_run=True, log=log)
+        return {"moves": len(moves), "refile": results, "identifiers": len(report["identifiers"]), "dry_run": True}
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     folder = Path(backup_dir or f"backups/topic-regroup-{stamp}")
@@ -241,27 +332,14 @@ def apply(supabase, plan_path: str, *, dry_run: bool = True, backup_dir: str | N
         (folder / f"{name}.json").write_text(json.dumps(rows, default=str))
     log(f"  [regroup] backup written to {folder}")
 
-    created: dict[str, int] = {}
     touched: set[int] = set()
     done = 0
     for m in moves:
         item = supabase.table("agenda_items").select("id, matter_id, meta").eq("id", m["item"]).single().execute().data
         if item["matter_id"] != m["from"] or staff_matter(item.get("meta")):
             continue  # changed since the plan, or staff placed it
-        to = m["to"]
-        if not to and not m["unfile"]:
-            to = created.get(m["new_topic_key"])
-            if not to:
-                numbers = parse_compound_identifier(m["new_topic_key"]) if not m["new_topic_key"].startswith("item-") else []
-                title = re.sub(r"\s+[—-]\s+Staff Report\b.*$", "", re.sub(r"^[A-Z][A-Z ,&'/]+\s+[—-]\s+", "", m["title"]))
-                data = {"title": title, "category": "Development", "status": "Active",
-                        "first_seen": m["date"], "last_seen": m["date"], "municipality_id": 1,
-                        "meta": {"created_by": "topic-regroup", "regrouped_from": m["from"]}}
-                if numbers and not supabase.table("matters").select("id").eq("identifier", m["new_topic_key"]).execute().data:
-                    data["identifier"] = m["new_topic_key"]
-                to = supabase.table("matters").insert(data).execute().data[0]["id"]
-                created[m["new_topic_key"]] = to
-        meta = {**(item.get("meta") or {}), "matter_match": {**_match_note(f"regroup:{m['match'] or 'new_topic'}", 1.0),
+        to = m["to"]  # None: off every topic now; entries bound for a new topic are re-filed below
+        meta = {**(item.get("meta") or {}), "matter_match": {**_match_note(f"regroup:{m['match'] or 'off_topic'}", 1.0),
                                                               "from": m["from"]}}
         supabase.table("agenda_items").update({"matter_id": to, "meta": meta}).eq("id", m["item"]).execute()
         supabase.table("property_links").update({"matter_id": to}).eq("agenda_item_id", m["item"]).execute()
@@ -270,10 +348,17 @@ def apply(supabase, plan_path: str, *, dry_run: bool = True, backup_dir: str | N
     for i in report["identifiers"]:
         if not i["clash"]:
             supabase.table("matters").update({"identifier": i["to"]}).eq("id", i["topic"]).eq("identifier", i["from"]).execute()
-    log(f"  [regroup] moved {done} item(s), created {len(created)} topic(s); refreshing {len(touched)} topic summaries")
+    for e in extra:  # take extra entries off their topic before re-filing (a staff lock is kept for refile to move)
+        if e.get("from"):
+            supabase.table("agenda_items").update({"matter_id": None}).eq("id", e["item"]).eq("matter_id", e["from"]).execute()
+            supabase.table("property_links").update({"matter_id": None}).eq("agenda_item_id", e["item"]).execute()
+            touched.add(e["from"])
+    results = refile(supabase, [{**e, "from": e.get("from")} for e in to_refile], dry_run=False, log=log)
+    touched |= {r["to"] for r in results if isinstance(r.get("to"), int)}
+    log(f"  [regroup] moved {done} item(s), re-filed {sum(1 for r in results if r['to'])}; refreshing {len(touched)} topic summaries")
     if touched:
         refresh_matter_summaries(supabase, sorted(touched))
-    return {"moves": done, "created": len(created), "touched": len(touched), "backup": str(folder)}
+    return {"moves": done, "refile": results, "touched": len(touched), "backup": str(folder)}
 
 
 if __name__ == "__main__":
@@ -288,7 +373,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("plan"); p.add_argument("--out", required=True); p.add_argument("--topic", type=int, action="append")
-    a = sub.add_parser("apply"); a.add_argument("plan"); a.add_argument("--write", action="store_true",
+    a = sub.add_parser("apply"); a.add_argument("plan"); a.add_argument("--extra", help="JSON list of extra entries to re-file")
+    a.add_argument("--write", action="store_true",
                                                                          help="Actually change the data (default: dry run).")
     args = parser.parse_args()
     client = create_client(config.SUPABASE_URL, config.SUPABASE_SECRET_KEY or config.SUPABASE_KEY)
@@ -300,6 +386,8 @@ if __name__ == "__main__":
         (out / "topic-regroup-plan.md").write_text(describe(result))
         print(f"  plan written to {out}/topic-regroup-plan.md")
     else:
-        print(apply(client, args.plan, dry_run=not args.write))
+        extra = json.loads(Path(args.extra).read_text()) if args.extra else None
+        result = apply(client, args.plan, dry_run=not args.write, extra=extra)
+        print({k: (len(v) if isinstance(v, list) else v) for k, v in result.items()})
     if sink is not None:
         sink.flush(timeout=10)

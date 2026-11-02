@@ -67,3 +67,33 @@ def test_regroup_finds_topics_spanning_unrelated_streets():
                {"id": 3, "addresses": ["2585 Selwyn Road"]},
                {"id": 4, "addresses": []}]
     assert sorted(map(sorted, street_groups(entries))) == [[1, 2], [3]]
+
+
+def test_bare_classification_codes_never_identify():
+    from pipeline.ingestion.matter_matching import identifying_identifier, is_city_wide
+
+    assert is_city_wide("File No. 8100-20") and is_city_wide("File No. 5480-04") and is_city_wide("5400-20")
+    assert not is_city_wide("File No. 8100-20 Bryn Maur Market")
+    assert not is_city_wide("File No. 3900-1427")
+    assert not is_city_wide("File No. 4020-20-100606-21")
+    assert identifying_identifier("File No. 8100-20; Bylaw No. 33") is None
+
+
+def test_templated_titles_naming_different_things_do_not_match():
+    from pipeline.ingestion.matter_matching import is_generic_or_procedural_matter, names_differ
+
+    assert names_differ("Terry Fox Run - Staff Report (File No. 8100-01)", "Toy Run Motorcycle Event - Staff Report (File No. 8100-01)")
+    assert names_differ("Request for Parking Permit Zone on Anders Road", "Request for Parking Permit Zone on Rowils")
+    assert not names_differ("Russ Hay's Bicycle Club - Circuit Bicycle Training Races - Staff Report",
+                            "Russ Hay's Bicycle Club — Circuit Bicycle Training Races — Staff Report (Engineering)")
+    assert not is_generic_or_procedural_matter(
+        "COMMITTEE RESOLUTIONS — Application for a Development Variance Permit for the 11 lot subdivision at 2585 Selwyn Road")
+    assert is_generic_or_procedural_matter("COMMITTEE RESOLUTIONS - Transportation and Public Works - May 9th, 2017")
+    assert is_generic_or_procedural_matter("TEMPORARY USE PERMIT")
+
+
+def test_parkway_addresses_and_street_clusters():
+    from pipeline.ingestion.matter_matching import extract_addresses
+
+    assert extract_addresses("2181 Bear Mountain Pkwy") == ["2181 bear mountain parkway"]
+    assert extract_addresses("Renewal of Leases at 1089 Langford Parkway") == ["1089 langford parkway"]

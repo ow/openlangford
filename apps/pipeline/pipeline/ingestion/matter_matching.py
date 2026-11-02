@@ -79,8 +79,17 @@ CITY_WIDE_BYLAWS = frozenset({
 })
 
 
+# A bare records-classification code ("File No. 8100-20" events, "5400-20" roads, "5480-04" parking) is a subject
+# folder shared by every request of that kind; like a city-wide bylaw it grouped unrelated events and petitions.
+# A code with something specific after it ("File No. 8100-20 Bryn Maur Market", "File No. 3900-1427") still identifies.
+CLASSIFICATION_CODE = re.compile(r"^(?:File\s+(?:No\.?\s*)?)?\d{4}-\d{2}$", re.IGNORECASE)
+
+
 def is_city_wide(part: str) -> bool:
-    """"Bylaw 300", "Zoning Bylaw No. 300" -> True; "Traffic Bylaw No. 33, Amendment ..., Bylaw No. 1890" -> False."""
+    """"Bylaw 300", "Zoning Bylaw No. 300", "File No. 8100-20" -> True; "Traffic Bylaw No. 33, Amendment ...,
+    Bylaw No. 1890", "File No. 3900-1427" -> False."""
+    if CLASSIFICATION_CODE.match(part.strip()):
+        return True
     numbers = bylaw_identifiers(part) or ({part} if part.startswith("Bylaw ") else set())
     return bool(numbers) and numbers <= CITY_WIDE_BYLAWS
 
@@ -181,7 +190,7 @@ def extract_addresses(text: str) -> list[str]:
         return []
 
     # Match: number + street name + street type
-    pattern = r"\b(\d+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Lane|Ln|Place|Pl|Crescent|Cres|Way|Boulevard|Blvd|Court|Ct|Terrace|Terr|Circle|Cir))\b"
+    pattern = r"\b(\d+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Lane|Ln|Place|Pl|Crescent|Cres|Way|Boulevard|Blvd|Court|Ct|Terrace|Terr|Circle|Cir|Parkway|Pkwy))\b"
     matches = re.findall(pattern, text, re.IGNORECASE)
     return [normalize_address(m) for m in matches]
 
@@ -198,6 +207,7 @@ def normalize_address(addr: str) -> str:
         r"\brd\b": "road",
         r"\bst\b": "street",
         r"\bave\b": "avenue",
+        r"\bpkwy\b": "parkway",
         r"\bdr\b": "drive",
         r"\bln\b": "lane",
         r"\bpl\b": "place",
@@ -218,6 +228,23 @@ def extract_numbers(text: str) -> set[str]:
     if not text:
         return set()
     return set(re.findall(r"\d+", text))
+
+
+_BOILERPLATE_WORDS = {
+    "staff", "report", "reports", "file", "no", "re", "request", "requests", "application", "applications", "permit",
+    "permits", "committee", "council", "city", "langford", "the", "of", "and", "for", "to", "at", "on", "in", "a",
+    "bylaw", "amendment", "development", "variance", "temporary", "use", "zoning", "rezoning", "engineering",
+}
+
+
+def names_differ(t1: str, t2: str) -> bool:
+    """True when each title names something the other doesn't ("Terry Fox Run" vs "Toy Run Motorcycle Event",
+    "Parking Permit Zone on Anders Road" vs "... on Rowils"): templated titles read alike while being about
+    different events, streets or applicants."""
+    def named(text: str) -> set[str]:
+        return {w.lower() for w in re.findall(r"\b[A-Z][A-Za-z'’]+\b", text or "") if w.lower() not in _BOILERPLATE_WORDS}
+    a, b = named(t1), named(t2)
+    return bool(a - b) and bool(b - a)
 
 
 def check_number_mismatch(t1: str, t2: str) -> bool:
@@ -498,6 +525,11 @@ SECTION_HEADING = re.compile(
 
 def is_generic_or_procedural_matter(title: str | None, category: str | None = None) -> bool:
     """Detect headings that should remain agenda items, not tracked matters."""
+    # "COMMITTEE RESOLUTIONS — Application for a Development Variance Permit at 2585 Selwyn Road": the section the
+    # item sat under, then the item itself. Judge the item, not its section.
+    sectioned = re.match(r"^([A-Z][A-Z0-9 ,&'/().-]+?)\s+[—–]\s+(\S.*)$", (title or "").strip(), re.S)
+    if sectioned and len(sectioned.group(2).strip()) >= 6:
+        return is_generic_or_procedural_matter(sectioned.group(2), category)
     if re.search(r"\(block\)\s*$", title or "", re.I):
         return True  # an agenda block heading: its sub-items are the business
     clean = clean_matter_title(title).lower()
@@ -874,7 +906,7 @@ class MatterMatcher:
 
         # --- Stage 3: Known entity cluster matching ---
         if title:
-            match = self._match_by_entity_cluster(title)
+            match = self._match_by_entity_cluster(title, normalized_addrs)
             if match:
                 return match
 
@@ -994,13 +1026,22 @@ class MatterMatcher:
     def _match_by_entity_cluster(
         self,
         title: str,
+        normalized_addrs: set[str] | None = None,
     ) -> Optional[tuple[int, str, float]]:
         cluster = detect_entity_cluster(title)
         if not cluster:
             return None
 
+        # A street-level cluster ("Langford Parkway") holds many properties: an item at a street address joins only
+        # a topic at that same address; one elsewhere on the street (or with no address) is a different application.
+        numbered = lambda addrs: {a for a in addrs if a and a[0].isdigit()}  # a bare street name places nothing
+        # Recorded addresses keep unit numbers ("136-1047"); title extraction drops them, so it is only the fallback.
+        incoming_addrs = numbered(set(normalized_addrs or ())) or numbered(set(extract_addresses(title)))
         candidates = [m for m in self.entity_cluster_index.get(cluster, [])
-                      if compatible_policy_scope(title, m.get("title"))]
+                      if compatible_policy_scope(title, m.get("title"))
+                      and (not incoming_addrs
+                           or incoming_addrs & (numbered(set(m.get("_addresses") or ()))
+                                                or numbered(set(extract_addresses(m.get("title") or "")))))]
         if not candidates:
             return None
 
@@ -1124,8 +1165,9 @@ class MatterMatcher:
 
             sim = difflib.SequenceMatcher(None, title_lower, m_title).ratio()
             if sim > best_sim:
-                # Safety: reject if numbers conflict (e.g. "Bylaw 1160" vs "Bylaw 1161")
-                if check_number_mismatch(title, m.get("title") or ""):
+                # Safety: reject if numbers conflict (e.g. "Bylaw 1160" vs "Bylaw 1161"), or if each names
+                # something the other doesn't (a different event, street or applicant).
+                if check_number_mismatch(title, m.get("title") or "") or names_differ(strip_stage(title), strip_stage(m.get("title"))):
                     continue
                 best_sim = sim
                 best_match = m
