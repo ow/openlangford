@@ -505,7 +505,13 @@ def is_valid_matter_identifier(identifier: str | None) -> bool:
 CONTAINER_TITLE = re.compile(
     r"^(notices? of motion|public participation|presentations?|delegations?|correspondence)$"
     r"|committee (?:of the whole )?(?:meeting )?(?:minutes|resolutions)|multiple (?:bylaws|topics)|receipt of .*minutes"
+    r"|\ba\)\s.+\bb\)\s"  # "a) … b) … c) …": a list of separate items under one heading
     r"|committee meeting\s*(?:[-–—,:]|of\b|held\b|on\b)"  # "… Committee Meeting - January 31, 2022": that meeting's report
+    # "Planning, Zoning and Affordable Housing Committee - October 23rd, 2017", "Protective Services - March 28, 2017":
+    # a standing committee's whole meeting, reported to Council.
+    r"|^(?:planning,? zoning,? (?:and |& )?affordable housing|protective services|transportation (?:and |& )?public works"
+    r"|parks,? recreation[a-z ,&]*|administration (?:and |& )?finance)(?: committee)?\s*[-–—(]\s*"
+    r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d)"
     r"|^(?:planning )?notices? of intent\b|^resolutions (?:from|of) .*committee|committee .*\bresolutions\b"
     r"|bylaws for consideration|^bylaw adoptions?$",
     re.I,
@@ -528,7 +534,7 @@ def is_generic_or_procedural_matter(title: str | None, category: str | None = No
     """Detect headings that should remain agenda items, not tracked matters."""
     # "COMMITTEE RESOLUTIONS — Application for a Development Variance Permit at 2585 Selwyn Road": the section the
     # item sat under, then the item itself. Judge the item, not its section.
-    sectioned = re.match(r"^([A-Z][A-Z0-9 ,&'/().-]+?)\s+[—–]\s+(\S.*)$", (title or "").strip(), re.S)
+    sectioned = re.match(r"^((?:\d+[.)]?\s*)?[A-Z][A-Z0-9 ,&'/().]+?)\s+[—–-]\s+(\S.*)$", (title or "").strip(), re.S)
     if sectioned and len(sectioned.group(2).strip()) >= 6:
         return is_generic_or_procedural_matter(sectioned.group(2), category)
     if re.search(r"\(block\)\s*$", title or "", re.I):
