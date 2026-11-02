@@ -95,7 +95,11 @@ export function PageReviewBar() {
   const links: Links = saved && saved.links !== undefined ? saved.links ?? null : loaded?.links ?? null;
   const suggestions = links?.suggestions || [];
   const searching = links?.findJob?.status === "queued" || links?.findJob?.status === "running";
-  const flags = review?.ai_flags || [];
+  // A rating shows the moment it's pressed; the save follows (a failed save shows the stored rating again).
+  const rating = save.state !== "idle" && save.formData?.get("intent") === "rate"
+    ? { index: Number(save.formData.get("index")), verdict: String(save.formData.get("verdict")) } : null;
+  const flags = (review?.ai_flags || []).map((f, i) => rating?.index === i
+    ? { ...f, verdict: rating.verdict === "none" ? null : rating.verdict as "agree" | "disagree" } : f);
   const open_ = unresolvedFlags(flags).length;
   const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length;
   useHighlights(flags, open);
@@ -301,8 +305,12 @@ export function PageReviewBar() {
                   </p>
                   {suggestions.length > 0 && (
                     <ol className="mt-2 space-y-2">
-                      {suggestions.map((s) => (
-                        <li key={`${s.table}-${s.id}`} className="rounded-lg border border-brand-200 px-2.5 py-2">
+                      {suggestions.map((s) => {
+                        // The one being decided shows it at once: the pressed button spins and the card fades.
+                        const deciding = (pending === "accept" || pending === "reject") && save.formData?.get("table") === s.table
+                          && save.formData?.get("id") === String(s.id) ? pending : null;
+                        return (
+                        <li key={`${s.table}-${s.id}`} className={cn("rounded-lg border border-brand-200 px-2.5 py-2 transition-opacity", deciding && "opacity-60")}>
                           <span className="text-xs font-semibold uppercase tracking-wide text-brand-700">
                             {s.kind === "related" ? "Related topic" : s.kind === "report" ? "Annual report" : "Mention"}{s.date && s.kind !== "report" ? ` · ${s.date.slice(0, 10)}` : ""}
                             {s.score != null && <span className="ml-1 font-normal normal-case tracking-normal text-zinc-500" title="How likely the linking model thinks it belongs">· {Math.round(s.score * 100)}% likely</span>}
@@ -316,12 +324,17 @@ export function PageReviewBar() {
                           )}
                           <div className="mt-1.5 flex gap-2 text-xs">
                             <button type="button" disabled={busy} onClick={() => submit("accept", { table: s.table, id: String(s.id) })}
-                              className="rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700">Add to page</button>
+                              className="inline-flex items-center gap-1 rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-80">
+                              {deciding === "accept" && <Loader2 className="h-3 w-3 animate-spin" />}{deciding === "accept" ? "Adding…" : "Add to page"}
+                            </button>
                             <button type="button" disabled={busy} onClick={() => submit("reject", { table: s.table, id: String(s.id) })}
-                              className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Doesn't belong</button>
+                              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">
+                              {deciding === "reject" && <Loader2 className="h-3 w-3 animate-spin" />}{deciding === "reject" ? "Removing…" : "Doesn't belong"}
+                            </button>
                           </div>
                         </li>
-                      ))}
+                        );
+                      })}
                     </ol>
                   )}
                 </div>

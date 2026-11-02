@@ -53,13 +53,14 @@ export async function action({ request, context }: Route.ActionArgs) {
     let message: string | null = null;
 
     if (intent === "check") {
-      await checkPage(supabase, new URL(request.url).origin, path);
-      // On a topic page, the same press also searches for entries missing from it (the pipeline's quick worker).
+      // On a topic page, the same press also searches for entries missing from it (the pipeline's quick worker),
+      // started first so it runs while the page is being checked rather than after.
       const matterId = await matterForPath(supabase, path);
       const running = matterId ? await latestFindJob(supabase, matterId) : null;
       if (matterId && !(running && (running.status === "queued" || running.status === "running"))) {
         await requestFindMissing(supabase, matterId, user.id);
       }
+      await checkPage(supabase, new URL(request.url).origin, path);
     }
     else if (intent === "rate") {
       const index = Number(form.get("index"));

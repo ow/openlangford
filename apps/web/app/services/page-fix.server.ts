@@ -4,7 +4,7 @@ import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, type PageFlag } from "../lib/page-review-types";
 import { readPage } from "./page-check.server";
-import { matterForPath, removableKey, removeEntry } from "./page-links.server";
+import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, type Suggestion } from "./page-links.server";
 import { itemRecords } from "./page-verify.server";
 import { logStaffAction } from "./staff.server";
 import type { StaffRole } from "../lib/auth.server";
@@ -29,7 +29,7 @@ import type { StaffRole } from "../lib/auth.server";
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "merge_topic", "waiting_on_records", "cannot_fix"]),
+      "rewrite_summary", "merge_topic", "accept_suggestion", "waiting_on_records", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. Otherwise null."),
@@ -76,8 +76,11 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, item: {
   }));
 }
 
+/** A search suggestion's key for the agent: "suggestion-L12" (a meeting item or topic link) or "suggestion-R7" (a report page). */
+const suggestionKey = (s: Suggestion) => `suggestion-${s.table === "matter_links" ? "L" : "R"}${s.id}`;
+
 function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
-  candidates: Map<string, Candidate[]>, records: string, lookalikes: Candidate[] = []) {
+  candidates: Map<string, Candidate[]>, records: string, lookalikes: Candidate[] = [], suggestions: Suggestion[] = []) {
   const removable = entries.filter((e) => removableKey(e.key)).map((e) => e.key);
   const movable = [...candidates.entries()].map(([key, list]) =>
     `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no listed topic (move_item with null re-files it)"}`).join("\n");
@@ -113,7 +116,11 @@ ${movable || "(No flagged items to move.)"}
   this topic's own to it (with to_matter_id null, they are re-filed with the rest of their bylaw).
 - merge_topic: when a related or same-named topic below is the very same project as this page (a duplicate, not just an
   earlier or later step), with its id.
-${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}
+- accept_suggestion: add one of the entries the search found for this page (listed below, not yet on it) when it
+  supplies what an agreed problem says is missing (e.g. the adoption or decision the status lacks), with its key.
+  A meeting item accepted here appears as "Also discussed"; if it is this topic's own step, the summary still won't
+  rely on it, so say so in the reason and the editor can file it here.
+${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote.slice(0, 240)}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}
 Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly. A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
@@ -181,10 +188,11 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     ]);
     const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`)]
       .filter(Boolean).join("\n\n");
-    const lookalikes = await relatedOrSameNamed(supabase, matterId);
+    const [lookalikes, suggestions] = await Promise.all([relatedOrSameNamed(supabase, matterId),
+      listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])]);
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records, lookalikes),
+      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records, lookalikes, suggestions),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
     });
@@ -209,6 +217,19 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       }
       if (step.action === "waiting_on_records") {
         waiting.push(step.reason);
+        continue;
+      }
+      if (step.action === "accept_suggestion") {
+        const found = suggestions.find((x) => suggestionKey(x) === step.key);
+        if (!found || found.kind === "related") left.push(`${step.reason} (that suggestion isn't one the agent can add${found ? "; related topics are added by an editor" : ""})`);
+        else {
+          try {
+            await decideSuggestion(supabase, matterId, found.table, found.id, true, requester.id);
+            done.push(step.reason);
+          } catch {
+            left.push(`${step.reason} (adding it didn't work)`);
+          }
+        }
         continue;
       }
       if (step.action === "hide_duplicate" && step.key?.startsWith("agenda-") && onPage.has(step.key)

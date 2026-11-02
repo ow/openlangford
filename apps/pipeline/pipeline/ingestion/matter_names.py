@@ -712,8 +712,14 @@ def suggest_links(matter_id: int, *, similar: bool = True, dry_run: bool = False
     by_name = [n for n, c in enumerate(candidates, 1) if c.get("where") != "similar"]
     by_meaning = [n for n, c in enumerate(candidates, 1) if c.get("where") == "similar"]
 
+    # The two groups are independent calls: run them side by side (each takes ~8s on the reviewer model).
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        named, meaning = pool.submit(judge_group, by_name), pool.submit(judge_group, by_meaning)
+        judged = named.result() + meaning.result()
+
     class _All:
-        verdicts = judge_group(by_name) + judge_group(by_meaning)
+        verdicts = judged
     result = _All
     # Terra decides and explains; the Decisions API (Luna) adds a calibrated score to each item it kept, for sorting
     # and for comparing later with what staff accept.
