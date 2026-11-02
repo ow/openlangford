@@ -17,7 +17,7 @@ it("labels earlier background with its owner while preserving the proceeding's o
   const text = html.replace(/<[^>]*>/g, "");
   expect(text).toContain("Part of Parks rate proposal");
   expect(text).toContain("June 29, 2026");
-  expect(text).toContain("This matter recorded from Jul 20, 2026");
+  expect(text).toContain("Discussed Jul 20, 2026");
   expect(text).not.toContain("This matter recorded from Jun 29");
   expect((text.match(/Part of Parks rate proposal/g) || [])).toHaveLength(1);
   expect(html).toContain('href="/matters/parks-rates"');

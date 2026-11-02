@@ -521,6 +521,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     d
       ? formatDate(d, { year: "numeric", month: "short", day: "numeric" })
       : "";
+  // One line: "Discussed May 4 – Jun 1, 2020" (the year once when it's the same).
+  const discussed = (() => {
+    if (!firstSeen) return null;
+    if (!lastSeen || lastSeen === firstSeen) return `Discussed ${shortDate(firstSeen)}`;
+    const sameYear = String(firstSeen).slice(0, 4) === String(lastSeen).slice(0, 4);
+    const start = sameYear ? formatDate(firstSeen, { month: "short", day: "numeric" }) : shortDate(firstSeen);
+    return `Discussed ${start} – ${shortDate(lastSeen)}`;
+  })();
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -531,15 +539,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             back={{ to: "/matters", label: "Decisions" }}
             meta={[
               matter.category || "General",
-              matter.identifier ? (
-                <span className="font-mono">{matter.identifier}</span>
-              ) : null,
-              firstSeen ? (
-                <span className="tabular-nums">This matter recorded from {shortDate(firstSeen)}</span>
-              ) : null,
-              lastSeen && lastSeen !== firstSeen ? (
-                <span className="tabular-nums">Last discussed {shortDate(lastSeen)}</span>
-              ) : null,
+              discussed ? <span className="tabular-nums">{discussed}</span> : null,
             ]}
             title={matterTitle(matter)}
             badges={
@@ -569,6 +569,11 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               <span className="font-semibold text-zinc-900">Where it stands: </span>
               {matter.meta.status_line}
             </p>
+          )}
+
+          {matter.identifier && (
+            // File and bylaw numbers, for anyone looking up the City's own records.
+            <p className="mt-3 text-xs text-zinc-500">Reference: {matter.identifier}</p>
           )}
 
           {images.lead && (
