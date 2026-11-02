@@ -71,6 +71,9 @@ def check_summary_notes(supabase, notes: list[dict]) -> list[str]:
     unfollowed = []
     for entry in notes:
         matter = supabase.table("matters").select("plain_english_summary, meta").eq("id", int(entry["matter_id"])).single().execute().data
+        canonical = (matter.get("meta") or {}).get("canonical_matter_id")
+        if canonical:  # merged away during this fix: the page now shows the topic it was merged into
+            matter = supabase.table("matters").select("plain_english_summary, meta").eq("id", int(canonical)).single().execute().data
         text = f"Summary: {matter.get('plain_english_summary') or ''}\nWhere it stands: {(matter.get('meta') or {}).get('status_line') or ''}"
         try:
             verdict = ai.json(f"An editor asked for this change to a topic page's summary on a site that follows a city "
