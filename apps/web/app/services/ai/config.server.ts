@@ -15,7 +15,9 @@ export type AiStage =
   /** Relevance scoring of retrieved evidence. */
   | "rerank"
   /** Structured extraction (agenda-item intelligence). */
-  | "extraction";
+  | "extraction"
+  /** Staff page checks: a reader's review of a public page (services/page-check.server.ts). */
+  | "review";
 
 export type AiProviderName = "openai";
 
@@ -33,6 +35,7 @@ const STAGE_ENV_PREFIX: Record<AiStage, string> = {
   followups: "RAG",
   rerank: "RERANK",
   extraction: "EXTRACTION",
+  review: "REVIEW",
 };
 
 /** Per-attempt timeouts. Streams use this as the total budget for the stream. */
@@ -42,6 +45,7 @@ export const STAGE_TIMEOUT_MS: Record<AiStage, number> = {
   followups: 20_000,
   rerank: 20_000,
   extraction: 120_000,
+  review: 90_000,
 };
 
 export const EMBEDDING_TIMEOUT_MS = 10_000;
@@ -75,6 +79,8 @@ export function readAiEnv(): AiEnv {
     RERANK_AI_MODEL: process.env.RERANK_AI_MODEL,
     EXTRACTION_AI_PROVIDER: process.env.EXTRACTION_AI_PROVIDER,
     EXTRACTION_AI_MODEL: process.env.EXTRACTION_AI_MODEL,
+    REVIEW_AI_PROVIDER: process.env.REVIEW_AI_PROVIDER,
+    REVIEW_AI_MODEL: process.env.REVIEW_AI_MODEL,
     EMBEDDING_MODEL: process.env.EMBEDDING_MODEL,
     EMBEDDING_DIMENSIONS: process.env.EMBEDDING_DIMENSIONS,
   };

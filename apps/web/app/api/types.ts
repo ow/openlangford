@@ -15,6 +15,8 @@ export interface ApiEnv {
     RERANK_AI_MODEL?: string;
     EXTRACTION_AI_PROVIDER?: string;
     EXTRACTION_AI_MODEL?: string;
+    REVIEW_AI_PROVIDER?: string;
+    REVIEW_AI_MODEL?: string;
     API_RATE_LIMITER: RateLimit;
     [key: string]: unknown;
   };

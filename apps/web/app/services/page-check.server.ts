@@ -110,7 +110,7 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const page = readPage(await renderPage(origin, path));
   const examples = await calibrationExamples(supabase);
   const result = await getAiClient().json({
-    stage: "extraction",
+    stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
     prompt: checkPrompt(page, examples),
     schema: CheckSchema,
     schemaName: "page_check",
