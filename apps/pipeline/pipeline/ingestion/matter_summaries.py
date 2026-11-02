@@ -281,6 +281,8 @@ def refresh_matter_summaries(
             meta = dict(matter["_meta"])
             meta["display_title"] = (descriptive.get("display_title") or "").strip() or None
             meta["summary_version"] = SUMMARY_VERSION
+            # Lines staff approved through the page review bar (meta.staff_headlines) outlive every rewrite.
+            staff_lines = {k: v for k, v in (meta.get("staff_headlines") or {}).items() if isinstance(v, str) and v.strip()}
             # A recorded replacement (meta.superseded_by) is a later council decision about this
             # matter that its own history doesn't show, so the model can't re-derive its status.
             superseded = bool(meta.get("superseded_by"))
@@ -291,6 +293,8 @@ def refresh_matter_summaries(
                     for t in fields.get("timeline") or []
                     if isinstance(t, dict) and t.get("item") in matter["_owned_item_ids"] and (t.get("headline") or "").strip()
                 }
+            if staff_lines:
+                meta["timeline_headlines"] = {**(meta.get("timeline_headlines") or {}), **staff_lines}
             update = {"plain_english_summary": descriptive["summary"].strip(), "meta": meta}
             if descriptive.get("category") in TOPICS:
                 update["category"] = descriptive["category"]

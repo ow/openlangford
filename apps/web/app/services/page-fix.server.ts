@@ -15,15 +15,17 @@ import type { StaffRole } from "../lib/auth.server";
  * the person who asked, tagged as the agent's.
  *
  * It can remove a timeline entry found for the topic or unlink the related topic an entry came from (here, at
- * once), and move an item filed under the wrong topic to the right one, or off every topic (a fix_page job on the
+ * once), rewrite the one-line description an entry has on this topic (matters.meta.timeline_headlines, kept through
+ * later summary rewrites as meta.staff_headlines) from the item's own record, and move an item filed under the wrong topic to the right one, or off every topic (a fix_page job on the
  * pipeline's quick worker, which also rewrites the summaries of the topics whose timelines changed).
  */
 
 const PlanSchema = z.object({
   actions: z.array(z.object({
-    action: z.enum(["remove_entry", "move_item", "cannot_fix"]),
+    action: z.enum(["remove_entry", "move_item", "rewrite_entry", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     to_matter_id: z.number().int().nullable().describe("move_item only: a candidate topic's id, or null to take the item off every topic."),
+    new_text: z.string().nullable().describe("rewrite_entry only: the entry's new one-line description for this topic, or null."),
     reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
   })),
 });
@@ -43,7 +45,7 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, title: 
 }
 
 function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
-  candidates: Map<string, Candidate[]>) {
+  candidates: Map<string, Candidate[]>, records: Map<string, string>) {
   const removable = entries.filter((e) => removableKey(e.key)).map((e) => e.key);
   const movable = [...candidates.entries()].map(([key, list]) =>
     `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no likely topic found"}`).join("\n");
@@ -58,8 +60,12 @@ Two kinds of entries:
   below if it clearly belongs there, or off every topic (to_matter_id null) if none fits.
 ${movable || "(No flagged items filed under this topic.)"}
 
-You can't rewrite an entry's text; the summaries of changed topics are rewritten automatically. For a problem you
-can't fix with these actions, say cannot_fix and why.
+An item filed under this topic whose line is vague can get a new line (rewrite_entry, with new_text): one plain
+sentence of at most 140 characters saying what this step did for this topic, outcome first ("Council gave second and
+third reading to the rezoning for the 165-home Costin Avenue apartments"). Use only facts in its record below; no
+file numbers, bylaw numbers or jargon unless the record gives nothing else. Summaries of changed topics are rewritten
+automatically. For a problem you can't fix with these actions, say cannot_fix and why.
+${records.size ? `\nRecords of flagged items:\n${[...records.entries()].map(([key, text]) => `[${key}] ${text}`).join("\n")}` : ""}
 
 For each agreed problem (and anything the note asks), give one action. Don't change anything the editor didn't
 agree with or ask for.
@@ -90,9 +96,24 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const { data: item } = await supabase.from("agenda_items").select("title").eq("id", Number(flag.key!.slice(7))).maybeSingle();
       candidates.set(flag.key!, item?.title ? await candidatesFor(supabase, matterId, item.title.split("\n")[0]) : []);
     }
+    // The record behind each flagged item filed here: what a rewritten line may say.
+    const records = new Map<string, string>();
+    for (const flag of filed) {
+      const id = Number(flag.key!.slice(7));
+      const [{ data: item }, { data: motions }] = await Promise.all([
+        supabase.from("agenda_items").select("title, plain_english_summary, meetings(meeting_date)").eq("id", id).maybeSingle(),
+        supabase.from("motions").select("text_content, result").eq("agenda_item_id", id).limit(5),
+      ]);
+      if (!item) continue;
+      const meeting = Array.isArray((item as any).meetings) ? (item as any).meetings[0] : (item as any).meetings;
+      records.set(flag.key!, [`${meeting?.meeting_date ?? ""}: ${String(item.title || "").split("\n")[0]}`,
+        item.plain_english_summary || "",
+        ...(motions || []).map((m: any) => `Motion (${m.result || "result not recorded"}): ${String(m.text_content || "").slice(0, 400)}`)]
+        .filter(Boolean).join(" | ").slice(0, 1500));
+    }
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates),
+      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
     });
@@ -102,7 +123,17 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const left: string[] = [];
     const fixedKeys = new Set<string>();
     const moves: { item_id: number; to_matter_id: number | null; reason: string }[] = [];
+    const rewrites: Record<string, string> = {};
     for (const step of result.data.actions) {
+      if (step.action === "rewrite_entry" && step.key && /^agenda-\d+$/.test(step.key) && onPage.has(step.key)) {
+        const text = (step.new_text || "").replace(/\s+/g, " ").trim();
+        if (text.length >= 15 && text.length <= 180) {
+          rewrites[step.key.slice(7)] = text;
+          fixedKeys.add(step.key);
+          done.push(`${step.reason} New line: "${text}"`);
+        } else left.push(`${step.reason} (the new line wasn't usable, so nothing changed)`);
+        continue;
+      }
       if (step.action === "move_item" && step.key && /^agenda-\d+$/.test(step.key) && onPage.has(step.key)) {
         const allowed = candidates.get(step.key)?.some((c) => c.id === step.to_matter_id) || step.to_matter_id === null;
         if (allowed) moves.push({ item_id: Number(step.key.slice(7)), to_matter_id: step.to_matter_id, reason: step.reason });
@@ -123,6 +154,22 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         }
       } else {
         left.push(step.reason);
+      }
+    }
+    if (Object.keys(rewrites).length) {
+      const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+      const meta = (matter?.meta || {}) as Record<string, any>;
+      const { error } = await supabase.from("matters").update({ meta: {
+        ...meta,
+        timeline_headlines: { ...(meta.timeline_headlines || {}), ...rewrites },
+        staff_headlines: { ...(meta.staff_headlines || {}), ...rewrites },
+      } }).eq("id", matterId);
+      if (error) {
+        for (const id of Object.keys(rewrites)) fixedKeys.delete(`agenda-${id}`);
+        left.push("Couldn't save the rewritten lines.");
+      } else {
+        await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:rewrite_entry",
+          detail: Object.fromEntries(Object.entries(rewrites).map(([id, text]) => [`item ${id}`, text])) });
       }
     }
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it.
