@@ -299,7 +299,7 @@ export function PageReviewBar() {
               {links && !links.hidden && (
                 confirming === "hide" ? (
                   <div className="mb-3 rounded-lg border border-red-200 px-2.5 py-2 text-xs">
-                    <p className="text-zinc-700">Hide this whole page from the public? It leaves lists, links and search results, and shows as not found. You can unhide it.</p>
+                    <p className="text-zinc-700">Remove this page from the site? It leaves topic lists, links and search, and anyone with an old link sees a short note that it was removed, with links to its meetings. You can undo it.</p>
                     <div className="mt-1.5 flex gap-2">
                       <button type="button" disabled={busy} onClick={() => { submit("hide_page"); setConfirming(null); }} className="rounded-md bg-red-600 px-2 py-1 font-medium text-white hover:bg-red-700">Hide page</button>
                       <button type="button" onClick={() => setConfirming(null)} className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Cancel</button>

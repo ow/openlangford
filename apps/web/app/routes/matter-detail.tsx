@@ -11,13 +11,14 @@ import {
 import { createSupabaseServerClient, getSupabaseAdminClient } from "../lib/supabase.server";
 import { parseRelatedAddresses } from "../lib/addresses";
 import { documentImageUrl } from "../lib/document-images.server";
-import { Link, redirect } from "react-router";
+import { Link, data, redirect } from "react-router";
 import { SubscribeButton } from "../components/subscribe-button";
 import { firstSentence, ogImageUrl } from "../lib/og";
 import { fitTitle, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd } from "../lib/structured-data";
 
 export const meta: Route.MetaFunction = ({ data }) => {
+  if (data && "removed" in data) return [{ title: `${data.removed.title} | ${SITE_NAME}` }, { name: "robots", content: "noindex" }];
   if (!data?.matter) return [{ title: `Matter | ${SITE_NAME}` }];
   const m = data.matter as any;
   const name = matterTitle(m);
@@ -331,10 +332,19 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const supabase = getSupabaseAdminClient();
     const resolved = await resolveSlugParam(supabase, "matters", params.id, request, (m) => matterPath(m), "Matter Not Found", { redirectLegacy: false });
     const matter = await getMatterById(supabase, String(resolved.id));
-    // Hidden by staff from the review bar: not found for the public; staff can still open it to unhide.
+    // Removed by staff from the review bar: old links get a short note (410 Gone, not indexed) pointing to the
+    // meetings where its agenda items still are; staff still see the whole page, to unhide it.
     if (matter.meta?.hidden === "staff") {
       const { data: { user } } = await createSupabaseServerClient(request).supabase.auth.getUser();
-      if (!(await getStaffRole(user))) throw new Response("Matter Not Found", { status: 404 });
+      if (!(await getStaffRole(user))) {
+        const meetings = new Map<string, { slug: string; title: string; date: string }>();
+        for (const item of matter.agenda_items || []) {
+          const m = (item as any).meetings;
+          if (m?.slug) meetings.set(m.slug, { slug: m.slug, title: m.title, date: m.meeting_date });
+        }
+        return data({ removed: { title: matterTitle(matter), meetings: [...meetings.values()].sort((a, b) => a.date.localeCompare(b.date)) } },
+          { status: 410, headers: { "X-Robots-Tag": "noindex" } });
+      }
     }
     // Legacy ids/slugs and alias matters go straight to the canonical slug URL.
     if (matter.slug && params.id !== matter.slug) return redirect(matterPath(matter) + new URL(request.url).search, 301);
@@ -377,6 +387,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 }
 
 export default function MatterDetail({ loaderData }: Route.ComponentProps) {
+  if ("removed" in loaderData) return <RemovedTopic {...loaderData.removed} />;
   const { matter, matterDocuments, matterEvidence, story, images, properties = [] } = loaderData;
 
   // Sort agenda items by meeting date
@@ -857,6 +868,30 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
           </section>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** A topic staff removed: say so, and point to where its agenda items still are. */
+function RemovedTopic({ title, meetings }: { title: string; meetings: { slug: string; title: string; date: string }[] }) {
+  return (
+    <div className="container mx-auto max-w-2xl px-4 py-16">
+      <h1 className="text-2xl font-bold text-zinc-900">{title}</h1>
+      <p className="mt-3 text-zinc-600">
+        This topic page was removed from Open Langford because there wasn't enough on record to follow it as a topic.
+        {meetings.length > 0 && " The agenda items it covered are still on their meeting pages."}
+      </p>
+      {meetings.length > 0 && (
+        <ul className="mt-4 space-y-1">
+          {meetings.map((m) => (
+            <li key={m.slug}>
+              <Link to={`/meetings/${m.slug}`} className="font-medium text-brand-700 hover:underline">{m.title}</Link>
+              <span className="text-sm text-zinc-500"> · {formatDate(m.date)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <Link to="/matters" className="mt-6 inline-block text-sm font-medium text-brand-700 hover:underline">Browse all topics</Link>
     </div>
   );
 }
