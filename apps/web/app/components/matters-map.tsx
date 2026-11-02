@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { quietSince } from "../lib/matter-status";
 import { createPortal } from "react-dom";
 import { Link } from "react-router";
 import { Loader2, MapPin } from "lucide-react";
@@ -492,12 +493,12 @@ export function MattersMap({
                         ? "success"
                         : ["Denied", "Repealed"].includes(matter.status)
                           ? "danger"
-                          : matter.status === "Active"
+                          : matter.status === "Active" && !quietSince(matter.status, (matter as any).last_seen)
                             ? "brand"
                             : "muted"
                     }
                   >
-                    {matter.status}
+                    {quietSince(matter.status, (matter as any).last_seen) ? `No activity since ${quietSince(matter.status, (matter as any).last_seen)}` : matter.status}
                   </Badge>
                   <span className="text-xs text-zinc-500">
                     {matter.category}

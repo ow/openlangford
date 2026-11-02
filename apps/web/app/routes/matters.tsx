@@ -24,6 +24,7 @@ import {
 import { Badge } from "../components/ui/badge";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { formatDate, cn } from "../lib/utils";
+import { quietSince } from "../lib/matter-status";
 import { PageHeader } from "../components/ui/page-header";
 import { documentImageUrl } from "../lib/document-images.server";
 import { displayTitle, matterTitle } from "../lib/display-text";
@@ -54,10 +55,12 @@ const PROCEDURAL_TITLES = new Set(["call to order", "approval of agenda", "adjou
 const mattersPagePath = (page: number) => (page > 1 ? `/matters?page=${page}` : "/matters");
 
 /** The status filter's buckets; counted server-side so the paginated view needn't ship every matter. */
-function statusCounts(matters: { status: string }[]) {
+function statusCounts(matters: { status: string; last_seen?: string | null }[]) {
   return {
     All: matters.length,
-    Active: matters.filter((m) => m.status === "Active").length,
+    // Active means recent too: an unconcluded matter with nothing in two years is "no recent activity".
+    Active: matters.filter((m) => m.status === "Active" && !quietSince(m.status, m.last_seen)).length,
+    Quiet: matters.filter((m) => quietSince(m.status, m.last_seen)).length,
     Completed: matters.filter((m) => ["Adopted", "Completed"].includes(m.status)).length,
     Inactive: matters.filter((m) => ["Inactive", "Denied", "Repealed"].includes(m.status)).length,
   };
@@ -177,7 +180,9 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
 
     if (statusFilter !== "All") {
       if (statusFilter === "Active") {
-        result = result.filter((m) => m.status === "Active");
+        result = result.filter((m) => m.status === "Active" && !quietSince(m.status, m.last_seen));
+      } else if (statusFilter === "Quiet") {
+        result = result.filter((m) => quietSince(m.status, m.last_seen));
       } else if (statusFilter === "Completed") {
         result = result.filter((m) =>
           ["Adopted", "Completed"].includes(m.status),
@@ -285,13 +290,16 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
   const statusTabs = [
     { value: "All", label: "All", count: counts.All },
     { value: "Active", label: "Active", count: counts.Active },
+    { value: "Quiet", label: "No recent activity", count: counts.Quiet },
     { value: "Completed", label: "Adopted / completed", count: counts.Completed },
     { value: "Inactive", label: "Inactive / denied", count: counts.Inactive },
   ];
   const showStatusTabs =
     statusTabs.filter((t) => t.value !== "All" && t.count > 0).length > 1;
 
-  const statusBadge = (status: string) => {
+  const statusBadge = (status: string, lastSeen?: string | null) => {
+    const quiet = quietSince(status, lastSeen);
+    if (quiet) return <Badge variant="muted">No activity since {quiet}</Badge>;
     if (status === "Active") return null;
     if (["Adopted", "Completed"].includes(status))
       return <Badge variant="success">{status}</Badge>;
@@ -453,7 +461,7 @@ export default function Matters({ loaderData }: Route.ComponentProps) {
                             <h3 className="text-base font-semibold leading-snug text-zinc-900 group-hover:text-brand-700">
                               {matterTitle(matter)}
                             </h3>
-                            {statusBadge(matter.status)}
+                            {statusBadge(matter.status, matter.last_seen)}
                           </div>
                           <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-zinc-500">
                             <span className="font-medium text-zinc-600">

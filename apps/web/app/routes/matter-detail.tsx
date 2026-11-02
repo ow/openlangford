@@ -52,7 +52,7 @@ import { crossNotes, writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
-import { matterStatusVariant } from "../lib/matter-status";
+import { matterStatusVariant, quietSince } from "../lib/matter-status";
 import { getPropertiesForMatter, propertyPath, propertyPin } from "../services/properties";
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
@@ -545,6 +545,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             badges={
               statusVariant ? (
                 <Badge variant={statusVariant}>{matter.status}</Badge>
+              ) : quietSince(matter.status, lastSeen || matter.last_seen) ? (
+                <Badge variant="muted">No activity since {quietSince(matter.status, lastSeen || matter.last_seen)}</Badge>
               ) : undefined
             }
             actions={
