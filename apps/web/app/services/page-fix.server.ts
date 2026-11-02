@@ -33,6 +33,7 @@ const PlanSchema = z.object({
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. Otherwise null."),
+    other_matter_id: z.number().int().nullable().describe("merge_topic only, when two related topics below duplicate each other but not this page: the second one's id (to_matter_id is the first). Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
     source: z.string().nullable().describe("rewrite_summary / rewrite_entry / rewrite_heading: the record's own words that support the change, quoted exactly from the records above. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null otherwise."),
     reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
@@ -114,8 +115,10 @@ ${movable || "(No flagged items to move.)"}
   of the right history: file_here if the item is on no topic; merge_topic if the topic holding it is this same
   project; or, if that topic is a separate project this page has wrongly taken steps from, move_item those steps of
   this topic's own to it (with to_matter_id null, they are re-filed with the rest of their bylaw).
-- merge_topic: when a related or same-named topic below is the very same project as this page (a duplicate, not just an
-  earlier or later step), with its id.
+- merge_topic: when a related or same-named topic below is the very same project as this page (a duplicate, or another
+  part of the same thing, like one year's budget split across several topics), with its id; one action per topic.
+  When two related topics duplicate each other but are not this page's project, give both: to_matter_id and
+  other_matter_id.
 - accept_suggestion: add one of the entries the search found for this page (listed below, not yet on it) when it
   supplies what an agreed problem says is missing (e.g. the adoption or decision the status lacks), with its key.
   A meeting item accepted here appears as "Also discussed"; if it is this topic's own step, the summary still won't
@@ -203,7 +206,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const fixedKeys = new Set<string>();
     const moves: { item_id: number; to_matter_id: number | null; refile?: boolean; reason: string }[] = [];
     const mentionMoves: { item_id: number; to_matter_id: number; reason: string }[] = [];
-    const merges: { with_matter_id: number; reason: string }[] = [];
+    const merges: { with_matter_id: number; matter_id?: number; reason: string }[] = [];
     const rewrites: Record<string, string> = {};
     const lines: Record<string, { line?: string; heading?: string; source?: string }> = {};
     const summaryNotes: string[] = [];
@@ -212,7 +215,11 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim().slice(0, 600);
     for (const step of result.data.actions) {
       if (step.action === "merge_topic" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id)) {
-        merges.push({ with_matter_id: step.to_matter_id, reason: step.reason });
+        const other = step.other_matter_id && step.other_matter_id !== step.to_matter_id
+          && lookalikes.some((c) => c.id === step.other_matter_id) ? step.other_matter_id : null;
+        // Two related topics merged with each other, or one merged into this page.
+        merges.push(other ? { matter_id: other, with_matter_id: step.to_matter_id, reason: step.reason }
+          : { with_matter_id: step.to_matter_id, reason: step.reason });
         continue;
       }
       if (step.action === "waiting_on_records") {
@@ -386,7 +393,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
       const { error } = await supabase.from("pipeline_jobs").insert({
         municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1,
-        args: { path, moves, merges: merges.map((m) => ({ ...m, matter_id: matterId })), refresh: [matterId], done, left, waiting,
+        args: { path, moves, merges: merges.map((m) => ({ ...m, matter_id: m.matter_id ?? matterId })), refresh: [matterId], done, left, waiting,
           summary_notes: summaryNotes.map((note) => ({ matter_id: matterId, note })),
           requested_by: requester.id, role: requester.staffRole },
       });

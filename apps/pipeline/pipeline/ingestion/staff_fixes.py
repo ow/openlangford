@@ -136,12 +136,14 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
         except Exception as exc:  # one failed move doesn't stop the rest
             left.append(f"{move.get('reason') or f'Moving item {item_id}'} (it didn't work: {exc})")
 
-    from pipeline.ingestion.matter_resolver import apply_merges
+    from pipeline.ingestion.matter_resolver import merge_flat
 
     for merge in args.get("merges") or []:
         a, b = int(merge["matter_id"]), int(merge["with_matter_id"])
         try:
-            applied = apply_merges(supabase, [[a, b]], reason="staff")
+            # Flattened, so no topic is left pointing at another alias.
+            merged = merge_flat(supabase, [a, b], canonical=a, reason="staff")  # the page being fixed keeps its address
+            applied = [merged] if merged["aliases"] else []
             if applied:
                 touched.add(applied[0]["canonical"])
                 done.append(merge.get("reason") or f"Merged topic {b} into this one.")
