@@ -37,6 +37,7 @@ import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { getStaffRole } from "./lib/auth.server";
 import { PageReviewBar } from "./components/admin/page-review-bar";
+import { isReviewable } from "./lib/page-review-types";
 
 export const meta: Route.MetaFunction = ({ matches, error }) => {
   // Error pages (404s, 503s) are never indexed.
@@ -222,7 +223,7 @@ export default function App() {
         <Outlet />
       </main>
       <Footer />
-      {root?.isAdmin && !pathname.startsWith("/admin") && <PageReviewBar />}
+      {root?.isAdmin && isReviewable(pathname) && <PageReviewBar />}
     </div>
   );
 }

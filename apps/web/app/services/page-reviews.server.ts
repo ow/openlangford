@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { unresolvedFlags, type PageFlag, type PageReview, type PageReviewStatus } from "../lib/page-review-types";
+import { UNREVIEWED_SECTIONS, isReviewable, unresolvedFlags, type PageFlag, type PageReview, type PageReviewStatus } from "../lib/page-review-types";
 import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap.server";
 
 export type { PageReview, PageReviewStatus } from "../lib/page-review-types";
@@ -9,6 +9,7 @@ const COLUMNS = "path, kind, title, status, note, reviewed_at, ai_flags, ai_page
 /** The page a review is about: its path alone, no query string or trailing slash ("/matters/x"). */
 export function reviewPath(value: string | null | undefined): string | null {
   if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
+  if (!isReviewable(value.split(/[?#]/)[0])) return null;
   const path = value.split(/[?#]/)[0].replace(/\/+$/, "") || "/";
   return path.length <= 300 && !path.startsWith("/admin") ? path : null;
 }
@@ -87,7 +88,8 @@ const SECTION_LABELS: Record<SitemapSection, string> = {
 /** Of every public page (the sitemap's lists), how many have been reviewed or checked, by kind of page. */
 export async function reviewCoverage(supabase: SupabaseClient, rows: { path: string; status: PageReviewStatus | null; ai_flags: unknown }[]) {
   const byPath = new Map(rows.map(r => [r.path, r]));
-  const sections = await Promise.all(SITEMAP_SECTIONS.map(async (section) => {
+  const reviewed = SITEMAP_SECTIONS.filter((s) => !(UNREVIEWED_SECTIONS as readonly string[]).includes(s));
+  const sections = await Promise.all(reviewed.map(async (section) => {
     const entries = await sitemapEntries(supabase, section).catch(() => []);
     let reviewed = 0, checked = 0;
     for (const entry of entries) {
@@ -110,7 +112,9 @@ export async function reviewCoverage(supabase: SupabaseClient, rows: { path: str
 /** A random page nobody has reviewed or checked yet: of one kind (a sitemap section), or of any kind (every page
  * equally likely), or null when none are left. */
 export async function randomUnreviewedPath(supabase: SupabaseClient, section: SitemapSection | "any"): Promise<string | null> {
-  const sections = section === "any" ? SITEMAP_SECTIONS.filter((s) => s !== "pages") : [section];
+  const sections = section === "any"
+    ? SITEMAP_SECTIONS.filter((s) => s !== "pages" && !(UNREVIEWED_SECTIONS as readonly string[]).includes(s))
+    : [section];
   const lists = await Promise.all(sections.map((s) => sitemapEntries(supabase, s).catch(() => [])));
   const entries = lists.flat().map((e) => reviewPath(e.path)).filter((p): p is string => !!p && !p.includes("?"));
   if (!entries.length) return null;

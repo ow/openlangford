@@ -47,3 +47,11 @@ export function reviewTime(iso: string | null | undefined) {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? "" : date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
+
+/** Pages the review tool leaves out: bylaws are imported as published, and councillor pages aren't reviewed here. */
+export const UNREVIEWED_SECTIONS = ["bylaws", "people"] as const;
+
+export function isReviewable(path: string) {
+  const first = path.split("/")[1] || "";
+  return !path.startsWith("/admin") && !(UNREVIEWED_SECTIONS as readonly string[]).includes(first);
+}
