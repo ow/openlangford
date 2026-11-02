@@ -129,10 +129,12 @@ Every rewrite (entry, heading or summary) puts the records' own words it rests o
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
-which record and which date disagree. When the fix needs a fact the records above don't contain (a motion's text, a
-report's details), say waiting_on_records and name the missing record: those are being recovered and the fix can be
-redone then. Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what
-is wrong and where, not "a person should look".
+which record and which date disagree. The council's records have all been recovered: what isn't in the records above
+isn't coming. So never wait for more. When the records don't say something, fix with what they do say: rewrite the
+line or summary to what they support (or to say plainly what they leave out), remove an entry that isn't about this
+topic, and leave an entry that is about it as it is. Say waiting_on_records only when you can name one specific
+record that exists but isn't shown above (say which meeting and item). Use cannot_fix only for a genuine judgement
+call none of these actions can make, and say precisely what is wrong and where, not "a person should look".
 
 For each agreed problem (and anything the note asks), give one action. Don't change anything the editor didn't
 agree with or ask for.
@@ -161,8 +163,12 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // Entries the search found that staff rated 👍: added first, so the plan (and the one summary rewrite) sees them.
     const agreedFound = (await listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])).filter((x) => x.agreed);
     if (!agreed.length && !row?.note && !agreedFound.length) {
-      // Everything agreed is already fixed (perhaps by a run a moment ago): leave the page as that run left it.
-      if (flags.some((f) => f.verdict === "agree" && f.fixed)) return;
+      // Everything agreed is already fixed (perhaps by a run a moment ago): back to "fixed", as that run left it
+      // (returning without that would leave the page saying the agent is still working).
+      if (flags.some((f) => f.verdict === "agree" && f.fixed)) {
+        await supabase.from("page_reviews").update({ status: "fixed" }).eq("path", path);
+        return;
+      }
       return finish("needs_work", "Nothing to fix: no flags were rated 👍 and there's no note.");
     }
     const added: { title: string; key: string | null }[] = [];
@@ -297,7 +303,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         const text = (step.new_text || "").replace(/\s+/g, " ").trim();
         const heading = step.action === "rewrite_heading";
         if (!quoteOf(step)) {
-          waiting.push(`${step.reason} (no record says it yet, so nothing changed)`);
+          waiting.push(`${step.reason} (no record says it, so nothing changed)`);
         } else if (text.length < (heading ? 6 : 15) || text.length > (heading ? 120 : 180) || (heading && step.key.startsWith("agenda-"))) {
           left.push(`${step.reason} (the new ${heading ? "heading" : "line"} wasn't usable, so nothing changed)`);
         } else {
@@ -436,7 +442,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     }
     const note = [
       done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : "Changed nothing.",
-      waiting.length ? `Waiting on records (being recovered; the fix can be redone then):\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
+      waiting.length ? `Needs a record that isn't on this page:\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
     ].filter(Boolean).join("\n\n");
     // Only waiting on records: nothing for a person to do now, so the page isn't sent back as needing work.

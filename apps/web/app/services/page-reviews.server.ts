@@ -19,10 +19,22 @@ export function reviewKind(path: string) {
   return path.split("/")[1] || "home";
 }
 
+/** How long a fix may run before the page stops saying the agent is working (a run that died, in a deploy say). */
+const STALE_FIX_MS = 10 * 60_000;
+
 export async function getPageReview(supabase: SupabaseClient, path: string): Promise<PageReview | null> {
   const { data, error } = await supabase.from("page_reviews").select(COLUMNS).eq("path", path).maybeSingle();
   if (error) throw new Error("Could not load the page review.");
-  return data as PageReview | null;
+  const review = data as PageReview | null;
+  // Fix sets "fixing" (stamping reviewed_at); the agent always finishes with "fixed" or "needs work". Still fixing
+  // long after: the run stopped without finishing, so say so rather than show the agent working forever.
+  if (review?.status === "fixing" && review.reviewed_at && Date.now() - new Date(review.reviewed_at).getTime() > STALE_FIX_MS) {
+    const agent_note = "The agent stopped without finishing. Press Fix to try again.";
+    await supabase.from("page_reviews").update({ status: "needs_work", agent_note, agent_at: new Date().toISOString() })
+      .eq("path", path).eq("status", "fixing");
+    return { ...review, status: "needs_work", agent_note };
+  }
+  return review;
 }
 
 export async function setPageReview(supabase: SupabaseClient, review: {
