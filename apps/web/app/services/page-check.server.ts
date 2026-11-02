@@ -14,7 +14,7 @@ import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-type
 
 export const FLAG_PROBLEMS: Record<FlagProblem, string> = {
   unclear_why: "You can't tell from what's shown why this entry is on this page.",
-  generic_text: "The text is generic (\"Public hearings were held\") and says nothing about this page's subject.",
+  generic_text: "The text could be about anything (\"Public hearings were held for bylaws (see subitems)\"), so a reader can't tell what happened to this subject. A line that doesn't repeat the page's subject is fine: on a page about one rezoning, \"Zoning amendment adopted\" is clear.",
   different_story: "It's about a different property, permit, project or decision than this page.",
   duplicate: "It repeats another entry on the page.",
   wrong_detail: "A date, name, number or outcome contradicts the rest of the page.",
