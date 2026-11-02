@@ -6,7 +6,8 @@ import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { randomUnreviewedPath, sectionOf } from "../services/page-reviews.server";
 import { SITEMAP_SECTIONS, type SitemapSection } from "../services/sitemap.server";
 
-/** The next page to review: a random page nobody has reviewed or checked, or the list when none are left.
+/** The next page to review: a random page nobody has reviewed or checked, or the list when none are left
+ * (or, with ?status=fixed, the next page the agent fixed that's waiting to be confirmed).
  * ?kind=meetings (or any other sitemap section, or "any") starts a run and is remembered in a cookie, so the review
  * bar's ?from=<the page just finished> keeps going in the same mode; without one, the same kind as that page. */
 const MODE_COOKIE = "review_mode";
@@ -14,6 +15,12 @@ const MODE_COOKIE = "review_mode";
 export async function loader({ request }: Route.LoaderArgs) {
   await requireModerator(request);
   const url = new URL(request.url);
+  // ?status=fixed: the next page the agent fixed that's waiting to be confirmed (oldest first), else that list.
+  if (url.searchParams.get("status") === "fixed") {
+    const { data } = await getSupabaseAdminClient().from("page_reviews").select("path").eq("status", "fixed")
+      .neq("path", url.searchParams.get("from") || "").order("agent_at", { ascending: true }).limit(1);
+    return redirect(data?.[0]?.path || "/admin/reviews?show=fixed", { headers: privateAdminHeaders() });
+  }
   const valid = (k: string | null | undefined): k is SitemapSection | "any" =>
     !!k && (k === "any" || (SITEMAP_SECTIONS as readonly string[]).includes(k));
   const asked = url.searchParams.get("kind");

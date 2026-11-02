@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate } from "react-router";
-import { Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
+import { ArrowRight, Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
@@ -53,12 +53,16 @@ export function PageReviewBar() {
   const [confirming, setConfirming] = useState<string | null>(null);
   const navigate = useNavigate();
   const finishing = useRef(false);
+  const [fixedRun, setFixedRun] = useState(false);  // this page came up as fixed by the agent, to confirm
+  const [stayed, setStayed] = useState(false);  // a fix was sent or confirmed here: offer Next instead of moving on
 
   useEffect(() => {
     setEditing(null);
     setBlocked(false);
     setOpen(false);
     setConfirming(null);
+    setFixedRun(false);
+    setStayed(false);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -76,6 +80,7 @@ export function PageReviewBar() {
     const r = load.data?.path === pathname ? load.data : null;
     if (!r || autoOpened.current === pathname) return;
     autoOpened.current = pathname;
+    if (r.review?.status === "fixed") setFixedRun(true);
     if (unresolvedFlags(r.review?.ai_flags).length || r.links?.suggestions?.length || r.review?.status === "fixed") setOpen(true);
   }, [load.data, pathname]);
 
@@ -108,7 +113,10 @@ export function PageReviewBar() {
   const checking = pending === "check";
   const busy = save.state !== "idle";
   const submit = (intent: string, extra: Record<string, string> = {}) => {
-    finishing.current = intent === "reviewed" || intent === "needs_work";
+    // Plain "Reviewed" moves on to the next page. Sending fixes to the agent, or confirming its fixes, stays here so
+    // the edits can be seen; the Next button moves on from there.
+    finishing.current = intent === "reviewed" && !fixedRun;
+    if (intent === "needs_work" || (intent === "reviewed" && fixedRun)) setStayed(true);
     save.submit({ intent, path: pathname, title: document.title, ...extra }, { method: "post", action: "/api/page-review" });
     if (intent === "check") setOpen(true);
     setEditing(null);
@@ -391,6 +399,14 @@ export function PageReviewBar() {
             {checking ? "Checking…" : review?.ai_checked_at ? (open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "No problems") : "Check"}
             {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{suggestions.length} new</span>}
           </button>
+          {(fixedRun || stayed) && (
+            <button type="button" disabled={busy && !fixing}
+              onClick={() => navigate(`/admin/reviews/next?${fixedRun ? "status=fixed&" : ""}from=${encodeURIComponent(pathname)}`)}
+              title={fixedRun ? "The next page the agent fixed, to confirm" : "The next page to review"}
+              className={cn(button, "flex items-center gap-1 text-zinc-700 hover:bg-zinc-100")}>
+              Next<ArrowRight className="h-4 w-4" />
+            </button>
+          )}
           {review?.status && !fixing && (
             <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review"
               className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"><X className="h-4 w-4" /></button>
