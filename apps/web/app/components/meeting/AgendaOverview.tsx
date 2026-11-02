@@ -349,7 +349,7 @@ function AgendaItemRow({
   const preview = item.plain_english_summary || null;
 
   return (
-    <div className="relative scroll-mt-24" id={`item-${item.id}`}>
+    <div className="relative scroll-mt-24" id={`item-${item.id}`} data-review-entry={`item-${item.id}`}>
 
       {/* Row Button */}
       <button

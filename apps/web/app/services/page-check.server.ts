@@ -52,16 +52,24 @@ export function readPage(html: string): ReadPage {
   const title = plain(html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || "");
   const heading = plain(html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "");
   const description = plain(html.match(/<meta\s+name="description"\s+content="([^"]*)"/i)?.[1] || "");
-  const starts = [...html.matchAll(/<li\b[^>]*\bid="timeline-([^"]+)"[^>]*>/g)];
+  // Entries a page marks for review: topic timelines (<li id="timeline-…">) and any element with
+  // data-review-entry="…" (a meeting's agenda items, with their motions and votes).
+  const starts = [...html.matchAll(/<li\b[^>]*\bid="timeline-([^"]+)"[^>]*>|<[a-z]+\b[^>]*\bdata-review-entry="([^"]+)"[^>]*>/g)]
+    .map((m) => Object.assign(m, { 1: m[1] ?? m[2] }));
+  const mainEnd = html.lastIndexOf("</main>");
   const entries = starts.map((m, i) => {
     const from = m.index! + m[0].length;
-    const next = starts[i + 1]?.index ?? html.indexOf("</ol>", from);
-    return { key: m[1], text: plain(html.slice(from, next === -1 ? undefined : next)) };
+    // The last entry ends where its list ends, or at the end of the page's main content, never in the footer.
+    const ends = [html.indexOf("</ol>", from), mainEnd].filter((n) => n > from);
+    const next = starts[i + 1]?.index ?? (ends.length ? Math.min(...ends) : undefined);
+    return { key: m[1], text: plain(html.slice(from, next)) };
   }).filter(e => e.text);
+  const mainStart = html.search(/<main\b/i);
   const main = html.match(/<main\b[^>]*>([\s\S]*)<\/main>/i)?.[1] || html;
   // Whole pages: a long meeting's motions and votes are at the bottom. The cap only guards against a runaway
-  // page (about 200,000 tokens), far beyond any real one.
-  const body = entries.length ? "" : plain(main);
+  // page (about 200,000 tokens), far beyond any real one. A page with entries still sends what comes before
+  // them (a meeting's summary and who attended), which the entries are judged against.
+  const body = entries.length ? plain(html.slice(mainStart >= 0 ? mainStart : 0, starts[0].index)) : plain(main);
   return { title, heading, description, entries, body: body.length > PAGE_CAP ? `${body.slice(0, PAGE_CAP)} [page continues; cut here]` : body };
 }
 
@@ -78,12 +86,24 @@ const CheckSchema = z.object({
 type Example = { problem: FlagProblem; reason: string; entry_text: string; verdict: FlagVerdict; note?: string | null };
 type Rule = { problem: string; text: string };
 
-export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = []) {
+/** What else to look for, by kind of page (the timeline guidance above suits topic pages). */
+const KIND_GUIDANCE: Record<string, string> = {
+  meetings: `This is one council or committee meeting. Each entry is an agenda item with its summary, motions, outcome and
+votes. Check that a summary says what the motions and outcome say; that a vote count, mover and seconder fit the people
+the page lists as attending; that an outcome isn't missing where a motion was made; and that speaker names make sense.
+Use wrong_detail for a contradiction, unclear_why for an item whose summary doesn't say what happened.`,
+  people: `This is a person's page: their roles and terms, votes, attendance and what they said. Check that dates and roles
+agree with each other, and that any claim about how they voted or what they said fits what the page lists.`,
+  properties: `This is a property's page: the council business about this address. Flag an entry that's about a different
+address or only mentions this one in passing.`,
+};
+
+export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = [], kind = "matters") {
   // Approved guidance replaces the built-in description of its problem type.
   const ruleFor = new Map(rules.map((r) => [r.problem, r.text]));
   const problems = CHECK_PROBLEMS.map((k) => `- ${k}: ${ruleFor.get(k) ?? FLAG_PROBLEMS[k]}`).join("\n");
   const content = page.entries.length
-    ? page.entries.map(e => `[${e.key}] ${e.text}`).join("\n\n")
+    ? `${page.body ? `Before the entries:\n${page.body}\n\n` : ""}${page.entries.map(e => `[${e.key}] ${e.text}`).join("\n\n")}`
     : page.body;
   const calibration = examples.length
     ? `\n\nAn editor rated flags on pages like this one. Flag what they agreed with; don't flag the kind of thing they rejected.\n` +
@@ -95,13 +115,13 @@ and a page with nothing wrong gets no flags. A timeline entry may be a small men
 meeting about something else; that's fine if the entry shows why it's there.
 
 Problems:
-${problems}${calibration}
+${problems}${KIND_GUIDANCE[kind] ? `\n\n${KIND_GUIDANCE[kind]}` : ""}${calibration}
 
 Page: ${page.title}
 Heading: ${page.heading}
 Description: ${page.description}
 
-${page.entries.length ? "Timeline entries (newest first), each with its key:" : "Page text:"}
+${page.entries.length ? (kind === "meetings" ? "The page, then its agenda items, each with its key:" : "Timeline entries (newest first), each with its key:") : "Page text:"}
 ${content}`;
 }
 
@@ -115,7 +135,7 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   ]);
   const result = await getAiClient().json({
     stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
-    prompt: checkPrompt(page, examples, guidance.rules),
+    prompt: checkPrompt(page, examples, guidance.rules, kind),
     schema: CheckSchema,
     schemaName: "page_check",
   });

@@ -18,13 +18,25 @@ describe("readPage", () => {
     expect(page.entries.map(e => e.key)).toEqual(["agenda-1", "background-2"]);
     expect(page.entries[0].text).toBe("July 17, 2023 Public Hearings · “TUP20-0002 Purpose”");
     expect(page.entries[1].text).toBe("Part of Renewal Minutes & more");
-    expect(page.body).toBe("");
+    expect(page.body).toBe("Flight Cannabis at 977 Langford Parkway");  // what comes before the entries
   });
 
   it("falls back to the main text on pages without a timeline", () => {
     const page = readPage("<main><h1>About</h1><p>We made this.</p></main>");
     expect(page.entries).toEqual([]);
     expect(page.body).toBe("About · We made this.");
+  });
+});
+
+describe("readPage on a meeting", () => {
+  it("reads marked agenda items, and the attendance before them, but not the footer", () => {
+    const meeting = `<main><h1>Regular Council</h1><p>Present: Mayor Goodmanson, Councillor Wagner</p>
+<div id="item-1" data-review-entry="item-1"><button>Rezoning</button><p>Carried 7–0</p></div>
+<div id="item-2" data-review-entry="item-2"><p>Adjournment</p></div></main><footer>About · Contact</footer>`;
+    const page = readPage(meeting);
+    expect(page.entries.map(e => e.key)).toEqual(["item-1", "item-2"]);
+    expect(page.entries[1].text).toBe("Adjournment");
+    expect(page.body).toContain("Present: Mayor Goodmanson, Councillor Wagner");
   });
 });
 
