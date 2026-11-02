@@ -8,6 +8,8 @@ import { onboardingNotice } from "../lib/onboarding-notice.server";
 import { EmailAlertsNotice } from "../components/email-alerts-notice";
 import { NEIGHBORHOODS } from "../lib/site-config";
 import { useState } from "react";
+import { PlacePicker, type PlaceChoice } from "../components/place-picker";
+import { readPlaceUpdate, readRadius, savePlace } from "../services/saved-place.server";
 import { redirect, useNavigation, useSubmit } from "react-router";
 import type { Route } from "./+types/onboarding";
 import { createSupabaseServerClient } from "../lib/supabase.server";
@@ -30,12 +32,6 @@ import type { Topic } from "../lib/types";
 // ── Neighbourhood list (keep in sync with settings.tsx) ──
 
 
-const PROXIMITY_OPTIONS = [
-  { value: 500, label: "500 m" },
-  { value: 1000, label: "1 km" },
-  { value: 2000, label: "2 km" },
-  { value: 3000, label: "3 km" },
-];
 
 // ── Loader ──
 
@@ -80,9 +76,6 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const topicIds = formData.getAll("topic_id").map(Number).filter(Boolean);
   const keywords = formData.getAll("keyword").map(String).filter(Boolean);
-  const address = (formData.get("address") as string) || "";
-  const lat = formData.get("lat") ? parseFloat(formData.get("lat") as string) : null;
-  const lng = formData.get("lng") ? parseFloat(formData.get("lng") as string) : null;
   const neighborhood = (formData.get("neighborhood") as string) || "";
   const proximityRadius = Number(formData.get("proximity_radius") || 1000);
   const alertsAvailable = emailAlertsAvailable();
@@ -105,32 +98,18 @@ export async function action({ request }: Route.ActionArgs) {
       }
     }
 
-    // 3. Handle address and location
+    // 3. Place for nearby alerts: only a rounded point and the street name are kept.
     const profileUpdate: Record<string, unknown> = {};
-
-    if (address) {
-      profileUpdate.address = address;
+    const place = await readPlaceUpdate(formData);
+    if (place.kind === "not_found") {
+      return { error: "We couldn't find that address. Go back to Location and try a nearby intersection, or skip it." };
     }
-
-    if (lat != null && lng != null) {
-      // Use SECURITY DEFINER RPC for safe geography write
-      const { error } = await supabase.rpc("update_user_location", {
-        target_user_id: user.id,
-        lng,
-        lat,
-      });
-      if (error) throw error;
-
-      // Create neighbourhood subscription for proximity alerts
-      await addSubscription(supabase, user.id, "neighborhood", {
-        proximity_radius_m: proximityRadius,
-      });
-    }
+    if (place.kind === "set") await savePlace(supabase, user.id, place, readRadius(formData) ?? proximityRadius);
 
     if (neighborhood) {
       profileUpdate.neighborhood = neighborhood;
-      // If not geocoded, still create neighbourhood subscription
-      if (lat == null || lng == null) {
+      // Without a place, alert on the neighbourhood by name.
+      if (place.kind !== "set") {
         await addSubscription(supabase, user.id, "neighborhood", {
           neighborhood,
           proximity_radius_m: proximityRadius,
@@ -368,66 +347,16 @@ function TopicStep({
 // ── Step 2: Location ──
 
 function LocationStep({
-  address,
-  setAddress,
-  geocodeResult,
-  setGeocodeResult,
+  placeChoice,
+  setPlaceChoice,
   neighborhood,
   setNeighborhood,
-  proximityRadius,
-  setProximityRadius,
 }: {
-  address: string;
-  setAddress: (a: string) => void;
-  geocodeResult: { lat: number; lng: number; display_name: string } | null;
-  setGeocodeResult: (
-    r: { lat: number; lng: number; display_name: string } | null,
-  ) => void;
+  placeChoice: PlaceChoice;
+  setPlaceChoice: (choice: PlaceChoice) => void;
   neighborhood: string;
   setNeighborhood: (n: string) => void;
-  proximityRadius: number;
-  setProximityRadius: (r: number) => void;
 }) {
-  const [geocoding, setGeocoding] = useState(false);
-  const [geocodeError, setGeocodeError] = useState("");
-
-  async function handleGeocode() {
-    if (!address.trim()) return;
-    setGeocoding(true);
-    setGeocodeError("");
-    setGeocodeResult(null);
-
-    try {
-      const res = await fetch("/api/geocode", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: address.trim() }),
-      });
-      const data = (await res.json()) as {
-        lat?: number;
-        lng?: number;
-        display_name?: string;
-        error?: string;
-      };
-      if (res.ok && data.lat && data.lng) {
-        setGeocodeResult({
-          lat: data.lat,
-          lng: data.lng,
-          display_name: data.display_name || address,
-        });
-      } else {
-        setGeocodeError(
-          data.error ||
-            "We couldn't find that address. Try adding more detail, or pick a neighbourhood instead.",
-        );
-      }
-    } catch {
-      setGeocodeError("Couldn't look up that address. Please try again.");
-    } finally {
-      setGeocoding(false);
-    }
-  }
-
   return (
     <div className="space-y-6">
       <div>
@@ -435,60 +364,17 @@ function LocationStep({
           Where in Langford?
         </h2>
         <p className="text-sm text-zinc-500">
-          Save a location for decisions and developments near your home. Your
-          address is only used to work out what's nearby.
+          Save a place to hear about decisions and developments near it.
         </p>
       </div>
 
-      <div className="space-y-3">
-        <label htmlFor="onboarding-address" className="text-sm font-medium text-zinc-700">
-          Street address
-        </label>
-        <div className="flex gap-2">
-          <Input
-            id="onboarding-address"
-            autoComplete="street-address"
-            className="h-10 bg-surface"
-            value={address}
-            onChange={(e) => {
-              setAddress(e.target.value);
-              setGeocodeResult(null);
-              setGeocodeError("");
-            }}
-            placeholder="e.g. 877 Goldstream Ave"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleGeocode();
-              }
-            }}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGeocode}
-            disabled={geocoding || !address.trim()}
-            className="h-10 flex-shrink-0"
-          >
-            {geocoding ? "Locating…" : "Locate"}
-          </Button>
-        </div>
-
-        {geocodeResult && (
-          <p
-            role="status"
-            className="truncate rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-sm text-emerald-800"
-          >
-            Found: {geocodeResult.display_name}
-          </p>
-        )}
-
-        {geocodeError && (
-          <p role="alert" className="rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-sm text-amber-800">
-            {geocodeError}
-          </p>
-        )}
-      </div>
+      {/* Remembers the choice when someone steps back to this page. */}
+      <PlacePicker
+        initial={placeChoice.place}
+        initialRadius={placeChoice.radius}
+        idPrefix="onboarding"
+        onChange={setPlaceChoice}
+      />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
@@ -515,33 +401,6 @@ function LocationStep({
             </option>
           ))}
         </NativeSelect>
-      </div>
-
-      <div className="space-y-3" role="group" aria-labelledby="onboarding-radius">
-        <div id="onboarding-radius" className="text-sm font-medium text-zinc-700">
-          Alert radius
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          {PROXIMITY_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setProximityRadius(opt.value)}
-              aria-pressed={proximityRadius === opt.value}
-              className={cn(
-                "rounded-lg border px-2 py-2 text-sm font-medium tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40",
-                proximityRadius === opt.value
-                  ? "border-brand-500 bg-brand-50 text-brand-700"
-                  : "border-zinc-200 bg-surface text-zinc-600 hover:border-zinc-300",
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-        <p className="text-xs text-zinc-500">
-          How far from your location we look for relevant decisions.
-        </p>
       </div>
     </div>
   );
@@ -624,14 +483,8 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
   const [step, setStep] = useState(0);
   const [selectedTopics, setSelectedTopics] = useState<Set<number>>(new Set());
   const [keywords, setKeywords] = useState<string[]>([]);
-  const [address, setAddress] = useState("");
-  const [geocodeResult, setGeocodeResult] = useState<{
-    lat: number;
-    lng: number;
-    display_name: string;
-  } | null>(null);
+  const [placeChoice, setPlaceChoice] = useState<PlaceChoice>({ place: null, lookup: "", radius: 1000, cleared: false });
   const [neighborhood, setNeighborhood] = useState("");
-  const [proximityRadius, setProximityRadius] = useState(1000);
   const [digestEnabled, setDigestEnabled] = useState(profile?.digest_enabled ?? false);
 
   function handleSubmit() {
@@ -646,13 +499,15 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
     }
 
     // Location
-    if (address) form.set("address", address);
-    if (geocodeResult) {
-      form.set("lat", String(geocodeResult.lat));
-      form.set("lng", String(geocodeResult.lng));
+    if (placeChoice.place) {
+      form.set("place_lat", String(placeChoice.place.lat));
+      form.set("place_lng", String(placeChoice.place.lng));
+      form.set("place_label", placeChoice.place.label);
+    } else if (placeChoice.lookup.trim()) {
+      form.set("place_lookup", placeChoice.lookup.trim());
     }
     if (neighborhood) form.set("neighborhood", neighborhood);
-    form.set("proximity_radius", String(proximityRadius));
+    form.set("proximity_radius", String(placeChoice.radius));
 
     // Digest
     form.set("digest_enabled", digestEnabled ? "true" : "false");
@@ -696,14 +551,10 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
 
           {step === 1 && (
             <LocationStep
-              address={address}
-              setAddress={setAddress}
-              geocodeResult={geocodeResult}
-              setGeocodeResult={setGeocodeResult}
+              placeChoice={placeChoice}
+              setPlaceChoice={setPlaceChoice}
               neighborhood={neighborhood}
               setNeighborhood={setNeighborhood}
-              proximityRadius={proximityRadius}
-              setProximityRadius={setProximityRadius}
             />
           )}
 

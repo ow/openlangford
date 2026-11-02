@@ -4,7 +4,7 @@ Last updated: November 1, 2026
 
 - Open Langford mostly publishes public council records: agendas, minutes, votes and meeting video.
 - These records name councillors, City staff and some residents who spoke or wrote to council. You can ask us to correct a name, or replace a resident's name with "a resident".
-- You don't need an account to use the site. If you create one, we keep your email, your settings and anything you choose to save, such as your address for local alerts. You can delete your account at any time.
+- You don't need an account to use the site. If you create one, we keep your email, your settings and anything you choose to save, such as a place for local alerts (a map point, not your address). You can delete your account at any time.
 - We use PostHog to see how the site is used, including the searches and questions people type. We don't send it your IP address or anything that identifies you.
 - PostHog and Google Analytics each set a cookie with a random ID so we can count visits and returning visitors.
 - Questions you ask are sent to OpenAI so it can write an answer.
@@ -70,7 +70,7 @@ To sign up, you give us your email address, a password and, if you like, a displ
 Once you have an account, you can choose to save:
 
 - **Things to follow:** topics, projects, people and keywords. Keywords you type are sent to OpenAI to help match them to council business.
-- **A street address or neighbourhood**, for alerts about decisions near you. When you look up an address, we send it to OpenStreetMap's Nominatim service to find its map location. We store the address you typed and its map location, use it only to work out what's nearby, and never show it on the site.
+- **A place or neighbourhood**, for alerts about decisions near you. You can type an address or let your browser share its location. We send the address, or your location rounded to about a block, to OpenStreetMap's Nominatim service to find the spot on the map. We keep only that map point, rounded to about a block, and the street name. We don't keep the address you typed. We use the point only to work out what's nearby, and never show it on the site.
 - **Email alert settings**, including when you agreed to get alerts.
 - **API keys**, if you use our data API. We store only a scrambled version of each key.
 
@@ -107,7 +107,7 @@ We don't sell personal information. We share it only with these service provider
 | PostHog | Usage analytics | Page views, clicks, searches and questions, without IP addresses | USA |
 | Google (Google Analytics) | Usage analytics | Page views, clicks, device and browser type, and your IP address, which it uses to estimate your general location | USA |
 | Resend | Sends alert and contact-form emails | Email address and email content | USA (Virginia) |
-| OpenStreetMap Nominatim | Finds the map location of an address you enter | The address you typed | United Kingdom / EU |
+| OpenStreetMap Nominatim | Finds the map location of a place you enter | The address you typed, or your location rounded to about a block (not stored by us) | United Kingdom / EU |
 | The City's video provider | Plays meeting video | Your IP address when you press play | Set by the City's provider |
 
 Your account and the site's database are stored in Canada. Some of these providers store information outside Canada, mostly in the United States. While it is there, the laws of that country apply, and authorities there may be able to access it.

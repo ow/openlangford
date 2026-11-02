@@ -13,6 +13,8 @@ import {
   removeSubscription,
 } from "../services/subscriptions";
 import { getTopics } from "../services/topics";
+import { readPlaceUpdate, readRadius, savePlace, savedPlace } from "../services/saved-place.server";
+import { PlacePicker } from "../components/place-picker";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -87,17 +89,22 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (intent === "update_profile") {
     const display_name = (formData.get("display_name") as string) || undefined;
-    const address = (formData.get("address") as string) || undefined;
     const neighborhood = (formData.get("neighborhood") as string) || undefined;
     const notification_email =
       (formData.get("notification_email") as string) || undefined;
     const digest_enabled = formData.get("digest_enabled") === "on";
-    const lat = formData.get("lat") ? parseFloat(formData.get("lat") as string) : null;
-    const lng = formData.get("lng") ? parseFloat(formData.get("lng") as string) : null;
+    let place;
+    try {
+      place = await readPlaceUpdate(formData);
+    } catch {
+      return { error: "The map lookup isn't answering, so your place wasn't saved. Please try again." };
+    }
+    if (place.kind === "not_found") {
+      return { error: "We couldn't find that address. Try adding more detail, or a nearby intersection." };
+    }
 
     await upsertUserProfile(supabase, user.id, {
       display_name,
-      address,
       neighborhood,
       notification_email,
       ...(emailAlertsAvailable() ? {
@@ -111,24 +118,8 @@ export async function action({ request }: Route.ActionArgs) {
       if (error) return { error: "Unable to save email consent. Confirm your sign-in email and try again." };
     }
 
-    // Alert radius lives on the user's neighbourhood subscription.
-    const radius = Number(formData.get("proximity_radius"));
-    if (Number.isFinite(radius) && radius > 0) {
-      await supabase
-        .from("subscriptions")
-        .update({ proximity_radius_m: radius })
-        .eq("user_id", user.id)
-        .eq("type", "neighborhood");
-    }
-
-    // If geocoded coordinates are provided, update geography via RPC
-    if (lat != null && lng != null) {
-      await supabase.rpc("update_user_location", {
-        target_user_id: user.id,
-        lng,
-        lat,
-      });
-    }
+    // Only the rounded point and street name are saved; the radius lives on the "near my place" alert.
+    await savePlace(supabase, user.id, place, readRadius(formData));
 
     return { success: true, message: "Profile updated." };
   }
@@ -145,12 +136,6 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 
-const PROXIMITY_OPTIONS = [
-  { value: 500, label: "500 m" },
-  { value: 1000, label: "1 km" },
-  { value: 2000, label: "2 km" },
-  { value: 3000, label: "3 km" },
-];
 
 const subscriptionTypeLabel: Record<string, string> = {
   matter: "Matter",
@@ -194,7 +179,7 @@ function SubscriptionRow({ sub }: { sub: Subscription }) {
       sub.proximity_radius_m >= 1000
         ? `${sub.proximity_radius_m / 1000} km`
         : `${sub.proximity_radius_m} m`
-    } of your address`;
+    } of your place`;
   } else if (sub.type === "digest") {
     title = "Meeting digest";
   }
@@ -436,124 +421,6 @@ function KeywordManager({
 
 // ── Address with Geocoding ──
 
-function AddressField({
-  defaultAddress,
-  defaultNeighborhood,
-}: {
-  defaultAddress: string;
-  defaultNeighborhood: string;
-}) {
-  const [address, setAddress] = useState(defaultAddress);
-  const [geocoding, setGeocoding] = useState(false);
-  const [geocodeResult, setGeocodeResult] = useState<{
-    lat: number;
-    lng: number;
-    display_name: string;
-  } | null>(null);
-  const [geocodeError, setGeocodeError] = useState("");
-
-  async function handleGeocode() {
-    if (!address.trim()) return;
-    setGeocoding(true);
-    setGeocodeError("");
-    setGeocodeResult(null);
-
-    try {
-      const res = await fetch("/api/geocode", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: address.trim() }),
-      });
-      const data = (await res.json()) as {
-        lat?: number;
-        lng?: number;
-        display_name?: string;
-        error?: string;
-      };
-      if (res.ok && data.lat && data.lng) {
-        setGeocodeResult({
-          lat: data.lat,
-          lng: data.lng,
-          display_name: data.display_name || address,
-        });
-      } else {
-        setGeocodeError(
-          data.error ||
-            "Could not find that address. Try adding more detail.",
-        );
-      }
-    } catch {
-      setGeocodeError("Couldn't look up that address. Please try again.");
-    } finally {
-      setGeocoding(false);
-    }
-  }
-
-  return (
-    <>
-      <div className="space-y-1.5">
-        <label htmlFor="address" className={LABEL}>
-          Street address
-        </label>
-        <div className="flex gap-2">
-          <Input
-            id="address"
-            name="address"
-            value={address}
-            autoComplete="street-address"
-            className="h-10 bg-surface"
-            onChange={(e) => {
-              setAddress(e.target.value);
-              setGeocodeResult(null);
-              setGeocodeError("");
-            }}
-            placeholder="e.g. 877 Goldstream Ave"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGeocode}
-            disabled={geocoding || !address.trim()}
-            className="h-10 flex-shrink-0"
-          >
-            {geocoding ? "Locating…" : "Locate"}
-          </Button>
-        </div>
-
-        {geocodeResult && (
-          <p
-            role="status"
-            className="truncate rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-2 text-xs text-emerald-800"
-          >
-            Found: {geocodeResult.display_name}
-          </p>
-        )}
-
-        {geocodeError && (
-          <p
-            role="alert"
-            className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-800"
-          >
-            {geocodeError}
-          </p>
-        )}
-
-        <p className={HINT}>
-          Press Locate to confirm your address for nearby alerts.
-        </p>
-      </div>
-
-      {/* Hidden fields for geocoded coordinates */}
-      {geocodeResult && (
-        <>
-          <input type="hidden" name="lat" value={geocodeResult.lat} />
-          <input type="hidden" name="lng" value={geocodeResult.lng} />
-        </>
-      )}
-    </>
-  );
-}
-
 export default function Settings({ loaderData }: Route.ComponentProps) {
   const { user, profile, subscriptions, topics, emailAlertsAvailable: alertsAvailable } = loaderData;
   const actionData = useActionData<typeof action>();
@@ -562,6 +429,7 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
   const neighborhoodSub = subscriptions.find(
     (s) => s.type === "neighborhood",
   );
+  const place = savedPlace(profile);
 
   // Non-topic/keyword/digest subscriptions for the "Active Subscriptions" section
   const otherSubscriptions = subscriptions.filter(
@@ -646,10 +514,18 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                <AddressField
-                  defaultAddress={profile?.address || ""}
-                  defaultNeighborhood={profile?.neighborhood || ""}
+              <div className="space-y-5 border-t border-zinc-100 pt-5">
+                <div>
+                  <h3 className="text-sm font-semibold text-zinc-900">Your place</h3>
+                  <p className={HINT}>For alerts about decisions near you.</p>
+                </div>
+                {/* Remount after a save so the picker shows what was stored. */}
+                <PlacePicker
+                  key={place ? `${place.lat},${place.lng},${place.label}` : "none"}
+                  initial={place}
+                  initialRadius={neighborhoodSub?.proximity_radius_m || 1000}
+                  idPrefix="settings"
+                  formFields
                 />
 
                 <div className="space-y-1.5">
@@ -668,40 +544,9 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
                       </option>
                     ))}
                   </NativeSelect>
-                  <p className={HINT}>Use this if you'd rather not share an address.</p>
+                  <p className={HINT}>Or pick a neighbourhood instead of a place.</p>
                 </div>
               </div>
-
-              {/* Proximity radius — stored on the neighbourhood subscription */}
-              {neighborhoodSub && (
-                <fieldset className="space-y-2">
-                  <legend className={LABEL}>Alert radius</legend>
-                  <div className="grid grid-cols-4 gap-2">
-                    {PROXIMITY_OPTIONS.map((opt) => {
-                      const currentRadius =
-                        neighborhoodSub?.proximity_radius_m || 1000;
-                      return (
-                        <label
-                          key={opt.value}
-                          className="cursor-pointer rounded-lg border border-zinc-200 bg-surface px-2 py-2 text-center text-sm font-medium tabular-nums text-zinc-600 transition-colors hover:border-zinc-300 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-800 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500/40"
-                        >
-                          <input
-                            type="radio"
-                            name="proximity_radius"
-                            value={opt.value}
-                            defaultChecked={currentRadius === opt.value}
-                            className="sr-only"
-                          />
-                          {opt.label}
-                        </label>
-                      );
-                    })}
-                  </div>
-                  <p className={HINT}>
-                    How far from your location we look for relevant decisions.
-                  </p>
-                </fieldset>
-              )}
 
               <div className="space-y-3 border-t border-zinc-100 pt-5">
                 <label className="flex items-start gap-3 text-sm">
@@ -881,7 +726,7 @@ function DeleteAccount({ email, failed }: { email: string; failed: boolean }) {
       <SectionHeading title="Delete your account" />
       <div className={cn(CARD, "p-5")}>
         <p className="text-sm text-zinc-600">
-          This deletes your sign-in, your saved address, the things you follow, your alert settings and any API keys. It can't be undone.
+          This deletes your sign-in, your saved place, the things you follow, your alert settings and any API keys. It can't be undone.
           Our record of alert emails we sent you keeps only whether each one was delivered, not your email address.
         </p>
         {!open ? (

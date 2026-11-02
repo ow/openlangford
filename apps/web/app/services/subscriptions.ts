@@ -34,7 +34,6 @@ export async function upsertUserProfile(
     Pick<
       UserProfile,
       | "display_name"
-      | "address"
       | "neighborhood"
       | "notification_email"
       | "digest_frequency"

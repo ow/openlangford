@@ -346,8 +346,11 @@ export type DigestFrequency = "each_meeting" | "weekly";
 export interface UserProfile {
   id: string; // uuid from auth.users
   display_name?: string;
-  address?: string;
   neighborhood?: string;
+  /** Rounded to about a block (lib/saved-place.ts); the typed address is never stored. */
+  location_lat?: number | null;
+  location_lng?: number | null;
+  location_label?: string | null;
   notification_email?: string;
   email_verified: boolean;
   email_alerts_enabled?: boolean;
