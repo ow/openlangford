@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -43,12 +44,28 @@ def read_meeting(connection, meeting_id, municipality_id):
     return meeting, motions, items
 
 
+# A scanned original has no text layer to bind a body to, so its OCR transcription is the only reading. A body from
+# it can become a motion when it owns exactly one complete mover/seconder/outcome envelope and opens the resolution
+# itself (after quote marks and a list label); it is stored as a transcription, with no OCR-read names.
+_OCR_OPERATIVE = re.compile(r'^(?:>\s*)*(?:(?:[a-z]\)|\d{1,2}[.)])\s*)?(?:THAT\b|WHEREAS\b)', re.I)
+
+
+def ocr_display_text(body):
+    return '\n'.join(re.sub(r'^[ \t]*(?:>[ \t]*)+', '', line) for line in body.splitlines()).strip()
+
+
+def _explicit(source, proof, block):
+    if proof.get('status') == 'explicit_operative' or source.get('source_format') == 'official_html_structural':
+        return True
+    return source.get('source_format') == 'ocr_marker' and bool(_OCR_OPERATIVE.match(block['motion_text'].strip()))
+
+
 def plan_meeting(meeting, motions, items, source, *, review_scope=None):
     """A source-authoritative report can still contain held, incomplete coverage."""
     claims = build_claim_inventory(motions, meeting_id=meeting['id'], expected_count=len(motions))
     base = {'meeting_id': meeting['id'], 'meeting_date': meeting['meeting_date'],
             'catalog_sha256': digest(meeting), 'claims_sha256': digest(motions),
-            'agenda_sha256': digest(items), 'new_motions': [], 'held': [],
+            'agenda_sha256': digest(items), 'new_motions': [], 'rebinds': [], 'held': [],
             'stored_outcome_unknown_ids': [row['id'] for row in motions if not row.get('result')]}
     if review_scope and 'closing_linked_vote_counts' in review_scope:
         base['closing_linked_vote_counts']=review_scope['closing_linked_vote_counts']
@@ -71,7 +88,7 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
     # source container, never a guessed legal proceeding or heading number.
     proposals = [{**item, 'motions': [{'motion_text': row['text_content']} for row in motions
                                      if row['agenda_item_id'] == item['id']]} for item in items]
-    planned, report = canonical_motion_plan(proposals, {'status': 'available', 'meeting': meeting,
+    planned, report = canonical_motion_plan(proposals, {'status': 'available', 'meeting': meeting, 'agenda_items': items,
                                                        'source': source, 'meeting_claim_inventory': claims, **(review_scope or {})}, motions)
     base.update(source_report=report, held=[*source.get('source_review_holds', []), *report.get('held', [])])
     if different_day:
@@ -87,34 +104,58 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
     for item in planned:
         parent = existing_agenda_item(item, items)
         for motion in item.get('motions', []):
-            if motion.get('_existing_motion'):
+            rebind = motion.get('_legacy_rebind')
+            if motion.get('_existing_motion') and not rebind:
                 continue  # Preserve every existing body, actor, result and proof.
             identity = motion['_canonical_source_motion']
             block = motion['_source_motion']
             proof = motion.get('_operative_motion_body') or {}
+            if rebind:
+                # An earlier AI-read row paired (uniquely, same item, compatible outcome) with the recorded motion:
+                # the record's words and outcome replace the paraphrase; the old text stays on the row.
+                ocr = source.get('source_format') == 'ocr_marker' and proof.get('status') != 'explicit_operative'
+                if not text_occurrence_unique(source, block) or not _explicit(source, proof, block):
+                    base['held'].append({'source_key': identity['key'], 'reason': 'rebind_requires_unique_explicit_operative_body',
+                                         'legacy_ids': [motion['_existing_motion']['id']]})
+                    continue
+                old = motion['_existing_motion']
+                base['rebinds'].append({'motion_id': old['id'], 'item_order': rebind['item_order'],
+                    'text_content': ocr_display_text(block['motion_text']) if ocr else motion.get('_operative_motion_text') or block['motion_text'],
+                    'result': motion['result'],
+                    'previous': {'text_content': old.get('text_content'), 'result': old.get('result')},
+                    'meta': {'canonical_source_motion': identity, 'operative_motion_body': proof,
+                             **({'text_source': 'ocr_transcription_of_scanned_original'} if ocr else {}),
+                             'vote_record': {'coverage': 'not_recorded', 'source': 'bounded_official_minutes',
+                                             'outcome_status': 'verified', 'outcome_source_quote': identity['outcome_quote']}}})
+                continue
             reviewed_native = source.get('source_format') == 'original_pdf_reviewed_image_decisions'
             if reviewed_native and identity['key'] not in source.get('reviewed_new_decision_keys', []):
                 base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_not_explicitly_image_enrolled'})
                 continue
-            explicit = proof.get('status') == 'explicit_operative' or source.get('source_format') == 'official_html_structural'
-            if not text_occurrence_unique(source, block) or not explicit:
+            if not text_occurrence_unique(source, block) or not _explicit(source, proof, block):
                 base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_requires_unique_explicit_operative_body'})
                 continue
+            ocr = source.get('source_format') == 'ocr_marker' and proof.get('status') != 'explicit_operative'
             actors = motion['_canonical_actor_ids']
             actors_unreviewed = reviewed_native or source['source_format']=='original_pdf_reviewed_local_ocr'
+            # From a scan, keep only names that resolved exactly to a person on that day's roster.
+            name = lambda field: (None if actors_unreviewed or (ocr and actors[field] is None) else motion.get(field))
             base['new_motions'].append({'parent_agenda_id': parent['id'] if parent else None,
-                'text_content': motion.get('_operative_motion_text') or motion['motion_text'], 'result': motion['result'],
-                'mover': motion.get('mover') if not actors_unreviewed else None,
-                'seconder': motion.get('seconder') if not actors_unreviewed else None,
+                'placed_by': motion.get('_placed_by'),
+                'text_content': ocr_display_text(motion['motion_text']) if ocr else motion.get('_operative_motion_text') or motion['motion_text'],
+                'result': motion['result'],
+                'mover': name('mover'),
+                'seconder': name('seconder'),
                 'mover_id': actors['mover'] if not actors_unreviewed else None,
                 'seconder_id': actors['seconder'] if not actors_unreviewed else None,
                 'meta': {'canonical_source_motion': identity, 'operative_motion_body': proof,
+                         **({'text_source': 'ocr_transcription_of_scanned_original'} if ocr else {}),
                          'individual_vote_coverage': 'not_recorded',
                          'vote_record': {'coverage': 'not_recorded', 'source': 'bounded_official_minutes',
                                          'outcome_status': 'verified', 'outcome_source_quote': identity['outcome_quote']}}})
     incomplete = (base['held'] or report.get('unmapped_legacy_ids') or report.get('unbound_outcome_leads')
                   or report.get('unparsed_formal_occurrence_leads'))
-    return {**base, 'coverage': 'review_required' if incomplete else 'missing_source_decisions' if base['new_motions'] else 'source_occurrences_accounted_for',
+    return {**base, 'coverage': 'review_required' if incomplete else 'missing_source_decisions' if (base['new_motions'] or base['rebinds']) else 'source_occurrences_accounted_for',
             'stored_motions': len(motions), 'mapped_source_motions': report.get('mapped_motions', 0)}
 
 
@@ -152,7 +193,7 @@ def audit(connection, meeting_ids, municipality_id, archive_root, cache_dir, pro
                                        project_ref=project_ref,municipality_id=municipality_id)
         if source is None:
             source = load_official_minutes(meeting, root=archive_root, people=people, cache_dir=cache_dir)
-        scope={'allow_reviewed_legacy_reservations': True, 'allow_reviewed_source_header':True,
+        scope={'allow_reviewed_legacy_reservations': True, 'allow_reviewed_source_header':True, 'allow_legacy_rebind': True,
             'project_ref':project_ref, 'municipality_id':municipality_id, 'archive_root':archive_root}
         from .legacy_occurrence_reviews import load_review
         try:
@@ -246,7 +287,7 @@ def apply_manifest(connection, manifest, regenerate, archive_root):
             path = (archive_root / plan['source_file']).resolve()
             if not path.is_relative_to(archive_root.resolve()) or hashlib.sha256(path.read_bytes()).hexdigest() != plan['source_sha256']:
                 raise ValueError('Original source changed; audit and review again')
-    if not any(plan['new_motions'] for plan in manifest['meetings']):
+    if not any(plan['new_motions'] or plan.get('rebinds') for plan in manifest['meetings']):
         return {'status': 'no_safe_additions', 'manifest_sha256': manifest_sha, 'meetings': []}
     receipt = {'status': 'applied', 'manifest_sha256': manifest_sha, 'meetings': []}
     for plan in manifest['meetings']:
@@ -264,12 +305,23 @@ def apply_manifest(connection, manifest, regenerate, archive_root):
                     else:
                         container = query(connection, "INSERT INTO agenda_items(meeting_id,item_order,title,category,slug) VALUES(%s,'official-recorded-motions','Official recorded motions','procedural',%s) RETURNING id", (meeting_id, f'{meeting_id}-official-recorded-motions'))[0]['id']
                 parent = container
-            row = {k: v for k, v in proposed.items() if k != 'parent_agenda_id'}
+            row = {k: v for k, v in proposed.items() if k not in ('parent_agenda_id', 'placed_by')}
+            if proposed.get('placed_by'):
+                row['meta'] = {**row['meta'], 'placed_by': proposed['placed_by']}
             row.update(meeting_id=meeting_id, agenda_item_id=parent)
             row['meta'] = Json({**row['meta'], 'history_catchup_manifest': manifest_sha})
             keys = list(row)
             inserted += query(connection, 'INSERT INTO motions (' + ','.join(keys) + ') VALUES (' + ','.join(['%s'] * len(keys)) + ') RETURNING id,meeting_id,agenda_item_id,text_content,result,mover,seconder,mover_id,seconder_id,meta', tuple(row[k] for k in keys))
-        entry = {'inserted_claims': inserted, 'source_sha256': plan.get('source_sha256'),
+        rebound = []
+        for change in plan.get('rebinds', []):
+            current = query(connection, 'SELECT meta FROM motions WHERE id=%s AND meeting_id=%s', (change['motion_id'], meeting_id))
+            if len(current) != 1:
+                raise ValueError('Rebound row missing; audit and review again')
+            meta = {**(current[0]['meta'] or {}), **change['meta'], 'history_catchup_manifest': manifest_sha,
+                    'legacy_rebind': {**change['previous'], 'item_order': change['item_order'], 'manifest_sha256': manifest_sha}}
+            rebound += query(connection, 'UPDATE motions SET text_content=%s, result=%s, meta=%s WHERE id=%s RETURNING id',
+                             (change['text_content'], change['result'], Json(meta), change['motion_id']))
+        entry = {'inserted_claims': inserted, 'rebound_ids': [r['id'] for r in rebound], 'source_sha256': plan.get('source_sha256'),
                  'remaining_coverage': remaining_coverage(plan), 'held': plan.get('held', []),
                  'stored_outcome_unknown_ids': plan.get('stored_outcome_unknown_ids', [])}
         if 'closing_linked_vote_counts' in plan:

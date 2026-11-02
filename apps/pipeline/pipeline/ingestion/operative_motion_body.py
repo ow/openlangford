@@ -193,7 +193,8 @@ def _derive_from_native(block, *, source_sha256, source_date, lines, page_count)
     result['excluded_spans']=excluded
     if re.fullmatch(_EVENT,body,re.I):
         return {**result,'status':'documentary_event_only_held'}
-    if not re.match(r'^(?:[a-z]\)\s*)?(?:THAT(?=\s|Council\b|Committee\b)|WHEREAS\b)',operative,re.I):
+    # A list label may lead the body ("a) THAT ...", "1. That Council ..."); the words must still open the resolution.
+    if not re.match(r'^(?:(?:[a-z]\)|\d{1,2}[.)])\s*)?(?:THAT(?=\s|Council\b|Committee\b)|WHEREAS\b)',operative,re.I):
         return {**result,'status':'operative_boundary_unknown_held'}
     result.update(operative_body=operative,status='explicit_operative')
     if result['motion_kind']=='amendment':

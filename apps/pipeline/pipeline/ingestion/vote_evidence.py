@@ -59,12 +59,32 @@ def special_voting_threshold(text):
     return bool(re.search(r'sustain.*chair|presiding|appeal.*chair|chair.*appeal|ruling.*chair', body, re.I))
 
 
+# Older minutes (2009-2014 scans) quote the motion and its outcome as block quotes ("> > CARRIED."), and the OCR
+# can read SECONDED as SEGONDED. These are recognised only where the original reading found no outcome or no
+# seconder, so every block the original reading produced is unchanged (its persisted identities stay valid).
+_QUOTED_OUTCOME = re.compile(
+    r"(?im)^[ \t]*(?:>[ \t]*)+\*{0,2}(?:Motion\s+)?(CARRIED(?:\s+UNANIMOUSLY)?|DEFEATED|WITHDRAWN|NOT CARRIED|TABLED)\b[^\n]*")
+_OCR_SECONDER = re.compile(r"(?im)^.*\bSEGONDED\b[^\n]*\n")
+
+
 def minutes_motion_blocks(minutes):
     """Keep a recorded decision bounded by its own mover and the next mover.
 
     Markdown exports may repeat the minutes; identical normalized blocks are
     deduplicated. Notices and narrative without an explicit outcome stay unknown.
+    The original reading's blocks come first and are never displaced: a block
+    recognised only through the older-minutes shapes is added when nothing the
+    original reading kept starts at its offset or repeats its text.
     """
+    original = list(_motion_blocks(minutes, older_shapes=False))
+    offsets = {block['source_offset'] for block in original}
+    keys = {normalize_text(block['source_block']) for block in original}
+    added = [block for block in _motion_blocks(minutes, older_shapes=True)
+             if block['source_offset'] not in offsets and normalize_text(block['source_block']) not in keys]
+    yield from sorted(original + added, key=lambda block: block['source_offset'])
+
+
+def _motion_blocks(minutes, *, older_shapes):
     seen = set()
     starts = list(_FORMAL_START.finditer(minutes))
     recovered = list(_OCR_MOVED_START.finditer(minutes))
@@ -84,12 +104,16 @@ def minutes_motion_blocks(minutes):
     for match, end, source_order, recovered_header in sorted(candidates, key=lambda entry: entry[0].start()):
         block = minutes[match.start():end]
         outcome = re.search(r"(?im)^\s*\*{0,2}(?:Motion\s+)?(CARRIED(?:\s+UNANIMOUSLY)?|DEFEATED|WITHDRAWN|NOT CARRIED|TABLED)\b[^\n]*", block)
+        if not outcome and older_shapes:
+            outcome = _QUOTED_OUTCOME.search(block)
         if not outcome:
             continue
         # Motion text begins after the seconder line and before its outcome.
         resumed = not recovered_header and not re.search(r'\bMOVED\b', match.group(), re.I)
         before = block[match.end()-match.start():outcome.start()] if resumed else block[:outcome.start()]
         seconder = re.search(r"(?im)^.*SECONDED[^\n]*\n", before)
+        if not seconder:  # no stored motion was read from a SEGONDED block (checked 2026-11-02), so both readings use it
+            seconder = _OCR_SECONDER.search(before)
         if match.start() in printed_offsets:
             seconders = list(re.finditer(r"(?im)^[ \t]*\*{0,2}SECONDED(?:[ \t]+BY)?[ \t]*[:;][^\n]*(?:\n|$)", before))
             if len(seconders) != 1:

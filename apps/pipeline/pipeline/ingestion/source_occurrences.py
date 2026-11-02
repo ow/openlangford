@@ -27,14 +27,41 @@ def _compact(text):
     return re.sub(r'[^a-z0-9]', '', text.casefold())
 
 
+# Older minutes print the seconder on the mover's line ("MOVED BY: COUNCILLOR X SECONDED: COUNCILLOR Y", OCR
+# sometimes "SEGONDED") and quote the outcome ("> > CARRIED."). Envelopes in those shapes are added only where they
+# don't overlap an envelope the original reading found, so existing envelopes (and proofs built on them) are unchanged.
+_INLINE_SECOND = re.compile(r'(?im)^[ \t]*\*{0,2}MOVED[ \t]+BY\b[^\n]*?\bSE[CG]ONDED\b(?:[ \t]+BY)?[^\n]*(?:\n|$)')
+_OCR_SECOND = re.compile(r'(?im)^[ \t]*\*{0,2}SEGONDED(?:[ \t]+BY)?[ \t]*[:;][^\n]*(?:\n|$)')
+_QUOTED_OUTCOME = re.compile(r'(?im)^[ \t]*(?:>[ \t]*)+\*{0,2}(?:Motion[ \t]+)?(?:CARRIED(?:[ \t]+UNANIMOUSLY)?|NOT CARRIED|DEFEATED|WITHDRAWN|TABLED)\b[^\n]*')
+
+
 def original_formal_inventory(text):
     """Retain every seconder/body/outcome or explicit resumed-main envelope."""
-    anchors = sorted([(m, 'seconded_motion') for m in _SECOND.finditer(text)] +
-                     [(m, 'resumed_main_motion') for m in _RESUMED.finditer(text)], key=lambda entry: entry[0].start())
+    envelopes = _envelopes(text, older_shapes=False)
+    spans = [(e['source_start'], e['outcome_end']) for e in envelopes]
+    for envelope in _envelopes(text, older_shapes=True):
+        if not any(envelope['source_start'] < stop and start < envelope['outcome_end'] for start, stop in spans):
+            envelopes.append(envelope)
+    envelopes.sort(key=lambda e: e['anchor_offset'])
+    return {'text_sha256': hashlib.sha256(text.encode()).hexdigest(), 'envelopes': envelopes}
+
+
+def _envelopes(text, *, older_shapes):
+    seconders = [_SECOND, _INLINE_SECOND, _OCR_SECOND] if older_shapes else [_SECOND]
+    seen = set()
+    anchors = []
+    for pattern in seconders:
+        for m in pattern.finditer(text):
+            if m.start() not in seen:
+                seen.add(m.start())
+                anchors.append((m, 'seconded_motion'))
+    anchors = sorted(anchors + [(m, 'resumed_main_motion') for m in _RESUMED.finditer(text)], key=lambda entry: entry[0].start())
     envelopes = []
     for index, (anchor, kind) in enumerate(anchors):
         stop = anchors[index+1][0].start() if index+1 < len(anchors) else len(text)
         outcome = _OUTCOME.search(text, anchor.end(), stop)
+        if not outcome and older_shapes:
+            outcome = _QUOTED_OUTCOME.search(text, anchor.end(), stop)
         if not outcome:
             continue
         body = text[anchor.end():outcome.start()].strip()
@@ -53,13 +80,14 @@ def original_formal_inventory(text):
             if found:
                 view = view[:found.start()]+'\n'+view[found.end():]
         prefix = text[:anchor.start()].rstrip()
-        start = prefix.rfind('\n')+1 if kind == 'seconded_motion' else anchor.start()
+        inline = kind == 'seconded_motion' and re.match(r'[ \t]*\*{0,2}MOVED', anchor.group())
+        start = anchor.start() if inline else prefix.rfind('\n')+1 if kind == 'seconded_motion' else anchor.start()
         envelopes.append({'kind': kind, 'anchor_offset': anchor.start(), 'body_start': anchor.end(),
                           'outcome_offset': outcome.start(), 'outcome_end': outcome.end(),
                           'body': body, 'body_view': view.strip(), 'body_compact': _compact(view),
                           'outcome_quote': outcome[0].strip(), 'source_start': start,
                           'source_quote': text[start:outcome.end()]})
-    return {'text_sha256': hashlib.sha256(text.encode()).hexdigest(), 'envelopes': envelopes}
+    return envelopes
 
 
 def formal_inventory(source):

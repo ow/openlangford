@@ -13,7 +13,7 @@ import re
 
 from .native_transcriptions import bound_transcription
 from .source_claims import build_claim_inventory, valid_inventory
-from .vote_evidence import normalize_text, _OCR_MOVED_START
+from .vote_evidence import normalize_text, outcome_family, _OCR_MOVED_START
 from .agenda_identity import existing_agenda_item  # noqa: F401  (re-exported)
 from .ballot_reconstruction import validate_roster_entries
 from .source_occurrences import text_occurrence_unique, own_formal_envelopes, matching_formal_envelopes, unparsed_formal_envelopes, matching_envelopes_all_parsed
@@ -97,6 +97,60 @@ def bound_source_motion(motion, source, meeting_id, claim_inventory=None):
     return matches[0] if len(matches) == 1 else None
 
 
+def _title_core(title):
+    """An agenda item's own words: "REPORTS — Affordable Housing Policy - Staff Report (File No. 0340-50)" ->
+    "affordable housing policy"."""
+    first = (title or '').split('\n')[0]
+    core = first.rsplit(' — ', 1)[-1]
+    core = re.sub(r'\((?:File|Files)\b[^)]*\)?', ' ', core, flags=re.I)
+    core = re.sub(r'\s+[-–]\s+(?:Staff Report|Report|Memo|Letter|Presentation)\b.*$', '', core, flags=re.I)
+    return normalize_text(core)
+
+
+def _order_key(value):
+    return re.sub(r'[^0-9a-z]+', '.', str(value or '').casefold()).strip('.')
+
+
+def heading_item(source, block, items):
+    """The agenda item whose heading sits directly above a motion in the minutes, or (None, None).
+
+    Exact and conservative: only the lines between the previous recorded outcome and this motion are read; a
+    heading names an item when it contains the item's own title words (or its title is the whole heading), and
+    a heading that fits several items needs their printed number ("13.5") to tell them apart. No proximity,
+    address or model guess decides it.
+    """
+    text = source.get('text', '')
+    start = block['source_offset']
+    floor = 0
+    for other in source.get('blocks', []):
+        if other['source_offset'] < start:
+            at = text.find(other['outcome_quote'], other['source_offset'])
+            if at >= 0:
+                floor = max(floor, at + len(other['outcome_quote']))
+    lines = [re.sub(r'^[#>*\s]+', '', line).strip() for line in text[floor:start].split('\n')]
+    lines = [line for line in lines if line and len(line) <= 300][-4:]
+    candidates = [(item, _title_core(item.get('title'))) for item in items
+                  if item.get('item_order') != 'official-recorded-motions']
+    candidates = [(item, core) for item, core in candidates if core]
+    for line in reversed(lines):
+        heading = normalize_text(line)
+        number = re.match(r'^(\d+(?:\.\d+)*|[a-z])[.)]?\s', line, re.I)
+        stripped = normalize_text(re.sub(r'^(?:\d+(?:\.\d+)*|[a-z])[.)]?\s+', '', line, flags=re.I))
+        # A one-word title ("ADJOURNMENT") must be the whole heading; a heading fragment inside a longer title must
+        # carry something specific (a number, or six words) so a bare stage phrase can't pick an item.
+        hits = [item for item, core in candidates
+                if (core == stripped) or (len(core.split()) >= 2 and core[:80] in heading)
+                or (len(stripped.split()) >= 4 and stripped in core and (re.search(r'\d', stripped) or len(stripped.split()) >= 6))]
+        if len(hits) > 1 and number:
+            hits = [item for item in hits if _order_key(item.get('item_order')).endswith(_order_key(number.group(1)))]
+        if len(hits) == 1:
+            return hits[0], {'method': 'minutes_heading_title', 'heading_quote': line[:200],
+                             'item_order': hits[0].get('item_order')}
+        if hits:
+            return None, None  # several items fit this heading: no guess
+    return None, None
+
+
 def catalog_cac_candidate(meeting):
     """Known Langford generic catalog labels still require the native CAC title."""
     title = normalize_text(meeting.get('title'))
@@ -158,6 +212,7 @@ def canonical_motion_plan(items, context, existing_motions):
                    or (len(source_motion_candidates(source, row['text_content'])) == 1
                        and normalize_text(row['text_content']) in source_motion_match_keys(source, block))]
         bindings.append((block, identity, choices))
+    placements = {id(block): heading_item(source, block, items) for block in blocks}
     reservations = {}
     documentary_preservations = {}
     supplemental_preservations = {}
@@ -210,6 +265,38 @@ def canonical_motion_plan(items, context, existing_motions):
                 'held':[{'reason':'supplemental_primary_ownership_conflict'}], 'source_motions':len(blocks)}
     bound_ids = {choices[0]['id'] for block, identity, choices in bindings if len(choices) == 1} | set(reservations) | set(documentary_preservations) | set(supplemental_preservations)
     unresolved = [row['id'] for row in existing_motions if row['id'] not in bound_ids]
+    # Deterministic catch-up only (context['allow_legacy_rebind']): an earlier AI-read row that matches no recorded
+    # motion word for word is paired with the one recorded motion under the same agenda item with the same outcome,
+    # when that pairing is unique both ways; the record's words replace the paraphrase (the old text is kept on the
+    # row). A row that still matches nothing holds back only new motions on its own item, not the whole meeting.
+    rebound = {}
+    item_of_row = {}
+    if context.get('allow_legacy_rebind'):
+        order_of = {row['id']: _order_key(row.get('item_order')) for row in context.get('agenda_items') or []}
+        item_of_row = {row['id']: order_of.get(row.get('agenda_item_id')) for row in existing_motions}
+        by_id = {row['id']: row for row in existing_motions}
+        def placed_order(block):
+            item, _ = placements.get(id(block)) or (None, None)
+            return _order_key(item.get('item_order')) if item else None
+        open_blocks = [(index, block) for index, (block, identity, choices) in enumerate(bindings)
+                       if not choices and text_occurrence_unique(source, block) and placed_order(block)]
+        pairs = defaultdict(list)
+        for claim_id in unresolved:
+            row = by_id[claim_id]
+            if (row.get('meta') or {}).get('canonical_source_motion') or not item_of_row.get(claim_id):
+                continue
+            for index, block in open_blocks:
+                # An outcome the earlier read left blank is no conflict; a different recorded outcome is.
+                if placed_order(block) == item_of_row[claim_id] and (not row.get('result') or outcome_family(block['result']) == outcome_family(row.get('result'))):
+                    pairs[claim_id].append(index)
+        claimed = Counter(index for indexes in pairs.values() for index in indexes)
+        for claim_id, indexes in pairs.items():
+            if len(indexes) == 1 and claimed[indexes[0]] == 1:
+                block, identity, _ = bindings[indexes[0]]
+                bindings[indexes[0]] = (block, identity, [by_id[claim_id]])
+                rebound[claim_id] = {'source_key': identity['key'], 'item_order': item_of_row[claim_id],
+                                     'previous_text': by_id[claim_id].get('text_content'), 'result': block['result']}
+        unresolved = [claim_id for claim_id in unresolved if claim_id not in rebound]
     all_current_bound = all(row['id'] in reservations or row['id'] in documentary_preservations or row['id'] in supplemental_preservations or bound_source_motion(row, source, meeting['id'], claim_inventory) is not None for row in existing_motions)
     held = [{'reason': ('reviewed_blank_time_adjournment_preserved_time_unknown_no_rewrite'
                        if entry['type']=='reviewed_blank_time_adjournment_presence'
@@ -252,16 +339,27 @@ def canonical_motion_plan(items, context, existing_motions):
             and all(identity['key'] in closing_conflicts[claim_id]['allowed_new_keys'] for claim_id in unresolved)
             and text_occurrence_unique(source, block) and body_counts[key] == 1)
         if not choices and unresolved and not reviewed_disjoint:
-            held.append({'source_key': identity['key'], 'reason': 'unmapped_legacy_records', 'legacy_ids': unresolved})
-            continue
+            placed_item, _ = placements.get(id(block)) or (None, None)
+            local = context.get('allow_legacy_rebind') and placed_item is not None
+            blocking = ([claim_id for claim_id in unresolved
+                         if item_of_row.get(claim_id) in (None, _order_key(placed_item.get('item_order')))]
+                        if local else unresolved)
+            if blocking:
+                held.append({'source_key': identity['key'], 'reason': 'unmapped_legacy_records', 'legacy_ids': blocking})
+                continue
         old = choices[0] if choices else None
         transcription = bound_transcription(old, source, block, claim_inventory) if old else None
-        if old and normalize_text(old['text_content']) not in source_motion_match_keys(source, block) and not transcription:
+        if old and normalize_text(old['text_content']) not in source_motion_match_keys(source, block) and not transcription and old['id'] not in rebound:
             held.append({'source_key': identity['key'], 'reason': 'source_key_body_conflict', 'legacy_ids': [old['id']]})
             continue
         enrichments = [(item, proposal) for item in items for proposal in item['_unverified_motion_proposals'] if normalize_text(proposal.get('motion_text')) in source_motion_match_keys(source, block) and len(source_motion_candidates(source, proposal.get('motion_text'))) == 1]
+        placed_item, placed_by = placements.get(id(block)) or (None, None)
+        if old and old['id'] in rebound:
+            enrichments = []
         if len(enrichments) == 1:
             item, proposal = enrichments[0]
+        elif placed_item is not None:
+            item, proposal = placed_item, {}
         else:
             # An explicit source container avoids guessing an agenda number from
             # addresses, numbered conditions, or a model's renumbered headings.
@@ -276,6 +374,10 @@ def canonical_motion_plan(items, context, existing_motions):
             prefix = r'(?:Amendment[ \t]*:[ \t]*|\.[ \t]*)?' if role == 'MOVED' else ''
             label = r'IV[IL]OVED' if role == 'MOVED' and recovered_header else role
             match = re.search(r'(?im)^\s*'+prefix+label+r'(?:[ \t]*BY)?\s*:\s*([^\n]+)', source_header)
+            # Older minutes print both on one line: "MOVED BY: COUNCILLOR X SECONDED: COUNCILLOR Y".
+            inline = re.search(r'(?im)^\s*MOVED[ \t]+BY\s*:?\s*(.+?)\s+SE[CG]ONDED(?:[ \t]+BY)?\s*:?\s*([^\n]+)', source_header)
+            if inline and (role == 'SECONDED' or (match and re.search(r'\bSE[CG]ONDED\b', match[1]))):
+                return inline[1 if role == 'MOVED' else 2].strip()
             return match[1].strip() if match else None
         actor_ids = {}
         actor_names = {}
@@ -297,6 +399,10 @@ def canonical_motion_plan(items, context, existing_motions):
                   **actor_names, '_canonical_actor_ids': actor_ids,
                   '_canonical_source_motion': identity, '_existing_motion': old,
                   '_source_motion': {**block, 'anchor_method': 'canonical_native_formal_motion', 'match_score': 1.0}}
+        if placed_by and len(enrichments) != 1 and not (old and old['id'] in rebound):
+            motion['_placed_by'] = placed_by
+        if old and old['id'] in rebound:
+            motion['_legacy_rebind'] = rebound[old['id']]
         if transcription:
             motion['_full_transcription_validation'] = transcription
         if view:
@@ -339,6 +445,7 @@ def canonical_motion_plan(items, context, existing_motions):
                    'supplemental_preserved_legacy_ids': sorted(supplemental_preservations),
                    'adjournment_narration_preserved_legacy_ids': sorted(claim_id for claim_id, entry in documentary_preservations.items()
                        if entry['type']=='reviewed_adjournment_narration_preservation'),
+                   'rebound_legacy': [{'motion_id': claim_id, **entry} for claim_id, entry in rebound.items()],
                    'mapped_motions': sum(len(item['motions']) for item in items)}
 
 
