@@ -4,7 +4,7 @@ import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, type PageFlag } from "../lib/page-review-types";
 import { readPage } from "./page-check.server";
-import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, type Suggestion } from "./page-links.server";
+import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { itemRecords } from "./page-verify.server";
 import { logStaffAction } from "./staff.server";
 import type { StaffRole } from "../lib/auth.server";
@@ -29,7 +29,7 @@ import type { StaffRole } from "../lib/auth.server";
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "merge_topic", "accept_suggestion", "waiting_on_records", "cannot_fix"]),
+      "rewrite_summary", "merge_topic", "accept_suggestion", "hide_page", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. Otherwise null."),
@@ -129,12 +129,13 @@ Every rewrite (entry, heading or summary) puts the records' own words it rests o
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
-which record and which date disagree. The council's records have all been recovered: what isn't in the records above
-isn't coming. So never wait for more. When the records don't say something, fix with what they do say: rewrite the
-line or summary to what they support (or to say plainly what they leave out), remove an entry that isn't about this
-topic, and leave an entry that is about it as it is. Say waiting_on_records only when you can name one specific
-record that exists but isn't shown above (say which meeting and item). Use cannot_fix only for a genuine judgement
-call none of these actions can make, and say precisely what is wrong and where, not "a person should look".
+which record and which date disagree. Work only from the records above, and never wait for more. When they don't
+say something, fix with what they do say: rewrite the line or summary to what they support (or to say plainly what
+they leave out), remove an entry they can't tie to this topic, and leave an entry that is about it as it is.
+- hide_page: when nothing in the records backs this page at all (no step of its own, nothing showing what it's
+  about), hide it from the public. It can be undone, and the editor confirms it like every other change.
+Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what is wrong and
+where, not "a person should look".
 
 For each agreed problem (and anything the note asks), give one action. Don't change anything the editor didn't
 agree with or ask for.
@@ -246,8 +247,13 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           : { with_matter_id: step.to_matter_id, reason: step.reason });
         continue;
       }
-      if (step.action === "waiting_on_records") {
-        waiting.push(step.reason);
+      if (step.action === "hide_page") {
+        try {
+          await setTopicHidden(supabase, matterId, true, requester.id);
+          done.push(`Hid this page from the public: ${step.reason} (Show this page again from the bar to undo.)`);
+        } catch {
+          left.push(`${step.reason} (hiding the page didn't work)`);
+        }
         continue;
       }
       if (step.action === "accept_suggestion") {
@@ -303,7 +309,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         const text = (step.new_text || "").replace(/\s+/g, " ").trim();
         const heading = step.action === "rewrite_heading";
         if (!quoteOf(step)) {
-          waiting.push(`${step.reason} (no record says it, so nothing changed)`);
+          left.push(`${step.reason} (no record says it, so nothing changed)`);
         } else if (text.length < (heading ? 6 : 15) || text.length > (heading ? 120 : 180) || (heading && step.key.startsWith("agenda-"))) {
           left.push(`${step.reason} (the new ${heading ? "heading" : "line"} wasn't usable, so nothing changed)`);
         } else {
