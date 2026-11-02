@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { PageFlag, PageReview, PageReviewStatus } from "../lib/page-review-types";
+import { unresolvedFlags, type PageFlag, type PageReview, type PageReviewStatus } from "../lib/page-review-types";
 import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap.server";
 
 export type { PageReview, PageReviewStatus } from "../lib/page-review-types";
@@ -69,8 +69,10 @@ export async function listPageReviews(supabase: SupabaseClient, filter: ReviewFi
     if (row.ai_flags) n.checked += 1;
   }
   const rated = rows.flatMap(r => (r.ai_flags || []).filter(f => f.verdict));
+  // "Open flags": checked pages with a flag still to rate or fix (resolved ones have nothing left to do).
+  const listed = (data || []) as PageReview[];
   return {
-    reviews: (data || []) as PageReview[],
+    reviews: filter === "flagged" ? listed.filter((r) => unresolvedFlags(r.ai_flags).length > 0) : listed,
     rows,
     byKind,
     agreement: { rated: rated.length, agreed: rated.filter(f => f.verdict === "agree").length },

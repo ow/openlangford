@@ -6,7 +6,7 @@ import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
 import { cn } from "../lib/utils";
-import { reviewTime } from "../lib/page-review-types";
+import { reviewTime, unresolvedFlags } from "../lib/page-review-types";
 import { listPageReviews, reviewCoverage, type ReviewFilter } from "../services/page-reviews.server";
 
 export const meta = () => [
@@ -15,7 +15,7 @@ export const meta = () => [
 ];
 export const headers = privateAdminHeaders;
 
-const FILTERS = [["all", "All"], ["fixed", "Fixed, to confirm"], ["needs_work", "Needs work"], ["flagged", "Flagged by a check"], ["reviewed", "Reviewed"]] as const;
+const FILTERS = [["all", "All"], ["fixed", "Fixed, to confirm"], ["needs_work", "Needs work"], ["flagged", "Open flags"], ["reviewed", "Reviewed"]] as const;
 
 export async function loader({ request }: Route.LoaderArgs) {
   return adminRead(request, async () => {
@@ -91,30 +91,30 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
           <ul className={cn(adminCard, "divide-y divide-zinc-100 overflow-hidden")}>
             {reviews.map((r) => {
               const flags = r.ai_flags || [];
-              const open = flags.filter(f => !f.verdict).length;
-              const agreed = flags.filter(f => f.verdict === "agree").length;
+              const open = unresolvedFlags(flags).length;
+              const unrated = flags.filter(f => !f.verdict).length;
               return (
                 <li key={r.path} className="px-5 py-3">
-                  <div className="flex items-baseline justify-between gap-4">
-                    <Link to={r.path} className="min-w-0 truncate font-medium text-zinc-900 hover:text-brand-700">{r.title || r.path}</Link>
-                    <span className="shrink-0 text-xs font-medium">
-                      {r.status && (
-                        <span className={r.status === "reviewed" ? "text-emerald-700" : r.status === "fixed" ? "text-brand-700" : "text-amber-700"}>
-                          {{ reviewed: "Reviewed", needs_work: "Needs work", fixing: "Agent fixing", fixed: "Fixed, to confirm" }[r.status]}{r.reviewed_at ? ` · ${reviewTime(r.reviewed_at)}` : ""}
-                        </span>
-                      )}
-                      {r.ai_checked_at && (
-                        <span className="ml-3 text-zinc-500">
-                          {flags.length} {flags.length === 1 ? "flag" : "flags"}
-                          {agreed > 0 && <span className="text-red-700"> · {agreed} real</span>}
-                          {open > 0 && <span> · {open} unrated</span>}
-                        </span>
-                      )}
-                    </span>
-                  </div>
+                  <Link to={r.path} className="block font-medium text-zinc-900 hover:text-brand-700">{r.title || r.path}</Link>
+                  <p className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs font-medium">
+                    {r.status && (
+                      <span className={r.status === "reviewed" ? "text-emerald-700" : r.status === "fixed" ? "text-brand-700" : "text-amber-700"}>
+                        {{ reviewed: "Reviewed", needs_work: "Needs work", fixing: "Agent fixing", fixed: "Fixed, to confirm" }[r.status]}{r.reviewed_at ? ` · ${reviewTime(r.reviewed_at)}` : ""}
+                      </span>
+                    )}
+                    {r.ai_checked_at && (
+                      flags.length === 0 ? <span className="text-zinc-500">Checked, no flags</span>
+                        : open === 0 ? <span className="text-emerald-700">{flags.length} {flags.length === 1 ? "flag" : "flags"}, all resolved</span>
+                        : <span className="text-amber-700">{open} of {flags.length} {flags.length === 1 ? "flag" : "flags"} open{unrated ? ` · ${unrated} unrated` : ""}</span>
+                    )}
+                  </p>
                   <p className="truncate text-xs text-zinc-500">{r.path}</p>
-                  {r.ai_page_issue && <p className="mt-1 text-sm text-amber-800">Whole page: {r.ai_page_issue}</p>}
-                  {r.ai_summary && <p className="mt-1 text-sm text-zinc-600">{r.ai_summary}</p>}
+                  {r.ai_page_issue && open > 0 && <p className="mt-1 text-sm text-amber-800">Whole page: {r.ai_page_issue}</p>}
+                  {r.ai_summary && (
+                    <p className="mt-1 text-sm text-zinc-600">
+                      <span className="text-xs font-medium text-zinc-500">The check, {reviewTime(r.ai_checked_at)}: </span>{r.ai_summary}
+                    </p>
+                  )}
                   {r.note && <p className="mt-1 whitespace-pre-line text-sm text-zinc-700">{r.note}</p>}
                   {r.agent_note && <p className="mt-1 whitespace-pre-line rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-600">{r.agent_note}</p>}
                 </li>
