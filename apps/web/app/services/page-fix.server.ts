@@ -338,7 +338,14 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const { data: moved, error } = await supabase.from("matter_links").update({ matter_id: move.to_matter_id })
         .eq("matter_id", matterId).eq("agenda_item_id", move.item_id).eq("kind", "mention").select("id");
       if (error || !moved?.length) {
-        left.push(`${move.reason} (it didn't work: the link couldn't be moved)`);
+        // Usually the other topic already links that item (or holds it): then it only needs to come off this page.
+        try {
+          await removeEntry(supabase, matterId, `mention-${move.item_id}`, requester.id);
+          fixedKeys.add(`mention-${move.item_id}`);
+          done.push(move.reason);
+        } catch {
+          left.push(`${move.reason} (it didn't work: the link couldn't be moved or removed)`);
+        }
         continue;
       }
       fixedKeys.add(`mention-${move.item_id}`);
