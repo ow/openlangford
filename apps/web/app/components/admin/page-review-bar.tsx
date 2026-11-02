@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useFetcher, useLocation } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { useFetcher, useLocation, useNavigate } from "react-router";
 import { Check, Flag, Loader2, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
@@ -33,7 +33,7 @@ function useHighlights(flags: PageFlag[], on: boolean) {
     const marked: HTMLElement[] = [];
     flags.forEach((flag) => {
       const card = flag.key ? document.getElementById(`timeline-${flag.key}`)?.querySelector<HTMLElement>(":scope > div") : null;
-      if (!card || flag.verdict === "disagree") return;
+      if (!card || flag.verdict === "disagree" || flag.fixed) return;
       card.style.outline = `2px solid ${flag.verdict === "agree" ? "rgb(220 38 38)" : "rgb(245 158 11)"}`;
       card.style.outlineOffset = "2px";
       card.title = `${FLAG_PROBLEM_LABELS[flag.problem]}: ${flag.reason}`;
@@ -58,6 +58,8 @@ export function PageReviewBar() {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [confirming, setConfirming] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const finishing = useRef(false);
 
   useEffect(() => {
     setWriting(false);
@@ -66,6 +68,13 @@ export function PageReviewBar() {
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  // Done with this page (Reviewed, Needs work, Looks good): on to the next one as soon as it's saved.
+  useEffect(() => {
+    if (!finishing.current || save.state !== "idle" || !save.data) return;
+    finishing.current = false;
+    if (save.data.ok) navigate("/admin/reviews/next");
+  }, [save.state, save.data, navigate]);
 
   const loaded = load.data?.path === pathname ? load.data : null;
   const fresher = (a?: string | null, b?: string | null) => (a || "") > (b || "");
@@ -92,6 +101,7 @@ export function PageReviewBar() {
   const checking = pending === "check";
   const busy = save.state !== "idle";
   const submit = (intent: string, extra: Record<string, string> = {}) => {
+    finishing.current = intent === "reviewed" || intent === "needs_work";
     save.submit({ intent, path: pathname, title: document.title, ...extra }, { method: "post", action: "/api/page-review" });
     if (intent === "check") setOpen(true);
     setWriting(false);
@@ -106,7 +116,8 @@ export function PageReviewBar() {
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
               <div className="font-semibold text-zinc-900">
-                {checking ? "Reading the page…" : !review?.ai_checked_at ? "Not checked yet" : flags.length ? `${flags.length} ${flags.length === 1 ? "problem" : "problems"} flagged` : "No problems flagged"}
+                {checking ? "Reading the page…" : !review?.ai_checked_at ? "Not checked yet" : !flags.length ? "No problems flagged"
+                  : open_ ? `${open_} of ${flags.length} ${flags.length === 1 ? "flag" : "flags"} still open` : `All ${flags.length} ${flags.length === 1 ? "flag" : "flags"} resolved`}
               </div>
               {!checking && review?.ai_checked_at && (
                 <p className="text-xs text-zinc-500">Read {readWhat(review)} · {reviewTime(review.ai_checked_at)}</p>
@@ -143,14 +154,14 @@ export function PageReviewBar() {
               {flags.length > 0 && (
                 <ol className="mb-3 space-y-2">
                   {flags.map((flag, index) => (
-                    <li key={index} className={cn("rounded-lg border px-2.5 py-2", flag.verdict === "disagree" ? "border-zinc-100 opacity-50" : "border-zinc-200")}>
+                    <li key={index} className={cn("rounded-lg border px-2.5 py-2", flag.verdict === "disagree" || flag.fixed ? "border-zinc-100 opacity-60" : "border-zinc-200")}>
                       <div className="flex items-start justify-between gap-2">
                         <a href={flag.key ? `#timeline-${flag.key}` : undefined} className="min-w-0">
                           <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">{FLAG_PROBLEM_LABELS[flag.problem]}</span>
                           <p className="text-zinc-800">{flag.reason}</p>
                           <p className="mt-0.5 line-clamp-2 text-xs text-zinc-500">{flag.excerpt}</p>
                         </a>
-                        <div className="flex shrink-0 gap-0.5">
+                        <div className={cn("flex shrink-0 gap-0.5", flag.fixed && "hidden")}>
                           {(["agree", "disagree"] as const).map((verdict) => (
                             <button key={verdict} type="button" disabled={busy}
                               aria-label={verdict === "agree" ? "Right, this is a problem" : "Wrong, this is fine"}
@@ -304,7 +315,7 @@ export function PageReviewBar() {
             title={review?.ai_checked_at ? "Show what the check found" : "Have the model read this page and flag problems"}
             className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-50")}>
             <Sparkles className={cn("h-4 w-4", checking && "animate-pulse")} />
-            {checking ? "Checking…" : review?.ai_checked_at ? (flags.length ? `${flags.length} ${flags.length === 1 ? "flag" : "flags"}` : "Checked") : "Check"}
+            {checking ? "Checking…" : review?.ai_checked_at ? (open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "Checked") : "Check"}
             {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{suggestions.length} new</span>}
           </button>
           {review?.status && !fixing && (

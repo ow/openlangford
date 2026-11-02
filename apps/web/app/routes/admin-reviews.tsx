@@ -8,7 +8,6 @@ import { PageHeader } from "../components/ui/page-header";
 import { cn } from "../lib/utils";
 import { reviewTime } from "../lib/page-review-types";
 import { listPageReviews, reviewCoverage, type ReviewFilter } from "../services/page-reviews.server";
-import { randomUncheckedMatterPath } from "../services/page-check.server";
 
 export const meta = () => [
   { title: "Page reviews | Admin | Open Langford" },
@@ -31,8 +30,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 /** "Random page": a matter page nobody has reviewed or checked, for sampling. */
 export async function action({ request }: Route.ActionArgs) {
   await requireModerator(request);
-  const path = await randomUncheckedMatterPath(getSupabaseAdminClient());
-  return redirect(path || "/admin/reviews", { headers: privateAdminHeaders() });
+  return redirect("/admin/reviews/next", { headers: privateAdminHeaders() });
 }
 
 export default function AdminReviews({ loaderData }: Route.ComponentProps) {
