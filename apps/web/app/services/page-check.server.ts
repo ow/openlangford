@@ -45,6 +45,8 @@ function plain(html: string) {
 }
 
 /** What a reader sees: the title, heading, description, and each timeline entry (by its anchor key). */
+const PAGE_CAP = 800_000;
+
 export function readPage(html: string): ReadPage {
   const title = plain(html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || "");
   const heading = plain(html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "");
@@ -53,10 +55,13 @@ export function readPage(html: string): ReadPage {
   const entries = starts.map((m, i) => {
     const from = m.index! + m[0].length;
     const next = starts[i + 1]?.index ?? html.indexOf("</ol>", from);
-    return { key: m[1], text: plain(html.slice(from, next === -1 ? undefined : next)).slice(0, 900) };
+    return { key: m[1], text: plain(html.slice(from, next === -1 ? undefined : next)) };
   }).filter(e => e.text);
   const main = html.match(/<main\b[^>]*>([\s\S]*)<\/main>/i)?.[1] || html;
-  return { title, heading, description, entries, body: entries.length ? "" : plain(main).slice(0, 14000) };
+  // Whole pages: a long meeting's motions and votes are at the bottom. The cap only guards against a runaway
+  // page (about 200,000 tokens), far beyond any real one.
+  const body = entries.length ? "" : plain(main);
+  return { title, heading, description, entries, body: body.length > PAGE_CAP ? `${body.slice(0, PAGE_CAP)} [page continues; cut here]` : body };
 }
 
 const CheckSchema = z.object({
