@@ -78,13 +78,14 @@ export function PageReviewBar() {
   }, [load.data, pathname]);
 
   const loaded = load.data?.path === pathname ? load.data : null;
-  const fresher = (a?: string | null, b?: string | null) => (a || "") > (b || "");
-  const savedRaw = save.state === "idle" && save.data && "review" in save.data && save.data.review?.path === pathname ? save.data.review : undefined;
-  // While the agent works, the poll's copy is newer than the one the "needs work" click returned.
-  const saved = savedRaw && loaded?.review && savedRaw.status === "fixing" && loaded.review.status !== "fixing"
-    && !fresher(savedRaw.agent_at, loaded.review.agent_at) ? undefined : savedRaw;
-  const review = saved !== undefined ? saved : loaded?.review ?? null;
-  const links: Links = saved !== undefined && save.data?.links !== undefined ? save.data.links ?? null : loaded?.links ?? null;
+  // Show whichever answer is newest: the last button press, or the last refresh (the bar refreshes while the
+  // agent fixes or the search runs, and those refreshes must win over the press that started them).
+  const [latest, setLatest] = useState<"save" | "load">("load");
+  useEffect(() => { if (save.state === "idle" && save.data) setLatest("save"); }, [save.state, save.data]);
+  useEffect(() => { if (load.state === "idle" && load.data) setLatest("load"); }, [load.state, load.data]);
+  const saved = latest === "save" && save.data && "review" in save.data && save.data.review?.path === pathname ? save.data : undefined;
+  const review = saved ? saved.review ?? null : loaded?.review ?? null;
+  const links: Links = saved && saved.links !== undefined ? saved.links ?? null : loaded?.links ?? null;
   const suggestions = links?.suggestions || [];
   const searching = links?.findJob?.status === "queued" || links?.findJob?.status === "running";
   const flags = review?.ai_flags || [];
