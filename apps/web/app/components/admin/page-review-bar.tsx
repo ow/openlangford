@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate, useRevalidator } from "react-router";
 import { OPEN_INTERNAL_NOTE } from "./internal-note-banner";
+import { Tip } from "../ui/tooltip";
 import { ArrowRight, Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, StickyNote, ThumbsDown, ThumbsUp, Undo2, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
@@ -180,7 +181,9 @@ export function PageReviewBar() {
                 <p className="text-xs text-zinc-500">Read {readWhat(review)} · {reviewTime(review.ai_checked_at)}</p>
               )}
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="rounded-full p-1 text-zinc-400 hover:bg-zinc-100"><X className="h-4 w-4" /></button>
+            <Tip label={"Close"}>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="rounded-full p-1 text-zinc-400 hover:bg-zinc-100"><X className="h-4 w-4" /></button>
+            </Tip>
           </div>
           {checking ? (
             <p className="text-zinc-500">The model is reading this page as a resident would. This takes a few seconds.</p>
@@ -219,11 +222,13 @@ export function PageReviewBar() {
               {(review?.ai_summary || review?.ai_checked_at) && (
                 <div className="mb-3 flex items-start gap-2">
                   {review?.ai_summary && <p className="min-w-0 flex-1 leading-relaxed text-zinc-700">{review.ai_summary}</p>}
-                  <button type="button" disabled={busy} onClick={() => { setNote(""); setEditing(-1); }}
-                    aria-label="Add an issue of your own for the agent to fix" title="Add an issue of your own for the agent to fix"
-                    className="ml-auto shrink-0 rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700">
-                    <Pencil className="h-3.5 w-3.5" />
-                  </button>
+                  <Tip label={"Add an issue of your own for the agent to fix"}>
+                    <button type="button" disabled={busy} onClick={() => { setNote(""); setEditing(-1); }}
+                      aria-label="Add an issue of your own for the agent to fix"
+                      className="ml-auto shrink-0 rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                  </Tip>
                 </div>
               )}
               {editing === -1 && (
@@ -258,23 +263,27 @@ export function PageReviewBar() {
                         </a>
                         <div className={cn("flex shrink-0 gap-0.5", flag.fixed && "hidden")}>
                           {flag.verdict !== "disagree" && (
-                            <button type="button" disabled={busy} onClick={() => { setNote(flag.note || ""); setEditing(index); }}
-                              aria-label={flag.note ? "Edit instructions for the agent" : "Add instructions for the agent"}
-                              title={flag.note ? "Edit instructions for the agent" : "Add instructions for the agent"}
-                              className={cn("rounded-full p-1.5", flag.note ? "bg-brand-100 text-brand-700" : "text-zinc-400 hover:bg-zinc-100")}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
+                            <Tip label={flag.note ? "Edit instructions for the agent" : "Add instructions for the agent"}>
+                              <button type="button" disabled={busy} onClick={() => { setNote(flag.note || ""); setEditing(index); }}
+                                aria-label={flag.note ? "Edit instructions for the agent" : "Add instructions for the agent"}
+                               
+                                className={cn("rounded-full p-1.5", flag.note ? "bg-brand-100 text-brand-700" : "text-zinc-400 hover:bg-zinc-100")}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                            </Tip>
                           )}
                           {flag.problem !== "editor_issue" && (["agree", "disagree"] as const).map((verdict) => (
-                            <button key={verdict} type="button"
-                              aria-label={verdict === "agree" ? "Yes, fix it" : "No, leave it"}
-                              title={verdict === "agree" ? "Yes, fix it" : "No, leave it"}
-                              aria-pressed={flag.verdict === verdict}
-                              onClick={() => rate(index, flag.verdict === verdict ? null : verdict)}
-                              className={cn("rounded-full p-1.5",
-                                flag.verdict === verdict ? (verdict === "agree" ? "bg-red-100 text-red-700" : "bg-zinc-200 text-zinc-700") : "text-zinc-400 hover:bg-zinc-100")}>
-                              {verdict === "agree" ? <ThumbsUp className="h-3.5 w-3.5" /> : <ThumbsDown className="h-3.5 w-3.5" />}
-                            </button>
+                            <Tip key={verdict} label={verdict === "agree" ? "Yes, fix it" : "No, leave it"}>
+                              <button type="button"
+                                aria-label={verdict === "agree" ? "Yes, fix it" : "No, leave it"}
+                               
+                                aria-pressed={flag.verdict === verdict}
+                                onClick={() => rate(index, flag.verdict === verdict ? null : verdict)}
+                                className={cn("rounded-full p-1.5",
+                                  flag.verdict === verdict ? (verdict === "agree" ? "bg-red-100 text-red-700" : "bg-zinc-200 text-zinc-700") : "text-zinc-400 hover:bg-zinc-100")}>
+                                {verdict === "agree" ? <ThumbsUp className="h-3.5 w-3.5" /> : <ThumbsDown className="h-3.5 w-3.5" />}
+                              </button>
+                            </Tip>
                           ))}
                         </div>
                       </div>
@@ -461,22 +470,28 @@ export function PageReviewBar() {
           </button>
           {/* Words for the decisions above; icons for the tools around them, with Next last. */}
           <span aria-hidden="true" className="mx-1 h-4 w-px bg-amber-300" />
-          <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_INTERNAL_NOTE))}
-            aria-label={review?.internal_note ? "Edit the internal note" : "Add an internal note"}
-            title={review?.internal_note ? "Edit the internal note (only staff see it)" : "Add an internal note (only staff see it)"}
-            className={cn("rounded-full p-1.5 hover:bg-amber-100", review?.internal_note ? "text-amber-700" : "text-zinc-500")}>
-            <StickyNote className={cn("h-4 w-4", review?.internal_note && "fill-amber-200")} />
-          </button>
+          <Tip label={review?.internal_note ? "Edit the internal note (only staff see it)" : "Add an internal note (only staff see it)"}>
+            <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_INTERNAL_NOTE))}
+              aria-label={review?.internal_note ? "Edit the internal note" : "Add an internal note"}
+             
+              className={cn("rounded-full p-1.5 hover:bg-amber-100", review?.internal_note ? "text-amber-700" : "text-zinc-500")}>
+              <StickyNote className={cn("h-4 w-4", review?.internal_note && "fill-amber-200")} />
+            </button>
+          </Tip>
           {review?.status && !fixing && (
-            <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review" title="Clear this page's review"
-              className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"><X className="h-4 w-4" /></button>
+            <Tip label={"Clear this page's review"}>
+              <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review"
+                className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"><X className="h-4 w-4" /></button>
+            </Tip>
           )}
           {/* Always there, so a page that can't be reviewed yet can be skipped (it stays as it is). */}
-          <button type="button" disabled={busy && !fixing}
-            onClick={() => navigate(`/admin/reviews/next?${fixedRun ? "status=fixed&" : ""}from=${encodeURIComponent(pathname)}`)}
-            aria-label="Next page"
-            title={fixedRun ? "Next: the next page the agent fixed, to confirm" : stayed ? "Next page to review" : "Skip to the next page; this one stays as it is"}
-            className="rounded-full p-1.5 text-zinc-700 hover:bg-zinc-100"><ArrowRight className="h-4 w-4" /></button>
+          <Tip label={fixedRun ? "Next: the next page the agent fixed, to confirm" : stayed ? "Next page to review" : "Skip to the next page; this one stays as it is"}>
+            <button type="button" disabled={busy && !fixing}
+              onClick={() => navigate(`/admin/reviews/next?${fixedRun ? "status=fixed&" : ""}from=${encodeURIComponent(pathname)}`)}
+              aria-label="Next page"
+             
+              className="rounded-full p-1.5 text-zinc-700 hover:bg-zinc-100"><ArrowRight className="h-4 w-4" /></button>
+          </Tip>
         </div>
       )}
       {save.data?.error && save.state === "idle" && <p className="rounded-lg bg-surface px-2 py-1 text-xs text-red-700 shadow">{save.data.error}</p>}

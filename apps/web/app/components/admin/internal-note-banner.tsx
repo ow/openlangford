@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFetcher, useLocation } from "react-router";
 import { Pencil, StickyNote } from "lucide-react";
+import { Tip } from "../ui/tooltip";
 import { reviewTime, type PageReview } from "../../lib/page-review-types";
 
 type Loaded = { path?: string; review?: PageReview | null };
@@ -50,8 +51,10 @@ export function InternalNoteBanner() {
             · only staff see this{review?.internal_note_at && !editing ? ` · ${reviewTime(review.internal_note_at)}` : ""}
           </span>
           {!editing && (
-            <button type="button" onClick={() => { setText(note || ""); setEditing(true); }} aria-label="Edit the internal note"
-              className="ml-auto rounded-full p-1 text-amber-700 hover:bg-amber-100"><Pencil className="h-3.5 w-3.5" /></button>
+            <Tip label={"Edit the internal note"}>
+              <button type="button" onClick={() => { setText(note || ""); setEditing(true); }} aria-label="Edit the internal note"
+                className="ml-auto rounded-full p-1 text-amber-700 hover:bg-amber-100"><Pencil className="h-3.5 w-3.5" /></button>
+            </Tip>
           )}
         </div>
         {editing ? (
