@@ -126,8 +126,11 @@ def plan(cur) -> dict[str, Any]:
     repoint: list[dict] = []
     kept_echo = 0
     per_item: dict[int, list[int]] = defaultdict(list)
-    cur.execute("select id, matter_id from agenda_items where matter_id is not null")
-    home = {iid: canonical.get(mid, mid) for iid, mid in cur.fetchall()}
+    cur.execute("select id, matter_id, title from agenda_items where matter_id is not null")
+    home, topic_items = {}, defaultdict(list)
+    for iid, mid, t in cur.fetchall():
+        home[iid] = canonical.get(mid, mid)
+        topic_items[home[iid]].append((iid, t or ""))
     for lid, mid, iid, title, quote, conf, source, day, org in links:
         topic = canonical.get(mid, mid)
         if home.get(iid) == topic:
@@ -140,6 +143,9 @@ def plan(cur) -> dict[str, Any]:
                 echoed = earlier[-1] if earlier else None
             if echoed is not None and echoed in days[topic]:
                 hide["minutes echo of a meeting already on the topic"].append(lid)
+                continue
+            if resolve_echo(quote, topic_items.get(topic, [])) is not None:  # a misdated echo of an entry it has
+                hide["minutes echo of an entry already on the topic"].append(lid)
                 continue
             real = resolve_echo(quote, items_on.get(echoed, [])) if echoed else None
             if real is not None:
