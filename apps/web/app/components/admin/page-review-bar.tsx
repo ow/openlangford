@@ -121,7 +121,7 @@ export function PageReviewBar() {
   const spinner = (intent: string) => pending === intent ? <Loader2 className="mr-1 inline h-3.5 w-3.5 animate-spin align-[-2px]" /> : null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
+    <div className="fixed bottom-4 left-4 right-4 z-40 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
       {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
         <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-zinc-200 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">

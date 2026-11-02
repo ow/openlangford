@@ -542,20 +542,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               discussed ? <span className="tabular-nums">{discussed}</span> : null,
             ]}
             title={matterTitle(matter)}
-            badges={
+            metaLead={
               statusVariant ? (
                 <Badge variant={statusVariant}>{matter.status}</Badge>
               ) : quietSince(matter.status, lastSeen || matter.last_seen) ? (
                 <Badge variant="muted">No activity since {quietSince(matter.status, lastSeen || matter.last_seen)}</Badge>
               ) : undefined
             }
-            actions={
-              <SubscribeButton
-                type="matter"
-                targetId={matter.id}
-                label="Follow matter"
-              />
-            }
+            metaAction={<SubscribeButton type="matter" targetId={matter.id} label="Follow" compact icon />}
           />
 
           {(matter.plain_english_summary || matter.description) && (

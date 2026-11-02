@@ -10,6 +10,10 @@ interface DetailHeaderProps {
   title: ReactNode;
   /** Inline next to the title (status badges). */
   badges?: ReactNode;
+  /** Before the facts, on their line (a status badge that belongs with them). */
+  metaLead?: ReactNode;
+  /** At the end of the facts' line (a compact follow button), pushed right when there's room. */
+  metaAction?: ReactNode;
   /** Right-aligned on desktop, below the title on mobile (source links, follow…). */
   actions?: ReactNode;
   /** Optional lead paragraph under the title. */
@@ -26,6 +30,8 @@ export function DetailHeader({
   meta = [],
   title,
   badges,
+  metaLead,
+  metaAction,
   actions,
   description,
   className,
@@ -56,7 +62,25 @@ export function DetailHeader({
             </h1>
             {badges}
           </div>
-          {items.length > 0 && (
+          {(metaLead || metaAction) ? (
+            // Status on the left and the follow button on the right of one row; the facts as a sentence below.
+            <div className="mt-3 space-y-1.5">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">{metaLead}</div>
+                {metaAction && <div className="shrink-0">{metaAction}</div>}
+              </div>
+              {items.length > 0 && (
+                <p className="text-sm text-zinc-500">
+                  {items.map((item, i) => (
+                    <span key={i}>
+                      {i > 0 && <span aria-hidden="true" className="px-1.5 text-zinc-300">·</span>}
+                      {item}
+                    </span>
+                  ))}
+                </p>
+              )}
+            </div>
+          ) : items.length > 0 && (
             <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
               {items.map((item, i) => (
                 <span key={i} className="inline-flex items-center gap-2">

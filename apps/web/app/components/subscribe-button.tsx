@@ -12,6 +12,8 @@ interface SubscribeButtonProps {
   label?: string;
   className?: string;
   compact?: boolean;
+  /** A bell before the label. */
+  icon?: boolean;
 }
 
 export function SubscribeButton({
@@ -20,6 +22,7 @@ export function SubscribeButton({
   label,
   className,
   compact = false,
+  icon = false,
 }: SubscribeButtonProps) {
   const rootData = useRouteLoaderData("root") as { user: any } | undefined;
   const user = rootData?.user;
@@ -65,6 +68,7 @@ export function SubscribeButton({
           className,
         )}
       >
+        {icon && <Bell className={compact ? "h-3 w-3" : "h-3.5 w-3.5"} />}
         {label || "Follow"}
       </Link>
     );
@@ -155,6 +159,7 @@ export function SubscribeButton({
       {loading && (
         <Loader2 className={cn(compact ? "h-3 w-3" : "h-3.5 w-3.5", "animate-spin")} />
       )}
+      {!loading && icon && <Bell className={cn(compact ? "h-3 w-3" : "h-3.5 w-3.5", subscribed && "fill-current")} />}
       {subscribed ? "Following" : label || "Follow"}
     </button>
   );
