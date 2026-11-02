@@ -95,7 +95,8 @@ function mentionLabel(title: string | null | undefined) {
   if (t.includes("presentation")) return "Presentation";
   if (t.includes("delegation")) return "Delegation";
   if (t.includes("correspondence") || t.includes("petition")) return "Correspondence";
-  return "Also discussed";
+  // Another agenda item where this topic came up (a meeting's item on something else that names it).
+  return "Discussed in another item";
 }
 
 /** A stored passage as plain words: source documents are markdown ("**$105,000**", stray "#"). */
@@ -529,11 +530,13 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
   // shown under Background aren't repeated for every address.
   const relatedIds = new Set((story.related || []).map((r: any) => r.id));
   const addressGroups = (() => {
-    const groups = new Map<string, { key: string; properties: any[]; others: any[] }>();
+    const groups = new Map<string, { key: string; properties: any[]; others: any[]; relatedHere: boolean }>();
     for (const p of properties as any[]) {
       const others = (p.others || []).filter((m: any) => !relatedIds.has(m.id));
       const key = others.map((m: any) => m.id).sort((a: number, b: number) => a - b).join(",") || "none";
-      const group = groups.get(key) ?? { key, properties: [] as any[], others };
+      const group = groups.get(key) ?? { key, properties: [] as any[], others, relatedHere: false };
+      // Topics here that are listed under Related topics: then "no other matters" would be wrong.
+      if ((p.others || []).some((m: any) => relatedIds.has(m.id))) group.relatedHere = true;
       group.properties.push(p);
       groups.set(key, group);
     }
@@ -701,11 +704,13 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                             </span>
                           ))}
                         </span>
-                        <span className="text-sm text-zinc-500">
-                          {g.others.length === 0
-                            ? `No other matters at ${g.properties.length > 1 ? "these addresses" : "this address"}`
-                            : `${g.others.length} other ${g.others.length === 1 ? "matter" : "matters"} at ${g.properties.length > 1 ? "these addresses" : "this address"}`}
-                        </span>
+                        {!(g.others.length === 0 && g.relatedHere) && (
+                          <span className="text-sm text-zinc-500">
+                            {g.others.length === 0
+                              ? `No other matters at ${g.properties.length > 1 ? "these addresses" : "this address"}`
+                              : `${g.others.length} other ${g.others.length === 1 ? "matter" : "matters"} at ${g.properties.length > 1 ? "these addresses" : "this address"}`}
+                          </span>
+                        )}
                       </div>
                       {g.others.length > 0 && (
                         <ul className="mt-2 space-y-1.5">
@@ -820,7 +825,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               ) : item.linkSource === "name_mention" ? (
                                 // Only mentioned here: the other item is context, the quote is the entry.
                                 <span>
-                                  {mentionLabel(item.title) === "Also discussed" ? "Mentioned" : mentionLabel(item.title)}
+                                  {mentionLabel(item.title) === "Discussed in another item" ? "Mentioned" : mentionLabel(item.title)}
                                   {!/^public participation$/i.test((item.title || "").trim()) && <> during <span className="italic">{displayTitle(item.title)}</span></>}
                                 </span>
                               ) : <span>{mentionLabel(item.title)}</span>}

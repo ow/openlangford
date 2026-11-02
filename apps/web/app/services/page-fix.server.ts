@@ -101,7 +101,7 @@ ${movable || "(No flagged items to move.)"}
   report and the bylaw readings at one meeting): give keep_key, the entry that stays. It is hidden from the timeline,
   not deleted, and stays part of the topic.
 - file_here: a "mention-" entry that is really one of this topic's own steps (e.g. the bylaw's adoption shown only as
-  "Also discussed"). It becomes part of this topic's own history, so the summary can rely on it. Only when the item
+  "Discussed in another item"). It becomes part of this topic's own history, so the summary can rely on it. Only when the item
   isn't filed on another topic; if it is, that other topic is probably the same project (merge_topic) or this page
   holds items that belong there (move_item).
 - rewrite_entry: a new line for any entry ("agenda-", "mention-", "background-", "report-"): one plain sentence of at most
@@ -121,7 +121,7 @@ ${movable || "(No flagged items to move.)"}
   other_matter_id.
 - accept_suggestion: add one of the entries the search found for this page (listed below, not yet on it) when it
   supplies what an agreed problem says is missing (e.g. the adoption or decision the status lacks), with its key.
-  A meeting item accepted here appears as "Also discussed"; if it is this topic's own step, the summary still won't
+  A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
 ${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote.slice(0, 240)}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}
 Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly. A
@@ -423,7 +423,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
 
 /** Topics that might be this one under another name: linked as related, with the same short title, or holding an
  * item mentioned on this page that names the same bylaw as one of this topic's own items (a bylaw's adoption filed on
- * another topic shows here only as "Also discussed"). */
+ * another topic shows here only as "Discussed in another item"). */
 async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number): Promise<Candidate[]> {
   const { data: me } = await supabase.from("matters").select("meta").eq("id", matterId).single();
   const title = (me?.meta as any)?.display_title as string | undefined;
