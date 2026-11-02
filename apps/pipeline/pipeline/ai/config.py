@@ -30,7 +30,9 @@ DEFAULT_PROVIDER = "openai"
 DEFAULT_MODEL = "gpt-6-luna"
 DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 DEFAULT_EMBEDDING_DIMENSIONS = 384
-DEFAULT_DECISIONS_MODEL = "gpt-6-luna"
+DEFAULT_DECISIONS_MODEL = "gpt-6-luna"  # the only model the Decisions API supports (Nov 2026)
+# Staff-facing judgments (link suggestions for the review bar): few calls, so the stronger model.
+DEFAULT_REVIEW_MODEL = "gpt-6.1-terra"
 DEFAULT_ASR_MODEL = "gpt-4o-transcribe"
 
 # Request timeouts (seconds). Long document/refinement calls can take minutes.
@@ -49,6 +51,7 @@ STAGE_PREFIX = {
     "profile": "PROFILE",
     "embedding": "EMBEDDING",
     "decisions": "DECISIONS",
+    "review": "REVIEW",
     "asr": "ASR",
 }
 
@@ -130,6 +133,8 @@ def resolve(stage: str) -> StageConfig:
         )
 
     prefix = STAGE_PREFIX.get(stage, stage.upper())
+    if stage == "review":  # its own default, not the site-wide AI_MODEL
+        return StageConfig(stage=stage, provider=provider, model=_env("REVIEW_AI_MODEL") or DEFAULT_REVIEW_MODEL, timeout=timeout)
     model = _env(f"{prefix}_AI_MODEL") or _env("AI_MODEL") or _env("OPENAI_MODEL") or DEFAULT_MODEL
     return StageConfig(stage=stage, provider=provider, model=model, timeout=timeout)
 

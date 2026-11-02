@@ -4,7 +4,11 @@ import { Check, Flag, Loader2, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
-type Suggestion = { table: string; id: number; kind: "mention" | "related" | "report"; date: string | null; title: string; quote: string | null; href: string | null };
+type Suggestion = {
+  table: string; id: number; kind: "mention" | "related" | "report"; date: string | null; title: string; quote: string | null;
+  href: string | null; reason: string | null; score: number | null; foundIn: "item" | "document" | "spoken" | "report" | "topic" | null;
+};
+const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
 type Links = { suggestions: Suggestion[]; findJob: FindJob | null } | null;
 type Loaded = { path: string | null; review: PageReview | null; links: Links };
@@ -204,7 +208,7 @@ export function PageReviewBar() {
                     </button>
                   </div>
                   <p className="mt-1 text-xs text-zinc-500">
-                    {findStatus(links.findJob) || "Searches every meeting, document and annual report again for this topic's names and file numbers. Nothing is added until you accept it."}
+                    {findStatus(links.findJob) || "Searches every meeting, document and annual report again for this topic's names and file numbers, then the review model picks what belongs in its story. Nothing is added until you accept it."}
                   </p>
                   {suggestions.length > 0 && (
                     <ol className="mt-2 space-y-2">
@@ -212,9 +216,15 @@ export function PageReviewBar() {
                         <li key={`${s.table}-${s.id}`} className="rounded-lg border border-brand-200 px-2.5 py-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-brand-700">
                             {s.kind === "related" ? "Related topic" : s.kind === "report" ? "Annual report" : "Mention"}{s.date && s.kind !== "report" ? ` · ${s.date.slice(0, 10)}` : ""}
+                            {s.score != null && <span className="ml-1 font-normal normal-case tracking-normal text-zinc-500" title="How likely the linking model thinks it belongs">· {Math.round(s.score * 100)}% likely</span>}
                           </span>
                           {s.href ? <a href={s.href} target="_blank" rel="noreferrer" className="block text-zinc-900 hover:underline">{s.title}</a> : <p className="text-zinc-900">{s.title}</p>}
-                          {s.quote && <p className="mt-0.5 line-clamp-3 text-xs text-zinc-500">“{s.quote}”</p>}
+                          {s.reason && <p className="mt-0.5 text-zinc-700">{s.reason}</p>}
+                          {s.quote && (
+                            <p className="mt-0.5 line-clamp-3 text-xs text-zinc-500">
+                              {s.foundIn && <span className="font-medium text-zinc-600">{FOUND_IN[s.foundIn]}: </span>}“{s.quote}”
+                            </p>
+                          )}
                           <div className="mt-1.5 flex gap-2 text-xs">
                             <button type="button" disabled={busy} onClick={() => submit("accept", { table: s.table, id: String(s.id) })}
                               className="rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700">Add to page</button>

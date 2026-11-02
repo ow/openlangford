@@ -23,7 +23,7 @@ from __future__ import annotations
 import json as _json
 import re
 from collections import defaultdict
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -266,13 +266,13 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
     for iid, matter_id, day, title, body in cur.fetchall():
         text = f"{title}. {body}"
         if pat.search(text):
-            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name)}
+            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name), "where": "item"}
     cur.execute(f"""select a.id, a.matter_id, mt.meeting_date, a.title, ds.section_text
                     from document_sections ds join agenda_items a on a.id = ds.agenda_item_id join meetings mt on mt.id = a.meeting_id
                     where {any_variant("ds.text_search")}{meeting_filter}""", [*variants, *extra])
     for iid, matter_id, day, title, text in cur.fetchall():
         if iid not in items and pat.search(text or ""):
-            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name)}
+            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name), "where": "document"}
     # Spoken mentions (public comment years later often names the place only aloud): a transcript line belongs
     # to the item whose discussion window holds its start time.
     segment_filter = " and t.meeting_id = any(%s)" if meeting_ids else ""
@@ -287,7 +287,7 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
     for iid, matter_id, day, title, text in cur.fetchall():
         if iid not in items and pat.search(text or ""):
             items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title,
-                          "excerpt": excerpt(text, name), "spoken": True}
+                          "excerpt": excerpt(text, name), "spoken": True, "where": "spoken"}
     items = {iid: it for iid, it in items.items() if not table_row(it["excerpt"])}
     pages = []
     if not meeting_ids:
@@ -471,20 +471,26 @@ def write_links(found: dict, conn=None, hidden: bool = False, suggested: bool = 
     def write(cur):
         changed, new_links, new_related, new_pages = set(), [], [], []
         for l in found["mentions"]:
-            cur.execute(f"""insert into matter_links (matter_id, kind, agenda_item_id, confidence, source, hidden, quote, suggested_at) values (%s, 'mention', %s, %s, %s, %s, %s, {when})
-                           on conflict do nothing returning matter_id, id""", (l["matter_id"], l["agenda_item_id"], l["confidence"], l["source"], hidden, l.get("quote")))
+            cur.execute(f"""insert into matter_links (matter_id, kind, agenda_item_id, confidence, source, hidden, quote, suggested_at, suggest_reason, found_in)
+                           values (%s, 'mention', %s, %s, %s, %s, %s, {when}, %s, %s)
+                           on conflict do nothing returning matter_id, id""", (l["matter_id"], l["agenda_item_id"], l["confidence"], l["source"], hidden, l.get("quote"),
+                                                                             l.get("suggest_reason"), l.get("found_in")))
             for mid, lid in cur.fetchall():
                 changed.add(mid)
                 new_links.append(lid)
         for l in found["related"]:
-            cur.execute(f"""insert into matter_links (matter_id, kind, related_matter_id, confidence, source, hidden, suggested_at) values (%s, 'related_matter', %s, %s, %s, %s, {when})
-                           on conflict do nothing returning matter_id, related_matter_id, id""", (l["matter_id"], l["related_matter_id"], l["confidence"], l["source"], hidden))
+            cur.execute(f"""insert into matter_links (matter_id, kind, related_matter_id, confidence, source, hidden, suggested_at, suggest_reason, found_in)
+                           values (%s, 'related_matter', %s, %s, %s, %s, {when}, %s, %s)
+                           on conflict do nothing returning matter_id, related_matter_id, id""", (l["matter_id"], l["related_matter_id"], l["confidence"], l["source"], hidden,
+                                                                                              l.get("suggest_reason"), "topic" if l.get("suggest_reason") else None))
             for a, b, lid in cur.fetchall():
                 changed.update((a, b))
                 new_related.append(lid)
         for l in found["pages"]:
-            cur.execute(f"""insert into matter_report_mentions (matter_id, report_id, page, quote, confidence, source, hidden, suggested_at) values (%s, %s, %s, %s, %s, %s, %s, {when})
-                           on conflict do nothing returning matter_id, id""", (l["matter_id"], l["report_id"], l["page"], l["quote"], l["confidence"], l["source"], hidden))
+            cur.execute(f"""insert into matter_report_mentions (matter_id, report_id, page, quote, confidence, source, hidden, suggested_at, suggest_reason)
+                           values (%s, %s, %s, %s, %s, %s, %s, {when}, %s)
+                           on conflict do nothing returning matter_id, id""", (l["matter_id"], l["report_id"], l["page"], l["quote"], l["confidence"], l["source"], hidden,
+                                                                             l.get("suggest_reason")))
             for mid, pid in cur.fetchall():
                 changed.add(mid)
                 new_pages.append(pid)
@@ -539,13 +545,53 @@ def run(*, matter_ids: list[int] | None = None, meeting_ids: list[int] | None = 
     return {"names": names, **found, "changed": written["matters"]}
 
 
-SUGGEST_MIN = 0.6  # a person decides each suggestion, so the bar is lower than for links published unseen
+class _Verdict(BaseModel):
+    n: int
+    verdict: Literal["belongs", "mentioned", "unrelated"]
+    reason: str
+
+
+class _Verdicts(BaseModel):
+    verdicts: list[_Verdict]
+
+
+SUGGEST_PROMPT = """You help an editor of Open Langford, a site that follows Langford City council, fill gaps in a topic's
+timeline. The topic is below with the entries it already has. Each numbered candidate names one of the topic's names
+or file numbers somewhere. Decide whether each is part of THIS topic's story.
+
+- belongs: it is a step in this topic's story (a decision, hearing, notice, report or comment about this very thing).
+- mentioned: it is about something else but refers to this topic in a way a reader following it would want to see.
+- unrelated: the name matches but it's a different thing: another business or unit at the same address, another
+  application, a list of many items, or a passing reference.
+
+Give a reason a resident would understand, naming what the candidate is actually about (e.g. "A different business,
+in unit #103 of the same building"). Don't guess from a title alone: an item's attached documents are often about
+something its title doesn't say.{examples}
+
+TOPIC: {topic}
+Already on its timeline:
+{timeline}
+
+CANDIDATES:
+{candidates}"""
+
+WHERE = {"item": "in the item's own text", "document": "in a document attached to the item", "spoken": "said at the meeting"}
+
+
+def _timeline(cur, matter_id: int) -> str:
+    cur.execute("""select mt.meeting_date, a.title from agenda_items a join meetings mt on mt.id = a.meeting_id
+                   where a.matter_id = %s
+                   union select mt.meeting_date, a.title from matter_links l join agenda_items a on a.id = l.agenda_item_id
+                   join meetings mt on mt.id = a.meeting_id where l.matter_id = %s and l.kind = 'mention' and not l.hidden
+                   order by 1 limit 40""", (matter_id, matter_id))
+    return "\n".join(f"- {d}: {(t or '').splitlines()[0][:120]}" for d, t in cur.fetchall()) or "(nothing yet)"
 
 
 def suggest_links(matter_id: int) -> dict[str, Any]:
-    """"Find missing" from the page review bar: search again for one matter by its names and file numbers, and
-    write what looks like it belongs as suggestions (hidden, suggested_at set) for staff to accept or reject.
-    Links already on the page, removed by staff, or rejected before are never suggested again."""
+    """"Find missing" from the page review bar: search again for one matter by its names and file numbers, and ask
+    the reviewer model (stage "review", Terra) which candidates belong in its story, all in one call. What it keeps
+    is written as suggestions (hidden, suggested_at set, with its reason and where the name was found) for staff to
+    add or reject. Links already on the page, removed by staff, or rejected before are never suggested again."""
     from pipeline.db import connect
 
     conn = connect()
@@ -553,23 +599,95 @@ def suggest_links(matter_id: int) -> dict[str, Any]:
     try:
         cur = conn.cursor()
         matters = load_matters(cur)
-        conn.rollback()
         target = next((m for m in matters if m["id"] == matter_id), None)
         if target is None:
             return {"suggested": 0, "names": []}
         names = extract_names([target], save=True).get(matter_id, [])
         names = [*names, *(f for f in target["file_numbers"] if f not in names)]
-        all_names = {m["id"]: m["meta"].get("anchor_names") or [] for m in matters}
-        all_names[matter_id] = names
-        found = judge(matters, {matter_id: names}, cur, existing=existing_links(cur), all_names=all_names,
-                      min_item=SUGGEST_MIN, min_page=SUGGEST_MIN, min_related=SUGGEST_MIN)
+        existing = existing_links(cur)
+        candidates: list[dict] = []
+        seen: set = set()
+        for name in names:
+            hits = find_hits(cur, name)
+            if len(hits["items"]) > MAX_ITEMS_PER_NAME:
+                continue
+            for it in hits["items"]:
+                key = ("item", it["id"])
+                if it["matter_id"] == matter_id or (matter_id, it["id"]) in existing["mentions"] or key in seen:
+                    continue
+                seen.add(key)
+                candidates.append({"kind": "item", "name": name, **it})
+            for pg in hits["pages"]:
+                key = ("page", pg["report_id"], pg["page"])
+                if (matter_id, pg["report_id"], pg["page"]) in existing["pages"] or key in seen:
+                    continue
+                seen.add(key)
+                candidates.append({"kind": "page", "name": name, **pg})
+        for other in matters:  # other topics with one of the same names
+            if other["id"] == matter_id or not set(map(str.lower, other["meta"].get("anchor_names") or [])) & set(map(str.lower, names)):
+                continue
+            pair = (min(matter_id, other["id"]), max(matter_id, other["id"]))
+            if pair not in existing["related"] and ("topic", other["id"]) not in seen:
+                seen.add(("topic", other["id"]))
+                candidates.append({"kind": "topic", "id": other["id"], "title": other["title"], "summary": other["summary"][:300],
+                                   "date": str(other["first_seen"] or "")})
+        candidates = candidates[:60]
+        timeline = _timeline(cur, matter_id)
+        examples = editor_examples(cur)
         conn.rollback()
     finally:
         conn.close()
+    if not candidates:
+        print(f"  [Names] matter {matter_id}: searched {', '.join(names) or 'no names'}; nothing new")
+        return {"suggested": 0, "names": names}
+
+    def line(i: int, c: dict) -> str:
+        if c["kind"] == "topic":
+            return f"{i}. ANOTHER TOPIC: {c['title']} ({c['date']}). {c['summary']}"
+        if c["kind"] == "page":
+            return f"{i}. ANNUAL REPORT {c['year']}, page {c['page']}: {c['excerpt']}"
+        return f"{i}. AGENDA ITEM {c['date']}: {(c['title'] or '').splitlines()[0][:140]}. Found {WHERE[c['where']]}: {c['excerpt']}"
+
+    result = ai.json(SUGGEST_PROMPT.format(
+        examples=examples, topic=_describe(target), timeline=timeline,
+        candidates="\n\n".join(line(i, c) for i, c in enumerate(candidates, 1))),
+        stage="review", schema=_Verdicts)
+    # Terra decides and explains; the Decisions API (Luna) adds a calibrated score to each item it kept, for sorting
+    # and for comparing later with what staff accept.
+    kept = {v.n: v for v in result.verdicts if v.verdict != "unrelated" and 1 <= v.n <= len(candidates)}
+    score_jobs = [(n, candidates[n - 1]) for n in kept if candidates[n - 1]["kind"] == "item"]
+    scores: dict[int, float] = {}
+    if score_jobs:
+        story_q = lambda c: ai.predicate(
+            "part_of_story",
+            f"Topic: {_describe(target)}\nAlready on its timeline:\n{timeline}\n\nIs this agenda item part of THIS topic's story, "
+            f"or does it refer to it in a way someone following the topic would want to see? Another business or unit at "
+            f"the same address, or a different application, is not.")
+        answers = ai.decide_many([(f"AGENDA ITEM {c['date']}: {(c['title'] or '').splitlines()[0][:140]}. Found {WHERE[c['where']]}: {c['excerpt']}",
+                                   [story_q(c)]) for _, c in score_jobs])
+        for (n, _), res in zip(score_jobs, answers):
+            if not isinstance(res, Exception):
+                ans = next(iter(res.values()), None)
+                scores[n] = round(float(getattr(ans, "probability", 0) or 0), 3)
+    found: dict = {"mentions": [], "related": [], "pages": []}
+    for v in result.verdicts:
+        if v.verdict == "unrelated" or not 1 <= v.n <= len(candidates):
+            continue
+        c = candidates[v.n - 1]
+        if c["kind"] == "item":
+            found["mentions"].append({"matter_id": matter_id, "agenda_item_id": c["id"], "kind": "mention", "confidence": scores.get(v.n),
+                                      "source": "name" if v.verdict == "belongs" else "name_mention", "quote": c["excerpt"],
+                                      "suggest_reason": v.reason, "found_in": c["where"]})
+        elif c["kind"] == "page":
+            found["pages"].append({"matter_id": matter_id, "report_id": c["report_id"], "page": c["page"], "quote": c["excerpt"],
+                                   "confidence": None, "source": "name", "suggest_reason": v.reason})
+        else:
+            found["related"].append({"matter_id": min(matter_id, c["id"]), "related_matter_id": max(matter_id, c["id"]),
+                                     "kind": "related_matter", "confidence": None, "source": "name", "suggest_reason": v.reason})
     written = write_links(found, suggested=True)
     count = len(written["links"]) + len(written["related"]) + len(written["pages"])
-    print(f"  [Names] matter {matter_id}: searched {', '.join(names) or 'no names'}; {count} suggestion(s)")
-    return {"suggested": count, "names": names}
+    print(f"  [Names] matter {matter_id}: searched {', '.join(names) or 'no names'}; {len(candidates)} candidate(s), {count} suggestion(s)")
+    return {"suggested": count, "candidates": len(candidates), "names": names}
 
 
 # --- second check --------------------------------------------------------------------------------------
