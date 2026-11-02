@@ -9,7 +9,7 @@ import { addEditorIssue, checkPage, rateFlag, resolveFlags, setFlagNote } from "
 import { fixPage } from "../services/page-fix.server";
 import { unresolvedFlags } from "../lib/page-review-types";
 import {
-  decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
+  agreeSuggestion, decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
   setTopicHidden, topicHidden,
 } from "../services/page-links.server";
 
@@ -89,7 +89,9 @@ export async function action({ request, context }: Route.ActionArgs) {
         const table = String(form.get("table") || "");
         const id = Number(form.get("id"));
         if ((table !== "matter_links" && table !== "matter_report_mentions") || !Number.isSafeInteger(id)) return bad("Unknown suggestion.");
-        await decideSuggestion(supabase, matterId, table, id, intent === "accept", user.id);
+        // 👍 marks it agreed (added by the agent on the next Fix); 👎 rejects it now (that changes nothing on the page).
+        if (intent === "accept") await agreeSuggestion(supabase, matterId, table, id, form.get("agree") !== "0", user.id);
+        else await decideSuggestion(supabase, matterId, table, id, false, user.id);
       }
     } else if (intent === "add_issue") {
       await addEditorIssue(supabase, path, String(form.get("note") || ""),

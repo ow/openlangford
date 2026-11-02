@@ -8,7 +8,7 @@ import { cn } from "../../lib/utils";
 
 type Suggestion = {
   table: string; id: number; kind: "mention" | "related" | "report"; date: string | null; title: string; quote: string | null;
-  href: string | null; reason: string | null; score: number | null; foundIn: "item" | "document" | "spoken" | "report" | "topic" | "similar" | null;
+  href: string | null; reason: string | null; score: number | null; foundIn: "item" | "document" | "spoken" | "report" | "topic" | "similar" | null; agreed?: boolean;
 };
 const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic", similar: "Similar in meaning (doesn't name this topic)" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
@@ -116,7 +116,8 @@ export function PageReviewBar() {
   useEffect(() => setRatings({}), [pathname]);
   const flags = (review?.ai_flags || []).map((f, i) => (i in ratings ? { ...f, verdict: ratings[i] } : f));
   const open_ = unresolvedFlags(flags).length;
-  const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length;
+  // What Fix will do: flags rated 👍 and not fixed yet, plus found entries rated 👍 (added by the agent on Fix).
+  const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length + suggestions.filter((x) => x.agreed).length;
   useHighlights(flags, open, review?.status === "fixed" || (stayed && review?.status === "reviewed"));
   const fixing = review?.status === "fixing";
   // When the agent finishes while you're on the page, reload the page's own content so its edits show (outlined).
@@ -359,9 +360,11 @@ export function PageReviewBar() {
                           )}
                           </div>
                           <div className="flex shrink-0 gap-0.5">
-                            <Tip label="Yes, add it to the page">
-                              <button type="button" disabled={busy} onClick={() => submit("accept", { table: s.table, id: String(s.id) })}
-                                aria-label="Yes, add it to the page" className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-emerald-700">
+                            <Tip label={s.agreed ? "Agreed: Fix adds it. Click to take it back" : "Yes, add it (on Fix)"}>
+                              <button type="button" disabled={busy} aria-pressed={s.agreed}
+                                onClick={() => submit("accept", { table: s.table, id: String(s.id), agree: s.agreed ? "0" : "1" })}
+                                aria-label="Yes, add it to the page"
+                                className={cn("rounded-full p-1.5", s.agreed ? "bg-red-100 text-red-700" : "text-zinc-400 hover:bg-zinc-100")}>
                                 {deciding === "accept" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ThumbsUp className="h-3.5 w-3.5" />}
                               </button>
                             </Tip>
@@ -460,7 +463,7 @@ export function PageReviewBar() {
           )}
           {(!review?.status || review.status === "needs_work") && !fixing && (
             <button type="button" disabled={busy}
-              onClick={() => (flags.some((f) => f.verdict === "agree" && !f.fixed) || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
+              onClick={() => (agreed > 0 || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
               title={agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent` : "Describe what needs work"}
               className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-200/70")}>
               {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>

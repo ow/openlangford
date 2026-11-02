@@ -158,11 +158,26 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed);
     const matterId = await matterForPath(supabase, path);
     if (!matterId) return finish("needs_work", "The agent only fixes topic pages so far. This one needs a person.");
-    if (!agreed.length && !row?.note) {
+    // Entries the search found that staff rated 👍: added first, so the plan (and the one summary rewrite) sees them.
+    const agreedFound = (await listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])).filter((x) => x.agreed);
+    if (!agreed.length && !row?.note && !agreedFound.length) {
       // Everything agreed is already fixed (perhaps by a run a moment ago): leave the page as that run left it.
       if (flags.some((f) => f.verdict === "agree" && f.fixed)) return;
       return finish("needs_work", "Nothing to fix: no flags were rated 👍 and there's no note.");
     }
+    const added: { title: string; key: string | null }[] = [];
+    for (const found of agreedFound) {
+      try {
+        await decideSuggestion(supabase, matterId, found.table, found.id, true, requester.id);
+        added.push({ title: found.title, key: found.itemId ? `mention-${found.itemId}` : null });
+      } catch (error) {
+        console.error("[page-fix] adding a found entry failed:", error instanceof Error ? error.message : error);
+      }
+    }
+    const addedNote = added.length
+      ? `Just added to this page from the search (staff agreed they belong): ${added.map((a) => `${a.key ? `[${a.key}] ` : ""}"${a.title}"`).join("; ")}. `
+        + `If one is really this topic's own step (its adoption, a reading, its decision), file_here so the summary can rely on it.`
+      : "";
 
     const page = readPage(await renderPage(origin, path));
     const itemId = (key: string | null | undefined) => Number(key?.match(/^(?:agenda|mention|background)-(\d+)$/)?.[1] ?? NaN);
@@ -196,14 +211,15 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])]);
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records, lookalikes, suggestions,
+      prompt: planPrompt(page.heading || page.title, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates, records, lookalikes, suggestions,
         (row as { internal_note?: string | null } | null)?.internal_note ?? null),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
     });
 
     const onPage = new Set(page.entries.map((e) => e.key));
-    const done: string[] = [];
+    const done: string[] = added.length
+      ? [`Added ${added.length === 1 ? "the entry" : `${added.length} entries`} the search found: ${added.map((a) => a.title).join("; ")}.`] : [];
     const left: string[] = [];
     const fixedKeys = new Set<string>();
     const moves: { item_id: number; to_matter_id: number | null; refile?: boolean; reason: string }[] = [];

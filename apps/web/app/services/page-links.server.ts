@@ -20,6 +20,10 @@ export type Suggestion = {
   /** The Decisions API's probability that it belongs (items only), for sorting and later comparison. */
   score: number | null;
   foundIn: "item" | "document" | "spoken" | "report" | "topic" | "similar" | null;
+  /** Staff said yes (👍): accepted but still hidden, to be added by the fix agent on the next Fix. */
+  agreed: boolean;
+  /** For a meeting item: its agenda item id (its entry will be "mention-<id>"). */
+  itemId: number | null;
 };
 export type FindJob = { id: string; status: string; requested_at: string; finished_at: string | null; suggested: number | null };
 
@@ -114,13 +118,13 @@ export async function latestFindJob(supabase: SupabaseClient, matterId: number):
 /** Suggestions waiting for a decision on this topic. */
 export async function listSuggestions(supabase: SupabaseClient, matterId: number): Promise<Suggestion[]> {
   const [mentions, related, pages] = await Promise.all([
-    supabase.from("matter_links").select("id, quote, confidence, suggest_reason, found_in, agenda_items(title, meetings(slug, meeting_date))")
-      .eq("matter_id", matterId).eq("kind", "mention").not("suggested_at", "is", null).is("review", null).limit(50),
-    supabase.from("matter_links").select("id, matter_id, related_matter_id, suggest_reason")
-      .eq("kind", "related_matter").not("suggested_at", "is", null).is("review", null)
+    supabase.from("matter_links").select("id, agenda_item_id, review, quote, confidence, suggest_reason, found_in, agenda_items(title, meetings(slug, meeting_date))")
+      .eq("matter_id", matterId).eq("kind", "mention").not("suggested_at", "is", null).eq("hidden", true).or("review.is.null,review.eq.accepted").limit(50),
+    supabase.from("matter_links").select("id, matter_id, related_matter_id, suggest_reason, review")
+      .eq("kind", "related_matter").not("suggested_at", "is", null).eq("hidden", true).or("review.is.null,review.eq.accepted")
       .or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`).limit(20),
-    supabase.from("matter_report_mentions").select("id, page, quote, suggest_reason, public_reports(year, title)")
-      .eq("matter_id", matterId).not("suggested_at", "is", null).is("review", null).limit(20),
+    supabase.from("matter_report_mentions").select("id, page, quote, suggest_reason, review, public_reports(year, title)")
+      .eq("matter_id", matterId).not("suggested_at", "is", null).eq("hidden", true).or("review.is.null,review.eq.accepted").limit(20),
   ]);
   const otherIds = (related.data || []).map((l) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id));
   const { data: others } = otherIds.length
@@ -133,21 +137,34 @@ export async function listSuggestions(supabase: SupabaseClient, matterId: number
       const meeting = one(item?.meetings) as any;
       return { table: "matter_links" as const, id: l.id, kind: "mention" as const, date: meeting?.meeting_date ?? null,
         title: item?.title?.split("\n")[0] || "Agenda item", quote: l.quote, href: meeting?.slug ? `/meetings/${meeting.slug}` : null,
-        reason: l.suggest_reason ?? null, score: l.confidence ?? null, foundIn: l.found_in ?? null };
+        reason: l.suggest_reason ?? null, score: l.confidence ?? null, foundIn: l.found_in ?? null,
+        agreed: l.review === "accepted", itemId: l.agenda_item_id ?? null };
     }),
     ...(related.data || []).map((l: any) => {
       const other = (others || []).find((m: any) => m.id === (l.matter_id === matterId ? l.related_matter_id : l.matter_id));
       return { table: "matter_links" as const, id: l.id, kind: "related" as const, date: other?.first_seen ?? null,
         title: other?.meta?.display_title || other?.title || "A related topic", quote: null, href: other?.slug ? `/matters/${other.slug}` : null,
-        reason: l.suggest_reason ?? null, score: null, foundIn: "topic" as const };
+        reason: l.suggest_reason ?? null, score: null, foundIn: "topic" as const, agreed: l.review === "accepted", itemId: null };
     }),
     ...(pages.data || []).map((p: any) => {
       const report = one(p.public_reports) as any;
       return { table: "matter_report_mentions" as const, id: p.id, kind: "report" as const, date: report ? `${report.year}-12-31` : null,
         title: `${report?.year ?? ""} annual report, page ${p.page}`.trim(), quote: p.quote, href: null,
-        reason: p.suggest_reason ?? null, score: null, foundIn: "report" as const };
+        reason: p.suggest_reason ?? null, score: null, foundIn: "report" as const, agreed: p.review === "accepted", itemId: null };
     }),
   ].sort((a, b) => (b.score ?? 0.5) - (a.score ?? 0.5) || String(b.date).localeCompare(String(a.date)));
+}
+
+/** Staff's 👍 on a suggestion (or taking it back): marked accepted but left hidden; the fix agent publishes it on the
+ * next Fix, with the page's other fixes and one summary rewrite. */
+export async function agreeSuggestion(supabase: SupabaseClient, matterId: number, table: Suggestion["table"], id: number,
+  agree: boolean, userId: string) {
+  let query = supabase.from(table).update(agree ? decided(userId, "accepted") : { review: null, reviewed_by: null, reviewed_at: null })
+    .eq("id", id).eq("hidden", true).not("suggested_at", "is", null);
+  query = table === "matter_report_mentions" ? query.eq("matter_id", matterId)
+    : query.or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`);
+  const { data, error } = await query.select("id");
+  if (error || !data?.length) throw new Error("Could not save that.");
 }
 
 /** Accept (publish) or reject (keep hidden for good) one suggestion on this topic. */
