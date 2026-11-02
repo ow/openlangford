@@ -447,13 +447,13 @@ export function PageReviewBar() {
           )}
           {review?.status !== "reviewed" && !fixing && review?.status !== "fixed" && (
             <button type="button" disabled={busy} onClick={markReviewed}
-              className={cn(button, "text-emerald-700 hover:bg-emerald-50", open_ > 0 && "text-emerald-700/60")}>{spinner("reviewed")}Reviewed</button>
+              className={cn(button, "text-emerald-700 hover:bg-emerald-100", open_ > 0 && "text-emerald-700/60")}>{spinner("reviewed")}Reviewed</button>
           )}
           {(!review?.status || review.status === "needs_work") && !fixing && (
             <button type="button" disabled={busy}
               onClick={() => (flags.some((f) => f.verdict === "agree" && !f.fixed) || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
               title={agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent` : "Describe what needs work"}
-              className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-50")}>
+              className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-200/70")}>
               {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>
           )}
           <Tip label={[
@@ -462,7 +462,7 @@ export function PageReviewBar() {
             ].filter(Boolean).join(" · ") || (review?.ai_checked_at ? "Checked: nothing open. Show what the check found" : "Have the model read this page and flag problems")}>
             <button type="button" disabled={busy}
               onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
-              className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-50")}>
+              className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-100")}>
               <Sparkles className={cn("h-4 w-4", checking && "animate-pulse")} />
               {checking ? "Checking…" : "Check"}
               {/* One count, like an unread count: open flags plus entries the search found that need a decision. */}
@@ -488,7 +488,7 @@ export function PageReviewBar() {
             </Tip>
           )}
           {/* Always there, so a page that can't be reviewed yet can be skipped (it stays as it is). */}
-          <Tip label={fixedRun ? "Next: the next page the agent fixed, to confirm" : stayed ? "Next page to review" : "Skip to the next page; this one stays as it is"}>
+          <Tip label={fixedRun ? "Next fixed page" : "Next page"}>
             <button type="button" disabled={busy && !fixing}
               onClick={() => navigate(`/admin/reviews/next?${fixedRun ? "status=fixed&" : ""}from=${encodeURIComponent(pathname)}`)}
               aria-label="Next page"
