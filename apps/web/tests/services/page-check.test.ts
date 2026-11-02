@@ -31,8 +31,8 @@ describe("readPage", () => {
 describe("checkPrompt", () => {
   it("lists entries by key and carries rated flags as calibration", () => {
     const prompt = checkPrompt(readPage(html), [
-      { problem: "generic_text", reason: "Says nothing about the store.", excerpt: "Public Hearings", verdict: "agree" },
-      { problem: "unclear_why", reason: "Minutes adoption.", excerpt: "Minutes", verdict: "disagree" },
+      { problem: "generic_text", reason: "Says nothing about the store.", entry_text: "Public Hearings", verdict: "agree" },
+      { problem: "unclear_why", reason: "Minutes adoption.", entry_text: "Minutes", verdict: "disagree" },
     ]);
     expect(prompt).toContain("[agenda-1] July 17, 2023");
     expect(prompt).toContain("AGREED generic_text: Says nothing about the store.");

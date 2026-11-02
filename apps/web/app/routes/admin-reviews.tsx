@@ -1,12 +1,17 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/admin-reviews";
-import { adminRead, adminReadOnlyAction, privateAdminHeaders } from "../lib/admin-read.server";
+import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
 import { cn } from "../lib/utils";
 import { reviewTime, unresolvedFlags } from "../lib/page-review-types";
 import { listPageReviews, reviewCoverage, type ReviewFilter } from "../services/page-reviews.server";
+import { decideGuidance, draftGuidance, learningOverview } from "../services/review-learning.server";
+import { ReviewLearningSection } from "../components/admin/review-learning-section";
+import { FLAG_PROBLEM_LABELS, type FlagProblem } from "../lib/page-review-types";
+import { requireModerator } from "../lib/auth.server";
+import { data } from "react-router";
 
 export const meta = () => [
   { title: "Page reviews | Admin | Open Langford" },
@@ -22,14 +27,34 @@ export async function loader({ request }: Route.LoaderArgs) {
     const filter: ReviewFilter = show === "needs_work" || show === "reviewed" || show === "flagged" || show === "fixed" ? show : null;
     const supabase = getSupabaseAdminClient();
     const { rows, ...list } = await listPageReviews(supabase, filter);
-    return { show: filter ?? "all", ...list, coverage: await reviewCoverage(supabase, rows) };
+    const [coverage, learning] = await Promise.all([reviewCoverage(supabase, rows), learningOverview(supabase)]);
+    return { show: filter ?? "all", ...list, coverage, learning };
   });
 }
 
-export const action = adminReadOnlyAction;
+/** Draft, approve or discard a guidance rule for the page check. */
+export async function action({ request }: Route.ActionArgs) {
+  const user = await requireModerator(request);
+  const form = await request.formData();
+  const intent = String(form.get("intent") || "");
+  const supabase = getSupabaseAdminClient();
+  try {
+    if (intent === "draft_rule") {
+      const problem = String(form.get("problem") || "") as FlagProblem;
+      if (!(problem in FLAG_PROBLEM_LABELS)) return data({ error: "Unknown problem type." }, { status: 400, headers: privateAdminHeaders() });
+      await draftGuidance(supabase, problem, FLAG_PROBLEM_LABELS[problem]);
+    } else if (intent === "approve_rule" || intent === "reject_rule") {
+      await decideGuidance(supabase, Number(form.get("id")), intent === "approve_rule" ? "approve" : "reject",
+        String(form.get("text") || "") || null, user.id);
+    } else return data({ error: "Unknown action." }, { status: 400, headers: privateAdminHeaders() });
+    return data({ ok: true }, { headers: privateAdminHeaders() });
+  } catch (error) {
+    return data({ error: error instanceof Error ? error.message : "That didn't work." }, { status: 503, headers: privateAdminHeaders() });
+  }
+}
 
 export default function AdminReviews({ loaderData }: Route.ComponentProps) {
-  const { show, reviews, agreement, coverage } = loaderData;
+  const { show, reviews, agreement, coverage, learning } = loaderData;
   const n = (value: number) => value.toLocaleString();
   return (
     <main className="min-h-screen bg-zinc-50">
@@ -74,6 +99,7 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
               className="mt-3 self-start rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700">Random page</Link>
           </div>
         </div>
+        <ReviewLearningSection rows={learning} />
         <nav aria-label="Filter reviews" className="mb-4 flex flex-wrap gap-2 text-sm">
           {FILTERS.map(([value, label]) => (
             <Link key={value} to={value === "all" ? "/admin/reviews" : `/admin/reviews?show=${value}`}

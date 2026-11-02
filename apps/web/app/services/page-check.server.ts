@@ -4,6 +4,7 @@ import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { reviewKind } from "./page-reviews.server";
 import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-types";
+import { approvedGuidance, examplesFor, recordExample } from "./review-learning.server";
 
 /**
  * A reader's check of one public page: the page is rendered as a signed-out visitor sees it, and the model is
@@ -74,28 +75,19 @@ const CheckSchema = z.object({
   })),
 });
 
-type Example = { problem: FlagProblem; reason: string; excerpt: string; verdict: FlagVerdict };
+type Example = { problem: FlagProblem; reason: string; entry_text: string; verdict: FlagVerdict; note?: string | null };
+type Rule = { problem: string; text: string };
 
-/** The most recent rated flags from any page: what the admin agreed was a problem, and what wasn't. */
-export async function calibrationExamples(supabase: SupabaseClient, limit = 12): Promise<Example[]> {
-  const { data } = await supabase.from("page_reviews").select("ai_flags, ai_rated_history").not("ai_flags", "is", null)
-    .order("ai_checked_at", { ascending: false }).limit(200);
-  const rated = ((data || []) as { ai_flags: PageFlag[] | null; ai_rated_history: PageFlag[] | null }[])
-    .flatMap(row => [...(row.ai_flags || []), ...(row.ai_rated_history || [])].filter(f => f.verdict && f.problem !== "editor_issue"))
-    .map(f => ({ problem: f.problem, reason: f.reason, excerpt: f.excerpt.slice(0, 220), verdict: f.verdict! }));
-  const agree = rated.filter(f => f.verdict === "agree").slice(0, limit);
-  const disagree = rated.filter(f => f.verdict === "disagree").slice(0, limit);
-  return [...agree, ...disagree];
-}
-
-export function checkPrompt(page: ReadPage, examples: Example[]) {
-  const problems = CHECK_PROBLEMS.map((k) => `- ${k}: ${FLAG_PROBLEMS[k]}`).join("\n");
+export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = []) {
+  // Approved guidance replaces the built-in description of its problem type.
+  const ruleFor = new Map(rules.map((r) => [r.problem, r.text]));
+  const problems = CHECK_PROBLEMS.map((k) => `- ${k}: ${ruleFor.get(k) ?? FLAG_PROBLEMS[k]}`).join("\n");
   const content = page.entries.length
     ? page.entries.map(e => `[${e.key}] ${e.text}`).join("\n\n")
     : page.body;
   const calibration = examples.length
-    ? `\n\nAn editor rated earlier flags. Flag what they agreed with; don't flag the kind of thing they rejected.\n` +
-      examples.map(e => `- ${e.verdict === "agree" ? "AGREED" : "REJECTED"} ${e.problem}: ${e.reason} (entry: "${e.excerpt}")`).join("\n")
+    ? `\n\nAn editor rated flags on pages like this one. Flag what they agreed with; don't flag the kind of thing they rejected.\n` +
+      examples.map(e => `- ${e.verdict === "agree" ? "AGREED" : "REJECTED"} ${e.problem}: ${e.reason} (entry: "${e.entry_text.slice(0, 220)}")${e.note ? ` Editor: ${e.note}` : ""}`).join("\n")
     : "";
   return `You're a Langford resident reading this page on Open Langford, a site that follows City council. Point out what
 would confuse or mislead you. Only flag clear problems a careful reader would notice; most entries are fine,
@@ -116,10 +108,14 @@ ${content}`;
 /** Check one page and store the result on its page_reviews row (keeping any review status and note). */
 export async function checkPage(supabase: SupabaseClient, origin: string, path: string): Promise<PageCheck> {
   const page = readPage(await renderPage(origin, path));
-  const examples = await calibrationExamples(supabase);
+  const kind = reviewKind(path);
+  const [examples, guidance] = await Promise.all([
+    examplesFor(supabase, kind, [page.heading, page.description, ...page.entries.map((e) => e.text), page.body].join("\n").slice(0, 6000)),
+    approvedGuidance(supabase, kind),
+  ]);
   const result = await getAiClient().json({
     stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
-    prompt: checkPrompt(page, examples),
+    prompt: checkPrompt(page, examples, guidance.rules),
     schema: CheckSchema,
     schemaName: "page_check",
   });
@@ -147,6 +143,7 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const { error } = await supabase.from("page_reviews").upsert({
     path, kind: reviewKind(path), title: page.heading || page.title || null,
     ai_flags: flags, ai_rated_history: history, ai_page_issue: result.data.page_issue, ai_summary: result.data.summary,
+    ai_guidance_version: guidance.version,
     ai_entries: page.entries.length, ai_model: result.model, ai_checked_at: checked_at,
   }, { onConflict: "path" });
   if (error) throw new Error("Could not save the page check.");
@@ -154,13 +151,14 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
 }
 
 /** An admin's verdict on one flag (by its position in the stored list); null clears it. */
-export async function rateFlag(supabase: SupabaseClient, path: string, index: number, verdict: FlagVerdict | null) {
-  const { data, error } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
+export async function rateFlag(supabase: SupabaseClient, path: string, index: number, verdict: FlagVerdict | null, userId?: string) {
+  const { data, error } = await supabase.from("page_reviews").select("ai_flags, ai_model, ai_guidance_version").eq("path", path).maybeSingle();
   if (error || !data?.ai_flags || !Array.isArray(data.ai_flags) || !data.ai_flags[index]) throw new Error("No such flag.");
   const flags = [...(data.ai_flags as PageFlag[])];
   flags[index] = { ...flags[index], verdict };
   const saved = await supabase.from("page_reviews").update({ ai_flags: flags }).eq("path", path);
   if (saved.error) throw new Error("Could not save the rating.");
+  await remember(supabase, path, [flags[index]], data, userId);
   return flags;
 }
 
@@ -182,19 +180,20 @@ export async function randomUncheckedMatterPath(supabase: SupabaseClient): Promi
 }
 
 /** Marks the flags on one entry resolved (the entry was removed, or staff handled it some other way). */
-export async function resolveFlags(supabase: SupabaseClient, path: string, match: { key?: string; index?: number }) {
-  const { data } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
+export async function resolveFlags(supabase: SupabaseClient, path: string, match: { key?: string; index?: number }, userId?: string) {
+  const { data } = await supabase.from("page_reviews").select("ai_flags, ai_model, ai_guidance_version").eq("path", path).maybeSingle();
   const flags = (data?.ai_flags || []) as PageFlag[];
   const hit = (f: PageFlag, i: number) => (match.index !== undefined ? i === match.index : !!match.key && f.key === match.key);
   if (!flags.some(hit)) return;
   const updated = flags.map((f, i) => (hit(f, i) ? { ...f, verdict: "agree" as const, fixed: true } : f));
   const saved = await supabase.from("page_reviews").update({ ai_flags: updated }).eq("path", path);
   if (saved.error) throw new Error("Could not save the flag.");
+  await remember(supabase, path, updated.filter(hit), data, userId);
 }
 
 /** Staff's instruction for the fix agent on one flag. Writing one agrees the flag is a problem. */
-export async function setFlagNote(supabase: SupabaseClient, path: string, index: number, note: string) {
-  const { data } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
+export async function setFlagNote(supabase: SupabaseClient, path: string, index: number, note: string, userId?: string) {
+  const { data } = await supabase.from("page_reviews").select("ai_flags, ai_model, ai_guidance_version").eq("path", path).maybeSingle();
   const flags = [...((data?.ai_flags || []) as PageFlag[])];
   if (!flags[index]) throw new Error("No such flag.");
   const text = note.trim().slice(0, 1000) || null;
@@ -203,6 +202,14 @@ export async function setFlagNote(supabase: SupabaseClient, path: string, index:
     ...(flags[index].problem === "editor_issue" && text ? { reason: text } : {}) };
   const saved = await supabase.from("page_reviews").update({ ai_flags: flags }).eq("path", path);
   if (saved.error) throw new Error("Could not save the instruction.");
+  await remember(supabase, path, [flags[index]], data, userId);
+}
+
+/** Every staff decision on a check's flag becomes (or updates) a permanent example the check learns from. */
+async function remember(supabase: SupabaseClient, path: string, flags: PageFlag[], row: any, userId?: string) {
+  for (const flag of flags) {
+    await recordExample(supabase, { path, kind: reviewKind(path), flag, userId, model: row?.ai_model, guidanceVersion: row?.ai_guidance_version });
+  }
 }
 
 /** Staff's own issue for the fix agent ("say whether the 2023 agreement renews the 2021 one"), as an agreed flag. */

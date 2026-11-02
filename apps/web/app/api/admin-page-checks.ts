@@ -65,7 +65,7 @@ app.post("/rate", async (c) => {
   if (!Number.isInteger(index) || index < 0 || !["agree", "disagree", "none"].includes(body.verdict)) {
     throw new ApiError(400, "INVALID_RATING", "Pass index (the flag's position) and verdict: agree, disagree or none.");
   }
-  const flags = await rateFlag(getSupabaseAdminClient(), pathOf(body.path), index, body.verdict === "none" ? null : body.verdict);
+  const flags = await rateFlag(getSupabaseAdminClient(), pathOf(body.path), index, body.verdict === "none" ? null : body.verdict, c.get("userId"));
   return c.json({ flags }, 200, noStore);
 });
 

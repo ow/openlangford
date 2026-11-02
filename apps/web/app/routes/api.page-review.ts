@@ -65,7 +65,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       const index = Number(form.get("index"));
       const verdict = String(form.get("verdict") || "");
       if (!Number.isInteger(index) || index < 0 || !["agree", "disagree", "none"].includes(verdict)) return bad("Unknown rating.");
-      await rateFlag(supabase, path, index, verdict === "none" ? null : verdict as "agree" | "disagree");
+      await rateFlag(supabase, path, index, verdict === "none" ? null : verdict as "agree" | "disagree", user.id);
     } else if (["remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page"].includes(intent)) {
       const matterId = await matterForPath(supabase, path);
       if (!matterId) return bad("This only works on a topic page.");
@@ -80,7 +80,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         if (!removableKey(key)) return bad("That entry can't be removed here.");
         message = await removeEntry(supabase, matterId, key, user.id);
         // Removing a flagged entry agrees with its flag (which teaches later checks) and resolves it.
-        await resolveFlags(supabase, path, { key });
+        await resolveFlags(supabase, path, { key }, user.id);
       } else if (intent === "find_missing") {
         await requestFindMissing(supabase, matterId, user.id);
         message = "Searching. Suggestions appear here when the pipeline has run.";
@@ -96,12 +96,12 @@ export async function action({ request, context }: Route.ActionArgs) {
     } else if (intent === "flag_note") {
       const index = Number(form.get("index"));
       if (!Number.isInteger(index) || index < 0) return bad("Unknown flag.");
-      await setFlagNote(supabase, path, index, String(form.get("note") || ""));
+      await setFlagNote(supabase, path, index, String(form.get("note") || ""), user.id);
     } else if (intent === "handled") {
       // An agreed flag fixed some other way (or that can't be fixed here and is being let go).
       const index = Number(form.get("index"));
       if (!Number.isInteger(index) || index < 0) return bad("Unknown flag.");
-      await resolveFlags(supabase, path, { index });
+      await resolveFlags(supabase, path, { index }, user.id);
     } else if (intent === "clear") await clearPageReview(supabase, path);
     else if (intent === "reviewed") {
       const open = unresolvedFlags((await getPageReview(supabase, path))?.ai_flags);
