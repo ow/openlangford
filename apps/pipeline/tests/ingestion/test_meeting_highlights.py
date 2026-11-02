@@ -49,7 +49,7 @@ def test_build_inputs_keeps_outcomes_and_notes_split_votes_only():
     motions = [
         {"id": 1, "agenda_item_id": 10, "plain_english_summary": "Approved the agenda.", "disposition": "Procedural", "result": "CARRIED"},
         {"id": 2, "agenda_item_id": 11, "plain_english_summary": "Gave 1st-3rd readings to parking.", "disposition": "Substantive",
-         "result": "CARRIED", "meta": {"headline": "Parking minimums dropped"}},
+         "result": "CARRIED", "meta": {"headline": "Parking minimums dropped", "individual_vote_coverage": "reconstructed_complete"}},
         {"id": 3, "agenda_item_id": 11, "plain_english_summary": "Gave 1st-3rd readings to budget.", "disposition": "Substantive", "result": "CARRIED"},
         {"id": 4, "agenda_item_id": 11, "plain_english_summary": "Never voted on.", "disposition": "Substantive", "result": None},
     ]
@@ -153,3 +153,12 @@ def test_write_retries_when_meta_changed_underneath():
     sb, table = _supabase({}, ["t1", "t2"], [[], [{"id": 7}]])
     assert mh.write_highlights(sb, 7, {"bullets": ["a."]})
     assert table.update.call_count == 2
+
+
+def test_a_partial_vote_says_how_many_opposed_not_a_tally():
+    from pipeline.ingestion.meeting_highlights import build_inputs
+    motions = [{"id": 5, "agenda_item_id": 11, "plain_english_summary": "Declined the rezoning.", "disposition": "Substantive",
+                "result": "CARRIED", "meta": {"individual_vote_coverage": "named_only"}}]
+    votes = {5: [{"vote": "No"}, {"vote": "No"}, {"vote": "No"}]}
+    out = build_inputs({"id": 1}, motions, votes, [{"id": 11, "title": "Rezoning"}])
+    assert out["decisions"][0]["vote"] == "3 opposed"  # not "0–3"

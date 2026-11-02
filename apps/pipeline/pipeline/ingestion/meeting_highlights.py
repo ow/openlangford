@@ -170,9 +170,12 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
         }
         if not entry["decision"]:
             entry["motion_text"] = _trim(m.get("text_content"), 600)
+        # A count only for a complete vote (reconstructed from attendance); minutes often name just those opposed,
+        # and counting those alone wrote "(passed 0–3)". Otherwise the opposed count, said as such.
         tally = _tally(votes_by_motion.get(m["id"], []))
+        complete = (m.get("meta") or {}).get("individual_vote_coverage") == "reconstructed_complete"
         if tally and tally["against"]:
-            entry["vote"] = f"{tally['for']}–{tally['against']}"
+            entry["vote"] = f"{tally['for']}–{tally['against']}" if complete else f"{tally['against']} opposed"
         decisions.append({k: v for k, v in entry.items() if v})
     # Every titled item (with its id, for links); summaries only where they add something.
     items = [
