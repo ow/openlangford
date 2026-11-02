@@ -1,0 +1,250 @@
+[
+ {
+  "matter_id": 3013,
+  "names": [
+   "912 Jenkins Avenue"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 992,
+  "names": [],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 1519,
+  "names": [
+   "1020 Costin Avenue",
+   "2836 Carlow Road",
+   "2842 Carlow Road",
+   "2848 Carlow Road",
+   "2854 Carlow Road"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": [
+   {
+    "id": 396,
+    "before": "unrelated",
+    "after": "belongs",
+    "title": "683 Goldie Avenue lot-width variance"
+   }
+  ]
+ },
+ {
+  "matter_id": 811,
+  "names": [
+   "2478 Selwyn Road",
+   "2482 Selwyn Road",
+   "647 Redington Avenue",
+   "667 Redington Avenue"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 1137,
+  "names": [
+   "1028 Lomalinda Drive",
+   "2165 Bellamy Road",
+   "2167 Bellamy Road",
+   "890 Walfred Road"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 2440,
+  "names": [
+   "Goldstream Meadows"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [
+   {
+    "n": 6,
+    "verdict": "belongs",
+    "reason": "Council directed staff to prepare the omnibus CD1 amendments addressed in the June 2009 staff report.",
+    "kind": "item",
+    "id": 9011,
+    "title": "Rezoning Application - Goldstream Meadows [Application to Make Various Omnibus Amendments to the CD1 (Goldstream Meadows) Zone] (File No. Z-08-31)",
+    "where": "similar",
+    "similarity": 0.774,
+    "date": "2009-02-16"
+   }
+  ],
+  "name_verdicts_changed": [
+   {
+    "id": 2219,
+    "before": "unrelated",
+    "after": "belongs",
+    "title": "Goldstream Meadows zone amendments"
+   }
+  ]
+ },
+ {
+  "matter_id": 2480,
+  "names": [
+   "3332 Hazelwood Road",
+   "1059 Marwood Avenue",
+   "3359 Luxton Road",
+   "3367 Luxton Road"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 573,
+  "names": [
+   "Honeycomb Cannabis",
+   "2317 Millstream Road",
+   "977 Langford Parkway",
+   "TUP19-0004"
+  ],
+  "base_kept": 1,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": [
+   {
+    "id": 4926,
+    "before": "unrelated",
+    "after": "belongs",
+    "title": "NOTICES OF INTENT - TUP20-0002 - #101 977 Langford Pkwy"
+   }
+  ]
+ },
+ {
+  "matter_id": 2029,
+  "names": [
+   "3350 Happy Valley Road"
+  ],
+  "base_kept": 1,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 1144,
+  "names": [
+   "4342 West Shore Parkway",
+   "TUP24-0007"
+  ],
+  "base_kept": 12,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": [
+   {
+    "id": 5587,
+    "before": "belongs",
+    "after": "mentioned",
+    "title": "Application to rezone 2321 and 2323 Belair Road from One- and Two-Family Residential (R2) to Residential Small Lot 1 (RS1) to allow for the creation of two fee simple lots AND amend the text at 2323 Belair Road to allow for a Group Daycare"
+   },
+   {
+    "id": 8313,
+    "before": "belongs",
+    "after": "mentioned",
+    "title": "Application to rezone 2321 and 2323 Belair Road from One- and Two-Family Residential (R2) to Residential Small Lot 1 (RS1) to allow for the creation of two fee simple lots AND amend the text at 2323 Belair Road to allow for a Group Daycare"
+   },
+   {
+    "id": 3948,
+    "before": "belongs",
+    "after": "mentioned",
+    "title": "DVP22-0002 - 798 Goldstream Ave, 2747, 2753, 2761 Peatt Rd, 2734, 2738, 2742, 2746 Claude Rd"
+   }
+  ]
+ },
+ {
+  "matter_id": 2293,
+  "names": [
+   "582 Goldstream Avenue",
+   "785 Station Avenue",
+   "791 Station Avenue",
+   "849 Station Avenue",
+   "940 Goldstream Avenue"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [
+   {
+    "n": 14,
+    "verdict": "belongs",
+    "reason": "This is the earlier request to consult Kingswood Road residents about the same no-parking signs.",
+    "kind": "item",
+    "id": 13350,
+    "title": "No Parking Signs on Kingswood Road (File No. 5480-01)",
+    "where": "similar",
+    "similarity": 0.808,
+    "date": "2008-12-01"
+   }
+  ],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 2795,
+  "names": [
+   "709 Latoria Road",
+   "774 Latoria Road",
+   "Z12-0019"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 457,
+  "names": [
+   "Clarity Cannabis",
+   "693 Hoffman Avenue",
+   "TUP19-0001"
+  ],
+  "base_kept": 4,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": [
+   {
+    "id": 3950,
+    "before": "belongs",
+    "after": "unrelated",
+    "title": "DVP22-0007 - 2089 Champions Way"
+   },
+   {
+    "id": 7740,
+    "before": "mentioned",
+    "after": "unrelated",
+    "title": "Application to Rezone 902 Walfred Road from Rural Residential 5 (RR5) to Residential Small Lot 1 (RS1) to accommodate an 13-lot bare land strata subdivision."
+   }
+  ]
+ },
+ {
+  "matter_id": 2008,
+  "names": [],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ },
+ {
+  "matter_id": 2402,
+  "names": [
+   "911 Jenkins Avenue"
+  ],
+  "base_kept": 0,
+  "similar_judged": 15,
+  "similar_kept": [],
+  "name_verdicts_changed": []
+ }
+]

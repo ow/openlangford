@@ -572,8 +572,9 @@ class _Verdicts(BaseModel):
 
 
 SUGGEST_PROMPT = """You help an editor of Open Langford, a site that follows Langford City council, fill gaps in a topic's
-timeline. The topic is below with the entries it already has. Each numbered candidate names one of the topic's names
-or file numbers somewhere. Decide whether each is part of THIS topic's story.
+timeline. The topic is below with the entries it already has. Most numbered candidates name one of the topic's names
+or file numbers somewhere; some were found only because they read similarly, and are often about something else.
+Decide whether each is part of THIS topic's story.
 
 - belongs: it is a step in this topic's story (a decision, hearing, notice, report or comment about this very thing).
 - mentioned: it is about something else but refers to this topic in a way a reader following it would want to see.
@@ -591,7 +592,8 @@ Already on its timeline:
 CANDIDATES:
 {candidates}"""
 
-WHERE = {"item": "in the item's own text", "document": "in a document attached to the item", "spoken": "said at the meeting"}
+WHERE = {"item": "in the item's own text", "document": "in a document attached to the item", "spoken": "said at the meeting",
+         "similar": "by meaning (it doesn't name the topic; this is the item's summary)"}
 
 
 def _timeline(cur, matter_id: int) -> str:
@@ -603,7 +605,30 @@ def _timeline(cur, matter_id: int) -> str:
     return "\n".join(f"- {d}: {(t or '').splitlines()[0][:120]}" for d, t in cur.fetchall()) or "(nothing yet)"
 
 
-def suggest_links(matter_id: int) -> dict[str, Any]:
+SIMILAR_LIMIT = 15  # closest items by meaning, from any year, added to the name matches for the judge
+
+
+def similar_items(cur, matter_id: int, exclude: set[int], limit: int = SIMILAR_LIMIT) -> list[dict]:
+    """Agenda items closest in meaning to the topic (embeddings, any year), for what names miss: paraphrases, a
+    renamed project, a different address for the same development. Loose by nature; the judge filters."""
+    cur.execute("""select a.id, a.matter_id, mt.meeting_date, a.title, coalesce(a.plain_english_summary, ''),
+                          1 - (a.embedding <=> m.embedding) as similarity
+                   from matters m, agenda_items a join meetings mt on mt.id = a.meeting_id
+                   where m.id = %s and a.embedding is not null and m.embedding is not null
+                     and a.matter_id is distinct from m.id
+                   order by a.embedding <=> m.embedding limit %s""", (matter_id, limit + len(exclude) + 10))
+    out = []
+    for iid, owner, day, title, summary, sim in cur.fetchall():
+        if iid in exclude or not summary.strip():
+            continue
+        out.append({"kind": "item", "id": iid, "matter_id": owner, "date": str(day), "title": title,
+                    "excerpt": summary[:320], "where": "similar", "similarity": round(float(sim), 3)})
+        if len(out) >= limit:
+            break
+    return out
+
+
+def suggest_links(matter_id: int, *, similar: bool = True, dry_run: bool = False) -> dict[str, Any]:
     """"Find missing" from the page review bar: search again for one matter by its names and file numbers, and ask
     the reviewer model (stage "review", Terra) which candidates belong in its story, all in one call. What it keeps
     is written as suggestions (hidden, suggested_at set, with its reason and where the name was found) for staff to
@@ -618,7 +643,7 @@ def suggest_links(matter_id: int) -> dict[str, Any]:
         target = next((m for m in matters if m["id"] == matter_id), None)
         if target is None:
             return {"suggested": 0, "names": []}
-        names = extract_names([target], save=True).get(matter_id, [])
+        names = extract_names([target], save=not dry_run).get(matter_id, [])
         names = [*names, *(f for f in target["file_numbers"] if f not in names)]
         existing = existing_links(cur)
         candidates: list[dict] = []
@@ -648,6 +673,9 @@ def suggest_links(matter_id: int) -> dict[str, Any]:
                 candidates.append({"kind": "topic", "id": other["id"], "title": other["title"], "summary": other["summary"][:300],
                                    "date": str(other["first_seen"] or "")})
         candidates = candidates[:60]
+        if similar:
+            taken = {c["id"] for c in candidates if c["kind"] == "item"} | {iid for (mid, iid) in existing["mentions"] if mid == matter_id}
+            candidates += similar_items(cur, matter_id, taken)
         timeline = _timeline(cur, matter_id)
         examples = editor_examples(cur)
         conn.rollback()
@@ -664,10 +692,23 @@ def suggest_links(matter_id: int) -> dict[str, Any]:
             return f"{i}. ANNUAL REPORT {c['year']}, page {c['page']}: {c['excerpt']}"
         return f"{i}. AGENDA ITEM {c['date']}: {(c['title'] or '').splitlines()[0][:140]}. Found {WHERE[c['where']]}: {c['excerpt']}"
 
-    result = ai.json(SUGGEST_PROMPT.format(
-        examples=examples, topic=_describe(target), timeline=timeline,
-        candidates="\n\n".join(line(i, c) for i, c in enumerate(candidates, 1))),
-        stage="review", schema=_Verdicts)
+    # Name matches and similar-by-meaning items are judged in separate calls: mixed in, the loose similar items
+    # unsettled verdicts on the name matches (8 of ~105 changed vs 2 between repeat runs; research/similar-candidates).
+    def judge_group(group: list[int]) -> list[_Verdict]:
+        if not group:
+            return []
+        res = ai.json(SUGGEST_PROMPT.format(
+            examples=examples, topic=_describe(target), timeline=timeline,
+            candidates="\n\n".join(line(k, candidates[n - 1]) for k, n in enumerate(group, 1))),
+            stage="review", schema=_Verdicts)
+        return [v.model_copy(update={"n": group[v.n - 1]}) for v in res.verdicts if 1 <= v.n <= len(group)]
+
+    by_name = [n for n, c in enumerate(candidates, 1) if c.get("where") != "similar"]
+    by_meaning = [n for n, c in enumerate(candidates, 1) if c.get("where") == "similar"]
+
+    class _All:
+        verdicts = judge_group(by_name) + judge_group(by_meaning)
+    result = _All
     # Terra decides and explains; the Decisions API (Luna) adds a calibrated score to each item it kept, for sorting
     # and for comparing later with what staff accept.
     kept = {v.n: v for v in result.verdicts if v.verdict != "unrelated" and 1 <= v.n <= len(candidates)}
@@ -700,6 +741,10 @@ def suggest_links(matter_id: int) -> dict[str, Any]:
         else:
             found["related"].append({"matter_id": min(matter_id, c["id"]), "related_matter_id": max(matter_id, c["id"]),
                                      "kind": "related_matter", "confidence": None, "source": "name", "suggest_reason": v.reason})
+    if dry_run:
+        verdicts = [{"n": v.n, "verdict": v.verdict, "reason": v.reason, **{k: candidates[v.n - 1].get(k) for k in
+                     ("kind", "id", "title", "where", "similarity", "date")}} for v in result.verdicts if 1 <= v.n <= len(candidates)]
+        return {"names": names, "candidates": len(candidates), "verdicts": verdicts, "found": found}
     written = write_links(found, suggested=True)
     count = len(written["links"]) + len(written["related"]) + len(written["pages"])
     print(f"  [Names] matter {matter_id}: searched {', '.join(names) or 'no names'}; {len(candidates)} candidate(s), {count} suggestion(s)")

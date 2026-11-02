@@ -6,9 +6,9 @@ import { cn } from "../../lib/utils";
 
 type Suggestion = {
   table: string; id: number; kind: "mention" | "related" | "report"; date: string | null; title: string; quote: string | null;
-  href: string | null; reason: string | null; score: number | null; foundIn: "item" | "document" | "spoken" | "report" | "topic" | null;
+  href: string | null; reason: string | null; score: number | null; foundIn: "item" | "document" | "spoken" | "report" | "topic" | "similar" | null;
 };
-const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic" };
+const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic", similar: "Similar in meaning (doesn't name this topic)" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
 type Links = { suggestions: Suggestion[]; findJob: FindJob | null; hidden?: boolean } | null;
 type Loaded = { path: string | null; review: PageReview | null; links: Links };

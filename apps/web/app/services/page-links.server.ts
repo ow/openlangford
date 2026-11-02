@@ -19,7 +19,7 @@ export type Suggestion = {
   reason: string | null;
   /** The Decisions API's probability that it belongs (items only), for sorting and later comparison. */
   score: number | null;
-  foundIn: "item" | "document" | "spoken" | "report" | "topic" | null;
+  foundIn: "item" | "document" | "spoken" | "report" | "topic" | "similar" | null;
 };
 export type FindJob = { id: string; status: string; requested_at: string; finished_at: string | null; suggested: number | null };
 
