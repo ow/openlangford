@@ -5,12 +5,14 @@ import { requireModerator } from "../lib/auth.server";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { clearPageReview, getPageReview, reviewPath, setPageReview } from "../services/page-reviews.server";
-import { checkPage, rateFlag } from "../services/page-check.server";
+import { checkPage, rateFlag, resolveFlags } from "../services/page-check.server";
+import { fixPage } from "../services/page-fix.server";
+import { unresolvedFlags } from "../lib/page-review-types";
 import {
   decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
 } from "../services/page-links.server";
 
-const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "remove_entry", "find_missing", "accept", "reject"];
+const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "handled", "remove_entry", "find_missing", "accept", "reject"];
 
 /** On a topic page: suggestions waiting for a decision, and the latest "find missing" search. */
 async function linkState(supabase: SupabaseClient, path: string) {
@@ -36,7 +38,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
   try {
     const user = await requireModerator(request);
     const form = await request.formData();
@@ -60,10 +62,8 @@ export async function action({ request }: Route.ActionArgs) {
         const key = String(form.get("key") || "");
         if (!removableKey(key)) return bad("That entry can't be removed here.");
         message = await removeEntry(supabase, matterId, key, user.id);
-        // Removing a flagged entry is agreeing with the flag (which teaches later checks).
-        const flags = (await getPageReview(supabase, path))?.ai_flags || [];
-        const index = flags.findIndex((f) => f.key === key && f.verdict !== "agree");
-        if (index >= 0) await rateFlag(supabase, path, index, "agree");
+        // Removing a flagged entry agrees with its flag (which teaches later checks) and resolves it.
+        await resolveFlags(supabase, path, { key });
       } else if (intent === "find_missing") {
         await requestFindMissing(supabase, matterId, user.id);
         message = "Searching. Suggestions appear here when the pipeline has run.";
@@ -73,11 +73,30 @@ export async function action({ request }: Route.ActionArgs) {
         if ((table !== "matter_links" && table !== "matter_report_mentions") || !Number.isSafeInteger(id)) return bad("Unknown suggestion.");
         await decideSuggestion(supabase, matterId, table, id, intent === "accept", user.id);
       }
+    } else if (intent === "handled") {
+      // An agreed flag fixed some other way (or that can't be fixed here and is being let go).
+      const index = Number(form.get("index"));
+      if (!Number.isInteger(index) || index < 0) return bad("Unknown flag.");
+      await resolveFlags(supabase, path, { index });
     } else if (intent === "clear") await clearPageReview(supabase, path);
-    else await setPageReview(supabase, {
-      path, status: intent as "reviewed" | "needs_work", userId: user.id,
-      title: String(form.get("title") || "") || null, note: String(form.get("note") || "") || null,
-    });
+    else if (intent === "reviewed") {
+      const open = unresolvedFlags((await getPageReview(supabase, path))?.ai_flags);
+      if (open.length) {
+        return bad(`${open.length} ${open.length === 1 ? "flag is" : "flags are"} still open. Rate each one, and fix or mark handled the ones you agree with.`);
+      }
+      await setPageReview(supabase, { path, status: "reviewed", userId: user.id, title: String(form.get("title") || "") || null, note: null });
+    } else {
+      // Needs work: the fix agent starts on the server now; the bar shows "Fixing…" until it's done.
+      await setPageReview(supabase, {
+        path, status: "fixing", userId: user.id,
+        title: String(form.get("title") || "") || null, note: String(form.get("note") || "") || null,
+      });
+      const run = fixPage(supabase, new URL(request.url).origin, path, user);
+      const ctx = (context as { cloudflare?: { ctx?: ExecutionContext } } | undefined)?.cloudflare?.ctx;
+      if (ctx?.waitUntil) ctx.waitUntil(run);
+      else void run;
+      message = "The agent is working on this page now.";
+    }
     return data({ ok: true as const, message, review: await getPageReview(supabase, path), links: await linkState(supabase, path) },
       { headers: privateAdminHeaders() });
   } catch (error) {

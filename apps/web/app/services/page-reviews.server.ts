@@ -4,7 +4,7 @@ import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap
 
 export type { PageReview, PageReviewStatus } from "../lib/page-review-types";
 
-const COLUMNS = "path, kind, title, status, note, reviewed_at, ai_flags, ai_page_issue, ai_summary, ai_entries, ai_checked_at";
+const COLUMNS = "path, kind, title, status, note, reviewed_at, ai_flags, ai_page_issue, ai_summary, ai_entries, ai_checked_at, agent_note, agent_at";
 
 /** The page a review is about: its path alone, no query string or trailing slash ("/matters/x"). */
 export function reviewPath(value: string | null | undefined): string | null {
@@ -53,6 +53,7 @@ export async function listPageReviews(supabase: SupabaseClient, filter: ReviewFi
     .order("reviewed_at", { ascending: false, nullsFirst: false })
     .order("ai_checked_at", { ascending: false, nullsFirst: false }).limit(500);
   if (filter === "flagged") query = query.not("ai_flags", "is", null).neq("ai_flags", "[]");
+  else if (filter === "needs_work") query = query.in("status", ["needs_work", "fixing"]);
   else if (filter) query = query.eq("status", filter);
   const [{ data, error }, all] = await Promise.all([
     query,
@@ -61,9 +62,10 @@ export async function listPageReviews(supabase: SupabaseClient, filter: ReviewFi
   if (error || all.error) throw new Error("Could not load page reviews.");
   const rows = (all.data || []) as { path: string; kind: string; status: PageReviewStatus | null; ai_flags: PageFlag[] | null }[];
   const byKind: Record<string, { reviewed: number; needs_work: number; checked: number }> = {};
+  const bucket = (status: PageReviewStatus) => (status === "reviewed" ? "reviewed" : "needs_work");
   for (const row of rows) {
     const n = (byKind[row.kind] ??= { reviewed: 0, needs_work: 0, checked: 0 });
-    if (row.status) n[row.status] += 1;
+    if (row.status) n[bucket(row.status)] += 1;
     if (row.ai_flags) n.checked += 1;
   }
   const rated = rows.flatMap(r => (r.ai_flags || []).filter(f => f.verdict));

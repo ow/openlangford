@@ -16,12 +16,12 @@ export const meta = () => [
 ];
 export const headers = privateAdminHeaders;
 
-const FILTERS = [["all", "All"], ["flagged", "Flagged by a check"], ["needs_work", "Needs work"], ["reviewed", "Reviewed"]] as const;
+const FILTERS = [["all", "All"], ["fixed", "Fixed, to confirm"], ["needs_work", "Needs work"], ["flagged", "Flagged by a check"], ["reviewed", "Reviewed"]] as const;
 
 export async function loader({ request }: Route.LoaderArgs) {
   return adminRead(request, async () => {
     const show = new URL(request.url).searchParams.get("show");
-    const filter: ReviewFilter = show === "needs_work" || show === "reviewed" || show === "flagged" ? show : null;
+    const filter: ReviewFilter = show === "needs_work" || show === "reviewed" || show === "flagged" || show === "fixed" ? show : null;
     const supabase = getSupabaseAdminClient();
     const { rows, ...list } = await listPageReviews(supabase, filter);
     return { show: filter ?? "all", ...list, coverage: await reviewCoverage(supabase, rows) };
@@ -101,8 +101,8 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
                     <Link to={r.path} className="min-w-0 truncate font-medium text-zinc-900 hover:text-brand-700">{r.title || r.path}</Link>
                     <span className="shrink-0 text-xs font-medium">
                       {r.status && (
-                        <span className={r.status === "reviewed" ? "text-emerald-700" : "text-amber-700"}>
-                          {r.status === "reviewed" ? "Reviewed" : "Needs work"}{r.reviewed_at ? ` · ${reviewTime(r.reviewed_at)}` : ""}
+                        <span className={r.status === "reviewed" ? "text-emerald-700" : r.status === "fixed" ? "text-brand-700" : "text-amber-700"}>
+                          {{ reviewed: "Reviewed", needs_work: "Needs work", fixing: "Agent fixing", fixed: "Fixed, to confirm" }[r.status]}{r.reviewed_at ? ` · ${reviewTime(r.reviewed_at)}` : ""}
                         </span>
                       )}
                       {r.ai_checked_at && (
@@ -118,6 +118,7 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
                   {r.ai_page_issue && <p className="mt-1 text-sm text-amber-800">Whole page: {r.ai_page_issue}</p>}
                   {r.ai_summary && <p className="mt-1 text-sm text-zinc-600">{r.ai_summary}</p>}
                   {r.note && <p className="mt-1 whitespace-pre-line text-sm text-zinc-700">{r.note}</p>}
+                  {r.agent_note && <p className="mt-1 whitespace-pre-line rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-600">{r.agent_note}</p>}
                 </li>
               );
             })}

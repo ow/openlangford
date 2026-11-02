@@ -156,3 +156,14 @@ export async function randomUncheckedMatterPath(supabase: SupabaseClient): Promi
   }
   return null;
 }
+
+/** Marks the flags on one entry resolved (the entry was removed, or staff handled it some other way). */
+export async function resolveFlags(supabase: SupabaseClient, path: string, match: { key?: string; index?: number }) {
+  const { data } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
+  const flags = (data?.ai_flags || []) as PageFlag[];
+  const hit = (f: PageFlag, i: number) => (match.index !== undefined ? i === match.index : !!match.key && f.key === match.key);
+  if (!flags.some(hit)) return;
+  const updated = flags.map((f, i) => (hit(f, i) ? { ...f, verdict: "agree" as const, fixed: true } : f));
+  const saved = await supabase.from("page_reviews").update({ ai_flags: updated }).eq("path", path);
+  if (saved.error) throw new Error("Could not save the flag.");
+}

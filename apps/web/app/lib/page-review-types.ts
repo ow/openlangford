@@ -1,8 +1,17 @@
 /** Shared by the admin review bar (browser) and the page review and check services (server). */
-export type PageReviewStatus = "reviewed" | "needs_work";
+export type PageReviewStatus = "reviewed" | "needs_work" | "fixing" | "fixed";
 export type FlagProblem = "unclear_why" | "generic_text" | "different_story" | "duplicate" | "wrong_detail";
 export type FlagVerdict = "agree" | "disagree";
-export type PageFlag = { key: string | null; problem: FlagProblem; reason: string; excerpt: string; verdict: FlagVerdict | null };
+export type PageFlag = {
+  key: string | null; problem: FlagProblem; reason: string; excerpt: string; verdict: FlagVerdict | null;
+  /** Set when the entry was removed (by staff or the fix agent): an agreed flag is then resolved. */
+  fixed?: boolean;
+};
+
+/** A flag still needs attention until it's rated 👎 (fine) or rated 👍 and fixed. Reviewed waits for none. */
+export function unresolvedFlags(flags: PageFlag[] | null | undefined) {
+  return (flags || []).filter((f) => f.verdict === null || (f.verdict === "agree" && !f.fixed));
+}
 export type PageReview = {
   path: string;
   kind: string;
@@ -15,6 +24,8 @@ export type PageReview = {
   ai_summary: string | null;
   ai_entries: number | null;
   ai_checked_at: string | null;
+  agent_note: string | null;
+  agent_at: string | null;
 };
 
 /** What a check looks for, shown in the review bar so a clean result says what was ruled out. */

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFetcher, useLocation } from "react-router";
-import { Check, Flag, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, X } from "lucide-react";
-import { FLAG_PROBLEM_LABELS, reviewTime, type PageFlag, type PageReview } from "../../lib/page-review-types";
+import { Check, Flag, Loader2, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
+import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
 type Suggestion = { table: string; id: number; kind: "mention" | "related" | "report"; date: string | null; title: string; quote: string | null; href: string | null };
@@ -64,12 +64,24 @@ export function PageReviewBar() {
   }, [pathname]);
 
   const loaded = load.data?.path === pathname ? load.data : null;
-  const saved = save.state === "idle" && save.data && "review" in save.data && save.data.review?.path === pathname ? save.data.review : undefined;
+  const fresher = (a?: string | null, b?: string | null) => (a || "") > (b || "");
+  const savedRaw = save.state === "idle" && save.data && "review" in save.data && save.data.review?.path === pathname ? save.data.review : undefined;
+  // While the agent works, the poll's copy is newer than the one the "needs work" click returned.
+  const saved = savedRaw && loaded?.review && savedRaw.status === "fixing" && loaded.review.status !== "fixing"
+    && !fresher(savedRaw.agent_at, loaded.review.agent_at) ? undefined : savedRaw;
   const review = saved !== undefined ? saved : loaded?.review ?? null;
   const links: Links = saved !== undefined && save.data?.links !== undefined ? save.data.links ?? null : loaded?.links ?? null;
   const suggestions = links?.suggestions || [];
   const flags = review?.ai_flags || [];
+  const open_ = unresolvedFlags(flags).length;
   useHighlights(flags, open);
+  const fixing = review?.status === "fixing";
+  useEffect(() => {
+    if (!fixing) return;
+    const timer = setInterval(() => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`), 3000);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fixing, pathname]);
   if (!loaded?.path) return null;
 
   const pending = save.formData?.get("intent");
@@ -85,7 +97,7 @@ export function PageReviewBar() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
-      {open && (review?.ai_checked_at || checking || links) && !writing && (
+      {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note) && !writing && (
         <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-zinc-200 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
@@ -102,6 +114,23 @@ export function PageReviewBar() {
             <p className="text-zinc-500">The model is reading this page as a resident would. This takes a few seconds.</p>
           ) : (
             <>
+              {review?.agent_note && (review.status === "fixed" || review.status === "needs_work") && (
+                <div className={cn("mb-3 rounded-lg px-2.5 py-2", review.status === "fixed" ? "bg-brand-50" : "bg-amber-50")}>
+                  <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-zinc-700">
+                    <Wrench className="h-3.5 w-3.5" />{review.status === "fixed" ? "The agent fixed this page" : "The agent couldn't fix this page"} · {reviewTime(review.agent_at)}
+                  </div>
+                  <p className="whitespace-pre-line text-zinc-800">{review.agent_note}</p>
+                  {review.status === "fixed" && (
+                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                      <button type="button" disabled={busy || open_ > 0} onClick={() => submit("reviewed")}
+                        title={open_ > 0 ? "Some flags are still open" : undefined}
+                        className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-50">Looks good</button>
+                      <button type="button" disabled={busy} onClick={() => { setNote(review.note || ""); setWriting(true); }}
+                        className="rounded-md px-2.5 py-1 font-medium text-amber-800 hover:bg-amber-100">Still needs work</button>
+                    </div>
+                  )}
+                </div>
+              )}
               {review?.ai_summary && <p className="mb-3 leading-relaxed text-zinc-700">{review.ai_summary}</p>}
               {review?.ai_page_issue && (
                 <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-amber-900">Whole page: {review.ai_page_issue}</p>
@@ -129,7 +158,12 @@ export function PageReviewBar() {
                           ))}
                         </div>
                       </div>
-                      {removable(flag.key) && flag.verdict !== "disagree" && (
+                      {flag.fixed && <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-700"><Check className="h-3.5 w-3.5" />Fixed</p>}
+                      {!flag.fixed && flag.verdict === "agree" && !removable(flag.key) && (
+                        <button type="button" disabled={busy} onClick={() => submit("handled", { index: String(index) })}
+                          className="mt-1.5 text-xs font-medium text-zinc-600 hover:underline">Mark handled</button>
+                      )}
+                      {!flag.fixed && removable(flag.key) && flag.verdict !== "disagree" && (
                         confirming === flag.key ? (
                           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                             <span className="text-zinc-600">
@@ -150,7 +184,14 @@ export function PageReviewBar() {
                   ))}
                 </ol>
               )}
-              {flags.length > 0 && <p className="mb-3 text-xs text-zinc-500">👍 it's a real problem · 👎 it's fine. Your ratings teach later checks.</p>}
+              {flags.length > 0 && (
+                <p className="mb-3 text-xs text-zinc-500">
+                  👍 it's a real problem · 👎 it's fine. Each rating saves as you tap it and teaches later checks.{" "}
+                  {open_ > 0
+                    ? <>Then press <strong>Needs work</strong> and the agent fixes what you agreed with.</>
+                    : <>Every flag is resolved: you can mark this page <strong>Reviewed</strong>.</>}
+                </p>
+              )}
               {links && (
                 <div className="mb-3 border-t border-zinc-100 pt-3">
                   <div className="flex items-center justify-between gap-2">
@@ -222,7 +263,13 @@ export function PageReviewBar() {
           review?.status === "reviewed" ? "border-emerald-300" : review?.status === "needs_work" ? "border-amber-300" : "border-zinc-200",
           busy && !checking && "opacity-60",
         )}>
-          {review?.status === "reviewed" ? (
+          {fixing ? (
+            <span className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-brand-700"><Loader2 className="h-4 w-4 animate-spin" />Agent fixing…</span>
+          ) : review?.status === "fixed" ? (
+            <button type="button" onClick={() => setOpen(true)} className="flex items-center gap-1.5 whitespace-nowrap pr-1 font-medium text-brand-700">
+              <Wrench className="h-4 w-4" />Fixed, confirm
+            </button>
+          ) : review?.status === "reviewed" ? (
             <span className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-emerald-700"><Check className="h-4 w-4" />Reviewed<span className="hidden sm:inline"> {reviewTime(review.reviewed_at)}</span></span>
           ) : review?.status === "needs_work" ? (
             <button type="button" onClick={() => { setNote(review.note || ""); setWriting(true); }}
@@ -232,10 +279,12 @@ export function PageReviewBar() {
           ) : (
             <span className="hidden whitespace-nowrap pr-1 text-zinc-500 sm:inline">Not reviewed</span>
           )}
-          {review?.status !== "reviewed" && (
-            <button type="button" disabled={busy} onClick={() => submit("reviewed")} className={cn(button, "text-emerald-700 hover:bg-emerald-50")}>Reviewed</button>
+          {review?.status !== "reviewed" && !fixing && review?.status !== "fixed" && (
+            <button type="button" disabled={busy || open_ > 0} onClick={() => submit("reviewed")}
+              title={open_ > 0 ? `${open_} ${open_ === 1 ? "flag is" : "flags are"} still open` : undefined}
+              className={cn(button, "text-emerald-700 hover:bg-emerald-50 disabled:text-zinc-400 disabled:hover:bg-transparent")}>Reviewed</button>
           )}
-          {!review?.status && (
+          {(!review?.status || review.status === "needs_work") && !fixing && (
             <button type="button" disabled={busy} onClick={() => { setNote(agreedNote()); setWriting(true); }}
               className={cn(button, "text-amber-700 hover:bg-amber-50")}>Needs work</button>
           )}
@@ -247,7 +296,7 @@ export function PageReviewBar() {
             {checking ? "Checking…" : review?.ai_checked_at ? (flags.length ? `${flags.length} ${flags.length === 1 ? "flag" : "flags"}` : "Checked") : "Check"}
             {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{suggestions.length} new</span>}
           </button>
-          {review?.status && (
+          {review?.status && !fixing && (
             <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review"
               className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"><X className="h-4 w-4" /></button>
           )}

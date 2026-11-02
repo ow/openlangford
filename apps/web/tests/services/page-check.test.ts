@@ -53,3 +53,16 @@ describe("removableKey", () => {
     expect(removableKey(null)).toBe(false);
   });
 });
+
+import { unresolvedFlags } from "../../app/lib/page-review-types";
+
+describe("unresolvedFlags", () => {
+  it("keeps a page open until every flag is rated fine, or agreed and fixed", () => {
+    const flag = (verdict: "agree" | "disagree" | null, fixed?: boolean) =>
+      ({ key: "mention-1", problem: "unclear_why" as const, reason: "", excerpt: "", verdict, fixed });
+    expect(unresolvedFlags([flag(null)])).toHaveLength(1);
+    expect(unresolvedFlags([flag("agree")])).toHaveLength(1);
+    expect(unresolvedFlags([flag("agree", true), flag("disagree")])).toHaveLength(0);
+    expect(unresolvedFlags(null)).toHaveLength(0);
+  });
+});
