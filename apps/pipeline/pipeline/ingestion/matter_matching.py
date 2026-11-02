@@ -448,10 +448,27 @@ CONTAINER_TITLE = re.compile(
 )
 
 
+# An agenda section heading for a kind of application, with nothing naming one ("DEVELOPMENT VARIANCE PERMIT (block)",
+# "TEMPORARY USE PERMITS"). It carries its sub-items' addresses, so it looked eligible, and became a catch-all that
+# unrelated applications were matched into (matter 633, 2017-2024).
+SECTION_HEADING = re.compile(
+    r"^(?:(?:development|temporary use|building|subdivision|heritage alteration)\s+(?:variance\s+)?permits?"
+    r"(?:\s+applications?)?|development variance permits?|rezoning(?:s| applications?)?|zoning(?: bylaw)? amendments?"
+    r"|subdivisions?|official community plan amendments?|ocp amendments?|land use applications?|planning applications?"
+    r"|public hearings?|bylaw readings?|first readings?|third readings?|second and third readings?|reports?)$",
+    re.I,
+)
+
+
 def is_generic_or_procedural_matter(title: str | None, category: str | None = None) -> bool:
     """Detect headings that should remain agenda items, not tracked matters."""
+    if re.search(r"\(block\)\s*$", title or "", re.I):
+        return True  # an agenda block heading: its sub-items are the business
     clean = clean_matter_title(title).lower()
     clean = clean.rstrip(":")
+    # The heading as written: cleaning strips "Adoption — Meaford Ave (1638)" down to a bare "zoning amendment".
+    if SECTION_HEADING.match(re.sub(r"\s+", " ", (title or "")).strip().rstrip(":").strip()):
+        return True
     if clean in GENERIC_MATTER_TITLES:
         return True
     if clean.startswith("reports - ") or clean.startswith("reports – "):
@@ -626,7 +643,11 @@ class MatterMatcher:
     def load(self):
         """Load all matters and build indices."""
         print("  [MatterMatcher] Loading all matters...")
-        self.matters = self._fetch_all_matters()
+        # Never match into a heading or a page staff removed: a section-heading topic attracted unrelated
+        # applications by title alone.
+        self.matters = [m for m in self._fetch_all_matters()
+                        if (m.get("meta") or {}).get("hidden") not in ("container", "staff")
+                        and not is_generic_or_procedural_matter(m.get("title"))]
         self._build_identifier_index()
         self._build_address_index()
         self._build_entity_cluster_index()

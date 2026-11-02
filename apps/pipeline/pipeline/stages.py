@@ -966,6 +966,15 @@ def run_matter_links(ctx: StageContext):
     return res
 
 
+def run_topic_tidy(ctx: StageContext):
+    """Topics that shouldn't exist: section headings and empty shells (see pipeline/ingestion/topic_tidy.py)."""
+    from pipeline.ingestion.topic_tidy import run
+
+    report = run(ctx.supabase, dry_run=ctx.dry_run)
+    return {"headings": len(report["headings"]), "empty_redirected": len(report["empty_aliased"]),
+            "empty_hidden": len(report["empty_hidden"])}
+
+
 def run_matter_names(ctx: StageContext):
     """Timeline entries found by a matter's exact names (see pipeline/ingestion/matter_names.py).
     ``--hidden`` writes new links unpublished, for review."""
@@ -1404,6 +1413,13 @@ STAGES: list[Stage] = [
                     "matter_report_mentions). --hidden writes them unpublished for review.",
         run=run_matter_names, when="post_ingest", scope="matter", version="1",
         depends_on=("matter-links",),
+    ),
+    Stage(
+        name="topic-tidy",
+        description="Hide topics that are only an agenda heading (rehoming their real items) and topics left with nothing on "
+                    "them (an empty twin of a live topic redirects to it). --dry-run reports without changing anything.",
+        run=run_topic_tidy, when="post_ingest", scope="global", version="1",
+        depends_on=("matter-names",),
     ),
     Stage(
         name="properties",

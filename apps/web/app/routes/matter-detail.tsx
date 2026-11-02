@@ -332,9 +332,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const supabase = getSupabaseAdminClient();
     const resolved = await resolveSlugParam(supabase, "matters", params.id, request, (m) => matterPath(m), "Matter Not Found", { redirectLegacy: false });
     const matter = await getMatterById(supabase, String(resolved.id));
-    // Removed by staff from the review bar: old links get a short note (410 Gone, not indexed) pointing to the
+    // Removed by staff from the review bar, or tidied away (a section heading, or a topic left with nothing on it):
+    // old links get a short note (410 Gone, not indexed) pointing to the
     // meetings where its agenda items still are; staff still see the whole page, to unhide it.
-    if (matter.meta?.hidden === "staff") {
+    if (["staff", "container", "no_records"].includes(matter.meta?.hidden)) {
       const { data: { user } } = await createSupabaseServerClient(request).supabase.auth.getUser();
       if (!(await getStaffRole(user))) {
         const meetings = new Map<string, { slug: string; title: string; date: string }>();
