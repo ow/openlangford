@@ -40,13 +40,8 @@ export default function AdminEmail({ loaderData }: Route.ComponentProps) {
     <AdminAudienceLayout
       title="Email details"
       description="One application email and its recorded attempt / delivery timeline."
+      back={{ to: "/admin/emails", label: "Email activity" }}
     >
-      <Link
-        className={`${adminLink} mb-5 inline-block text-sm`}
-        to="/admin/emails"
-      >
-        ← Email activity
-      </Link>
       <LedgerCoverage available={available} />
       {message && (
         <>

@@ -40,7 +40,7 @@ export default function AdminUsers({ loaderData }: Route.ComponentProps) {
   const { users, page, q, hasMore, total } = loaderData;
   return (
     <AdminAudienceLayout
-      title="Users"
+      title="Accounts"
       description="Registered accounts, confirmation and saved preferences."
     >
       <AdminFilter>

@@ -8,33 +8,49 @@ export const adminField =
   "h-10 rounded-lg border border-zinc-300 bg-surface px-3 text-sm";
 export const adminLink =
   "font-semibold text-brand-700 underline-offset-4 hover:underline";
+const TABS = [
+  { to: "/admin/users", label: "Accounts" },
+  { to: "/admin/emails", label: "Email activity" },
+];
+
+/**
+ * Accounts and email activity. List pages get the two tabs; a detail page (one account, one email)
+ * gets a single link back to its list instead.
+ */
 export function AdminAudienceLayout({
   title,
   description,
+  back,
   children,
 }: {
   title: string;
-  description: string;
+  description?: ReactNode;
+  back?: { to: string; label: string };
   children: ReactNode;
 }) {
+  const { pathname } = useLocation();
   return (
     <main className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-6xl px-4 py-10">
-        <Link to="/admin" className={`${adminLink} mb-5 inline-block text-sm`}>
-          ← Admin area
+        <Link to={back?.to ?? "/admin"} className={`${adminLink} mb-5 inline-block text-sm`}>
+          ← {back?.label ?? "Admin area"}
         </Link>
         <PageHeader title={title} description={description}>
-          <nav
-            aria-label="Audience administration"
-            className="flex gap-5 text-sm"
-          >
-            <Link className={adminLink} to="/admin/users">
-              Users
-            </Link>
-            <Link className={adminLink} to="/admin/emails">
-              Email activity
-            </Link>
-          </nav>
+          {!back && (
+            <nav aria-label="Accounts and email" className="flex gap-1 border-b border-zinc-200 text-sm">
+              {TABS.map((tab) => {
+                const active = pathname === tab.to;
+                return (
+                  <Link key={tab.to} to={tab.to} aria-current={active ? "page" : undefined}
+                    className={active
+                      ? "-mb-px border-b-2 border-brand-600 px-3 py-2 font-semibold text-zinc-900"
+                      : "px-3 py-2 text-zinc-600 hover:text-zinc-900"}>
+                    {tab.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
         </PageHeader>
         {children}
       </div>

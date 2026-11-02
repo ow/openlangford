@@ -107,17 +107,10 @@ export default function AdminUser({ loaderData }: Route.ComponentProps) {
   ];
   return (
     <AdminAudienceLayout
-      title={user.name || "User details"}
-      description="Account, subscription and staff access details."
+      title={user.name || user.email || "Account"}
+      description={user.name ? user.email : undefined}
+      back={{ to: "/admin/users", label: "Accounts" }}
     >
-      <div className="mb-5 flex flex-wrap gap-5 text-sm">
-        <Link to="/admin/users" className={adminLink}>
-          ← All users
-        </Link>
-        <Link to={`/admin/emails?user=${user.id}`} className={adminLink}>
-          View application email activity →
-        </Link>
-      </div>
       {!user.hasProfile && (
         <p className="mb-5 rounded-xl border border-zinc-200 bg-surface p-4 text-sm">
           This Auth account has no saved profile yet. It is still included in
@@ -135,7 +128,10 @@ export default function AdminUser({ loaderData }: Route.ComponentProps) {
             </div>
           ))}
         </dl>
-        <p className="mt-5 text-xs text-zinc-500">
+        <Link to={`/admin/emails?user=${user.id}`} className={`${adminLink} mt-5 inline-block text-sm`}>
+          Emails sent to this account →
+        </Link>
+        <p className="mt-3 text-xs text-zinc-500">
           Saved choices are not proof of delivery readiness. An account’s
           confirmed email does not verify a different notification address.
         </p>
