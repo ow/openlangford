@@ -32,6 +32,8 @@ class _Filer:
         self.matcher = MatterMatcher(supabase, municipality_id)
         self.matcher.load()
 
+    last_matter_match = None
+
     def file(self, item: dict, date: str | None, dry_run: bool) -> int | None:
         from pipeline.ingestion.ingester import MeetingIngester
         from pipeline.ingestion.matter_names import file_numbers
@@ -99,7 +101,9 @@ def run(supabase, *, dry_run: bool = True, matter_ids: list[int] | None = None, 
                     target = None
             moves.append({"item": item["id"], "title": (item["title"] or "").splitlines()[0][:90], "to": target, "why": why})
             if not dry_run:
-                supabase.table("agenda_items").update({"matter_id": target}).eq("id", item["id"]).execute()
+                note = getattr(filer, "last_matter_match", None) if target else None
+                supabase.table("agenda_items").update({"matter_id": target, "meta": {**(item["meta"] or {}),
+                    **({"matter_match": note} if note else {})}}).eq("id", item["id"]).execute()
                 supabase.table("property_links").update({"matter_id": target}).eq("agenda_item_id", item["id"]).execute()
             if target:
                 report["touched"].append(target)

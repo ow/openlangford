@@ -269,7 +269,7 @@ class TestMatterMatcher:
         matter = {
             "id": 42,
             "title": "Noise Control Bylaw",
-            "identifier": "Bylaw 1160",
+            "identifier": "Bylaw 1450",
             "status": "Active",
             "category": "Bylaw",
             "_addresses": set(),
@@ -278,7 +278,7 @@ class TestMatterMatcher:
         matcher._build_identifier_index()
         matcher._build_address_index()
 
-        result = matcher.find_match("Bylaw No. 1160", "Noise Control")
+        result = matcher.find_match("Bylaw No. 1450", "Noise Control")
         assert result[0] == 42
         assert "identifier_exact" in result[1]
         assert result[2] == 1.0

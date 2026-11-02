@@ -31,6 +31,7 @@ from pipeline import ai
 from pipeline.ingestion.matter_matching import (
     _street_names,
     bylaw_identifiers,
+    identifying,
     normalize_address,
     parse_compound_identifier,
     strip_stage,
@@ -63,11 +64,11 @@ class MatterRecord:
 
 
 def _keys(identifier: str | None, title: str | None) -> set[str]:
-    keys = {p for p in parse_compound_identifier(identifier or "") if re.match(r"^(Bylaw|TUP|DVP|DP|Z|OCP|ALR|LLP|REZ|SUB) ", p)}
+    keys = {p for p in identifying(parse_compound_identifier(identifier or "")) if re.match(r"^(Bylaw|TUP|DVP|DP|Z|OCP|ALR|LLP|REZ|SUB) ", p)}
     if not any(k.startswith("Bylaw ") for k in keys) and not re.search(
         r"\b(vary|variance|contravention|enforcement)\b", title or "", re.I
     ):
-        keys |= bylaw_identifiers(title)
+        keys |= identifying(bylaw_identifiers(title))
     return {k.upper() for k in keys}
 
 

@@ -7,7 +7,7 @@ eligible for automatic repair. Other plausible matches remain review findings.
 from collections import defaultdict
 import re
 
-from .matter_matching import bylaw_identifiers, is_matter_eligible, matter_identifiers, policy_identity, policy_candidates, is_valid_matter_identifier
+from .matter_matching import bylaw_identifiers, identifying, is_matter_eligible, matter_identifiers, policy_identity, policy_candidates, is_valid_matter_identifier
 from .staff_fixes import staff_matter
 
 
@@ -70,7 +70,7 @@ def plan_history(matters, items, *, focus_ids=None, review_meeting_ids=None):
         candidate = candidates[0]
         in_interval = bool(day and candidate.get("first_seen") and candidate.get("last_seen")
                            and str(candidate["first_seen"])[:10] <= day <= str(candidate["last_seen"])[:10])
-        item_bylaws = bylaw_identifiers(item.get("title"))
+        item_bylaws = identifying(bylaw_identifiers(item.get("title")))
         identifiers = matter_identifiers(candidate)
         target_bylaws = {key for key in identifiers if key.startswith("Bylaw ")}
         safe = len(exact) == 1 and in_interval and item_bylaws == target_bylaws and identifiers == target_bylaws

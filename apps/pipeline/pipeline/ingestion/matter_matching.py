@@ -61,12 +61,48 @@ def bylaw_identifiers(text: str | None) -> set[str]:
     return identifiers
 
 
+# City-wide bylaws that nearly every application cites ("vary Zoning Bylaw No. 300", "Subdivision and Development
+# Servicing Bylaw No. 1000"). They say which rules a property is under, not which application an item is about, so
+# they never identify a topic: as identifiers they pulled unrelated variances on other streets into one topic.
+# Amendment bylaws keep their own numbers ("Zoning Bylaw No. 300, Amendment No. 706, Bylaw No. 1927" -> Bylaw 1927).
+CITY_WIDE_BYLAWS = frozenset({
+    "Bylaw 300",   # Zoning Bylaw
+    "Bylaw 1000",  # Subdivision and Development Servicing Bylaw
+    "Bylaw 500",   # Subdivision and Development Servicing Bylaw (earlier)
+    "Bylaw 1200",  # Official Community Plan Bylaw (2008)
+    "Bylaw 2200",  # Official Community Plan Bylaw (2025)
+    "Bylaw 1160",  # Building Bylaw
+    "Bylaw 1250",  # Sign Bylaw
+    "Bylaw 33",    # Traffic Bylaw
+    "Bylaw 34",    # Ticket Information Bylaw
+    "Bylaw 209",   # Development Procedures (application fees) Bylaw
+})
+
+
+def is_city_wide(part: str) -> bool:
+    """"Bylaw 300", "Zoning Bylaw No. 300" -> True; "Traffic Bylaw No. 33, Amendment ..., Bylaw No. 1890" -> False."""
+    numbers = bylaw_identifiers(part) or ({part} if part.startswith("Bylaw ") else set())
+    return bool(numbers) and numbers <= CITY_WIDE_BYLAWS
+
+
+def identifying(parts) -> set[str]:
+    """Identifier parts that can identify a topic: everything except city-wide bylaws."""
+    return {p for p in parts if not is_city_wide(p)}
+
+
+def identifying_identifier(raw: str | None) -> str | None:
+    """A compound identifier as written, minus its city-wide bylaw parts; None when nothing identifying is left."""
+    kept = [part.strip() for part in (raw or "").split(";")
+            if part.strip() and identifying(parse_compound_identifier(part))]
+    return "; ".join(kept) or None
+
+
 def matter_identifiers(matter: dict) -> set[str]:
-    identifiers = set(parse_compound_identifier(matter.get("identifier")))
+    identifiers = identifying(parse_compound_identifier(matter.get("identifier")))
     if not any(value.startswith("Bylaw ") for value in identifiers) and not re.search(
         r"\b(vary|variance|contravention|enforcement)\b", matter.get("title") or "", re.I
     ):
-        identifiers |= bylaw_identifiers(matter.get("title"))
+        identifiers |= identifying(bylaw_identifiers(matter.get("title")))
     return identifiers
 
 
@@ -799,9 +835,10 @@ class MatterMatcher:
             title_addrs = extract_addresses(title)
             normalized_addrs.update(title_addrs)
 
+        identifier = identifying_identifier(identifier)
         # Explicit title bylaw numbers also identify title-only source records.
         if not identifier and title and not re.search(r"\b(vary|variance|contravention|enforcement)\b", title, re.I):
-            identifier = "; ".join(sorted(bylaw_identifiers(title))) or None
+            identifier = "; ".join(sorted(identifying(bylaw_identifiers(title)))) or None
 
         # --- Stage 1: Identifier matching ---
         if identifier:
@@ -859,7 +896,7 @@ class MatterMatcher:
         normalized_addrs: set[str],
     ) -> Optional[tuple[int, str, float]]:
         """Try to match by parsing and looking up identifier parts."""
-        parts = parse_compound_identifier(identifier)
+        parts = [p for p in parse_compound_identifier(identifier) if not is_city_wide(p)]
         if not parts:
             return None
 
@@ -905,7 +942,7 @@ class MatterMatcher:
         best_overlap = 0
         for m in candidates.values():
             m_parts = set(
-                p.lower() for p in parse_compound_identifier(m.get("identifier", ""))
+                p.lower() for p in identifying(parse_compound_identifier(m.get("identifier", "")))
             )
             incoming_parts = set(p.lower() for p in parts)
             overlap = len(m_parts & incoming_parts)

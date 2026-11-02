@@ -70,6 +70,13 @@ def motion_hold_applies(is_planned_meeting, classification, ballot_context, clos
             and (ballot_context or {}).get("status") == "committee_membership_rules_need_validation")
 
 
+def _match_note(reason, confidence) -> dict:
+    """Why an item was filed under its topic, kept on the item so a wrong grouping can be traced."""
+    from datetime import datetime, timezone
+
+    return {"reason": str(reason), "score": round(float(confidence or 0), 3), "at": datetime.now(timezone.utc).isoformat()}
+
+
 class MeetingIngester:
     def __init__(self, supabase_url, supabase_key, municipality_id=None):
         if not supabase_url or not supabase_key:
@@ -330,6 +337,13 @@ class MeetingIngester:
     def get_or_create_matter(
         self, identifier, title, date=None, dry_run=False, related_addresses=None
     ):
+        """The topic an item belongs to (creating one if needed). Why it was chosen is left in
+        ``self.last_matter_match`` for the caller to store on the item (agenda_items.meta.matter_match)."""
+        from pipeline.ingestion.matter_matching import identifying_identifier
+
+        # City-wide bylaws (Zoning Bylaw No. 300 ...) never identify a topic, nor become a new topic's identifier.
+        identifier = identifying_identifier(identifier)
+        self.last_matter_match = None
         # Use new matcher logic
         matter_id, reason, confidence = self.matcher.find_match(
             identifier, title, related_addresses, meeting_date=str(date) if date else None
@@ -376,6 +390,7 @@ class MeetingIngester:
                         self.supabase.table("matters").update(updates).eq(
                             "id", matter_id
                         ).execute()
+            self.last_matter_match = _match_note(reason, confidence)
             return matter_id
 
         if not identifier and not title:
@@ -434,8 +449,10 @@ class MeetingIngester:
             canonical = (row.get("meta") or {}).get("canonical_matter_id")
             print(f"  [~] {identifier} already exists as matter {row['id']}; linking to it")
             self.matcher._add_matter_to_indices(row)
+            self.last_matter_match = _match_note(f"identifier_exists:{identifier}", 1.0)
             return int(canonical) if canonical else row["id"]
         new_record = res.data[0]
+        self.last_matter_match = _match_note("new_topic", 1.0)
         # Update matcher cache to avoid duplicates in the same run
         self.matcher._add_matter_to_indices(new_record)
         return new_record["id"]
@@ -2316,6 +2333,7 @@ class MeetingIngester:
                     # cached AI agenda title is not proof of a new agenda item.
                     item = {"item_order": "official-recorded-motions", "title": "Official recorded motions", "category": "procedural", "motions": item["motions"]}
                     retained_item = existing_agenda_item(item, existing_items, claimed_item_ids)
+            self.last_matter_match = None  # set only when this item is filed by get_or_create_matter
             # The persisted row this item refreshes, resolved before matter linking.
             matched_item = None if retained_item else existing_agenda_item(item, existing_items, claimed_item_ids)
             if retained_item:
@@ -2397,7 +2415,9 @@ class MeetingIngester:
                 "financial_cost": item.get("financial_cost"),
                 "funding_source": item.get("funding_source"),
                 "keywords": tags,
-                "meta": {"key_quotes": item.get("key_quotes"), **({"unverified_motion_proposals": item.get("_unverified_motion_proposals", [])} if canonical_enabled or committee_hold else {})},
+                "meta": {"key_quotes": item.get("key_quotes"),
+                         **({"matter_match": self.last_matter_match} if matter_id and getattr(self, "last_matter_match", None) else {}),
+                         **({"unverified_motion_proposals": item.get("_unverified_motion_proposals", [])} if canonical_enabled or committee_hold else {})},
             }
 
             agenda_item_id = 200  # Placeholder for dry run
@@ -2788,6 +2808,8 @@ class MeetingIngester:
                     )
                     if matter_id:
                         item_data["matter_id"] = matter_id
+                        if self.last_matter_match:
+                            item_data["meta"] = {"matter_match": self.last_matter_match}
 
                 self.supabase.table("agenda_items").insert(item_data).execute()
 
