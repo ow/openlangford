@@ -520,19 +520,25 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
   // shown under Background aren't repeated for every address.
   const relatedIds = new Set((story.related || []).map((r: any) => r.id));
   const addressGroups = (() => {
-    const groups = new Map<string, { key: string; properties: any[]; others: any[]; street: string | null }>();
+    const groups = new Map<string, { key: string; properties: any[]; others: any[] }>();
     for (const p of properties as any[]) {
       const others = (p.others || []).filter((m: any) => !relatedIds.has(m.id));
       const key = others.map((m: any) => m.id).sort((a: number, b: number) => a - b).join(",") || "none";
-      const group = groups.get(key) ?? { key, properties: [] as any[], others, street: null as string | null };
+      const group = groups.get(key) ?? { key, properties: [] as any[], others };
       group.properties.push(p);
       groups.set(key, group);
     }
-    for (const g of groups.values()) {
-      const streets = new Set(g.properties.map((p) => String(p.address).replace(/^[\d\-–A-Za-z]*\d[A-Za-z]?\s+/, "")));
-      g.street = g.properties.length > 1 && streets.size === 1 ? [...streets][0] : null;
-    }
-    return [...groups.values()];
+    // Within a card, addresses on the same street read "2614, 2616 and 2618 Peatt Road; 2622 Sunderland Road".
+    const streetOf = (address: string) => String(address).replace(/^[\d\-–A-Za-z]*\d[A-Za-z]?\s+/, "");
+    return [...groups.values()].map((g) => {
+      const byStreet = new Map<string, any[]>();
+      for (const p of g.properties) byStreet.set(streetOf(p.address), [...(byStreet.get(streetOf(p.address)) || []), p]);
+      const num = (p: any) => parseInt(String(p.address), 10) || 0;
+      return { ...g, streets: [...byStreet].map(([street, props]) => ({
+        street, properties: [...props].sort((a, b) => num(a) - num(b)),
+        number: (p: any) => String(p.address).slice(0, String(p.address).length - street.length).trim() || p.address,
+      })) };
+    });
   })();
   const statusVariant = matterStatusVariant(matter.status);
   const shortDate = (d: string | null | undefined) =>
@@ -673,19 +679,16 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     <li key={g.key} className="rounded-2xl border border-zinc-200 bg-surface p-4 shadow-sm">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                         <span className="font-semibold text-zinc-900">
-                          {g.street ? (
-                            <>
-                              {g.properties.map((p: any, i: number) => (
+                          {g.streets.map((st, si) => (
+                            <span key={st.street + si}>
+                              {si > 0 && "; "}
+                              {st.properties.map((p: any, i: number) => (
                                 <span key={p.id}>
-                                  {i > 0 && (i === g.properties.length - 1 ? " and " : ", ")}
-                                  <Link to={propertyPath(p)} className="hover:text-brand-700">{p.address.slice(0, p.address.length - (g.street ?? "").length).trim()}</Link>
+                                  {i > 0 && (i === st.properties.length - 1 ? " and " : ", ")}
+                                  <Link to={propertyPath(p)} className="hover:text-brand-700">{st.properties.length > 1 ? st.number(p) : p.address}</Link>
                                 </span>
-                              ))}{" "}{g.street}
-                            </>
-                          ) : g.properties.map((p: any, i: number) => (
-                            <span key={p.id}>
-                              {i > 0 && (i === g.properties.length - 1 ? " and " : ", ")}
-                              <Link to={propertyPath(p)} className="hover:text-brand-700">{p.address}</Link>
+                              ))}
+                              {st.properties.length > 1 && <> {st.street}</>}
                             </span>
                           ))}
                         </span>
