@@ -65,8 +65,8 @@ export function PageReviewBar() {
   useEffect(() => {
     if (!finishing.current || save.state !== "idle" || !save.data) return;
     finishing.current = false;
-    if (save.data.ok) navigate("/admin/reviews/next");
-  }, [save.state, save.data, navigate]);
+    if (save.data.ok) navigate(`/admin/reviews/next?from=${encodeURIComponent(pathname)}`);  // another page of the same kind
+  }, [save.state, save.data, navigate, pathname]);
 
   // Open the panel by itself once per page when there's something to act on.
   const autoOpened = useRef<string | null>(null);

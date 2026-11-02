@@ -106,3 +106,24 @@ export async function reviewCoverage(supabase: SupabaseClient, rows: { path: str
     checked: list.reduce((n, s) => n + s.checked, 0),
   };
 }
+
+/** A random page nobody has reviewed or checked yet: of one kind (a sitemap section), or of any kind (every page
+ * equally likely), or null when none are left. */
+export async function randomUnreviewedPath(supabase: SupabaseClient, section: SitemapSection | "any"): Promise<string | null> {
+  const sections = section === "any" ? SITEMAP_SECTIONS.filter((s) => s !== "pages") : [section];
+  const lists = await Promise.all(sections.map((s) => sitemapEntries(supabase, s).catch(() => [])));
+  const entries = lists.flat().map((e) => reviewPath(e.path)).filter((p): p is string => !!p && !p.includes("?"));
+  if (!entries.length) return null;
+  const { data } = await supabase.from("page_reviews").select("path").limit(20000);
+  const seen = new Set((data || []).map((r: { path: string }) => r.path));
+  const open = entries.filter((p) => !seen.has(p));
+  return open.length ? open[Math.floor(Math.random() * open.length)] : null;
+}
+
+/** The sitemap section a page belongs to (for "next page of the same kind"), or null. */
+export function sectionOf(path: string): SitemapSection | null {
+  const first = path.split("/")[1] || "";
+  if (/^meetings$/.test(first)) return /\/documents\//.test(path) ? "documents" : "meetings";
+  const map: Record<string, SitemapSection> = { matters: "matters", people: "people", properties: "properties", bylaws: "bylaws", participants: "participants", elections: "elections" };
+  return map[first] ?? null;
+}

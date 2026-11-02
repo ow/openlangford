@@ -1,7 +1,6 @@
-import { Form, Link, redirect } from "react-router";
+import { Link } from "react-router";
 import type { Route } from "./+types/admin-reviews";
-import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
-import { requireModerator } from "../lib/auth.server";
+import { adminRead, adminReadOnlyAction, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
@@ -27,11 +26,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
 }
 
-/** "Random page": a matter page nobody has reviewed or checked, for sampling. */
-export async function action({ request }: Route.ActionArgs) {
-  await requireModerator(request);
-  return redirect("/admin/reviews/next", { headers: privateAdminHeaders() });
-}
+export const action = adminReadOnlyAction;
 
 export default function AdminReviews({ loaderData }: Route.ComponentProps) {
   const { show, reviews, agreement, coverage } = loaderData;
@@ -53,7 +48,8 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
           <ul className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
             {coverage.sections.map((s) => (
               <li key={s.section} className="flex items-baseline justify-between gap-3 border-t border-zinc-100 pt-2">
-                <span className="font-medium text-zinc-900">{s.label}</span>
+                <Link to={`/admin/reviews/next?kind=${s.section}`} title={`Review a random ${s.label.toLowerCase()} page`}
+                  className="font-medium text-brand-700 hover:underline">{s.label}</Link>
                 <span className="tabular-nums text-zinc-600">
                   {n(s.reviewed)} of {n(s.total)}{s.checked > 0 && <span className="text-zinc-400"> · {n(s.checked)} checked</span>}
                 </span>
@@ -69,13 +65,14 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
             </div>
             <p className="mt-1 text-xs text-zinc-500">{agreement.agreed} of {agreement.rated} rated flags were real problems. Your ratings guide later checks.</p>
           </div>
-          <Form method="post" className={cn(adminCard, "flex flex-col justify-between px-5 py-4")}>
+          <div className={cn(adminCard, "flex flex-col justify-between px-5 py-4")}>
             <div>
               <div className="text-sm font-medium text-zinc-600">Sample a page</div>
-              <p className="mt-1 text-xs text-zinc-500">Opens a random topic page nobody has reviewed or checked.</p>
+              <p className="mt-1 text-xs text-zinc-500">Any page nobody has reviewed or checked. To stay in one kind, pick it from the list above. After each page you go on to the next in the same mode.</p>
             </div>
-            <button type="submit" className="mt-3 self-start rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700">Random page</button>
-          </Form>
+            <Link to="/admin/reviews/next?kind=any"
+              className="mt-3 self-start rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700">Random page</Link>
+          </div>
         </div>
         <nav aria-label="Filter reviews" className="mb-4 flex flex-wrap gap-2 text-sm">
           {FILTERS.map(([value, label]) => (
