@@ -9,3 +9,64 @@ def test_a_staff_move_survives_reprocessing():
     off = {"staff_matter": {"matter_id": None, "by": "u", "at": "2026-11-02T00:00:00Z"}}
     assert staff_matter(off) is not None and locked_matter_id(off, 7) is None  # taken off every topic stays off
     assert locked_matter_id({}, 7) == 7
+
+
+class _Q:
+    def __init__(self, db, table):
+        self.db, self.table, self.op, self.payload = db, table, "select", None
+
+    def select(self, *_):
+        return self
+
+    def update(self, payload):
+        self.op, self.payload = "update", payload
+        return self
+
+    def insert(self, payload):
+        self.op, self.payload = "insert", payload
+        return self
+
+    def eq(self, *_):
+        return self
+
+    def single(self):
+        return self
+
+    def maybe_single(self):
+        return self
+
+    def execute(self):
+        if self.op != "select":
+            self.db.writes.append((self.table, self.op, self.payload))
+        return type("R", (), {"data": self.db.rows.get(self.table, {})})()
+
+
+class _DB:
+    def __init__(self, rows):
+        self.rows, self.writes = rows, []
+
+    def table(self, name):
+        return _Q(self, name)
+
+
+def test_a_move_with_no_destination_is_refiled_and_unfollowed_summary_notes_are_reported(monkeypatch):
+    import pipeline.ingestion.staff_fixes as sf
+    import pipeline.ingestion.matter_lifecycle as lifecycle
+    import pipeline.ingestion.matter_summaries as summaries
+
+    db = _DB({"agenda_items": {"matter_id": 5, "meeting_id": 9, "meta": {}},
+              "matters": {"plain_english_summary": "Old text.", "meta": {}},
+              "page_reviews": {"ai_flags": [{"key": None, "verdict": "agree"}, {"key": "agenda-1", "verdict": "agree"}]}})
+    monkeypatch.setattr(sf, "refile_target", lambda supabase, item_id: 77)
+    monkeypatch.setattr(sf, "check_summary_notes", lambda supabase, notes: [n["note"] for n in notes])
+    monkeypatch.setattr(lifecycle, "refresh_meeting_matter_lifecycles", lambda *a, **k: None)
+    monkeypatch.setattr(summaries, "refresh_matter_summaries", lambda *a, **k: {5: {}})
+    result = sf.run_fix_page(db, {"path": "/matters/x", "moves": [{"item_id": 1, "to_matter_id": None, "refile": True, "reason": "Not this topic."}],
+                                  "refresh": [5], "summary_notes": [{"matter_id": 5, "note": "Say it was adopted."}],
+                                  "done": ["Summary note. The summary is being rewritten with this note: \"Say it was adopted.\""]})
+    item_update = next(p for t, op, p in db.writes if t == "agenda_items" and op == "update")
+    assert item_update["matter_id"] == 77 and item_update["meta"]["staff_matter"]["matter_id"] == 77  # re-filed, not dropped
+    review = next(p for t, op, p in db.writes if t == "page_reviews")
+    assert "doesn't yet say what was asked" in review["agent_note"]
+    assert [f.get("fixed") for f in review["ai_flags"]] == [False, True]  # the page-wide flag stays open
+    assert result["left"] == 1

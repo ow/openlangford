@@ -2,8 +2,10 @@
 
 Marking a topic page "needs work" in the site's review bar starts the fix agent on the site
 (apps/web/app/services/page-fix.server.ts). It removes wrong links itself, then queues this job for what needs the
-pipeline: moving an agenda item filed under the wrong topic, and rewriting the summaries of the topics whose
-timelines changed. When this finishes, the page is "fixed" for staff to confirm.
+pipeline: moving an agenda item filed under the wrong topic (or, when no listed topic fits, re-filing it the way
+ingest files an item, never back onto the topic it left), and rewriting the summaries of the topics whose timelines
+changed, then checking that each summary instruction staff approved was actually followed. When this finishes, the
+page is "fixed" for staff to confirm.
 
 A moved item carries a lock, ``agenda_items.meta.staff_matter`` ({"matter_id", "by", "at", "reason"}), which the
 ingester and the history step respect: re-processing a meeting never files it back.
@@ -13,6 +15,8 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from typing import Any
+
+from pydantic import BaseModel, Field
 
 
 def staff_matter(meta: dict | None) -> dict | None:
@@ -45,6 +49,42 @@ def move_item(supabase, item_id: int, to_matter_id: int | None, *, by: str | Non
     return {"from": item.get("matter_id"), "to": to_matter_id, "meeting_id": item["meeting_id"]}
 
 
+def refile_target(supabase, item_id: int) -> int | None:
+    """Where ingest would file this item if it weren't on its current topic (never that topic): an existing topic
+    for its permit, bylaw or address, a new one, or none for a heading."""
+    from pipeline.ingestion.topic_regroup import refile
+
+    item = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data
+    results = refile(supabase, [{"item": item_id, "from": item.get("matter_id")}], dry_run=False, log=lambda *_: None)
+    target = results[0].get("to") if results else None
+    return int(target) if isinstance(target, int) else None
+
+
+class _NoteCheck(BaseModel):
+    followed: bool = Field(description="True when the summary or status says what the instruction asks (or leaves out what it says to leave out).")
+
+
+def check_summary_notes(supabase, notes: list[dict]) -> list[str]:
+    """The approved summary instructions the rewritten summary doesn't follow."""
+    from pipeline import ai
+
+    unfollowed = []
+    for entry in notes:
+        matter = supabase.table("matters").select("plain_english_summary, meta").eq("id", int(entry["matter_id"])).single().execute().data
+        text = f"Summary: {matter.get('plain_english_summary') or ''}\nWhere it stands: {(matter.get('meta') or {}).get('status_line') or ''}"
+        try:
+            verdict = ai.json(f"An editor asked for this change to a topic page's summary on a site that follows a city "
+                              f"council:\n\n{entry['note']}\n\nThe page now reads:\n{text}\n\nDoes it follow the instruction?",
+                              stage="review", schema=_NoteCheck)
+        except Exception as exc:  # can't check: say so rather than claim it
+            print(f"  [fix_page] summary check failed: {exc}")
+            unfollowed.append(entry["note"])
+            continue
+        if not verdict.followed:
+            unfollowed.append(entry["note"])
+    return unfollowed
+
+
 def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
     """Carry out the moves the site's fix agent planned, refresh the topics they touched, and finish the page."""
     from pipeline.ingestion.matter_lifecycle import refresh_meeting_matter_lifecycles
@@ -62,6 +102,10 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
     for move in args.get("moves") or []:
         item_id, to = int(move["item_id"]), move.get("to_matter_id")
         try:
+            if move.get("refile") and to is None:
+                origin = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data.get("matter_id")
+                to = refile_target(supabase, item_id)
+                touched.update(m for m in (origin,) if m)
             result = move_item(supabase, item_id, int(to) if to is not None else None, by=by, reason=move.get("reason") or "")
             touched.update(m for m in (result["from"], result["to"]) if m)
             meetings.add(result["meeting_id"])
@@ -103,9 +147,16 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
         if summaries:
             done.append(f"Rewrote the summary of {len(summaries)} {'topic' if len(summaries) == 1 else 'topics'} whose timeline changed.")
 
+    unfollowed = check_summary_notes(supabase, args.get("summary_notes") or [])
+    for note in unfollowed:
+        left.append(f"The summary was rewritten but doesn't yet say what was asked: \"{note[:300]}\"")
+        done[:] = [d for d in done if note.split(" The record says:")[0][:80] not in d]
+
     row = supabase.table("page_reviews").select("ai_flags").eq("path", path).maybe_single().execute()
     flags = ((row.data if row else None) or {}).get("ai_flags") or []
     flags = [{**f, "fixed": True} if f.get("key") in fixed_keys else f for f in flags]
+    if unfollowed:  # a whole-page problem isn't fixed until its summary instruction is followed
+        flags = [{**f, "fixed": False} if not f.get("key") and f.get("verdict") == "agree" else f for f in flags]
     note = "\n\n".join(p for p in [
         "Changed:\n" + "\n".join(f"• {d}" for d in done) if done else "Changed nothing.",
         "Needs a person:\n" + "\n".join(f"• {d}" for d in left) if left else "",

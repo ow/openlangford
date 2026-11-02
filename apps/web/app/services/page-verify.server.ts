@@ -40,7 +40,7 @@ function subjectPattern(title: string): RegExp | null {
 
 /** Records for each item, and which items have any. Older imports often left the minutes and reports unattached
  * to their agenda items; for those, the same meeting's unattached text is searched for the item's subject. */
-async function itemRecords(supabase: SupabaseClient, itemIds: number[]): Promise<{ text: string; covered: Set<number> }> {
+export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): Promise<{ text: string; covered: Set<number> }> {
   const covered = new Set<number>();
   if (!itemIds.length) return { text: "", covered };
   const [{ data: items }, { data: motions }, { data: docs }, { data: sections }] = await Promise.all([

@@ -769,6 +769,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               <>
                 <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-zinc-200">
                   {timelineEntries.map((entry: any) => {
+                    // Staff-approved wording for a linked entry (the fix agent, quoting the record) replaces the generated text.
+                    const override: { line?: string; heading?: string } | undefined = matter.meta?.entry_lines?.[entry.key];
                     if (entry.kind === "report") {
                       const report: ReportMention = entry.report;
                       return (
@@ -784,7 +786,12 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                                 </a>
                               ) : <span>City annual report, page {report.page}</span>}
                             </div>
-                            <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(report.quote)}”</blockquote>
+                            {override?.heading && <p className="mb-1 text-sm font-medium text-zinc-700">{override.heading}</p>}
+                            {override?.line ? (
+                              <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
+                            ) : (
+                              <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(report.quote)}”</blockquote>
+                            )}
                           </div>
                         </li>
                       );
@@ -810,8 +817,12 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                                 </span>
                               ) : <span>{mentionLabel(item.title)}</span>}
                             </div>
-                            {(entry.relatedMatter || (item.linkQuote && item.linkSource !== "name_mention")) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
-                            {item.linkQuote && !quoteIsTitle(item.linkQuote, item.title) ? (
+                            {override?.heading ? (
+                              <p className="mb-1 text-sm font-medium text-zinc-700">{override.heading}</p>
+                            ) : (entry.relatedMatter || (item.linkQuote && item.linkSource !== "name_mention")) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
+                            {override?.line ? (
+                              <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
+                            ) : item.linkQuote && !quoteIsTitle(item.linkQuote, item.title) ? (
                               // Found by name: the passage that names this matter, not the item's own summary.
                               <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(item.linkQuote)}”</blockquote>
                             ) : (() => {
