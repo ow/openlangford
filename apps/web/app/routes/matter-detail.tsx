@@ -1,4 +1,5 @@
 import { SITE_NAME } from "../lib/site-name";
+import { collapseListedReadings } from "../lib/timeline-story";
 import { getStaffRole } from "../lib/auth.server";
 import type { Route } from "./+types/matter-detail";
 import {
@@ -355,7 +356,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const matterDocuments = await getDocumentsForAgendaItems(supabase, agendaItemIds);
     const [matterEvidence, story, properties] = await Promise.all([
       getMatterEvidence(supabase, matter.id, matter.meta?.merged_matter_ids || []),
-      getMatterStory(supabase, matter.id),
+      getMatterStory(supabase, matter.id, undefined, matter.meta?.merged_matter_ids || []),
       getPropertiesForMatter(supabase, matter.id),
     ]);
 
@@ -462,7 +463,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
   // Entries staff hid as repeats of another entry (meta.hidden_duplicates) stay on the topic but not in its timeline.
   const hiddenDuplicates = (matter.meta?.hidden_duplicates || {}) as Record<string, unknown>;
-  const timelineEntries = [
+  const timelineEntries = collapseListedReadings([
     ...timeline.filter((item) => !hiddenDuplicates[String(item.id)]).map((item) => ({
       kind: "primary" as const,
       key: `agenda-${item.id}`,
@@ -485,7 +486,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     ...(story.reports || []).map((report: ReportMention) => ({ kind: "report" as const, key: `report-${report.id}`, date: `${report.year}-12-31`, report })),
   ].sort(
     (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime(),
-  );
+  ) as any[], matter.meta?.timeline_headlines || {});
 
   // People who both spoke and wrote in about this matter get a note on each side.
   const aboutMatter = `${matterTitle(matter)} ${matter.plain_english_summary || ""}`;
@@ -730,8 +731,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
           {story.related.length > 0 && (
             <section>
               <SectionHeading
-                title="Background"
-                description="Earlier and later steps of the same initiative."
+                title="Related topics"
+                description="Other topics about the same place or project."
               />
               <ol className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm divide-y divide-zinc-100">
                 {story.related.map((r: any) => (

@@ -304,7 +304,10 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
         if iid not in items and pat.search(text or ""):
             items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title,
                           "excerpt": excerpt(text, name), "spoken": True, "where": "spoken"}
-    items = {iid: it for iid, it in items.items() if not table_row(it["excerpt"])}
+    from pipeline.ingestion.mention_hygiene import candidate_ok
+
+    # A table row, a minutes echo or an omnibus bylaw's legal description is one line of many, not a mention.
+    items = {iid: it for iid, it in items.items() if not table_row(it["excerpt"]) and candidate_ok(it["title"], it["excerpt"])}
     pages = []
     if not meeting_ids:
         cur.execute(f"""select p.report_id, p.page, r.year, r.title, p.content from public_report_pages p
@@ -558,6 +561,9 @@ def run(*, matter_ids: list[int] | None = None, meeting_ids: list[int] | None = 
             c.execute("update matter_links set hidden = false where id = any(%s) and hidden", (written["links"] + written["related"],))
             c.execute("update matter_report_mentions set hidden = false where id = any(%s) and hidden", (written["pages"],))
         run_write(publish)
+    from pipeline.ingestion import mention_hygiene
+
+    mention_hygiene.run()  # an item that now reaches too many topics is a list: hide its links everywhere
     return {"names": names, **found, "changed": written["matters"]}
 
 

@@ -6,7 +6,8 @@ it("reconstructs one-hop background with provenance, preserving cities, hidden l
   const matter = (id: number, municipality_id = 1) => ({ id, municipality_id, title: `Matter ${id}`, slug: `matter-${id}`, meta: {}, first_seen: "2026-06-29" });
   const item = (id: number, matter_id: number | null, city = 1, date = "2026-06-29") => ({ id, matter_id, meeting_id: 50, title: `Item ${id}`, meetings: { municipality_id: city, meeting_date: date, slug: "2026-06-29-special-council" } });
   const tables: Record<string, any[]> = {
-    matters: [matter(1685), matter(208), matter(1126), matter(999, 2)],
+    // 1685 and 208 are one project (the same bylaw); 1126 is related to 208 only.
+    matters: [{ ...matter(1685), identifier: "Bylaw No. 1990" }, { ...matter(208), identifier: "Bylaw No. 1990; Z26-0001" }, matter(1126), matter(999, 2)],
     matter_links: [
       { kind: "related_matter", matter_id: 1685, related_matter_id: 208, hidden: false },
       { kind: "related_matter", matter_id: 208, related_matter_id: 1126, hidden: false },
@@ -80,4 +81,28 @@ it("carries a name-found link's quote and the annual-report pages, hiding hidden
     [50, "name_mention", "the quiet sale of the North Langford Recreation Center"], [51, "resolver", null]]);
   expect(story.reports).toEqual([{ id: 2, year: 2015, title: "Annual Report 2015", page: 24,
     quote: "The City acquired and completed a $500,000 renovation", url: "https://gspr.emc2.build/documents/abc#page=24" }]);
+});
+
+it("lists a related topic that is another project without borrowing its entries", async () => {
+  const meeting = { municipality_id: 1, meeting_date: "2017-08-14", slug: "2017-08-14-regular-council" };
+  const tables: Record<string, any[]> = {
+    // 2945 Jacklin Road: the 2017 showroom permit and the 2010 cinema variances share only an address.
+    matters: [{ id: 1, municipality_id: 1, title: "Showroom", slug: "showroom", identifier: "TUP17-0003", meta: {}, first_seen: "2017-07-10" },
+      { id: 2, municipality_id: 1, title: "Cinema variances", slug: "cinema", identifier: "DVP-10-15", meta: {}, first_seen: "2010-09-20" }],
+    matter_links: [{ kind: "related_matter", matter_id: 1, related_matter_id: 2, hidden: false, source: "name" }],
+    agenda_items: [{ id: 70, matter_id: 2, meeting_id: 3, title: "Cinema variances", meetings: meeting }],
+  };
+  const ids = (value: string) => value.slice(value.indexOf("(") + 1, -1).split(",").map(Number);
+  const client = createClient("https://example.supabase.co", "synthetic-test-key", { auth: { persistSession: false }, global: { fetch: async input => {
+    const url = new URL(String(input));
+    let rows = tables[url.pathname.split("/").pop()!] || [];
+    for (const [key, value] of url.searchParams) {
+      if (value.startsWith("eq.") && !key.includes(".")) rows = rows.filter(row => String(row[key]) === value.slice(3));
+      if (value.startsWith("in.(")) rows = rows.filter(row => ids(value).includes(row[key]));
+    }
+    return Response.json(rows);
+  } } });
+  const story = await getMatterStory(client, 1);
+  expect(story.related.map(r => r.id)).toEqual([2]);
+  expect(story.background).toEqual([]);
 });

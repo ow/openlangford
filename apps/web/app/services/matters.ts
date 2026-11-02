@@ -1,4 +1,5 @@
 import { writtenLetters } from "../lib/written";
+import { showsInTimeline } from "../lib/timeline-story";
 import { getPropertyPinsByMatter, type Pin } from "./properties";
 import { parseRelatedAddresses } from "../lib/addresses";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -292,7 +293,10 @@ export async function getFiscalData(supabase: SupabaseClient) {
  * public participation) that discussed it. Written by the pipeline's
  * matter_links step.
  */
-export async function getMatterStory(supabase: SupabaseClient, matterId: number, municipalityId = 1) {
+export async function getMatterStory(supabase: SupabaseClient, matterId: number, municipalityId = 1, mergedIds: number[] = []) {
+  // A merged page is one topic: its aliases' mentions and related links are its own.
+  const ownIds = [matterId, ...mergedIds.filter((id) => Number.isSafeInteger(id) && id > 0 && id !== matterId)];
+  const own = new Set(ownIds);
   const rows = async (build: () => any): Promise<{ data: any[]; error: any }> => {
     const data: any[] = [];
     for (let start = 0; ; start += 500) {
@@ -303,22 +307,26 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
     }
   };
   const empty = { related: [] as any[], mentions: [] as any[], background: [] as any[], reports: [] as any[] };
-  const [{ data: links, error }, reports] = await Promise.all([
+  const [{ data: links, error }, { data: ownRows }, reports] = await Promise.all([
     rows(() => supabase.from("matter_links")
-      .select("kind, matter_id, related_matter_id, agenda_item_id, confidence, source, quote")
-      .eq("hidden", false).or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`).order("id")),
+      .select("kind, matter_id, related_matter_id, agenda_item_id, confidence, source, quote, review")
+      .eq("hidden", false).or(`matter_id.in.(${ownIds.join(",")}),related_matter_id.in.(${ownIds.join(",")})`).order("id")),
+    rows(() => supabase.from("matters").select("id, identifier").in("id", ownIds)),
     getMatterReportMentions(supabase, matterId, municipalityId),
   ]);
   empty.reports = reports;
   if (error) { console.error("Error fetching matter links:", error); return empty; }
-  const relatedIds = [...new Set((links || []).filter(l => l.kind === "related_matter")
-    .map(l => l.matter_id === matterId ? l.related_matter_id : l.matter_id))]
-    .filter(id => Number.isSafeInteger(id) && id > 0 && id !== matterId);
-  const mentionIds = (links || []).filter(l => l.kind === "mention" && l.matter_id === matterId).map(l => l.agenda_item_id);
+  const relatedLinks = new Map<number, any>();
+  for (const l of (links || []).filter(l => l.kind === "related_matter")) {
+    const other = own.has(l.matter_id) ? l.related_matter_id : l.matter_id;
+    if (Number.isSafeInteger(other) && other > 0 && !own.has(other) && !relatedLinks.has(other)) relatedLinks.set(other, l);
+  }
+  const relatedIds = [...relatedLinks.keys()];
+  const mentionIds = [...new Set((links || []).filter(l => l.kind === "mention" && own.has(l.matter_id)).map(l => l.agenda_item_id))];
   const selection = "id, matter_id, meeting_id, title, plain_english_summary, meta, meetings!inner(slug, id, meeting_date, title, municipality_id, organizations(name))";
   const [relatedResult, mentionsResult] = await Promise.all([
     relatedIds.length ? rows(() => supabase.from("matters")
-      .select("id, slug, title, status, first_seen, last_seen, meta, plain_english_summary")
+      .select("id, slug, title, identifier, status, first_seen, last_seen, meta, plain_english_summary")
       .in("id", relatedIds).eq("municipality_id", municipalityId).is("meta->>canonical_matter_id", null).order("id"))
       : Promise.resolve({ data: [] as any[], error: null }),
     mentionIds.length ? rows(() => supabase.from("agenda_items").select(selection).in("id", mentionIds)
@@ -332,12 +340,14 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
     .sort((a, b) => String(a.first_seen).localeCompare(String(b.first_seen)));
   // Links found by name carry the passage that names the matter, and say whether the item was about it
   // ("name") or only referred to it ("name_mention").
-  const linkFor = new Map((links || []).filter(l => l.kind === "mention" && l.matter_id === matterId).map(l => [l.agenda_item_id, l]));
+  const linkFor = new Map((links || []).filter(l => l.kind === "mention" && own.has(l.matter_id)).map(l => [l.agenda_item_id, l]));
   const mentions = (mentionsResult.data || []).map(item => {
     const link = linkFor.get(item.id);
     return { ...item, linkSource: link?.source ?? null, linkQuote: link?.quote ?? null };
   });
-  const verifiedIds = related.map(r => r.id);
+  // Only a related topic that is the same project lends its entries to the timeline; the rest stay in the list.
+  const ownIdentifiers = ((ownRows || []) as any[]).map((r) => r.identifier);
+  const verifiedIds = related.filter(r => showsInTimeline(relatedLinks.get(r.id), ownIdentifiers, r)).map(r => r.id);
   if (!verifiedIds.length) return { related, mentions, background: [] as any[], reports };
 
   // One hop only: a related matter's direct records/mentions are background,
@@ -353,7 +363,7 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
     .eq("meetings.municipality_id", municipalityId).order("id"));
   if (records.error) { console.error("Error fetching background records:", records.error); return { related, mentions, background: [] as any[], reports }; }
   const directIds = new Set(mentions.map(item => item.id));
-  const background = (records.data || []).filter(item => item.matter_id !== matterId && !directIds.has(item.id)).map(item => {
+  const background = (records.data || []).filter(item => !own.has(item.matter_id) && !directIds.has(item.id)).map(item => {
     const link = verifiedIds.includes(item.matter_id) ? null
       : (relatedMentions.data || []).find(link => link.agenda_item_id === item.id);
     const ownerId = link ? link.matter_id : item.matter_id;
