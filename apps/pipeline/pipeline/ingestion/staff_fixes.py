@@ -55,7 +55,8 @@ def refile_target(supabase, item_id: int) -> int | None:
     from pipeline.ingestion.topic_regroup import refile
 
     item = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data
-    results = refile(supabase, [{"item": item_id, "from": item.get("matter_id")}], dry_run=False, log=lambda *_: None)
+    # An approved move overrides an earlier staff placement: that placement is what's being corrected.
+    results = refile(supabase, [{"item": item_id, "from": item.get("matter_id"), "override_lock": True}], dry_run=False, log=lambda *_: None)
     target = results[0].get("to") if results else None
     return int(target) if isinstance(target, int) else None
 
@@ -114,6 +115,10 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
     for move in args.get("moves") or []:
         item_id, to = int(move["item_id"]), move.get("to_matter_id")
         try:
+            current = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data.get("matter_id")
+            if to is not None and int(to) == current:  # "move" onto the topic it's already on: re-file it instead
+                to = None
+                move = {**move, "refile": True}
             if move.get("refile") and to is None:
                 origin = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data.get("matter_id")
                 to = refile_target(supabase, item_id)
