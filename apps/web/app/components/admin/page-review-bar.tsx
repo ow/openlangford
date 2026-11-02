@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate, useRevalidator } from "react-router";
-import { ArrowRight, Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
+import { ArrowRight, Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, ThumbsDown, ThumbsUp, Undo2, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
@@ -420,11 +420,12 @@ export function PageReviewBar() {
             </button>
           ) : review?.status === "reviewed" ? (
             // Pressing it again undoes the review.
-            <button type="button" disabled={busy} onClick={() => submit("clear")} title="Reviewed. Click to undo."
+            <button type="button" disabled={busy} onClick={() => submit("clear")} title="Reviewed. Click to undo the review."
               className="group flex items-center gap-1.5 whitespace-nowrap rounded-full pr-1 text-emerald-700 hover:text-zinc-600">
-              {pending === "clear" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              <span className="group-hover:hidden">Reviewed<span className="hidden sm:inline"> {reviewTime(review.reviewed_at)}</span></span>
-              <span className="hidden group-hover:inline">Undo review</span>
+              {/* Only the icon changes on hover: swapping the text changed the button's width, so it flickered. */}
+              {pending === "clear" ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <><Check className="h-4 w-4 group-hover:hidden" /><Undo2 className="hidden h-4 w-4 group-hover:block" /></>}
+              <span>Reviewed<span className="hidden sm:inline"> {reviewTime(review.reviewed_at)}</span></span>
             </button>
           ) : review?.status === "needs_work" ? (
             <button type="button" onClick={() => setOpen(true)}
