@@ -205,8 +205,10 @@ export function PageReviewBar() {
                   <p className="whitespace-pre-line text-zinc-800">{review.agent_note}</p>
                   {review.status === "fixed" && (
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <button type="button" disabled={busy} onClick={markReviewed}
-                        className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-60">{spinner("reviewed")}Looks good</button>
+                      <button type="button" disabled={busy} onClick={() => (open_ > 0 ? submit("reviewed", { set_aside: "1" }) : markReviewed())}
+                        title={open_ > 0 ? `The agent couldn't finish ${open_} ${open_ === 1 ? "flag" : "flags"}; they're set aside as handled` : undefined}
+                        className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-60">
+                        {spinner("reviewed")}{open_ > 0 ? `Looks good, set aside the ${open_} left` : "Looks good"}</button>
                       <button type="button" disabled={busy} onClick={() => submit("needs_work")}
                         className="rounded-md px-2.5 py-1 font-medium text-amber-800 hover:bg-amber-100">{spinner("needs_work")}Still needs work</button>
                     </div>

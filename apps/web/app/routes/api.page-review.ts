@@ -105,6 +105,14 @@ export async function action({ request, context }: Route.ActionArgs) {
       await resolveFlags(supabase, path, { index }, user.id);
     } else if (intent === "clear") await clearPageReview(supabase, path);
     else if (intent === "reviewed") {
+      const current = await getPageReview(supabase, path);
+      // Confirming the agent's fix with flags it couldn't finish (waiting on records, say): staff set them aside.
+      if (form.get("set_aside") === "1" && current?.status === "fixed") {
+        const flags = current.ai_flags || [];
+        for (const [index, flag] of flags.entries()) {
+          if (unresolvedFlags([flag]).length) await resolveFlags(supabase, path, { index }, user.id);
+        }
+      }
       const open = unresolvedFlags((await getPageReview(supabase, path))?.ai_flags);
       if (open.length) {
         return bad(`${open.length} ${open.length === 1 ? "flag is" : "flags are"} still open. Rate each one, and fix or mark handled the ones you agree with.`);
