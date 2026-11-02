@@ -13,7 +13,7 @@ import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-type
  *   across versions.
  */
 
-export const CHECKED_PROBLEMS: FlagProblem[] = ["unclear_why", "generic_text", "different_story", "duplicate", "wrong_detail"];
+export const CHECKED_PROBLEMS: FlagProblem[] = ["unclear_why", "generic_text", "different_story", "duplicate", "wrong_detail", "unsupported"];
 const PER_VERDICT = 3;
 
 export type Example = { problem: FlagProblem; entry_text: string; reason: string; verdict: FlagVerdict; note?: string | null };

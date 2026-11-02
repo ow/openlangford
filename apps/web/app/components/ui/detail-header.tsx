@@ -12,7 +12,7 @@ interface DetailHeaderProps {
   badges?: ReactNode;
   /** Before the facts, on their line (a status badge that belongs with them). */
   metaLead?: ReactNode;
-  /** At the end of the facts' line (a compact follow button), pushed right when there's room. */
+  /** On the breadcrumb row, at the right (a compact follow button). */
   metaAction?: ReactNode;
   /** Right-aligned on desktop, below the title on mobile (source links, follow…). */
   actions?: ReactNode;
@@ -41,8 +41,10 @@ export function DetailHeader({
     <header className={cn("mb-8", className)}>
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
-          {back && (
-            <nav aria-label="Breadcrumb" className="mb-2 text-sm">
+          {(back || metaAction) && (
+            <div className="mb-2 flex items-center justify-between gap-3">
+            {back ? (
+            <nav aria-label="Breadcrumb" className="text-sm">
               <ol className="flex flex-wrap items-center gap-x-1.5 text-zinc-500">
                 <li>
                   <Link to="/" className="hover:text-brand-700">Home</Link>
@@ -55,6 +57,9 @@ export function DetailHeader({
                 </li>
               </ol>
             </nav>
+            ) : <span />}
+            {metaAction && <div className="shrink-0">{metaAction}</div>}
+            </div>
           )}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">
@@ -62,24 +67,19 @@ export function DetailHeader({
             </h1>
             {badges}
           </div>
-          {(metaLead || metaAction) ? (
-            // Status on the left and the follow button on the right of one row; the facts as a sentence below.
-            <div className="mt-3 space-y-1.5">
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">{metaLead}</div>
-                {metaAction && <div className="shrink-0">{metaAction}</div>}
-              </div>
-              {items.length > 0 && (
-                <p className="text-sm text-zinc-500">
-                  {items.map((item, i) => (
-                    <span key={i}>
-                      {i > 0 && <span aria-hidden="true" className="px-1.5 text-zinc-300">·</span>}
-                      {item}
-                    </span>
-                  ))}
-                </p>
-              )}
-            </div>
+          {metaLead ? (
+            // The status first, then the facts, wrapping as one sentence.
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm text-zinc-500">
+              {metaLead}
+              <span>
+                {items.map((item, i) => (
+                  <span key={i}>
+                    {i > 0 && <span aria-hidden="true" className="px-1.5 text-zinc-300">·</span>}
+                    {item}
+                  </span>
+                ))}
+              </span>
+            </p>
           ) : items.length > 0 && (
             <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
               {items.map((item, i) => (

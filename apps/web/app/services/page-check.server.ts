@@ -5,6 +5,7 @@ import { renderPage } from "../lib/page-render.server";
 import { reviewKind } from "./page-reviews.server";
 import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-types";
 import { approvedGuidance, examplesFor, recordExample } from "./review-learning.server";
+import { verifyAgainstRecords } from "./page-verify.server";
 
 /**
  * A reader's check of one public page: the page is rendered as a signed-out visitor sees it, and the model is
@@ -19,10 +20,11 @@ export const FLAG_PROBLEMS: Record<FlagProblem, string> = {
   different_story: "It's about a different property, permit, project or decision than this page.",
   duplicate: "It repeats another entry on the page.",
   wrong_detail: "A date, name, number or outcome contradicts the rest of the page.",
+  unsupported: "A statement the council's records don't back or contradict (found by checking against the records, not by reading).",
   editor_issue: "Something an editor wants changed (added by staff, never by the check).",
 };
 /** What the check itself may flag: everything except staff's own issues. */
-const CHECK_PROBLEMS = (Object.keys(FLAG_PROBLEMS) as FlagProblem[]).filter((p) => p !== "editor_issue");
+const CHECK_PROBLEMS = (Object.keys(FLAG_PROBLEMS) as FlagProblem[]).filter((p) => p !== "editor_issue" && p !== "unsupported");
 export type { FlagProblem, FlagVerdict, PageFlag };
 export type PageCheck = { path: string; flags: PageFlag[]; page_issue: string | null; summary: string; model: string; checked_at: string; entries: number };
 
@@ -133,19 +135,28 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
     examplesFor(supabase, kind, [page.heading, page.description, ...page.entries.map((e) => e.text), page.body].join("\n").slice(0, 6000)),
     approvedGuidance(supabase, kind),
   ]);
-  const result = await getAiClient().json({
-    stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
-    prompt: checkPrompt(page, examples, guidance.rules, kind),
-    schema: CheckSchema,
-    schemaName: "page_check",
-  });
+  // Two readings at once: as a resident (this prompt) and against the records behind the page (page-verify).
+  const [result, unsupported] = await Promise.all([
+    getAiClient().json({
+      stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
+      prompt: checkPrompt(page, examples, guidance.rules, kind),
+      schema: CheckSchema,
+      schemaName: "page_check",
+    }),
+    verifyAgainstRecords(supabase, path).catch((error) => {
+      console.error("[page-check] verifying against the records failed:", error instanceof Error ? error.message : error);
+      return [] as PageFlag[];
+    }),
+  ]);
   const byKey = new Map(page.entries.map(e => [e.key, e.text]));
   // What staff already decided on this page: a re-raised flag (same entry, same problem) keeps its rating;
   // rated flags the new check drops are kept as history, still teaching later checks.
   const { data: prior } = await supabase.from("page_reviews").select("ai_flags, ai_rated_history").eq("path", path).maybeSingle();
   const priorFlags = ((prior?.ai_flags || []) as PageFlag[]);
   const decidedFlag = (f: PageFlag) => f.verdict !== null || !!f.note;
-  const same = (a: PageFlag, b: { key: string | null; problem: string }) => a.key === b.key && a.problem === b.problem;
+  // The same flag: same entry and problem (and, for statements checked against the records, the same statement).
+  const same = (a: PageFlag, b: { key: string | null; problem: string; excerpt?: string }) =>
+    a.key === b.key && a.problem === b.problem && (a.problem !== "unsupported" || a.excerpt === b.excerpt);
   const flags: PageFlag[] = [
     ...result.data.flags
       .filter(f => f.key === null || byKey.has(f.key))
@@ -154,6 +165,10 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
         return { key: f.key, problem: f.problem, reason: f.reason, excerpt: (f.key && byKey.get(f.key)) || page.heading,
           verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
       }),
+    ...unsupported.map(f => {
+      const before = priorFlags.find(p => decidedFlag(p) && same(p, f));
+      return { ...f, verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
+    }),
     // Staff's own issues aren't the check's to drop.
     ...priorFlags.filter(p => p.problem === "editor_issue" && !p.fixed),
   ];

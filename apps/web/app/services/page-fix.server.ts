@@ -64,7 +64,9 @@ An item filed under this topic whose line is vague can get a new line (rewrite_e
 sentence of at most 140 characters saying what this step did for this topic, outcome first ("Council gave second and
 third reading to the rezoning for the 165-home Costin Avenue apartments"). Use only facts in its record below; no
 file numbers, bylaw numbers or jargon unless the record gives nothing else. Summaries of changed topics are rewritten
-automatically. When a related or same-named topic below is the very same project as this page (a duplicate, not
+automatically. A "Not backed by the record" problem quotes what the record says: fix it with rewrite_entry (a timeline
+line, its "agenda-" key) or rewrite_summary (the summary or "where it stands"), saying only what the record supports.
+When a related or same-named topic below is the very same project as this page (a duplicate, not
 just an earlier or later step), merge_topic with its id folds it into one page.
 ${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}A problem with the topic's summary or overall explanation (e.g. "say whether the 2023 agreement
 renews the 2021 one") gets rewrite_summary, with a short instruction for the summary writer in new_text; it will
