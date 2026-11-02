@@ -15,7 +15,9 @@ const DAYS = 30;
 export type DailyPoint = { day: string; value: number };
 
 export type SiteTraffic =
-  | { available: false; reason: "not_configured" | "error" }
+  | { available: false; reason: "not_configured" }
+  /** status is PostHog's HTTP status when it refused the request, null for timeouts and network errors. */
+  | { available: false; reason: "error"; status: number | null }
   | {
       available: true;
       visitors: DailyPoint[];
@@ -30,6 +32,12 @@ export type SiteTraffic =
 
 let cached: { key: string; at: number; value: Promise<SiteTraffic> } | null = null;
 
+class PostHogError extends Error {
+  constructor(readonly status: number) {
+    super(`PostHog query failed (${status})`);
+  }
+}
+
 async function hogql(projectId: string, apiKey: string, query: string): Promise<any[][]> {
   const response = await fetch(`${POSTHOG_APP_HOST}/api/projects/${encodeURIComponent(projectId)}/query/`, {
     method: "POST",
@@ -37,7 +45,7 @@ async function hogql(projectId: string, apiKey: string, query: string): Promise<
     body: JSON.stringify({ query: { kind: "HogQLQuery", query } }),
     signal: AbortSignal.timeout(6000),
   });
-  if (!response.ok) throw new Error(`PostHog query failed (${response.status})`);
+  if (!response.ok) throw new PostHogError(response.status);
   const body = (await response.json()) as { results?: any[][] };
   return body.results ?? [];
 }
@@ -78,7 +86,7 @@ async function readTraffic(projectId: string, apiKey: string): Promise<SiteTraff
     };
   } catch (error) {
     console.error("Site traffic unavailable:", error instanceof Error ? error.message : "unknown error");
-    return { available: false, reason: "error" };
+    return { available: false, reason: "error", status: error instanceof PostHogError ? error.status : null };
   }
 }
 

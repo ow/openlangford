@@ -92,6 +92,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
   const busy = groups.flatMap((g) => g.links).filter((t) => t.status?.tone === "waiting" || t.status?.tone === "urgent").length;
   const traffic = data.traffic.available ? data.traffic : null;
   const trafficReason = data.traffic.available ? null : data.traffic.reason;
+  const trafficShort = trafficReason === "error" ? "PostHog didn't answer" : "PostHog not connected";
   const signups = data.audience?.signups ?? [];
   const alertsAdded = data.audience?.alertsAdded ?? [];
   const questions = data.questions ?? [];
@@ -111,13 +112,13 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
           <Stat
             label="Visitors"
             value={traffic ? n(traffic.visitors7) : "—"}
-            detail={traffic ? change(traffic.visitors7, traffic.visitorsPrev7) : trafficReason === "error" ? "PostHog didn't answer" : "PostHog not connected"}
+            detail={traffic ? change(traffic.visitors7, traffic.visitorsPrev7) : trafficShort}
             series={traffic?.visitors}
           />
           <Stat
             label="Page views"
             value={traffic ? n(traffic.views7) : "—"}
-            detail={traffic ? change(traffic.views7, traffic.viewsPrev7) : "PostHog not connected"}
+            detail={traffic ? change(traffic.views7, traffic.viewsPrev7) : trafficShort}
             series={traffic?.views}
           />
           <Stat
@@ -150,7 +151,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
 
           <div className="min-w-0 space-y-6 lg:col-start-1 lg:row-span-2 lg:row-start-1">
             <Panel title="Visitors" subtitle="People per day, last 30 days">
-              {traffic ? <AreaChart data={traffic.visitors} unit="visitors" label="Visitors per day" /> : <TrafficSetup reason={trafficReason ?? "not_configured"} />}
+              {traffic ? <AreaChart data={traffic.visitors} unit="visitors" label="Visitors per day" /> : <TrafficSetup traffic={data.traffic} />}
             </Panel>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -295,11 +296,20 @@ function Empty({ children }: { children: ReactNode }) {
   return <p className="text-sm text-zinc-500">{children}</p>;
 }
 
-function TrafficSetup({ reason }: { reason: "not_configured" | "error" }) {
+function postHogProblem(status: number | null) {
+  if (status === 401) return "PostHog didn't accept the key. Set POSTHOG_PERSONAL_API_KEY again; it may be empty or mistyped.";
+  if (status === 403) return "The key can't run queries on this project. Give it Query: read on the Open Langford project.";
+  if (status === 404) return "PostHog can't find the project. Check POSTHOG_PROJECT_ID in wrangler.toml.";
+  if (status) return `PostHog returned an error (${status}). Visitors will show again once it answers.`;
+  return "PostHog didn't answer in time. Visitors will show again on the next load.";
+}
+
+function TrafficSetup({ traffic }: { traffic: AdminOverview["traffic"] }) {
+  const reason = traffic.available ? "not_configured" : traffic.reason;
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-8 border-zinc-300 bg-zinc-50 px-6 text-center text-sm text-zinc-600">
       {reason === "error" ? (
-        <p>PostHog didn't answer. Visitors will show again on the next load.</p>
+        <p className="max-w-md">{postHogProblem(!traffic.available && traffic.reason === "error" ? traffic.status : null)}</p>
       ) : (
         <p className="max-w-md">
           Visitor numbers come from PostHog. Set the Worker secret <code className="text-xs">POSTHOG_PERSONAL_API_KEY</code> (a
