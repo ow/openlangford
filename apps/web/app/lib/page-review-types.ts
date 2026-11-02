@@ -12,5 +12,23 @@ export type PageReview = {
   reviewed_at: string | null;
   ai_flags: PageFlag[] | null;
   ai_page_issue: string | null;
+  ai_summary: string | null;
+  ai_entries: number | null;
   ai_checked_at: string | null;
 };
+
+/** What a check looks for, shown in the review bar so a clean result says what was ruled out. */
+export const FLAG_PROBLEM_LABELS: Record<FlagProblem, string> = {
+  unclear_why: "Unclear why it's here",
+  generic_text: "Generic text",
+  different_story: "Different story",
+  duplicate: "Duplicate",
+  wrong_detail: "Contradicts the page",
+};
+
+/** "Nov 1, 6:09 PM" from a stored timestamp. */
+export function reviewTime(iso: string | null | undefined) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+}

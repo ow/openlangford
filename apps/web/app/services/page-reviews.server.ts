@@ -4,7 +4,7 @@ import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap
 
 export type { PageReview, PageReviewStatus } from "../lib/page-review-types";
 
-const COLUMNS = "path, kind, title, status, note, reviewed_at, ai_flags, ai_page_issue, ai_checked_at";
+const COLUMNS = "path, kind, title, status, note, reviewed_at, ai_flags, ai_page_issue, ai_summary, ai_entries, ai_checked_at";
 
 /** The page a review is about: its path alone, no query string or trailing slash ("/matters/x"). */
 export function reviewPath(value: string | null | undefined): string | null {

@@ -17,10 +17,10 @@ export const FLAG_PROBLEMS: Record<FlagProblem, string> = {
   generic_text: "The text is generic (\"Public hearings were held\") and says nothing about this page's subject.",
   different_story: "It's about a different property, permit, project or decision than this page.",
   duplicate: "It repeats another entry on the page.",
-  wrong_detail: "A date, name, number or outcome looks wrong or contradicts the rest of the page.",
+  wrong_detail: "A date, name, number or outcome contradicts the rest of the page.",
 };
 export type { FlagProblem, FlagVerdict, PageFlag };
-export type PageCheck = { path: string; flags: PageFlag[]; page_issue: string | null; model: string; checked_at: string; entries: number };
+export type PageCheck = { path: string; flags: PageFlag[]; page_issue: string | null; summary: string; model: string; checked_at: string; entries: number };
 
 export type PageEntry = { key: string; text: string };
 export type ReadPage = { title: string; heading: string; description: string; entries: PageEntry[]; body: string };
@@ -57,6 +57,7 @@ export function readPage(html: string): ReadPage {
 }
 
 const CheckSchema = z.object({
+  summary: z.string().describe("Two plain sentences for the editor: what this page is about, and whether its entries hang together as one story (name any weak spots even if not worth a flag)."),
   page_issue: z.string().nullable().describe("A problem with the page as a whole (e.g. it lumps unrelated subjects together), or null."),
   flags: z.array(z.object({
     key: z.string().nullable().describe("The entry's key exactly as given, or null for a problem outside the entries."),
@@ -121,10 +122,11 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const checked_at = new Date().toISOString();
   const { error } = await supabase.from("page_reviews").upsert({
     path, kind: reviewKind(path), title: page.heading || page.title || null,
-    ai_flags: flags, ai_page_issue: result.data.page_issue, ai_model: result.model, ai_checked_at: checked_at,
+    ai_flags: flags, ai_page_issue: result.data.page_issue, ai_summary: result.data.summary,
+    ai_entries: page.entries.length, ai_model: result.model, ai_checked_at: checked_at,
   }, { onConflict: "path" });
   if (error) throw new Error("Could not save the page check.");
-  return { path, flags, page_issue: result.data.page_issue, model: result.model, checked_at, entries: page.entries.length };
+  return { path, flags, page_issue: result.data.page_issue, summary: result.data.summary, model: result.model, checked_at, entries: page.entries.length };
 }
 
 /** An admin's verdict on one flag (by its position in the stored list); null clears it. */

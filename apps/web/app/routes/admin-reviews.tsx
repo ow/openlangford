@@ -5,7 +5,8 @@ import { requireModerator } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
-import { cn, formatDate } from "../lib/utils";
+import { cn } from "../lib/utils";
+import { reviewTime } from "../lib/page-review-types";
 import { listPageReviews, reviewCoverage, type ReviewFilter } from "../services/page-reviews.server";
 import { randomUncheckedMatterPath } from "../services/page-check.server";
 
@@ -101,7 +102,7 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
                     <span className="shrink-0 text-xs font-medium">
                       {r.status && (
                         <span className={r.status === "reviewed" ? "text-emerald-700" : "text-amber-700"}>
-                          {r.status === "reviewed" ? "Reviewed" : "Needs work"}{r.reviewed_at ? ` · ${formatDate(r.reviewed_at)}` : ""}
+                          {r.status === "reviewed" ? "Reviewed" : "Needs work"}{r.reviewed_at ? ` · ${reviewTime(r.reviewed_at)}` : ""}
                         </span>
                       )}
                       {r.ai_checked_at && (
@@ -115,6 +116,7 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
                   </div>
                   <p className="truncate text-xs text-zinc-500">{r.path}</p>
                   {r.ai_page_issue && <p className="mt-1 text-sm text-amber-800">Whole page: {r.ai_page_issue}</p>}
+                  {r.ai_summary && <p className="mt-1 text-sm text-zinc-600">{r.ai_summary}</p>}
                   {r.note && <p className="mt-1 whitespace-pre-line text-sm text-zinc-700">{r.note}</p>}
                 </li>
               );
