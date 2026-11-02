@@ -73,10 +73,10 @@ type Example = { problem: FlagProblem; reason: string; excerpt: string; verdict:
 
 /** The most recent rated flags from any page: what the admin agreed was a problem, and what wasn't. */
 export async function calibrationExamples(supabase: SupabaseClient, limit = 12): Promise<Example[]> {
-  const { data } = await supabase.from("page_reviews").select("ai_flags").not("ai_flags", "is", null)
+  const { data } = await supabase.from("page_reviews").select("ai_flags, ai_rated_history").not("ai_flags", "is", null)
     .order("ai_checked_at", { ascending: false }).limit(200);
-  const rated = ((data || []) as { ai_flags: PageFlag[] | null }[])
-    .flatMap(row => (row.ai_flags || []).filter(f => f.verdict))
+  const rated = ((data || []) as { ai_flags: PageFlag[] | null; ai_rated_history: PageFlag[] | null }[])
+    .flatMap(row => [...(row.ai_flags || []), ...(row.ai_rated_history || [])].filter(f => f.verdict && f.problem !== "editor_issue"))
     .map(f => ({ problem: f.problem, reason: f.reason, excerpt: f.excerpt.slice(0, 220), verdict: f.verdict! }));
   const agree = rated.filter(f => f.verdict === "agree").slice(0, limit);
   const disagree = rated.filter(f => f.verdict === "disagree").slice(0, limit);
@@ -119,13 +119,29 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
     schemaName: "page_check",
   });
   const byKey = new Map(page.entries.map(e => [e.key, e.text]));
-  const flags: PageFlag[] = result.data.flags
-    .filter(f => f.key === null || byKey.has(f.key))
-    .map(f => ({ key: f.key, problem: f.problem, reason: f.reason, excerpt: (f.key && byKey.get(f.key)) || page.heading, verdict: null }));
+  // What staff already decided on this page: a re-raised flag (same entry, same problem) keeps its rating;
+  // rated flags the new check drops are kept as history, still teaching later checks.
+  const { data: prior } = await supabase.from("page_reviews").select("ai_flags, ai_rated_history").eq("path", path).maybeSingle();
+  const priorFlags = ((prior?.ai_flags || []) as PageFlag[]);
+  const decidedFlag = (f: PageFlag) => f.verdict !== null || !!f.note;
+  const same = (a: PageFlag, b: { key: string | null; problem: string }) => a.key === b.key && a.problem === b.problem;
+  const flags: PageFlag[] = [
+    ...result.data.flags
+      .filter(f => f.key === null || byKey.has(f.key))
+      .map(f => {
+        const before = priorFlags.find(p => decidedFlag(p) && same(p, f));
+        return { key: f.key, problem: f.problem, reason: f.reason, excerpt: (f.key && byKey.get(f.key)) || page.heading,
+          verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
+      }),
+    // Staff's own issues aren't the check's to drop.
+    ...priorFlags.filter(p => p.problem === "editor_issue" && !p.fixed),
+  ];
+  const dropped = priorFlags.filter(p => decidedFlag(p) && p.problem !== "editor_issue" && !flags.some(f => same(f, p)));
+  const history = [...((prior?.ai_rated_history || []) as PageFlag[]), ...dropped].slice(-50);
   const checked_at = new Date().toISOString();
   const { error } = await supabase.from("page_reviews").upsert({
     path, kind: reviewKind(path), title: page.heading || page.title || null,
-    ai_flags: flags, ai_page_issue: result.data.page_issue, ai_summary: result.data.summary,
+    ai_flags: flags, ai_rated_history: history, ai_page_issue: result.data.page_issue, ai_summary: result.data.summary,
     ai_entries: page.entries.length, ai_model: result.model, ai_checked_at: checked_at,
   }, { onConflict: "path" });
   if (error) throw new Error("Could not save the page check.");
