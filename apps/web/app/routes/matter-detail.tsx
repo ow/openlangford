@@ -460,8 +460,10 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       .values(),
   );
 
+  // Entries staff hid as repeats of another entry (meta.hidden_duplicates) stay on the topic but not in its timeline.
+  const hiddenDuplicates = (matter.meta?.hidden_duplicates || {}) as Record<string, unknown>;
   const timelineEntries = [
-    ...timeline.map((item) => ({
+    ...timeline.filter((item) => !hiddenDuplicates[String(item.id)]).map((item) => ({
       kind: "primary" as const,
       key: `agenda-${item.id}`,
       date: item.meetings.meeting_date,

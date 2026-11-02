@@ -28,8 +28,10 @@ import type { StaffRole } from "../lib/auth.server";
 
 const PlanSchema = z.object({
   actions: z.array(z.object({
-    action: z.enum(["remove_entry", "move_item", "unfile_item", "rewrite_entry", "rewrite_heading", "rewrite_summary", "merge_topic", "cannot_fix"]),
+    action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
+      "rewrite_summary", "merge_topic", "waiting_on_records", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
+    keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
     source: z.string().nullable().describe("rewrite_summary / rewrite_entry / rewrite_heading: the record's own words that support the change, quoted exactly from the records above. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null otherwise."),
@@ -91,6 +93,13 @@ What you can do:
   are filed (onto the topic for its own address or permit, or a new one), never back here.
 - unfile_item: only for an "agenda-" item that isn't a topic of its own at all (a section heading, a one-off courtesy item).
 ${movable || "(No flagged items to move.)"}
+- hide_duplicate: an "agenda-" entry that repeats another entry on this page (the same step recorded twice, e.g. a staff
+  report and the bylaw readings at one meeting): give keep_key, the entry that stays. It is hidden from the timeline,
+  not deleted, and stays part of the topic.
+- file_here: a "mention-" entry that is really one of this topic's own steps (e.g. the bylaw's adoption shown only as
+  "Also discussed"). It becomes part of this topic's own history, so the summary can rely on it. Only when the item
+  isn't filed on another topic; if it is, that other topic is probably the same project (merge_topic) or this page
+  holds items that belong there (move_item).
 - rewrite_entry: a new line for any entry ("agenda-", "mention-", "background-", "report-"): one plain sentence of at most
   140 characters saying what this step did for this topic, outcome first ("Council gave second and third reading to the
   rezoning for the 165-home Costin Avenue apartments"). Use only facts in the records below; no file numbers, bylaw
@@ -104,8 +113,10 @@ Every rewrite (entry, heading or summary) puts the records' own words it rests o
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
-which record and which date disagree. Use cannot_fix only when none of these actions can make the page right, and say
-precisely what is wrong and where, not "a person should look".
+which record and which date disagree. When the fix needs a fact the records above don't contain (a motion's text, a
+report's details), say waiting_on_records and name the missing record: those are being recovered and the fix can be
+redone then. Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what
+is wrong and where, not "a person should look".
 
 For each agreed problem (and anything the note asks), give one action. Don't change anything the editor didn't
 agree with or ask for.
@@ -183,10 +194,45 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const rewrites: Record<string, string> = {};
     const lines: Record<string, { line?: string; heading?: string; source?: string }> = {};
     const summaryNotes: string[] = [];
+    const waiting: string[] = [];
+    const hidden: Record<string, { keep: number; reason: string; by: string; at: string }> = {};
     const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim().slice(0, 600);
     for (const step of result.data.actions) {
       if (step.action === "merge_topic" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id)) {
         merges.push({ with_matter_id: step.to_matter_id, reason: step.reason });
+        continue;
+      }
+      if (step.action === "waiting_on_records") {
+        waiting.push(step.reason);
+        continue;
+      }
+      if (step.action === "hide_duplicate" && step.key?.startsWith("agenda-") && onPage.has(step.key)
+          && step.keep_key?.startsWith("agenda-") && onPage.has(step.keep_key) && step.keep_key !== step.key) {
+        const { data: pair } = await supabase.from("agenda_items").select("id, meeting_id, item_order, title")
+          .in("id", [itemId(step.key), itemId(step.keep_key)]);
+        const [a, b] = (pair || []) as any[];
+        const sameTitle = (x: any, y: any) => String(x?.title || "").split("\n")[0].toLowerCase().replace(/\W+/g, " ").trim()
+          === String(y?.title || "").split("\n")[0].toLowerCase().replace(/\W+/g, " ").trim();
+        if (a && b && a.meeting_id === b.meeting_id && (a.item_order === b.item_order || sameTitle(a, b))) {
+          // One agenda record stored twice: that is merged with the agenda duplicate repair, not hidden.
+          left.push(`${step.reason} (items ${itemId(step.key)} and ${itemId(step.keep_key)} are the same agenda record stored twice; merge them with research/data-integrity/merge_agenda_duplicates_20261030.py --map ${itemId(step.key)}:${itemId(step.keep_key)})`);
+        } else {
+          hidden[String(itemId(step.key))] = { keep: itemId(step.keep_key), reason: step.reason.slice(0, 300), by: requester.id, at: new Date().toISOString() };
+          fixedKeys.add(step.key);
+          done.push(step.reason);
+        }
+        continue;
+      }
+      if (step.action === "file_here" && step.key?.startsWith("mention-") && onPage.has(step.key)) {
+        const { data: item } = await supabase.from("agenda_items").select("matter_id, meta").eq("id", itemId(step.key)).maybeSingle();
+        const lock = (item?.meta as any)?.staff_matter;
+        if (!item) left.push(`${step.reason} (that item couldn't be found)`);
+        else if (lock && "matter_id" in lock && lock.matter_id !== matterId) left.push(`${step.reason} (an editor placed that item ${lock.matter_id ? `on topic ${lock.matter_id}` : "off every topic"}, so it stays there)`);
+        else if (item.matter_id && item.matter_id !== matterId) left.push(`${step.reason} (that item is filed on topic ${item.matter_id}; if that topic is the same project, merge it, otherwise it stays there)`);
+        else {
+          moves.push({ item_id: itemId(step.key), to_matter_id: matterId, reason: step.reason });
+          fixedKeys.add(step.key);
+        }
         continue;
       }
       if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
@@ -200,7 +246,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         const text = (step.new_text || "").replace(/\s+/g, " ").trim();
         const heading = step.action === "rewrite_heading";
         if (!quoteOf(step)) {
-          left.push(`${step.reason} (no record was quoted to support the new wording, so nothing changed)`);
+          waiting.push(`${step.reason} (no record says it yet, so nothing changed)`);
         } else if (text.length < (heading ? 6 : 15) || text.length > (heading ? 120 : 180) || (heading && step.key.startsWith("agenda-"))) {
           left.push(`${step.reason} (the new ${heading ? "heading" : "line"} wasn't usable, so nothing changed)`);
         } else {
@@ -287,6 +333,15 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
             ...Object.fromEntries(Object.entries(lines).map(([key, v]) => [key, [v.heading, v.line].filter(Boolean).join(" | ")])) } });
       }
     }
+    if (Object.keys(hidden).length) {
+      // Reversible: the item stays on the topic; the page leaves it out of the timeline as a repeat of the kept entry.
+      const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+      const meta = (matter?.meta || {}) as Record<string, any>;
+      await supabase.from("matters").update({ meta: { ...meta, hidden_duplicates: { ...(meta.hidden_duplicates || {}), ...hidden } } })
+        .eq("id", matterId);
+      await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:hide_duplicate",
+        detail: Object.fromEntries(Object.entries(hidden).map(([id, h]) => [`item ${id}`, `kept item ${h.keep}`])) });
+    }
     if (summaryNotes.length) {
       // Kept on the topic: every later summary rewrite follows them too (pipeline matter_summaries).
       const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
@@ -305,7 +360,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
       const { error } = await supabase.from("pipeline_jobs").insert({
         municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1,
-        args: { path, moves, merges: merges.map((m) => ({ ...m, matter_id: matterId })), refresh: [matterId], done, left,
+        args: { path, moves, merges: merges.map((m) => ({ ...m, matter_id: matterId })), refresh: [matterId], done, left, waiting,
           summary_notes: summaryNotes.map((note) => ({ matter_id: matterId, note })),
           requested_by: requester.id, role: requester.staffRole },
       });
@@ -322,6 +377,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     }
     const note = [
       done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : "Changed nothing.",
+      waiting.length ? `Waiting on records (being recovered; the fix can be redone then):\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
     ].filter(Boolean).join("\n\n");
     await finish(done.length ? "fixed" : "needs_work", note, updated);

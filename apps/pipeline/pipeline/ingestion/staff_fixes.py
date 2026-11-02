@@ -157,8 +157,10 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
     flags = [{**f, "fixed": True} if f.get("key") in fixed_keys else f for f in flags]
     if unfollowed:  # a whole-page problem isn't fixed until its summary instruction is followed
         flags = [{**f, "fixed": False} if not f.get("key") and f.get("verdict") == "agree" else f for f in flags]
+    waiting: list[str] = list(args.get("waiting") or [])
     note = "\n\n".join(p for p in [
         "Changed:\n" + "\n".join(f"• {d}" for d in done) if done else "Changed nothing.",
+        "Waiting on records (being recovered; the fix can be redone then):\n" + "\n".join(f"• {d}" for d in waiting) if waiting else "",
         "Needs a person:\n" + "\n".join(f"• {d}" for d in left) if left else "",
     ] if p)
     supabase.table("page_reviews").update({
