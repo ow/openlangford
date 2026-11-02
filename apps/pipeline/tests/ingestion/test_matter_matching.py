@@ -57,3 +57,13 @@ def test_amendment_bylaws_keep_their_own_identity():
     assert identifying_identifier("Zoning Bylaw No. 300") is None
     matcher = _matcher({"id": 9, "title": "957 Walfred Road rezoning", "identifier": "Bylaw No. 1927; Zoning Bylaw No. 300"})
     assert matcher.find_match("Bylaw No. 1927", title)[0] == 9
+
+
+def test_regroup_finds_topics_spanning_unrelated_streets():
+    from pipeline.ingestion.topic_regroup import street_groups
+
+    entries = [{"id": 1, "addresses": ["927 Lobo Vale", "3467 Happy Valley Road"]},
+               {"id": 2, "addresses": ["3467 Happy Valley Rd"]},
+               {"id": 3, "addresses": ["2585 Selwyn Road"]},
+               {"id": 4, "addresses": []}]
+    assert sorted(map(sorted, street_groups(entries))) == [[1, 2], [3]]
