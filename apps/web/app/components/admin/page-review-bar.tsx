@@ -50,6 +50,9 @@ function useHighlights(flags: PageFlag[], on: boolean, changed = false) {
   }, [flags, on, changed]);
 }
 
+/** A suggestion's internal key ("suggestion-L37015") reads as "the suggested entry". */
+const plainKeys = (text: string) => text.replace(/\b(?:add\s+)?suggestion-[LR]\d+\b/gi, (m) => (m.toLowerCase().startsWith("add") ? "add the suggested entry" : "the suggested entry"));
+
 function readWhat(review: PageReview) {
   const n = review.ai_entries ?? 0;
   return n > 0 ? `the title, summary and ${n} timeline ${n === 1 ? "entry" : "entries"}` : "the page's text";
@@ -70,6 +73,8 @@ export function PageReviewBar() {
   const finishing = useRef(false);
   const [fixedRun, setFixedRun] = useState(false);  // this page came up as fixed by the agent, to confirm
   const [stayed, setStayed] = useState(false);  // a fix was sent or confirmed here: offer Next instead of moving on
+  const [showCheck, setShowCheck] = useState(false);  // unfold the check's details while the agent's report is shown
+  const panel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setEditing(null);
@@ -78,6 +83,7 @@ export function PageReviewBar() {
     setConfirming(null);
     setFixedRun(false);
     setStayed(false);
+    setShowCheck(false);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -120,6 +126,11 @@ export function PageReviewBar() {
   const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length + suggestions.filter((x) => x.agreed).length;
   useHighlights(flags, open, review?.status === "fixed" || (stayed && review?.status === "reviewed"));
   const fixing = review?.status === "fixing";
+  const agentMode = fixing || review?.status === "fixed";
+  // Fix pressed (or the agent finished): show its report from the top.
+  useEffect(() => {
+    if (agentMode) { setShowCheck(false); panel.current?.scrollTo({ top: 0, behavior: "smooth" }); }
+  }, [agentMode]);
   // When the agent finishes while you're on the page, reload the page's own content so its edits show (outlined).
   const revalidator = useRevalidator();
   const lastStatus = useRef<string | null | undefined>(undefined);
@@ -171,7 +182,7 @@ export function PageReviewBar() {
   return (
     <div className="fixed bottom-4 left-4 right-4 z-40 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
       {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
-        <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-dashed border-amber-400 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
+        <div ref={panel} className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-dashed border-amber-400 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
               <div className="font-semibold text-zinc-900">
@@ -220,6 +231,14 @@ export function PageReviewBar() {
                   )}
                 </div>
               )}
+              {/* While the agent works, or waits for its fix to be confirmed, its report is what matters: the check's
+                  details fold away behind a link. */}
+              {agentMode && !showCheck ? (
+                <button type="button" onClick={() => setShowCheck(true)} className="mb-3 text-xs font-medium text-brand-700 hover:underline">
+                  Show what the check found
+                </button>
+              ) : (
+                <>
               {(review?.ai_summary || review?.ai_checked_at) && (
                 <div className="mb-3 flex items-start gap-2">
                   {review?.ai_summary && <p className="min-w-0 flex-1 leading-relaxed text-zinc-700">{review.ai_summary}</p>}
@@ -244,8 +263,8 @@ export function PageReviewBar() {
                   </div>
                 </form>
               )}
-              {review?.ai_page_issue && (
-                <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-amber-900">Whole page: {review.ai_page_issue}</p>
+              {review?.ai_page_issue && !(review.agent_at && review.ai_checked_at && review.agent_at > review.ai_checked_at) && (
+                <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-amber-900">Whole page: {plainKeys(review.ai_page_issue)}</p>
               )}
               {flags.length > 0 && (
                 <ol className="mb-3 space-y-2">
@@ -254,7 +273,7 @@ export function PageReviewBar() {
                       <div className="flex items-start justify-between gap-2">
                         <a href={flag.key ? `#timeline-${flag.key}` : undefined} className="min-w-0">
                           <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">{FLAG_PROBLEM_LABELS[flag.problem]}</span>
-                          <p className="text-zinc-800">{flag.reason}</p>
+                          <p className="text-zinc-800">{plainKeys(flag.reason)}</p>
                           {flag.fix && !flag.fixed && flag.problem !== "editor_issue" && (
                             <p className="mt-1 rounded-md bg-brand-50 px-2 py-1 text-xs text-brand-900">
                               <span className="font-semibold">Suggested fix:</span> {flag.fix}
@@ -394,6 +413,8 @@ export function PageReviewBar() {
                 </p>
               )}
                 </div>
+              )}
+                </>
               )}
               {save.data?.message && save.state === "idle" && <p className="mb-3 rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-700">{save.data.message}</p>}
               {links && !links.hidden && (
