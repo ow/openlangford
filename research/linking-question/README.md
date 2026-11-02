@@ -27,3 +27,11 @@ Disagreements at the 0.85 bar got a third opinion from gpt-6.1-terra.
 The main linking publishes few wrong links but misses real ones. Better levers than rewording the question:
 staff "Find missing" (Terra suggestions, a person decides), possibly in bulk; or loosening the second check for
 items that share a file number or civic address with the topic's own items.
+
+## Follow-up: skipping the second check on strong evidence
+
+Rule tested on the 200 turned-down candidates: keep a link without the second check when the item's own title
+names the topic's permit/file number or one of its civic addresses. It rescued 42, all by address; Terra: 14
+belong, 10 mention, 18 unrelated (different applications on the same property, e.g. Western Speedway's licensed
+area vs an OCP amendment at 2207 Millstream Road). Shipped only the permit-number half (same application number =
+same application); address matches still go through the check.
