@@ -61,6 +61,37 @@ def refile_target(supabase, item_id: int) -> int | None:
     return int(target) if isinstance(target, int) else None
 
 
+class _DirectEdit(BaseModel):
+    summary: str = Field(description="The topic's summary with the instruction applied; unchanged if it doesn't concern the summary.")
+    status_line: str = Field(description="The 'where it stands' line with the instruction applied; unchanged if it doesn't concern it.")
+
+
+def direct_edit(supabase, matter_id: int, notes: list[str]) -> bool:
+    """Last step when the summary writer won't follow an approved instruction: edit the current summary and status
+    line directly, using only the instruction and the record's words it quotes. Kept as meta.staff_text, which later
+    rewrites keep until the topic gains a step of its own (then the writer takes over again). True when saved."""
+    from pipeline import ai
+
+    m = supabase.table("matters").select("plain_english_summary, meta").eq("id", matter_id).single().execute().data
+    meta = m.get("meta") or {}
+    try:
+        edit = ai.json("Apply these approved instructions to a topic page on a site that follows a city council. Change only "
+                       "what they ask; keep everything else, and use only facts the instructions or their quoted records "
+                       f"give.\n\nInstructions:\n" + "\n".join(f"- {n}" for n in notes)
+                       + f"\n\nCurrent summary: {m.get('plain_english_summary') or ''}\nCurrent where it stands: {meta.get('status_line') or ''}",
+                       stage="review", schema=_DirectEdit)
+    except Exception as exc:
+        print(f"  [fix_page] direct edit failed: {exc}")
+        return False
+    owned = [r["id"] for r in supabase.table("agenda_items").select("id").eq("matter_id", matter_id).execute().data or []]
+    staff_text = {"summary": edit.summary.strip(), "status_line": edit.status_line.strip(), "items": sorted(owned),
+                  "notes": notes, "at": datetime.now(timezone.utc).isoformat()}
+    supabase.table("matters").update({"plain_english_summary": staff_text["summary"] or m.get("plain_english_summary"),
+                                      "meta": {**meta, "status_line": staff_text["status_line"] or meta.get("status_line"),
+                                               "staff_text": staff_text}}).eq("id", matter_id).execute()
+    return True
+
+
 class _NoteCheck(BaseModel):
     followed: bool = Field(description="True when the summary or status says what the instruction asks (or leaves out what it says to leave out).")
     missing: str = Field(description="When not followed, what the summary still needs, in one plain sentence; empty otherwise.")
@@ -175,6 +206,11 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
             if asks:
                 supabase.table("matters").update({"meta": {**meta, "editor_notes": [*(meta.get("editor_notes") or []), *asks][-10:]}}).eq("id", matter_id).execute()
         refresh_matter_summaries(supabase, retry)
+        unfollowed = check_summary_notes(supabase, [{"matter_id": u["matter_id"], "note": u["note"]} for u in unfollowed])
+    if unfollowed:  # the writer still won't: the agent edits the text itself, checked the same way
+        for matter_id in sorted({u["matter_id"] for u in unfollowed}):
+            if direct_edit(supabase, matter_id, [u["note"] for u in unfollowed if u["matter_id"] == matter_id]):
+                done.append("Edited the summary directly, since the summary writer didn't follow the instruction.")
         unfollowed = check_summary_notes(supabase, [{"matter_id": u["matter_id"], "note": u["note"]} for u in unfollowed])
     for u in unfollowed:
         note = u["note"]

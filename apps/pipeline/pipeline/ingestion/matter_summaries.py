@@ -50,6 +50,9 @@ Return for each matter:
 - "display_title": a short, plain title (max 8 words) naming the thing itself, e.g. "Solid waste collection bylaw", "854 Latoria Road rezoning". No reading stages, no "(Background report attached)", no years unless essential. Keep a street address when the matter is about a property.
 - "summary": 2-3 sentences, max 60 words, saying what the matter actually is and why it matters to residents. Be concrete and lead with the substance: for a development, what would be built (use, units, storeys, tenure) and where; for a bylaw or program, what changes for residents, what it costs them, and why the city is doing it. No bylaw numbers, no "Council" as the opening word, no jargon. Do not mention readings, approval or status here; that belongs in status_line.
 - "status_line": max 18 words on where it stands now: the latest step and its date (e.g. "Third reading given Sep 28, 2026; final adoption still to come."). Use the dates provided.
+  When "history" is empty and only "mentions" exist, say where it last came up, as discussion, not a decision
+  (e.g. "Draft presented to Council Apr 7, 2026; BC Transit is updating the plan."). Never say that history,
+  records or a latest step are missing or not provided: that describes this site's data, not the matter.
 - "timeline": for each history entry, {{"item": <its item id>, "headline": "<max 12 words>"}} — a plain-English headline for that step that says what happened, e.g. "Staff propose city-run curbside garbage and organics pickup" or "Third reading for 120-unit rental building". No agenda numbering, no "(Background report attached)".
 - "category": exactly one of {", ".join(TOPICS)}.
 - "status": exactly one of {", ".join(STATUSES)}. Adopted = bylaw finally adopted; Approved = non-bylaw item approved; Defeated/Withdrawn when the latest decision says so; Completed = received for information or finished with nothing pending; otherwise Active.
@@ -327,8 +330,22 @@ def _generate(batch: list[dict], *, context_only: bool = False) -> dict[int, dic
                 for t in fields.get("timeline") or []
                 if isinstance(t, dict) and t.get("item") in matter["_owned_item_ids"] and (t.get("headline") or "").strip()
             }
+        elif not matter["history"] and not superseded:
+            # Nothing filed on it, only mentions: where it last came up, as discussion (the decision pass sees no
+            # mentions, so its line would only say the history is empty). Without mentions either, no line at all;
+            # before, the old line was simply kept, whatever it said.
+            line = ((descriptions.get(matter["id"]) or {}).get("status_line") or "").strip() if matter["_has_mentions"] else ""
+            meta["status_line"] = line or None
         if staff_lines:
             meta["timeline_headlines"] = {**(meta.get("timeline_headlines") or {}), **staff_lines}
+        # Text the fix agent edited directly (an approved instruction the writer wouldn't follow) stands until the
+        # topic gains a step of its own; then this rewrite takes over.
+        staff_text = meta.get("staff_text") if isinstance(meta.get("staff_text"), dict) else None
+        if staff_text and set(matter["_owned_item_ids"]) <= set(staff_text.get("items") or []):
+            if staff_text.get("status_line"):
+                meta["status_line"] = staff_text["status_line"]
+            if staff_text.get("summary"):
+                descriptive = {**descriptive, "summary": staff_text["summary"]}
         update = {"plain_english_summary": descriptive["summary"].strip(), "meta": meta}
         if descriptive.get("category") in TOPICS:
             update["category"] = descriptive["category"]

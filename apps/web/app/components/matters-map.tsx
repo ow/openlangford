@@ -445,7 +445,7 @@ export function MattersMap({
         open={failed || undefined}
       >
         <summary className="cursor-pointer font-medium text-brand-700">
-          Browse mapped locations without the map
+          {markers.length === 1 ? "View the address" : `View ${markers.length} addresses`}
         </summary>
         <ul
           className="mt-3 max-h-64 space-y-2 overflow-auto"
