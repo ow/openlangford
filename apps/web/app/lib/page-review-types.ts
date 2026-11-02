@@ -50,10 +50,13 @@ export function reviewTime(iso: string | null | undefined) {
   return Number.isNaN(date.getTime()) ? "" : date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
-/** Pages the review tool leaves out: bylaws are imported as published, and councillor pages aren't reviewed here. */
-export const UNREVIEWED_SECTIONS = ["bylaws", "people"] as const;
+/** Pages the review tool leaves out: bylaws are imported as published, councillor pages aren't reviewed here,
+ * documents are the City's own files, and other pages (home, lists, about) have nothing to check against records. */
+export const UNREVIEWED_SECTIONS = ["bylaws", "people", "documents", "pages"] as const;
+
+/** Only a single record's page: a topic, meeting, property, participant or election (not a list or a document). */
+const REVIEWABLE_PAGE = /^\/(matters|meetings|properties|participants|elections)\/(?!closed$)[^/]+\/?$/;
 
 export function isReviewable(path: string) {
-  const first = path.split("/")[1] || "";
-  return !path.startsWith("/admin") && !(UNREVIEWED_SECTIONS as readonly string[]).includes(first);
+  return REVIEWABLE_PAGE.test(path);
 }

@@ -90,7 +90,8 @@ export async function reviewCoverage(supabase: SupabaseClient, rows: { path: str
   const byPath = new Map(rows.map(r => [r.path, r]));
   const reviewed = SITEMAP_SECTIONS.filter((s) => !(UNREVIEWED_SECTIONS as readonly string[]).includes(s));
   const sections = await Promise.all(reviewed.map(async (section) => {
-    const entries = await sitemapEntries(supabase, section).catch(() => []);
+    // Only the pages the tool reviews: a section's list pages ("/meetings?year=2019") don't count.
+    const entries = (await sitemapEntries(supabase, section).catch(() => [])).filter((e) => reviewPath(e.path));
     let reviewed = 0, checked = 0;
     for (const entry of entries) {
       const row = byPath.get(reviewPath(entry.path) || "");
@@ -113,7 +114,7 @@ export async function reviewCoverage(supabase: SupabaseClient, rows: { path: str
  * equally likely), or null when none are left. */
 export async function randomUnreviewedPath(supabase: SupabaseClient, section: SitemapSection | "any"): Promise<string | null> {
   const sections = section === "any"
-    ? SITEMAP_SECTIONS.filter((s) => s !== "pages" && !(UNREVIEWED_SECTIONS as readonly string[]).includes(s))
+    ? SITEMAP_SECTIONS.filter((s) => !(UNREVIEWED_SECTIONS as readonly string[]).includes(s))
     : [section];
   const lists = await Promise.all(sections.map((s) => sitemapEntries(supabase, s).catch(() => [])));
   const entries = lists.flat().map((e) => reviewPath(e.path)).filter((p): p is string => !!p && !p.includes("?"));
