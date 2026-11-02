@@ -505,6 +505,7 @@ def is_valid_matter_identifier(identifier: str | None) -> bool:
 CONTAINER_TITLE = re.compile(
     r"^(notices? of motion|public participation|presentations?|delegations?|correspondence)$"
     r"|committee (?:of the whole )?(?:meeting )?(?:minutes|resolutions)|multiple (?:bylaws|topics)|receipt of .*minutes"
+    r"|committee meeting\s*(?:[-–—,:]|of\b|held\b|on\b)"  # "… Committee Meeting - January 31, 2022": that meeting's report
     r"|^(?:planning )?notices? of intent\b|^resolutions (?:from|of) .*committee|committee .*\bresolutions\b"
     r"|bylaws for consideration|^bylaw adoptions?$",
     re.I,

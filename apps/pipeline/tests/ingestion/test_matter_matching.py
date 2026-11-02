@@ -97,3 +97,10 @@ def test_parkway_addresses_and_street_clusters():
 
     assert extract_addresses("2181 Bear Mountain Pkwy") == ["2181 bear mountain parkway"]
     assert extract_addresses("Renewal of Leases at 1089 Langford Parkway") == ["1089 langford parkway"]
+
+
+def test_committee_meeting_headings_are_containers():
+    from pipeline.ingestion.matter_matching import is_generic_or_procedural_matter
+
+    assert is_generic_or_procedural_matter("Planning, Zoning and Affordable Housing Committee Meeting - January 31, 2022.")
+    assert not is_generic_or_procedural_matter("Committee meeting room rental rates")
