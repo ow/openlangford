@@ -586,13 +586,13 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
           />
 
           {(matter.plain_english_summary || matter.description) && (
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-700">
+            <p id="topic-summary" className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-700">
               {matter.plain_english_summary || matter.description}
             </p>
           )}
 
           {matter.meta?.status_line && (
-            <p className="mt-4 max-w-2xl border-l-2 border-brand-500 pl-3 text-sm leading-relaxed text-zinc-600">
+            <p id="topic-status" className="mt-4 max-w-2xl border-l-2 border-brand-500 pl-3 text-sm leading-relaxed text-zinc-600">
               <span className="font-semibold text-zinc-900">Where it stands: </span>
               {matter.meta.status_line}
             </p>

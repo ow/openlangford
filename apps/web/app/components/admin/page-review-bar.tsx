@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useFetcher, useLocation, useNavigate } from "react-router";
+import { useFetcher, useLocation, useNavigate, useRevalidator } from "react-router";
 import { ArrowRight, Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
@@ -19,20 +19,33 @@ const removable = (key: string | null) => !!key && /^(mention|background|report)
 
 
 /** Outline the flagged timeline entries while the panel is open. */
-function useHighlights(flags: PageFlag[], on: boolean) {
+/** Outlines on the page: open flags in red (agreed) or amber, and, after the agent's fix (`changed`), what it changed in
+ * green: each fixed entry, and the summary and "where it stands" when a whole-page problem was fixed. */
+function useHighlights(flags: PageFlag[], on: boolean, changed = false) {
   useEffect(() => {
-    if (!on) return;
+    if (!on && !changed) return;
     const marked: HTMLElement[] = [];
+    const mark = (el: HTMLElement | null | undefined, color: string, title: string) => {
+      if (!el) return;
+      el.style.outline = `2px solid ${color}`;
+      el.style.outlineOffset = "2px";
+      el.title = title;
+      marked.push(el);
+    };
+    const green = "rgb(5 150 105)";
     flags.forEach((flag) => {
       const card = flag.key ? document.getElementById(`timeline-${flag.key}`)?.querySelector<HTMLElement>(":scope > div") : null;
-      if (!card || flag.verdict === "disagree" || flag.fixed) return;
-      card.style.outline = `2px solid ${flag.verdict === "agree" ? "rgb(220 38 38)" : "rgb(245 158 11)"}`;
-      card.style.outlineOffset = "2px";
-      card.title = `${FLAG_PROBLEM_LABELS[flag.problem]}: ${flag.reason}`;
-      marked.push(card);
+      if (flag.fixed) {
+        if (!changed) return;
+        if (card) mark(card, green, `Changed by the agent: ${flag.reason}`);
+        else if (!flag.key) for (const id of ["topic-summary", "topic-status"]) mark(document.getElementById(id), green, `Changed by the agent: ${flag.reason}`);
+        return;
+      }
+      if (!on || !card || flag.verdict === "disagree") return;
+      mark(card, flag.verdict === "agree" ? "rgb(220 38 38)" : "rgb(245 158 11)", `${FLAG_PROBLEM_LABELS[flag.problem]}: ${flag.reason}`);
     });
-    return () => marked.forEach((card) => { card.style.outline = ""; card.style.outlineOffset = ""; card.title = ""; });
-  }, [flags, on]);
+    return () => marked.forEach((el) => { el.style.outline = ""; el.style.outlineOffset = ""; el.title = ""; });
+  }, [flags, on, changed]);
 }
 
 function readWhat(review: PageReview) {
@@ -95,15 +108,23 @@ export function PageReviewBar() {
   const links: Links = saved && saved.links !== undefined ? saved.links ?? null : loaded?.links ?? null;
   const suggestions = links?.suggestions || [];
   const searching = links?.findJob?.status === "queued" || links?.findJob?.status === "running";
-  // A rating shows the moment it's pressed; the save follows (a failed save shows the stored rating again).
-  const rating = save.state !== "idle" && save.formData?.get("intent") === "rate"
-    ? { index: Number(save.formData.get("index")), verdict: String(save.formData.get("verdict")) } : null;
-  const flags = (review?.ai_flags || []).map((f, i) => rating?.index === i
-    ? { ...f, verdict: rating.verdict === "none" ? null : rating.verdict as "agree" | "disagree" } : f);
+  // Ratings are sent on their own (not through the router, which would reload the whole page after each one): they
+  // show the moment they're pressed, and a failed save puts the stored rating back.
+  const [ratings, setRatings] = useState<Record<number, "agree" | "disagree" | null>>({});
+  useEffect(() => setRatings({}), [pathname]);
+  const flags = (review?.ai_flags || []).map((f, i) => (i in ratings ? { ...f, verdict: ratings[i] } : f));
   const open_ = unresolvedFlags(flags).length;
   const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length;
-  useHighlights(flags, open);
+  useHighlights(flags, open, review?.status === "fixed" || (stayed && review?.status === "reviewed"));
   const fixing = review?.status === "fixing";
+  // When the agent finishes while you're on the page, reload the page's own content so its edits show (outlined).
+  const revalidator = useRevalidator();
+  const lastStatus = useRef<string | null | undefined>(undefined);
+  useEffect(() => {
+    if (lastStatus.current === "fixing" && review?.status && review.status !== "fixing") revalidator.revalidate();
+    lastStatus.current = review?.status;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [review?.status]);
   const waiting = fixing || searching;
   useEffect(() => {
     if (!waiting) return;
@@ -119,11 +140,22 @@ export function PageReviewBar() {
   const submit = (intent: string, extra: Record<string, string> = {}) => {
     // Plain "Reviewed" moves on to the next page. Sending fixes to the agent, or confirming its fixes, stays here so
     // the edits can be seen; the Next button moves on from there.
-    finishing.current = intent === "reviewed" && !fixedRun;
-    if (intent === "needs_work" || (intent === "reviewed" && fixedRun)) setStayed(true);
+    const confirmingFix = intent === "reviewed" && (fixedRun || review?.status === "fixed");
+    finishing.current = intent === "reviewed" && !confirmingFix;
+    if (intent === "needs_work" || confirmingFix) setStayed(true);
     save.submit({ intent, path: pathname, title: document.title, ...extra }, { method: "post", action: "/api/page-review" });
     if (intent === "check") setOpen(true);
     setEditing(null);
+  };
+  const rate = (index: number, verdict: "agree" | "disagree" | null) => {
+    setRatings((r) => ({ ...r, [index]: verdict }));
+    const body = new FormData();
+    Object.entries({ intent: "rate", path: pathname, title: document.title, index: String(index), verdict: verdict ?? "none" })
+      .forEach(([k, v]) => body.set(k, v));
+    fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } })
+      .then((res) => { if (!res.ok) throw new Error(String(res.status)); })
+      .then(() => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`))
+      .catch(() => setRatings((r) => { const next = { ...r }; delete next[index]; return next; }));
   };
   const button = "whitespace-nowrap rounded-full px-2.5 py-1 font-medium";
   const markReviewed = () => {
@@ -231,11 +263,11 @@ export function PageReviewBar() {
                             </button>
                           )}
                           {flag.problem !== "editor_issue" && (["agree", "disagree"] as const).map((verdict) => (
-                            <button key={verdict} type="button" disabled={busy}
+                            <button key={verdict} type="button"
                               aria-label={verdict === "agree" ? "Yes, fix it" : "No, leave it"}
                               title={verdict === "agree" ? "Yes, fix it" : "No, leave it"}
                               aria-pressed={flag.verdict === verdict}
-                              onClick={() => submit("rate", { index: String(index), verdict: flag.verdict === verdict ? "none" : verdict })}
+                              onClick={() => rate(index, flag.verdict === verdict ? null : verdict)}
                               className={cn("rounded-full p-1.5",
                                 flag.verdict === verdict ? (verdict === "agree" ? "bg-red-100 text-red-700" : "bg-zinc-200 text-zinc-700") : "text-zinc-400 hover:bg-zinc-100")}>
                               {verdict === "agree" ? <ThumbsUp className="h-3.5 w-3.5" /> : <ThumbsDown className="h-3.5 w-3.5" />}
