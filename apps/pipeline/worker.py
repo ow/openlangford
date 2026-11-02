@@ -15,7 +15,7 @@ import sys
 import threading
 import time
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from pipeline.supabase_client import create_client
 
@@ -108,6 +108,30 @@ def finish_job(supabase, job_id: int, status: str, result=None, error: str | Non
     if recovery_args is not None:
         payload['args'] = recovery_args
     supabase.table("pipeline_jobs").update(payload).eq("id", job_id).execute()
+
+
+STALE_LOCK_MINUTES = 10  # heartbeats come every 30 seconds; a lock this old belongs to a worker that died
+
+
+def recover_stale_jobs(supabase, job_types: list[str] | None = None) -> int:
+    """Requeue jobs left "running" by a worker that was restarted or killed mid-job (its heartbeat stopped), so they
+    don't sit as running forever. Only this worker's job types; a job out of attempts is marked failed instead."""
+    cutoff = (datetime.now(timezone.utc) - timedelta(minutes=STALE_LOCK_MINUTES)).isoformat()
+    query = supabase.table("pipeline_jobs").select("id, job_type, attempt_count, max_attempts, locked_by") \
+        .eq("status", "running").lt("locked_at", cutoff)
+    if job_types:
+        query = query.in_("job_type", job_types)
+    recovered = 0
+    for job in query.execute().data or []:
+        out_of_attempts = (job.get("attempt_count") or 0) >= (job.get("max_attempts") or 3)
+        update = {"status": "failed", "finished_at": datetime.now(timezone.utc).isoformat(),
+                  "last_error": f"worker {job.get('locked_by')} stopped mid-job"} if out_of_attempts else {"status": "queued"}
+        supabase.table("pipeline_jobs").update({**update, "locked_by": None, "locked_at": None}) \
+            .eq("id", job["id"]).eq("status", "running").lt("locked_at", cutoff).execute()
+        print(f"[worker] job {job['id']} ({job['job_type']}) was left running by {job.get('locked_by')}: "
+              f"{'failed (out of attempts)' if out_of_attempts else 'requeued'}")
+        recovered += 1
+    return recovered
 
 
 def heartbeat_job(supabase, job_id: int):
@@ -739,7 +763,14 @@ def main():
     usage_sink = install_usage_logging()
     scope = ",".join(job_types) if job_types else "all"
     print(f"[worker] started {args.worker_id} job_types={scope}")
+    last_recovery = 0.0
     while True:
+        if time.time() - last_recovery > 60:
+            try:
+                recover_stale_jobs(get_supabase(), job_types)
+            except Exception as exc:  # never let recovery stop the worker
+                print(f"[worker] stale-job recovery failed: {exc}")
+            last_recovery = time.time()
         # Poll explicit durable intents even while no ingestion job is queued.
         # The Edge/SQL gate defers matching until agenda embeddings exist.
         from pipeline.email_outbox import retry_email_enqueues
