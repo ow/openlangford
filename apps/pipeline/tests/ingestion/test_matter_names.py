@@ -69,3 +69,12 @@ def test_table_rows_are_not_mentions():
     from pipeline.ingestion.matter_names import table_row
     assert table_row("…| DVP-17-20 | 8-Aug-17 | 2-Oct-17 | 2207 Millstream Rd | Waive of Fee |")
     assert not table_row("TUP20-0002 - Flight Cannabis Co. - 101-977 Langford Pkwy")
+
+
+def test_same_application_is_the_permit_number_not_the_address():
+    from pipeline.ingestion.matter_names import same_application
+    flight = {"file_numbers": ["TUP20-0002"]}
+    assert same_application("TUP20-0002 - Flight Cannabis Co. - 101-977 Langford Pkwy", flight)
+    assert not same_application("Application to add retail sales at Unit 28 #103 977 Langford Parkway", flight)
+    assert not same_application(None, flight)
+    assert not same_application("TUP20-0002", {})

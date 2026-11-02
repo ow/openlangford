@@ -166,6 +166,22 @@ def load_matters(cur) -> list[dict]:
     return out
 
 
+def load_matters_light(file_numbers_only: bool = True) -> list[dict]:
+    """Each matter's permit and file numbers (from its identifier), for checks that need nothing else."""
+    from pipeline.db import connect
+
+    conn = connect()
+    conn.set_session(readonly=True)
+    try:
+        cur = conn.cursor()
+        cur.execute("select id, identifier from matters where identifier is not null")
+        rows = [{"id": mid, "file_numbers": file_numbers(ident)} for mid, ident in cur.fetchall()]
+        conn.rollback()
+    finally:
+        conn.close()
+    return [r for r in rows if r["file_numbers"]]
+
+
 def source_text(m: dict) -> str:
     """Where a name must appear to belong to the matter: its own title and summary. Its agenda items' titles are
     shown to the model for context only; a name found only there ("Goldstream Avenue" in one item of a ticket
@@ -690,6 +706,14 @@ def suggest_links(matter_id: int) -> dict[str, Any]:
     return {"suggested": count, "candidates": len(candidates), "names": names}
 
 
+def same_application(item_title: str | None, m: dict) -> bool:
+    """The item's own title names one of the matter's permit or file numbers ("TUP20-0002"): a step in the same
+    application, so the second check doesn't get to drop it. A shared civic address is not enough: tested on
+    2026-11-02 (research/linking-question), about 4 in 10 links rescued by address alone were a different
+    application on the same property (a speedway licence vs an OCP amendment at 2207 Millstream Road)."""
+    return any(name_pattern(f).search(item_title or "") for f in m.get("file_numbers") or [])
+
+
 # --- second check --------------------------------------------------------------------------------------
 
 VERIFY_MIN_PROBABILITY = 0.75
@@ -733,6 +757,9 @@ def verify_hidden_links(*, dry_run: bool = False, link_ids: list[int] | None = N
                                 f"or project that only shares a street, park or program name, or names it only in passing "
                                 f"(a location, a venue, one of a list)."}
 
+    # Same permit or file number in the item's own title: the same application, kept without asking.
+    numbers = {m["id"]: m for m in load_matters_light(file_numbers_only=True)}
+    links = [l for l in links if not same_application(l[5], numbers.get(l[1], {}))]
     jobs = [(f"ENTRY ({day}): {item}\nPassage: {quote[:400]}", [question(title, summary)])
             for _, _, title, summary, day, item, quote in links]
     jobs += [(f"ENTRY: City annual report {years.get(rid)}, page {page}: {quote[:400]}", [question(*matters[mid])])
