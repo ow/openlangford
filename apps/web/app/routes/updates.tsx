@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, data as routeData } from "react-router";
-import { History } from "lucide-react";
+import { History, UserCheck } from "lucide-react";
 import type { Route } from "./+types/updates";
 import { PageHeader } from "../components/ui/page-header";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getMunicipality } from "../services/municipality";
 import { getRecentUpdates, updateDay, type RecentUpdate } from "../services/recent-updates.server";
+import { getReviewedPages, type ReviewedPage } from "../services/reviewed-pages.server";
 import { publicData } from "../services/public-data-cache.server";
 import { RECENT_PUBLIC_TTL } from "../lib/public-content-cache";
 import { DEGRADED_HEADERS, forwardCacheControl } from "../lib/degraded-response";
@@ -23,25 +24,31 @@ export const meta: Route.MetaFunction = () =>
 
 export const headers = forwardCacheControl;
 
-type UpdateDay = { day: string; updates: RecentUpdate[] };
+type UpdateDay = { day: string; updates: RecentUpdate[]; reviewed: ReviewedPage[] };
 
 export async function loader() {
   try {
     const supabase = getSupabaseAdminClient();
     const municipality = await getMunicipality(supabase);
-    const updates = await publicData(
-      `recent-updates:v2:${municipality.id}`,
-      () => getRecentUpdates(supabase, municipality),
-      () => true,
-      RECENT_PUBLIC_TTL,
-      { shareWithSignedIn: true },
-    );
-    const days: UpdateDay[] = [];
-    for (const update of updates) {
-      const day = updateDay(update.finishedAt);
-      if (days.at(-1)?.day !== day) days.push({ day, updates: [] });
-      days.at(-1)!.updates.push(update);
-    }
+    const [updates, reviewed] = await Promise.all([
+      publicData(
+        `recent-updates:v2:${municipality.id}`,
+        () => getRecentUpdates(supabase, municipality),
+        () => true,
+        RECENT_PUBLIC_TTL,
+        { shareWithSignedIn: true },
+      ),
+      publicData(`reviewed-pages:v1:${municipality.id}`, () => getReviewedPages(supabase), () => true, RECENT_PUBLIC_TTL,
+        { shareWithSignedIn: true }).catch((error) => {
+        console.error("Error loading reviewed pages:", error);
+        return [] as ReviewedPage[];
+      }),
+    ]);
+    const byDay = new Map<string, UpdateDay>();
+    const dayFor = (day: string) => byDay.get(day) ?? byDay.set(day, { day, updates: [], reviewed: [] }).get(day)!;
+    for (const update of updates) dayFor(updateDay(update.finishedAt)).updates.push(update);
+    for (const page of reviewed) dayFor(updateDay(page.reviewedAt)).reviewed.push(page);
+    const days = [...byDay.values()].sort((a, b) => b.day.localeCompare(a.day));
     return routeData({ days, loadError: false });
   } catch (error) {
     console.error("Error loading recent updates:", error);
@@ -90,6 +97,34 @@ function UpdateRow({ update }: { update: RecentUpdate }) {
   );
 }
 
+function ReviewedList({ pages }: { pages: ReviewedPage[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? pages : pages.slice(0, DAY_PREVIEW);
+  return (
+    <div className="mt-3">
+      <h3 className="flex items-center gap-1.5 text-sm font-semibold text-zinc-700">
+        <UserCheck className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+        Checked by a person
+      </h3>
+      <ul className="mt-1.5 divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface px-4">
+        {visible.map((page) => (
+          <li key={page.path} className="flex flex-col gap-1 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <Link to={page.path} className="font-medium text-zinc-900 hover:text-brand-700 hover:underline">{page.title}</Link>
+            <span className="w-fit shrink-0 rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 ring-1 ring-zinc-200">
+              {page.kind === "topic" ? "Topic reviewed" : "Meeting reviewed"}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {pages.length > visible.length && (
+        <button type="button" onClick={() => setExpanded(true)} className="mt-2 text-sm font-medium text-brand-700 hover:underline">
+          Show {pages.length - visible.length} more
+        </button>
+      )}
+    </div>
+  );
+}
+
 function DayGroup({ group }: { group: UpdateDay }) {
   const [expanded, setExpanded] = useState(false);
   const visible = expanded ? group.updates : group.updates.slice(0, DAY_PREVIEW);
@@ -100,14 +135,16 @@ function DayGroup({ group }: { group: UpdateDay }) {
       <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-brand-600 ring-4 ring-brand-100" aria-hidden="true" />
       <h2 className="text-sm font-bold uppercase tracking-wide text-zinc-900">{dayHeading(group.day)}</h2>
       <p className="mt-0.5 text-sm text-zinc-500">
-        {group.updates.length} {group.updates.length === 1 ? "meeting" : "meetings"}
-        {added > 0 ? ` · ${added} new` : ""}
+        {[
+          group.updates.length ? `${group.updates.length} ${group.updates.length === 1 ? "meeting" : "meetings"}${added > 0 ? ` · ${added} new` : ""}` : "",
+          group.reviewed.length ? `${group.reviewed.length} checked by a person` : "",
+        ].filter(Boolean).join(" · ")}
       </p>
-      <ul className="mt-2 divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface px-4">
+      {group.updates.length > 0 && <ul className="mt-2 divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-surface px-4">
         {visible.map((update) => (
           <UpdateRow key={`${update.meetingId}:${update.finishedAt}`} update={update} />
         ))}
-      </ul>
+      </ul>}
       {hidden > 0 && (
         <button
           type="button"
@@ -117,6 +154,7 @@ function DayGroup({ group }: { group: UpdateDay }) {
           Show {hidden} more
         </button>
       )}
+      {group.reviewed.length > 0 && <ReviewedList pages={group.reviewed} />}
     </section>
   );
 }
@@ -130,7 +168,7 @@ export default function Updates({ loaderData }: Route.ComponentProps) {
           title="Recent updates"
           icon={History}
           className="lg:-ml-7"
-          description="Meetings in the order we finished processing them. Older meetings show up here too when they gain a transcript or their agenda and minutes are reprocessed."
+          description="Meetings in the order we finished processing them, and pages a person has checked against the records. Older meetings show up here too when they gain a transcript or their agenda and minutes are reprocessed."
         />
         {loadError ? (
           <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
