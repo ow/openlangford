@@ -107,6 +107,13 @@ def _title_core(title):
     return normalize_text(core)
 
 
+def _word_overlap(old, new):
+    """Share of the earlier text's words (3+ letters) that appear in the recorded motion."""
+    words = lambda text: {w for w in normalize_text(text).split() if len(w) >= 3}
+    earlier = words(old)
+    return len(earlier & words(new)) / len(earlier) if earlier else 0.0
+
+
 def _order_key(value):
     return re.sub(r'[^0-9a-z]+', '.', str(value or '').casefold()).strip('.')
 
@@ -132,7 +139,11 @@ def heading_item(source, block, items):
     candidates = [(item, _title_core(item.get('title'))) for item in items
                   if item.get('item_order') != 'official-recorded-motions']
     candidates = [(item, core) for item, core in candidates if core]
+    def distinctive(text):
+        return {w for w in normalize_text(text).split() if (w.isdigit() and len(w) >= 3) or len(w) >= 5} - {'bylaw', 'council', 'report', 'langford'}
     for line in reversed(lines):
+        # Printed asides aren't part of the title: "(File No. 3900-1212)", "(Background report attached)".
+        line = re.sub(r'\((?:File|Files)\b[^)]*\)?|\([^)]*\battached\)', ' ', line, flags=re.I).strip()
         heading = normalize_text(line)
         number = re.match(r'^(\d+(?:\.\d+)*|[a-z])[.)]?\s', line, re.I)
         stripped = normalize_text(re.sub(r'^(?:\d+(?:\.\d+)*|[a-z])[.)]?\s+', '', line, flags=re.I))
@@ -148,7 +159,25 @@ def heading_item(source, block, items):
                              'item_order': hits[0].get('item_order')}
         if hits:
             return None, None  # several items fit this heading: no guess
+        # A heading printed with the agenda's own full number ("10.3 BYLAW NO. 2009") names the item with exactly
+        # that number, when the two share an identifying word or number.
+        full = re.match(r'^(\d+(?:\.\d+)+|\d+)\.?\s', line)
+        if full:
+            numbered = [item for item, core in candidates if _order_key(item.get('item_order')) == _order_key(full.group(1))]
+            if len(numbered) == 1 and distinctive(line) & distinctive(numbered[0].get('title')):
+                return numbered[0], {'method': 'minutes_heading_number', 'heading_quote': line[:200],
+                                     'item_order': numbered[0].get('item_order')}
+            if numbered:
+                return None, None
     return None, None
+
+
+def committee_header_names(title, header):
+    """Whether a minutes header names this committee: every word of its name ("Parks, Recreation, Culture &
+    Beautification Committee") appears in the header, with "&" read as "and"."""
+    words = normalize_text((title or '').replace('&', ' and ')).split()
+    text = set(normalize_text((header or '').replace('&', ' and ')).split())
+    return len(words) >= 2 and 'committee' in words and all(word in text for word in words)
 
 
 def catalog_cac_candidate(meeting):
@@ -197,8 +226,12 @@ def canonical_motion_plan(items, context, existing_motions):
     native_cac = bool(re.search(r'community\s+advisory\s+committee', source.get('source_header', ''), re.I))
     if context.get('allow_reviewed_source_header') and source.get('source_review_evidence') and source.get('reviewed_committee_scope',{}).get('scope')=='Community Advisory Committee':
         native_cac=True
-    expected_body = 'Committee' if catalog_cac and native_cac else 'Committee of the Whole' if catalog_cotw else meeting.get('classification')
-    allowed_bodies = ('Council', 'Committee of the Whole', 'Committee') if catalog_cac and native_cac else ('Council', 'Committee of the Whole')
+    # History catch-up only (allow_committee_motions): a committee's own minutes, whose header names that same
+    # committee, are its record of motions and outcomes. Who voted is a separate question (committee rosters).
+    named_committee = bool(context.get('allow_committee_motions') and meeting.get('classification') == 'Committee'
+                           and committee_header_names(meeting.get('title'), source.get('source_header')))
+    expected_body = 'Committee' if (catalog_cac and native_cac) or named_committee else 'Committee of the Whole' if catalog_cotw else meeting.get('classification')
+    allowed_bodies = ('Council', 'Committee of the Whole', 'Committee') if (catalog_cac and native_cac) or named_committee else ('Council', 'Committee of the Whole')
     if source.get('source_classification') not in allowed_bodies or source.get('source_classification') != expected_body:
         return items, {'status': 'source_voting_body_not_bound', 'held': [], 'source_motions': 0}
     blocks = source.get('blocks', [])
@@ -286,8 +319,11 @@ def canonical_motion_plan(items, context, existing_motions):
             if (row.get('meta') or {}).get('canonical_source_motion') or not item_of_row.get(claim_id):
                 continue
             for index, block in open_blocks:
-                # An outcome the earlier read left blank is no conflict; a different recorded outcome is.
-                if placed_order(block) == item_of_row[claim_id] and (not row.get('result') or outcome_family(block['result']) == outcome_family(row.get('result'))):
+                # An outcome the earlier read left blank is no conflict; a different recorded outcome is. At least half
+                # the earlier row's words must be in the recorded motion, so a different motion on the item never pairs.
+                if (placed_order(block) == item_of_row[claim_id]
+                        and (not row.get('result') or outcome_family(block['result']) == outcome_family(row.get('result')))
+                        and _word_overlap(row.get('text_content'), block['motion_text']) >= 0.5):
                     pairs[claim_id].append(index)
         claimed = Counter(index for indexes in pairs.values() for index in indexes)
         for claim_id, indexes in pairs.items():

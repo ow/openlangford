@@ -125,3 +125,40 @@ def test_ocr_path_needs_the_resolution_words():
     assert not _explicit({'source_format': 'ocr_marker'}, {}, {'motion_text': 'Mayor Young adjourned the meeting.'})
     assert not _explicit({'source_format': 'original_pdf_layout'}, {}, block)
     assert ocr_display_text('> That Council issue\n> the permit.') == 'That Council issue\nthe permit.'
+
+
+NUMBERED = """10.2 BYLAW NO. 2001
+
+MOVED BY: WADE
+SECONDED: BLACKWELL
+
+THAT Council give Bylaw No. 2001 second and third readings.
+
+Motion CARRIED.
+
+10.3 BYLAW NO. 2009 (Background report attached)
+"Langford Zoning Bylaw, Amendment No. 640, (Bray Avenue), Bylaw No. 2009, 2021". (ADOPTION)
+
+MOVED BY: WADE
+SECONDED: SEATON
+
+THAT Council adopt Bylaw No. 2009.
+
+Motion CARRIED.
+"""
+
+
+def test_numbered_heading_places_on_the_same_numbered_item():
+    source = _source(NUMBERED)
+    items = [{'item_order': '10.', 'title': 'BYLAWS'},
+             {'item_order': '10.2', 'title': 'BYLAW NO. 2001 "Langford Zoning Bylaw, Amendment No. 639" (SECOND AND THIRD READING)'},
+             {'item_order': '10.3', 'title': 'BYLAW NO. 2009 "Langford Zoning Bylaw, Amendment No. 640, (Bray Avenue)" (ADOPTION)'}]
+    placed = [heading_item(source, b, items)[0]['item_order'] for b in source['blocks']]
+    assert placed == ['10.2', '10.3']
+
+
+def test_a_different_motion_on_the_item_is_not_rebound():
+    legacy = {'id': 7, 'meeting_id': 824, 'agenda_item_id': 103, 'text_content': 'THAT staff report back on parking fees.',
+              'result': None, 'meta': {}}
+    _, report = _plan([legacy])
+    assert not report['rebound_legacy'] and report['unmapped_legacy_ids'] == [7]

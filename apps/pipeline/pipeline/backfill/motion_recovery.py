@@ -69,13 +69,16 @@ def summarise(plan: dict) -> dict:
             "added": len(new), "on_item": sum(1 for m in new if m.get("parent_agenda_id")),
             "catch_all": sum(1 for m in new if not m.get("parent_agenda_id")),
             "rebound": len(plan.get("rebinds") or []),
+            "votes": dict(Counter((m.get("committee_votes") or {}).get("inference_basis") or (m.get("committee_votes") or {}).get("reason")
+                                  for m in new if "committee_votes" in m)),
             "held": dict(Counter(h.get("reason") for h in plan.get("held") or [])),
             "unmapped_legacy": len((plan.get("source_report") or {}).get("unmapped_legacy_ids") or [])}
 
 
 def describe(rows: list[dict], label: str) -> str:
-    totals, held, coverage = Counter(), Counter(), Counter()
+    totals, held, coverage, votes = Counter(), Counter(), Counter(), Counter()
     for r in rows:
+        votes.update(r.get("votes") or {})
         for key in ("stored", "parsed_blocks", "added", "on_item", "catch_all", "rebound", "unmapped_legacy"):
             totals[key] += r.get(key) or 0
         held.update(r.get("held") or {})
@@ -87,7 +90,8 @@ def describe(rows: list[dict], label: str) -> str:
         f"- Earlier AI-read rows rebound to the recorded wording: {totals['rebound']}",
         f"- Earlier rows still unmatched: {totals['unmapped_legacy']}",
         f"- Coverage: {dict(coverage.most_common())}",
-        f"- Held (by reason): {dict(held.most_common())}"])
+        f"- Held (by reason): {dict(held.most_common())}"]
+        + ([f"- Committee per-member votes for added motions (basis, or why held): {dict(votes.most_common())}"] if votes else []))
 
 
 def run(ids: list[int], workers: int) -> list[dict]:

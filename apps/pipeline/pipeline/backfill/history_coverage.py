@@ -140,8 +140,15 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
             actors_unreviewed = reviewed_native or source['source_format']=='original_pdf_reviewed_local_ocr'
             # From a scan, keep only names that resolved exactly to a person on that day's roster.
             name = lambda field: (None if actors_unreviewed or (ocr and actors[field] is None) else motion.get(field))
+            votes = None
+            roster = (meeting.get('meta') or {}).get('committee_roster')
+            if meeting.get('classification') == 'Committee' and roster and (review_scope or {}).get('person_names'):
+                from pipeline.ingestion.committee_roster_ballots import committee_roster_votes
+                votes = committee_roster_votes(block, source.get('text', ''), roster, meeting['meeting_date'],
+                                               review_scope['person_names'])
             base['new_motions'].append({'parent_agenda_id': parent['id'] if parent else None,
                 'placed_by': motion.get('_placed_by'),
+                **({'committee_votes': votes} if votes is not None else {}),
                 'text_content': ocr_display_text(motion['motion_text']) if ocr else motion.get('_operative_motion_text') or motion['motion_text'],
                 'result': motion['result'],
                 'mover': name('mover'),
@@ -150,6 +157,7 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
                 'seconder_id': actors['seconder'] if not actors_unreviewed else None,
                 'meta': {'canonical_source_motion': identity, 'operative_motion_body': proof,
                          **({'text_source': 'ocr_transcription_of_scanned_original'} if ocr else {}),
+                         **({'outcome_role': 'committee_recommendation'} if meeting.get('classification') == 'Committee' else {}),
                          'individual_vote_coverage': 'not_recorded',
                          'vote_record': {'coverage': 'not_recorded', 'source': 'bounded_official_minutes',
                                          'outcome_status': 'verified', 'outcome_source_quote': identity['outcome_quote']}}})
@@ -194,6 +202,7 @@ def audit(connection, meeting_ids, municipality_id, archive_root, cache_dir, pro
         if source is None:
             source = load_official_minutes(meeting, root=archive_root, people=people, cache_dir=cache_dir)
         scope={'allow_reviewed_legacy_reservations': True, 'allow_reviewed_source_header':True, 'allow_legacy_rebind': True,
+            'allow_committee_motions': True, 'person_names': {p['id']: p['name'] for p in people},
             'project_ref':project_ref, 'municipality_id':municipality_id, 'archive_root':archive_root}
         from .legacy_occurrence_reviews import load_review
         try:
@@ -305,7 +314,8 @@ def apply_manifest(connection, manifest, regenerate, archive_root):
                     else:
                         container = query(connection, "INSERT INTO agenda_items(meeting_id,item_order,title,category,slug) VALUES(%s,'official-recorded-motions','Official recorded motions','procedural',%s) RETURNING id", (meeting_id, f'{meeting_id}-official-recorded-motions'))[0]['id']
                 parent = container
-            row = {k: v for k, v in proposed.items() if k not in ('parent_agenda_id', 'placed_by')}
+            # Committee vote candidates are reviewed and written separately; this apply adds motions only.
+            row = {k: v for k, v in proposed.items() if k not in ('parent_agenda_id', 'placed_by', 'committee_votes')}
             if proposed.get('placed_by'):
                 row['meta'] = {**row['meta'], 'placed_by': proposed['placed_by']}
             row.update(meeting_id=meeting_id, agenda_item_id=parent)
