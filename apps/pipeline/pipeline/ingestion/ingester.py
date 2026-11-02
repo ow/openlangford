@@ -9,6 +9,7 @@ import time
 import requests as http_requests
 from bs4 import BeautifulSoup
 from supabase import Client
+from pipeline.ingestion.staff_fixes import locked_matter_id, staff_matter
 from pipeline.supabase_client import create_client
 
 import pipeline.parser as parser
@@ -2413,6 +2414,9 @@ class MeetingIngester:
                     for identity_key in ("slug", "item_order", "title"):
                         item_data.pop(identity_key, None)
                     item_data["meta"] = {**(old_item.get("meta") or {}), **{key: value for key, value in item_data["meta"].items() if value is not None}}
+                    # Staff moved this item to another topic (or off every topic): re-processing keeps it there.
+                    if staff_matter(old_item.get("meta")):
+                        item_data["matter_id"] = locked_matter_id(old_item.get("meta"), item_data.get("matter_id"))
                     query = self.supabase.table("agenda_items").update(item_data).eq("id", old_item["id"])
                     if old_item.get("updated_at"):
                         query = query.eq("updated_at", old_item["updated_at"])

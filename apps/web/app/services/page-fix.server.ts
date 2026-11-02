@@ -14,30 +14,55 @@ import type { StaffRole } from "../lib/auth.server";
  * confirm, with a note of what it changed and what it couldn't do. Every change is recorded in staff_actions under
  * the person who asked, tagged as the agent's.
  *
- * What it can do today: remove a timeline entry found for the topic, or unlink the related topic an entry came
- * from. What it can't (yet): move an item filed under the wrong topic, or rewrite a summary. It says so.
+ * It can remove a timeline entry found for the topic or unlink the related topic an entry came from (here, at
+ * once), and move an item filed under the wrong topic to the right one, or off every topic (a fix_page job on the
+ * pipeline's quick worker, which also rewrites the summaries of the topics whose timelines changed).
  */
 
 const PlanSchema = z.object({
   actions: z.array(z.object({
-    action: z.enum(["remove_entry", "cannot_fix"]),
+    action: z.enum(["remove_entry", "move_item", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
-    reason: z.string().describe("One plain sentence: what you're doing and why, or why it can't be done here."),
+    to_matter_id: z.number().int().nullable().describe("move_item only: a candidate topic's id, or null to take the item off every topic."),
+    reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
   })),
 });
 
-function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null) {
+type Candidate = { id: number; title: string; dates: string };
+
+/** Topics an item filed here might belong to instead: full-text matches on its title, not this topic. */
+async function candidatesFor(supabase: SupabaseClient, matterId: number, title: string): Promise<Candidate[]> {
+  const words = title.replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/).filter((w) => w.length > 3).slice(0, 8).join(" or ");
+  if (!words) return [];
+  const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen")
+    .textSearch("text_search", words, { type: "websearch", config: "english" })
+    .is("meta->>canonical_matter_id", null).neq("id", matterId).limit(6);
+  return (data || []).map((m: any) => ({
+    id: m.id, title: m.meta?.display_title || m.title, dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to "),
+  }));
+}
+
+function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
+  candidates: Map<string, Candidate[]>) {
   const removable = entries.filter((e) => removableKey(e.key)).map((e) => e.key);
+  const movable = [...candidates.entries()].map(([key, list]) =>
+    `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no likely topic found"}`).join("\n");
   return `You fix timeline problems on a page of Open Langford, a site that follows Langford City council. An editor
 reviewed the page "${heading}" and agreed these problems are real:
 ${flags.map((f) => `- [${f.key ?? "whole page"}] ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}`).join("\n")}
 ${note ? `\nTheir note: ${note}\n` : ""}
-You can only remove entries with these keys (links found for this topic): ${removable.join(", ") || "none"}.
-Removing a "background-" entry unlinks the whole related topic it came from.
-Entries with other keys are filed under this topic itself; you can't move them or rewrite text — say "cannot_fix" and why.
+Two kinds of entries:
+- Links found for this topic, which you can remove: ${removable.join(", ") || "none"}. Removing a "background-" entry
+  unlinks the whole related topic it came from.
+- Items filed under this topic itself ("agenda-" keys), which you can move: to one of the candidate topics listed
+  below if it clearly belongs there, or off every topic (to_matter_id null) if none fits.
+${movable || "(No flagged items filed under this topic.)"}
 
-For each agreed problem (and anything the note asks), give one action: remove_entry with its key, or cannot_fix.
-Don't remove anything the editor didn't agree with or ask for.
+You can't rewrite an entry's text; the summaries of changed topics are rewritten automatically. For a problem you
+can't fix with these actions, say cannot_fix and why.
+
+For each agreed problem (and anything the note asks), give one action. Don't change anything the editor didn't
+agree with or ask for.
 
 Timeline entries:
 ${entries.map((e) => `[${e.key}] ${e.text}`).join("\n\n")}`;
@@ -59,9 +84,15 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     if (!agreed.length && !row?.note) return finish("needs_work", "Nothing to fix: no flags were rated 👍 and there's no note.");
 
     const page = readPage(await renderPage(origin, path));
+    const filed = agreed.filter((f) => f.key?.startsWith("agenda-"));
+    const candidates = new Map<string, Candidate[]>();
+    for (const flag of filed) {
+      const { data: item } = await supabase.from("agenda_items").select("title").eq("id", Number(flag.key!.slice(7))).maybeSingle();
+      candidates.set(flag.key!, item?.title ? await candidatesFor(supabase, matterId, item.title.split("\n")[0]) : []);
+    }
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null),
+      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
     });
@@ -70,7 +101,14 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const done: string[] = [];
     const left: string[] = [];
     const fixedKeys = new Set<string>();
+    const moves: { item_id: number; to_matter_id: number | null; reason: string }[] = [];
     for (const step of result.data.actions) {
+      if (step.action === "move_item" && step.key && /^agenda-\d+$/.test(step.key) && onPage.has(step.key)) {
+        const allowed = candidates.get(step.key)?.some((c) => c.id === step.to_matter_id) || step.to_matter_id === null;
+        if (allowed) moves.push({ item_id: Number(step.key.slice(7)), to_matter_id: step.to_matter_id, reason: step.reason });
+        else left.push(`${step.reason} (the agent picked a topic that wasn't offered, so nothing moved)`);
+        continue;
+      }
       if (step.action === "remove_entry" && step.key && removableKey(step.key) && onPage.has(step.key) && !fixedKeys.has(step.key)) {
         try {
           await removeEntry(supabase, matterId, step.key, requester.id);
@@ -89,6 +127,24 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     }
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it.
     const updated = flags.map((f) => (f.key && fixedKeys.has(f.key) ? { ...f, fixed: true } : f));
+    if (moves.length || done.length) {
+      // The pipeline's quick worker moves items and rewrites the changed summaries, then finishes the page.
+      const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
+      const { error } = await supabase.from("pipeline_jobs").insert({
+        municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1,
+        args: { path, moves, refresh: [matterId], done, left, requested_by: requester.id, role: requester.staffRole },
+      });
+      if (!error) {
+        await supabase.from("page_reviews").update({
+          ai_flags: updated, agent_at: new Date().toISOString(),
+          agent_note: [done.length ? `Done so far:\n${done.map((d) => `• ${d}`).join("\n")}` : "",
+            `Next, on the pipeline worker: ${moves.length ? `move ${moves.length} ${moves.length === 1 ? "item" : "items"}, then ` : ""}rewrite the summary.`]
+            .filter(Boolean).join("\n\n"),
+        }).eq("path", path);
+        return;
+      }
+      left.push("Couldn't hand the rest to the pipeline worker, so items weren't moved and the summary wasn't rewritten.");
+    }
     const note = [
       done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : "Changed nothing.",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",

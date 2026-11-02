@@ -8,6 +8,7 @@ from collections import defaultdict
 import re
 
 from .matter_matching import bylaw_identifiers, is_matter_eligible, matter_identifiers, policy_identity, policy_candidates, is_valid_matter_identifier
+from .staff_fixes import staff_matter
 
 
 def _pages(build):
@@ -146,12 +147,13 @@ def reconcile_history(supabase, *, municipality_ids=None, focus_ids=None, meetin
     items = []
     for city in sorted(cities):
         def build():
-            q = supabase.table("agenda_items").select("id,meeting_id,matter_id,title,category,plain_english_summary,meetings!inner(municipality_id,meeting_date)") \
+            q = supabase.table("agenda_items").select("id,meeting_id,matter_id,title,category,plain_english_summary,meta,meetings!inner(municipality_id,meeting_date)") \
                 .is_("matter_id", "null").eq("meetings.municipality_id", city).order("id")
             if meeting_ids is not None:
                 q = q.in_("meeting_id", meeting_ids)
             return q.gte("meetings.meeting_date", since) if since else q
-        items.extend(_pages(build))
+        # An item staff took off a topic stays unfiled (agenda_items.meta.staff_matter).
+        items.extend(i for i in _pages(build) if not staff_matter(i.get("meta")))
     plan = plan_history(matters, items, focus_ids=focus, review_meeting_ids=review_meeting_ids)
     applied = []
     if not dry_run:

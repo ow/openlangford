@@ -114,10 +114,11 @@ export function PageReviewBar() {
             <p className="text-zinc-500">The model is reading this page as a resident would. This takes a few seconds.</p>
           ) : (
             <>
-              {review?.agent_note && (review.status === "fixed" || review.status === "needs_work") && (
-                <div className={cn("mb-3 rounded-lg px-2.5 py-2", review.status === "fixed" ? "bg-brand-50" : "bg-amber-50")}>
+              {review?.agent_note && (review.status === "fixed" || review.status === "needs_work" || review.status === "fixing") && (
+                <div className={cn("mb-3 rounded-lg px-2.5 py-2", review.status === "needs_work" ? "bg-amber-50" : "bg-brand-50")}>
                   <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-zinc-700">
-                    <Wrench className="h-3.5 w-3.5" />{review.status === "fixed" ? "The agent fixed this page" : "The agent couldn't fix this page"} · {reviewTime(review.agent_at)}
+                    {review.status === "fixing" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wrench className="h-3.5 w-3.5" />}
+                    {{ fixed: "The agent fixed this page", needs_work: "The agent couldn't fix this page", fixing: "The agent is working" }[review.status]} · {reviewTime(review.agent_at)}
                   </div>
                   <p className="whitespace-pre-line text-zinc-800">{review.agent_note}</p>
                   {review.status === "fixed" && (
@@ -264,7 +265,7 @@ export function PageReviewBar() {
           busy && !checking && "opacity-60",
         )}>
           {fixing ? (
-            <span className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-brand-700"><Loader2 className="h-4 w-4 animate-spin" />Agent fixing…</span>
+            <button type="button" onClick={() => setOpen(true)} className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-brand-700"><Loader2 className="h-4 w-4 animate-spin" />Agent fixing…</button>
           ) : review?.status === "fixed" ? (
             <button type="button" onClick={() => setOpen(true)} className="flex items-center gap-1.5 whitespace-nowrap pr-1 font-medium text-brand-700">
               <Wrench className="h-4 w-4" />Fixed, confirm

@@ -633,6 +633,12 @@ def run_job(supabase, job: dict):
             "diarized_folders": sorted(diarized),
         }
 
+    if job_type == "fix_page":
+        # The site's fix agent: moves items filed under the wrong topic and rewrites the summaries that changed.
+        from pipeline.ingestion.staff_fixes import run_fix_page
+
+        return run_fix_page(supabase, args)
+
     if job_type == "find_matter_links":
         # "Find missing" from the page review bar: suggestions for staff, never published unseen.
         from pipeline.ingestion.matter_names import suggest_links
