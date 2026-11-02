@@ -26,6 +26,7 @@ const PlanSchema = z.object({
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to take the item off every topic. merge_topic: the duplicate topic's id."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_summary: the instruction for the summary writer. Otherwise null."),
+    source: z.string().nullable().describe("rewrite_summary / rewrite_entry: the record's own words that support the change, quoted exactly from the records above. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null otherwise."),
     reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
   })),
 });
@@ -139,7 +140,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         continue;
       }
       if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
-        summaryNotes.push((step.new_text || "").trim().slice(0, 500));
+        const quote = (step.source || "").replace(/\s+/g, " ").trim().slice(0, 600);
+        summaryNotes.push(`${(step.new_text || "").trim().slice(0, 500)}${quote ? ` The record says: “${quote}”` : ""}`);
         done.push(`${step.reason} The summary is being rewritten with this note: "${(step.new_text || "").trim()}"`);
         continue;
       }

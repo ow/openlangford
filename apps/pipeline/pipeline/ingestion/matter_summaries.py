@@ -57,7 +57,9 @@ use them to infer adoption, approval, a vote, or a change in legal status. Only 
 are owned proceedings and may receive timeline headlines. A date mentioned inside a report is
 not necessarily the date of its containing council meeting; never silently substitute one for the other.
 "editor_notes", when present, are an editor's requests about this matter's text (from the site's page review):
-follow them where the history and mentions support it, and leave out what they ask for if the inputs don't say it.
+follow them where the history and mentions support it, or where the note quotes the record ("The record says: …"; an
+editor checked that quote against the council's documents, so it counts as an input), and leave out what they ask
+for if neither says it.
 Never invent facts that are not in the inputs. If the history is too thin to say what it is about, base the summary on the title alone and keep it short."""
 
 Topic = Literal[tuple(TOPICS)]  # type: ignore[valid-type]

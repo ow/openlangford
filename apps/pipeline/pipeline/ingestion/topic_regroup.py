@@ -345,9 +345,17 @@ def apply(supabase, plan_path: str, *, dry_run: bool = True, backup_dir: str | N
         supabase.table("property_links").update({"matter_id": to}).eq("agenda_item_id", m["item"]).execute()
         touched |= {m["from"]} | ({to} if to else set())
         done += 1
+    clashes = []
     for i in report["identifiers"]:
         if not i["clash"]:
-            supabase.table("matters").update({"identifier": i["to"]}).eq("id", i["topic"]).eq("identifier", i["from"]).execute()
+            try:
+                supabase.table("matters").update({"identifier": i["to"]}).eq("id", i["topic"]).eq("identifier", i["from"]).execute()
+            except Exception as error:  # another topic already holds it: a duplicate pair, left for merging
+                if "matters_identifier_key" not in str(error):
+                    raise
+                clashes.append(i["topic"])
+    if clashes:
+        log(f"  [regroup] identifier kept on {len(clashes)} topic(s) (another topic holds it; likely duplicates): {clashes}")
     for e in extra:  # take extra entries off their topic before re-filing (a staff lock is kept for refile to move)
         if e.get("from"):
             supabase.table("agenda_items").update({"matter_id": None}).eq("id", e["item"]).eq("matter_id", e["from"]).execute()
