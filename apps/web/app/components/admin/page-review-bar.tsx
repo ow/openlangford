@@ -399,14 +399,13 @@ export function PageReviewBar() {
             {checking ? "Checking…" : review?.ai_checked_at ? (open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "No problems") : "Check"}
             {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{suggestions.length} new</span>}
           </button>
-          {(fixedRun || stayed) && (
-            <button type="button" disabled={busy && !fixing}
-              onClick={() => navigate(`/admin/reviews/next?${fixedRun ? "status=fixed&" : ""}from=${encodeURIComponent(pathname)}`)}
-              title={fixedRun ? "The next page the agent fixed, to confirm" : "The next page to review"}
-              className={cn(button, "flex items-center gap-1 text-zinc-700 hover:bg-zinc-100")}>
-              Next<ArrowRight className="h-4 w-4" />
-            </button>
-          )}
+          {/* Always there, so a page that can't be reviewed yet can be skipped (it stays as it is). */}
+          <button type="button" disabled={busy && !fixing}
+            onClick={() => navigate(`/admin/reviews/next?${fixedRun ? "status=fixed&" : ""}from=${encodeURIComponent(pathname)}`)}
+            title={fixedRun ? "The next page the agent fixed, to confirm" : stayed ? "The next page to review" : "Skip to the next page; this one stays as it is"}
+            className={cn(button, "flex items-center gap-1 text-zinc-700 hover:bg-zinc-100")}>
+            Next<ArrowRight className="h-4 w-4" />
+          </button>
           {review?.status && !fixing && (
             <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review"
               className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"><X className="h-4 w-4" /></button>

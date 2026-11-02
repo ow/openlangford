@@ -27,7 +27,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   const remembered = request.headers.get("Cookie")?.match(/(?:^|;\s*)review_mode=([a-z]+)/)?.[1];
   const kind: SitemapSection | "any" = valid(asked) ? asked : valid(remembered) ? remembered
     : sectionOf(url.searchParams.get("from") || "") ?? "any";
-  const path = await randomUnreviewedPath(getSupabaseAdminClient(), kind);
+  // A skipped page is still unreviewed: don't hand it straight back.
+  const from = url.searchParams.get("from");
+  let path = await randomUnreviewedPath(getSupabaseAdminClient(), kind);
+  for (let tries = 0; path && path === from && tries < 3; tries++) path = await randomUnreviewedPath(getSupabaseAdminClient(), kind);
+  if (path === from) path = null;
   const headers = privateAdminHeaders();
   if (valid(asked)) headers.append("Set-Cookie", `${MODE_COOKIE}=${asked}; Path=/; Max-Age=86400; SameSite=Lax; Secure; HttpOnly`);
   return redirect(path || "/admin/reviews", { headers });
