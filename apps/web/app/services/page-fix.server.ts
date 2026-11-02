@@ -131,10 +131,23 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed);
     const matterId = await matterForPath(supabase, path);
     if (!matterId) return finish("needs_work", "The agent only fixes topic pages so far. This one needs a person.");
-    if (!agreed.length && !row?.note) return finish("needs_work", "Nothing to fix: no flags were rated 👍 and there's no note.");
+    if (!agreed.length && !row?.note) {
+      // Everything agreed is already fixed (perhaps by a run a moment ago): leave the page as that run left it.
+      if (flags.some((f) => f.verdict === "agree" && f.fixed)) return;
+      return finish("needs_work", "Nothing to fix: no flags were rated 👍 and there's no note.");
+    }
 
     const page = readPage(await renderPage(origin, path));
     const itemId = (key: string | null | undefined) => Number(key?.match(/^(?:agenda|mention|background)-(\d+)$/)?.[1] ?? NaN);
+    // An item's entry key can change after it was flagged (a related topic's entry becomes a direct mention when the
+    // topics are regrouped): follow the item to its current key, and map fixes back to the flag's own key.
+    const pageKeys = new Set(page.entries.map((e) => e.key));
+    const renamed = new Map<string, string>();  // current key -> flagged key
+    for (const flag of agreed) {
+      if (!flag.key || pageKeys.has(flag.key) || !Number.isSafeInteger(itemId(flag.key))) continue;
+      const now = ["agenda", "mention", "background"].map((k) => `${k}-${itemId(flag.key)}`).find((k) => pageKeys.has(k));
+      if (now) { renamed.set(now, flag.key); flag.key = now; }
+    }
     const movableKey = (key: string | null | undefined) => !!key && /^(agenda|mention)-\d+$/.test(key);
     const candidates = new Map<string, Candidate[]>();
     for (const flag of agreed.filter((f) => movableKey(f.key))) {
@@ -235,7 +248,9 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           left.push(`${step.reason} (it didn't work: ${error instanceof Error ? error.message : "unknown error"})`);
         }
       } else {
-        left.push(step.reason);
+        const why = step.action === "cannot_fix" ? "" : step.key && !onPage.has(step.key) ? " (that entry isn't on the page any more)"
+          : " (that action doesn't apply to this entry)";
+        left.push(`${step.reason}${why}`);
       }
     }
     for (const move of mentionMoves) {
@@ -284,7 +299,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it; a whole-page issue is
     // resolved by a summary rewrite.
     const updated = flags.map((f) => (f.key && fixedKeys.has(f.key)) || (!f.key && f.verdict === "agree" && summaryNotes.length)
-      ? { ...f, fixed: true } : f);
+      ? { ...f, key: renamed.get(f.key!) ?? f.key, fixed: true } : { ...f, key: renamed.get(f.key!) ?? f.key });
     if (moves.length || merges.length || done.length) {
       // The pipeline's quick worker moves items and rewrites the changed summaries, then finishes the page.
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();

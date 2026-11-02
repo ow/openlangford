@@ -32,6 +32,7 @@ const sentences = (text: string) => (text.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g)
 function subjectPattern(title: string): RegExp | null {
   const first = String(title || "").split("\n")[0];
   const subject = (first.includes(" — ") ? first.slice(first.indexOf(" — ") + 3) : first)
+    .replace(/^[A-Z][A-Z ,&'/]+\s+[a-z]\)\s+/, "")  // "BYLAWS j) BYLAW NO. 1966 …": the section and its letter
     .replace(/\(File[^)]*\)?/gi, "").replace(/\s+-\s+(Staff Report|Report|Memo|Letter|Presentation)\b.*$/i, "");
   const words = subject.match(/[A-Za-z0-9]+/g) || [];
   if (words.length < 2) return null;
