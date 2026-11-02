@@ -22,9 +22,9 @@ import type { StaffRole } from "../lib/auth.server";
 
 const PlanSchema = z.object({
   actions: z.array(z.object({
-    action: z.enum(["remove_entry", "move_item", "rewrite_entry", "rewrite_summary", "cannot_fix"]),
+    action: z.enum(["remove_entry", "move_item", "rewrite_entry", "rewrite_summary", "merge_topic", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
-    to_matter_id: z.number().int().nullable().describe("move_item only: a candidate topic's id, or null to take the item off every topic."),
+    to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to take the item off every topic. merge_topic: the duplicate topic's id."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_summary: the instruction for the summary writer. Otherwise null."),
     reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
   })),
@@ -45,7 +45,7 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, title: 
 }
 
 function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
-  candidates: Map<string, Candidate[]>, records: Map<string, string>) {
+  candidates: Map<string, Candidate[]>, records: Map<string, string>, lookalikes: Candidate[] = []) {
   const removable = entries.filter((e) => removableKey(e.key)).map((e) => e.key);
   const movable = [...candidates.entries()].map(([key, list]) =>
     `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no likely topic found"}`).join("\n");
@@ -64,7 +64,9 @@ An item filed under this topic whose line is vague can get a new line (rewrite_e
 sentence of at most 140 characters saying what this step did for this topic, outcome first ("Council gave second and
 third reading to the rezoning for the 165-home Costin Avenue apartments"). Use only facts in its record below; no
 file numbers, bylaw numbers or jargon unless the record gives nothing else. Summaries of changed topics are rewritten
-automatically. A problem with the topic's summary or overall explanation (e.g. "say whether the 2023 agreement
+automatically. When a related or same-named topic below is the very same project as this page (a duplicate, not
+just an earlier or later step), merge_topic with its id folds it into one page.
+${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}A problem with the topic's summary or overall explanation (e.g. "say whether the 2023 agreement
 renews the 2021 one") gets rewrite_summary, with a short instruction for the summary writer in new_text; it will
 follow it only as far as the records support. For a problem you can't fix with these actions, say cannot_fix and why.
 ${records.size ? `\nRecords of flagged items:\n${[...records.entries()].map(([key, text]) => `[${key}] ${text}`).join("\n")}` : ""}
@@ -113,9 +115,10 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         ...(motions || []).map((m: any) => `Motion (${m.result || "result not recorded"}): ${String(m.text_content || "").slice(0, 400)}`)]
         .filter(Boolean).join(" | ").slice(0, 1500));
     }
+    const lookalikes = await relatedOrSameNamed(supabase, matterId);
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records),
+      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records, lookalikes),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
     });
@@ -125,9 +128,14 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const left: string[] = [];
     const fixedKeys = new Set<string>();
     const moves: { item_id: number; to_matter_id: number | null; reason: string }[] = [];
+    const merges: { with_matter_id: number; reason: string }[] = [];
     const rewrites: Record<string, string> = {};
     const summaryNotes: string[] = [];
     for (const step of result.data.actions) {
+      if (step.action === "merge_topic" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id)) {
+        merges.push({ with_matter_id: step.to_matter_id, reason: step.reason });
+        continue;
+      }
       if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
         summaryNotes.push((step.new_text || "").trim().slice(0, 500));
         done.push(`${step.reason} The summary is being rewritten with this note: "${(step.new_text || "").trim()}"`);
@@ -193,18 +201,19 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // resolved by a summary rewrite.
     const updated = flags.map((f) => (f.key && fixedKeys.has(f.key)) || (!f.key && f.verdict === "agree" && summaryNotes.length)
       ? { ...f, fixed: true } : f);
-    if (moves.length || done.length) {
+    if (moves.length || merges.length || done.length) {
       // The pipeline's quick worker moves items and rewrites the changed summaries, then finishes the page.
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
       const { error } = await supabase.from("pipeline_jobs").insert({
         municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1,
-        args: { path, moves, refresh: [matterId], done, left, requested_by: requester.id, role: requester.staffRole },
+        args: { path, moves, merges: merges.map((m) => ({ ...m, matter_id: matterId })), refresh: [matterId], done, left,
+          requested_by: requester.id, role: requester.staffRole },
       });
       if (!error) {
         await supabase.from("page_reviews").update({
           ai_flags: updated, agent_at: new Date().toISOString(),
           agent_note: [done.length ? `Done so far:\n${done.map((d) => `• ${d}`).join("\n")}` : "",
-            `Next, on the pipeline worker: ${moves.length ? `move ${moves.length} ${moves.length === 1 ? "item" : "items"}, then ` : ""}rewrite the summary.`]
+            `Next, on the pipeline worker: ${moves.length ? `move ${moves.length} ${moves.length === 1 ? "item" : "items"}, then ` : ""}${merges.length ? `merge ${merges.length} duplicate ${merges.length === 1 ? "topic" : "topics"}, then ` : ""}rewrite the summary.`]
             .filter(Boolean).join("\n\n"),
         }).eq("path", path);
         return;
@@ -220,4 +229,22 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     console.error("[page-fix]", error instanceof Error ? error.message : error);
     await finish("needs_work", "The agent hit an error and changed nothing. Try again, or fix it by hand.");
   }
+}
+
+/** Topics that might be this one under another name: linked as related, or with the same short title. */
+async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number): Promise<Candidate[]> {
+  const { data: me } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+  const title = (me?.meta as any)?.display_title as string | undefined;
+  const [{ data: links }, { data: named }] = await Promise.all([
+    supabase.from("matter_links").select("matter_id, related_matter_id").eq("kind", "related_matter").eq("hidden", false)
+      .or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`),
+    title ? supabase.from("matters").select("id").eq("meta->>display_title", title).neq("id", matterId).limit(10) : Promise.resolve({ data: [] }),
+  ]);
+  const ids = [...new Set([...(links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)),
+    ...((named || []) as any[]).map((m) => m.id)])];
+  if (!ids.length) return [];
+  const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", ids)
+    .is("meta->>canonical_matter_id", null);
+  return (data || []).map((m: any) => ({ id: m.id, title: m.meta?.display_title || m.title,
+    dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to ") }));
 }

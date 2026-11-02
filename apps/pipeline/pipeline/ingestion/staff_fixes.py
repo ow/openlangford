@@ -75,6 +75,23 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
         except Exception as exc:  # one failed move doesn't stop the rest
             left.append(f"{move.get('reason') or f'Moving item {item_id}'} (it didn't work: {exc})")
 
+    from pipeline.ingestion.matter_resolver import apply_merges
+
+    for merge in args.get("merges") or []:
+        a, b = int(merge["matter_id"]), int(merge["with_matter_id"])
+        try:
+            applied = apply_merges(supabase, [[a, b]], reason="staff")
+            if applied:
+                touched.add(applied[0]["canonical"])
+                done.append(merge.get("reason") or f"Merged topic {b} into this one.")
+                supabase.table("staff_actions").insert({
+                    "user_id": by, "role": role, "path": path, "action": "agent:merge_topic",
+                    "detail": {"canonical": str(applied[0]["canonical"]), "aliases": ",".join(map(str, applied[0]["aliases"])),
+                               "reason": (merge.get("reason") or "")[:400]},
+                }).execute()
+        except Exception as exc:
+            left.append(f"{merge.get('reason') or 'Merging a duplicate topic'} (it didn't work: {exc})")
+
     for meeting_id in meetings:
         try:
             refresh_meeting_matter_lifecycles(supabase, meeting_id)

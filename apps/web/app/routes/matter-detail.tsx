@@ -516,6 +516,24 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       ? directEntries[directEntries.length - 1].date
       : null;
 
+  // Addresses that share the same other topics are one card ("3044, 3108 and 3127 Glen Lake Road"), and topics already
+  // shown under Background aren't repeated for every address.
+  const relatedIds = new Set((story.related || []).map((r: any) => r.id));
+  const addressGroups = (() => {
+    const groups = new Map<string, { key: string; properties: any[]; others: any[]; street: string | null }>();
+    for (const p of properties as any[]) {
+      const others = (p.others || []).filter((m: any) => !relatedIds.has(m.id));
+      const key = others.map((m: any) => m.id).sort((a: number, b: number) => a - b).join(",") || "none";
+      const group = groups.get(key) ?? { key, properties: [] as any[], others, street: null as string | null };
+      group.properties.push(p);
+      groups.set(key, group);
+    }
+    for (const g of groups.values()) {
+      const streets = new Set(g.properties.map((p) => String(p.address).replace(/^[\d\-–A-Za-z]*\d[A-Za-z]?\s+/, "")));
+      g.street = g.properties.length > 1 && streets.size === 1 ? [...streets][0] : null;
+    }
+    return [...groups.values()];
+  })();
   const statusVariant = matterStatusVariant(matter.status);
   const shortDate = (d: string | null | undefined) =>
     d
@@ -649,23 +667,37 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                   <MattersMap matters={[matter]} activeLocation={matter.locations?.[0]} />
                 </div>
               )}
-              {properties.length > 0 && (
+              {addressGroups.length > 0 && (
                 <ul className={cn("space-y-3", matter.locations?.length ? "mt-4" : "")}>
-                  {properties.map((p) => (
-                    <li key={p.id} className="rounded-2xl border border-zinc-200 bg-surface p-4 shadow-sm">
+                  {addressGroups.map((g) => (
+                    <li key={g.key} className="rounded-2xl border border-zinc-200 bg-surface p-4 shadow-sm">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                        <Link to={propertyPath(p)} className="font-semibold text-zinc-900 hover:text-brand-700">
-                          {p.address}
-                        </Link>
+                        <span className="font-semibold text-zinc-900">
+                          {g.street ? (
+                            <>
+                              {g.properties.map((p: any, i: number) => (
+                                <span key={p.id}>
+                                  {i > 0 && (i === g.properties.length - 1 ? " and " : ", ")}
+                                  <Link to={propertyPath(p)} className="hover:text-brand-700">{p.address.slice(0, p.address.length - (g.street ?? "").length).trim()}</Link>
+                                </span>
+                              ))}{" "}{g.street}
+                            </>
+                          ) : g.properties.map((p: any, i: number) => (
+                            <span key={p.id}>
+                              {i > 0 && (i === g.properties.length - 1 ? " and " : ", ")}
+                              <Link to={propertyPath(p)} className="hover:text-brand-700">{p.address}</Link>
+                            </span>
+                          ))}
+                        </span>
                         <span className="text-sm text-zinc-500">
-                          {p.others.length === 0
-                            ? "No other matters at this address"
-                            : `${p.others.length} other ${p.others.length === 1 ? "matter" : "matters"} at this address`}
+                          {g.others.length === 0
+                            ? `No other matters at ${g.properties.length > 1 ? "these addresses" : "this address"}`
+                            : `${g.others.length} other ${g.others.length === 1 ? "matter" : "matters"} at ${g.properties.length > 1 ? "these addresses" : "this address"}`}
                         </span>
                       </div>
-                      {p.others.length > 0 && (
+                      {g.others.length > 0 && (
                         <ul className="mt-2 space-y-1.5">
-                          {p.others.slice(0, 4).map((m: any) => (
+                          {g.others.slice(0, 4).map((m: any) => (
                             <li key={m.id} className="flex items-baseline gap-3 text-sm">
                               <span className="w-12 shrink-0 tabular-nums text-xs text-zinc-400">
                                 {String(m.last_seen || m.first_seen || "").slice(0, 4)}
@@ -677,9 +709,9 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                           ))}
                         </ul>
                       )}
-                      {p.others.length > 4 && (
-                        <Link to={propertyPath(p)} className="mt-2 inline-block text-sm font-medium text-brand-700 hover:underline">
-                          See all {p.others.length + 1} at {p.address}
+                      {g.others.length > 4 && g.properties.length === 1 && (
+                        <Link to={propertyPath(g.properties[0])} className="mt-2 inline-block text-sm font-medium text-brand-700 hover:underline">
+                          See all {g.others.length + 1} at {g.properties[0].address}
                         </Link>
                       )}
                     </li>
