@@ -39,7 +39,9 @@ type Stored = { at: number; value: SiteTraffic };
 type Kv = { get(key: string, type: "json"): Promise<unknown>; put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void> };
 
 let memory: { key: string; stored: Stored } | null = null;
-let refreshing: Promise<SiteTraffic> | null = null;
+/** When this isolate last started a background refresh. Only finished values are shared between requests: a
+ * Worker can't await another request's fetch ("Cannot perform I/O on behalf of a different request"). */
+let refreshStartedAt = 0;
 
 class PostHogError extends Error {
   constructor(readonly status: number) {
@@ -120,22 +122,22 @@ export async function getSiteTraffic(env: Record<string, unknown>, waitUntil?: (
   }
   if (stored && memory?.stored !== stored) memory = { key, stored };
 
-  const refresh = (timeoutMs: number) => {
-    refreshing ??= readTraffic(projectId, apiKey, timeoutMs, Date.now()).then(async (value) => {
-      if (value.available) {
-        memory = { key, stored: { at: Date.now(), value } };
-        await kv?.put(key, JSON.stringify(memory.stored), { expirationTtl: 2 * 86400 }).catch(() => {});
-      }
-      return value;
-    }).finally(() => { refreshing = null; });
-    return refreshing;
+  const refresh = async (timeoutMs: number) => {
+    const value = await readTraffic(projectId, apiKey, timeoutMs, Date.now());
+    if (value.available) {
+      memory = { key, stored: { at: Date.now(), value } };
+      await kv?.put(key, JSON.stringify(memory.stored), { expirationTtl: 2 * 86400 }).catch(() => {});
+    }
+    return value;
   };
 
   if (stored && now - stored.at <= FRESH_MS) return stored.value;
   if (stored && now - stored.at <= STALE_MS) {
-    const pending = refresh(25_000);
-    if (waitUntil) waitUntil(pending);
+    if (waitUntil && now - refreshStartedAt > 60_000) {
+      refreshStartedAt = now;
+      waitUntil(refresh(25_000));
+    }
     return stored.value;
   }
-  return refresh(12_000);
+  return refresh(15_000);
 }
