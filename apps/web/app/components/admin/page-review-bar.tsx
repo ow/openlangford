@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate } from "react-router";
-import { Check, Flag, Loader2, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
+import { Check, Flag, Loader2, Pencil, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
@@ -54,7 +54,7 @@ export function PageReviewBar() {
   const { pathname } = useLocation();
   const load = useFetcher<Loaded>();
   const save = useFetcher<Saved>();
-  const [writing, setWriting] = useState(false);
+  const [editing, setEditing] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -62,7 +62,7 @@ export function PageReviewBar() {
   const finishing = useRef(false);
 
   useEffect(() => {
-    setWriting(false);
+    setEditing(null);
     setOpen(false);
     setConfirming(null);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
@@ -104,14 +104,13 @@ export function PageReviewBar() {
     finishing.current = intent === "reviewed" || intent === "needs_work";
     save.submit({ intent, path: pathname, title: document.title, ...extra }, { method: "post", action: "/api/page-review" });
     if (intent === "check") setOpen(true);
-    setWriting(false);
+    setEditing(null);
   };
-  const agreedNote = () => flags.filter((f) => f.verdict === "agree").map((f) => `${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}`).join("\n");
   const button = "whitespace-nowrap rounded-full px-2.5 py-1 font-medium";
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
-      {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note) && !writing && (
+      {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note) && (
         <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-zinc-200 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
@@ -141,7 +140,7 @@ export function PageReviewBar() {
                       <button type="button" disabled={busy || open_ > 0} onClick={() => submit("reviewed")}
                         title={open_ > 0 ? "Some flags are still open" : undefined}
                         className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-50">Looks good</button>
-                      <button type="button" disabled={busy} onClick={() => { setNote(review.note || ""); setWriting(true); }}
+                      <button type="button" disabled={busy} onClick={() => submit("needs_work")}
                         className="rounded-md px-2.5 py-1 font-medium text-amber-800 hover:bg-amber-100">Still needs work</button>
                     </div>
                   )}
@@ -162,6 +161,14 @@ export function PageReviewBar() {
                           <p className="mt-0.5 line-clamp-2 text-xs text-zinc-500">{flag.excerpt}</p>
                         </a>
                         <div className={cn("flex shrink-0 gap-0.5", flag.fixed && "hidden")}>
+                          {flag.verdict !== "disagree" && (
+                            <button type="button" disabled={busy} onClick={() => { setNote(flag.note || ""); setEditing(index); }}
+                              aria-label={flag.note ? "Edit instructions for the agent" : "Add instructions for the agent"}
+                              title={flag.note ? "Edit instructions for the agent" : "Add instructions for the agent"}
+                              className={cn("rounded-full p-1.5", flag.note ? "bg-brand-100 text-brand-700" : "text-zinc-400 hover:bg-zinc-100")}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                           {(["agree", "disagree"] as const).map((verdict) => (
                             <button key={verdict} type="button" disabled={busy}
                               aria-label={verdict === "agree" ? "Right, this is a problem" : "Wrong, this is fine"}
@@ -175,6 +182,19 @@ export function PageReviewBar() {
                         </div>
                       </div>
                       {flag.fixed && <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-700"><Check className="h-3.5 w-3.5" />Fixed</p>}
+                      {!flag.fixed && flag.verdict !== "disagree" && (editing === index ? (
+                        <form className="mt-2" onSubmit={(e) => { e.preventDefault(); submit("flag_note", { index: String(index), note }); }}>
+                          <textarea autoFocus rows={2} value={note} onChange={(e) => setNote(e.target.value)}
+                            placeholder="Tell the agent what to do, e.g. move it to the 2022 budget topic"
+                            className="w-full rounded-lg border border-zinc-200 bg-transparent p-2 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                          <div className="mt-1 flex gap-2 text-xs">
+                            <button type="submit" disabled={busy} className="rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700">Save</button>
+                            <button type="button" onClick={() => setEditing(null)} className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Cancel</button>
+                          </div>
+                        </form>
+                      ) : (
+                        flag.note ? <p className="mt-1.5 rounded-md bg-zinc-50 px-2 py-1 text-xs text-zinc-700"><span className="font-medium">Your instructions:</span> {flag.note}</p> : null
+                      ))}
                       {!flag.fixed && flag.verdict === "agree" && !removable(flag.key) && (
                         <button type="button" disabled={busy} onClick={() => submit("handled", { index: String(index) })}
                           className="mt-1.5 text-xs font-medium text-zinc-600 hover:underline">Mark handled</button>
@@ -204,7 +224,7 @@ export function PageReviewBar() {
                 <p className="mb-3 text-xs text-zinc-500">
                   👍 it's a real problem · 👎 it's fine. Each rating saves as you tap it and teaches later checks.{" "}
                   {open_ > 0
-                    ? <>Then press <strong>Needs work</strong> and the agent fixes what you agreed with.</>
+                    ? <>Then press <strong>Needs work</strong> and the agent fixes what you agreed with. To steer it, tap ✏️ on a flag.</>
                     : <>Every flag is resolved: you can mark this page <strong>Reviewed</strong>.</>}
                 </p>
               )}
@@ -264,22 +284,7 @@ export function PageReviewBar() {
           )}
         </div>
       )}
-      {writing ? (
-        <form
-          className="w-full rounded-2xl border border-zinc-200 bg-surface p-3 shadow-lg sm:w-80"
-          onSubmit={(e) => { e.preventDefault(); submit("needs_work", { note }); }}
-        >
-          <label htmlFor="page-review-note" className="text-xs font-medium text-zinc-600">What needs work?</label>
-          <textarea
-            id="page-review-note" autoFocus rows={4} value={note} onChange={(e) => setNote(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-transparent p-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
-          />
-          <div className="mt-2 flex justify-end gap-2 text-sm">
-            <button type="button" onClick={() => setWriting(false)} className="rounded-lg px-3 py-1.5 text-zinc-600 hover:bg-zinc-100">Cancel</button>
-            <button type="submit" className="rounded-lg bg-amber-600 px-3 py-1.5 font-medium text-white hover:bg-amber-700">Save</button>
-          </div>
-        </form>
-      ) : (
+      {(
         <div className={cn(
           "flex max-w-full items-center gap-0.5 rounded-full border bg-surface py-1 pl-3 pr-1 text-sm shadow-lg",
           review?.status === "reviewed" ? "border-emerald-300" : review?.status === "needs_work" ? "border-amber-300" : "border-zinc-200",
@@ -294,7 +299,7 @@ export function PageReviewBar() {
           ) : review?.status === "reviewed" ? (
             <span className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-emerald-700"><Check className="h-4 w-4" />Reviewed<span className="hidden sm:inline"> {reviewTime(review.reviewed_at)}</span></span>
           ) : review?.status === "needs_work" ? (
-            <button type="button" onClick={() => { setNote(review.note || ""); setWriting(true); }}
+            <button type="button" onClick={() => setOpen(true)}
               className="flex min-w-0 items-center gap-1.5 pr-1 text-amber-700" title={review.note || undefined}>
               <Flag className="h-4 w-4 shrink-0" /><span className="max-w-40 truncate">Needs work{review.note ? `: ${review.note}` : ""}</span>
             </button>
@@ -307,7 +312,8 @@ export function PageReviewBar() {
               className={cn(button, "text-emerald-700 hover:bg-emerald-50 disabled:text-zinc-400 disabled:hover:bg-transparent")}>Reviewed</button>
           )}
           {(!review?.status || review.status === "needs_work") && !fixing && (
-            <button type="button" disabled={busy} onClick={() => { setNote(agreedNote()); setWriting(true); }}
+            <button type="button" disabled={busy} onClick={() => submit("needs_work")}
+              title="Send this page to the agent to fix what you agreed with"
               className={cn(button, "text-amber-700 hover:bg-amber-50")}>Needs work</button>
           )}
           <button type="button" disabled={busy}

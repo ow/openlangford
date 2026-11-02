@@ -6,6 +6,8 @@ export type PageFlag = {
   key: string | null; problem: FlagProblem; reason: string; excerpt: string; verdict: FlagVerdict | null;
   /** Set when the entry was removed (by staff or the fix agent): an agreed flag is then resolved. */
   fixed?: boolean;
+  /** Staff's instruction to the fix agent about this entry ("move it to the 2022 budget topic"). */
+  note?: string | null;
 };
 
 /** A flag still needs attention until it's rated 👎 (fine) or rated 👍 and fixed. Reviewed waits for none. */

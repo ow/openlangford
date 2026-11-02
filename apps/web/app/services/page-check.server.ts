@@ -167,3 +167,14 @@ export async function resolveFlags(supabase: SupabaseClient, path: string, match
   const saved = await supabase.from("page_reviews").update({ ai_flags: updated }).eq("path", path);
   if (saved.error) throw new Error("Could not save the flag.");
 }
+
+/** Staff's instruction for the fix agent on one flag. Writing one agrees the flag is a problem. */
+export async function setFlagNote(supabase: SupabaseClient, path: string, index: number, note: string) {
+  const { data } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
+  const flags = [...((data?.ai_flags || []) as PageFlag[])];
+  if (!flags[index]) throw new Error("No such flag.");
+  const text = note.trim().slice(0, 1000) || null;
+  flags[index] = { ...flags[index], note: text, ...(text ? { verdict: "agree" as const } : {}) };
+  const saved = await supabase.from("page_reviews").update({ ai_flags: flags }).eq("path", path);
+  if (saved.error) throw new Error("Could not save the instruction.");
+}

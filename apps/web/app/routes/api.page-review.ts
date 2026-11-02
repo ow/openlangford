@@ -5,14 +5,14 @@ import { requireModerator } from "../lib/auth.server";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { clearPageReview, getPageReview, reviewPath, setPageReview } from "../services/page-reviews.server";
-import { checkPage, rateFlag, resolveFlags } from "../services/page-check.server";
+import { checkPage, rateFlag, resolveFlags, setFlagNote } from "../services/page-check.server";
 import { fixPage } from "../services/page-fix.server";
 import { unresolvedFlags } from "../lib/page-review-types";
 import {
   decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
 } from "../services/page-links.server";
 
-const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "handled", "remove_entry", "find_missing", "accept", "reject"];
+const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "handled", "remove_entry", "find_missing", "accept", "reject"];
 
 /** On a topic page: suggestions waiting for a decision, and the latest "find missing" search. */
 async function linkState(supabase: SupabaseClient, path: string) {
@@ -73,6 +73,10 @@ export async function action({ request, context }: Route.ActionArgs) {
         if ((table !== "matter_links" && table !== "matter_report_mentions") || !Number.isSafeInteger(id)) return bad("Unknown suggestion.");
         await decideSuggestion(supabase, matterId, table, id, intent === "accept", user.id);
       }
+    } else if (intent === "flag_note") {
+      const index = Number(form.get("index"));
+      if (!Number.isInteger(index) || index < 0) return bad("Unknown flag.");
+      await setFlagNote(supabase, path, index, String(form.get("note") || ""));
     } else if (intent === "handled") {
       // An agreed flag fixed some other way (or that can't be fixed here and is being let go).
       const index = Number(form.get("index"));
