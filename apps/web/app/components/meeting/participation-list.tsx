@@ -14,7 +14,11 @@ export type ParticipationSpeaker = {
   /** Hydrated by the loader when available, for the profile slug. */
   person?: { id: number; name?: string | null; slug?: string | null };
 };
-export type Participation = { overview?: string; source?: "minutes" | "transcript"; speakers?: ParticipationSpeaker[] };
+export type Participation = {
+  overview?: string; source?: "minutes" | "transcript"; speakers?: ParticipationSpeaker[];
+  /** Topic id -> positions of the speakers who spoke about it, judged by the pipeline (participation_mentions). */
+  about_matters?: Record<string, number[]>;
+};
 
 export const POSITION_LABEL: Record<string, string> = {
   supports: "Supports",
@@ -34,10 +38,17 @@ const STOP = new Set(["the", "and", "for", "with", "from", "bylaw", "city", "lan
 const words = (t: string) =>
   new Set(t.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !STOP.has(w)));
 
-/** Speakers relevant to a matter, by overlap between their topic and the matter's title/summary. */
-export function speakersAbout(p: Participation | undefined, about: string): ParticipationSpeaker[] {
+/** Speakers relevant to a matter: those the pipeline judged to be about it (or one of the topics merged into it);
+ * not yet judged, by overlap between their topic and the matter's title/summary. */
+export function speakersAbout(p: Participation | undefined, about: string, matterIds: number[] = []): ParticipationSpeaker[] {
+  const speakers = p?.speakers || [];
+  const judged = matterIds.map((id) => p?.about_matters?.[String(id)]).filter((v): v is number[] => Array.isArray(v));
+  if (judged.length) {
+    const keep = new Set(judged.flat());
+    return speakers.filter((_, i) => keep.has(i));
+  }
   const target = words(about);
-  return (p?.speakers || []).filter((s) => [...words(`${s.topic} ${s.point}`)].some((w) => target.has(w)));
+  return speakers.filter((s) => [...words(`${s.topic} ${s.point}`)].some((w) => target.has(w)));
 }
 
 /** Public comment, one line per speaker (from the meeting transcript). */

@@ -250,4 +250,8 @@ def build_links(
             if m["id"] in gained and meta.get("hidden") == "no_records":
                 meta = {k: v for k, v in meta.items() if k != "hidden"}
                 supabase.table("matters").update({"meta": meta}).eq("id", m["id"]).execute()
+        if mentions:
+            from pipeline.ingestion import participation_mentions
+
+            participation_mentions.run()  # public comment: only the speakers about each topic
     return {"related": related, "mentions": mentions}

@@ -806,7 +806,9 @@ def verify_hidden_links(*, dry_run: bool = False, link_ids: list[int] | None = N
                                 f"permits, subdivision, bylaw readings, agreements, budgets, reports and public comment, "
                                 f"before or after this matter. Answer no when the entry is about a different property, place "
                                 f"or project that only shares a street, park or program name, or names it only in passing "
-                                f"(a location, a venue, one of a list)."}
+                                f"(a location, a venue, one of a list). An annual-report or financial-statement passage "
+                                f"belongs only when it reports on this matter itself, not when it names the same facility "
+                                f"or organization while reporting on something else (an asset transfer on a fees topic)."}
 
     # Same permit or file number in the item's own title: the same application, kept without asking.
     numbers = {m["id"]: m for m in load_matters_light(file_numbers_only=True)}

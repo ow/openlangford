@@ -21,9 +21,23 @@ const STAGES: { test: RegExp; label: string }[] = [
   { test: /first reading|1st reading/i, label: "Introduced to council. A bylaw needs several readings before it becomes law." },
 ];
 
-export function stageExplanation(...texts: (string | null | undefined)[]): string | null {
-  const text = texts.filter(Boolean).join(" ");
-  return STAGES.find((s) => s.test.test(text))?.label ?? null;
+/** Words that make an "adopt" a recommendation or an instruction, not the adoption itself. */
+const NOT_ADOPTING = /\brecommend|\bdirect(s|ed)? staff|\bstaff (were |was )?directed|\bprepare\b|proceed with consideration|\brefer(red)? /i;
+
+/** A step's plain-language stage. Only Council's own adoption is "final approval": a committee recommending that
+ * Council adopt something, or Council directing staff to prepare a bylaw for adoption, is an earlier step. */
+export function stageExplanation(texts: (string | null | undefined)[], { committee = false }: { committee?: boolean } = {}): string | null {
+  const parts = texts.filter(Boolean) as string[];
+  const text = parts.join(" ");
+  // Judged per text: a headline "Council adopts the policy" is final even beside a motion that also directs staff.
+  const adopts = !committee && parts.some((t) => STAGES[1].test.test(t) && !NOT_ADOPTING.test(t));
+  return STAGES.find((s) => s.label === "Final approval." ? adopts : s.test.test(text))?.label ?? null;
+}
+
+/** Whether an item's meeting is a committee's rather than Council's. */
+export function isCommitteeItem(item: any): boolean {
+  const meeting = item?.meetings || {};
+  return /committee|commission|board/i.test(`${meeting.organizations?.name || ""} ${meeting.type || ""}`);
 }
 
 type Vote = { id: number; vote: string; person?: { name?: string | null } | null };
@@ -65,7 +79,7 @@ function outcome(motion: Motion) {
 export function isProceduralStep(item: any, extra: { hasParticipation: boolean; hasImage: boolean; headline?: string }) {
   const motions: Motion[] = item.motions || [];
   return (
-    Boolean(stageExplanation(extra.headline, item.title, ...motions.map((m) => m.text_content))) &&
+    Boolean(stageExplanation([extra.headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item) })) &&
     !item.debate_summary &&
     !extra.hasParticipation &&
     !extra.hasImage &&
@@ -109,7 +123,7 @@ export function TimelineStep({
   const letterCount = writtenLetters(written).length;
   const hasParticipation = Boolean(participation?.speakers?.length || letterCount);
   const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline });
-  const stage = stageExplanation(headline, item.title, ...motions.map((m) => m.text_content));
+  const stage = stageExplanation([headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item) });
   const title = headline || displayTitle(item.title);
   const itemHref = meetingPath({ id: item.meeting_id, slug: item.meetings?.slug }, `#item-${item.id}`);
   const meetingLine = (

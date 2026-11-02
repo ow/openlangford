@@ -490,14 +490,19 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
   // People who both spoke and wrote in about this matter get a note on each side.
   const aboutMatter = `${matterTitle(matter)} ${matter.plain_english_summary || ""}`;
+  const matterIds: number[] = [matter.id, ...((matter.meta?.merged_matter_ids || []) as number[])];
   const notes = crossNotes(
     timelineEntries.flatMap((entry: any) =>
       entry.kind === "mention"
-        ? speakersAbout(entry.item.meta?.participation, aboutMatter)
+        ? speakersAbout(entry.item.meta?.participation, aboutMatter, matterIds)
         : entry.item?.meta?.participation?.speakers || [],
     ),
     timelineEntries.flatMap((entry: any) => writtenLetters(entry.item?.meta?.written_participation)),
   );
+
+  const judgedSpeakers = (item: any) => item?.meta?.participation?.about_matters
+    && matterIds.some((id) => item.meta.participation.about_matters[String(id)])
+    ? speakersAbout(item.meta.participation, aboutMatter, matterIds) : [];
 
   // Build document lookup by agenda item ID
   const docsByItem = new Map<number, typeof matterDocuments>();
@@ -825,11 +830,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                             ) : (entry.relatedMatter || (item.linkQuote && item.linkSource !== "name_mention")) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
                             {override?.line ? (
                               <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
+                            ) : judgedSpeakers(item).length > 0 ? (
+                              // Public comment judged speaker by speaker: only those who spoke about this topic.
+                              <ParticipationList speakers={judgedSpeakers(item)} note={notes.speaker} className="mt-1" />
                             ) : item.linkQuote && !quoteIsTitle(item.linkQuote, item.title) ? (
                               // Found by name: the passage that names this matter, not the item's own summary.
                               <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(item.linkQuote)}”</blockquote>
                             ) : (() => {
-                              const about = speakersAbout(item.meta?.participation, `${matterTitle(matter)} ${matter.plain_english_summary || ""}`);
+                              const about = speakersAbout(item.meta?.participation, aboutMatter, matterIds);
                               return about.length > 0 ? (
                                 <ParticipationList speakers={about} note={notes.speaker} className="mt-1" />
                               ) : (

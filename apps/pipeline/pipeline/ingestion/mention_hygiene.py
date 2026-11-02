@@ -213,7 +213,11 @@ def run(*, dry_run: bool = False, backup_path: str | None = None) -> dict[str, A
           f"keep {found['kept_echoes']} echo(es) that are the only record")
     if dry_run:
         return {**found, "counts": counts}
-    return {**apply(found, backup_path), "counts": counts}
+    applied = apply(found, backup_path)
+    from pipeline.ingestion import participation_mentions
+
+    participation_mentions.run()  # public comment linked since the last run: only the speakers about each topic
+    return {**applied, "counts": counts}
 
 
 # --- a topic's own steps shown as mentions ------------------------------------------------------------------------
