@@ -119,6 +119,7 @@ export function PageReviewBar() {
   // Ratings are sent on their own (not through the router, which would reload the whole page after each one): they
   // show the moment they're pressed, and a failed save puts the stored rating back.
   const [ratings, setRatings] = useState<Record<number, "agree" | "disagree" | null>>({});
+  const ratingQueue = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => setRatings({}), [pathname]);
   const flags = (review?.ai_flags || []).map((f, i) => (i in ratings ? { ...f, verdict: ratings[i] } : f));
   const open_ = unresolvedFlags(flags).length;
@@ -161,15 +162,39 @@ export function PageReviewBar() {
     if (intent === "check") setOpen(true);
     setEditing(null);
   };
-  const rate = (index: number, verdict: "agree" | "disagree" | null) => {
-    setRatings((r) => ({ ...r, [index]: verdict }));
+  // One rating, sent on its own; the returned promise settles when it's saved (or rolled back).
+  const sendRating = (index: number, verdict: "agree" | "disagree" | null) => {
+    // Queued: each save rewrites the page's list of flags, so two at once could overwrite each other.
+    const next = ratingQueue.current.then(() => sendOne(index, verdict));
+    ratingQueue.current = next;
+    return next;
+  };
+  const sendOne = (index: number, verdict: "agree" | "disagree" | null) => {
     const body = new FormData();
     Object.entries({ intent: "rate", path: pathname, title: document.title, index: String(index), verdict: verdict ?? "none" })
       .forEach(([k, v]) => body.set(k, v));
-    fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } })
+    return fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } })
       .then((res) => { if (!res.ok) throw new Error(String(res.status)); })
-      .then(() => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`))
       .catch(() => setRatings((r) => { const next = { ...r }; delete next[index]; return next; }));
+  };
+  const rate = (index: number, verdict: "agree" | "disagree" | null) => {
+    setRatings((r) => ({ ...r, [index]: verdict }));
+    sendRating(index, verdict).then(() => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`));
+  };
+  // The "All" row: every undecided flag and found entry at once (already-decided ones are left alone).
+  const undecidedFlags = flags.map((f, i) => ({ f, i })).filter(({ f }) => f.verdict === null && !f.fixed && f.problem !== "editor_issue");
+  const undecidedFound = suggestions.filter((x) => !x.agreed);
+  const decideAll = async (verdict: "agree" | "disagree") => {
+    // Shown at once; saved one at a time, since each save rewrites the page's list of flags.
+    setRatings((r) => ({ ...r, ...Object.fromEntries(undecidedFlags.map(({ i }) => [i, verdict])) }));
+    for (const { i } of undecidedFlags) await sendRating(i, verdict);
+    for (const x of undecidedFound) {
+      const body = new FormData();
+      Object.entries({ intent: verdict === "agree" ? "accept" : "reject", path: pathname, title: document.title, table: x.table, id: String(x.id), agree: "1" })
+        .forEach(([k, v]) => body.set(k, v));
+      await fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } }).catch(() => null);
+    }
+    load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
   };
   const button = "whitespace-nowrap rounded-full px-2.5 py-1 font-medium";
   const markReviewed = () => {
@@ -265,6 +290,21 @@ export function PageReviewBar() {
               )}
               {review?.ai_page_issue && !(review.agent_at && review.ai_checked_at && review.agent_at > review.ai_checked_at) && (
                 <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-amber-900">Whole page: {plainKeys(review.ai_page_issue)}</p>
+              )}
+              {undecidedFlags.length + undecidedFound.length >= 2 && (
+                <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-zinc-50 px-2.5 py-1.5 text-xs text-zinc-600">
+                  <span>All {undecidedFlags.length + undecidedFound.length} undecided</span>
+                  <div className="flex shrink-0 gap-0.5">
+                    <Tip label="Yes to all: fix every flag, add every found entry (on Fix)">
+                      <button type="button" disabled={busy} onClick={() => decideAll("agree")} aria-label="Yes to all"
+                        className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-200"><ThumbsUp className="h-3.5 w-3.5" /></button>
+                    </Tip>
+                    <Tip label="No to all: leave every flag, reject every found entry">
+                      <button type="button" disabled={busy} onClick={() => decideAll("disagree")} aria-label="No to all"
+                        className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-200"><ThumbsDown className="h-3.5 w-3.5" /></button>
+                    </Tip>
+                  </div>
+                </div>
               )}
               {flags.length > 0 && (
                 <ol className="mb-3 space-y-2">
