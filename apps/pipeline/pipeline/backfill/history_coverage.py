@@ -22,6 +22,7 @@ from pipeline.ingestion.canonical_motions import canonical_motion_plan, existing
 from pipeline.ingestion.official_ballots import load_official_minutes
 from pipeline.ingestion.source_claims import build_claim_inventory
 from pipeline.ingestion.source_occurrences import text_occurrence_unique
+from pipeline.ingestion.ballot_reconstruction import validate_roster_entries
 
 
 def digest(value):
@@ -54,10 +55,36 @@ def ocr_display_text(body):
     return '\n'.join(re.sub(r'^[ \t]*(?:>[ \t]*)+', '', line) for line in body.splitlines()).strip()
 
 
+def tidy_spacing(text):
+    """Layout extraction pads lines with runs of spaces ("minutes of the          meeting"); words are unchanged."""
+    return '\n'.join(re.sub(r'[ \t]{2,}', ' ', line).strip() for line in (text or '').splitlines()).strip()
+
+
 def _explicit(source, proof, block):
     if proof.get('status') == 'explicit_operative' or source.get('source_format') == 'official_html_structural':
         return True
     return source.get('source_format') == 'ocr_marker' and bool(_OCR_OPERATIVE.match(block['motion_text'].strip()))
+
+
+def committee_actor_names(source_block):
+    """The mover and seconder as printed: "MOVED BY: A. CREUZOT SECONDED: N. STEWART" or on separate lines."""
+    def grab(pattern):
+        found = re.search(pattern, source_block or '', re.I | re.M)
+        return found.group(1).strip(' .:') if found else None
+    return {'mover': grab(r'MOVED[ \t]+BY[ \t]*:?[ \t]*(.+?)(?=[ \t]+SE[CG]ONDED\b|$)'),
+            'seconder': grab(r'SE[CG]ONDED(?:[ \t]+BY)?[ \t]*:?[ \t]*(.+?)$')}
+
+
+def unproven_committee_identities(meeting, review_scope):
+    """Citizen committee members linked to a person whose Council term began after this meeting: that the member
+    and the later councillor are one person is unproven (e.g. "N. Stewart", 2016-2017), so they count as unknown."""
+    if meeting.get('classification') != 'Committee':
+        return set()
+    starts = (review_scope or {}).get('council_term_starts') or {}
+    roster = (meeting.get('meta') or {}).get('committee_roster') or {}
+    return {m['person_id'] for m in roster.get('members') or []
+            if m.get('person_id') in starts and m.get('kind') != 'councillor'
+            and str(starts[m['person_id']]) > str(meeting['meeting_date'])}
 
 
 def plan_meeting(meeting, motions, items, source, *, review_scope=None):
@@ -120,7 +147,7 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
                     continue
                 old = motion['_existing_motion']
                 base['rebinds'].append({'motion_id': old['id'], 'item_order': rebind['item_order'],
-                    'text_content': ocr_display_text(block['motion_text']) if ocr else motion.get('_operative_motion_text') or block['motion_text'],
+                    'text_content': tidy_spacing(ocr_display_text(block['motion_text']) if ocr else motion.get('_operative_motion_text') or block['motion_text']),
                     'result': motion['result'],
                     'previous': {'text_content': old.get('text_content'), 'result': old.get('result')},
                     'meta': {'canonical_source_motion': identity, 'operative_motion_body': proof,
@@ -136,20 +163,34 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
                 base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_requires_unique_explicit_operative_body'})
                 continue
             ocr = source.get('source_format') == 'ocr_marker' and proof.get('status') != 'explicit_operative'
-            actors = motion['_canonical_actor_ids']
+            actors = dict(motion['_canonical_actor_ids'])
             actors_unreviewed = reviewed_native or source['source_format']=='original_pdf_reviewed_local_ocr'
-            # From a scan, keep only names that resolved exactly to a person on that day's roster.
-            name = lambda field: (None if actors_unreviewed or (ocr and actors[field] is None) else motion.get(field))
+            roster = (meeting.get('meta') or {}).get('committee_roster')
+            committee = meeting.get('classification') == 'Committee'
+            unproven = unproven_committee_identities(meeting, review_scope)
+            if committee:
+                # A committee's mover/seconder must be a member confirmed on that meeting's roster; a surname-and-
+                # initial match elsewhere (a later councillor with the same initial) is not proof of identity.
+                members = {m.get('person_id') for m in (roster or {}).get('members') or [] if m.get('person_id')} - unproven
+                names = (review_scope or {}).get('person_names') or {}
+                roster_people = [{'id': pid, 'name': names[pid]} for pid in members if pid in names]
+                printed = committee_actor_names(block['source_block'])
+                for field in ('mover', 'seconder'):
+                    resolved, unknown = validate_roster_entries(printed[field] or '', roster_people) if printed[field] else ([], [])
+                    actors[field] = resolved[0]['id'] if len(resolved) == 1 and not unknown else None
+                    motion = {**motion, field: resolved[0]['name'] if actors[field] else None}
+            # From a scan, or on a committee, keep only names that resolved to a confirmed person.
+            name = lambda field: (None if actors_unreviewed or ((ocr or committee) and actors[field] is None) else motion.get(field))
             votes = None
             roster = (meeting.get('meta') or {}).get('committee_roster')
             if meeting.get('classification') == 'Committee' and roster and (review_scope or {}).get('person_names'):
                 from pipeline.ingestion.committee_roster_ballots import committee_roster_votes
-                votes = committee_roster_votes(block, source.get('text', ''), roster, meeting['meeting_date'],
-                                               review_scope['person_names'])
+                names = {pid: name for pid, name in review_scope['person_names'].items() if pid not in unproven}
+                votes = committee_roster_votes(block, source.get('text', ''), roster, meeting['meeting_date'], names)
             base['new_motions'].append({'parent_agenda_id': parent['id'] if parent else None,
                 'placed_by': motion.get('_placed_by'),
                 **({'committee_votes': votes} if votes is not None else {}),
-                'text_content': ocr_display_text(motion['motion_text']) if ocr else motion.get('_operative_motion_text') or motion['motion_text'],
+                'text_content': tidy_spacing(ocr_display_text(motion['motion_text']) if ocr else motion.get('_operative_motion_text') or motion['motion_text']),
                 'result': motion['result'],
                 'mover': name('mover'),
                 'seconder': name('seconder'),
@@ -190,6 +231,9 @@ def closing_linked_vote_counts(connection, meeting_id, motion_ids):
 
 def audit(connection, meeting_ids, municipality_id, archive_root, cache_dir, project_ref=None):
     people = query(connection, 'SELECT id,name FROM people ORDER BY id')
+    council_starts = {row['person_id']: row['start'] for row in query(connection,
+        "SELECT ms.person_id, MIN(ms.start_date)::text start FROM memberships ms JOIN organizations o ON o.id=ms.organization_id "
+        "WHERE o.classification='Council' GROUP BY ms.person_id")}
     plans = []
     for meeting_id in meeting_ids:
         meeting, motions, items = read_meeting(connection, meeting_id, municipality_id)
@@ -203,6 +247,7 @@ def audit(connection, meeting_ids, municipality_id, archive_root, cache_dir, pro
             source = load_official_minutes(meeting, root=archive_root, people=people, cache_dir=cache_dir)
         scope={'allow_reviewed_legacy_reservations': True, 'allow_reviewed_source_header':True, 'allow_legacy_rebind': True,
             'allow_committee_motions': True, 'person_names': {p['id']: p['name'] for p in people},
+            'council_term_starts': council_starts,
             'project_ref':project_ref, 'municipality_id':municipality_id, 'archive_root':archive_root}
         from .legacy_occurrence_reviews import load_review
         try:

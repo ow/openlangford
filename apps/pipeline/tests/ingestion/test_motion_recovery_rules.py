@@ -162,3 +162,18 @@ def test_a_different_motion_on_the_item_is_not_rebound():
               'result': None, 'meta': {}}
     _, report = _plan([legacy])
     assert not report['rebound_legacy'] and report['unmapped_legacy_ids'] == [7]
+
+
+def test_committee_actor_names_inline_and_split():
+    from pipeline.backfill.history_coverage import committee_actor_names, tidy_spacing
+    assert committee_actor_names('MOVED BY: A. CREUZOT SECONDED: N. STEWART\nThat ...') == {'mover': 'A. CREUZOT', 'seconder': 'N. STEWART'}
+    assert committee_actor_names('MOVED BY: WADE\nSECONDED: HORNER\nTHAT ...') == {'mover': 'WADE', 'seconder': 'HORNER'}
+    assert tidy_spacing('minutes of the          meeting\n  held   May 8') == 'minutes of the meeting\nheld May 8'
+
+
+def test_later_councillor_link_on_an_earlier_committee_is_unproven():
+    from pipeline.backfill.history_coverage import unproven_committee_identities
+    meeting = {'classification': 'Committee', 'meeting_date': '2017-05-29', 'meta': {'committee_roster': {'members': [
+        {'person_id': 136, 'kind': 'member'}, {'person_id': 137, 'kind': 'councillor'}]}}}
+    scope = {'council_term_starts': {136: '2018-11-05', 137: '2014-11-03'}}
+    assert unproven_committee_identities(meeting, scope) == {136}
