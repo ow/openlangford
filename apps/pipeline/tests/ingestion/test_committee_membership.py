@@ -148,3 +148,12 @@ def test_councillor_identified_from_council_on_the_date_with_scan_tolerance():
     e = {"initial": "M", "surname": "Sahlstronn"}
     assert people.councillor(e, date(2022, 1, 25)) == (7, "sitting_council_member_on_date")
     assert people.councillor(e, date(2023, 1, 25))[0] is None
+
+
+def test_titles_companies_and_non_voting_members():
+    from pipeline.ingestion.committee_membership import parse_entry
+
+    assert parse_entry("V. CMMC Rep") is None
+    assert parse_entry("Victoria Contracting") is None
+    assert parse_entry("D. Wilson (non-voting)")["non_voting"] is True
+    assert parse_entry("D. Wilson")["non_voting"] is False

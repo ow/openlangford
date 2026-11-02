@@ -28,7 +28,7 @@ from collections import Counter, defaultdict
 from datetime import date, datetime, timezone
 from typing import Any
 
-ROSTER_VERSION = 1
+ROSTER_VERSION = 2
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 LABEL = re.compile(r"^\s*#*\s*\**(PRESENT|ABSENT|REGRETS|AT[TI]ENDING|ALSO\s+PRESENT|STAFF(?:\s+PRESENT)?|GUESTS?)\b\s*:?\s*(.*)$", re.I)
@@ -110,6 +110,9 @@ def _split_names(text: str) -> list[str]:
     return [p for p in (_clean(x) for x in re.split(r"[,;]", text)) if p]
 
 
+COMPANY = re.compile(r"\b(?:Contracting|Consulting|Consultants?|Construction|Engineering|Ltd|Inc|Corp|Corporation|Company|Group|Services|Associates)\b\.?", re.I)
+
+
 def parse_entry(raw: str, group: str | None = None) -> dict | None:
     """'Councillor L Szpak - Chair' / 'D. Blackwell (Chair)' / 'VCMMC Rep. M. Gibbins' / 'D. Hopkins, Corporate
     Officer, Esquimalt' → {name, initial, surname, kind, chair, vice, note}."""
@@ -137,10 +140,14 @@ def parse_entry(raw: str, group: str | None = None) -> dict | None:
         return {"skip": True}
     if TITLE_WORDS.search(core) or MUNICIPALITY.match(core.strip()):
         return None  # a job title or a municipality, not a person
+    if COMPANY.search(core):
+        return None  # a firm ("Victoria Contracting") printed in the roster, not a member
     core = core.strip().rstrip(" -.")
     m = re.match(r"^(?:([A-Z])\.?\s*(?:[A-Z]\.\s*)?|([A-Z][a-z]+(?:-[A-Z][a-z]+)?)\s+)((?:[A-Z][a-z]*'?)?(?:Mc|Mac|O')?[A-Z][A-Za-z'\-]+(?:\s+[A-Z][A-Za-z'\-]+)?)$", core)
     if m:
         initial, first, surname = (m.group(1) or m.group(2)[0]).upper(), m.group(2), m.group(3)
+        if re.search(r"\bReps?\b", surname) or re.fullmatch(r"[A-Z]{2,6}", surname):
+            return None  # "V. CMMC Rep" (the VCMMC representative's title), "C. AD": an acronym, not a surname
     elif kind in ("councillor", "mayor") and re.match(r"^[A-Z][A-Za-z'\-]+$", core):
         initial, first, surname = None, None, core  # "Councillor Blackwell (Chair)": Council's own roll identifies the office holder
     else:
@@ -154,6 +161,7 @@ def parse_entry(raw: str, group: str | None = None) -> dict | None:
             "vice": bool(re.search(r"Vice[- ]?Chair", note_text, re.I)) and not re.search(r"Alternate", note_text, re.I),
             "acting_chair": bool(re.search(r"(?:Acting\s+|A/)(?:Vice[- ]?)?Chair", note_text, re.I)),
             "remote": bool(re.search(r"Remote|Electronic|via", note_text, re.I)),
+            "non_voting": bool(re.search(r"non[- ]?voting", raw, re.I)),
             "affiliation": affiliation, "note": note_text or None}
 
 
@@ -243,6 +251,48 @@ def _term_end(text: str, start: date) -> str | None:
     if re.search(r"\bone[- ]year\s+term\b", text, re.I):
         return date(start.year + 1, start.month, start.day).isoformat()
     return None
+
+
+OTHER_REPORT_HEADINGS = re.compile(
+    r"Board of Variance|MAYOR AND COUNCIL|Beautification (?:&|and) Festival Committee|Parks and Recreation Committee"
+    r"|Planning and Zoning Committee|Accessibility Advisory Committee|Advisory Design Panel|Heritage Commission", re.I)
+
+
+class ReportRosters:
+    """Committee member lists printed in the City's annual reports ("Protective Services Committee Councillor Lillian
+    Szpak, Chair … Ms. Deborah Wilson Mr. Hans Frederiksen …"): an independent, published record of who sat on each
+    committee in a year. A roster name found there (same initial and surname, that year or the next report) is
+    corroborated, and the report supplies the full name."""
+
+    def __init__(self, cur, committees: dict[int, str]):
+        cur.execute("""select r.year, string_agg(p.content, ' ' order by p.page) from public_report_pages p
+                       join public_reports r on r.id = p.report_id where r.kind = 'annual_report'
+                       and p.content ~* 'committee' and p.content ~* 'councillor' group by r.year""")
+        pages = {y: re.sub(r"\s+", " ", t or "") for y, t in cur.fetchall()}
+        heads = {org: committee_pattern(re.sub(r"\s*Committee$", "", name) + " Committee") for org, name in committees.items()}
+        self.sections: dict[tuple[int, int], str] = {}
+        for year, text in pages.items():
+            spots = sorted((m.start(), m.end(), org) for org, pat in heads.items() for m in pat.finditer(text))
+            # A section ends at the next committee heading. Only known headings count: member names run straight
+            # into the next heading, so a generic "Words … Committee" pattern would swallow them.
+            stops = sorted({m.start() for pat in [*heads.values(), OTHER_REPORT_HEADINGS] for m in pat.finditer(text)})
+            for start, end, org in spots:
+                nxt = next((x for x in stops if x > end), end + 900)
+                self.sections[(org, year)] = self.sections.get((org, year), "") + " " + text[end:min(nxt, end + 900)]
+
+    def corroborate(self, org: int, day, entry: dict) -> dict | None:
+        if not entry.get("surname"):
+            return None
+        for year in (day.year, day.year + 1, day.year - 1):
+            section = self.sections.get((org, year))
+            if not section:
+                continue
+            initial = entry.get("initial") or ""
+            m = re.search(rf"(?:Councillor|Mayor|Mr\.?|Mrs\.?|Ms\.?|Dr\.?|Lt\.?)?\s*({initial}[a-z’'\-]+)?\s+{re.escape(entry['surname'])}\b", section)
+            if m and (m.group(1) or not initial):
+                return {"report_year": year, "quote": section[max(0, m.start() - 40):m.end() + 40].strip(),
+                        "full_name": f"{m.group(1)} {entry['surname']}" if m.group(1) else None}
+        return None
 
 
 def committee_pattern(name: str) -> re.Pattern:
@@ -430,6 +480,7 @@ def build_plan(cur, organization_ids: list[int] | None = None, log=print) -> dic
                    and exists (select 1 from meetings mt where mt.organization_id = o.id) order by o.id""")
     committees = {i: n for i, n in cur.fetchall() if not organization_ids or i in organization_ids}
     people = People(cur)
+    report_rosters = ReportRosters(cur, committees)
     appointments = find_appointments(cur, committees)
     full_names: dict[int, dict[tuple[str, str], set[str]]] = defaultdict(lambda: defaultdict(set))
     for a in appointments:
@@ -508,7 +559,14 @@ def build_plan(cur, organization_ids: list[int] | None = None, log=print) -> dic
                     m = {"name": e["raw"], "person_id": pid, "how": how, "attendance": bucket,
                          "kind": "councillor" if is_council and e["kind"] != "mayor" else e["kind"],
                          "chair": e["chair"], "vice_chair": e["vice"], "acting_chair": e["acting_chair"], "alternate": e["alternate"],
-                         "remote": e["remote"], "affiliation": e["affiliation"]}
+                         "remote": e["remote"], "affiliation": e["affiliation"],
+                         # "(non-voting)" in the roster: present, but never counted as a voter or toward quorum.
+                         "voting": not e.get("non_voting")}
+                    report = report_rosters.corroborate(org, day, e)
+                    if report:
+                        m["corroborated_by"] = report
+                        if new_name and report.get("full_name") and re.match(r"^[A-Z]\.?\s", new_name):
+                            new_name = report["full_name"]  # "E. Wilson" → "Edward Wilson", as the annual report lists
                     if new_name:
                         m["new_person"] = new_name
                         plan["new_people"].setdefault(f"{org}:{key[0]}:{key[1]}", {"name": new_name, "organization_id": org,
