@@ -47,6 +47,7 @@ export function PageReviewBar() {
   const load = useFetcher<Loaded>();
   const save = useFetcher<Saved>();
   const [editing, setEditing] = useState<number | null>(null);
+  const [blocked, setBlocked] = useState(false);  // pressed Reviewed with flags still open
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -55,6 +56,7 @@ export function PageReviewBar() {
 
   useEffect(() => {
     setEditing(null);
+    setBlocked(false);
     setOpen(false);
     setConfirming(null);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
@@ -111,6 +113,12 @@ export function PageReviewBar() {
     setEditing(null);
   };
   const button = "whitespace-nowrap rounded-full px-2.5 py-1 font-medium";
+  const markReviewed = () => {
+    if (open_ > 0) { setBlocked(true); setOpen(true); return; }
+    setBlocked(false);
+    submit("reviewed");
+  };
+  const spinner = (intent: string) => pending === intent ? <Loader2 className="mr-1 inline h-3.5 w-3.5 animate-spin align-[-2px]" /> : null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
@@ -132,6 +140,11 @@ export function PageReviewBar() {
             <p className="text-zinc-500">The model is reading this page as a resident would. This takes a few seconds.</p>
           ) : (
             <>
+              {blocked && open_ > 0 && (
+                <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-sm text-amber-900">
+                  Rate or fix the {open_} open {open_ === 1 ? "flag" : "flags"} below first, then mark the page Reviewed.
+                </p>
+              )}
               {links?.hidden && (
                 <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2.5 py-2 text-xs text-zinc-700">
                   <span className="flex items-center gap-1.5"><EyeOff className="h-3.5 w-3.5" />Hidden from the public. Only staff can see this page.</span>
@@ -147,11 +160,10 @@ export function PageReviewBar() {
                   <p className="whitespace-pre-line text-zinc-800">{review.agent_note}</p>
                   {review.status === "fixed" && (
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <button type="button" disabled={busy || open_ > 0} onClick={() => submit("reviewed")}
-                        title={open_ > 0 ? "Some flags are still open" : undefined}
-                        className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-50">Looks good</button>
+                      <button type="button" disabled={busy} onClick={markReviewed}
+                        className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-60">{spinner("reviewed")}Looks good</button>
                       <button type="button" disabled={busy} onClick={() => submit("needs_work")}
-                        className="rounded-md px-2.5 py-1 font-medium text-amber-800 hover:bg-amber-100">Still needs work</button>
+                        className="rounded-md px-2.5 py-1 font-medium text-amber-800 hover:bg-amber-100">{spinner("needs_work")}Still needs work</button>
                     </div>
                   )}
                 </div>
@@ -351,15 +363,14 @@ export function PageReviewBar() {
             <span className="hidden whitespace-nowrap pr-1 text-zinc-500 sm:inline">Not reviewed</span>
           )}
           {review?.status !== "reviewed" && !fixing && review?.status !== "fixed" && (
-            <button type="button" disabled={busy || open_ > 0} onClick={() => submit("reviewed")}
-              title={open_ > 0 ? `${open_} ${open_ === 1 ? "flag is" : "flags are"} still open` : undefined}
-              className={cn(button, "text-emerald-700 hover:bg-emerald-50 disabled:text-zinc-400 disabled:hover:bg-transparent")}>Reviewed</button>
+            <button type="button" disabled={busy} onClick={markReviewed}
+              className={cn(button, "text-emerald-700 hover:bg-emerald-50", open_ > 0 && "text-emerald-700/60")}>{spinner("reviewed")}Reviewed</button>
           )}
           {(!review?.status || review.status === "needs_work") && !fixing && (
             <button type="button" disabled={busy}
               onClick={() => (flags.some((f) => f.verdict === "agree" && !f.fixed) || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
               title="Send this page to the agent to fix what you agreed with"
-              className={cn(button, "text-amber-700 hover:bg-amber-50")}>Needs work</button>
+              className={cn(button, "text-amber-700 hover:bg-amber-50")}>{spinner("needs_work")}Needs work</button>
           )}
           <button type="button" disabled={busy}
             onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
