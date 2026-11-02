@@ -6,6 +6,7 @@ import { reviewKind } from "./page-reviews.server";
 import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-types";
 import { approvedGuidance, examplesFor, recordExample } from "./review-learning.server";
 import { verifyAgainstRecords } from "./page-verify.server";
+import { latestFindJob, listSuggestions, matterForPath, type Suggestion } from "./page-links.server";
 
 /**
  * A reader's check of one public page: the page is rendered as a signed-out visitor sees it, and the model is
@@ -101,7 +102,10 @@ agree with each other, and that any claim about how they voted or what they said
 address or only mentions this one in passing.`,
 };
 
-export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = [], kind = "matters") {
+/** A search suggestion's key, as the fix agent knows it ("suggestion-L12" a meeting item or topic, "suggestion-R7" a report page). */
+export const suggestionKey = (s: Pick<Suggestion, "table" | "id">) => `suggestion-${s.table === "matter_links" ? "L" : "R"}${s.id}`;
+
+export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = [], kind = "matters", suggestions: Suggestion[] = []) {
   // Approved guidance replaces the built-in description of its problem type.
   const ruleFor = new Map(rules.map((r) => [r.problem, r.text]));
   const problems = CHECK_PROBLEMS.map((k) => `- ${k}: ${ruleFor.get(k) ?? FLAG_PROBLEMS[k]}`).join("\n");
@@ -125,29 +129,49 @@ Heading: ${page.heading}
 Description: ${page.description}
 
 ${page.entries.length ? (kind === "meetings" ? "The page, then its agenda items, each with its key:" : "Timeline entries (newest first), each with its key:") : "Page text:"}
-${content}`;
+${content}${suggestions.length ? `
+
+A search of the council's records found these entries, NOT yet on the page (an editor decides whether to add them):
+${suggestions.map((x) => `[${suggestionKey(x)}] ${x.date ? `${String(x.date).slice(0, 10)} ` : ""}${x.title}${x.quote ? `: "${x.quote.slice(0, 240)}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}
+When the page lacks a step or fact one of these supplies (its adoption, the decision its status says is missing), don't
+just say it's missing: say which one supplies it in the fix, e.g. "Add the suggested entry ${suggestionKey(suggestions[0])}".` : ""}`;
+}
+
+/** The latest "find missing" search for a topic, once it's done (or after `waitMs`): the check reads its suggestions. */
+async function settledSuggestions(supabase: SupabaseClient, path: string, waitMs = 35_000): Promise<Suggestion[]> {
+  const matterId = await matterForPath(supabase, path);
+  if (!matterId) return [];
+  for (const until = Date.now() + waitMs; Date.now() < until;) {
+    const job = await latestFindJob(supabase, matterId);
+    if (!job || (job.status !== "queued" && job.status !== "running")) break;
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  return listSuggestions(supabase, matterId).catch(() => []);
 }
 
 /** Check one page and store the result on its page_reviews row (keeping any review status and note). */
 export async function checkPage(supabase: SupabaseClient, origin: string, path: string): Promise<PageCheck> {
   const page = readPage(await renderPage(origin, path));
   const kind = reviewKind(path);
-  const [examples, guidance] = await Promise.all([
+  // Two readings at once: against the records behind the page (page-verify, starts now), and as a resident (this
+  // prompt), which first waits for the "find missing" search so it can point a missing step at what the search found.
+  const verifying = verifyAgainstRecords(supabase, path).catch((error) => {
+    console.error("[page-check] verifying against the records failed:", error instanceof Error ? error.message : error);
+    return [] as PageFlag[];
+  });
+  const [examples, guidance, suggestions] = await Promise.all([
     examplesFor(supabase, kind, [page.heading, page.description, ...page.entries.map((e) => e.text), page.body].join("\n").slice(0, 6000)),
     approvedGuidance(supabase, kind),
+    kind === "matters" ? settledSuggestions(supabase, path) : Promise.resolve([] as Suggestion[]),
   ]);
-  // Two readings at once: as a resident (this prompt) and against the records behind the page (page-verify).
   const [result, unsupported] = await Promise.all([
     getAiClient().json({
       stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
-      prompt: checkPrompt(page, examples, guidance.rules, kind),
+      prompt: checkPrompt(page, examples, guidance.rules, kind, suggestions),
       schema: CheckSchema,
       schemaName: "page_check",
     }),
-    verifyAgainstRecords(supabase, path).catch((error) => {
-      console.error("[page-check] verifying against the records failed:", error instanceof Error ? error.message : error);
-      return [] as PageFlag[];
-    }),
+    verifying,
   ]);
   const byKey = new Map(page.entries.map(e => [e.key, e.text]));
   // What staff already decided on this page: a re-raised flag (same entry, same problem) keeps its rating;
