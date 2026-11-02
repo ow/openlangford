@@ -13,7 +13,6 @@ import {
   ChevronDown,
   Building2,
   CheckCircle2,
-  Mic,
   Landmark,
   LogOut,
   Menu,
@@ -187,7 +186,7 @@ export function Navbar() {
               }
               items={[
                 { name: "Members", href: "/people", icon: Users },
-                { name: "Participants", href: "/participants", icon: Mic },
+                // Participants (/participants) left out of the menu for now; the pages still exist.
                 { name: "Alignment", href: "/alignment", icon: Scale },
                 { name: "Compare", href: "/compare", icon: ArrowLeftRight },
                 { name: "Elections", href: "/elections", icon: Vote },
@@ -292,12 +291,6 @@ export function Navbar() {
               href="/people"
               icon={Users}
               isActive={isLinkActive("/people")}
-            />
-            <MobileNavLink
-              name="Participants"
-              href="/participants"
-              icon={Mic}
-              isActive={isLinkActive("/participants")}
             />
             <MobileNavLink
               name="Alignment"
