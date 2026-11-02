@@ -447,11 +447,6 @@ export function PageReviewBar() {
               className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-50")}>
               {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>
           )}
-          {!review?.internal_note && (
-            <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_INTERNAL_NOTE))}
-              aria-label="Add an internal note" title="Add an internal note (only staff see it)"
-              className="rounded-full p-1.5 text-amber-700 hover:bg-amber-100"><StickyNote className="h-4 w-4" /></button>
-          )}
           <button type="button" disabled={busy}
             onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
             title={review?.ai_checked_at ? "Show what the check found" : "Have the model read this page and flag problems"}
@@ -460,17 +455,24 @@ export function PageReviewBar() {
             {checking ? "Checking…" : review?.ai_checked_at ? (open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "No problems") : "Check"}
             {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{suggestions.length} new</span>}
           </button>
+          {/* Words for the decisions above; icons for the tools around them, with Next last. */}
+          <span aria-hidden="true" className="mx-1 h-4 w-px bg-amber-300" />
+          <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_INTERNAL_NOTE))}
+            aria-label={review?.internal_note ? "Edit the internal note" : "Add an internal note"}
+            title={review?.internal_note ? "Edit the internal note (only staff see it)" : "Add an internal note (only staff see it)"}
+            className={cn("rounded-full p-1.5 hover:bg-amber-100", review?.internal_note ? "text-amber-700" : "text-zinc-500")}>
+            <StickyNote className={cn("h-4 w-4", review?.internal_note && "fill-amber-200")} />
+          </button>
+          {review?.status && !fixing && (
+            <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review" title="Clear this page's review"
+              className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"><X className="h-4 w-4" /></button>
+          )}
           {/* Always there, so a page that can't be reviewed yet can be skipped (it stays as it is). */}
           <button type="button" disabled={busy && !fixing}
             onClick={() => navigate(`/admin/reviews/next?${fixedRun ? "status=fixed&" : ""}from=${encodeURIComponent(pathname)}`)}
-            title={fixedRun ? "The next page the agent fixed, to confirm" : stayed ? "The next page to review" : "Skip to the next page; this one stays as it is"}
-            className={cn(button, "flex items-center gap-1 text-zinc-700 hover:bg-zinc-100")}>
-            Next<ArrowRight className="h-4 w-4" />
-          </button>
-          {review?.status && !fixing && (
-            <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review"
-              className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"><X className="h-4 w-4" /></button>
-          )}
+            aria-label="Next page"
+            title={fixedRun ? "Next: the next page the agent fixed, to confirm" : stayed ? "Next page to review" : "Skip to the next page; this one stays as it is"}
+            className="rounded-full p-1.5 text-zinc-700 hover:bg-zinc-100"><ArrowRight className="h-4 w-4" /></button>
         </div>
       )}
       {save.data?.error && save.state === "idle" && <p className="rounded-lg bg-surface px-2 py-1 text-xs text-red-700 shadow">{save.data.error}</p>}
