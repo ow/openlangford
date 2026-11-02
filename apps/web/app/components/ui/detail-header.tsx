@@ -39,28 +39,29 @@ export function DetailHeader({
   const items = meta.filter(Boolean);
   return (
     <header className={cn("mb-8", className)}>
+      {/* The breadcrumb row spans the whole header, so a follow button sits at its right edge on every screen. */}
+      {(back || metaAction) && (
+        <div className="mb-2 flex items-center justify-between gap-3">
+        {back ? (
+        <nav aria-label="Breadcrumb" className="text-sm">
+          <ol className="flex flex-wrap items-center gap-x-1.5 text-zinc-500">
+            <li>
+              <Link to="/" className="hover:text-brand-700">Home</Link>
+            </li>
+            <li aria-hidden="true" className="text-zinc-300">/</li>
+            <li>
+              <Link to={back.to} className="font-medium text-zinc-700 hover:text-brand-700">
+                {back.label}
+              </Link>
+            </li>
+          </ol>
+        </nav>
+        ) : <span />}
+        {metaAction && <div className="shrink-0">{metaAction}</div>}
+        </div>
+      )}
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
-          {(back || metaAction) && (
-            <div className="mb-2 flex items-center justify-between gap-3">
-            {back ? (
-            <nav aria-label="Breadcrumb" className="text-sm">
-              <ol className="flex flex-wrap items-center gap-x-1.5 text-zinc-500">
-                <li>
-                  <Link to="/" className="hover:text-brand-700">Home</Link>
-                </li>
-                <li aria-hidden="true" className="text-zinc-300">/</li>
-                <li>
-                  <Link to={back.to} className="font-medium text-zinc-700 hover:text-brand-700">
-                    {back.label}
-                  </Link>
-                </li>
-              </ol>
-            </nav>
-            ) : <span />}
-            {metaAction && <div className="shrink-0">{metaAction}</div>}
-            </div>
-          )}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">
               {title}

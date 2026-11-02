@@ -132,7 +132,7 @@ export function PageReviewBar() {
   return (
     <div className="fixed bottom-4 left-4 right-4 z-40 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
       {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
-        <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-zinc-200 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
+        <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-dashed border-amber-400 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
               <div className="font-semibold text-zinc-900">
@@ -360,10 +360,11 @@ export function PageReviewBar() {
       )}
       {(
         <div className={cn(
-          "flex max-w-full items-center gap-0.5 rounded-full border bg-surface py-1 pl-3 pr-1 text-sm shadow-lg",
-          review?.status === "reviewed" ? "border-emerald-300" : review?.status === "needs_work" ? "border-amber-300" : "border-zinc-200",
+          // The admin-only treatment (components/ui/admin-only.tsx): a dashed amber frame with an "Admin" tag.
+          "flex max-w-full items-center gap-0.5 rounded-full border border-dashed border-amber-400 bg-amber-50 py-1 pl-3 pr-1 text-sm shadow-lg",
           busy && !checking && "opacity-60",
         )}>
+          <span className="mr-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-700">Admin</span>
           {fixing ? (
             <button type="button" onClick={() => setOpen(true)} className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-brand-700"><Loader2 className="h-4 w-4 animate-spin" />Agent fixing…</button>
           ) : review?.status === "fixed" ? (
