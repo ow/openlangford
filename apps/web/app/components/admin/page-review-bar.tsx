@@ -222,9 +222,10 @@ export function PageReviewBar() {
               )}
               {flags.length > 0 && (
                 <p className="mb-3 text-xs text-zinc-500">
-                  👍 it's a real problem · 👎 it's fine. Each rating saves as you tap it and teaches later checks.{" "}
+                  <ThumbsUp className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> it's a real problem ·{" "}
+                  <ThumbsDown className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> it's fine. Each rating saves as you tap it and teaches later checks.{" "}
                   {open_ > 0
-                    ? <>Then press <strong>Needs work</strong> and the agent fixes what you agreed with. To steer it, tap ✏️ on a flag.</>
+                    ? <>Then press <strong>Needs work</strong> and the agent fixes what you agreed with. To steer it, tap <Pencil className="inline h-3.5 w-3.5 align-[-2px]" aria-label="the pencil" /> on a flag.</>
                     : <>Every flag is resolved: you can mark this page <strong>Reviewed</strong>.</>}
                 </p>
               )}
