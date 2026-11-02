@@ -633,6 +633,12 @@ def run_job(supabase, job: dict):
             "diarized_folders": sorted(diarized),
         }
 
+    if job_type == "find_matter_links":
+        # "Find missing" from the page review bar: suggestions for staff, never published unseen.
+        from pipeline.ingestion.matter_names import suggest_links
+
+        return suggest_links(int(args["matter_id"]))
+
     raise ValueError(f"Unsupported job_type: {job_type}")
 
 

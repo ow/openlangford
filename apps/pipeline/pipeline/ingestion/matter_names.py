@@ -304,8 +304,25 @@ def _describe(m: dict) -> str:
     return f"\"{m['title']}\" ({m['first_seen']} to {m['last_seen']}) — {m['summary'][:400]}"
 
 
+def editor_examples(cur, limit: int = 8) -> str:
+    """Recent staff decisions on timeline links (page review bar): entries removed or suggestions rejected, and
+    suggestions accepted. Added to the question so later judgments follow what an editor decided."""
+    cur.execute("""select l.review, coalesce(m.meta->>'display_title', m.title), a.title, coalesce(l.quote, '')
+                   from matter_links l join matters m on m.id = l.matter_id join agenda_items a on a.id = l.agenda_item_id
+                   where l.kind = 'mention' and l.review is not null order by l.reviewed_at desc limit 60""")
+    rows = cur.fetchall()
+    keep = [r for r in rows if r[0] == "accepted"][:limit // 2] + [r for r in rows if r[0] != "accepted"][:limit // 2]
+    if not keep:
+        return ""
+    lines = [f"- {'BELONGS' if review == 'accepted' else 'DOES NOT BELONG'}: matter \"{matter}\"; item \"{(title or '')[:90]}\""
+             f"{f'; passage: {quote[:160]}' if quote else ''}" for review, matter, title, quote in keep]
+    return "\n\nAn editor has already decided these, as examples:\n" + "\n".join(lines)
+
+
 def judge(matters: list[dict], names: dict[int, list[str]], cur, meeting_ids: list[int] | None = None,
-          existing: dict | None = None, all_names: dict[int, list[str]] | None = None) -> dict:
+          existing: dict | None = None, all_names: dict[int, list[str]] | None = None,
+          min_item: float = ITEM_MIN_PROBABILITY, min_page: float = MENTION_MIN_PROBABILITY,
+          min_related: float = MIN_PROBABILITY) -> dict:
     """Candidates by name, then one Decisions API question each. Returns the links to write."""
     by_id = {m["id"]: m for m in matters}
     existing = existing or {"mentions": set(), "related": set(), "pages": set()}
@@ -379,9 +396,10 @@ def judge(matters: list[dict], names: dict[int, list[str]], cur, meeting_ids: li
     # Asked about the named place, not the matter's one decision: the sale of a recreation centre has a story that
     # includes its purchase, its repair budgets, and residents citing the sale years later in another debate. That
     # last kind is a "mention": a small timeline entry with the quote.
+    examples = editor_examples(cur)
     mention_q = lambda m, n: ai.choice(
         "role",
-        f"This matter is about \"{n}\": {_describe(m)}. How does this agenda item involve \"{n}\"?",
+        f"This matter is about \"{n}\": {_describe(m)}. How does this agenda item involve \"{n}\"?{examples}",
         [("about", f"It does something about \"{n}\" itself: decides, budgets or spends money on it, reports on it, "
                    f"or carries public comment about it."),
          ("mentioned", f"It is about something else, but someone refers to \"{n}\" or what happened to it in a way a "
@@ -392,7 +410,7 @@ def judge(matters: list[dict], names: dict[int, list[str]], cur, meeting_ids: li
     def accept_item(j, probs):
         # "about" and "mentioned" often split one judgement ("it's part of the story"), so they count together.
         about, mentioned = probs.get("about", 0), probs.get("mentioned", 0)
-        if about + mentioned >= ITEM_MIN_PROBABILITY:
+        if about + mentioned >= min_item:
             return {"matter_id": j[0], "agenda_item_id": j[1]["id"], "kind": "mention", "confidence": about + mentioned,
                     "source": "name" if about >= mentioned else "name_mention", "quote": j[1]["excerpt"]}
         return None
@@ -413,7 +431,7 @@ def judge(matters: list[dict], names: dict[int, list[str]], cur, meeting_ids: li
         page_jobs,
         lambda j: (f"{j[1]['title']}, page {j[1]['page']}: {j[1]['excerpt']}", [report_q(by_id[j[0]], j[2])]),
         lambda j, p: {"matter_id": j[0], "report_id": j[1]["report_id"], "page": j[1]["page"], "quote": j[1]["excerpt"],
-                      "confidence": p, "source": "name"} if p >= MENTION_MIN_PROBABILITY else None,
+                      "confidence": p, "source": "name"} if p >= min_page else None,
     )
     related_q = {
         "type": "predicate", "name": "same_initiative",
@@ -425,7 +443,7 @@ def judge(matters: list[dict], names: dict[int, list[str]], cur, meeting_ids: li
         pair_jobs,
         lambda j: (f"A: {_describe(by_id[j[0]])}\n\nB: {_describe(by_id[j[1]])}", [related_q]),
         lambda j, p: {"matter_id": j[0], "related_matter_id": j[1], "kind": "related_matter", "confidence": p, "source": "name"}
-        if p >= MIN_PROBABILITY else None,
+        if p >= min_related else None,
     )
     return {"mentions": mentions, "pages": pages, "related": related, "skipped": skipped, "scores": scores}
 
@@ -442,27 +460,30 @@ def existing_links(cur) -> dict:
     return {"mentions": mentions, "related": related, "pages": set(cur.fetchall())}
 
 
-def write_links(found: dict, conn=None, hidden: bool = False) -> dict:
+def write_links(found: dict, conn=None, hidden: bool = False, suggested: bool = False) -> dict:
     """Insert new links (existing and hidden ones stay as they are). Returns {"matters", "links", "pages"}: the matters
-    that gained any and the new row ids. ``hidden`` writes them unpublished."""
+    that gained any and the new row ids. ``hidden`` writes them unpublished; ``suggested`` marks them for staff to
+    accept or reject in the page review bar (implies hidden)."""
+    hidden = hidden or suggested
+    when = "now()" if suggested else "null"
     from pipeline.db import run_write
 
     def write(cur):
         changed, new_links, new_related, new_pages = set(), [], [], []
         for l in found["mentions"]:
-            cur.execute("""insert into matter_links (matter_id, kind, agenda_item_id, confidence, source, hidden, quote) values (%s, 'mention', %s, %s, %s, %s, %s)
+            cur.execute(f"""insert into matter_links (matter_id, kind, agenda_item_id, confidence, source, hidden, quote, suggested_at) values (%s, 'mention', %s, %s, %s, %s, %s, {when})
                            on conflict do nothing returning matter_id, id""", (l["matter_id"], l["agenda_item_id"], l["confidence"], l["source"], hidden, l.get("quote")))
             for mid, lid in cur.fetchall():
                 changed.add(mid)
                 new_links.append(lid)
         for l in found["related"]:
-            cur.execute("""insert into matter_links (matter_id, kind, related_matter_id, confidence, source, hidden) values (%s, 'related_matter', %s, %s, %s, %s)
+            cur.execute(f"""insert into matter_links (matter_id, kind, related_matter_id, confidence, source, hidden, suggested_at) values (%s, 'related_matter', %s, %s, %s, %s, {when})
                            on conflict do nothing returning matter_id, related_matter_id, id""", (l["matter_id"], l["related_matter_id"], l["confidence"], l["source"], hidden))
             for a, b, lid in cur.fetchall():
                 changed.update((a, b))
                 new_related.append(lid)
         for l in found["pages"]:
-            cur.execute("""insert into matter_report_mentions (matter_id, report_id, page, quote, confidence, source, hidden) values (%s, %s, %s, %s, %s, %s, %s)
+            cur.execute(f"""insert into matter_report_mentions (matter_id, report_id, page, quote, confidence, source, hidden, suggested_at) values (%s, %s, %s, %s, %s, %s, %s, {when})
                            on conflict do nothing returning matter_id, id""", (l["matter_id"], l["report_id"], l["page"], l["quote"], l["confidence"], l["source"], hidden))
             for mid, pid in cur.fetchall():
                 changed.add(mid)
@@ -518,6 +539,39 @@ def run(*, matter_ids: list[int] | None = None, meeting_ids: list[int] | None = 
     return {"names": names, **found, "changed": written["matters"]}
 
 
+SUGGEST_MIN = 0.6  # a person decides each suggestion, so the bar is lower than for links published unseen
+
+
+def suggest_links(matter_id: int) -> dict[str, Any]:
+    """"Find missing" from the page review bar: search again for one matter by its names and file numbers, and
+    write what looks like it belongs as suggestions (hidden, suggested_at set) for staff to accept or reject.
+    Links already on the page, removed by staff, or rejected before are never suggested again."""
+    from pipeline.db import connect
+
+    conn = connect()
+    conn.set_session(readonly=True)
+    try:
+        cur = conn.cursor()
+        matters = load_matters(cur)
+        conn.rollback()
+        target = next((m for m in matters if m["id"] == matter_id), None)
+        if target is None:
+            return {"suggested": 0, "names": []}
+        names = extract_names([target], save=True).get(matter_id, [])
+        names = [*names, *(f for f in target["file_numbers"] if f not in names)]
+        all_names = {m["id"]: m["meta"].get("anchor_names") or [] for m in matters}
+        all_names[matter_id] = names
+        found = judge(matters, {matter_id: names}, cur, existing=existing_links(cur), all_names=all_names,
+                      min_item=SUGGEST_MIN, min_page=SUGGEST_MIN, min_related=SUGGEST_MIN)
+        conn.rollback()
+    finally:
+        conn.close()
+    written = write_links(found, suggested=True)
+    count = len(written["links"]) + len(written["related"]) + len(written["pages"])
+    print(f"  [Names] matter {matter_id}: searched {', '.join(names) or 'no names'}; {count} suggestion(s)")
+    return {"suggested": count, "names": names}
+
+
 # --- second check --------------------------------------------------------------------------------------
 
 VERIFY_MIN_PROBABILITY = 0.75
@@ -537,9 +591,11 @@ def verify_hidden_links(*, dry_run: bool = False, link_ids: list[int] | None = N
                    from matter_links l join matters m on m.id = l.matter_id
                    join agenda_items a on a.id = l.agenda_item_id join meetings mt on mt.id = a.meeting_id
                    where l.hidden and l.source in ('name', 'name_mention') and l.kind = 'mention'
+                     and l.review is null and l.suggested_at is null
                      and (%(links)s::bigint[] is null or l.id = any(%(links)s))""", {"links": link_ids})
     links = cur.fetchall()
     cur.execute("""select id, report_id, page, quote, matter_id from matter_report_mentions where hidden and source = 'name'
+                   and review is null and suggested_at is null
                    and (%(pages)s::bigint[] is null or id = any(%(pages)s))""", {"pages": page_ids})
     pages = cur.fetchall()
     cur.execute("""select id, coalesce(meta->>'display_title', title), coalesce(plain_english_summary, '') from matters""")
@@ -593,7 +649,7 @@ def verify_hidden_related(*, dry_run: bool = False, link_ids: list[int] | None =
     cur.execute("""select l.id, coalesce(a.meta->>'display_title', a.title), coalesce(a.plain_english_summary, ''),
                           coalesce(b.meta->>'display_title', b.title), coalesce(b.plain_english_summary, '')
                    from matter_links l join matters a on a.id = l.matter_id join matters b on b.id = l.related_matter_id
-                   where l.hidden and l.source = 'name' and l.kind = 'related_matter'
+                   where l.hidden and l.source = 'name' and l.kind = 'related_matter' and l.review is null and l.suggested_at is null
                      and (%(links)s::bigint[] is null or l.id = any(%(links)s))""", {"links": link_ids})
     pairs = cur.fetchall()
     conn.rollback()

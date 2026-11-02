@@ -39,3 +39,17 @@ describe("checkPrompt", () => {
     expect(prompt).toContain("REJECTED unclear_why: Minutes adoption.");
   });
 });
+
+import { removableKey } from "../../app/services/page-links.server";
+
+describe("removableKey", () => {
+  it("allows entries found for the topic, not items filed under it", () => {
+    expect(removableKey("mention-13234")).toBe(true);
+    expect(removableKey("background-5189")).toBe(true);
+    expect(removableKey("report-12")).toBe(true);
+    expect(removableKey("agenda-2558")).toBe(false);
+    expect(removableKey("evidence-9")).toBe(false);
+    expect(removableKey("mention-1; drop")).toBe(false);
+    expect(removableKey(null)).toBe(false);
+  });
+});

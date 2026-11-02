@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
 import { useFetcher, useLocation } from "react-router";
-import { Check, Flag, RefreshCw, Sparkles, ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { Check, Flag, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
-type Loaded = { path: string | null; review: PageReview | null };
-type Saved = { ok?: true; review?: PageReview | null; error?: string };
+type Suggestion = { table: string; id: number; kind: "mention" | "related" | "report"; date: string | null; title: string; quote: string | null; href: string | null };
+type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
+type Links = { suggestions: Suggestion[]; findJob: FindJob | null } | null;
+type Loaded = { path: string | null; review: PageReview | null; links: Links };
+type Saved = { ok?: true; review?: PageReview | null; links?: Links; message?: string | null; error?: string };
+
+/** Entries found for this topic can be removed here; items filed under the topic itself can't. */
+const removable = (key: string | null) => !!key && /^(mention|background|report)-\d+$/.test(key);
+
+function findStatus(job: FindJob | null) {
+  if (!job) return null;
+  if (job.status === "queued") return `Waiting for the pipeline (asked ${reviewTime(job.requested_at)}).`;
+  if (job.status === "running" || job.status === "claimed") return "The pipeline is searching now…";
+  if (job.status === "succeeded" || job.status === "completed")
+    return `Last search ${reviewTime(job.finished_at)}: ${job.suggested ?? 0} new ${job.suggested === 1 ? "suggestion" : "suggestions"}.`;
+  return `The last search didn't finish (${job.status}).`;
+}
 
 /** Outline the flagged timeline entries while the panel is open. */
 function useHighlights(flags: PageFlag[], on: boolean) {
@@ -38,10 +53,12 @@ export function PageReviewBar() {
   const [writing, setWriting] = useState(false);
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
+  const [confirming, setConfirming] = useState<string | null>(null);
 
   useEffect(() => {
     setWriting(false);
     setOpen(false);
+    setConfirming(null);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -49,6 +66,8 @@ export function PageReviewBar() {
   const loaded = load.data?.path === pathname ? load.data : null;
   const saved = save.state === "idle" && save.data && "review" in save.data && save.data.review?.path === pathname ? save.data.review : undefined;
   const review = saved !== undefined ? saved : loaded?.review ?? null;
+  const links: Links = saved !== undefined && save.data?.links !== undefined ? save.data.links ?? null : loaded?.links ?? null;
+  const suggestions = links?.suggestions || [];
   const flags = review?.ai_flags || [];
   useHighlights(flags, open);
   if (!loaded?.path) return null;
@@ -66,12 +85,12 @@ export function PageReviewBar() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
-      {open && (review?.ai_checked_at || checking) && !writing && (
+      {open && (review?.ai_checked_at || checking || links) && !writing && (
         <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-zinc-200 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
               <div className="font-semibold text-zinc-900">
-                {checking ? "Reading the page…" : flags.length ? `${flags.length} ${flags.length === 1 ? "problem" : "problems"} flagged` : "No problems flagged"}
+                {checking ? "Reading the page…" : !review?.ai_checked_at ? "Not checked yet" : flags.length ? `${flags.length} ${flags.length === 1 ? "problem" : "problems"} flagged` : "No problems flagged"}
               </div>
               {!checking && review?.ai_checked_at && (
                 <p className="text-xs text-zinc-500">Read {readWhat(review)} · {reviewTime(review.ai_checked_at)}</p>
@@ -110,11 +129,63 @@ export function PageReviewBar() {
                           ))}
                         </div>
                       </div>
+                      {removable(flag.key) && flag.verdict !== "disagree" && (
+                        confirming === flag.key ? (
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                            <span className="text-zinc-600">
+                              {flag.key!.startsWith("background-") ? "Unlink the related topic this came from, with all its entries?" : "Remove this entry from the page?"}
+                            </span>
+                            <button type="button" disabled={busy} onClick={() => { submit("remove_entry", { key: flag.key! }); setConfirming(null); }}
+                              className="rounded-md bg-red-600 px-2 py-1 font-medium text-white hover:bg-red-700">Remove</button>
+                            <button type="button" onClick={() => setConfirming(null)} className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Cancel</button>
+                          </div>
+                        ) : (
+                          <button type="button" disabled={busy} onClick={() => setConfirming(flag.key)}
+                            className="mt-1.5 text-xs font-medium text-red-700 hover:underline">
+                            {flag.key!.startsWith("background-") ? "Unlink related topic" : "Remove from page"}
+                          </button>
+                        )
+                      )}
                     </li>
                   ))}
                 </ol>
               )}
               {flags.length > 0 && <p className="mb-3 text-xs text-zinc-500">👍 it's a real problem · 👎 it's fine. Your ratings teach later checks.</p>}
+              {links && (
+                <div className="mb-3 border-t border-zinc-100 pt-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-zinc-900">Missing from this page?</span>
+                    <button type="button" disabled={busy || links.findJob?.status === "queued" || links.findJob?.status === "running"}
+                      onClick={() => submit("find_missing")}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50">
+                      <Search className="h-3.5 w-3.5" />Find missing
+                    </button>
+                  </div>
+                  <p className="mt-1 text-xs text-zinc-500">
+                    {findStatus(links.findJob) || "Searches every meeting, document and annual report again for this topic's names and file numbers. Nothing is added until you accept it."}
+                  </p>
+                  {suggestions.length > 0 && (
+                    <ol className="mt-2 space-y-2">
+                      {suggestions.map((s) => (
+                        <li key={`${s.table}-${s.id}`} className="rounded-lg border border-brand-200 px-2.5 py-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-brand-700">
+                            {s.kind === "related" ? "Related topic" : s.kind === "report" ? "Annual report" : "Mention"}{s.date && s.kind !== "report" ? ` · ${s.date.slice(0, 10)}` : ""}
+                          </span>
+                          {s.href ? <a href={s.href} target="_blank" rel="noreferrer" className="block text-zinc-900 hover:underline">{s.title}</a> : <p className="text-zinc-900">{s.title}</p>}
+                          {s.quote && <p className="mt-0.5 line-clamp-3 text-xs text-zinc-500">“{s.quote}”</p>}
+                          <div className="mt-1.5 flex gap-2 text-xs">
+                            <button type="button" disabled={busy} onClick={() => submit("accept", { table: s.table, id: String(s.id) })}
+                              className="rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700">Add to page</button>
+                            <button type="button" disabled={busy} onClick={() => submit("reject", { table: s.table, id: String(s.id) })}
+                              className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Doesn't belong</button>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </div>
+              )}
+              {save.data?.message && save.state === "idle" && <p className="mb-3 rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-700">{save.data.message}</p>}
               <details className="text-xs text-zinc-500">
                 <summary className="cursor-pointer select-none font-medium text-zinc-600">What it looks for</summary>
                 <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
@@ -124,7 +195,7 @@ export function PageReviewBar() {
               </details>
               <button type="button" disabled={busy} onClick={() => submit("check")}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50">
-                <RefreshCw className="h-3.5 w-3.5" />Check again
+                <RefreshCw className="h-3.5 w-3.5" />{review?.ai_checked_at ? "Check again" : "Check this page"}
               </button>
             </>
           )}
@@ -169,11 +240,12 @@ export function PageReviewBar() {
               className={cn(button, "text-amber-700 hover:bg-amber-50")}>Needs work</button>
           )}
           <button type="button" disabled={busy}
-            onClick={() => (review?.ai_checked_at ? setOpen(!open) : submit("check"))}
+            onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
             title={review?.ai_checked_at ? "Show what the check found" : "Have the model read this page and flag problems"}
             className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-50")}>
             <Sparkles className={cn("h-4 w-4", checking && "animate-pulse")} />
             {checking ? "Checking…" : review?.ai_checked_at ? (flags.length ? `${flags.length} ${flags.length === 1 ? "flag" : "flags"}` : "Checked") : "Check"}
+            {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{suggestions.length} new</span>}
           </button>
           {review?.status && (
             <button type="button" disabled={busy} onClick={() => submit("clear")} aria-label="Clear review"
