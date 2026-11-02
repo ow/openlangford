@@ -98,6 +98,12 @@ SECTION_SUMMARY = re.compile(
     r"|committee(?:'s)? minutes and (?:multiple|considered))\b", re.I)
 
 
+# A section name and nothing else ("REPORTS", "10. BYLAWS"): as a topic's only entry it is the section, whatever its
+# summary says (the summary then describes every item under it, "Council considered five staff reports…").
+SECTION_WORD = re.compile(r"^\s*(?:\d+[.)]?\s*)?(?:staff\s+)?(?:reports?|bylaws?|correspondence|business arising|new business"
+                          r"|unfinished business|consent agenda)\s*$", re.I)
+
+
 def heading_entries(cur, ids: list[int] | None = None) -> list[tuple]:
     """(item id, topic id, title, meta) for entries that are bare section headings on a visible topic: a heading
     title AND nothing of their own (sub-items carry the business, or the summary is empty or only describes the
@@ -123,7 +129,8 @@ def heading_entries(cur, ids: list[int] | None = None) -> list[tuple]:
         # A bare heading with no summary of its own on a topic with other entries was likely filed there by address
         # (an old "PUBLIC HEARING" entry for that rezoning): left alone. As a topic's only entry, it made the topic.
         # A summary of its own that says something specific keeps it, whatever its heading.
-        if SECTION_SUMMARY.search(summary) or (not summary.strip() and (subs or sizes[mid] == 1)):
+        if SECTION_SUMMARY.search(summary) or (not summary.strip() and (subs or sizes[mid] == 1)) \
+                or (sizes[mid] == 1 and SECTION_WORD.match(" ".join((t or "").split()))):  # the whole title, not just line one
             out.append((i, mid, t, meta))
     return out
 
