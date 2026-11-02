@@ -312,7 +312,7 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
       .select("kind, matter_id, related_matter_id, agenda_item_id, confidence, source, quote, review")
       .eq("hidden", false).or(`matter_id.in.(${ownIds.join(",")}),related_matter_id.in.(${ownIds.join(",")})`).order("id")),
     rows(() => supabase.from("matters").select("id, identifier").in("id", ownIds)),
-    getMatterReportMentions(supabase, matterId, municipalityId),
+    getMatterReportMentions(supabase, ownIds, municipalityId),
   ]);
   empty.reports = reports;
   if (error) { console.error("Error fetching matter links:", error); return empty; }
@@ -377,16 +377,19 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
 export type ReportMention = { id: number; year: number; title: string; page: number; quote: string; url: string | null };
 
 /** Pages of the City's annual reports that describe a matter (pipeline matter_names step), oldest first. */
-export async function getMatterReportMentions(supabase: SupabaseClient, matterId: number, municipalityId = 1): Promise<ReportMention[]> {
+export async function getMatterReportMentions(supabase: SupabaseClient, matterId: number | number[], municipalityId = 1): Promise<ReportMention[]> {
+  const ids = Array.isArray(matterId) ? matterId : [matterId];
   const { data, error } = await supabase.from("matter_report_mentions")
     .select("id, page, quote, public_reports!inner(year, title, source_url, municipality_id)")
-    .eq("matter_id", matterId).eq("hidden", false).eq("public_reports.municipality_id", municipalityId);
+    .in("matter_id", ids).eq("hidden", false).eq("public_reports.municipality_id", municipalityId);
   if (error) { console.error("Error fetching annual report mentions:", error); return []; }
+  const seen = new Set<string>();  // merged topics can each cite the same page
   return (data || []).map((row: any) => {
     const report = Array.isArray(row.public_reports) ? row.public_reports[0] : row.public_reports;
     return { id: row.id, year: report.year, title: report.title, page: row.page, quote: row.quote,
              url: report.source_url ? `${report.source_url}#page=${row.page}` : null };
-  }).sort((a, b) => a.year - b.year || a.page - b.page);
+  }).filter((r) => !seen.has(`${r.year}:${r.page}`) && !!seen.add(`${r.year}:${r.page}`))
+    .sort((a, b) => a.year - b.year || a.page - b.page);
 }
 
 export type MatterLink = { id: number; slug: string | null; title: string };
