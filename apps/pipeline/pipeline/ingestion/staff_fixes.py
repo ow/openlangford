@@ -76,7 +76,10 @@ def check_summary_notes(supabase, notes: list[dict]) -> list[str]:
             verdict = ai.json(f"An editor asked for this change to a topic page's summary on a site that follows a city "
                               f"council:\n\n{entry['note']}\n\nThe page now reads:\n{text}\n\nThe page's dates (when it was "
                               f"discussed) and its timeline are drawn from its records and shown separately, so judge only "
-                              f"what the summary and status should say. Does it follow the instruction?",
+                              f"what the summary and status should say. Judge substance, not wording: it follows the "
+                              f"instruction when the facts it asks for are there (in the summary or the status) and "
+                              f"nothing it says to drop is left; asides such as \"noting that…\" are optional. "
+                              f"Does it follow the instruction?",
                               stage="review", schema=_NoteCheck)
         except Exception as exc:  # can't check: say so rather than claim it
             print(f"  [fix_page] summary check failed: {exc}")
