@@ -4,7 +4,7 @@ import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap
 
 export type { PageReview, PageReviewStatus } from "../lib/page-review-types";
 
-const COLUMNS = "path, kind, title, status, note, reviewed_at, ai_flags, ai_page_issue, ai_summary, ai_entries, ai_checked_at, agent_note, agent_at";
+const COLUMNS = "path, kind, title, status, note, reviewed_at, ai_flags, ai_page_issue, ai_summary, ai_entries, ai_checked_at, agent_note, agent_at, internal_note, internal_note_at";
 
 /** The page a review is about: its path alone, no query string or trailing slash ("/matters/x"). */
 export function reviewPath(value: string | null | undefined): string | null {
@@ -38,6 +38,16 @@ export async function setPageReview(supabase: SupabaseClient, review: {
     reviewed_at: new Date().toISOString(),
   });
   if (error) throw new Error("Could not save the page review.");
+}
+
+/** Staff's internal note on a page (empty clears it). Kept apart from the review: clearing a review keeps it. */
+export async function setInternalNote(supabase: SupabaseClient, path: string, note: string, userId: string, title: string | null) {
+  const text = note.trim().slice(0, 4000) || null;
+  const { error } = await supabase.from("page_reviews").upsert({
+    path, kind: reviewKind(path), ...(title ? { title: title.replace(/\s*\|\s*Open Langford\s*$/, "").slice(0, 300) } : {}),
+    internal_note: text, internal_note_by: text ? userId : null, internal_note_at: text ? new Date().toISOString() : null,
+  }, { onConflict: "path" });
+  if (error) throw new Error("Could not save the note.");
 }
 
 /** Clears the review status and note; a stored check stays (its ratings calibrate later checks). */

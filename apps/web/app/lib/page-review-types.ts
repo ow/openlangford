@@ -30,6 +30,9 @@ export type PageReview = {
   ai_checked_at: string | null;
   agent_note: string | null;
   agent_at: string | null;
+  /** Staff's own note on the page, for whoever reviews it next; never public. */
+  internal_note?: string | null;
+  internal_note_at?: string | null;
 };
 
 /** What a check looks for, shown in the review bar so a clean result says what was ruled out. */

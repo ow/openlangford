@@ -4,7 +4,7 @@ import type { Route } from "./+types/api.page-review";
 import { requireModerator } from "../lib/auth.server";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
-import { clearPageReview, getPageReview, reviewPath, setPageReview } from "../services/page-reviews.server";
+import { clearPageReview, getPageReview, reviewPath, setInternalNote, setPageReview } from "../services/page-reviews.server";
 import { addEditorIssue, checkPage, rateFlag, resolveFlags, setFlagNote } from "../services/page-check.server";
 import { fixPage } from "../services/page-fix.server";
 import { unresolvedFlags } from "../lib/page-review-types";
@@ -13,7 +13,7 @@ import {
   setTopicHidden, topicHidden,
 } from "../services/page-links.server";
 
-const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page"];
+const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note"];
 
 /** On a topic page: suggestions waiting for a decision, and the latest "find missing" search. */
 async function linkState(supabase: SupabaseClient, path: string) {
@@ -103,6 +103,8 @@ export async function action({ request, context }: Route.ActionArgs) {
       const index = Number(form.get("index"));
       if (!Number.isInteger(index) || index < 0) return bad("Unknown flag.");
       await resolveFlags(supabase, path, { index }, user.id);
+    } else if (intent === "internal_note") {
+      await setInternalNote(supabase, path, String(form.get("note") || ""), user.id, String(form.get("title") || "") || null);
     } else if (intent === "clear") await clearPageReview(supabase, path);
     else if (intent === "reviewed") {
       const current = await getPageReview(supabase, path);

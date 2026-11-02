@@ -81,14 +81,15 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, item: {
 const suggestionKey = (s: Suggestion) => `suggestion-${s.table === "matter_links" ? "L" : "R"}${s.id}`;
 
 function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
-  candidates: Map<string, Candidate[]>, records: string, lookalikes: Candidate[] = [], suggestions: Suggestion[] = []) {
+  candidates: Map<string, Candidate[]>, records: string, lookalikes: Candidate[] = [], suggestions: Suggestion[] = [],
+  internalNote: string | null = null) {
   const removable = entries.filter((e) => removableKey(e.key)).map((e) => e.key);
   const movable = [...candidates.entries()].map(([key, list]) =>
     `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no listed topic (move_item with null re-files it)"}`).join("\n");
   return `You fix problems on a page of Open Langford, a site that follows Langford City council. An editor
 reviewed the page "${heading}" and agreed these problems are real:
 ${flags.map((f) => `- [${f.key ?? "whole page"}] ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.fix ? `\n  Approved fix (do this): ${f.fix}` : ""}${f.note ? `\n  Editor's instruction for this entry (follow it, over the fix above): ${f.note}` : ""}`).join("\n")}
-${note ? `\nTheir note: ${note}\n` : ""}
+${note ? `\nTheir note: ${note}\n` : ""}${internalNote ? `\nStaff's internal note on this page (background to keep in mind, not an instruction): ${internalNote}\n` : ""}
 What you can do:
 - remove_entry: drop a link found for this topic (${removable.join(", ") || "none here"}). Removing a "background-" entry
   unlinks the whole related topic it came from, so prefer rewrite_entry or rewrite_heading when only its wording is wrong.
@@ -152,7 +153,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     }).eq("path", path);
   };
   try {
-    const { data: row } = await supabase.from("page_reviews").select("ai_flags, note").eq("path", path).maybeSingle();
+    const { data: row } = await supabase.from("page_reviews").select("ai_flags, note, internal_note").eq("path", path).maybeSingle();
     const flags = ((row?.ai_flags || []) as PageFlag[]);
     const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed);
     const matterId = await matterForPath(supabase, path);
@@ -195,7 +196,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])]);
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records, lookalikes, suggestions),
+      prompt: planPrompt(page.heading || page.title, page.entries, agreed, row?.note ?? null, candidates, records, lookalikes, suggestions,
+        (row as { internal_note?: string | null } | null)?.internal_note ?? null),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
     });
