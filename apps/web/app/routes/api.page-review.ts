@@ -52,7 +52,15 @@ export async function action({ request, context }: Route.ActionArgs) {
     const supabase = getSupabaseAdminClient();
     let message: string | null = null;
 
-    if (intent === "check") await checkPage(supabase, new URL(request.url).origin, path);
+    if (intent === "check") {
+      await checkPage(supabase, new URL(request.url).origin, path);
+      // On a topic page, the same press also searches for entries missing from it (the pipeline's quick worker).
+      const matterId = await matterForPath(supabase, path);
+      const running = matterId ? await latestFindJob(supabase, matterId) : null;
+      if (matterId && !(running && (running.status === "queued" || running.status === "running"))) {
+        await requestFindMissing(supabase, matterId, user.id);
+      }
+    }
     else if (intent === "rate") {
       const index = Number(form.get("index"));
       const verdict = String(form.get("verdict") || "");

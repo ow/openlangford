@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate } from "react-router";
-import { Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
+import { Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
@@ -17,14 +17,6 @@ type Saved = { ok?: true; review?: PageReview | null; links?: Links; message?: s
 /** Entries found for this topic can be removed here; items filed under the topic itself can't. */
 const removable = (key: string | null) => !!key && /^(mention|background|report)-\d+$/.test(key);
 
-function findStatus(job: FindJob | null) {
-  if (!job) return null;
-  if (job.status === "queued") return `Waiting for the pipeline (asked ${reviewTime(job.requested_at)}).`;
-  if (job.status === "running" || job.status === "claimed") return "The pipeline is searching now…";
-  if (job.status === "succeeded" || job.status === "completed")
-    return `Last search ${reviewTime(job.finished_at)}: ${job.suggested ?? 0} new ${job.suggested === 1 ? "suggestion" : "suggestions"}.`;
-  return `The last search didn't finish (${job.status}).`;
-}
 
 /** Outline the flagged timeline entries while the panel is open. */
 function useHighlights(flags: PageFlag[], on: boolean) {
@@ -76,6 +68,15 @@ export function PageReviewBar() {
     if (save.data.ok) navigate("/admin/reviews/next");
   }, [save.state, save.data, navigate]);
 
+  // Open the panel by itself once per page when there's something to act on.
+  const autoOpened = useRef<string | null>(null);
+  useEffect(() => {
+    const r = load.data?.path === pathname ? load.data : null;
+    if (!r || autoOpened.current === pathname) return;
+    autoOpened.current = pathname;
+    if (unresolvedFlags(r.review?.ai_flags).length || r.links?.suggestions?.length || r.review?.status === "fixed") setOpen(true);
+  }, [load.data, pathname]);
+
   const loaded = load.data?.path === pathname ? load.data : null;
   const fresher = (a?: string | null, b?: string | null) => (a || "") > (b || "");
   const savedRaw = save.state === "idle" && save.data && "review" in save.data && save.data.review?.path === pathname ? save.data.review : undefined;
@@ -85,16 +86,18 @@ export function PageReviewBar() {
   const review = saved !== undefined ? saved : loaded?.review ?? null;
   const links: Links = saved !== undefined && save.data?.links !== undefined ? save.data.links ?? null : loaded?.links ?? null;
   const suggestions = links?.suggestions || [];
+  const searching = links?.findJob?.status === "queued" || links?.findJob?.status === "running";
   const flags = review?.ai_flags || [];
   const open_ = unresolvedFlags(flags).length;
   useHighlights(flags, open);
   const fixing = review?.status === "fixing";
+  const waiting = fixing || searching;
   useEffect(() => {
-    if (!fixing) return;
+    if (!waiting) return;
     const timer = setInterval(() => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`), 3000);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fixing, pathname]);
+  }, [waiting, pathname]);
   if (!loaded?.path) return null;
 
   const pending = save.formData?.get("intent");
@@ -258,16 +261,12 @@ export function PageReviewBar() {
               )}
               {links && (
                 <div className="mb-3 border-t border-zinc-100 pt-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-zinc-900">Missing from this page?</span>
-                    <button type="button" disabled={busy || links.findJob?.status === "queued" || links.findJob?.status === "running"}
-                      onClick={() => submit("find_missing")}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50">
-                      <Search className="h-3.5 w-3.5" />Find missing
-                    </button>
-                  </div>
-                  <p className="mt-1 text-xs text-zinc-500">
-                    {findStatus(links.findJob) || "Searches every meeting, document and annual report again for this topic's names and file numbers, then the review model picks what belongs in its story. Nothing is added until you accept it."}
+                  <p className="text-xs text-zinc-500">
+                    {searching ? <span className="inline-flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" />Searching meetings and reports for entries missing from this page…</span>
+                      : suggestions.length ? <span className="font-semibold text-zinc-900">Possibly missing from this page</span>
+                      : links.findJob?.status === "succeeded" ? <>No missing entries found · {reviewTime(links.findJob.finished_at)}</>
+                      : links.findJob?.status === "failed" ? "The search for missing entries didn't finish. Check again to retry."
+                      : null}
                   </p>
                   {suggestions.length > 0 && (
                     <ol className="mt-2 space-y-2">
@@ -318,7 +317,7 @@ export function PageReviewBar() {
                 <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
                   {Object.values(FLAG_PROBLEM_LABELS).map((label) => <li key={label}>{label}</li>)}
                 </ul>
-                <p className="mt-1.5">It reads only what's on this page, as a signed-out resident sees it. It doesn't open the minutes or agendas behind each entry, so it can't confirm facts against the source.</p>
+                <p className="mt-1.5">The model reads only what's on this page, as a signed-out resident sees it, so it can't confirm facts against the minutes. On a topic page, Check also searches every meeting and annual report for this topic's names and permit numbers, and the model picks what belongs. Nothing is added until you accept it.</p>
               </details>
               <button type="button" disabled={busy} onClick={() => submit("check")}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50">
@@ -366,7 +365,7 @@ export function PageReviewBar() {
             title={review?.ai_checked_at ? "Show what the check found" : "Have the model read this page and flag problems"}
             className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-50")}>
             <Sparkles className={cn("h-4 w-4", checking && "animate-pulse")} />
-            {checking ? "Checking…" : review?.ai_checked_at ? (open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "Checked") : "Check"}
+            {checking ? "Checking…" : review?.ai_checked_at ? (open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "No problems") : "Check"}
             {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{suggestions.length} new</span>}
           </button>
           {review?.status && !fixing && (
