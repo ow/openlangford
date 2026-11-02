@@ -17,6 +17,8 @@ import json
 import re
 from typing import Iterable, Literal
 
+from datetime import datetime, timezone
+
 from pydantic import BaseModel, Field
 from supabase import Client
 
@@ -24,7 +26,7 @@ from pipeline import ai
 
 # Bump when the prompt/schema changes so `main.py --stage matter-summaries --stale`
 # re-runs matters summarized by an older version (stamped in meta.summary_version).
-SUMMARY_VERSION = "2"
+SUMMARY_VERSION = "3"
 
 TOPICS = [
     "Development",
@@ -60,7 +62,12 @@ not necessarily the date of its containing council meeting; never silently subst
 follow them where the history and mentions support it, or where the note quotes the record ("The record says: …"; an
 editor checked that quote against the council's documents, so it counts as an input), and leave out what they ask
 for if neither says it.
-Never invent facts that are not in the inputs. If the history is too thin to say what it is about, base the summary on the title alone and keep it short."""
+Never invent facts that are not in the inputs. If the history is too thin to say what it is about, base the summary on the title alone and keep it short.
+Figures and names are copied, never made: every amount, count, measurement, date and name comes exactly from the inputs,
+whole ("$4,408,940.67", "1.5 spaces per unit", not "$67" or "5 spaces"). Don't round, total, convert or estimate one,
+don't give a count (units, lots, homes) the inputs don't state, and don't expand a name or acronym the inputs don't spell out.
+"fix_these", when present, lists problems a check found in your last text for this matter, with what the records say:
+fix every one, using the records' own words and figures, or leave the statement out."""
 
 Topic = Literal[tuple(TOPICS)]  # type: ignore[valid-type]
 Status = Literal[tuple(STATUSES)]  # type: ignore[valid-type]
@@ -209,7 +216,9 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                     "debate": (item.get("debate_summary") or "")[:300] or None,
                     "motions": [
                         {
-                            "decision": m.get("plain_english_summary") or (m.get("text_content") or "")[:300],
+                            "decision": m.get("plain_english_summary") or None,
+                            # The recorded wording, whole enough to carry its figures: summaries dropped digits.
+                            "text": (m.get("text_content") or "")[:1200],
                             "result": m.get("result"),
                         }
                         for m in motions_by_item.get(item["id"], [])
@@ -252,6 +261,114 @@ def _summarize(batch: list[dict]) -> dict[int, dict]:
     return {m.id: m.model_dump() for m in result.matters if m.summary.strip()}
 
 
+class SummaryProblem(BaseModel):
+    matter: int = Field(description="The matter's id")
+    statement: str = Field(description="The words in the summary or status that are wrong, quoted")
+    verdict: Literal["contradicted", "not_in_record"]
+    record_says: str = Field(description="What the records say instead, quoted; empty when they say nothing about it")
+
+
+class SummaryCheck(BaseModel):
+    problems: list[SummaryProblem]
+
+
+CHECK_PROMPT = """You check short texts written for residents about city council matters against the records they were
+written from. For each matter below you get its records (as given to the writer) and the text: a summary and a
+"where it stands" line. List every statement the records contradict (a different amount, count, measurement, date,
+name, address, outcome or step) or don't contain at all (an invented figure, count, name or detail). Paraphrase and
+plain-language simplification are fine; judge facts, not style. A statement about what the records don't say ("no
+decision is recorded") is fine when true. Missing detail is not a problem. Return no problems when the text is right.
+
+"""
+
+
+def _check(batch: list[dict], updates: dict[int, dict]) -> dict[int, list[dict]]:
+    """Problems per matter in the written text (summary and status line), judged against the matter's own inputs."""
+    payload = []
+    for m in batch:
+        u = updates.get(m["id"])
+        if not u:
+            continue
+        payload.append({"id": m["id"], "records": {k: v for k, v in m.items() if not k.startswith("_") and k != "fix_these"},
+                        "text": {"summary": u["plain_english_summary"], "where_it_stands": (u["meta"] or {}).get("status_line")}})
+    if not payload:
+        return {}
+    result = ai.json(CHECK_PROMPT + json.dumps(payload, ensure_ascii=False, default=str), stage="review", schema=SummaryCheck)
+    found: dict[int, list[dict]] = {}
+    for p in result.problems:
+        if p.matter in updates:
+            found.setdefault(p.matter, []).append(p.model_dump(exclude={"matter"}))
+    return found
+
+
+def _generate(batch: list[dict], *, context_only: bool = False) -> dict[int, dict]:
+    """The updates for a batch: decisions from owned proceedings, descriptions with linked context."""
+    decisions = {} if context_only else _summarize([{**matter, "mentions": []} for matter in batch])
+    context = batch if context_only else [matter for matter in batch if matter["_has_mentions"]]
+    descriptions = _summarize(context) if context else {}
+    out: dict[int, dict] = {}
+    for matter in batch:
+        fields = decisions.get(matter["id"])
+        descriptive = descriptions.get(matter["id"]) or fields
+        if not descriptive:
+            continue
+        meta = dict(matter["_meta"])
+        meta["display_title"] = (descriptive.get("display_title") or "").strip() or None
+        meta["summary_version"] = SUMMARY_VERSION
+        # Lines staff approved through the page review bar (meta.staff_headlines) outlive every rewrite.
+        staff_lines = {k: v for k, v in (meta.get("staff_headlines") or {}).items() if isinstance(v, str) and v.strip()}
+        # A recorded replacement (meta.superseded_by) is a later council decision about this
+        # matter that its own history doesn't show, so the model can't re-derive its status.
+        superseded = bool(meta.get("superseded_by"))
+        if fields and matter["history"] and not superseded:
+            meta["status_line"] = (fields.get("status_line") or "").strip() or None
+            meta["timeline_headlines"] = {
+                str(t["item"]): t["headline"].strip()
+                for t in fields.get("timeline") or []
+                if isinstance(t, dict) and t.get("item") in matter["_owned_item_ids"] and (t.get("headline") or "").strip()
+            }
+        if staff_lines:
+            meta["timeline_headlines"] = {**(meta.get("timeline_headlines") or {}), **staff_lines}
+        update = {"plain_english_summary": descriptive["summary"].strip(), "meta": meta}
+        if descriptive.get("category") in TOPICS:
+            update["category"] = descriptive["category"]
+        if fields and matter["history"] and not superseded and fields.get("status") in STATUSES:
+            update["status"] = fields["status"]
+        out[matter["id"]] = update
+    return out
+
+
+def _checked(batch: list[dict], updates: dict[int, dict], *, context_only: bool = False) -> dict[int, dict]:
+    """Check the written text against the records; a matter with problems is rewritten once, told what they were,
+    and keeps whichever version has fewer. The outcome is stamped in meta.summary_check."""
+    try:
+        problems = _check(batch, updates)
+    except Exception as exc:  # unchecked rather than unwritten
+        print(f"  [MatterSummaries] check failed: {exc}")
+        return updates
+    retry = [{**m, "fix_these": problems[m["id"]]} for m in batch if problems.get(m["id"])]
+    second: dict[int, dict] = {}
+    second_problems: dict[int, list[dict]] = {}
+    if retry:
+        try:
+            second = _generate(retry, context_only=context_only)
+            second_problems = _check(retry, second)
+        except Exception as exc:
+            print(f"  [MatterSummaries] rewrite after check failed: {exc}")
+    now = datetime.now(timezone.utc).isoformat()
+    out = {}
+    for mid, update in updates.items():
+        first = problems.get(mid, [])
+        if mid in second and len(second_problems.get(mid, [])) < len(first):
+            update, left, rewritten = second[mid], second_problems.get(mid, []), True
+        else:
+            left, rewritten = first, False
+        update["meta"]["summary_check"] = {"at": now, "problems": len(left), "first_problems": len(first),
+                                           "rewritten": rewritten, **({"unresolved": left[:5]} if left else {})}
+        out[mid] = update
+    return out
+
+
 def refresh_matter_summaries(
     supabase: Client,
     matter_ids: Iterable[int],
@@ -259,12 +376,14 @@ def refresh_matter_summaries(
     batch_size: int = 8,
     dry_run: bool = False,
     context_only: bool = False,
+    check: bool = True,
 ) -> dict[int, dict]:
     """Describe accepted context; derive decisions only from owned proceedings.
 
     A post-link refresh updates descriptions without rerunning lifecycle changes.
     On a normal refresh, owned-only generation remains independent of mentions,
     so later owned approvals still update status even when older comments exist.
+    With ``check``, each text is checked against its records and rewritten once if it gets facts wrong.
     """
     ids = sorted({int(i) for i in matter_ids})
     results: dict[int, dict] = {}
@@ -273,44 +392,50 @@ def refresh_matter_summaries(
         if not batch:
             continue
         try:
-            decisions = {} if context_only else _summarize([{**matter, "mentions": []} for matter in batch])
-            context = batch if context_only else [matter for matter in batch if matter["_has_mentions"]]
-            descriptions = _summarize(context) if context else {}
+            updates = _generate(batch, context_only=context_only)
         except Exception as exc:
             print(f"  [MatterSummaries] batch {ids[start]}…: {exc}")
             continue
-        for matter in batch:
-            fields = decisions.get(matter["id"])
-            descriptive = descriptions.get(matter["id"]) or fields
-            if not descriptive:
-                continue
-            meta = dict(matter["_meta"])
-            meta["display_title"] = (descriptive.get("display_title") or "").strip() or None
-            meta["summary_version"] = SUMMARY_VERSION
-            # Lines staff approved through the page review bar (meta.staff_headlines) outlive every rewrite.
-            staff_lines = {k: v for k, v in (meta.get("staff_headlines") or {}).items() if isinstance(v, str) and v.strip()}
-            # A recorded replacement (meta.superseded_by) is a later council decision about this
-            # matter that its own history doesn't show, so the model can't re-derive its status.
-            superseded = bool(meta.get("superseded_by"))
-            if fields and matter["history"] and not superseded:
-                meta["status_line"] = (fields.get("status_line") or "").strip() or None
-                meta["timeline_headlines"] = {
-                    str(t["item"]): t["headline"].strip()
-                    for t in fields.get("timeline") or []
-                    if isinstance(t, dict) and t.get("item") in matter["_owned_item_ids"] and (t.get("headline") or "").strip()
-                }
-            if staff_lines:
-                meta["timeline_headlines"] = {**(meta.get("timeline_headlines") or {}), **staff_lines}
-            update = {"plain_english_summary": descriptive["summary"].strip(), "meta": meta}
-            if descriptive.get("category") in TOPICS:
-                update["category"] = descriptive["category"]
-            if fields and matter["history"] and not superseded and fields.get("status") in STATUSES:
-                update["status"] = fields["status"]
-            results[matter["id"]] = update
+        if check and updates:
+            updates = _checked(batch, updates, context_only=context_only)
+        for mid, update in updates.items():
+            results[mid] = update
             if not dry_run:
-                supabase.table("matters").update(update).eq("id", matter["id"]).execute()
+                supabase.table("matters").update(update).eq("id", mid).execute()
         print(f"  [MatterSummaries] {min(start + batch_size, len(ids))}/{len(ids)}")
     return results
+
+
+def check_existing(supabase: Client, matter_ids: Iterable[int], *, batch_size: int = 8, dry_run: bool = False) -> dict:
+    """Check topics' current summaries against their records without rewriting them; the ones with problems are
+    regenerated (checked again, see refresh_matter_summaries), the rest are stamped as checked."""
+    ids = sorted({int(i) for i in matter_ids})
+    failing, passed, problems = [], [], {}
+    for start in range(0, len(ids), batch_size):
+        batch = _load_context(supabase, ids[start : start + batch_size])
+        current = {}
+        for m in batch:
+            row = supabase.table("matters").select("plain_english_summary, meta").eq("id", m["id"]).single().execute().data
+            if row.get("plain_english_summary"):
+                current[m["id"]] = {"plain_english_summary": row["plain_english_summary"], "meta": row.get("meta") or {}}
+        try:
+            found = _check(batch, current)
+        except Exception as exc:
+            print(f"  [MatterSummaries] check {ids[start]}…: {exc}")
+            continue
+        for mid, cur in current.items():
+            if found.get(mid):
+                failing.append(mid)
+                problems[mid] = found[mid]
+            else:
+                passed.append(mid)
+                if not dry_run:
+                    meta = {**cur["meta"], "summary_check": {"at": datetime.now(timezone.utc).isoformat(), "problems": 0,
+                                                              "first_problems": 0, "rewritten": False}}
+                    supabase.table("matters").update({"meta": meta}).eq("id", mid).execute()
+        print(f"  [MatterSummaries] checked {min(start + batch_size, len(ids))}/{len(ids)}: {len(failing)} with problems", flush=True)
+    rewritten = {} if dry_run else refresh_matter_summaries(supabase, failing, batch_size=batch_size)
+    return {"checked": len(failing) + len(passed), "failing": failing, "problems": problems, "rewritten": len(rewritten)}
 
 
 def matters_for_meetings(supabase: Client, meeting_ids: list[int]) -> list[int]:
