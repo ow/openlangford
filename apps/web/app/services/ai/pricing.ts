@@ -17,6 +17,9 @@ export const MODEL_PRICES: Record<string, ModelPrice> = {
   // TODO(owner): confirm against the current OpenAI price sheet.
   // Third-party-reported list price (Oct 2026); confirm against OpenAI pricing.
   "gpt-6-luna": { inputPerM: 0.1, outputPerM: 0.5 },
+  // Staff page checks (REVIEW_AI_MODEL). OpenAI's launch post, Oct 26 2026: $1 in / $5 out
+  // ($0.05 cached input; prompts over 272K tokens cost more, which a page check never reaches).
+  "gpt-6.1-terra": { inputPerM: 1, outputPerM: 5 },
   "text-embedding-3-small": { inputPerM: 0.02, outputPerM: 0 },
 };
 
