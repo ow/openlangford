@@ -60,6 +60,58 @@ def tidy_spacing(text):
     return '\n'.join(re.sub(r'[ \t]{2,}', ' ', line).strip() for line in (text or '').splitlines()).strip()
 
 
+# Scanned minutes whose machine-read text doesn't bind cleanly (a page header inside the body, OCR typos, a text
+# layer that differs from the page image) are admitted as transcriptions: the owner accepted scanning errors in
+# exchange for having the motion, labelled as transcribed. Only a complete formal motion qualifies: a mover line,
+# a printed CARRIED/DEFEATED, a body found once in the minutes and opening the resolution itself once page
+# furniture is removed. Narrative, fragments, missing outcomes and duplicates stay held.
+_MONTH = r'(?:January|February|March|April|May|June|July|August|September|October|November|December)'
+_TRANSCRIPTION_OPERATIVE = re.compile(r'^(?:(?:[a-z]\)|\d{1,2}[.)])\s*)?(?:THAT|WHEREAS)', re.I)
+_TRANSCRIBABLE_PROOFS = {None, 'native_body_not_uniquely_bound_held', 'operative_boundary_unknown_held'}
+# An image-reviewed scan or a correction-only review already decided what its pages certify; their other bodies stay.
+_UNTRANSCRIBABLE_FORMATS = {'original_pdf_reviewed_local_ocr', 'original_pdf_reviewed_image_corrections'}
+_SCAN_MISMATCH_HOLD_SUFFIXES = (': native_full_body_differs_from_independently_image_reviewed_operative_body',
+                                ': native_full_body_differs_from_image_operative_body')
+
+
+def strip_page_furniture(text):
+    """Drop page headers and footers a page break left inside a body ("July 19, 2021", "Page 17 of 22")."""
+    kept = []
+    for line in (text or '').splitlines():
+        s = line.strip()
+        if (re.fullmatch(r'Page\s+\d+\s+of\s+\d+', s, re.I) or s.isdigit()
+                or re.fullmatch(r'Minutes [co]f the .{0,60}Meeting', s)
+                or re.fullmatch(_MONTH + r'\s+\d{1,2}\S{0,3},?\s+\d{4}', s)
+                or (len(s) <= 90 and re.search(r'\bPage\s+\d+\s+of\s+\d+$', s) and not _TRANSCRIPTION_OPERATIVE.match(s))):
+            continue
+        kept.append(line)
+    return re.sub(r'\n{3,}', '\n\n', '\n'.join(kept)).strip()
+
+
+def scan_mismatch_hold(hold):
+    """A reviewer's hold that only says the machine-read text and the page image differ."""
+    reason = hold.get('reason') or ''
+    if reason.startswith('deferred_source_decision_from_explicit_first'):
+        return set(hold.get('strict_gate_reasons') or []) <= {'full_native_body_differs_beyond_whitespace'}
+    return reason.endswith(_SCAN_MISMATCH_HOLD_SUFFIXES)
+
+
+def transcription_text(source, block, motion, proof, review_holds, *, reviewed=False):
+    """The body to store as a transcription, or None when the motion must stay held. In an image-reviewed meeting
+    (reviewed) only a body the reviewer held for a text/image mismatch alone qualifies."""
+    if (source.get('source_format') in _UNTRANSCRIBABLE_FORMATS or proof.get('status') not in _TRANSCRIBABLE_PROOFS
+            or not all(scan_mismatch_hold(h) for h in review_holds) or (reviewed and not review_holds)):
+        return None
+    if motion.get('result') not in ('CARRIED', 'DEFEATED') or not re.search(r'\bMOVED\b', block.get('source_block') or '', re.I):
+        return None
+    if not text_occurrence_unique(source, block):
+        return None
+    text = tidy_spacing(strip_page_furniture(ocr_display_text(motion.get('_operative_motion_text') or motion['motion_text'])))
+    if not _TRANSCRIPTION_OPERATIVE.match(text) or re.search(r'\badjourn', text, re.I):
+        return None
+    return text
+
+
 def _explicit(source, proof, block):
     if proof.get('status') == 'explicit_operative' or source.get('source_format') == 'official_html_structural':
         return True
@@ -77,13 +129,14 @@ def committee_actor_names(source_block):
 
 def unproven_committee_identities(meeting, review_scope):
     """Citizen committee members linked to a person whose Council term began after this meeting: that the member
-    and the later councillor are one person is unproven (e.g. "N. Stewart", 2016-2017), so they count as unknown."""
+    and the later councillor are one person is unproven (e.g. "N. Stewart", 2016-2017), so they count as unknown,
+    unless the roster entry records that the identity was confirmed (an annual report naming them, and the owner)."""
     if meeting.get('classification') != 'Committee':
         return set()
     starts = (review_scope or {}).get('council_term_starts') or {}
     roster = (meeting.get('meta') or {}).get('committee_roster') or {}
     return {m['person_id'] for m in roster.get('members') or []
-            if m.get('person_id') in starts and m.get('kind') != 'councillor'
+            if m.get('person_id') in starts and m.get('kind') != 'councillor' and not m.get('identity_confirmed')
             and str(starts[m['person_id']]) > str(meeting['meeting_date'])}
 
 
@@ -128,6 +181,7 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
         return {**base, 'coverage': 'source_validation_held', 'reason': 'catalog_source_date_mismatch'}
     if report['status'] != 'source_authoritative':
         return {**base, 'coverage': 'source_validation_held'}
+    transcribed_keys = set()
     for item in planned:
         parent = existing_agenda_item(item, items)
         for motion in item.get('motions', []):
@@ -156,13 +210,21 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
                                              'outcome_status': 'verified', 'outcome_source_quote': identity['outcome_quote']}}})
                 continue
             reviewed_native = source.get('source_format') == 'original_pdf_reviewed_image_decisions'
+            review_holds = [h for h in source.get('source_review_holds', []) if h.get('source_key') == identity['key']]
+            transcribed = None
             if reviewed_native and identity['key'] not in source.get('reviewed_new_decision_keys', []):
-                base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_not_explicitly_image_enrolled'})
-                continue
-            if not text_occurrence_unique(source, block) or not _explicit(source, proof, block):
-                base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_requires_unique_explicit_operative_body'})
-                continue
-            ocr = source.get('source_format') == 'ocr_marker' and proof.get('status') != 'explicit_operative'
+                transcribed = transcription_text(source, block, motion, proof, review_holds, reviewed=True)
+                if transcribed is None:
+                    base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_not_explicitly_image_enrolled'})
+                    continue
+            elif not text_occurrence_unique(source, block) or not _explicit(source, proof, block):
+                transcribed = transcription_text(source, block, motion, proof, review_holds)
+                if transcribed is None:
+                    base['held'].append({'source_key': identity['key'], 'reason': 'new_fact_requires_unique_explicit_operative_body'})
+                    continue
+            if transcribed is not None:
+                transcribed_keys.add(identity['key'])
+            ocr = transcribed is not None or (source.get('source_format') == 'ocr_marker' and proof.get('status') != 'explicit_operative')
             actors = dict(motion['_canonical_actor_ids'])
             actors_unreviewed = reviewed_native or source['source_format']=='original_pdf_reviewed_local_ocr'
             roster = (meeting.get('meta') or {}).get('committee_roster')
@@ -190,7 +252,7 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
             base['new_motions'].append({'parent_agenda_id': parent['id'] if parent else None,
                 'placed_by': motion.get('_placed_by'),
                 **({'committee_votes': votes} if votes is not None else {}),
-                'text_content': tidy_spacing(ocr_display_text(motion['motion_text']) if ocr else motion.get('_operative_motion_text') or motion['motion_text']),
+                'text_content': transcribed if transcribed is not None else tidy_spacing(ocr_display_text(motion['motion_text']) if ocr else motion.get('_operative_motion_text') or motion['motion_text']),
                 'result': motion['result'],
                 'mover': name('mover'),
                 'seconder': name('seconder'),
@@ -198,10 +260,16 @@ def plan_meeting(meeting, motions, items, source, *, review_scope=None):
                 'seconder_id': actors['seconder'] if not actors_unreviewed else None,
                 'meta': {'canonical_source_motion': identity, 'operative_motion_body': proof,
                          **({'text_source': 'ocr_transcription_of_scanned_original'} if ocr else {}),
+                         **({'transcription_admission': {'basis': 'owner_accepted_scanned_minutes_transcription',
+                                                         'proof_status': proof.get('status'),
+                                                         'review_holds': [h['reason'] for h in review_holds]}}
+                            if transcribed is not None else {}),
                          **({'outcome_role': 'committee_recommendation'} if meeting.get('classification') == 'Committee' else {}),
                          'individual_vote_coverage': 'not_recorded',
                          'vote_record': {'coverage': 'not_recorded', 'source': 'bounded_official_minutes',
                                          'outcome_status': 'verified', 'outcome_source_quote': identity['outcome_quote']}}})
+    # A transcribed motion settles the reviewer's "text and image differ" note about it.
+    base['held'] = [h for h in base['held'] if h.get('source_key') not in transcribed_keys]
     incomplete = (base['held'] or report.get('unmapped_legacy_ids') or report.get('unbound_outcome_leads')
                   or report.get('unparsed_formal_occurrence_leads'))
     return {**base, 'coverage': 'review_required' if incomplete else 'missing_source_decisions' if (base['new_motions'] or base['rebinds']) else 'source_occurrences_accounted_for',

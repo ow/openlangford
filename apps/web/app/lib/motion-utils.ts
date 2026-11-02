@@ -76,3 +76,11 @@ export function isProceduralMotion(
     ADJOURN_RE.test(motion.text_content || "")
   );
 }
+
+/** True when a motion's words were machine-read from scanned minutes, so a word may be wrong. */
+export function isTranscribedMotion(motion: { meta?: any } | null | undefined): boolean {
+  return motion?.meta?.text_source === "ocr_transcription_of_scanned_original";
+}
+
+export const TRANSCRIBED_NOTE = "Transcribed from scanned minutes";
+export const TRANSCRIBED_TITLE = "Read by machine from a scanned page of the minutes, so a word may be wrong.";

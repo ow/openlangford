@@ -1,7 +1,7 @@
 import { isInferredChoice, voteTally } from "../lib/vote-coverage";
 import { CheckCircle2, MinusCircle, XCircle } from "lucide-react";
 import type { Motion } from "../lib/types";
-import { normalizeMotionResult } from "../lib/motion-utils";
+import { isTranscribedMotion, normalizeMotionResult, TRANSCRIBED_NOTE, TRANSCRIBED_TITLE } from "../lib/motion-utils";
 import { formatTimestamp } from "../lib/timeline-utils";
 import { displayTitle, lastName } from "../lib/display-text";
 import { cn } from "../lib/utils";
@@ -80,6 +80,7 @@ export function MotionCard({ motion, context, onWatchVideo, className }: MotionC
               {seconder && `, seconded by ${lastName(seconder)}`}
             </span>
           )}
+          {isTranscribedMotion(motion) && <span title={TRANSCRIBED_TITLE}>{TRANSCRIBED_NOTE}</span>}
           {watchTime != null && onWatchVideo && (
             <button
               type="button"

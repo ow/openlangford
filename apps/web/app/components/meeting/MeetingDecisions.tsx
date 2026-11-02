@@ -2,7 +2,7 @@ import { isInferredChoice, voteTally } from "../../lib/vote-coverage";
 import { useMemo, useState } from "react";
 import { CheckCircle2, ChevronDown, MinusCircle, PlayCircle, XCircle } from "lucide-react";
 import type { AgendaItem, Motion } from "../../lib/types";
-import { isProceduralMotion, normalizeMotionResult } from "../../lib/motion-utils";
+import { isProceduralMotion, isTranscribedMotion, normalizeMotionResult, TRANSCRIBED_NOTE, TRANSCRIBED_TITLE } from "../../lib/motion-utils";
 import { formatTimestamp } from "../../lib/timeline-utils";
 import { displayTitle, lastName } from "../../lib/display-text";
 import { cn } from "../../lib/utils";
@@ -97,6 +97,7 @@ function DecisionRow({ decision, onWatch }: { decision: Decision; onWatch?: (s: 
               {seconder && `, seconded by ${lastName(seconder)}`}
             </span>
           )}
+          {isTranscribedMotion(motion) && <span title={TRANSCRIBED_TITLE}>{TRANSCRIBED_NOTE}</span>}
           {watchTime != null && onWatch && (
             <button
               onClick={() => onWatch(watchTime)}

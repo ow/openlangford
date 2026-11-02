@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { displayTitle } from "../../lib/display-text";
+import { isTranscribedMotion, TRANSCRIBED_NOTE, TRANSCRIBED_TITLE } from "../../lib/motion-utils";
 import { formatDate, cn } from "../../lib/utils";
 import { ParticipationList, WrittenSubmissions } from "../meeting/participation-list";
 import { writtenLetters } from "../../lib/written";
@@ -34,6 +35,7 @@ type Motion = {
   mover?: string | null;
   seconder?: string | null;
   votes?: Vote[] | null;
+  meta?: any;
 };
 
 function tally(motion: Motion) {
@@ -197,10 +199,13 @@ export function TimelineStep({
               <p className="text-zinc-800">
                 <span className="font-medium">Decision:</span> {m.plain_english_summary || displayTitle(m.text_content || "")}
               </p>
-              {o.label && (
+              {(o.label || isTranscribedMotion(m)) && (
                 <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs">
-                  {outcomeMark(o)}
-                  {o.against.length > 0 && <span className="text-zinc-500">· Against: {o.against.join(", ")}</span>}
+                  {o.label && outcomeMark(o)}
+                  {o.label && o.against.length > 0 && <span className="text-zinc-500">· Against: {o.against.join(", ")}</span>}
+                  {isTranscribedMotion(m) && (
+                    <span className="text-zinc-500" title={TRANSCRIBED_TITLE}>{o.label ? "· " : ""}{TRANSCRIBED_NOTE}</span>
+                  )}
                 </p>
               )}
             </div>

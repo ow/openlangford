@@ -177,3 +177,90 @@ def test_later_councillor_link_on_an_earlier_committee_is_unproven():
         {'person_id': 136, 'kind': 'member'}, {'person_id': 137, 'kind': 'councillor'}]}}}
     scope = {'council_term_starts': {136: '2018-11-05', 137: '2014-11-03'}}
     assert unproven_committee_identities(meeting, scope) == {136}
+
+
+def test_confirmed_committee_identity_is_not_unproven():
+    from pipeline.backfill.history_coverage import unproven_committee_identities
+    meeting = {'classification': 'Committee', 'meeting_date': '2017-05-29', 'meta': {'committee_roster': {'members': [
+        {'person_id': 136, 'kind': 'member', 'identity_confirmed': {'basis': 'annual_report_and_owner'}}]}}}
+    assert unproven_committee_identities(meeting, {'council_term_starts': {136: '2018-11-05'}}) == set()
+
+
+def test_page_furniture_is_stripped_from_a_body():
+    from pipeline.backfill.history_coverage import strip_page_furniture
+    body = ("Minutes cf the Regular Council Meeting\n  July 19, 2021\n  Page 17 of 22\n\n\n"
+            "  That Council support the walkway project.")
+    assert strip_page_furniture(body) == "That Council support the walkway project."
+    assert strip_page_furniture("March 2\", 2020\nPage 12 of 12\n\nThat Council give Bylaw 1890 first reading.") == \
+        "That Council give Bylaw 1890 first reading."
+    assert strip_page_furniture("Pro. Services Committee January 28^^ 2020 Page 2 of 4\nCARRIED.") == "CARRIED."
+    # A body line that merely mentions the minutes stays.
+    kept = "That Council approve the\nminutes of the meeting held on July 12, 2021."
+    assert strip_page_furniture(kept) == kept
+
+
+def _scan_case(text, *, result='CARRIED', block=None):
+    source = _source(f"MOVED BY: COUNCILLOR WADE SECONDED: COUNCILLOR SEATON\n\n{text}\n\nCARRIED.\n")
+    source['source_format'] = 'original_pdf_layout'
+    found = source['blocks'][0]
+    return source, block or found, {'motion_text': found['motion_text'], 'result': result}
+
+
+def test_scanned_mismatch_is_admitted_as_a_transcription():
+    from pipeline.backfill.history_coverage import transcription_text
+    text = "July 19, 2021\nPage 19 of 22\n\n\nThat Council adopt Bylaw No. 1944."
+    source, block, motion = _scan_case(text)
+    holds = [{'reason': 'deferred_source_decision_from_explicit_first20_batch',
+              'strict_gate_reasons': ['full_native_body_differs_beyond_whitespace']}]
+    assert transcription_text(source, block, motion, {'status': None}, holds) == "That Council adopt Bylaw No. 1944."
+    assert transcription_text(source, block, motion, {'status': None}, holds, reviewed=True) == "That Council adopt Bylaw No. 1944."
+    assert transcription_text(source, block, motion, {'status': 'native_body_not_uniquely_bound_held'}, []) == \
+        "That Council adopt Bylaw No. 1944."
+    closing = [{'reason': 'Closing-conflict strict full-body/ownership rule holds otherwise image-reviewed decision: '
+                          'native_full_body_differs_from_independently_image_reviewed_operative_body'}]
+    assert transcription_text(source, block, motion, {'status': None}, closing) == "That Council adopt Bylaw No. 1944."
+    source, block, motion = _scan_case("THATthe Committee approve the agenda as presented.")
+    assert transcription_text(source, block, motion, {'status': 'operative_boundary_unknown_held'}, []) == \
+        "THATthe Committee approve the agenda as presented."
+
+
+def test_genuine_ambiguity_stays_held():
+    from pipeline.backfill.history_coverage import transcription_text
+    ok = "That Council adopt Bylaw No. 1944."
+    # No printed outcome.
+    assert transcription_text(*_scan_case(ok, result=None), {'status': None}, []) is None
+    # Narrative, not a resolution.
+    assert transcription_text(*_scan_case("Mayor Young adjourned the meeting at 6:58 pm."), {'status': None}, []) is None
+    # A fragment that has lost its opening words.
+    assert transcription_text(*_scan_case("1. Direct Staff to draft a Bylaw to amend the zoning."), {'status': None}, []) is None
+    # An adjournment (closing conflicts are reviewed separately).
+    assert transcription_text(*_scan_case("That the meeting be adjourned."), {'status': None}, []) is None
+    # A reviewer hold for anything other than a text/image mismatch.
+    lease = [{'reason': 'Distinct printed lease vote has identical full body to another occurrence.'}]
+    assert transcription_text(*_scan_case(ok), {'status': None}, lease) is None
+    deferred_other = [{'reason': 'deferred_source_decision_from_explicit_first20_batch',
+                       'strict_gate_reasons': ['full_native_body_differs_beyond_whitespace', 'heading_conflict']}]
+    assert transcription_text(*_scan_case(ok), {'status': None}, deferred_other) is None
+    # A body the operative check found twice in its own block, or a documentary event.
+    assert transcription_text(*_scan_case(ok), {'status': 'raw_body_not_uniquely_bound_held'}, []) is None
+    assert transcription_text(*_scan_case(ok), {'status': 'documentary_event_only_held'}, []) is None
+    # An image-reviewed meeting's body the reviewer never held for a mismatch; a reviewed scan; a correction-only review.
+    assert transcription_text(*_scan_case(ok), {'status': None}, [], reviewed=True) is None
+    source, block, motion = _scan_case(ok)
+    for fmt in ('original_pdf_reviewed_local_ocr', 'original_pdf_reviewed_image_corrections'):
+        assert transcription_text({**source, 'source_format': fmt}, block, motion, {'status': None}, []) is None
+    assert transcription_text(source, block, motion, {'status': 'scan_body_not_independently_reviewed_held'}, []) is None
+    # No mover line: not a formal motion.
+    source, block, motion = _scan_case(ok)
+    assert transcription_text(source, {**block, 'source_block': f'{ok}\n\nCARRIED.'}, motion, {'status': None}, []) is None
+
+
+def test_duplicate_body_stays_held():
+    from pipeline.backfill.history_coverage import transcription_text
+    ok = "That Council adopt Bylaw No. 1217."
+    one = f"MOVED BY: COUNCILLOR WADE SECONDED: COUNCILLOR SEATON\n\n{ok}\n\nCARRIED.\n\n"
+    source = _source("9. BYLAWS\n\na) Bylaw No. 1217\n\n" + one + "b) Bylaw No. 1217 again\n\n" + one)
+    source['source_format'] = 'original_pdf_layout'
+    assert len(source['blocks']) == 2
+    motion = {'motion_text': ok, 'result': 'CARRIED'}
+    assert transcription_text(source, source['blocks'][0], motion, {'status': None}, []) is None

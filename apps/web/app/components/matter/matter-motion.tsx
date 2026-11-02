@@ -1,6 +1,7 @@
 import { CheckCircle2, MinusCircle, XCircle } from "lucide-react";
 import type { Motion, Vote } from "../../lib/types";
 import { displayTitle } from "../../lib/display-text";
+import { isTranscribedMotion, TRANSCRIBED_NOTE, TRANSCRIBED_TITLE } from "../../lib/motion-utils";
 import { MotionOutcomeBadge as OutcomeBadge } from "../motion-outcome-badge";
 
 function formatOffset(seconds?: number | null) {
@@ -24,6 +25,7 @@ export function MatterMotion({ motion }: { motion: Motion }) {
         <span className="font-medium text-zinc-700">Motion</span>
         <OutcomeBadge result={motion.result} />
         {offset && <span className="tabular-nums">at {offset}</span>}
+        {isTranscribedMotion(motion) && <span title={TRANSCRIBED_TITLE}>{TRANSCRIBED_NOTE}</span>}
       </div>
       <p className="text-sm leading-relaxed text-zinc-800">
         {motion.text_content}
