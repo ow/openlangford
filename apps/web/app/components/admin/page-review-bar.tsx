@@ -326,23 +326,11 @@ export function PageReviewBar() {
                   ))}
                 </ol>
               )}
-              {flags.length > 0 && (
-                <p className="mb-3 text-xs text-zinc-500">
-                  <ThumbsUp className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> yes, fix it ·{" "}
-                  <ThumbsDown className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> no, leave it ·{" "}
-                  <Pencil className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> fix it differently.{" "}
-                  {open_ > 0
-                    ? agreed > 0
-                      ? <>Then press <strong>Fix {agreed}</strong> and the agent makes the changes for you to confirm.</>
-                      : <>Answer each flag, then press <strong>Fix</strong> or <strong>Reviewed</strong>.</>
-                    : <>Every flag is answered: mark this page <strong>Reviewed</strong>.</>}
-                </p>
-              )}
               {links && (
-                <div className="mb-3 border-t border-zinc-100 pt-3">
+                <div className="mb-3">
                   <p className="text-xs text-zinc-500">
                     {searching ? <span className="inline-flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" />Searching meetings and reports for entries missing from this page…</span>
-                      : suggestions.length ? <span className="font-semibold text-zinc-900">Possibly missing from this page</span>
+                      : suggestions.length ? null
                       : links.findJob?.status === "succeeded" ? <>No missing entries found · {reviewTime(links.findJob.finished_at)}</>
                       : links.findJob?.status === "failed" ? "The search for missing entries didn't finish. Check again to retry."
                       : null}
@@ -355,8 +343,11 @@ export function PageReviewBar() {
                           && save.formData?.get("id") === String(s.id) ? pending : null;
                         return (
                         <li key={`${s.table}-${s.id}`} className={cn("rounded-lg border border-brand-200 px-2.5 py-2 transition-opacity", deciding && "opacity-60")}>
+                          {/* Decided like a flag: 👍 adds it to the page, 👎 says it doesn't belong. */}
+                          <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
                           <span className="text-xs font-semibold uppercase tracking-wide text-brand-700">
-                            {s.kind === "related" ? "Related topic" : s.kind === "report" ? "Annual report" : "Mention"}{s.date && s.kind !== "report" ? ` · ${s.date.slice(0, 10)}` : ""}
+                            Possibly missing · {s.kind === "related" ? "related topic" : s.kind === "report" ? "annual report" : "meeting item"}{s.date && s.kind !== "report" ? ` · ${s.date.slice(0, 10)}` : ""}
                             {s.score != null && <span className="ml-1 font-normal normal-case tracking-normal text-zinc-500" title="How likely the linking model thinks it belongs">· {Math.round(s.score * 100)}% likely</span>}
                           </span>
                           {s.href ? <a href={s.href} target="_blank" rel="noreferrer" className="block text-zinc-900 hover:underline">{s.title}</a> : <p className="text-zinc-900">{s.title}</p>}
@@ -366,21 +357,39 @@ export function PageReviewBar() {
                               {s.foundIn && <span className="font-medium text-zinc-600">{FOUND_IN[s.foundIn]}: </span>}“{s.quote}”
                             </p>
                           )}
-                          <div className="mt-1.5 flex gap-2 text-xs">
-                            <button type="button" disabled={busy} onClick={() => submit("accept", { table: s.table, id: String(s.id) })}
-                              className="inline-flex items-center gap-1 rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-80">
-                              {deciding === "accept" && <Loader2 className="h-3 w-3 animate-spin" />}{deciding === "accept" ? "Adding…" : "Add to page"}
-                            </button>
-                            <button type="button" disabled={busy} onClick={() => submit("reject", { table: s.table, id: String(s.id) })}
-                              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">
-                              {deciding === "reject" && <Loader2 className="h-3 w-3 animate-spin" />}{deciding === "reject" ? "Removing…" : "Doesn't belong"}
-                            </button>
+                          </div>
+                          <div className="flex shrink-0 gap-0.5">
+                            <Tip label="Yes, add it to the page">
+                              <button type="button" disabled={busy} onClick={() => submit("accept", { table: s.table, id: String(s.id) })}
+                                aria-label="Yes, add it to the page" className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-emerald-700">
+                                {deciding === "accept" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ThumbsUp className="h-3.5 w-3.5" />}
+                              </button>
+                            </Tip>
+                            <Tip label="No, it doesn't belong">
+                              <button type="button" disabled={busy} onClick={() => submit("reject", { table: s.table, id: String(s.id) })}
+                                aria-label="No, it doesn't belong" className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700">
+                                {deciding === "reject" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ThumbsDown className="h-3.5 w-3.5" />}
+                              </button>
+                            </Tip>
+                          </div>
                           </div>
                         </li>
                         );
                       })}
                     </ol>
                   )}
+              {flags.length > 0 && (
+                <p className="mb-3 text-xs text-zinc-500">
+                  <ThumbsUp className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> yes, fix it ·{" "}
+                  <ThumbsDown className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> no, leave it ·{" "}
+                  <Pencil className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> fix it differently.{" "}
+                  {open_ > 0
+                    ? agreed > 0
+                      ? <>Then press <strong>Fix {agreed}</strong> and the agent makes the changes for you to confirm.</>
+                      : <>Answer each flag, then press <strong>Fix</strong> or <strong>Reviewed</strong>.</>
+                    : <>Every flag is answered: mark this page <strong>Reviewed</strong>.</>}
+                </p>
+              )}
                 </div>
               )}
               {save.data?.message && save.state === "idle" && <p className="mb-3 rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-700">{save.data.message}</p>}
