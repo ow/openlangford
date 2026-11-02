@@ -481,7 +481,9 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
         item,
       })),
     ...(story.background || [])
-      .filter((item: any) => !primaryAgendaItemIds.has(item.id) && !story.mentions.some((direct: any) => direct.id === item.id))
+      // Staff (or the fix agent) can take one borrowed entry off this page without unlinking its whole topic.
+      .filter((item: any) => !primaryAgendaItemIds.has(item.id) && !story.mentions.some((direct: any) => direct.id === item.id)
+        && !hiddenDuplicates[String(item.id)])
       .map((item: any) => ({ kind: "mention" as const, key: `background-${item.id}`, date: item.meetings?.meeting_date, item, relatedMatter: item.relatedMatter })),
     // An annual report covers its year, so it sits at the year's end.
     ...(story.reports || []).map((report: ReportMention) => ({ kind: "report" as const, key: `report-${report.id}`, date: `${report.year}-12-31`, report })),

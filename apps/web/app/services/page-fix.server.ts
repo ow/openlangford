@@ -174,7 +174,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const now = ["agenda", "mention", "background"].map((k) => `${k}-${itemId(flag.key)}`).find((k) => pageKeys.has(k));
       if (now) { renamed.set(now, flag.key); flag.key = now; }
     }
-    const movableKey = (key: string | null | undefined) => !!key && /^(agenda|mention)-\d+$/.test(key);
+    const movableKey = (key: string | null | undefined) => !!key && /^(agenda|mention|background)-\d+$/.test(key);
     const candidates = new Map<string, Candidate[]>();
     for (const flag of agreed.filter((f) => movableKey(f.key))) {
       const { data: item } = await supabase.from("agenda_items").select("title, related_address").eq("id", itemId(flag.key)).maybeSingle();
@@ -296,12 +296,13 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       }
       if (step.action === "move_item" && movableKey(step.key) && onPage.has(step.key!)) {
         const offered = candidates.get(step.key!)?.some((c) => c.id === step.to_matter_id);
-        if (step.to_matter_id !== null && !offered) {
-          left.push(`${step.reason} (the agent picked a topic that wasn't offered, so nothing moved)`);
-        } else if (step.key!.startsWith("agenda-")) {
-          moves.push({ item_id: itemId(step.key), to_matter_id: step.to_matter_id, refile: step.to_matter_id === null, reason: step.reason });
-        } else if (step.to_matter_id !== null) {
-          mentionMoves.push({ item_id: itemId(step.key), to_matter_id: step.to_matter_id, reason: step.reason });
+        // A topic that wasn't offered: an item filed here is re-filed the way ingest would; a mention or borrowed
+        // entry already lives on its own topic, so it simply comes off this page.
+        const target = offered ? step.to_matter_id : null;
+        if (step.key!.startsWith("agenda-")) {
+          moves.push({ item_id: itemId(step.key), to_matter_id: target, refile: target === null, reason: step.reason });
+        } else if (target !== null && step.key!.startsWith("mention-")) {
+          mentionMoves.push({ item_id: itemId(step.key), to_matter_id: target, reason: step.reason });
         } else {
           // A mention with nowhere better to go is simply not about this topic.
           try {
