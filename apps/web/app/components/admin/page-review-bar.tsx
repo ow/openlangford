@@ -456,18 +456,21 @@ export function PageReviewBar() {
               className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-50")}>
               {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>
           )}
-          <button type="button" disabled={busy}
-            onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
-            title={review?.ai_checked_at ? (open_ ? `Show the ${open_} open ${open_ === 1 ? "flag" : "flags"}` : "Checked: no open flags. Show what the check found") : "Have the model read this page and flag problems"}
-            className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-50")}>
-            <Sparkles className={cn("h-4 w-4", checking && "animate-pulse")} />
-            {checking ? "Checking…" : "Check"}
-            {/* Counts as badges, like unread counts: open flags in red, entries the search found in the brand colour. */}
-            {!checking && open_ > 0 && (
-              <span className="rounded-full bg-red-600 px-1.5 text-xs font-semibold text-white" title={`${open_} open ${open_ === 1 ? "flag" : "flags"}`}>{open_}</span>
-            )}
-            {suggestions.length > 0 && <span className="rounded-full bg-brand-100 px-1.5 text-xs text-brand-800" title="Entries the search found, possibly missing from this page">{suggestions.length} new</span>}
-          </button>
+          <Tip label={[
+              open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "",
+              suggestions.length ? `${suggestions.length} possibly missing ${suggestions.length === 1 ? "entry" : "entries"}` : "",
+            ].filter(Boolean).join(" · ") || (review?.ai_checked_at ? "Checked: nothing open. Show what the check found" : "Have the model read this page and flag problems")}>
+            <button type="button" disabled={busy}
+              onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
+              className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-50")}>
+              <Sparkles className={cn("h-4 w-4", checking && "animate-pulse")} />
+              {checking ? "Checking…" : "Check"}
+              {/* One count, like an unread count: open flags plus entries the search found that need a decision. */}
+              {!checking && open_ + suggestions.length > 0 && (
+                <span className="rounded-full bg-red-600 px-1.5 text-xs font-semibold text-white">{open_ + suggestions.length}</span>
+              )}
+            </button>
+          </Tip>
           {/* Words for the decisions above; icons for the tools around them, with Next last. */}
           <span aria-hidden="true" className="mx-1 h-4 w-px bg-amber-300" />
           <Tip label={review?.internal_note ? "Edit the internal note (only staff see it)" : "Add an internal note (only staff see it)"}>
