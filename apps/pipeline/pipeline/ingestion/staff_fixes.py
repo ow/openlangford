@@ -164,7 +164,7 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
         "Needs a person:\n" + "\n".join(f"• {d}" for d in left) if left else "",
     ] if p)
     supabase.table("page_reviews").update({
-        "status": "fixed" if done else "needs_work", "agent_note": note,
+        "status": "fixed" if done or (waiting and not left) else "needs_work", "agent_note": note,
         "agent_at": datetime.now(timezone.utc).isoformat(), "ai_flags": flags,
     }).eq("path", path).execute()
     return {"moved": len(fixed_keys), "summaries": len(summaries), "left": len(left)}

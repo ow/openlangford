@@ -380,24 +380,36 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       waiting.length ? `Waiting on records (being recovered; the fix can be redone then):\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
     ].filter(Boolean).join("\n\n");
-    await finish(done.length ? "fixed" : "needs_work", note, updated);
+    // Only waiting on records: nothing for a person to do now, so the page isn't sent back as needing work.
+    await finish(done.length || (waiting.length && !left.length) ? "fixed" : "needs_work", note, updated);
   } catch (error) {
     console.error("[page-fix]", error instanceof Error ? error.message : error);
     await finish("needs_work", "The agent hit an error and changed nothing. Try again, or fix it by hand.");
   }
 }
 
-/** Topics that might be this one under another name: linked as related, or with the same short title. */
+/** Topics that might be this one under another name: linked as related, with the same short title, or holding an
+ * item mentioned on this page that names the same bylaw as one of this topic's own items (a bylaw's adoption filed on
+ * another topic shows here only as "Also discussed"). */
 async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number): Promise<Candidate[]> {
   const { data: me } = await supabase.from("matters").select("meta").eq("id", matterId).single();
   const title = (me?.meta as any)?.display_title as string | undefined;
+  const bylaws = (text: string) => new Set((text.match(/\bBylaw No\.?\s*(\d{3,4})\b/gi) || []).map((b) => b.replace(/\D/g, "")));
+  const [{ data: ownItems }, { data: mentions }] = await Promise.all([
+    supabase.from("agenda_items").select("title").eq("matter_id", matterId).limit(60),
+    supabase.from("matter_links").select("agenda_items(matter_id, title)").eq("matter_id", matterId).eq("kind", "mention").eq("hidden", false).limit(80),
+  ]);
+  const mine = new Set(((ownItems || []) as any[]).flatMap((i) => [...bylaws(String(i.title || ""))]));
+  const sameBylaw = ((mentions || []) as any[]).map((l) => (Array.isArray(l.agenda_items) ? l.agenda_items[0] : l.agenda_items))
+    .filter((i) => i?.matter_id && i.matter_id !== matterId && [...bylaws(String(i.title || ""))].some((b) => mine.has(b)))
+    .map((i) => i.matter_id as number);
   const [{ data: links }, { data: named }] = await Promise.all([
     supabase.from("matter_links").select("matter_id, related_matter_id").eq("kind", "related_matter").eq("hidden", false)
       .or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`),
     title ? supabase.from("matters").select("id").eq("meta->>display_title", title).neq("id", matterId).limit(10) : Promise.resolve({ data: [] }),
   ]);
   const ids = [...new Set([...(links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)),
-    ...((named || []) as any[]).map((m) => m.id)])];
+    ...((named || []) as any[]).map((m) => m.id), ...sameBylaw])];
   if (!ids.length) return [];
   const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", ids)
     .is("meta->>canonical_matter_id", null);
