@@ -23,9 +23,10 @@ export const FLAG_PROBLEMS: Record<FlagProblem, string> = {
   wrong_detail: "A date, name, number or outcome contradicts the rest of the page.",
   unsupported: "A statement the council's records don't back or contradict (found by checking against the records, not by reading).",
   editor_issue: "Something an editor wants changed (added by staff, never by the check).",
+  page_issue: "A problem with the page as a whole (from the check's page_issue, stored as a flag so it's rated and fixed like the rest).",
 };
 /** What the check itself may flag: everything except staff's own issues. */
-const CHECK_PROBLEMS = (Object.keys(FLAG_PROBLEMS) as FlagProblem[]).filter((p) => p !== "editor_issue" && p !== "unsupported");
+const CHECK_PROBLEMS = (Object.keys(FLAG_PROBLEMS) as FlagProblem[]).filter((p) => p !== "editor_issue" && p !== "unsupported" && p !== "page_issue");
 export type { FlagProblem, FlagVerdict, PageFlag };
 export type PageCheck = { path: string; flags: PageFlag[]; page_issue: string | null; summary: string; model: string; checked_at: string; entries: number };
 
@@ -194,6 +195,12 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
       const before = priorFlags.find(p => decidedFlag(p) && same(p, f));
       return { ...f, verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
     }),
+    // The page as a whole: a flag like the rest (rated, sent to the agent, resolved), keeping an earlier rating.
+    ...(result.data.page_issue ? [(() => {
+      const f = { key: null, problem: "page_issue" as const, reason: result.data.page_issue!, excerpt: page.heading };
+      const before = priorFlags.find(p => decidedFlag(p) && p.problem === "page_issue");
+      return { ...f, fix: result.data.page_issue, verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
+    })()] : []),
     // Staff's own issues aren't the check's to drop.
     ...priorFlags.filter(p => p.problem === "editor_issue" && !p.fixed),
   ];
@@ -202,7 +209,7 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const checked_at = new Date().toISOString();
   const { error } = await supabase.from("page_reviews").upsert({
     path, kind: reviewKind(path), title: page.heading || page.title || null,
-    ai_flags: flags, ai_rated_history: history, ai_page_issue: result.data.page_issue, ai_summary: result.data.summary,
+    ai_flags: flags, ai_rated_history: history, ai_page_issue: null, ai_summary: result.data.summary,
     ai_guidance_version: guidance.version,
     ai_entries: page.entries.length, ai_model: result.model, ai_checked_at: checked_at,
   }, { onConflict: "path" });

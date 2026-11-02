@@ -1,6 +1,6 @@
 /** Shared by the admin review bar (browser) and the page review and check services (server). */
 export type PageReviewStatus = "reviewed" | "needs_work" | "fixing" | "fixed";
-export type FlagProblem = "unclear_why" | "generic_text" | "different_story" | "duplicate" | "wrong_detail" | "unsupported" | "editor_issue";
+export type FlagProblem = "unclear_why" | "generic_text" | "different_story" | "duplicate" | "wrong_detail" | "unsupported" | "editor_issue" | "page_issue";
 export type FlagVerdict = "agree" | "disagree";
 export type PageFlag = {
   key: string | null; problem: FlagProblem; reason: string; excerpt: string; verdict: FlagVerdict | null;
@@ -44,6 +44,7 @@ export const FLAG_PROBLEM_LABELS: Record<FlagProblem, string> = {
   wrong_detail: "Contradicts the page",
   unsupported: "Not backed by the record",
   editor_issue: "Your issue",
+  page_issue: "Whole page",
 };
 
 /** "Nov 1, 6:09 PM" from a stored timestamp. */
