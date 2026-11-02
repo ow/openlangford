@@ -62,17 +62,21 @@ def refile_target(supabase, item_id: int) -> int | None:
 
 class _NoteCheck(BaseModel):
     followed: bool = Field(description="True when the summary or status says what the instruction asks (or leaves out what it says to leave out).")
+    missing: str = Field(description="When not followed, what the summary still needs, in one plain sentence; empty otherwise.")
 
 
-def check_summary_notes(supabase, notes: list[dict]) -> list[str]:
-    """The approved summary instructions the rewritten summary doesn't follow."""
+def check_summary_notes(supabase, notes: list[dict]) -> list[dict]:
+    """The approved summary instructions the rewritten summary doesn't follow, each with the topic the page now shows
+    and what is still missing."""
     from pipeline import ai
 
     unfollowed = []
     for entry in notes:
         matter = supabase.table("matters").select("plain_english_summary, meta").eq("id", int(entry["matter_id"])).single().execute().data
+        matter_id = int(entry["matter_id"])
         canonical = (matter.get("meta") or {}).get("canonical_matter_id")
-        if canonical:  # merged away during this fix: the page now shows the topic it was merged into
+        if canonical:
+            matter_id = int(canonical)  # merged away during this fix: the page now shows the topic it was merged into
             matter = supabase.table("matters").select("plain_english_summary, meta").eq("id", int(canonical)).single().execute().data
         text = f"Summary: {matter.get('plain_english_summary') or ''}\nWhere it stands: {(matter.get('meta') or {}).get('status_line') or ''}"
         try:
@@ -86,10 +90,10 @@ def check_summary_notes(supabase, notes: list[dict]) -> list[str]:
                               stage="review", schema=_NoteCheck)
         except Exception as exc:  # can't check: say so rather than claim it
             print(f"  [fix_page] summary check failed: {exc}")
-            unfollowed.append(entry["note"])
+            unfollowed.append({"note": entry["note"], "matter_id": matter_id, "missing": ""})
             continue
         if not verdict.followed:
-            unfollowed.append(entry["note"])
+            unfollowed.append({"note": entry["note"], "matter_id": matter_id, "missing": verdict.missing})
     return unfollowed
 
 
@@ -156,8 +160,19 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
             done.append(f"Rewrote the summary of {len(summaries)} {'topic' if len(summaries) == 1 else 'topics'} whose timeline changed.")
 
     unfollowed = check_summary_notes(supabase, args.get("summary_notes") or [])
-    for note in unfollowed:
-        left.append(f"The summary was rewritten but doesn't yet say what was asked: \"{note[:300]}\"")
+    if unfollowed:  # one more rewrite, told exactly what the last one missed
+        retry = sorted({u["matter_id"] for u in unfollowed})
+        for matter_id in retry:
+            meta = supabase.table("matters").select("meta").eq("id", matter_id).single().execute().data.get("meta") or {}
+            asks = [f"The last rewrite missed this: {u['missing']}" for u in unfollowed if u["matter_id"] == matter_id and u["missing"]]
+            if asks:
+                supabase.table("matters").update({"meta": {**meta, "editor_notes": [*(meta.get("editor_notes") or []), *asks][-10:]}}).eq("id", matter_id).execute()
+        refresh_matter_summaries(supabase, retry)
+        unfollowed = check_summary_notes(supabase, [{"matter_id": u["matter_id"], "note": u["note"]} for u in unfollowed])
+    for u in unfollowed:
+        note = u["note"]
+        left.append(f"The summary was rewritten but doesn't yet say what was asked: \"{note[:300]}\""
+                    + (f" Still missing: {u['missing']}" if u["missing"] else ""))
         done[:] = [d for d in done if note.split(" The record says:")[0][:80] not in d]
 
     row = supabase.table("page_reviews").select("ai_flags").eq("path", path).maybe_single().execute()

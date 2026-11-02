@@ -58,7 +58,9 @@ def test_a_move_with_no_destination_is_refiled_and_unfollowed_summary_notes_are_
               "matters": {"plain_english_summary": "Old text.", "meta": {}},
               "page_reviews": {"ai_flags": [{"key": None, "verdict": "agree"}, {"key": "agenda-1", "verdict": "agree"}]}})
     monkeypatch.setattr(sf, "refile_target", lambda supabase, item_id: 77)
-    monkeypatch.setattr(sf, "check_summary_notes", lambda supabase, notes: [n["note"] for n in notes])
+    checks = []
+    monkeypatch.setattr(sf, "check_summary_notes", lambda supabase, notes: checks.append(notes) or
+                        [{"note": n["note"], "matter_id": 5, "missing": "The adoption."} for n in notes])
     monkeypatch.setattr(lifecycle, "refresh_meeting_matter_lifecycles", lambda *a, **k: None)
     monkeypatch.setattr(summaries, "refresh_matter_summaries", lambda *a, **k: {5: {}})
     result = sf.run_fix_page(db, {"path": "/matters/x", "moves": [{"item_id": 1, "to_matter_id": None, "refile": True, "reason": "Not this topic."}],
@@ -67,6 +69,9 @@ def test_a_move_with_no_destination_is_refiled_and_unfollowed_summary_notes_are_
     item_update = next(p for t, op, p in db.writes if t == "agenda_items" and op == "update")
     assert item_update["matter_id"] == 77 and item_update["meta"]["staff_matter"]["matter_id"] == 77  # re-filed, not dropped
     review = next(p for t, op, p in db.writes if t == "page_reviews")
-    assert "doesn't yet say what was asked" in review["agent_note"]
+    assert "doesn't yet say what was asked" in review["agent_note"] and "Still missing: The adoption." in review["agent_note"]
+    assert len(checks) == 2  # rewritten once more, told what was missing, before asking a person
+    notes_update = next(p for t, op, p in db.writes if t == "matters" and op == "update" and "editor_notes" in (p.get("meta") or {}))
+    assert notes_update["meta"]["editor_notes"] == ["The last rewrite missed this: The adoption."]
     assert [f.get("fixed") for f in review["ai_flags"]] == [False, True]  # the page-wide flag stays open
     assert result["left"] == 1
