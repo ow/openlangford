@@ -234,7 +234,7 @@ export function PageReviewBar() {
               {/* While the agent works, or waits for its fix to be confirmed, its report is what matters: the check's
                   details fold away behind a link. */}
               {agentMode && !showCheck ? (
-                <button type="button" onClick={() => setShowCheck(true)} className="mb-3 text-xs font-medium text-brand-700 hover:underline">
+                <button type="button" onClick={() => setShowCheck(true)} className="block text-xs font-medium text-brand-700 hover:underline">
                   Show what the check found
                 </button>
               ) : (
@@ -417,6 +417,9 @@ export function PageReviewBar() {
                 </>
               )}
               {save.data?.message && save.state === "idle" && <p className="mb-3 rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-700">{save.data.message}</p>}
+              {/* The page tools belong with the check: folded away with it while the agent's report is shown. */}
+              {(!agentMode || showCheck) && (
+                <>
               {links && !links.hidden && (
                 confirming === "hide" ? (
                   <div className="mb-3 rounded-lg border border-red-200 px-2.5 py-2 text-xs">
@@ -444,6 +447,8 @@ export function PageReviewBar() {
                 className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50">
                 <RefreshCw className="h-3.5 w-3.5" />{review?.ai_checked_at ? "Check again" : "Check this page"}
               </button>
+                </>
+              )}
             </>
           )}
         </div>
