@@ -9,7 +9,10 @@
  */
 
 const POSTHOG_APP_HOST = "https://us.posthog.com";
-const CACHE_MS = 5 * 60_000;
+/** Traffic doesn't need to be live: a stored read is used for 30 minutes, then refreshed in the background while
+ * the stored one (up to a day old) is still shown. Only with nothing stored does a page wait for PostHog. */
+const FRESH_MS = 30 * 60_000;
+const STALE_MS = 24 * 60 * 60_000;
 const DAYS = 30;
 
 export type DailyPoint = { day: string; value: number };
@@ -20,6 +23,8 @@ export type SiteTraffic =
   | { available: false; reason: "error"; status: number | null }
   | {
       available: true;
+      /** When PostHog was read (ISO). */
+      asOf: string;
       visitors: DailyPoint[];
       views: DailyPoint[];
       visitors7: number;
@@ -30,7 +35,11 @@ export type SiteTraffic =
       referrers: { label: string; value: number }[];
     };
 
-let cached: { key: string; at: number; value: Promise<SiteTraffic> } | null = null;
+type Stored = { at: number; value: SiteTraffic };
+type Kv = { get(key: string, type: "json"): Promise<unknown>; put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void> };
+
+let memory: { key: string; stored: Stored } | null = null;
+let refreshing: Promise<SiteTraffic> | null = null;
 
 class PostHogError extends Error {
   constructor(readonly status: number) {
@@ -38,12 +47,12 @@ class PostHogError extends Error {
   }
 }
 
-async function hogql(projectId: string, apiKey: string, query: string): Promise<any[][]> {
+async function hogql(projectId: string, apiKey: string, query: string, timeoutMs: number): Promise<any[][]> {
   const response = await fetch(`${POSTHOG_APP_HOST}/api/projects/${encodeURIComponent(projectId)}/query/`, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({ query: { kind: "HogQLQuery", query } }),
-    signal: AbortSignal.timeout(6000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   if (!response.ok) throw new PostHogError(response.status);
   const body = (await response.json()) as { results?: any[][] };
@@ -52,8 +61,8 @@ async function hogql(projectId: string, apiKey: string, query: string): Promise<
 
 const pageviews = (days: number) => `event = '$pageview' and timestamp >= now() - interval ${days} day`;
 
-async function readTraffic(projectId: string, apiKey: string): Promise<SiteTraffic> {
-  const q = (query: string) => hogql(projectId, apiKey, query);
+async function readTraffic(projectId: string, apiKey: string, timeoutMs: number, now: number): Promise<SiteTraffic> {
+  const q = (query: string) => hogql(projectId, apiKey, query, timeoutMs);
   try {
     const [totals, daily, pages, referrers] = await Promise.all([
       q(`select
@@ -75,6 +84,7 @@ async function readTraffic(projectId: string, apiKey: string): Promise<SiteTraff
     const [visitors7, visitorsPrev7, views7, viewsPrev7] = (totals[0] ?? []).map((v) => Number(v) || 0);
     return {
       available: true,
+      asOf: new Date(now).toISOString(),
       visitors: daily.map(([day, visitors]) => ({ day: String(day), value: Number(visitors) || 0 })),
       views: daily.map(([day, , views]) => ({ day: String(day), value: Number(views) || 0 })),
       visitors7: visitors7 ?? 0,
@@ -90,17 +100,42 @@ async function readTraffic(projectId: string, apiKey: string): Promise<SiteTraff
   }
 }
 
-export function getSiteTraffic(env: Record<string, unknown>, now = Date.now()): Promise<SiteTraffic> {
+/**
+ * Traffic for the admin overview. Stored in the PUBLIC_CACHE KV binding (shared by every Worker) and in memory.
+ * Fresh for 30 minutes; after that the stored read is returned at once and PostHog is asked again in the
+ * background (`waitUntil`), with a longer timeout since nobody is waiting on it. A failed read never replaces a
+ * stored good one.
+ */
+export async function getSiteTraffic(env: Record<string, unknown>, waitUntil?: (p: Promise<unknown>) => void, now = Date.now()): Promise<SiteTraffic> {
   const apiKey = String(env.POSTHOG_PERSONAL_API_KEY ?? process.env.POSTHOG_PERSONAL_API_KEY ?? "");
   const projectId = String(env.POSTHOG_PROJECT_ID ?? process.env.POSTHOG_PROJECT_ID ?? "");
-  if (!apiKey || !projectId) return Promise.resolve({ available: false, reason: "not_configured" });
+  if (!apiKey || !projectId) return { available: false, reason: "not_configured" };
 
-  const key = `${projectId}:${apiKey.slice(-6)}`;
-  if (!cached || cached.key !== key || now - cached.at > CACHE_MS) {
-    const value = readTraffic(projectId, apiKey);
-    cached = { key, at: now, value };
-    // Don't hold on to a failed read for five minutes.
-    value.then((t) => { if (!t.available && cached?.value === value) cached = null; });
+  const kv = env.PUBLIC_CACHE as Kv | undefined;
+  const key = `admin:site-traffic:v1:${projectId}:${apiKey.slice(-6)}`;
+  let stored = memory?.key === key ? memory.stored : null;
+  if (!stored || now - stored.at > FRESH_MS) {
+    const fromKv = kv ? ((await kv.get(key, "json").catch(() => null)) as Stored | null) : null;
+    if (fromKv?.value?.available && (!stored || fromKv.at > stored.at)) stored = fromKv;
   }
-  return cached.value;
+  if (stored && memory?.stored !== stored) memory = { key, stored };
+
+  const refresh = (timeoutMs: number) => {
+    refreshing ??= readTraffic(projectId, apiKey, timeoutMs, Date.now()).then(async (value) => {
+      if (value.available) {
+        memory = { key, stored: { at: Date.now(), value } };
+        await kv?.put(key, JSON.stringify(memory.stored), { expirationTtl: 2 * 86400 }).catch(() => {});
+      }
+      return value;
+    }).finally(() => { refreshing = null; });
+    return refreshing;
+  };
+
+  if (stored && now - stored.at <= FRESH_MS) return stored.value;
+  if (stored && now - stored.at <= STALE_MS) {
+    const pending = refresh(25_000);
+    if (waitUntil) waitUntil(pending);
+    return stored.value;
+  }
+  return refresh(12_000);
 }

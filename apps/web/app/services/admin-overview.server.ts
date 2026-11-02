@@ -182,7 +182,8 @@ async function getCalendar(supabase: SupabaseClient, municipalityId: number | nu
   };
 }
 
-export async function getAdminOverview(supabase: SupabaseClient, env: Record<string, unknown>, now = new Date()) {
+export async function getAdminOverview(supabase: SupabaseClient, env: Record<string, unknown>, now = new Date(),
+  waitUntil?: (p: Promise<unknown>) => void) {
   const municipalityId = await section(async () => (await getMunicipality(supabase)).id as number);
   const [queues, audience, email, questions, ai, calendar, traffic] = await Promise.all([
     getQueues(supabase, municipalityId),
@@ -191,7 +192,7 @@ export async function getAdminOverview(supabase: SupabaseClient, env: Record<str
     section(() => getAsk(supabase, now)),
     getAiUsageDashboard(supabase, { windows: [7], now }),
     section(() => getCalendar(supabase, municipalityId)),
-    getSiteTraffic(env),
+    getSiteTraffic(env, waitUntil),
   ]);
   return {
     generatedAt: now.toISOString(),

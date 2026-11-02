@@ -16,7 +16,9 @@ export const meta = () => [
 
 export async function loader({ request, context }: Route.LoaderArgs) {
   const env = ((context as any)?.cloudflare?.env ?? {}) as Record<string, unknown>;
-  return adminRead(request, async (role) => ({ ...(await getAdminOverview(getSupabaseAdminClient(), env)), staffRole: role }));
+  const ctx = (context as any)?.cloudflare?.ctx as { waitUntil?: (p: Promise<unknown>) => void } | undefined;
+  const waitUntil = ctx?.waitUntil ? (p: Promise<unknown>) => ctx.waitUntil!(p) : undefined;
+  return adminRead(request, async (role) => ({ ...(await getAdminOverview(getSupabaseAdminClient(), env, new Date(), waitUntil)), staffRole: role }));
 }
 
 export const action = adminReadOnlyAction;
@@ -151,7 +153,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
           <ToolsPanel groups={groups} contact={data.queues.contact} />
 
           <div className="min-w-0 space-y-6 lg:col-start-1 lg:row-span-2 lg:row-start-1">
-            <Panel title="Visitors" subtitle="People per day, last 30 days">
+            <Panel title="Visitors" subtitle={`People per day, last 30 days${traffic ? ` · as of ${formatRelativeTime(traffic.asOf)}` : ""}`}>
               {traffic ? <AreaChart data={traffic.visitors} unit="visitors" label="Visitors per day" /> : <TrafficSetup traffic={data.traffic} />}
             </Panel>
 
