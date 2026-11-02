@@ -975,6 +975,42 @@ def run_topic_tidy(ctx: StageContext):
             "empty_hidden": len(report["empty_hidden"])}
 
 
+def run_committee_membership(ctx: StageContext):
+    """Committee membership from each meeting's minutes roster and Council's appointments (see
+    pipeline/ingestion/committee_membership.py). Plans only, writing the plan for review, unless --force."""
+    import json
+    import os
+    from datetime import date
+
+    from pipeline.db import connect
+    from pipeline.ingestion import committee_membership as cm
+    from pipeline.paths import BASE_DIR
+
+    conn = connect()
+    conn.set_session(readonly=True)
+    cur = conn.cursor()
+    try:
+        target = ctx.target_id()
+        plan = cm.build_plan(cur, [target] if target is not None else None)
+        cm.resolve_appointments(plan, cur)
+    finally:
+        conn.rollback()
+        conn.close()
+    out_dir = os.path.join(BASE_DIR, "research", "data-integrity", date.today().isoformat())
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(out_dir, "committee-membership-plan.json"), "w") as f:
+        json.dump(plan, f, default=str, indent=1)
+    with open(os.path.join(out_dir, "committee-membership-plan.md"), "w") as f:
+        f.write(cm.describe(plan))
+    print(f"  [committee-membership] plan: {out_dir}/committee-membership-plan.md")
+    counts = {"meetings": len(plan["meetings"]), "votes_recordable": sum(m["status"] == "votes_recordable" for m in plan["meetings"]),
+              "new_people": len(plan["new_people"]), "appointments": len(plan["appointments"])}
+    if ctx.dry_run or not ctx.force:
+        print("  [committee-membership] plan only; run with --force to write it")
+        return counts
+    return {**counts, **cm.apply_plan(ctx.supabase, plan, backup_dir=out_dir)}
+
+
 def run_matter_names(ctx: StageContext):
     """Timeline entries found by a matter's exact names (see pipeline/ingestion/matter_names.py).
     ``--hidden`` writes new links unpublished, for review."""
@@ -1477,6 +1513,12 @@ STAGES: list[Stage] = [
         name="letter-placement-eval",
         description="Replay admin letter placements: how often the model agrees with them, by confidence. Read-only.",
         run=run_letter_placement_eval, when="backfill_only", scope="global", version="1",
+    ),
+    Stage(
+        name="committee-membership",
+        description="Who sat on each committee at each meeting, from the minutes roster and Council's appointments, so "
+                    "committee votes can be recorded. Writes a plan for review; --force applies it (with a backup).",
+        run=run_committee_membership, when="backfill_only", scope="global", version="1",
     ),
     Stage(
         name="matter-resolver-audit",
