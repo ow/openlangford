@@ -240,10 +240,44 @@ def roles_for(directory: dict, meeting_date) -> dict[str, int]:
 
 
 def known_people(sb) -> list[dict]:
-    """Everyone the minutes have ever listed as attending (officials), plus councillors."""
+    """Everyone the minutes have ever listed as attending (officials), plus councillors, with their roles' dates
+    and any date of death (people.meta.died_on), for who may be named at a given meeting."""
     ids = {r["person_id"] for r in _pages(lambda: sb.table("attendance").select("person_id").order("id"))}
-    people = _pages(lambda: sb.table("people").select("id, name, is_councillor").order("id"))
-    return [p for p in people if p["id"] in ids or p.get("is_councillor")]
+    people = _pages(lambda: sb.table("people").select("id, name, is_councillor, meta").order("id"))
+    terms = defaultdict(list)
+    for m in _pages(lambda: sb.table("memberships").select("id, person_id, start_date, end_date").order("id")):
+        terms[m["person_id"]].append((m.get("start_date"), m.get("end_date")))
+    def died_on(p: dict):
+        # An explicit date, else for someone marked in memoriam the end of their last role.
+        meta = p.get("meta") or {}
+        if meta.get("died_on"):
+            return meta["died_on"]
+        ends = [end for _, end in terms.get(p["id"], []) if end]
+        return max(ends) if meta.get("in_memoriam") and ends else None
+
+    return [{"id": p["id"], "name": p["name"], "is_councillor": p.get("is_councillor"),
+             "died_on": died_on(p), "terms": terms.get(p["id"], [])}
+            for p in people if p["id"] in ids or p.get("is_councillor")]
+
+
+def gone_on(people: list[dict], day: str | None) -> set[int]:
+    """People who had died by this date: never named, and their voices aren't candidates."""
+    return {p["id"] for p in people if day and p.get("died_on") and str(p["died_on"]) <= str(day)}
+
+
+def former_on(people: list[dict], day: str | None) -> set[int]:
+    """People whose every recorded role had ended by this date (a former councillor). A voice match alone
+    can't name them: their voice is too easily confused with whoever sits in that seat now. People with no
+    role records (most staff) and future officials aren't affected."""
+    if not day:
+        return set()
+    day = str(day)
+    out = set()
+    for p in people:
+        terms = p.get("terms") or []
+        if terms and all(end and str(end) < day for _, end in terms):
+            out.add(p["id"])
+    return out
 
 
 # ── exemplars / fingerprints ─────────────────────────────────────────────
@@ -499,15 +533,22 @@ def name_meeting(sb, meeting_id: int, bank: VoiceBank, people: list[dict], *, dr
         if r["person_id"] and r["id"] not in ours and si.is_diarized_label(label):
             legacy[label][r["person_id"]] += 1
 
-    voice_rows = [x for x in bank.rows if x["meeting_id"] != meeting_id]
+    day = meeting.get("meeting_date")
+    gone = gone_on(people, day)
+    voice_rows = [x for x in bank.rows if x["meeting_id"] != meeting_id and x.get("person_id") not in gone]
     result = si.identify_meeting(
-        evidence_rows, data["attendees"], known_people=people, minutes=data["minutes"],
+        evidence_rows, [a for a in data["attendees"] if a["id"] not in gone],
+        known_people=[p for p in people if p["id"] not in gone], minutes=data["minutes"], voice_barred=former_on(people, day),
         chair_person_id=meeting.get("chair_person_id"), centroids=data["centroids"],
         fingerprints=voice_rows, meeting_id=meeting_id, motions=data["motions"],
         person_means=VoiceBank(voice_rows).reference_means() if voice_rows else None,
         roles=roles_for(roles_dir or {}, meeting.get("meeting_date")), items=data.get("items"),
     )
     labels = result["labels"]
+    for entry in labels.values():  # belt and braces: nobody is named after their death
+        if entry.get("person_id") in gone:
+            entry["held"] = "died_before_meeting"
+            entry.pop("person_id")
     hold_withheld(labels, {a["id"] for a in data["attendees"]}, withheld or {})
     for label, entry in labels.items():
         prior = legacy.get(label)

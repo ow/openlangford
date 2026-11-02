@@ -274,3 +274,22 @@ def test_presenter_named_in_the_agenda_is_the_label_doing_the_talking():
     assert si.decide(ev["Speaker_1"], None, {55})["person_id"] == 55
     # "Deputy director of finance" never reads as the director.
     assert si.item_presenter("Deputy Director of Finance remarks", idx, roles) is None
+
+
+def test_voice_alone_cannot_name_a_former_official():
+    from pipeline.ingestion.speaker_identity import decide
+    strong = {"person_id": 35, "similarity": 0.96, "margin": 0.14}
+    assert decide([], strong, roster=set()) is not None  # staff the minutes omit
+    assert decide([], strong, roster=set(), voice_barred={35}) is None  # a former councillor: voice alone isn't enough
+
+
+def test_nobody_is_named_after_their_death():
+    from pipeline.ingestion.speaker_names import former_on, gone_on
+    people = [{"id": 35, "died_on": "2026-05-02", "terms": [("2022-11-07", "2026-05-02")]},
+              {"id": 60, "died_on": None, "terms": [("2026-11-02", None)]},
+              {"id": 70, "died_on": None, "terms": []}]
+    assert gone_on(people, "2026-09-08") == {35}
+    assert gone_on(people, "2026-04-07") == set()
+    assert former_on(people, "2026-09-08") == {35}  # all roles over
+    assert former_on(people, "2026-04-07") == set()
+    assert former_on(people, "2025-01-01") == set()  # a future councillor and staff without role records: unaffected

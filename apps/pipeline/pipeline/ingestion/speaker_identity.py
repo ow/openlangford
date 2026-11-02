@@ -39,7 +39,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 
-IDENTITY_VERSION = "4"
+IDENTITY_VERSION = "5"  # 5: voice alone can't name a former official; nobody is named after their death
 ATTRIBUTION_SOURCE = "SPEAKER_EVIDENCE"
 # Rows the stage may name. Anything else (manual, verified, legacy-named) is left alone.
 UNNAMED_SOURCES = ("UNIDENTIFIED_DIARIZATION", "CACHED_TRANSCRIPT_BACKFILL", "AI_DIARIZATION")
@@ -618,7 +618,8 @@ def voice_match(centroid, fingerprints: list[dict], exclude_meeting: int | None 
     return {"person_id": pid, "similarity": round(kth, 4), "margin": round(kth - rival, 4)}
 
 
-def decide(events: list[dict], voice: dict | None, roster: set[int], ignore: frozenset = frozenset()) -> dict | None:
+def decide(events: list[dict], voice: dict | None, roster: set[int], ignore: frozenset = frozenset(),
+           voice_barred: frozenset | set = frozenset()) -> dict | None:
     """Name a label when its evidence clearly points to one person.
 
     Minutes roster membership is supporting evidence, not a filter: a person the
@@ -659,9 +660,13 @@ def decide(events: list[dict], voice: dict | None, roster: set[int], ignore: fro
         if set(k) == {"chair"} and k["chair"] < 3:
             return None
     else:
-        # Staff and others the minutes omit: two kinds of evidence, or a voice heard
-        # unmistakably at earlier meetings (exemplars only ever hold roster officials).
-        if not strong_voice and (top < MIN_SCORE + 1 or len(k) < 2):
+        # Staff and others the minutes omit: two kinds of evidence, or a voice heard unmistakably at earlier
+        # meetings. Never voice alone for someone whose roles had all ended (``voice_barred``): a former
+        # councillor's voice is too easily confused with whoever now sits in that seat (2026-11-02: Lillian
+        # Szpak was named at four meetings after her death on voice alone).
+        text_enough = top >= MIN_SCORE + 1 and len(k) >= 2
+        voice_enough = strong_voice and pid not in voice_barred
+        if not (text_enough or voice_enough):
             return None
     return {"person_id": pid, "score": top, "share": round(top / total, 3), "kinds": dict(k),
             "on_roster": on_roster}
@@ -698,6 +703,7 @@ def identify_meeting(
     person_means: dict | None = None,
     roles: dict[str, int] | None = None,
     items: list[dict] | None = None,
+    voice_barred: frozenset | set = frozenset(),
 ) -> dict:
     """Return {"labels": {label: decision+evidence}, "chair": person_id|None}. Pure; no I/O."""
     cands = candidates_from_people(attendees)
@@ -726,7 +732,7 @@ def identify_meeting(
         vec = keyed.get(label_number(label))
         if vec is not None and fingerprints:
             voice = voice_match(vec, fingerprints, exclude_meeting=meeting_id)
-        decision = decide(ev.get(label, []), voice, roster, ignore)
+        decision = decide(ev.get(label, []), voice, roster, ignore, voice_barred)
         entry = {"seconds": round(seconds[label], 1), "evidence": ev.get(label, [])[:12], "voice": voice,
                  "all_evidence": ev.get(label, [])}
         if decision and vec is not None and person_means and seconds[label] >= FINGERPRINT_MIN_SECONDS:
