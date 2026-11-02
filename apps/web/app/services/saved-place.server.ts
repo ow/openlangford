@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { cleanLabel, validPoint, type SavedPlace } from "../lib/saved-place";
+// The saved place shown on a page is browser-safe, so it lives in lib; re-exported for server callers.
+export { savedPlace } from "../lib/saved-place";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { geocodeAddress } from "./geocode.server";
 import { addSubscription } from "./subscriptions";
@@ -67,7 +69,3 @@ export async function savePlace(supabase: SupabaseClient, userId: string, update
   }
 }
 
-export function savedPlace(profile: { location_lat?: number | null; location_lng?: number | null; location_label?: string | null } | null): SavedPlace | null {
-  if (profile?.location_lat == null || profile?.location_lng == null) return null;
-  return { lat: profile.location_lat, lng: profile.location_lng, label: profile.location_label || DEFAULT_MUNICIPALITY.short_name };
-}

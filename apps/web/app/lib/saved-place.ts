@@ -1,3 +1,4 @@
+import { DEFAULT_MUNICIPALITY } from "./site-config";
 /**
  * A resident's place for nearby alerts. We keep only a map point rounded to three decimal places
  * (about 110 m north–south, 75 m east–west here: roughly a block) and the street name. The address
@@ -24,4 +25,10 @@ export function cleanLabel(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const label = value.replace(/\d+/g, "").replace(/\s+/g, " ").trim().slice(0, 80);
   return label || null;
+}
+
+/** The place saved on a profile, or null (shown on settings, so browser-safe). */
+export function savedPlace(profile: { location_lat?: number | null; location_lng?: number | null; location_label?: string | null } | null): SavedPlace | null {
+  if (profile?.location_lat == null || profile?.location_lng == null) return null;
+  return { lat: profile.location_lat, lng: profile.location_lng, label: profile.location_label || DEFAULT_MUNICIPALITY.short_name };
 }

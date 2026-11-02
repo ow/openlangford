@@ -13,7 +13,8 @@ import {
   removeSubscription,
 } from "../services/subscriptions";
 import { getTopics } from "../services/topics";
-import { readPlaceUpdate, readRadius, savePlace, savedPlace } from "../services/saved-place.server";
+import { readPlaceUpdate, readRadius, savePlace } from "../services/saved-place.server";
+import { savedPlace } from "../lib/saved-place";
 import { PlacePicker } from "../components/place-picker";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
