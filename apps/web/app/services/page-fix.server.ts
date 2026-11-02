@@ -106,6 +106,11 @@ ${movable || "(No flagged items to move.)"}
   numbers or jargon unless the record gives nothing else.
 - rewrite_heading: a new heading for a "mention-", "background-" or "report-" entry whose heading is wrong or misleading.
 - rewrite_summary: for the topic's summary or "where it stands", a short instruction for the summary writer in new_text.
+  The summary writer treats only items filed on this topic as its history: it will not state a decision (an adoption,
+  an approval) that appears here only as a "mention-" entry. When the fix rests on such a decision, first make it part
+  of the right history: file_here if the item is on no topic; merge_topic if the topic holding it is this same
+  project; or, if that topic is a separate project this page has wrongly taken steps from, move_item those steps of
+  this topic's own to it (with to_matter_id null, they are re-filed with the rest of their bylaw).
 - merge_topic: when a related or same-named topic below is the very same project as this page (a duplicate, not just an
   earlier or later step), with its id.
 ${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}
