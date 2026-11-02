@@ -33,6 +33,9 @@ export const usersFixture = {
   total: 2,
 };
 export const userFixture = {
+  staff: { ownerByEmail: false, grantedRole: null, grantedAt: null, actions: [] },
+  canGrant: false,
+  isSelf: false,
   user: account,
   preferences: {
     notificationEmail: "reader@example.test",

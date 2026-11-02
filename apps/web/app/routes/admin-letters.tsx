@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useFetcher } from "react-router";
 import type { Route } from "./+types/admin-letters";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Button } from "../components/ui/button";
 import { DetailHeader } from "../components/ui/detail-header";
@@ -19,7 +19,7 @@ export const meta: Route.MetaFunction = () => [
 type Supabase = ReturnType<typeof getSupabaseAdminClient>;
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireAdmin(request);
+  await requireModerator(request);
   return loadLetterQueue(getSupabaseAdminClient());
 }
 
@@ -219,7 +219,7 @@ async function guardedUpdate(
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  await requireAdmin(request);
+  await requireModerator(request);
   const supabase = getSupabaseAdminClient();
   const form = await request.formData();
   const meetingId = Number(form.get("meeting_id"));

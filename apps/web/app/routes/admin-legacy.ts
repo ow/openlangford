@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 
 const destinations: Record<string, string> = {
   "/admin-pipeline": "/admin/pipeline",
@@ -7,7 +7,7 @@ const destinations: Record<string, string> = {
 };
 
 export async function loader({ request }: { request: Request }) {
-  await requireAdmin(request);
+  await requireModerator(request);
   const url = new URL(request.url);
   const destination = destinations[url.pathname.replace(/\/+$/, "")];
   if (!destination) throw new Response("Not found", { status: 404 });
@@ -15,6 +15,6 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export async function action({ request }: { request: Request }) {
-  await requireAdmin(request);
+  await requireModerator(request);
   throw new Response("Use the canonical admin page.", { status: 405, headers: { Allow: "GET" } });
 }

@@ -35,7 +35,7 @@ import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
-import { isAdminUser } from "./lib/auth.server";
+import { getStaffRole } from "./lib/auth.server";
 import { PageReviewBar } from "./components/admin/page-review-bar";
 
 export const meta: Route.MetaFunction = ({ matches, error }) => {
@@ -127,10 +127,13 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     }
   }
 
+  const staffRole = user ? await timed("root-role", getStaffRole(user)) : null;
   return {
     user,
     municipality,
-    isAdmin: isAdminUser(user),
+    // Any staff role: every admin control on public pages is open to moderators (servers check the role).
+    isAdmin: !!staffRole,
+    staffRole,
     signupsEnabled: publicSignupsEnabled(),
     emailAlertsAvailable: emailAlertsAvailable(),
     aiSearchAvailable: searchBudget.available,

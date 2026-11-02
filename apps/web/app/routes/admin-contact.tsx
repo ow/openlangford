@@ -1,6 +1,6 @@
 import { Form, Link, data, useNavigation } from "react-router";
 import type { Route } from "./+types/admin-contact";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { adminRead, privateAdminHeaders, requireUuid } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
@@ -24,7 +24,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   try {
-    const user = await requireAdmin(request);
+    const user = await requireModerator(request);
     const form = await request.formData();
     const intent = String(form.get("intent") || "");
     if (intent !== "handle" && intent !== "reopen") {

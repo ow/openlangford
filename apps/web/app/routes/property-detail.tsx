@@ -1,5 +1,5 @@
 import { Link, useFetcher, useRouteLoaderData } from "react-router";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { AdminOnly } from "../components/ui/admin-only";
 import { FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
@@ -64,7 +64,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 /** Admins remove a wrong link (the address parser misread a title). The pipeline keeps it hidden. */
 export async function action({ request, params }: Route.ActionArgs) {
-  await requireAdmin(request);
+  await requireModerator(request);
   const form = await request.formData();
   const supabase = getSupabaseAdminClient();
   const { data: property } = await supabase.from("properties").select("id").eq("slug", params.slug).maybeSingle();

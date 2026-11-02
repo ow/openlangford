@@ -2,7 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import { Form, Link, useNavigation } from "react-router";
 import { matterPath } from "../lib/paths";
 import type { Route } from "./+types/admin-matters";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Button } from "../components/ui/button";
 import { DetailHeader } from "../components/ui/detail-header";
@@ -42,7 +42,7 @@ async function loadMergeRows(supabase: ReturnType<typeof getSupabaseAdminClient>
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireAdmin(request);
+  await requireModerator(request);
   return loadMergeQueue(getSupabaseAdminClient());
 }
 
@@ -162,7 +162,7 @@ function sharedAddresses(histories: { addresses: string[] }[][]) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireAdmin(request);
+  const user = await requireModerator(request);
   const supabase = getSupabaseAdminClient();
   const form = await request.formData();
   const id = Number(form.get("proposal_id"));

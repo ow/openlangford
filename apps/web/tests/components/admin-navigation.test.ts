@@ -42,6 +42,7 @@ it("shows a named admin entry on desktop and mobile, with matter review discover
     askCost7: 0.04,
     calendar: { latest: null, upcoming: [] },
     traffic: { available: false, reason: "not_configured" },
+    staffRole: "admin",
   };
   const router = createMemoryRouter([{ path: "/admin", element: h(Admin as any, { loaderData } as any) }], { initialEntries: ["/admin"] });
   await act(async () => root.render(h(RouterProvider, { router, key: "directory" })));
@@ -51,4 +52,18 @@ it("shows a named admin entry on desktop and mobile, with matter review discover
   expect(matter?.textContent).toContain("2 to review");
   expect(host.querySelector('a[href="/admin/pipeline"]')?.textContent).toContain("2 failed");
   expect(host.querySelector('a[href="/admin/profiles"]')?.textContent).toContain("Clear");
+});
+it("leaves pipeline operations and people records off a moderator's directory", async () => {
+  const loaderData = {
+    generatedAt: new Date().toISOString(),
+    queues: { contact: { count: 0 }, names: 0, letters: { letters: 0 }, merges: 0, profiles: 0, pages: 0, failedJobs: 2 },
+    audience: null, email: null, questions: [], askCost7: null, calendar: null,
+    traffic: { available: false, reason: "not_configured" },
+    staffRole: "moderator",
+  };
+  const router = createMemoryRouter([{ path: "/admin", element: h(Admin as any, { loaderData } as any) }], { initialEntries: ["/admin"] });
+  await act(async () => root.render(h(RouterProvider, { router, key: "moderator" })));
+  expect(host.querySelector('a[href="/admin/contact"]')).not.toBeNull();
+  expect(host.querySelector('a[href="/admin/pipeline"]')).toBeNull();
+  expect(host.querySelector('a[href="/admin/people"]')).toBeNull();
 });

@@ -6,7 +6,7 @@ import {
   Link,
   useRevalidator,
 } from "react-router";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import {
   getSupabaseAdminClient,
   createSupabaseServerClient,
@@ -85,7 +85,7 @@ type FingerprintMatch = {
 };
 
 export async function loader({ request }: { request: Request }) {
-  await requireAdmin(request);
+  await requireModerator(request);
   const { supabase: serverClient } = createSupabaseServerClient(request);
 
   const url = new URL(request.url);
@@ -214,7 +214,7 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export async function action({ request }: { request: Request }) {
-  await requireAdmin(request);
+  await requireModerator(request);
   const supabaseAdmin = getSupabaseAdminClient();
 
   const formData = await request.formData();

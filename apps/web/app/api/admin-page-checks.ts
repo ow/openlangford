@@ -4,13 +4,14 @@ import type { ApiEnv } from "./types";
 import { ApiError } from "./lib/api-errors";
 import { apiKeyAuth } from "./middleware/auth";
 import { rateLimit } from "./middleware/rate-limit";
-import { isAdminUser } from "~/lib/auth.server";
+import { getStaffRole } from "~/lib/auth.server";
 import { getSupabaseAdminClient } from "~/lib/supabase.server";
 import { checkPage, randomUncheckedMatterPath, rateFlag } from "~/services/page-check.server";
 import { getPageReview, listPageReviews, reviewPath } from "~/services/page-reviews.server";
+import { logStaffAction, requestDetail } from "~/services/staff.server";
 
 /**
- * Page checks for agents (and scripts), with an admin's API key from /settings/api-keys. Not in the public
+ * Page checks for agents (and scripts), with a moderator's or admin's API key from /settings/api-keys. Not in the public
  * API docs. The same checks and ratings the admin review bar uses:
  *
  *   GET  /api/v1/admin/page-checks?path=/matters/x   one page's stored check and review
@@ -22,7 +23,12 @@ import { getPageReview, listPageReviews, reviewPath } from "~/services/page-revi
 const adminOnly = createMiddleware<ApiEnv>(async (c, next) => {
   const userId = c.get("userId");
   const { data } = userId ? await getSupabaseAdminClient().auth.admin.getUserById(userId) : { data: null };
-  if (!isAdminUser(data?.user)) throw new ApiError(403, "FORBIDDEN", "This API key's account is not an admin.");
+  const role = await getStaffRole(data?.user);
+  if (!role) throw new ApiError(403, "FORBIDDEN", "This API key's account has no staff role.");
+  if (c.req.method === "POST") {
+    const detail = await requestDetail(c.req.raw);
+    await logStaffAction(getSupabaseAdminClient(), { userId: userId!, role, path: c.req.path, action: `api${c.req.path.endsWith("/rate") ? ":rate" : ":check"}`, detail });
+  }
   await next();
 });
 

@@ -1,14 +1,16 @@
 import type { Route } from "./+types/admin-user";
-import { Link } from "react-router";
+import { Link, data } from "react-router";
 import {
   adminRead,
-  adminReadOnlyAction,
   boundedPage,
   privateAdminHeaders,
   requireUuid,
 } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getAudienceUser } from "../services/audience-admin.server";
+import { getUserStaff, setUserRole } from "../services/staff.server";
+import { isAdminEmail, requireAdmin } from "../lib/auth.server";
+import { StaffAccessSection } from "../components/admin/staff-access-section";
 import {
   AdminAudienceLayout,
   AdminPagination,
@@ -22,19 +24,45 @@ export const meta = () => [
   { name: "robots", content: "noindex, nofollow" },
 ];
 export const headers = privateAdminHeaders;
-export const action = adminReadOnlyAction;
+/** Admins grant or remove a staff role (recorded in staff_actions by requireAdmin). */
+export async function action({ request, params }: Route.ActionArgs) {
+  try {
+    const admin = await requireAdmin(request);
+    const id = requireUuid(params.id);
+    const form = await request.formData();
+    const role = String(form.get("role") || "");
+    if (form.get("intent") !== "role" || !["admin", "moderator", "none"].includes(role) || id === admin.id) {
+      return data({ error: "Unknown change." }, { status: 400, headers: privateAdminHeaders() });
+    }
+    await setUserRole(getSupabaseAdminClient(), id, role === "none" ? null : (role as "admin" | "moderator"), admin.id);
+    return data({ ok: true }, { headers: privateAdminHeaders() });
+  } catch (error) {
+    if (error instanceof Response) {
+      const headers = new Headers(error.headers);
+      privateAdminHeaders().forEach((value, key) => headers.set(key, value));
+      throw new Response(error.body, { status: error.status, statusText: error.statusText, headers });
+    }
+    return data({ error: "Could not change the role. Please try again." }, { status: 503, headers: privateAdminHeaders() });
+  }
+}
 export async function loader({ request, params }: Route.LoaderArgs) {
-  return adminRead(request, async () => {
+  return adminRead(request, async (viewerRole, viewer) => {
     const id = requireUuid(params.id),
       page = boundedPage(new URL(request.url).searchParams.get("page"));
+    const supabase = getSupabaseAdminClient();
+    const audience = await getAudienceUser(supabase, id, page);  // 404s an unknown account first
+    const staff = await getUserStaff(supabase, id);
     return {
-      ...(await getAudienceUser(getSupabaseAdminClient(), id, page)),
+      ...audience,
       page,
+      staff: { ...staff, ownerByEmail: isAdminEmail(audience.user.email) && !!audience.user.confirmedAt },
+      canGrant: viewerRole === "admin",
+      isSelf: viewer.id === id,
     };
   });
 }
 export default function AdminUser({ loaderData }: Route.ComponentProps) {
-  const { user, preferences, subscriptions, subscriptionCount, page, hasMore } =
+  const { user, preferences, subscriptions, subscriptionCount, page, hasMore, staff, canGrant, isSelf } =
     loaderData;
   const details = [
     ["Account email", user.email || "No email"],
@@ -80,7 +108,7 @@ export default function AdminUser({ loaderData }: Route.ComponentProps) {
   return (
     <AdminAudienceLayout
       title={user.name || "User details"}
-      description="Read-only account and subscription details."
+      description="Account, subscription and staff access details."
     >
       <div className="mb-5 flex flex-wrap gap-5 text-sm">
         <Link to="/admin/users" className={adminLink}>
@@ -153,6 +181,7 @@ export default function AdminUser({ loaderData }: Route.ComponentProps) {
           label="Subscription pages"
         />
       </section>
+      <StaffAccessSection staff={staff} canGrant={canGrant} isSelf={isSelf} />
     </AdminAudienceLayout>
   );
 }

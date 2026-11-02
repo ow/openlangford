@@ -1,7 +1,7 @@
 import { hasSourceIntegrityHold } from "~/lib/key-statement-evidence";
 import { Form, Link, useNavigation, useSearchParams } from "react-router";
 import type { Route } from "./+types/admin-profiles";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { PageHeader } from "../components/ui/page-header";
 import { Badge } from "../components/ui/badge";
@@ -28,7 +28,7 @@ type ProfileRow = {
 export const meta: Route.MetaFunction = () => [{ title: "Profile review" }];
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireAdmin(request);
+  await requireModerator(request);
   const supabase = getSupabaseAdminClient();
   const url = new URL(request.url);
   const selectedId = Number(url.searchParams.get("person")) || null;
@@ -67,7 +67,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireAdmin(request);
+  const user = await requireModerator(request);
   const supabase = getSupabaseAdminClient();
   const form = await request.formData();
   const intent = String(form.get("intent"));

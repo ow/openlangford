@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form, Link, useNavigation } from "react-router";
 import type { Route } from "./+types/admin-names";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Button } from "../components/ui/button";
 import { DetailHeader } from "../components/ui/detail-header";
@@ -27,7 +27,7 @@ type NameRow = {
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireAdmin(request);
+  await requireModerator(request);
   return loadNameQueue(getSupabaseAdminClient());
 }
 
@@ -89,7 +89,7 @@ export async function loadNameQueue(supabase: ReturnType<typeof getSupabaseAdmin
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireAdmin(request);
+  const user = await requireModerator(request);
   const supabase = getSupabaseAdminClient();
   const form = await request.formData();
   const key = String(form.get("name_key") || "");

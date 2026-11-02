@@ -1,6 +1,6 @@
 import type { Route } from "./+types/api.intel";
 import { formatSpeakerName } from "~/lib/speaker-labels";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getAiClient } from "../services/ai/index.server";
 import {
@@ -15,10 +15,10 @@ export async function action({ params, request }: Route.ActionArgs) {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  // Spends AI budget and overwrites agenda_items.meta, so admin-only (signup is open).
+  // Spends AI budget and overwrites agenda_items.meta, so staff only (signup is open).
   // Return JSON instead of a login redirect: callers are fetchers.
   try {
-    await requireAdmin(request);
+    await requireModerator(request);
   } catch (error) {
     if (error instanceof Response) {
       const forbidden = error.status === 403;

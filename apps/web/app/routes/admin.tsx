@@ -16,7 +16,7 @@ export const meta = () => [
 
 export async function loader({ request, context }: Route.LoaderArgs) {
   const env = ((context as any)?.cloudflare?.env ?? {}) as Record<string, unknown>;
-  return adminRead(request, () => getAdminOverview(getSupabaseAdminClient(), env));
+  return adminRead(request, async (role) => ({ ...(await getAdminOverview(getSupabaseAdminClient(), env)), staffRole: role }));
 }
 
 export const action = adminReadOnlyAction;
@@ -42,7 +42,7 @@ function waiting(count: number | null | undefined, noun: string, tone: "waiting"
   return count > 0 ? { text: `${n(count)} ${noun}`, tone } : { text: "Clear", tone: "clear" };
 }
 
-function tools(data: AdminOverview): { heading: string; links: Tool[] }[] {
+function tools(data: AdminOverview & { staffRole?: string }): { heading: string; links: Tool[] }[] {
   const q = data.queues;
   return [
     {
@@ -76,18 +76,19 @@ function tools(data: AdminOverview): { heading: string; links: Tool[] }[] {
         { to: "/speaker-alias", title: "Speaker aliases", status: null },
       ],
     },
-    {
+    // Admins only: moderators don't run the pipeline or edit council and staff records.
+    ...(data.staffRole !== "admin" ? [] : [{
       heading: "Site data",
       links: [
         { to: "/admin/pipeline", title: "Pipeline", status: waiting(q.failedJobs, "failed", "urgent") },
         { to: "/admin/people", title: "People and memberships", status: null },
       ],
-    },
+    }]),
   ];
 }
 
 export default function Admin({ loaderData }: Route.ComponentProps) {
-  const data = loaderData as unknown as AdminOverview;
+  const data = loaderData as unknown as AdminOverview & { staffRole?: string };
   const groups = tools(data);
   const busy = groups.flatMap((g) => g.links).filter((t) => t.status?.tone === "waiting" || t.status?.tone === "urgent").length;
   const traffic = data.traffic.available ? data.traffic : null;

@@ -1,7 +1,7 @@
 import { Form, Link, redirect } from "react-router";
 import type { Route } from "./+types/admin-reviews";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
@@ -29,7 +29,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 /** "Random page": a matter page nobody has reviewed or checked, for sampling. */
 export async function action({ request }: Route.ActionArgs) {
-  await requireAdmin(request);
+  await requireModerator(request);
   const path = await randomUncheckedMatterPath(getSupabaseAdminClient());
   return redirect(path || "/admin/reviews", { headers: privateAdminHeaders() });
 }

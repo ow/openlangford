@@ -28,7 +28,7 @@ function fakeAdmin(respond: (table: string, ops: Op[]) => { data: any; error: an
 }
 
 const mocks = vi.hoisted(() => ({ admin: null as any }));
-vi.mock("~/lib/auth.server", () => ({ requireAdmin: vi.fn(async () => ({ id: "admin" })) }));
+vi.mock("~/lib/auth.server", () => ({ requireModerator: vi.fn(async () => ({ id: "admin" })) }));
 vi.mock("~/lib/supabase.server", () => ({
   getSupabaseAdminClient: () => mocks.admin,
   createSupabaseServerClient: () => ({ supabase: {}, headers: new Headers() }),

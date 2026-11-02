@@ -134,23 +134,30 @@ describe("mark handled / reopen", () => {
     mocks.adminClient.mockReturnValue(db);
     const result = await post({ intent: "handle", id: MESSAGE_ID });
     expect(result.data).toEqual({ ok: true });
-    const update = db.calls[0].ops.find(([op]) => op === "update")![1][0];
+    const messages = db.calls.find((c) => c.table === "contact_messages")!;
+    const update = messages.ops.find(([op]) => op === "update")![1][0];
     expect(update.handled_by).toBe(ADMIN.id);
     expect(typeof update.handled_at).toBe("string");
-    expect(db.calls[0].ops).toContainEqual(["eq", ["id", MESSAGE_ID]]);
+    expect(messages.ops).toContainEqual(["eq", ["id", MESSAGE_ID]]);
+    // Who did it is recorded too.
+    const logged = db.calls.find((c) => c.table === "staff_actions")!.ops.find(([op]) => op === "insert")![1][0];
+    expect(logged).toMatchObject({ user_id: ADMIN.id, role: "admin", path: "/admin/contact", action: "handle", detail: { id: MESSAGE_ID } });
   });
 
   it("reopens a message by clearing handled fields", async () => {
     const db = fakeSupabase([{ error: null }]);
     mocks.adminClient.mockReturnValue(db);
     await post({ intent: "reopen", id: MESSAGE_ID });
-    expect(db.calls[0].ops.find(([op]) => op === "update")![1][0]).toEqual({ handled_at: null, handled_by: null });
+    expect(db.calls.find((c) => c.table === "contact_messages")!.ops.find(([op]) => op === "update")![1][0]).toEqual({ handled_at: null, handled_by: null });
   });
 
   it("rejects unknown intents and malformed ids without writing", async () => {
+    const db = fakeSupabase();
+    mocks.adminClient.mockReturnValue(db);
     expect((await post({ intent: "delete", id: MESSAGE_ID })).init.status).toBe(400);
     expect((await caught(post({ intent: "handle", id: "1 OR 1=1" }))).status).toBe(400);
-    expect(mocks.adminClient).not.toHaveBeenCalled();
+    // Only the attempts are recorded; no message is touched.
+    expect(db.calls.filter((c) => c.table !== "staff_actions")).toEqual([]);
   });
 });
 

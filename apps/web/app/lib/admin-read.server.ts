@@ -1,5 +1,7 @@
 import { data } from "react-router";
-import { requireAdmin } from "./auth.server";
+import { requireRole, type StaffRole } from "./auth.server";
+
+type StaffUser = Awaited<ReturnType<typeof requireRole>>;
 
 export function privateAdminHeaders() {
   return new Headers({
@@ -10,10 +12,10 @@ export function privateAdminHeaders() {
 }
 
 /** Every route calls this itself, including direct React Router data requests. */
-export async function adminRead<T>(request: Request, read: () => Promise<T>) {
+export async function adminRead<T>(request: Request, read: (role: StaffRole, user: StaffUser) => Promise<T>, minimum: StaffRole = "moderator") {
   try {
-    await requireAdmin(request);
-    return data(await read(), { headers: privateAdminHeaders() });
+    const user = await requireRole(request, minimum, { record: false });  // reads change nothing
+    return data(await read(user.staffRole, user), { headers: privateAdminHeaders() });
   } catch (error) {
     if (error instanceof Response) {
       const headers = new Headers(error.headers);

@@ -374,7 +374,7 @@ it("returns a safe preview and only events scoped to the requested message", asy
   expect(JSON.stringify(data)).not.toContain("never-return");
 });
 
-it.each(endpoints)(
+it.each(endpoints.filter(([path]) => path !== `/admin/users/${id}`))(
   "keeps explicitly allowlisted admin POSTs read-only at %s",
   async (path) => {
     const context: any = await handler.query(
@@ -389,3 +389,13 @@ it.each(endpoints)(
     ).toBe(true);
   },
 );
+
+it("accepts only a role change on an account page, and never records a read", async () => {
+  const context: any = await handler.query(
+    new Request(`https://example.test/admin/users/${id}`, { method: "POST", body: new URLSearchParams({ intent: "delete" }) }),
+  );
+  expect(context.statusCode).toBe(400);
+  expect(
+    Object.values(context.actionHeaders).some((header: any) => header.get("Cache-Control") === "private, no-store"),
+  ).toBe(true);
+});

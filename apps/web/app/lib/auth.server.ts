@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { createSupabaseServerClient } from "./supabase.server";
+import { createSupabaseServerClient, getSupabaseAdminClient } from "./supabase.server";
 
 /** The admin allowlist used by requireAdmin; also the recipients of contact-form notifications. */
 export function getConfiguredAdminEmails() {
@@ -25,6 +25,28 @@ export function isAdminUser(user?: { email?: string | null; email_confirmed_at?:
   return !!user?.email_confirmed_at && isAdminEmail(user.email);
 }
 
+/**
+ * Staff roles. Admins (the ADMIN_EMAILS owners, or a granted "admin") use every tool; moderators use all but
+ * pipeline operations, people and memberships, and granting roles. Granted in /admin/users (user_roles).
+ */
+export type StaffRole = "admin" | "moderator";
+const RANK: Record<StaffRole, number> = { moderator: 1, admin: 2 };
+
+export function hasRole(role: StaffRole | null | undefined, minimum: StaffRole) {
+  return !!role && RANK[role] >= RANK[minimum];
+}
+
+type RoleUser = { id?: string; email?: string | null; email_confirmed_at?: string | null };
+
+export async function getStaffRole(user?: RoleUser | null): Promise<StaffRole | null> {
+  if (!user?.email_confirmed_at) return null;
+  if (isAdminEmail(user.email)) return "admin";
+  if (!user.id) return null;
+  const { data, error } = await getSupabaseAdminClient().from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
+  if (error) return null;
+  return data?.role === "admin" || data?.role === "moderator" ? data.role : null;
+}
+
 // 1. Helper to check if user is authenticated
 export async function isAuthenticated(request: Request) {
   const { supabase } = createSupabaseServerClient(request);
@@ -48,19 +70,38 @@ export async function requireAuth(request: Request) {
   return user;
 }
 
-// 3. Helper to require admin authorization
-export async function requireAdmin(request: Request) {
+// 3. Helpers to require a staff role: requireModerator for most tools, requireAdmin for the rest
+export async function requireRole(request: Request, minimum: StaffRole, { record = true }: { record?: boolean } = {}) {
   const user = await requireAuth(request);
+  const role = await getStaffRole(user);
 
-  if (!isAdminUser(user)) {
-    throw new Response("Admin access is not enabled for this account.", {
+  if (!hasRole(role, minimum)) {
+    throw new Response(minimum === "admin" ? "This needs an admin account." : "Admin access is not enabled for this account.", {
       status: 403,
       statusText: "Forbidden",
     });
   }
 
-  return user;
+  // Who did what: every change made through a staff tool is recorded (reads are not).
+  // A failed record never blocks the change itself.
+  if (record && request.method !== "GET" && request.method !== "HEAD") {
+    try {
+      const { logStaffAction, requestDetail } = await import("../services/staff.server");
+      const detail = await requestDetail(request);
+      await logStaffAction(getSupabaseAdminClient(), {
+        userId: user.id, role: role as StaffRole, path: new URL(request.url).pathname,
+        action: detail.intent || detail._action || null, detail,
+      });
+    } catch (error) {
+      console.error("[staff] could not record action:", error instanceof Error ? error.message : error);
+    }
+  }
+
+  return Object.assign(user, { staffRole: role as StaffRole });
 }
+
+export const requireAdmin = (request: Request) => requireRole(request, "admin");
+export const requireModerator = (request: Request) => requireRole(request, "moderator");
 
 // 4. Helper to sign out
 export async function signOut(request: Request) {

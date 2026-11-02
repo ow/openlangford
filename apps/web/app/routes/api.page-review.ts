@@ -1,6 +1,6 @@
 import { data } from "react-router";
 import type { Route } from "./+types/api.page-review";
-import { requireAdmin } from "../lib/auth.server";
+import { requireModerator } from "../lib/auth.server";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { clearPageReview, getPageReview, reviewPath, setPageReview } from "../services/page-reviews.server";
@@ -17,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   try {
-    const user = await requireAdmin(request);
+    const user = await requireModerator(request);
     const form = await request.formData();
     const path = reviewPath(String(form.get("path") || ""));
     const intent = String(form.get("intent") || "");
