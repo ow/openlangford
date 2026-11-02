@@ -51,7 +51,7 @@ function planPrompt(heading: string, entries: { key: string; text: string }[], f
     `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no likely topic found"}`).join("\n");
   return `You fix timeline problems on a page of Open Langford, a site that follows Langford City council. An editor
 reviewed the page "${heading}" and agreed these problems are real:
-${flags.map((f) => `- [${f.key ?? "whole page"}] ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.note ? `\n  Editor's instruction for this entry (follow it): ${f.note}` : ""}`).join("\n")}
+${flags.map((f) => `- [${f.key ?? "whole page"}] ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.fix ? `\n  Approved fix (do this): ${f.fix}` : ""}${f.note ? `\n  Editor's instruction for this entry (follow it, over the fix above): ${f.note}` : ""}`).join("\n")}
 ${note ? `\nTheir note: ${note}\n` : ""}
 Two kinds of entries:
 - Links found for this topic, which you can remove: ${removable.join(", ") || "none"}. Removing a "background-" entry

@@ -92,6 +92,7 @@ export function PageReviewBar() {
   const searching = links?.findJob?.status === "queued" || links?.findJob?.status === "running";
   const flags = review?.ai_flags || [];
   const open_ = unresolvedFlags(flags).length;
+  const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length;
   useHighlights(flags, open);
   const fixing = review?.status === "fixing";
   const waiting = fixing || searching;
@@ -201,6 +202,11 @@ export function PageReviewBar() {
                         <a href={flag.key ? `#timeline-${flag.key}` : undefined} className="min-w-0">
                           <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">{FLAG_PROBLEM_LABELS[flag.problem]}</span>
                           <p className="text-zinc-800">{flag.reason}</p>
+                          {flag.fix && !flag.fixed && flag.problem !== "editor_issue" && (
+                            <p className="mt-1 rounded-md bg-brand-50 px-2 py-1 text-xs text-brand-900">
+                              <span className="font-semibold">Suggested fix:</span> {flag.fix}
+                            </p>
+                          )}
                           <p className="mt-0.5 line-clamp-2 text-xs text-zinc-500">{flag.excerpt}</p>
                         </a>
                         <div className={cn("flex shrink-0 gap-0.5", flag.fixed && "hidden")}>
@@ -214,7 +220,8 @@ export function PageReviewBar() {
                           )}
                           {flag.problem !== "editor_issue" && (["agree", "disagree"] as const).map((verdict) => (
                             <button key={verdict} type="button" disabled={busy}
-                              aria-label={verdict === "agree" ? "Right, this is a problem" : "Wrong, this is fine"}
+                              aria-label={verdict === "agree" ? "Yes, fix it" : "No, leave it"}
+                              title={verdict === "agree" ? "Yes, fix it" : "No, leave it"}
                               aria-pressed={flag.verdict === verdict}
                               onClick={() => submit("rate", { index: String(index), verdict: flag.verdict === verdict ? "none" : verdict })}
                               className={cn("rounded-full p-1.5",
@@ -265,11 +272,14 @@ export function PageReviewBar() {
               )}
               {flags.length > 0 && (
                 <p className="mb-3 text-xs text-zinc-500">
-                  <ThumbsUp className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> it's a real problem ·{" "}
-                  <ThumbsDown className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> it's fine. Each rating saves as you tap it and teaches later checks.{" "}
+                  <ThumbsUp className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> yes, fix it ·{" "}
+                  <ThumbsDown className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> no, leave it ·{" "}
+                  <Pencil className="inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" /> fix it differently.{" "}
                   {open_ > 0
-                    ? <>Then press <strong>Needs work</strong> and the agent fixes what you agreed with. To steer it, tap <Pencil className="inline h-3.5 w-3.5 align-[-2px]" aria-label="the pencil" /> on a flag.</>
-                    : <>Every flag is resolved: you can mark this page <strong>Reviewed</strong>.</>}
+                    ? agreed > 0
+                      ? <>Then press <strong>Fix {agreed}</strong> and the agent makes the changes for you to confirm.</>
+                      : <>Answer each flag, then press <strong>Fix</strong> or <strong>Reviewed</strong>.</>
+                    : <>Every flag is answered: mark this page <strong>Reviewed</strong>.</>}
                 </p>
               )}
               {links && (
@@ -369,8 +379,9 @@ export function PageReviewBar() {
           {(!review?.status || review.status === "needs_work") && !fixing && (
             <button type="button" disabled={busy}
               onClick={() => (flags.some((f) => f.verdict === "agree" && !f.fixed) || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
-              title="Send this page to the agent to fix what you agreed with"
-              className={cn(button, "text-amber-700 hover:bg-amber-50")}>{spinner("needs_work")}Needs work</button>
+              title={agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent` : "Describe what needs work"}
+              className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-50")}>
+              {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>
           )}
           <button type="button" disabled={busy}
             onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}

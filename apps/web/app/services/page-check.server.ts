@@ -77,11 +77,12 @@ export function readPage(html: string): ReadPage {
 
 const CheckSchema = z.object({
   summary: z.string().describe("Two plain sentences for the editor: what this page is about, and whether its entries hang together as one story (name any weak spots even if not worth a flag)."),
-  page_issue: z.string().nullable().describe("A problem with the page as a whole (e.g. it lumps unrelated subjects together), or null."),
+  page_issue: z.string().nullable().describe("A problem with the page as a whole that no flag covers (e.g. it lumps unrelated subjects together), or null. Never restate a flag."),
   flags: z.array(z.object({
     key: z.string().nullable().describe("The entry's key exactly as given, or null for a problem outside the entries."),
     problem: z.enum(CHECK_PROBLEMS as [FlagProblem, ...FlagProblem[]]),
     reason: z.string().describe("One plain sentence a resident would understand."),
+    fix: z.string().describe("What should change, as one instruction an editor can approve: e.g. \"Remove this entry from the page\", \"Move this item to the 2022 budget topic\", \"Rewrite the status to say Council rescinded the direction on Nov 4, 2024\", \"Merge with the Shared micromobility parking and licence topic\"."),
   })),
 });
 
@@ -113,7 +114,7 @@ export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] =
     : "";
   return `You're a Langford resident reading this page on Open Langford, a site that follows City council. Point out what
 would confuse or mislead you. Only flag clear problems a careful reader would notice; most entries are fine,
-and a page with nothing wrong gets no flags. A timeline entry may be a small mention of this subject inside a
+and a page with nothing wrong gets no flags. Raise each problem once, on the entry it's about. A timeline entry may be a small mention of this subject inside a
 meeting about something else; that's fine if the entry shows why it's there.
 
 Problems:
@@ -162,10 +163,10 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
       .filter(f => f.key === null || byKey.has(f.key))
       .map(f => {
         const before = priorFlags.find(p => decidedFlag(p) && same(p, f));
-        return { key: f.key, problem: f.problem, reason: f.reason, excerpt: (f.key && byKey.get(f.key)) || page.heading,
+        return { key: f.key, problem: f.problem, reason: f.reason, fix: f.fix, excerpt: (f.key && byKey.get(f.key)) || page.heading,
           verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
       }),
-    ...unsupported.map(f => {
+    ...unsupported.filter(f => !result.data.flags.some(c => c.key === f.key && (f.key !== null || c.problem === "wrong_detail"))).map(f => {
       const before = priorFlags.find(p => decidedFlag(p) && same(p, f));
       return { ...f, verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
     }),

@@ -21,6 +21,7 @@ const VerifySchema = z.object({
     verdict: z.enum(["supported", "not_in_record", "contradicted"]),
     source: z.string().nullable().describe("The words in the records that support or contradict it, quoted; null when nothing does."),
     reason: z.string().describe("One plain sentence an editor would understand."),
+    fix: z.string().nullable().describe("What should change, as one instruction an editor can approve: e.g. \"Remove this entry from the page\", \"Move this item to the 2022 budget topic\", \"Rewrite the status to say Council rescinded the direction on Nov 4, 2024\", \"Merge with the Shared micromobility parking and licence topic\"." + " Null when supported."),
   })),
 });
 
@@ -114,7 +115,7 @@ ${input.records}`;
     .map((v) => {
       const claim = byId.get(v.id)!;
       return {
-        key: claim.key, problem: "unsupported" as const, verdict: null,
+        key: claim.key, problem: "unsupported" as const, verdict: null, fix: v.fix,
         reason: `${v.verdict === "contradicted" ? "Contradicted by the record" : "Not in the record"}: ${v.reason}${v.source ? ` The record says: “${v.source.slice(0, 400)}”` : ""}`,
         excerpt: claim.text,
       };

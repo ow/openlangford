@@ -8,6 +8,8 @@ export type PageFlag = {
   fixed?: boolean;
   /** Staff's instruction to the fix agent about this entry ("move it to the 2022 budget topic"). */
   note?: string | null;
+  /** The check's proposed fix, which a thumbs-up approves ("Rewrite the status to say…"). */
+  fix?: string | null;
 };
 
 /** A flag still needs attention until it's rated 👎 (fine) or rated 👍 and fixed. Reviewed waits for none. */
