@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { completeVoteCounts } from "../../lib/vote-coverage";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Badge } from "../ui/badge";
@@ -510,6 +511,8 @@ function AgendaItemDetails({ item, onSeek }: { item: AgendaItem; onSeek: (time: 
 }
 
 function MotionRow({ motion, onSeek }: { motion: Motion; onSeek: (time: number) => void }) {
+  // Counts only for a complete vote (motions.yes_votes is never filled in).
+  const counts = completeVoteCounts(motion as any);
   const [showVotes, setShowVotes] = useState(false);
   const votes = motion.votes || [];
   const byVote = (v: Vote["vote"]) =>
@@ -529,9 +532,9 @@ function MotionRow({ motion, onSeek }: { motion: Motion; onSeek: (time: number) 
       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         <MotionOutcomeBadge
           result={motion.result}
-          showVoteCounts={motion.yes_votes > 0}
-          yesVotes={motion.yes_votes}
-          noVotes={motion.no_votes}
+          showVoteCounts={!!counts}
+          yesVotes={counts?.yes}
+          noVotes={counts?.no}
         />
         {motion.time_offset_seconds != null && motion.time_offset_seconds > 0 && (
           <button

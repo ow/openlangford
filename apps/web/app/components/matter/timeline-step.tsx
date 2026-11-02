@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { completeVoteCounts } from "../../lib/vote-coverage";
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "../ui/badge";
@@ -37,9 +38,12 @@ type Motion = {
 
 function tally(motion: Motion) {
   const votes = motion.votes || [];
-  const yes = votes.filter((v) => v.vote === "Yes").length;
   const no = votes.filter((v) => v.vote === "No");
-  return { yes, no: no.length, against: no.map((v) => v.person?.name).filter(Boolean) as string[], counted: votes.length > 0 };
+  // A count ("5–2") only when the whole vote is known; minutes often name just the people opposed, and counting
+  // those rows alone read as "Carried 0–2".
+  const complete = completeVoteCounts(motion as any);
+  return { yes: complete?.yes ?? 0, no: complete?.no ?? no.length, against: no.map((v) => v.person?.name).filter(Boolean) as string[],
+    counted: !!complete };
 }
 
 function outcome(motion: Motion) {
@@ -52,7 +56,7 @@ function outcome(motion: Motion) {
     tone: passed ? "text-emerald-700" : failed ? "text-red-700" : "text-zinc-600",
     count: t.counted ? `${t.yes}–${t.no}` : null,
     against: t.against,
-    unanimous: t.counted ? t.no === 0 : true,
+    unanimous: t.counted ? t.no === 0 : t.against.length === 0,
   };
 }
 
