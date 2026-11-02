@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate, useRevalidator } from "react-router";
+import { OPEN_INTERNAL_NOTE } from "./internal-note-banner";
 import { ArrowRight, Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, StickyNote, ThumbsDown, ThumbsUp, Undo2, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
@@ -68,8 +69,6 @@ export function PageReviewBar() {
   const finishing = useRef(false);
   const [fixedRun, setFixedRun] = useState(false);  // this page came up as fixed by the agent, to confirm
   const [stayed, setStayed] = useState(false);  // a fix was sent or confirmed here: offer Next instead of moving on
-  const [noteOpen, setNoteOpen] = useState(false);  // editing the page's internal note
-  const [internalNote, setInternalNote] = useState("");
 
   useEffect(() => {
     setEditing(null);
@@ -78,7 +77,6 @@ export function PageReviewBar() {
     setConfirming(null);
     setFixedRun(false);
     setStayed(false);
-    setNoteOpen(false);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -170,36 +168,6 @@ export function PageReviewBar() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-40 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
-      {/* Staff's internal note on this page: always shown when there is one, never public. */}
-      {(noteOpen || review?.internal_note) && (
-        <div className="w-full rounded-2xl border border-dashed border-amber-400 bg-amber-50 p-3 text-sm shadow-lg sm:w-[26rem]">
-          <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-800">
-            <StickyNote className="h-3.5 w-3.5" />Internal note{review?.internal_note_at && !noteOpen ? ` · ${reviewTime(review.internal_note_at)}` : ""}
-            <span className="font-normal normal-case tracking-normal text-amber-700/80">· staff only</span>
-            {!noteOpen && (
-              <button type="button" onClick={() => { setInternalNote(review?.internal_note || ""); setNoteOpen(true); }}
-                aria-label="Edit the internal note" className="ml-auto rounded-full p-1 text-amber-700 hover:bg-amber-100"><Pencil className="h-3.5 w-3.5" /></button>
-            )}
-          </div>
-          {noteOpen ? (
-            <form onSubmit={(e) => { e.preventDefault(); submit("internal_note", { note: internalNote }); setNoteOpen(false); }}>
-              <textarea autoFocus rows={3} value={internalNote} onChange={(e) => setInternalNote(e.target.value)}
-                placeholder="Context for whoever looks at this page next. Only staff see it."
-                className="w-full rounded-lg border border-amber-200 bg-white p-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-300" />
-              <div className="mt-1.5 flex gap-2 text-xs">
-                <button type="submit" disabled={busy} className="rounded-md bg-amber-600 px-2.5 py-1 font-medium text-white hover:bg-amber-700">Save note</button>
-                <button type="button" onClick={() => setNoteOpen(false)} className="rounded-md px-2.5 py-1 text-zinc-600 hover:bg-amber-100">Cancel</button>
-                {review?.internal_note && (
-                  <button type="button" disabled={busy} onClick={() => { submit("internal_note", { note: "" }); setNoteOpen(false); }}
-                    className="ml-auto rounded-md px-2.5 py-1 text-zinc-500 hover:bg-amber-100">Delete</button>
-                )}
-              </div>
-            </form>
-          ) : (
-            <p className="whitespace-pre-line text-zinc-800">{pending === "internal_note" ? String(save.formData?.get("note") ?? "") : review?.internal_note}</p>
-          )}
-        </div>
-      )}
       {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
         <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-dashed border-amber-400 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
@@ -479,8 +447,8 @@ export function PageReviewBar() {
               className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-50")}>
               {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>
           )}
-          {!review?.internal_note && !noteOpen && (
-            <button type="button" onClick={() => { setInternalNote(""); setNoteOpen(true); }}
+          {!review?.internal_note && (
+            <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_INTERNAL_NOTE))}
               aria-label="Add an internal note" title="Add an internal note (only staff see it)"
               className="rounded-full p-1.5 text-amber-700 hover:bg-amber-100"><StickyNote className="h-4 w-4" /></button>
           )}

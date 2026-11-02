@@ -37,6 +37,7 @@ import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { getStaffRole } from "./lib/auth.server";
 import { PageReviewBar } from "./components/admin/page-review-bar";
+import { InternalNoteBanner } from "./components/admin/internal-note-banner";
 import { isReviewable } from "./lib/page-review-types";
 
 export const meta: Route.MetaFunction = ({ matches, error }) => {
@@ -220,6 +221,7 @@ export default function App() {
       </div>
       <Navbar />
       <main className="flex-1 flex flex-col">
+        {root?.isAdmin && isReviewable(pathname) && <InternalNoteBanner />}
         <Outlet />
       </main>
       <Footer />
