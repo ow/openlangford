@@ -407,11 +407,10 @@ export function PageReviewBar() {
       )}
       {(
         <div className={cn(
-          // The admin-only treatment (components/ui/admin-only.tsx): a dashed amber frame with an "Admin" tag.
+          // The admin-only treatment (components/ui/admin-only.tsx): a dashed amber frame.
           "flex max-w-full items-center gap-0.5 rounded-full border border-dashed border-amber-400 bg-amber-50 py-1 pl-3 pr-1 text-sm shadow-lg",
           busy && !checking && "opacity-60",
         )}>
-          <span className="mr-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-700">Admin</span>
           {fixing ? (
             <button type="button" onClick={() => setOpen(true)} className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-brand-700"><Loader2 className="h-4 w-4 animate-spin" />Agent fixing…</button>
           ) : review?.status === "fixed" ? (
@@ -433,7 +432,8 @@ export function PageReviewBar() {
               <Flag className="h-4 w-4 shrink-0" /><span className="max-w-40 truncate">Needs work{review.note ? `: ${review.note}` : ""}</span>
             </button>
           ) : (
-            <span className="hidden whitespace-nowrap pr-1 text-zinc-500 sm:inline">Not reviewed</span>
+            // A status, not a button: shown as a badge so it doesn't read like the buttons beside it.
+            <span className="hidden whitespace-nowrap rounded-full bg-zinc-200/70 px-2 py-0.5 text-xs font-medium text-zinc-600 sm:inline">Not reviewed</span>
           )}
           {review?.status !== "reviewed" && !fixing && review?.status !== "fixed" && (
             <button type="button" disabled={busy} onClick={markReviewed}
