@@ -25,7 +25,10 @@ const VerifySchema = z.object({
   })),
 });
 
-const sentences = (text: string) => (text.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || []).map((s) => s.trim()).filter((s) => s.length > 3);
+/** A text's sentences. A sentence ends at ".", "!" or "?" followed by a space and a capital (or the end), never at
+ * a decimal point or an abbreviation inside a figure: "$4,408,940.67" split there had read as "67 plus GST". */
+export const sentences = (text: string) =>
+  text.split(/(?<=[.!?])\s+(?=[A-Z0-9“"‘'(])/).map((s) => s.trim()).filter((s) => s.length > 3);
 
 /** The words that name an item's subject ("REPORTS — Affordable Housing Policy - Staff Report (File …)" → its
  * subject), as a pattern that finds it in minutes or report text whatever the punctuation between words. */

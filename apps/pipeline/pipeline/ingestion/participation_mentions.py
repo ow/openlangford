@@ -20,7 +20,7 @@ SPEAKER_MIN_PROBABILITY = 0.5
 EXCERPT_UNRELATED_PROBABILITY = 0.7
 COMMENT_ONLY = re.compile(r"(?i)\b(public participation|public input|delegations?|petitions?|correspondence|letters?|"
                           r"written submissions?|public comments?|question period)\b")
-REPORT_ITEM = re.compile(r"(?i)\bannual report\b|\bfinancial statements?\b|\baudited\b")
+REPORT_ITEM = re.compile(r"(?i)\bannual report\b|\bfinancial (?:statements?|information)\b|\baudited\b")
 
 
 def comment_only(title: str | None) -> bool:
@@ -88,7 +88,7 @@ def excerpt_pending(cur) -> list[dict]:
                           coalesce(m.plain_english_summary, ''), l.review
                    from matter_links l join agenda_items a on a.id = l.agenda_item_id join matters m on m.id = l.matter_id
                    where l.kind = 'mention' and not l.hidden and l.quote is not null
-                     and a.title ~* '(annual report|financial statement|audited)'""")
+                     and a.title ~* '(annual report|financial (statement|information)|audited|statement of financial)'""")
     rows += cur.fetchall()
     return [{"kind": k, "id": i, "matter": mid, "quote": q, "source": src, "topic": t, "summary": s, "review": rv}
             for k, i, mid, q, src, t, s, rv in rows]
