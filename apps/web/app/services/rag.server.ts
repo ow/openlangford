@@ -591,7 +591,8 @@ async function search_matters({
           meta
         `,
         )
-        .in("id", matterIds);
+        .in("id", matterIds)
+        .or("meta->>hidden.is.null,meta->>hidden.neq.staff");
 
       if (status) {
         enrichQuery = enrichQuery.eq("status", status);
@@ -607,6 +608,7 @@ async function search_matters({
       .select(
         "id, title, identifier, description, plain_english_summary, category, status, first_seen, last_seen, meta",
       )
+      .or("meta->>hidden.is.null,meta->>hidden.neq.staff")  // pages staff hid from the public
       .limit(1000);
 
     const keywordData = (keywordMatches.data || []).filter((matter: any) => {

@@ -199,6 +199,7 @@ async function searchMatters(
     .select(
       "id, slug, title, identifier, description, plain_english_summary, category, status, first_seen, last_seen, meta",
     )
+    .or("meta->>hidden.is.null,meta->>hidden.neq.staff")  // pages staff hid from the public
     .order("last_seen", { ascending: false, nullsFirst: false })
     .limit(1000);
 

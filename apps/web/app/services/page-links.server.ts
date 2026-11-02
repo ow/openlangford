@@ -151,3 +151,19 @@ export async function decideSuggestion(supabase: SupabaseClient, matterId: numbe
   const { data, error } = await query.select("id");
   if (error || !data?.length) throw new Error("Could not save that decision.");
 }
+
+/** Hide a topic page from the public (or show it again): staff's call that the page shouldn't exist, like a lone
+ * agenda line with nothing behind it. Lists, links and the sitemap skip it; the page is "not found" for the public. */
+export async function setTopicHidden(supabase: SupabaseClient, matterId: number, hidden: boolean, userId: string) {
+  const { data } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+  const meta = { ...((data?.meta || {}) as Record<string, unknown>) };
+  if (hidden) Object.assign(meta, { hidden: "staff", hidden_by: userId, hidden_at: new Date().toISOString() });
+  else if (meta.hidden === "staff") { delete meta.hidden; delete meta.hidden_by; delete meta.hidden_at; }
+  const { error } = await supabase.from("matters").update({ meta }).eq("id", matterId);
+  if (error) throw new Error("Could not change whether the page is hidden.");
+}
+
+export async function topicHidden(supabase: SupabaseClient, matterId: number) {
+  const { data } = await supabase.from("matters").select("meta").eq("id", matterId).maybeSingle();
+  return (data?.meta as Record<string, unknown> | null)?.hidden === "staff";
+}

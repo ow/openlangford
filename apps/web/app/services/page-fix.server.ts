@@ -22,10 +22,10 @@ import type { StaffRole } from "../lib/auth.server";
 
 const PlanSchema = z.object({
   actions: z.array(z.object({
-    action: z.enum(["remove_entry", "move_item", "rewrite_entry", "cannot_fix"]),
+    action: z.enum(["remove_entry", "move_item", "rewrite_entry", "rewrite_summary", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     to_matter_id: z.number().int().nullable().describe("move_item only: a candidate topic's id, or null to take the item off every topic."),
-    new_text: z.string().nullable().describe("rewrite_entry only: the entry's new one-line description for this topic, or null."),
+    new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_summary: the instruction for the summary writer. Otherwise null."),
     reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
   })),
 });
@@ -64,7 +64,9 @@ An item filed under this topic whose line is vague can get a new line (rewrite_e
 sentence of at most 140 characters saying what this step did for this topic, outcome first ("Council gave second and
 third reading to the rezoning for the 165-home Costin Avenue apartments"). Use only facts in its record below; no
 file numbers, bylaw numbers or jargon unless the record gives nothing else. Summaries of changed topics are rewritten
-automatically. For a problem you can't fix with these actions, say cannot_fix and why.
+automatically. A problem with the topic's summary or overall explanation (e.g. "say whether the 2023 agreement
+renews the 2021 one") gets rewrite_summary, with a short instruction for the summary writer in new_text; it will
+follow it only as far as the records support. For a problem you can't fix with these actions, say cannot_fix and why.
 ${records.size ? `\nRecords of flagged items:\n${[...records.entries()].map(([key, text]) => `[${key}] ${text}`).join("\n")}` : ""}
 
 For each agreed problem (and anything the note asks), give one action. Don't change anything the editor didn't
@@ -124,7 +126,13 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const fixedKeys = new Set<string>();
     const moves: { item_id: number; to_matter_id: number | null; reason: string }[] = [];
     const rewrites: Record<string, string> = {};
+    const summaryNotes: string[] = [];
     for (const step of result.data.actions) {
+      if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
+        summaryNotes.push((step.new_text || "").trim().slice(0, 500));
+        done.push(`${step.reason} The summary is being rewritten with this note: "${(step.new_text || "").trim()}"`);
+        continue;
+      }
       if (step.action === "rewrite_entry" && step.key && /^agenda-\d+$/.test(step.key) && onPage.has(step.key)) {
         const text = (step.new_text || "").replace(/\s+/g, " ").trim();
         if (text.length >= 15 && text.length <= 180) {
@@ -172,8 +180,19 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           detail: Object.fromEntries(Object.entries(rewrites).map(([id, text]) => [`item ${id}`, text])) });
       }
     }
-    // Any agreed flag on an entry that's now gone is resolved, whichever step removed it.
-    const updated = flags.map((f) => (f.key && fixedKeys.has(f.key) ? { ...f, fixed: true } : f));
+    if (summaryNotes.length) {
+      // Kept on the topic: every later summary rewrite follows them too (pipeline matter_summaries).
+      const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+      const meta = (matter?.meta || {}) as Record<string, any>;
+      await supabase.from("matters").update({ meta: { ...meta, editor_notes: [...(meta.editor_notes || []), ...summaryNotes].slice(-10) } })
+        .eq("id", matterId);
+      await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:rewrite_summary",
+        detail: { notes: summaryNotes.join(" | ").slice(0, 500) } });
+    }
+    // Any agreed flag on an entry that's now gone is resolved, whichever step removed it; a whole-page issue is
+    // resolved by a summary rewrite.
+    const updated = flags.map((f) => (f.key && fixedKeys.has(f.key)) || (!f.key && f.verdict === "agree" && summaryNotes.length)
+      ? { ...f, fixed: true } : f);
     if (moves.length || done.length) {
       // The pipeline's quick worker moves items and rewrites the changed summaries, then finishes the page.
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();

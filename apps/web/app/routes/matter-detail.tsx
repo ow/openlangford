@@ -1,4 +1,5 @@
 import { SITE_NAME } from "../lib/site-name";
+import { getStaffRole } from "../lib/auth.server";
 import type { Route } from "./+types/matter-detail";
 import {
   getMatterById,
@@ -7,7 +8,7 @@ import {
   getMatterStory,
   type ReportMention,
 } from "../services/matters";
-import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { createSupabaseServerClient, getSupabaseAdminClient } from "../lib/supabase.server";
 import { parseRelatedAddresses } from "../lib/addresses";
 import { documentImageUrl } from "../lib/document-images.server";
 import { Link, redirect } from "react-router";
@@ -330,6 +331,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const supabase = getSupabaseAdminClient();
     const resolved = await resolveSlugParam(supabase, "matters", params.id, request, (m) => matterPath(m), "Matter Not Found", { redirectLegacy: false });
     const matter = await getMatterById(supabase, String(resolved.id));
+    // Hidden by staff from the review bar: not found for the public; staff can still open it to unhide.
+    if (matter.meta?.hidden === "staff") {
+      const { data: { user } } = await createSupabaseServerClient(request).supabase.auth.getUser();
+      if (!(await getStaffRole(user))) throw new Response("Matter Not Found", { status: 404 });
+    }
     // Legacy ids/slugs and alias matters go straight to the canonical slug URL.
     if (matter.slug && params.id !== matter.slug) return redirect(matterPath(matter) + new URL(request.url).search, 301);
 

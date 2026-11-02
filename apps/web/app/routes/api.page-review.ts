@@ -5,21 +5,24 @@ import { requireModerator } from "../lib/auth.server";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { clearPageReview, getPageReview, reviewPath, setPageReview } from "../services/page-reviews.server";
-import { checkPage, rateFlag, resolveFlags, setFlagNote } from "../services/page-check.server";
+import { addEditorIssue, checkPage, rateFlag, resolveFlags, setFlagNote } from "../services/page-check.server";
 import { fixPage } from "../services/page-fix.server";
 import { unresolvedFlags } from "../lib/page-review-types";
 import {
   decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
+  setTopicHidden, topicHidden,
 } from "../services/page-links.server";
 
-const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "handled", "remove_entry", "find_missing", "accept", "reject"];
+const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page"];
 
 /** On a topic page: suggestions waiting for a decision, and the latest "find missing" search. */
 async function linkState(supabase: SupabaseClient, path: string) {
   const matterId = await matterForPath(supabase, path);
   if (!matterId) return null;
-  const [suggestions, findJob] = await Promise.all([listSuggestions(supabase, matterId), latestFindJob(supabase, matterId)]);
-  return { suggestions, findJob };
+  const [suggestions, findJob, hidden] = await Promise.all([
+    listSuggestions(supabase, matterId), latestFindJob(supabase, matterId), topicHidden(supabase, matterId),
+  ]);
+  return { suggestions, findJob, hidden };
 }
 
 /** Staff only: a public page's review. GET ?path=/matters/x. POST to mark or clear it; run a reader's check
@@ -55,10 +58,16 @@ export async function action({ request, context }: Route.ActionArgs) {
       const verdict = String(form.get("verdict") || "");
       if (!Number.isInteger(index) || index < 0 || !["agree", "disagree", "none"].includes(verdict)) return bad("Unknown rating.");
       await rateFlag(supabase, path, index, verdict === "none" ? null : verdict as "agree" | "disagree");
-    } else if (intent === "remove_entry" || intent === "find_missing" || intent === "accept" || intent === "reject") {
+    } else if (["remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page"].includes(intent)) {
       const matterId = await matterForPath(supabase, path);
       if (!matterId) return bad("This only works on a topic page.");
-      if (intent === "remove_entry") {
+      if (intent === "hide_page" || intent === "unhide_page") {
+        await setTopicHidden(supabase, matterId, intent === "hide_page", user.id);
+        if (intent === "hide_page") {
+          await setPageReview(supabase, { path, status: "reviewed", userId: user.id, title: String(form.get("title") || "") || null, note: "Hidden from the public." });
+        }
+        message = intent === "hide_page" ? "This page is now hidden from the public." : "This page is public again.";
+      } else if (intent === "remove_entry") {
         const key = String(form.get("key") || "");
         if (!removableKey(key)) return bad("That entry can't be removed here.");
         message = await removeEntry(supabase, matterId, key, user.id);
@@ -73,6 +82,9 @@ export async function action({ request, context }: Route.ActionArgs) {
         if ((table !== "matter_links" && table !== "matter_report_mentions") || !Number.isSafeInteger(id)) return bad("Unknown suggestion.");
         await decideSuggestion(supabase, matterId, table, id, intent === "accept", user.id);
       }
+    } else if (intent === "add_issue") {
+      await addEditorIssue(supabase, path, String(form.get("note") || ""),
+        String(form.get("title") || "").replace(/\s*\|\s*Open Langford\s*$/, "") || null);
     } else if (intent === "flag_note") {
       const index = Number(form.get("index"));
       if (!Number.isInteger(index) || index < 0) return bad("Unknown flag.");

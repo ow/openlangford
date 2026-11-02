@@ -328,7 +328,7 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
   if (relatedResult.error || mentionsResult.error) {
     console.error("Error fetching matter story records:", relatedResult.error || mentionsResult.error); return empty;
   }
-  const related = (relatedResult.data || []).filter(r => r.meta?.hidden !== "container")
+  const related = (relatedResult.data || []).filter(r => r.meta?.hidden !== "container" && r.meta?.hidden !== "staff")
     .sort((a, b) => String(a.first_seen).localeCompare(String(b.first_seen)));
   // Links found by name carry the passage that names the matter, and say whether the item was about it
   // ("name") or only referred to it ("name_mention").
@@ -403,7 +403,7 @@ export async function getMatterLinks(supabase: SupabaseClient, matterIds: (numbe
   const links: Record<number, MatterLink> = {};
   for (const row of rows) {
     const target = row.canonical ? byId.get(Number(row.canonical)) : row;
-    if (!target || target.hidden === "true" || target.canonical) continue;
+    if (!target || target.hidden === "true" || target.hidden === "staff" || target.canonical) continue;
     links[row.id] = { id: target.id, slug: target.slug, title: target.title };
   }
   return links;

@@ -18,7 +18,10 @@ export const FLAG_PROBLEMS: Record<FlagProblem, string> = {
   different_story: "It's about a different property, permit, project or decision than this page.",
   duplicate: "It repeats another entry on the page.",
   wrong_detail: "A date, name, number or outcome contradicts the rest of the page.",
+  editor_issue: "Something an editor wants changed (added by staff, never by the check).",
 };
+/** What the check itself may flag: everything except staff's own issues. */
+const CHECK_PROBLEMS = (Object.keys(FLAG_PROBLEMS) as FlagProblem[]).filter((p) => p !== "editor_issue");
 export type { FlagProblem, FlagVerdict, PageFlag };
 export type PageCheck = { path: string; flags: PageFlag[]; page_issue: string | null; summary: string; model: string; checked_at: string; entries: number };
 
@@ -61,7 +64,7 @@ const CheckSchema = z.object({
   page_issue: z.string().nullable().describe("A problem with the page as a whole (e.g. it lumps unrelated subjects together), or null."),
   flags: z.array(z.object({
     key: z.string().nullable().describe("The entry's key exactly as given, or null for a problem outside the entries."),
-    problem: z.enum(Object.keys(FLAG_PROBLEMS) as [FlagProblem, ...FlagProblem[]]),
+    problem: z.enum(CHECK_PROBLEMS as [FlagProblem, ...FlagProblem[]]),
     reason: z.string().describe("One plain sentence a resident would understand."),
   })),
 });
@@ -81,7 +84,7 @@ export async function calibrationExamples(supabase: SupabaseClient, limit = 12):
 }
 
 export function checkPrompt(page: ReadPage, examples: Example[]) {
-  const problems = Object.entries(FLAG_PROBLEMS).map(([k, v]) => `- ${k}: ${v}`).join("\n");
+  const problems = CHECK_PROBLEMS.map((k) => `- ${k}: ${FLAG_PROBLEMS[k]}`).join("\n");
   const content = page.entries.length
     ? page.entries.map(e => `[${e.key}] ${e.text}`).join("\n\n")
     : page.body;
@@ -174,7 +177,23 @@ export async function setFlagNote(supabase: SupabaseClient, path: string, index:
   const flags = [...((data?.ai_flags || []) as PageFlag[])];
   if (!flags[index]) throw new Error("No such flag.");
   const text = note.trim().slice(0, 1000) || null;
-  flags[index] = { ...flags[index], note: text, ...(text ? { verdict: "agree" as const } : {}) };
+  flags[index] = { ...flags[index], note: text, ...(text ? { verdict: "agree" as const } : {}),
+    // A staff issue is its own text: editing it rewrites the issue.
+    ...(flags[index].problem === "editor_issue" && text ? { reason: text } : {}) };
   const saved = await supabase.from("page_reviews").update({ ai_flags: flags }).eq("path", path);
   if (saved.error) throw new Error("Could not save the instruction.");
+}
+
+/** Staff's own issue for the fix agent ("say whether the 2023 agreement renews the 2021 one"), as an agreed flag. */
+export async function addEditorIssue(supabase: SupabaseClient, path: string, text: string, heading: string | null) {
+  const issue = text.trim().slice(0, 1000);
+  if (!issue) throw new Error("Could not save an empty issue.");
+  const { data } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
+  const flags = [...((data?.ai_flags || []) as PageFlag[]), {
+    key: null, problem: "editor_issue" as const, reason: issue, excerpt: heading || "Whole page", verdict: "agree" as const, note: issue,
+  }];
+  const { error } = data
+    ? await supabase.from("page_reviews").update({ ai_flags: flags }).eq("path", path)
+    : await supabase.from("page_reviews").insert({ path, kind: reviewKind(path), title: heading, ai_flags: flags });
+  if (error) throw new Error("Could not save the issue.");
 }

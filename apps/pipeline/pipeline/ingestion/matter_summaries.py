@@ -56,6 +56,8 @@ public comments or earlier presentations: retain their source dates, attribute t
 use them to infer adoption, approval, a vote, or a change in legal status. Only "history" entries
 are owned proceedings and may receive timeline headlines. A date mentioned inside a report is
 not necessarily the date of its containing council meeting; never silently substitute one for the other.
+"editor_notes", when present, are an editor's requests about this matter's text (from the site's page review):
+follow them where the history and mentions support it, and leave out what they ask for if the inputs don't say it.
 Never invent facts that are not in the inputs. If the history is too thin to say what it is about, base the summary on the title alone and keep it short."""
 
 Topic = Literal[tuple(TOPICS)]  # type: ignore[valid-type]
@@ -225,6 +227,8 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                 "identifier": matter.get("identifier"),
                 "history": history[-MAX_HISTORY:],
                 "mentions": sorted(mentions_by_matter.get(matter["id"], []), key=lambda row: row["date"] or "")[-MAX_HISTORY:],
+                **({"editor_notes": notes} if (notes := [n for n in ((matter.get("meta") or {}).get("editor_notes") or [])[-5:]
+                                                          if isinstance(n, str) and n.strip()]) else {}),
                 "_has_mentions": bool(mentions_by_matter.get(matter["id"])),
                 "_owned_item_ids": {item["item"] for item in history},
                 "_meta": matter.get("meta") or {},

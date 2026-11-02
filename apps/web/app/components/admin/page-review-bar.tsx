@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate } from "react-router";
-import { Check, Flag, Loader2, Pencil, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
+import { Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Search, Sparkles, ThumbsDown, ThumbsUp, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
@@ -10,7 +10,7 @@ type Suggestion = {
 };
 const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
-type Links = { suggestions: Suggestion[]; findJob: FindJob | null } | null;
+type Links = { suggestions: Suggestion[]; findJob: FindJob | null; hidden?: boolean } | null;
 type Loaded = { path: string | null; review: PageReview | null; links: Links };
 type Saved = { ok?: true; review?: PageReview | null; links?: Links; message?: string | null; error?: string };
 
@@ -110,7 +110,7 @@ export function PageReviewBar() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
-      {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note) && (
+      {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
         <div className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-zinc-200 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
@@ -128,6 +128,12 @@ export function PageReviewBar() {
             <p className="text-zinc-500">The model is reading this page as a resident would. This takes a few seconds.</p>
           ) : (
             <>
+              {links?.hidden && (
+                <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2.5 py-2 text-xs text-zinc-700">
+                  <span className="flex items-center gap-1.5"><EyeOff className="h-3.5 w-3.5" />Hidden from the public. Only staff can see this page.</span>
+                  <button type="button" disabled={busy} onClick={() => submit("unhide_page")} className="font-medium text-brand-700 hover:underline">Unhide</button>
+                </div>
+              )}
               {review?.agent_note && (review.status === "fixed" || review.status === "needs_work" || review.status === "fixing") && (
                 <div className={cn("mb-3 rounded-lg px-2.5 py-2", review.status === "needs_work" ? "bg-amber-50" : "bg-brand-50")}>
                   <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-zinc-700">
@@ -146,7 +152,28 @@ export function PageReviewBar() {
                   )}
                 </div>
               )}
-              {review?.ai_summary && <p className="mb-3 leading-relaxed text-zinc-700">{review.ai_summary}</p>}
+              {(review?.ai_summary || review?.ai_checked_at) && (
+                <div className="mb-3 flex items-start gap-2">
+                  {review?.ai_summary && <p className="min-w-0 flex-1 leading-relaxed text-zinc-700">{review.ai_summary}</p>}
+                  <button type="button" disabled={busy} onClick={() => { setNote(""); setEditing(-1); }}
+                    aria-label="Add an issue of your own for the agent to fix" title="Add an issue of your own for the agent to fix"
+                    className="ml-auto shrink-0 rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+              {editing === -1 && (
+                <form className="mb-3" onSubmit={(e) => { e.preventDefault(); if (note.trim()) submit("add_issue", { note }); }}>
+                  <textarea autoFocus rows={3} value={note} onChange={(e) => setNote(e.target.value)}
+                    placeholder="What should change? e.g. Say whether the 2023 agreement renews or replaces the 2021 one"
+                    className="w-full rounded-lg border border-zinc-200 bg-transparent p-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                  <div className="mt-1 flex gap-2 text-xs">
+                    <button type="submit" disabled={busy || !note.trim()} className="rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-50">Add issue</button>
+                    <span className="self-center text-zinc-500">then press Needs work to send it to the agent</span>
+                    <button type="button" onClick={() => setEditing(null)} className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Cancel</button>
+                  </div>
+                </form>
+              )}
               {review?.ai_page_issue && (
                 <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-amber-900">Whole page: {review.ai_page_issue}</p>
               )}
@@ -169,7 +196,7 @@ export function PageReviewBar() {
                               <Pencil className="h-3.5 w-3.5" />
                             </button>
                           )}
-                          {(["agree", "disagree"] as const).map((verdict) => (
+                          {flag.problem !== "editor_issue" && (["agree", "disagree"] as const).map((verdict) => (
                             <button key={verdict} type="button" disabled={busy}
                               aria-label={verdict === "agree" ? "Right, this is a problem" : "Wrong, this is fine"}
                               aria-pressed={flag.verdict === verdict}
@@ -193,7 +220,7 @@ export function PageReviewBar() {
                           </div>
                         </form>
                       ) : (
-                        flag.note ? <p className="mt-1.5 rounded-md bg-zinc-50 px-2 py-1 text-xs text-zinc-700"><span className="font-medium">Your instructions:</span> {flag.note}</p> : null
+                        flag.note && flag.problem !== "editor_issue" ? <p className="mt-1.5 rounded-md bg-zinc-50 px-2 py-1 text-xs text-zinc-700"><span className="font-medium">Your instructions:</span> {flag.note}</p> : null
                       ))}
                       {!flag.fixed && flag.verdict === "agree" && !removable(flag.key) && (
                         <button type="button" disabled={busy} onClick={() => submit("handled", { index: String(index) })}
@@ -270,6 +297,22 @@ export function PageReviewBar() {
                 </div>
               )}
               {save.data?.message && save.state === "idle" && <p className="mb-3 rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-700">{save.data.message}</p>}
+              {links && !links.hidden && (
+                confirming === "hide" ? (
+                  <div className="mb-3 rounded-lg border border-red-200 px-2.5 py-2 text-xs">
+                    <p className="text-zinc-700">Hide this whole page from the public? It leaves lists, links and search results, and shows as not found. You can unhide it.</p>
+                    <div className="mt-1.5 flex gap-2">
+                      <button type="button" disabled={busy} onClick={() => { submit("hide_page"); setConfirming(null); }} className="rounded-md bg-red-600 px-2 py-1 font-medium text-white hover:bg-red-700">Hide page</button>
+                      <button type="button" onClick={() => setConfirming(null)} className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" disabled={busy} onClick={() => setConfirming("hide")}
+                    className="mb-3 inline-flex items-center gap-1.5 text-xs font-medium text-red-700 hover:underline">
+                    <EyeOff className="h-3.5 w-3.5" />Hide this page
+                  </button>
+                )
+              )}
               <details className="text-xs text-zinc-500">
                 <summary className="cursor-pointer select-none font-medium text-zinc-600">What it looks for</summary>
                 <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
@@ -313,7 +356,8 @@ export function PageReviewBar() {
               className={cn(button, "text-emerald-700 hover:bg-emerald-50 disabled:text-zinc-400 disabled:hover:bg-transparent")}>Reviewed</button>
           )}
           {(!review?.status || review.status === "needs_work") && !fixing && (
-            <button type="button" disabled={busy} onClick={() => submit("needs_work")}
+            <button type="button" disabled={busy}
+              onClick={() => (flags.some((f) => f.verdict === "agree" && !f.fixed) || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
               title="Send this page to the agent to fix what you agreed with"
               className={cn(button, "text-amber-700 hover:bg-amber-50")}>Needs work</button>
           )}
