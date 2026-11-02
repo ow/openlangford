@@ -6,7 +6,7 @@ import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
 import { cn, formatDate } from "../lib/utils";
-import { listPageReviews, type ReviewFilter } from "../services/page-reviews.server";
+import { listPageReviews, reviewCoverage, type ReviewFilter } from "../services/page-reviews.server";
 import { randomUncheckedMatterPath } from "../services/page-check.server";
 
 export const meta = () => [
@@ -21,7 +21,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   return adminRead(request, async () => {
     const show = new URL(request.url).searchParams.get("show");
     const filter: ReviewFilter = show === "needs_work" || show === "reviewed" || show === "flagged" ? show : null;
-    return { show: filter ?? "all", ...(await listPageReviews(getSupabaseAdminClient(), filter)) };
+    const supabase = getSupabaseAdminClient();
+    const { rows, ...list } = await listPageReviews(supabase, filter);
+    return { show: filter ?? "all", ...list, coverage: await reviewCoverage(supabase, rows) };
   });
 }
 
@@ -33,8 +35,8 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function AdminReviews({ loaderData }: Route.ComponentProps) {
-  const { show, reviews, byKind, agreement } = loaderData;
-  const kinds = Object.entries(byKind).sort((a, b) => (b[1].reviewed + b[1].checked) - (a[1].reviewed + a[1].checked));
+  const { show, reviews, agreement, coverage } = loaderData;
+  const n = (value: number) => value.toLocaleString();
   return (
     <main className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-4xl px-4 py-10">
@@ -43,6 +45,23 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
           title="Page reviews"
           description="Pages you've looked over or had checked. While signed in, every public page has a review bar at the bottom left: mark it reviewed, or press Check to have the model read it and flag problems."
         />
+        <div className={cn(adminCard, "mb-3 px-5 py-4")}>
+          <div className="text-sm font-medium text-zinc-600">Pages reviewed</div>
+          <div className="mt-1 text-3xl font-semibold tabular-nums text-zinc-950">
+            {n(coverage.reviewed)} <span className="text-lg font-normal text-zinc-500">of {n(coverage.total)}</span>
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">{n(coverage.checked)} checked by the model. Every public page in the sitemap counts.</p>
+          <ul className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+            {coverage.sections.map((s) => (
+              <li key={s.section} className="flex items-baseline justify-between gap-3 border-t border-zinc-100 pt-2">
+                <span className="font-medium text-zinc-900">{s.label}</span>
+                <span className="tabular-nums text-zinc-600">
+                  {n(s.reviewed)} of {n(s.total)}{s.checked > 0 && <span className="text-zinc-400"> · {n(s.checked)} checked</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="mb-5 grid gap-3 sm:grid-cols-2">
           <div className={cn(adminCard, "px-5 py-4")}>
             <div className="text-sm font-medium text-zinc-600">Check flags you agreed with</div>
@@ -59,16 +78,6 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
             <button type="submit" className="mt-3 self-start rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700">Random page</button>
           </Form>
         </div>
-        {kinds.length > 0 && (
-          <div className={cn(adminCard, "mb-5 flex flex-wrap gap-x-6 gap-y-2 px-5 py-3 text-sm")}>
-            {kinds.map(([kind, n]) => (
-              <span key={kind} className="tabular-nums text-zinc-600">
-                <span className="font-medium capitalize text-zinc-900">{kind}</span> {n.reviewed} reviewed · {n.checked} checked
-                {n.needs_work > 0 && <span className="text-amber-700"> · {n.needs_work} need work</span>}
-              </span>
-            ))}
-          </div>
-        )}
         <nav aria-label="Filter reviews" className="mb-4 flex flex-wrap gap-2 text-sm">
           {FILTERS.map(([value, label]) => (
             <Link key={value} to={value === "all" ? "/admin/reviews" : `/admin/reviews?show=${value}`}
