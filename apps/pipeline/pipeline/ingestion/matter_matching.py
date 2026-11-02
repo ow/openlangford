@@ -558,6 +558,27 @@ def _contains_any(text: str, terms: set[str]) -> bool:
     return any(term in text for term in terms)
 
 
+# Standing fee schedules: each amendment gets its own bylaw number but changes the same price list, so every one
+# joins the schedule's single topic (marked meta.standing_bylaw). Most specific first: "City Centre Park Fees and
+# Charges" is not the City's own fees bylaw.
+STANDING_FEE_BYLAWS = [
+    ("recreation_centre_fees", re.compile(r"(juan de fuca recreation|west shore parks (?:&|and) recreation).{0,80}\bfees\b", re.I)),
+    ("city_centre_park_fees", re.compile(r"city centre park fees", re.I)),
+    ("station_avenue_fees", re.compile(r"station avenue fees|fees and charges for station ave|langford station\b.{0,40}\bfees\b", re.I)),
+    ("servicing_fees", re.compile(r"subdivision and (?:development )?servicing\b.{0,120}\bfee", re.I)),
+    ("city_fees", re.compile(r"\b(?:city|district) of langford fees and charges\b|fees and charges bylaw no\.? 113\b"
+                              r"|^(?:bylaw no\.? ?\d+\s*[-—]\s*)?(?:revised )?fees and charges\b", re.I)),
+]
+
+
+def standing_fee_bylaw(title: str | None) -> str | None:
+    """The standing fee schedule a title amends, if any."""
+    for key, pattern in STANDING_FEE_BYLAWS:
+        if title and pattern.search(title):
+            return key
+    return None
+
+
 def detect_entity_cluster(text: str | None) -> str | None:
     """Find a strong known civic-entity cluster in text.
 
@@ -873,6 +894,12 @@ class MatterMatcher:
         if title:
             title_addrs = extract_addresses(title)
             normalized_addrs.update(title_addrs)
+
+        fees = standing_fee_bylaw(title)
+        if fees:
+            homes = [m for m in self.matters if (m.get("meta") or {}).get("standing_bylaw") == fees]
+            if len(homes) == 1:
+                return homes[0]["id"], f"standing_fee_bylaw:{fees}", 0.95
 
         identifier = identifying_identifier(identifier)
         # Explicit title bylaw numbers also identify title-only source records.

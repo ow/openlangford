@@ -104,3 +104,16 @@ def test_committee_meeting_headings_are_containers():
 
     assert is_generic_or_procedural_matter("Planning, Zoning and Affordable Housing Committee Meeting - January 31, 2022.")
     assert not is_generic_or_procedural_matter("Committee meeting room rental rates")
+
+
+def test_standing_fee_bylaw_amendments_name_their_schedule():
+    from pipeline.ingestion.matter_matching import standing_fee_bylaw
+    assert standing_fee_bylaw('BYLAW NO. 1964 "City of Langford Fees and Charges, Amendment No. 14, Bylaw No. 1964, 2021" (ADOPTION)') == "city_fees"
+    assert standing_fee_bylaw("Bylaw No. 2123 - Revised Fees and Charges Report") == "city_fees"
+    assert standing_fee_bylaw('BYLAW NO. 1345 "Juan de Fuca Recreation Centre (West Shore Parks & Recreation Society) Fees and Charges"') == "recreation_centre_fees"
+    assert standing_fee_bylaw("City Centre Park Fees & Charges Bylaw No. 1203, Amendment No. 3") == "city_centre_park_fees"
+    assert standing_fee_bylaw("City Centre Park fees and charges") == "city_centre_park_fees"
+    assert standing_fee_bylaw('BYLAW NO. 2119 "Station Avenue Fees and Charges Bylaw No. 2010, Amendment No. 1, 2023"') == "station_avenue_fees"
+    assert standing_fee_bylaw('BYLAW NO. 1901 "Subdivision and Development Servicing Bylaw, Amendment No. 20 (Fee Schedule)"') == "servicing_fees"
+    assert standing_fee_bylaw("Omnibus Amendments to Subdivision and Development Servicing Bylaw No. 1000, Bylaw No. 2103") is None
+    assert standing_fee_bylaw("Permission and fee waiver for the Hike for Hunger") is None
