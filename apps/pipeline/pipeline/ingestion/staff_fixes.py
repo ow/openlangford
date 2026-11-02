@@ -39,6 +39,9 @@ def move_item(supabase, item_id: int, to_matter_id: int | None, *, by: str | Non
         "from": item.get("matter_id"),
     }}
     supabase.table("agenda_items").update({"matter_id": to_matter_id, "meta": meta}).eq("id", item_id).execute()
+    # The item's addresses go with it, so the old topic's map and property pages drop them now (the properties
+    # stage would also catch up, on its next run).
+    supabase.table("property_links").update({"matter_id": to_matter_id}).eq("agenda_item_id", item_id).execute()
     return {"from": item.get("matter_id"), "to": to_matter_id, "meeting_id": item["meeting_id"]}
 
 
