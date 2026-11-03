@@ -132,9 +132,9 @@ def _texts(result: Highlights) -> list[str]:
 # ── inputs ───────────────────────────────────────────────────────────────
 
 
-def _trim(text: Any, limit: int) -> str:
-    text = re.sub(r"\s+", " ", str(text or "")).strip()
-    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+def _clean(text: Any) -> str:
+    """Whitespace collapsed; never shortened (the model needs the whole record)."""
+    return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
 def _tally(votes: list[dict]) -> dict | None:
@@ -166,11 +166,11 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
                 continue
         entry = {
             "agenda_item_id": m.get("agenda_item_id") if m.get("agenda_item_id") in titles else None,
-            "agenda_item": _trim(titles.get(m.get("agenda_item_id")), 160),
+            "agenda_item": _clean(titles.get(m.get("agenda_item_id"))),
             # The recorded wording is the record; the summaries are notes (record_sources.RECORD_RULE).
-            "motion_text": _trim(m.get("text_content"), 1200),
+            "motion_text": _clean(m.get("text_content")),
             "result": m.get("result"),
-            "notes": {k: v for k, v in {"summary": _trim(m.get("plain_english_summary"), 400),
+            "notes": {k: v for k, v in {"summary": _clean(m.get("plain_english_summary")),
                                         "headline": (m.get("meta") or {}).get("headline") or ""}.items() if v},
         }
         # A count only for a complete vote (reconstructed from attendance); minutes often name just those opposed,
@@ -182,8 +182,8 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
         decisions.append({k: v for k, v in entry.items() if v})
     # Every titled item (with its id, for links); summaries only where they add something.
     items = [
-        {k: v for k, v in {"id": a["id"], "title": _trim(a.get("title"), 160),
-                           "notes": _trim(a.get("plain_english_summary"), 300)}.items() if v}
+        {k: v for k, v in {"id": a["id"], "title": _clean(a.get("title")),
+                           "notes": _clean(a.get("plain_english_summary"))}.items() if v}
         for a in agenda_items
         if a.get("title")
     ]
@@ -196,7 +196,7 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
         },
         "notes_meeting_summary": meeting.get("summary") or "",
         "decisions": decisions,
-        "agenda_items_for_context_only": items[:60],
+        "agenda_items_for_context_only": items,
         # Without recorded decisions, the video is the record of what happened (``generate`` fills it in).
         **({"video_transcript": transcript} if transcript else {}),
     }
@@ -412,6 +412,9 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
     decided = any(m.get("result") and (m.get("disposition") or "") != "Procedural" for m in motions)
     inputs = build_inputs(meeting, motions, votes, items, "" if decided else meeting_transcript(supabase, meeting_id))
     prompt = build_prompt(inputs)
+    if ai.budget.size(prompt) > ai.INPUT_BUDGET_CHARS:  # never cut the record to fit; say so instead
+        print(f"  [Highlights] meeting {meeting_id}: TOO LARGE for one request ({ai.budget.size(prompt):,} characters); not written")
+        return None
     result = ai.json(prompt, stage="writing", schema=Highlights, system=SYSTEM)
     issues = problems(_texts(result))
     for _ in range(REVISION_PASSES):  # revise with the specific problems; keep whichever draft has fewer

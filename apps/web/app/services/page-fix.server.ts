@@ -5,7 +5,7 @@ import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, type PageFlag } from "../lib/page-review-types";
 import { readPage } from "./page-check.server";
 import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
-import { itemRecords } from "./page-verify.server";
+import { fetchAll, itemRecords, topicItemIds } from "./page-verify.server";
 import { logStaffAction } from "./staff.server";
 import type { StaffRole } from "../lib/auth.server";
 
@@ -80,8 +80,8 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, item: {
 /** A search suggestion's key for the agent: "suggestion-L12" (a meeting item or topic link) or "suggestion-R7" (a report page). */
 const suggestionKey = (s: Suggestion) => `suggestion-${s.table === "matter_links" ? "L" : "R"}${s.id}`;
 
-/** The passages of each flagged supporting record that name this topic (by its title or aliases), so the agent can
- * reword the entry from the record itself rather than from the page's short quote. */
+/** Each flagged supporting record in full, with the places it names this topic (title or aliases) marked »so«, so the
+ * agent can reword the entry from the record itself rather than from the page's short quote. */
 async function evidenceRecords(supabase: SupabaseClient, matterId: number, ids: number[]) {
   if (!ids.length) return "";
   const [{ data: m }, { data: rows }] = await Promise.all([
@@ -95,17 +95,9 @@ async function evidenceRecords(supabase: SupabaseClient, matterId: number, ids: 
     const section = Array.isArray(r.document_sections) ? r.document_sections[0] : r.document_sections;
     const text = String(section?.section_text || "").replace(/\s+/g, " ").trim();
     const lower = text.toLowerCase();
-    const hits = terms.flatMap((t) => { const out: number[] = []; let i = lower.indexOf(t); while (i >= 0 && out.length < 6) { out.push(i); i = lower.indexOf(t, i + t.length); } return out; })
-      .sort((a, b) => a - b);
-    // Each mention with ~500 characters either side, overlapping windows joined; the start of the record if none.
-    const spans: [number, number][] = [];
-    for (const at of hits) {
-      const span: [number, number] = [Math.max(0, at - 500), Math.min(text.length, at + 500)];
-      const last = spans[spans.length - 1];
-      if (last && span[0] <= last[1]) last[1] = span[1]; else spans.push(span);
-    }
-    const passages = (spans.length ? spans : [[0, Math.min(text.length, 1200)] as [number, number]]).slice(0, 4)
-      .map(([a, b]) => `${a > 0 ? "…" : ""}${text.slice(a, b)}${b < text.length ? "…" : ""}`).join("\n  ");
+    const hits = terms.filter((t) => lower.includes(t));
+    // The whole record, with the places it names this topic marked, so the agent reads it rather than a window of it.
+    const passages = hits.length ? text.replace(new RegExp(terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "gi"), (w) => `»${w}«`) : text;
     const title = section?.section_title || section?.documents?.title || "record";
     return `SUPPORTING RECORD evidence-${r.id} (${title}${hits.length ? "" : "; doesn't name this topic"}):\n  ${passages}`;
   }).join("\n\n");
@@ -170,7 +162,7 @@ ${movable || "(No flagged items to move.)"}
   supplies what an agreed problem says is missing (e.g. the adoption or decision the status lacks), with its key.
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
-${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote.slice(0, 240)}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}
+${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}
 Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly. A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
@@ -253,8 +245,9 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     }
     // The records behind the page: every item filed here plus each flagged linked item, gathered the way the page
     // check gathers them (unattached minutes and reports of the same meeting included), and flagged report quotes.
-    const { data: own } = await supabase.from("agenda_items").select("id").eq("matter_id", matterId).limit(60);
-    const ids = [...new Set([...((own || []) as any[]).map((i) => i.id), ...agreed.map((f) => itemId(f.key)).filter(Number.isSafeInteger)])];
+    const { data: topic } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+    const own = await topicItemIds(supabase, matterId, topic?.meta as any);
+    const ids = [...new Set([...own, ...agreed.map((f) => itemId(f.key)).filter(Number.isSafeInteger)])];
     const reportIds = agreed.map((f) => Number(f.key?.match(/^report-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
     const evidenceIds = agreed.map((f) => Number(f.key?.match(/^evidence-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
     const [{ text: itemText }, { data: reports }, evidenceText] = await Promise.all([
@@ -293,7 +286,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const summaryNotes: string[] = [];
     const waiting: string[] = [];
     const hidden: Record<string, { keep: number; reason: string; by: string; at: string }> = {};
-    const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim().slice(0, 600);
+    const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim();
     for (const step of result.data.actions) {
       if (step.action === "merge_topic" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id)) {
         const other = step.other_matter_id && step.other_matter_id !== step.to_matter_id
@@ -524,9 +517,10 @@ async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number, al
   const { data: me } = await supabase.from("matters").select("meta").eq("id", matterId).single();
   const title = (me?.meta as any)?.display_title as string | undefined;
   const bylaws = (text: string) => new Set((text.match(/\bBylaw No\.?\s*(\d{3,4})\b/gi) || []).map((b) => b.replace(/\D/g, "")));
-  const [{ data: ownItems }, { data: mentions }] = await Promise.all([
-    supabase.from("agenda_items").select("title").eq("matter_id", matterId).limit(60),
-    supabase.from("matter_links").select("agenda_items(matter_id, title)").eq("matter_id", matterId).eq("kind", "mention").eq("hidden", false).limit(80),
+  const merged = (((me?.meta as any)?.merged_matter_ids || []) as number[]).filter(Number.isSafeInteger);
+  const [ownItems, mentions] = await Promise.all([
+    fetchAll((from, to) => supabase.from("agenda_items").select("title").in("matter_id", [matterId, ...merged]).order("id").range(from, to)),
+    fetchAll((from, to) => supabase.from("matter_links").select("agenda_items(matter_id, title)").eq("matter_id", matterId).eq("kind", "mention").eq("hidden", false).order("id").range(from, to)),
   ]);
   const mine = new Set(((ownItems || []) as any[]).flatMap((i) => [...bylaws(String(i.title || ""))]));
   const sameBylaw = ((mentions || []) as any[]).map((l) => (Array.isArray(l.agenda_items) ? l.agenda_items[0] : l.agenda_items))

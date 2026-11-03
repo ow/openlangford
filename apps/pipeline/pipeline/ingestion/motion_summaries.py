@@ -39,8 +39,8 @@ def _prompt(rows: list[dict]) -> str:
         {
             "id": r["id"],
             "agenda_item": r.get("agenda_title") or "",
-            "agenda_item_summary": (r.get("agenda_summary") or "")[:600],
-            "motion_text": (r.get("text_content") or "")[:1500],
+            "agenda_item_summary": r.get("agenda_summary") or "",
+            "motion_text": r.get("text_content") or "",
             "result": r.get("result") or "",
             "current_summary": r.get("plain_english_summary") or "",
         }

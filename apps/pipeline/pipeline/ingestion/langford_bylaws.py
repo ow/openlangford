@@ -110,7 +110,8 @@ def derive_status(src: BylawSource, text: str, amendments: list[dict]) -> str | 
     return STATUS_IN_FORCE
 
 
-SUMMARY_INPUT_CHARS = 60000
+# A bylaw that fits a request is read whole; only one too long for any request (the zoning bylaw, the OCP) is digested.
+SUMMARY_INPUT_CHARS = ai.INPUT_BUDGET_CHARS
 
 _TOC = re.compile(r"\b(?:table\s+of\s+contents|^\s*contents\s*$)", re.IGNORECASE | re.MULTILINE)
 _KEY_SECTION = re.compile(

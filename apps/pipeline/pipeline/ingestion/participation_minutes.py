@@ -30,7 +30,6 @@ from .participation_validation import VERBS, StreetCheck, folded, load_streets, 
 
 # Bump when the prompt/schema changes; stamped in agenda_items.meta.participation_minutes_version.
 MINUTES_VERSION = "1"
-MAX_MINUTES_CHARS = 150000
 MIN_QUOTE_WORDS = 4
 
 
@@ -58,7 +57,7 @@ def minutes_text(rows: list[dict]) -> tuple[str, list[int]]:
     """Concatenate a meeting's minutes documents: (text, document ids)."""
     docs = [r for r in rows if "minute" in (r.get("category") or "").lower() and (r.get("full_text") or "").strip()]
     docs.sort(key=lambda r: r["id"])
-    return "\n\n".join(r["full_text"] for r in docs)[:MAX_MINUTES_CHARS], [r["id"] for r in docs]
+    return "\n\n".join(r["full_text"] for r in docs), [r["id"] for r in docs]
 
 
 def build_prompt(item: dict, text: str, other_titles: list[str]) -> str:

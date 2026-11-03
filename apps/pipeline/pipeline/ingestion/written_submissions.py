@@ -385,7 +385,7 @@ def load_examples(supabase) -> list[dict]:
             titles[row["id"]] = row["title"]
     for e in examples:
         if e.get("item") and not e.get("item_title"):
-            e["item_title"] = (titles.get(e["item"]) or "")[:160]
+            e["item_title"] = titles.get(e["item"]) or ""
     return examples
 
 
@@ -442,7 +442,7 @@ def place_letters(letters: list[dict], items: list[dict], *, linked_item_id: int
             if target in by_id:
                 placed.setdefault(target, []).append(letter)
             continue
-        excerpt = (letter.get("excerpt") or "")[:1200]
+        excerpt = letter.get("excerpt") or ""
         context = (f"Letter to council from the package \"{document_title}\". "
                    f"Topic: {letter['topic']}. Point: {letter['point']}" + (f"\nLetter text: {excerpt}" if excerpt else "")
                    + _examples_text(similar_examples(letter, examples or [], exclude=letter.get("_exclude"))))
@@ -530,19 +530,19 @@ def _item_description(item: dict) -> str:
     "REPORTS" or "BYLAWS" say nothing on their own."""
     parts = [f"{item.get('item_order') or ''} {item.get('title') or ''}".strip()]
     if item.get("plain_english_summary"):
-        parts.append(item["plain_english_summary"][:200])
+        parts.append(item["plain_english_summary"])
     if item.get("context_properties"):
-        parts.append("Properties: " + "; ".join(item["context_properties"])[:200])
+        parts.append("Properties: " + "; ".join(item["context_properties"]))
     if item.get("context_documents"):
-        parts.append("Documents: " + "; ".join(item["context_documents"])[:400])
+        parts.append("Documents: " + "; ".join(item["context_documents"]))
     if item.get("context_summaries"):
-        parts.append("Document summaries: " + " ".join(item["context_summaries"])[:500])
+        parts.append("Document summaries: " + " ".join(item["context_summaries"]))
     if item.get("context_letters"):
-        parts.append("Letters already placed here are about: " + "; ".join(item["context_letters"])[:400])
+        parts.append("Letters already placed here are about: " + "; ".join(item["context_letters"]))
     if item.get("shared_terms"):
         parts.append("Shares with this letter: " + ", ".join(item["shared_terms"]))
     if item.get("context_decisions"):
-        parts.append("Decided: " + "; ".join(item["context_decisions"])[:300])
+        parts.append("Decided: " + "; ".join(item["context_decisions"]))
     return " — ".join(parts)
 
 
@@ -558,9 +558,9 @@ def with_item_context(supabase, items: list[dict], exclude: tuple | None = None)
     out = []
     for item in items:
         titles = sorted({d["title"] for d in docs if d["agenda_item_id"] == item["id"] and d.get("title")})
-        decided = [(m.get("plain_english_summary") or m.get("text_content") or "")[:160]
+        decided = [(m.get("plain_english_summary") or m.get("text_content") or "")
                    for m in motions if m["agenda_item_id"] == item["id"]]
-        summaries = [d["summary"][:220] for d in docs if d["agenda_item_id"] == item["id"] and d.get("summary")]
+        summaries = [d["summary"] for d in docs if d["agenda_item_id"] == item["id"] and d.get("summary")]
         # Letters already here (admin decisions and confident placements) show what people call this item:
         # "Western Speedway" for an item that only says "2207 Millstream Rd".
         placed = ((item.get("meta") or {}).get("written_participation") or {}).get("documents") or []
@@ -572,9 +572,9 @@ def with_item_context(supabase, items: list[dict], exclude: tuple | None = None)
             for value in [group.get("title"), *(l.get("topic") for l in letters)]:
                 if value and value not in about:
                     about.append(value)
-        out.append({**item, "context_documents": titles[:8], "context_summaries": summaries[:5],
-                    "context_decisions": [d for d in decided if d][:5], "context_letters": about[:10],
-                    "context_properties": lots.get(item["id"], [])[:8]})
+        out.append({**item, "context_documents": titles, "context_summaries": summaries,
+                    "context_decisions": [d for d in decided if d], "context_letters": about,
+                    "context_properties": lots.get(item["id"], [])})
     return out
 
 
@@ -612,7 +612,7 @@ def _item_decider():
             "item",
             "A resident's letter was included in a council agenda package. Which agenda item is it about? "
             "Choose none if it fits no single item.",
-            [(f"i{i}", _item_description(it)) for i, it in enumerate(items[:60])] + [("none", "Not about any single agenda item.")],
+            [(f"i{i}", _item_description(it)) for i, it in enumerate(items)] + [("none", "Not about any single agenda item.")],
         )
         answer = ai.decide(context, [question]).get("item")
         if answer is None or answer.type != "choice":

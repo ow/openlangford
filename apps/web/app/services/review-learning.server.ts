@@ -43,7 +43,7 @@ export async function recordExample(supabase: SupabaseClient, input: {
   }
   const embedding = await embed(`${flag.excerpt}\n${flag.reason}`);
   const { error } = await supabase.from("review_examples").upsert({
-    ...match, page_kind: input.kind, entry_text: flag.excerpt.slice(0, 2000), verdict: flag.verdict, note: flag.note ?? null,
+    ...match, page_kind: input.kind, entry_text: flag.excerpt, verdict: flag.verdict, note: flag.note ?? null,
     model: input.model ?? null, guidance_version: input.guidanceVersion ?? null, rated_by: input.userId ?? null,
     embedding, updated_at: new Date().toISOString(),
   }, { onConflict: "path,entry_key,problem,reason" });
@@ -92,7 +92,7 @@ REJECTED means it shouldn't have been flagged. Write the rule that would have pr
 flag "${label}" and, just as important, when not to. Generalize; don't list cases.
 ${(current || []).length ? `\nThe current rule (improve it, keep what still holds):\n${(current || []).map((c: any) => `- ${c.text}`).join("\n")}\n` : ""}
 Ratings:
-${rows.map((r) => `- ${r.verdict === "agree" ? "AGREED" : "REJECTED"} on a ${r.page_kind} page: ${r.reason} (entry: "${r.entry_text.slice(0, 200)}")${r.note ? ` Editor's note: ${r.note}` : ""}`).join("\n")}`;
+${rows.map((r) => `- ${r.verdict === "agree" ? "AGREED" : "REJECTED"} on a ${r.page_kind} page: ${r.reason} (entry: "${r.entry_text}")${r.note ? ` Editor's note: ${r.note}` : ""}`).join("\n")}`;
   const result = await getAiClient().json({ stage: "review", prompt, schema: DraftSchema, schemaName: "guidance_draft" });
   const { error } = await supabase.from("review_guidance").insert({
     problem, page_kind: result.data.page_kind, text: result.data.rule.trim(), status: "draft", based_on: rows.length,

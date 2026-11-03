@@ -45,7 +45,7 @@ def _prompt(rows: list[dict]) -> str:
             "id": r["id"],
             "agenda_item": r.get("agenda_title") or "",
             "decision": r.get("plain_english_summary") or "",
-            "motion_text": (r.get("text_content") or "")[:1200],
+            "motion_text": r.get("text_content") or "",
             "result": r.get("result") or "",
         }
         for r in rows

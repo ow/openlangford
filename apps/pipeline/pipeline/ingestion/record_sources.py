@@ -25,8 +25,6 @@ report text, video transcripts); "notes" are summaries a model wrote earlier, wh
 supported only by a record. A statement only the notes back is not_in_record (say "only in a model-written summary"),
 and so is one where a note and the record disagree and the text follows the note."""
 
-TRANSCRIPT_CAP = 6000  # characters per agenda item; long discussions keep their end, where the motion and vote are
-
 
 def _segments(supabase: Client, meeting_id: int, start: float | None = None, end: float | None = None) -> list[dict]:
     rows: list[dict] = []
@@ -44,26 +42,24 @@ def _segments(supabase: Client, meeting_id: int, start: float | None = None, end
         offset += 1000
 
 
-def _text(segments: list[dict], cap: int) -> str:
-    text = "\n".join(f"{s.get('speaker_name') or 'Speaker'}: {s.get('text_content') or ''}" for s in segments)
-    return text if len(text) <= cap else "…" + text[-cap:]
+def _text(segments: list[dict]) -> str:
+    return "\n".join(f"{s.get('speaker_name') or 'Speaker'}: {s.get('text_content') or ''}" for s in segments)
 
 
-def item_transcripts(supabase: Client, items: Iterable[dict], cap: int = TRANSCRIPT_CAP) -> dict[int, str]:
-    """The video transcript of each item's discussion ({item id: text}), for items with a discussion window."""
+def item_transcripts(supabase: Client, items: Iterable[dict]) -> dict[int, str]:
+    """The whole video transcript of each item's discussion ({item id: text}), for items with a discussion window."""
     out: dict[int, str] = {}
     for item in items:
         start = item.get("discussion_start_time")
         if start is None or not item.get("meeting_id"):
             continue
         end = item.get("discussion_end_time")
-        text = _text(_segments(supabase, item["meeting_id"], float(start), float(end) if end is not None else float(start) + 1800), cap)
+        text = _text(_segments(supabase, item["meeting_id"], float(start), float(end) if end is not None else float(start) + 1800))
         if text.strip():
             out[item["id"]] = text
     return out
 
 
-def meeting_transcript(supabase: Client, meeting_id: int, cap: int = 60000) -> str:
-    """The whole meeting's video transcript, capped (the start: a meeting's business is in agenda order)."""
-    text = _text(_segments(supabase, meeting_id), 10**9)
-    return text[:cap] + ("…" if len(text) > cap else "")
+def meeting_transcript(supabase: Client, meeting_id: int) -> str:
+    """The whole meeting's video transcript."""
+    return _text(_segments(supabase, meeting_id))

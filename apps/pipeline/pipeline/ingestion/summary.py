@@ -23,12 +23,6 @@ def _absolute_archive_path(archive_path: str) -> str:
     return os.path.join(BASE_DIR, archive_path)
 
 
-def _trim(text: str, limit: int) -> str:
-    if len(text) <= limit:
-        return text
-    return text[:limit] + "\n\n[TRUNCATED]"
-
-
 def build_summary_prompt(meeting: dict, agenda_text: str, minutes_text: str, transcript_text: str) -> str:
     return f"""
 Regenerate ONLY the public-facing meeting summary.
@@ -60,8 +54,8 @@ MINUTES:
 AGENDA:
 {agenda_text}
 
-TRANSCRIPT EXCERPT:
-{_trim(transcript_text, 12000)}
+TRANSCRIPT:
+{transcript_text}
 """.strip()
 
 
@@ -102,6 +96,8 @@ def regenerate_meeting_summary(
         raise ValueError(f"meeting_id {meeting_id} has no usable agenda or minutes text")
 
     prompt = build_summary_prompt(meeting, agenda_text or "", minutes_text or "", transcript_text or "")
+    if ai.budget.size(prompt) > ai.INPUT_BUDGET_CHARS:  # never cut the minutes or transcript to fit; say so instead
+        raise ai.TooLarge(f"meeting {meeting_id}: {ai.budget.size(prompt):,} characters of minutes, agenda and transcript")
     summary = ai.text(prompt, stage="extraction", system=SUMMARY_SYSTEM)
     if not summary or len(summary.strip()) < 20:
         raise RuntimeError("summary generation returned an empty response")

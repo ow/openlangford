@@ -85,3 +85,5 @@ def transcribe(audio_path: str, *, stage: str = "asr", model: str | None = None,
     return get_client().transcribe(
         audio_path, stage=stage, model=model, max_attempts=max_attempts, timeout=timeout, **options
     )
+
+from pipeline.ai.budget import INPUT_BUDGET_CHARS, TooLarge, pack  # noqa: E402  (fitting inputs to the context window)

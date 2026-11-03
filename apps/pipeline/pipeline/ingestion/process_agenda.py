@@ -63,7 +63,7 @@ Analyze the following transcript segment which corresponds to a specific Agenda 
 **GOAL**: Extract deep insights into the discussion, PRIORITIZING the contributions, concerns, and arguments made by Council Members (Mayor and Councillors).
 
 **TRANSCRIPT**:
-{transcript_text[:50000]} 
+{transcript_text} 
 
 **INSTRUCTIONS**:
 1. **detailed_analysis**: Write a comprehensive 2-3 paragraph narrative. Focus on the Council's reaction to the proposal, the core of their debate, and how they reached their decision.

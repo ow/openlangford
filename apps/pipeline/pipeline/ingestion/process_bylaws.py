@@ -45,8 +45,11 @@ def generate_bylaw_intelligence(bylaw):
         return None
 
     # Construct Prompt
-    # Truncate very long bylaws; most are well within this limit.
-    truncated_text = text[:300000]
+    # The whole bylaw: the model reads it all (pipeline.ai.budget). A bylaw too long for one request is reported.
+    if len(text) > ai.INPUT_BUDGET_CHARS:
+        print(f"    [!] Bylaw text is {len(text):,} characters, too long for one request; not summarized.")
+        return None
+    truncated_text = text
 
     prompt = f"""
 You are an expert legal analyst for a municipal government.

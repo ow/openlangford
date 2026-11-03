@@ -21,7 +21,6 @@ from pydantic import BaseModel
 from pipeline import ai
 
 DISSENT = re.compile(r"(?i)\b(voted against|voted no|voted in opposition|opposed|dissent(?:ed|ing)?)\b")
-TRANSCRIPT_CAP = 12000
 
 
 class _Check(BaseModel):
@@ -80,14 +79,14 @@ def candidates(cur, meeting_ids: list[int] | None = None) -> list[dict]:
 
 def _context(cur, c: dict) -> tuple[str, str]:
     cur.execute("select text_content, result from motions where agenda_item_id = %s order by id", (c["item_id"],))
-    motions = "\n".join(f"- {(t or '').strip()[:600]} ({r or 'no result'})" for t, r in cur.fetchall())
+    motions = "\n".join(f"- {(t or '').strip()} ({r or 'no result'})" for t, r in cur.fetchall())
     if c["start"] is None:
         return motions, "(no transcript for this item)"
     cur.execute("""select coalesce(speaker_name, 'Speaker'), text_content from transcript_segments
                    where meeting_id = %s and start_time >= %s and start_time < %s order by start_time""",
                 (c["meeting_id"], c["start"], c["end"] if c["end"] is not None else c["start"] + 1800))
     transcript = "\n".join(f"{who}: {text}" for who, text in cur.fetchall())
-    return motions, (transcript[-TRANSCRIPT_CAP:] or "(no transcript for this item)")
+    return motions, (transcript or "(no transcript for this item)")
 
 
 def run(*, meeting_ids: list[int] | None = None, dry_run: bool = False) -> dict[str, Any]:
@@ -110,12 +109,12 @@ def run(*, meeting_ids: list[int] | None = None, dry_run: bool = False) -> dict[
     confirmed: dict[int, list[dict]] = {}
     checked = []
     for c, (motions, transcript) in zip(found, contexts):
-        res = ai.json(PROMPT.format(name=c["name"], motion=(c["motion"] or "")[:2000], motions=motions, debate=c["debate"],
+        res = ai.json(PROMPT.format(name=c["name"], motion=c["motion"] or "", motions=motions, debate=c["debate"],
                                     transcript=transcript), stage="review", schema=_Check)
         checked.append({**{k: c[k] for k in ("motion_id", "item_id", "name")}, **res.model_dump()})
         if res.dissented:
             confirmed.setdefault(c["motion_id"], []).append(
-                {"person_id": c["person_id"], "name": c["name"], "named_in_video": res.named, "quote": res.quote[:400],
+                {"person_id": c["person_id"], "name": c["name"], "named_in_video": res.named, "quote": res.quote,
                  "reason": res.reason})
     if not dry_run:
         def write(cur):

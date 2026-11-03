@@ -204,7 +204,7 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
             meta = supabase.table("matters").select("meta").eq("id", matter_id).single().execute().data.get("meta") or {}
             asks = [f"The last rewrite missed this: {u['missing']}" for u in unfollowed if u["matter_id"] == matter_id and u["missing"]]
             if asks:
-                supabase.table("matters").update({"meta": {**meta, "editor_notes": [*(meta.get("editor_notes") or []), *asks][-10:]}}).eq("id", matter_id).execute()
+                supabase.table("matters").update({"meta": {**meta, "editor_notes": [*(meta.get("editor_notes") or []), *asks]}}).eq("id", matter_id).execute()
         refresh_matter_summaries(supabase, retry)
         unfollowed = check_summary_notes(supabase, [{"matter_id": u["matter_id"], "note": u["note"]} for u in unfollowed])
     if unfollowed:  # the writer still won't: the agent edits the text itself, checked the same way

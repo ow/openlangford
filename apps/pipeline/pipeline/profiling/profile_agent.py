@@ -564,9 +564,9 @@ def _synthesize_profile(context: dict, themes: list[dict]) -> dict | None:
             elif ev["type"] == "vote":
                 vote_str = ev.get("vote", "")
                 result_str = ev.get("result", "")
-                motion_preview = (ev.get("text", "") or "")[:200]
+                motion_preview = ev.get("text", "") or ""
                 section += (
-                    f'  {i}. [{date_str}] VOTE: {vote_str} on "{motion_preview}..." '
+                    f'  {i}. [{date_str}] VOTE: {vote_str} on "{motion_preview}" '
                     f'(Result: {result_str})\n'
                 )
                 all_evidence_flat["votes"].append({

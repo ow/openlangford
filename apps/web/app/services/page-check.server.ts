@@ -49,7 +49,8 @@ function plain(html: string) {
     .trim();
 }
 
-/** What a reader sees: the title, heading, description, and each timeline entry (by its anchor key). */
+/** What a reader sees: the title, heading, description, and each timeline entry (by its anchor key). A page larger
+ * than PAGE_CAP characters (far beyond any real one) fails openly rather than being cut. */
 const PAGE_CAP = 800_000;
 
 export function readPage(html: string): ReadPage {
@@ -74,7 +75,9 @@ export function readPage(html: string): ReadPage {
   // page (about 200,000 tokens), far beyond any real one. A page with entries still sends what comes before
   // them (a meeting's summary and who attended), which the entries are judged against.
   const body = entries.length ? plain(html.slice(mainStart >= 0 ? mainStart : 0, starts[0].index)) : plain(main);
-  return { title, heading, description, entries, body: body.length > PAGE_CAP ? `${body.slice(0, PAGE_CAP)} [page continues; cut here]` : body };
+  // Never cut: a page too large for the review model fails openly instead.
+  if (body.length + entries.reduce((n, e) => n + e.text.length, 0) > PAGE_CAP) throw new Error("This page is too large for the review model to read at once.");
+  return { title, heading, description, entries, body };
 }
 
 const CheckSchema = z.object({
@@ -118,7 +121,7 @@ export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] =
     : page.body;
   const calibration = examples.length
     ? `\n\nAn editor rated flags on pages like this one. Flag what they agreed with; don't flag the kind of thing they rejected.\n` +
-      examples.map(e => `- ${e.verdict === "agree" ? "AGREED" : "REJECTED"} ${e.problem}: ${e.reason} (entry: "${e.entry_text.slice(0, 220)}")${e.note ? ` Editor: ${e.note}` : ""}`).join("\n")
+      examples.map(e => `- ${e.verdict === "agree" ? "AGREED" : "REJECTED"} ${e.problem}: ${e.reason} (entry: "${e.entry_text}")${e.note ? ` Editor: ${e.note}` : ""}`).join("\n")
     : "";
   return `You're a Langford resident reading this page on Open Langford, a site that follows City council. Point out what
 would confuse or mislead you. Only flag clear problems a careful reader would notice; most entries are fine,
@@ -136,7 +139,7 @@ ${page.entries.length ? (kind === "meetings" ? "The page, then its agenda items,
 ${content}${suggestions.length ? `
 
 A search of the council's records found these entries, NOT yet on the page (an editor decides whether to add them):
-${suggestions.map((x) => `[${suggestionKey(x)}] ${x.date ? `${String(x.date).slice(0, 10)} ` : ""}${x.title}${x.quote ? `: "${x.quote.slice(0, 240)}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}
+${suggestions.map((x) => `[${suggestionKey(x)}] ${x.date ? `${String(x.date).slice(0, 10)} ` : ""}${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}
 When the page lacks a step or fact one of these supplies (its adoption, the decision its status says is missing), don't
 just say it's missing: say which one supplies it in the fix, e.g. "Add the suggested entry ${suggestionKey(suggestions[0])}".` : ""}`;
 }

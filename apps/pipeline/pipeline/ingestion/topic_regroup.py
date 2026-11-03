@@ -103,8 +103,8 @@ def _load(cur) -> tuple[dict[int, dict], dict[int, list[dict]]]:
                    where a.matter_id = any(%s) order by mt.meeting_date""", (list(topics),))
     entries: dict[int, list[dict]] = defaultdict(list)
     for iid, mid, day, title, addrs, summary, meta in cur.fetchall():
-        entries[mid].append({"id": iid, "date": str(day), "title": (title or "").split("\n")[0][:220],
-                             "addresses": _addresses(addrs), "summary": (summary or "")[:280], "meta": meta or {}})
+        entries[mid].append({"id": iid, "date": str(day), "title": " ".join((title or "").split()),
+                             "addresses": _addresses(addrs), "summary": summary or "", "meta": meta or {}})
     return topics, entries
 
 

@@ -23,7 +23,7 @@ from pydantic import BaseModel, Field
 from supabase import Client
 
 from pipeline import ai
-from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, TRANSCRIPT_CAP, item_transcripts
+from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, item_transcripts
 
 # Bump when the prompt/schema changes so `main.py --stage matter-summaries --stale`
 # re-runs matters summarized by an older version (stamped in meta.summary_version).
@@ -45,10 +45,10 @@ STATUSES = ["Active", "Adopted", "Approved", "Defeated", "Withdrawn", "Completed
 
 SYSTEM = f"""You explain city council matters to residents of a small Canadian city.
 For each matter you get its raw title and its history (agenda items, oldest first), each with its "record" (motion
-wording and results, staff report excerpts, the video transcript of its discussion) and its "notes".
+wording and results, staff report text, the video transcript of its discussion) and its "notes".
 """ + RECORD_RULE + f"""
 The agenda title is record too: it says what the item was (a public hearing, a staff report, a bylaw's readings).
-The report excerpts are the best source for what the matter actually is; use them. Be specific wherever the record is:
+The report text is the best source for what the matter actually is; use it. Be specific wherever the record is:
 the number of homes or lots, the amounts, the names, what exactly was approved. Text that stays vague when the record
 gives the details is as unhelpful as text that gets them wrong.
 Return for each matter:
@@ -105,10 +105,6 @@ class MatterSummaries(BaseModel):
     matters: list[MatterSummary]
 
 
-MAX_HISTORY = 12
-REPORT_TEXT_CAP = 12000  # characters of an item's report text given as record
-SECTION_CAP = 1500
-TRANSCRIPTS_PER_MATTER = 12000  # characters of video transcript per matter, newest discussed items first
 KEY_SECTION = re.compile(r"purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial", re.I)
 
 
@@ -123,37 +119,41 @@ def _paginate(query_fn, page: int = 1000) -> list[dict]:
         start += page
 
 
+LOAD_CHUNK = 32  # matters whose records are loaded at once (then packed into requests by size)
+
+
+def _in_chunks(build, ids: list[int], size: int = 200) -> list[dict]:
+    """Every row of ``build(chunk)`` for the ids in chunks (long id lists overflow a request URL), all pages."""
+    rows: list[dict] = []
+    for start in range(0, len(ids), size):
+        chunk = ids[start : start + size]
+        rows.extend(_paginate(lambda: build(chunk)))
+    return rows
+
+
 def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
-    matters = (
-        supabase.table("matters")
-        .select("id, municipality_id, title, identifier, category, status, meta")
-        .in_("id", matter_ids)
-        .execute()
-        .data
-        or []
-    )
+    """Each matter's whole history and its accepted mentions, with every record in full: motion wording, report text,
+    the video transcript of each discussed item. Nothing is cut to fit; ``refresh_matter_summaries`` packs matters into
+    requests by size instead (pipeline.ai.budget)."""
+    matters = _in_chunks(lambda ids: supabase.table("matters").select("id, municipality_id, title, identifier, category, status, meta")
+                         .in_("id", ids).order("id"), matter_ids)
     # Merged duplicates (aliases) keep their agenda items; read them as the canonical's history.
     owner = {m["id"]: m["id"] for m in matters}
     for m in matters:
         for alias_id in (m.get("meta") or {}).get("merged_matter_ids") or []:
             owner[int(alias_id)] = m["id"]
-    items = (
-        supabase.table("agenda_items")
-        .select("id, matter_id, meeting_id, title, description, plain_english_summary, debate_summary, discussion_start_time, "
-                "discussion_end_time, meetings(meeting_date, type)")
-        .in_("matter_id", list(owner))
-        .execute()
-        .data
-        or []
-    )
+    items = _in_chunks(lambda ids: supabase.table("agenda_items")
+                       .select("id, matter_id, meeting_id, title, description, plain_english_summary, debate_summary, "
+                               "discussion_start_time, discussion_end_time, meetings(meeting_date, type)")
+                       .in_("matter_id", ids).order("id"), list(owner))
     for item in items:
         item["matter_id"] = owner.get(item["matter_id"], item["matter_id"])
-    links = supabase.table("matter_links").select("matter_id,agenda_item_id").in_("matter_id", list(owner)) \
-        .eq("kind", "mention").eq("hidden", False).execute().data or []
+    links = _in_chunks(lambda ids: supabase.table("matter_links").select("id,matter_id,agenda_item_id").in_("matter_id", ids)
+                       .eq("kind", "mention").eq("hidden", False).order("id"), list(owner))
     mention_ids = sorted({link["agenda_item_id"] for link in links if link.get("agenda_item_id")})
-    mention_items = (supabase.table("agenda_items")
-                     .select("id,matter_id,title,plain_english_summary,meetings!inner(meeting_date,municipality_id)")
-                     .in_("id", mention_ids).execute().data or []) if mention_ids else []
+    mention_items = _in_chunks(lambda ids: supabase.table("agenda_items")
+                               .select("id,matter_id,title,plain_english_summary,meetings!inner(meeting_date,municipality_id)")
+                               .in_("id", ids).order("id"), mention_ids) if mention_ids else []
     mentions_by_matter = {}
     matter_by_id = {m["id"]: m for m in matters}
     item_by_id = {item["id"]: item for item in mention_items}
@@ -168,44 +168,24 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
             continue
         mentions_by_matter.setdefault(mid, []).append({
             "item": item["id"], "date": meeting.get("meeting_date"), "agenda_item": item["title"],
-            "notes": {"summary": (item.get("plain_english_summary") or "")[:400]}, "source": "accepted mention",
+            "notes": {"summary": item.get("plain_english_summary") or ""}, "source": "accepted mention",
         })
     item_ids = [i["id"] for i in items]
-    motions = (
-        supabase.table("motions")
-        .select("agenda_item_id, plain_english_summary, text_content, result")
-        .in_("agenda_item_id", item_ids)
-        .execute()
-        .data
-        or []
-    ) if item_ids else []
-    docs = (
-        supabase.table("extracted_documents")
-        .select("agenda_item_id, title, document_type, summary, key_facts")
-        .in_("agenda_item_id", item_ids)
-        .execute()
-        .data
-        or []
-    ) if item_ids else []
+    motions = _in_chunks(lambda ids: supabase.table("motions").select("id, agenda_item_id, plain_english_summary, text_content, result")
+                         .in_("agenda_item_id", ids).order("id"), item_ids) if item_ids else []
+    docs = _in_chunks(lambda ids: supabase.table("extracted_documents").select("id, agenda_item_id, title, document_type, summary, key_facts")
+                      .in_("agenda_item_id", ids).order("id"), item_ids) if item_ids else []
     # The substance of a staff report lives in its sections; the extracted summary and key facts are notes (often
-    # vague, sometimes wrong), so the report's own text goes in as record: the key sections first (purpose,
-    # proposal, recommendation...), then the rest, up to REPORT_TEXT_CAP characters per item.
-    sections = _paginate(lambda: (
-        supabase.table("document_sections")
-        .select("agenda_item_id, section_title, section_text, section_order")
-        .in_("agenda_item_id", item_ids)
-        .order("agenda_item_id").order("section_order")
-    )) if item_ids else []
+    # vague, sometimes wrong), so the report's own text goes in as record, whole, its key sections first.
+    sections = _in_chunks(lambda ids: supabase.table("document_sections")
+                          .select("id, agenda_item_id, section_title, section_text, section_order")
+                          .in_("agenda_item_id", ids).order("agenda_item_id").order("section_order").order("id"), item_ids) if item_ids else []
     excerpts_by_item: dict[int, list[str]] = {}
-    used: dict[int, int] = {}
     for sec in sorted(sections, key=lambda x: not KEY_SECTION.search((x.get("section_title") or ""))):
         text = re.sub(r"\s+", " ", re.sub(r"[#|*]", " ", sec.get("section_text") or "")).strip()
-        room = REPORT_TEXT_CAP - used.get(sec["agenda_item_id"], 0)
-        if not text or room < 200:
-            continue
-        piece = text[: min(SECTION_CAP, room)]
-        used[sec["agenda_item_id"]] = used.get(sec["agenda_item_id"], 0) + len(piece)
-        excerpts_by_item.setdefault(sec["agenda_item_id"], []).append(piece)
+        if text:
+            excerpts_by_item.setdefault(sec["agenda_item_id"], []).append(
+                f"{sec['section_title']}: {text}" if sec.get("section_title") else text)
     docs_by_item: dict[int, list[dict]] = {}
     # Staff reports first; drawings, schedules and forms add little.
     rank = lambda d: 0 if "report" in (d.get("document_type") or "").lower() or "report" in (d.get("title") or "").lower() else 1
@@ -215,17 +195,9 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
     for m in motions:
         motions_by_item.setdefault(m["agenda_item_id"], []).append(m)
 
-    # The video is the original for what was said: each discussed item's transcript goes in as record, so a fact
-    # from its debate summary (a note) can be confirmed (newest items first, up to TRANSCRIPTS_PER_MATTER characters).
-    talked = sorted((i for i in items if i.get("debate_summary")), key=lambda i: (i.get("meetings") or {}).get("meeting_date") or "",
-                    reverse=True)
-    budget: dict[int, int] = {}
-    wanted = []
-    for item in talked:
-        if budget.get(item["matter_id"], 0) < TRANSCRIPTS_PER_MATTER:
-            budget[item["matter_id"]] = budget.get(item["matter_id"], 0) + TRANSCRIPT_CAP
-            wanted.append(item)
-    transcripts = item_transcripts(supabase, wanted)
+    # The video is the original for what was said: every item discussed on video brings its transcript as record, so a
+    # fact from its debate summary (a note) can be confirmed.
+    transcripts = item_transcripts(supabase, [i for i in items if i.get("discussion_start_time") is not None])
 
     out = []
     for matter in matters:
@@ -243,21 +215,18 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                     "agenda_item": item.get("title"),
                     # The City's own text (see record_sources.RECORD_RULE).
                     "record": {k: v for k, v in {
-                        # The recorded wording, whole enough to carry its figures: summaries dropped digits.
-                        "motions": [{"text": (m.get("text_content") or "")[:1200], "result": m.get("result")} for m in mine],
-                        "report_excerpts": excerpts_by_item.get(item["id"], []),
+                        "motions": [{"text": m.get("text_content") or "", "result": m.get("result")} for m in mine],
+                        "report_text": excerpts_by_item.get(item["id"], []),
                         "video_transcript": transcripts.get(item["id"]),
                     }.items() if v},
                     # What a model wrote about it earlier: for orientation, never the source of a fact.
                     "notes": {k: v for k, v in {
-                        "summary": (item.get("plain_english_summary") or "")[:400],
-                        "description": (item.get("description") or "")[:400],
-                        "video_summary": (item.get("debate_summary") or "")[:300],
+                        "summary": item.get("plain_english_summary") or "",
+                        "description": item.get("description") or "",
+                        "video_summary": item.get("debate_summary") or "",
                         "motion_summaries": [m["plain_english_summary"] for m in mine if m.get("plain_english_summary")],
-                        "reports": [
-                            {"title": d.get("title"), "summary": (d.get("summary") or "")[:500], "key_facts": (d.get("key_facts") or [])[:10]}
-                            for d in docs_by_item.get(item["id"], [])[:3]
-                        ],
+                        "reports": [{"title": d.get("title"), "summary": d.get("summary") or "", "key_facts": d.get("key_facts") or []}
+                                    for d in docs_by_item.get(item["id"], [])],
                     }.items() if v},
                 }
             )
@@ -267,9 +236,9 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                 "id": matter["id"],
                 "title": matter["title"],
                 "identifier": matter.get("identifier"),
-                "history": history[-MAX_HISTORY:],
-                "mentions": sorted(mentions_by_matter.get(matter["id"], []), key=lambda row: row["date"] or "")[-MAX_HISTORY:],
-                **({"editor_notes": notes} if (notes := [n for n in ((matter.get("meta") or {}).get("editor_notes") or [])[-5:]
+                "history": history,
+                "mentions": sorted(mentions_by_matter.get(matter["id"], []), key=lambda row: row["date"] or ""),
+                **({"editor_notes": notes} if (notes := [n for n in ((matter.get("meta") or {}).get("editor_notes") or [])
                                                           if isinstance(n, str) and n.strip()]) else {}),
                 "_has_mentions": bool(mentions_by_matter.get(matter["id"])),
                 "_owned_item_ids": {item["item"] for item in history},
@@ -418,7 +387,7 @@ def _checked(batch: list[dict], updates: dict[int, dict], *, context_only: bool 
         else:
             left, rewritten = first, False
         update["meta"]["summary_check"] = {"at": now, "problems": len(left), "first_problems": len(first),
-                                           "rewritten": rewritten, **({"unresolved": left[:5]} if left else {})}
+                                           "rewritten": rewritten, **({"unresolved": left} if left else {})}
         out[mid] = update
     return out
 
@@ -441,22 +410,32 @@ def refresh_matter_summaries(
     """
     ids = sorted({int(i) for i in matter_ids})
     results: dict[int, dict] = {}
-    for start in range(0, len(ids), batch_size):
-        batch = _load_context(supabase, ids[start : start + batch_size])
-        if not batch:
-            continue
-        try:
-            updates = _generate(batch, context_only=context_only)
-        except Exception as exc:
-            print(f"  [MatterSummaries] batch {ids[start]}…: {exc}")
-            continue
-        if check and updates:
-            updates = _checked(batch, updates, context_only=context_only)
-        for mid, update in updates.items():
-            results[mid] = update
-            if not dry_run:
-                supabase.table("matters").update(update).eq("id", mid).execute()
-        print(f"  [MatterSummaries] {min(start + batch_size, len(ids))}/{len(ids)}")
+    done = 0
+    for start in range(0, len(ids), LOAD_CHUNK):
+        loaded = _load_context(supabase, ids[start : start + LOAD_CHUNK])
+        # Requests are filled by size, never by cutting a matter's records: up to batch_size matters each, within the
+        # input budget. A matter too large for a request on its own is reported and left as it was.
+        fits = []
+        for matter in loaded:
+            if ai.budget.size(_prompt([matter])) > ai.INPUT_BUDGET_CHARS:
+                print(f"  [MatterSummaries] matter {matter['id']}: TOO LARGE for one request "
+                      f"({ai.budget.size(_prompt([matter])):,} characters of records); not rewritten")
+            else:
+                fits.append(matter)
+        for batch in ai.pack(fits, measure=lambda m: ai.budget.size(_prompt([m])), max_count=batch_size):
+            try:
+                updates = _generate(batch, context_only=context_only)
+            except Exception as exc:
+                print(f"  [MatterSummaries] batch {batch[0]['id']}…: {exc}")
+                continue
+            if check and updates:
+                updates = _checked(batch, updates, context_only=context_only)
+            for mid, update in updates.items():
+                results[mid] = update
+                if not dry_run:
+                    supabase.table("matters").update(update).eq("id", mid).execute()
+        done += len(loaded)
+        print(f"  [MatterSummaries] {done}/{len(ids)}", flush=True)
     return results
 
 
@@ -465,8 +444,9 @@ def check_existing(supabase: Client, matter_ids: Iterable[int], *, batch_size: i
     regenerated (checked again, see refresh_matter_summaries), the rest are stamped as checked."""
     ids = sorted({int(i) for i in matter_ids})
     failing, passed, problems = [], [], {}
-    for start in range(0, len(ids), batch_size):
-        batch = _load_context(supabase, ids[start : start + batch_size])
+    loaded_all = (m for start in range(0, len(ids), LOAD_CHUNK) for m in _load_context(supabase, ids[start : start + LOAD_CHUNK]))
+    fits = [m for m in loaded_all if ai.budget.size(_prompt([m])) <= ai.INPUT_BUDGET_CHARS]
+    for start, batch in enumerate(ai.pack(fits, measure=lambda m: ai.budget.size(_prompt([m])), max_count=batch_size)):
         current = {}
         for m in batch:
             row = supabase.table("matters").select("plain_english_summary, meta").eq("id", m["id"]).single().execute().data
@@ -475,7 +455,7 @@ def check_existing(supabase: Client, matter_ids: Iterable[int], *, batch_size: i
         try:
             found = _check(batch, current)
         except Exception as exc:
-            print(f"  [MatterSummaries] check {ids[start]}…: {exc}")
+            print(f"  [MatterSummaries] check {batch[0]['id']}…: {exc}")
             continue
         for mid, cur in current.items():
             if found.get(mid):
@@ -487,7 +467,7 @@ def check_existing(supabase: Client, matter_ids: Iterable[int], *, batch_size: i
                     meta = {**cur["meta"], "summary_check": {"at": datetime.now(timezone.utc).isoformat(), "problems": 0,
                                                               "first_problems": 0, "rewritten": False}}
                     supabase.table("matters").update({"meta": meta}).eq("id", mid).execute()
-        print(f"  [MatterSummaries] checked {min(start + batch_size, len(ids))}/{len(ids)}: {len(failing)} with problems", flush=True)
+        print(f"  [MatterSummaries] checked {len(failing) + len(passed)}/{len(ids)}: {len(failing)} with problems", flush=True)
     rewritten = {} if dry_run else refresh_matter_summaries(supabase, failing, batch_size=batch_size)
     return {"checked": len(failing) + len(passed), "failing": failing, "problems": problems, "rewritten": len(rewritten)}
 

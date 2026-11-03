@@ -151,7 +151,7 @@ def load_records(supabase: Client, municipality_id: int = 1) -> dict[int, Matter
             {
                 "date": (it.get("meetings") or {}).get("meeting_date"),
                 "title": it.get("title"),
-                "summary": (it.get("plain_english_summary") or "")[:280],
+                "summary": it.get("plain_english_summary") or "",
             }
         )
     for rec in records.values():
@@ -311,10 +311,10 @@ def _describe(label: str, r: MatterRecord) -> str:
     lines = [
         f"{label}: {r.title}",
         f"  identifier: {r.identifier or '-'}",
-        f"  addresses: {', '.join(sorted(r.addresses)[:4]) or '-'}",
+        f"  addresses: {', '.join(sorted(r.addresses)) or '-'}",
         f"  seen: {r.first_seen} to {r.last_seen}",
     ]
-    lines += [f"  {i['date']}: {i['title']} — {i['summary']}" for i in r.items[-4:]]
+    lines += [f"  {i['date']}: {i['title']} — {i['summary']}" for i in r.items]
     return "\n".join(lines)
 
 
@@ -560,16 +560,16 @@ def resolve_incoming(
         [
             f"NEW ITEM ({date or 'date unknown'}): {title}",
             f"  identifier: {identifier or '-'}",
-            f"  addresses: {', '.join(sorted(addresses)[:4]) or '-'}",
-            f"  summary: {(summary or '-')[:400]}",
+            f"  addresses: {', '.join(sorted(addresses)) or '-'}",
+            f"  summary: {summary or '-'}",
         ]
     )
     def describe(c: MatterRecord) -> str:
         bits = [f"m{c.id}: {c.title}", f"identifier: {c.identifier or '-'}",
-                f"addresses: {', '.join(sorted(c.addresses)[:3]) or '-'}", f"active: {c.first_seen} to {c.last_seen}"]
+                f"addresses: {', '.join(sorted(c.addresses)) or '-'}", f"active: {c.first_seen} to {c.last_seen}"]
         where = (c.meta or {}).get("status_line") or c.summary
         if where:
-            bits.append(f"latest: {where[:240]}")
+            bits.append(f"latest: {where}")
         return " | ".join(bits)
 
     listing = "\n".join(describe(c) for c in candidates)
@@ -580,7 +580,7 @@ def resolve_incoming(
         "Separate applications for the same property, different amendments of a parent bylaw, and recurring "
         "items from other years are NOT the same matter. A later reading, adoption, or decision on the same "
         "bylaw or application IS the same matter even if worded differently.",
-        [(f"m{c.id}", c.title[:200]) for c in candidates] + [("new", "None of these; it is a new matter.")],
+        [(f"m{c.id}", c.title) for c in candidates] + [("new", "None of these; it is a new matter.")],
     )
     try:
         answer = ai.decide(f"{incoming}\n\nEXISTING MATTERS:\n{listing}", [question]).get("matter")

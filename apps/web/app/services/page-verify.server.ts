@@ -13,8 +13,10 @@ import type { PageFlag } from "../lib/page-review-types";
  */
 
 type Claim = { id: string; key: string | null; text: string };
-const RECORD_CAP = 160_000;  // characters of records per page; a big meeting's minutes are the long part
-const DOCUMENT_CAP = 15_000;  // characters of one item's report text
+/** Records are never cut to fit: a model that sees only part of a report flags true figures as unconfirmed. A page whose
+ * records would overflow the review model's context fails openly instead (about 3 million characters, far beyond any
+ * real page). */
+export const RECORD_LIMIT = 3_000_000;
 const KEY_SECTION = /purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial/i;
 
 const VerifySchema = z.object({
@@ -46,65 +48,90 @@ function subjectPattern(title: string): RegExp | null {
 
 /** Records for each item, and which items have any. Older imports often left the minutes and reports unattached
  * to their agenda items; for those, the same meeting's unattached text is searched for the item's subject. */
+/** Every row of a query, page by page (the API returns at most 1,000 at a time). */
+export async function fetchAll<T = any>(build: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: any }>): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await build(from, from + 999);
+    if (error) throw error;
+    rows.push(...(data || []));
+    if (!data || data.length < 1000) return rows;
+  }
+}
+
+/** A topic's own agenda items, including those of topics merged into it. */
+export async function topicItemIds(supabase: SupabaseClient, matterId: number, meta?: Record<string, any> | null): Promise<number[]> {
+  const merged = ((meta?.merged_matter_ids || []) as number[]).filter(Number.isSafeInteger);
+  const rows = await fetchAll<{ id: number }>((from, to) =>
+    supabase.from("agenda_items").select("id").in("matter_id", [matterId, ...merged]).order("id").range(from, to));
+  return rows.map((r) => r.id);
+}
+
+/** Records for each item, and which items have any. Older imports often left the minutes and reports unattached
+ * to their agenda items; for those, the same meeting's unattached text is searched for the item's subject. Nothing is
+ * cut: motions, report text and minutes go in whole. */
 export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): Promise<{ text: string; covered: Set<number> }> {
   const covered = new Set<number>();
   if (!itemIds.length) return { text: "", covered };
-  const [{ data: items }, { data: motions }, { data: docs }, { data: sections }] = await Promise.all([
-    supabase.from("agenda_items").select("id, meeting_id, title, plain_english_summary, meetings(meeting_date)").in("id", itemIds),
-    supabase.from("motions").select("id, agenda_item_id, text_content, result, mover, seconder, meta, votes(person_id, vote)").in("agenda_item_id", itemIds),
-    supabase.from("extracted_documents").select("agenda_item_id, title, key_facts").in("agenda_item_id", itemIds),
-    supabase.from("document_sections").select("agenda_item_id, section_title, section_text, section_order").in("agenda_item_id", itemIds)
-      .order("section_order").limit(3000),
+  const chunks = Array.from({ length: Math.ceil(itemIds.length / 200) }, (_, i) => itemIds.slice(i * 200, i * 200 + 200));
+  const each = async <T,>(build: (ids: number[], from: number, to: number) => PromiseLike<{ data: T[] | null; error: any }>) =>
+    (await Promise.all(chunks.map((ids) => fetchAll<T>((from, to) => build(ids, from, to))))).flat();
+  const [items, motions, docs, sections] = await Promise.all([
+    each<any>((ids, from, to) => supabase.from("agenda_items").select("id, meeting_id, title, plain_english_summary, meetings(meeting_date)").in("id", ids).order("id").range(from, to)),
+    each<any>((ids, from, to) => supabase.from("motions").select("id, agenda_item_id, text_content, result, mover, seconder, meta, votes(person_id, vote)").in("agenda_item_id", ids).order("id").range(from, to)),
+    each<any>((ids, from, to) => supabase.from("extracted_documents").select("agenda_item_id, title, key_facts").in("agenda_item_id", ids).order("id").range(from, to)),
+    each<any>((ids, from, to) => supabase.from("document_sections").select("id, agenda_item_id, section_title, section_text, section_order").in("agenda_item_id", ids)
+      .order("section_order").order("id").range(from, to)),
   ]);
-  const has = (id: number) => [motions, docs, sections].some((rows) => ((rows || []) as any[]).some((r) => r.agenda_item_id === id));
-  const bare = ((items || []) as any[]).filter((i) => !has(i.id) && i.meeting_id);
+  const has = (id: number) => [motions, docs, sections].some((rows) => rows.some((r) => r.agenda_item_id === id));
+  const bare = items.filter((i) => !has(i.id) && i.meeting_id);
   const loose = new Map<number, string[]>();  // meeting → its unattached minutes/report text
   if (bare.length) {
-    const { data: meetingDocs } = await supabase.from("documents").select("id, meeting_id")
-      .in("meeting_id", [...new Set(bare.map((i) => i.meeting_id))]);
-    const docMeeting = new Map(((meetingDocs || []) as any[]).map((d) => [d.id, d.meeting_id]));
+    const meetingDocs = await fetchAll<any>((from, to) => supabase.from("documents").select("id, meeting_id")
+      .in("meeting_id", [...new Set(bare.map((i) => i.meeting_id))]).order("id").range(from, to));
+    const docMeeting = new Map(meetingDocs.map((d) => [d.id, d.meeting_id]));
     if (docMeeting.size) {
-      const { data: free } = await supabase.from("document_sections").select("document_id, section_text")
-        .in("document_id", [...docMeeting.keys()]).is("agenda_item_id", null).limit(2000);
-      for (const s of (free || []) as any[]) {
+      const free = await fetchAll<any>((from, to) => supabase.from("document_sections").select("document_id, section_text")
+        .in("document_id", [...docMeeting.keys()]).is("agenda_item_id", null).order("section_order").order("id").range(from, to));
+      for (const s of free) {
         const mid = docMeeting.get(s.document_id);
         if (mid && s.section_text) loose.set(mid, [...(loose.get(mid) || []), s.section_text]);
       }
     }
   }
   const out: string[] = [];
-  for (const item of (items || []) as any[]) {
+  for (const item of items) {
     const meeting = Array.isArray(item.meetings) ? item.meetings[0] : item.meetings;
     const lines = [`ITEM ${item.id} (${meeting?.meeting_date ?? "date unknown"}): ${String(item.title || "").split("\n")[0]}`];
-    for (const m of ((motions || []) as any[]).filter((m) => m.agenda_item_id === item.id)) {
+    for (const m of motions.filter((m) => m.agenda_item_id === item.id)) {
       const counts = completeVoteCounts(m);
       const opposed = (m.votes || []).filter((v: any) => v.vote === "No").length;
-      lines.push(`  MOTION: ${String(m.text_content || "").slice(0, 1500)} | RESULT: ${m.result || "not recorded"}` +
+      lines.push(`  MOTION: ${String(m.text_content || "")} | RESULT: ${m.result || "not recorded"}` +
         `${counts ? ` | VOTE ${counts.yes}–${counts.no}` : opposed ? ` | ${opposed} named as opposed (full vote not recorded)` : ""}` +
         `${m.mover ? ` | moved by ${m.mover}` : ""}${m.seconder ? `, seconded by ${m.seconder}` : ""}`);
     }
-    for (const d of ((docs || []) as any[]).filter((d) => d.agenda_item_id === item.id)) {
-      const facts = Array.isArray(d.key_facts) ? d.key_facts.slice(0, 12).join("; ") : "";
+    for (const d of docs.filter((d) => d.agenda_item_id === item.id)) {
+      const facts = Array.isArray(d.key_facts) ? d.key_facts.join("; ") : "";
       // Extracted by a model from the report: a pointer to what the report covers, not the report's words.
       if (facts) lines.push(`  NOTES (model-extracted from report "${d.title}"): ${facts}`);
     }
-    // The report's own text is the record the page's figures are checked against (its extracted key facts are only
-    // notes), so the sections that carry them come first: a staff report's numbers are often in its comments.
-    const text = ((sections || []) as any[]).filter((s) => s.agenda_item_id === item.id)
-      .sort((a, b) => Number(!KEY_SECTION.test(a.section_title || "")) - Number(!KEY_SECTION.test(b.section_title || "")))
+    const text = sections.filter((s) => s.agenda_item_id === item.id)
       .map((s) => `${s.section_title ? `${s.section_title}: ` : ""}${s.section_text || ""}`).join(" ").replace(/\s+/g, " ");
-    if (text) lines.push(`  DOCUMENT TEXT: ${text.slice(0, DOCUMENT_CAP)}`);
+    if (text) lines.push(`  DOCUMENT TEXT: ${text}`);
     const pattern = !has(item.id) ? subjectPattern(item.title) : null;
     if (pattern) {
-      const found = (loose.get(item.meeting_id) || []).map((t) => ({ t, at: t.search(pattern) })).filter((f) => f.at >= 0)
-        .map((f) => f.t.slice(f.at, f.at + 3000).replace(/\s+/g, " ")).slice(0, 3);
-      for (const f of found) lines.push(`  MINUTES OR REPORT TEXT FROM THIS MEETING: ${f}`);
+      // Each unattached minutes or report section of the same meeting that names the item's subject, whole.
+      for (const t of (loose.get(item.meeting_id) || []).filter((t) => pattern.test(t))) {
+        lines.push(`  MINUTES OR REPORT TEXT FROM THIS MEETING: ${t.replace(/\s+/g, " ")}`);
+      }
     }
     if (lines.length > 1) covered.add(item.id);
     else lines.push("  (no minutes, motions or reports found for this item)");
     out.push(lines.join("\n"));
   }
-  return { text: out.join("\n\n").slice(0, RECORD_CAP), covered };
+  const text = out.join("\n\n");
+  if (text.length > RECORD_LIMIT) throw new Error(`The records behind this page are ${text.length.toLocaleString()} characters, more than the review model can read at once.`);
+  return { text, covered };
 }
 
 /** The statements a page makes and the records behind them, for a topic or a meeting page; null for others. */
@@ -115,8 +142,7 @@ export async function claimsAndRecords(supabase: SupabaseClient, path: string): 
     const { data: m } = await supabase.from("matters").select("id, plain_english_summary, meta").eq("slug", topic).maybeSingle();
     if (!m) return null;
     const meta = (m.meta || {}) as Record<string, any>;
-    const { data: own } = await supabase.from("agenda_items").select("id").eq("matter_id", m.id).limit(60);
-    const ids = ((own || []) as any[]).map((i) => i.id);
+    const ids = await topicItemIds(supabase, m.id, meta);
     const claims: Claim[] = [
       ...sentences(m.plain_english_summary || "").map((t, i) => ({ id: `summary-${i}`, key: null, text: `Summary: ${t}` })),
       ...(meta.status_line ? [{ id: "status", key: null, text: `Where it stands: ${meta.status_line}` }] : []),
@@ -132,8 +158,7 @@ export async function claimsAndRecords(supabase: SupabaseClient, path: string): 
   if (meeting) {
     const { data: mt } = await supabase.from("meetings").select("id, meta").eq("slug", meeting).maybeSingle();
     if (!mt) return null;
-    const { data: items } = await supabase.from("agenda_items").select("id, plain_english_summary").eq("meeting_id", mt.id).limit(80);
-    const list = (items || []) as any[];
+    const list = await fetchAll<any>((from, to) => supabase.from("agenda_items").select("id, plain_english_summary").eq("meeting_id", mt.id).order("id").range(from, to));
     const bullets = ((mt.meta as any)?.highlights?.bullets || []) as string[];
     const claims: Claim[] = [
       ...bullets.map((t, i) => ({ id: `highlight-${i}`, key: null, text: `Meeting highlight: ${t}` })),
@@ -178,7 +203,7 @@ ${input.records}`;
       const claim = byId.get(v.id)!;
       return {
         key: claim.key, problem: "unsupported" as const, verdict: null, fix: v.fix,
-        reason: `${v.verdict === "contradicted" ? "Contradicted by the record" : "Not in the record"}: ${v.reason}${v.source ? ` The record says: “${v.source.slice(0, 400)}”` : ""}`,
+        reason: `${v.verdict === "contradicted" ? "Contradicted by the record" : "Not in the record"}: ${v.reason}${v.source ? ` The record says: “${v.source}”` : ""}`,
         excerpt: claim.text,
       };
     });

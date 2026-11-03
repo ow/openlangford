@@ -104,7 +104,7 @@ def _decide_items(attachments: list[Attachment], agenda_items: list[dict]) -> di
     """Titles differ between eSCRIBE and our minutes-derived items; let the Decisions API pick."""
     from pipeline import ai
 
-    choices = [(f"i{r['id']}", (r.get("title") or "")[:200]) for r in agenda_items[:60]] + [("none", "None of these.")]
+    choices = [(f"i{r['id']}", r.get("title") or "") for r in agenda_items] + [("none", "None of these.")]
     jobs = [
         (
             f"eSCRIBE agenda item: {a.item_title}\nAttachment file: {a.filename}",

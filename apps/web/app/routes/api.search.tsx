@@ -251,7 +251,7 @@ export async function loader({ request, context: loaderContext }: Route.LoaderAr
             let followups: string[] = [];
             try {
               if (ai.isConfigured() && fullAnswer.length > 50) {
-                const followupPrompt = `Based on this civic question and answer about a municipal council, suggest 2-3 natural follow-up questions a citizen might ask.\n\nQuestion: ${query}\n\nAnswer summary: ${fullAnswer.slice(0, 500)}`;
+                const followupPrompt = `Based on this civic question and answer about a municipal council, suggest 2-3 natural follow-up questions a citizen might ask.\n\nQuestion: ${query}\n\nAnswer: ${fullAnswer}`;
                 const followupResult = await ai.json({
                   stage: "followups",
                   prompt: followupPrompt,

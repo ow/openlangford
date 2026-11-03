@@ -1058,7 +1058,7 @@ function normalizeTranscriptSources(
     meeting_date: s.meetings?.meeting_date || "Unknown",
     title: (s.text_content || "").slice(0, 120),
     speaker_name: s.speaker_name,
-    content: (s.text_content || "").slice(0, 500),
+    content: s.text_content || "",
   }));
 }
 
@@ -1082,7 +1082,7 @@ function normalizeMotionSources(motions: any[]): NormalizedSource[] {
       meeting_id: meeting?.id || m.meeting_id || 0,
       meeting_date: meeting?.meeting_date || "Unknown",
       title: m.plain_english_summary || (m.text_content || "").slice(0, 120),
-      content: details.slice(0, 500),
+      content: details,
       result: m.result,
     };
   });
@@ -1098,7 +1098,7 @@ function normalizeKeyStatementSources(statements: any[]): NormalizedSource[] {
       meeting_date: meeting?.meeting_date || "Unknown",
       title: `[${s.statement_type}] ${(s.statement_text || "").slice(0, 100)}`,
       speaker_name: s.speaker_name,
-      content: (s.statement_text || "").slice(0, 500),
+      content: s.statement_text || "",
     };
   });
 }
@@ -1114,7 +1114,7 @@ function normalizeVoteSources(votes: Vote[]): NormalizedSource[] {
       title:
         v.motions!.plain_english_summary ||
         (v.motions!.text_content || "").slice(0, 120),
-      content: (v.motions!.text_content || "").slice(0, 500),
+      content: v.motions!.text_content || "",
       result: v.motions!.result,
     }));
 }
@@ -1126,7 +1126,7 @@ function normalizeMatterSources(matters: any[]): NormalizedSource[] {
     meeting_id: 0,
     meeting_date: m.last_seen || m.first_seen || "Unknown",
     title: m.title || (m.plain_english_summary || "").slice(0, 120),
-    content: (m.plain_english_summary || m.title || "").slice(0, 500),
+    content: m.plain_english_summary || m.title || "",
   }));
 }
 
@@ -1201,7 +1201,7 @@ function normalizeDocumentSectionSources(sections: any[]): NormalizedSource[] {
     meeting_id: s.meeting_id || 0,
     meeting_date: s.meeting_date || "Unknown",
     title: `[Doc] ${s.heading || s.document_title || "Document Section"}`,
-    content: (s.content || "").slice(0, 500),
+    content: s.content || "",
   }));
 }
 
@@ -1246,7 +1246,7 @@ function normalizeBylawSources(results: any[]): NormalizedSource[] {
     meeting_id: 0,
     meeting_date: "N/A",
     title: `[Bylaw ${r.bylaw_number || ""}] ${r.bylaw_title || "Bylaw"} — ${(r.text_content || "").slice(0, 80)}`,
-    content: (r.text_content || "").slice(0, 500),
+    content: r.text_content || "",
   }));
 }
 
@@ -1257,7 +1257,7 @@ function normalizeAgendaItemSources(items: any[]): NormalizedSource[] {
     meeting_id: item.meeting_id || 0,
     meeting_date: item.meetings?.meeting_date || "Unknown",
     title: item.plain_english_summary || item.title || "",
-    content: (item.plain_english_summary || item.title || "").slice(0, 500),
+    content: item.plain_english_summary || item.title || "",
   }));
 }
 
@@ -1524,29 +1524,41 @@ function unflattenRerankResults(toolName: string, flat: any[], keptIndices: numb
   return items;
 }
 
-/**
- * Truncate tool result JSON to a reasonable size for the context window.
- * Keeps the first `maxItems` items for arrays, or truncates raw strings.
- */
-function truncateForContext(result: any, maxItems = 15): string {
-  if (typeof result === "string") {
-    return result.slice(0, 2000);
-  }
+/** Characters of one tool result the agent sees per step. Results go in whole; when a search returns more than this,
+ * the agent is told how many it didn't see, so it can search more narrowly instead of reasoning from a silent cut. */
+const OBSERVATION_BUDGET = 200_000;
+
+function toContext(result: any): string {
+  if (typeof result === "string") return result;
+  const fit = (rows: any[]) => {
+    const out: any[] = [];
+    let used = 0;
+    for (const row of rows) {
+      const n = JSON.stringify(row).length;
+      if (out.length && used + n > OBSERVATION_BUDGET) break;
+      out.push(row);
+      used += n;
+    }
+    return out;
+  };
+  const note = (shown: number, total: number) =>
+    shown < total ? `\n(${total - shown} more results not shown here; search more narrowly to see them.)` : "";
   if (Array.isArray(result)) {
-    const sliced = result.slice(0, maxItems);
-    return JSON.stringify(sliced, null, 0);
+    const shown = fit(result);
+    return JSON.stringify(shown) + note(shown.length, result.length);
   }
   if (typeof result === "object" && result !== null) {
-    // For voting history objects, truncate inner arrays
-    const truncated: any = {};
+    const out: any = {};
+    const notes: string[] = [];
     for (const [key, value] of Object.entries(result)) {
       if (Array.isArray(value)) {
-        truncated[key] = (value as any[]).slice(0, maxItems);
+        out[key] = fit(value as any[]);
+        if (out[key].length < (value as any[]).length) notes.push(`${(value as any[]).length - out[key].length} more ${key}`);
       } else {
-        truncated[key] = value;
+        out[key] = value;
       }
     }
-    return JSON.stringify(truncated, null, 0);
+    return JSON.stringify(out) + (notes.length ? `\n(${notes.join(", ")} not shown here; search more narrowly to see them.)` : "");
   }
   return String(result);
 }
@@ -1657,7 +1669,7 @@ ${history.join("\n\n") || "(none)"}`;
     }
 
     // Build a concise but complete context string for the orchestrator
-    const contextStr = truncateForContext(finalResult);
+    const contextStr = toContext(finalResult);
     const observation = `Result from ${tool_name}(${JSON.stringify(tool_args)}):\n${contextStr}`;
     history.push(observation);
 

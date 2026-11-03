@@ -21,8 +21,6 @@ from pydantic import BaseModel, Field
 
 from pipeline.paths import BASE_DIR
 
-MINUTES_CAP = 60_000
-AGENDA_CAP = 14_000
 
 
 class _Sub(BaseModel):
@@ -106,8 +104,8 @@ def sources(archive_path: str) -> tuple[str, str]:
     folder = Path(BASE_DIR) / archive_path
     read = lambda name: (folder / name).read_text(errors="ignore") if (folder / name).exists() else ""
     agenda = read("agenda.md")
-    agenda = agenda.split("\n---\n", 1)[0][:AGENDA_CAP]
-    return read("minutes.md")[:MINUTES_CAP], agenda
+    agenda = agenda.split("\n---\n", 1)[0]
+    return read("minutes.md"), agenda  # whole: the model reads every heading and motion
 
 
 def check_plan(subs: list[dict], headings: dict[str, dict], existing: list[dict], minutes: str, agenda: str,
@@ -183,7 +181,7 @@ def plan_meeting(cur, meeting_id: int) -> dict[str, Any]:
     minutes, agenda = sources(archive_path)
     result = ai.json(PROMPT.format(
         headings="\n".join(f"{k}. {v['title']}" for k, v in sorted(headings.items(), key=lambda kv: int(kv[0]))),
-        motions="\n".join(f"[{m['id']}] (now under {m['item_order']}) {m['text'][:220]}" for m in motions),
+        motions="\n".join(f"[{m['id']}] (now under {m['item_order']}) {m['text']}" for m in motions),
         minutes=minutes, agenda=agenda), stage="extraction", schema=_Subs)
     subs = [s.model_dump() for s in result.items]
     checked = check_plan(subs, headings, existing, minutes, agenda, motions)

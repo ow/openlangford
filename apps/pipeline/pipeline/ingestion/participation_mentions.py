@@ -29,7 +29,7 @@ def comment_only(title: str | None) -> bool:
 
 
 def speaker_questions(topic: str, summary: str, speakers: list[dict]) -> list[dict]:
-    return [ai.predicate(f"s{i}", f"Is speaker {i}'s comment about this council topic: \"{topic}\" — {summary[:300]}? "
+    return [ai.predicate(f"s{i}", f"Is speaker {i}'s comment about this council topic: \"{topic}\" — {summary}? "
                                   f"Yes only when the comment is about this specific topic (its property, project, bylaw or "
                                   f"decision). A comment on another subject that shares a word, a street or a broad theme "
                                   f"(housing, parking, taxes) is not.")
@@ -57,7 +57,7 @@ def pending(cur, link_ids: list[int] | None = None) -> list[dict]:
 
 def judge(links: list[dict]) -> dict[int, list[int] | None]:
     """Link id -> positions of the speakers about its topic (None when unanswered)."""
-    jobs = [(f"PUBLIC COMMENT at an agenda item \"{(l['title'] or '').splitlines()[0][:160]}\":\n{speakers_text(l['speakers'])}",
+    jobs = [(f"PUBLIC COMMENT at an agenda item \"{' '.join((l['title'] or '').split())}\":\n{speakers_text(l['speakers'])}",
              speaker_questions(l["topic"], l["summary"], l["speakers"])) for l in links]
     out: dict[int, list[int] | None] = {}
     for start in range(0, len(jobs), 100):
@@ -95,7 +95,7 @@ def excerpt_pending(cur) -> list[dict]:
 
 
 def excerpt_question(topic: str, summary: str) -> dict:
-    return ai.predicate("unrelated", f"This council topic is \"{topic}\" — {summary[:300]}. Is this passage about something "
+    return ai.predicate("unrelated", f"This council topic is \"{topic}\" — {summary}. Is this passage about something "
                                      f"unrelated to it, that only shares a facility, organization or place name? Example: a "
                                      f"financial-statement note on transferring a recreation centre's assets, on a topic about "
                                      f"that centre's fee bylaw. Progress, completion, costs or results of the same project, "
@@ -104,8 +104,8 @@ def excerpt_question(topic: str, summary: str) -> dict:
 
 def judge_excerpts(rows: list[dict]) -> list[dict]:
     """The rows to hide."""
-    jobs = [(f"PASSAGE ({'City annual report ' + r['source'] if r['kind'] == 'page' else (r['source'] or '').splitlines()[0][:120]}): "
-             f"{(r['quote'] or '')[:600]}", [excerpt_question(r["topic"], r["summary"])]) for r in rows]
+    jobs = [(f"PASSAGE ({'City annual report ' + r['source'] if r['kind'] == 'page' else  ' '.join((r['source'] or '').split())}): "
+             f"{r['quote'] or ''}", [excerpt_question(r["topic"], r["summary"])]) for r in rows]
     hide = []
     for start in range(0, len(jobs), 100):
         for r, res in zip(rows[start:start + 100], ai.decide_many(jobs[start:start + 100])):

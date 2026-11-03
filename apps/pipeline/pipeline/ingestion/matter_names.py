@@ -208,7 +208,7 @@ def central_name(name: str, m: dict) -> bool:
 
 def _name_batch(batch: list[dict]) -> dict[int, list[str]]:
     listing = "\n\n".join(
-        f"[{m['id']}] {m['title']}\n{m['summary'][:600]}\nAgenda items: " + "; ".join(t for t in m["item_titles"][:8])
+        f"[{m['id']}] {m['title']}\n{m['summary']}\nAgenda items: " + "; ".join(t for t in m["item_titles"])
         for m in batch)
     result = ai.json(PROMPT.format(matters=listing), stage="extraction", schema=_Batch)
     picked = {r.id: r.names for r in result.matters}
@@ -281,13 +281,15 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
     for iid, matter_id, day, title, body in cur.fetchall():
         text = f"{title}. {body}"
         if pat.search(text):
-            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name), "where": "item"}
+            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name),
+                          "context": text, "where": "item"}
     cur.execute(f"""select a.id, a.matter_id, mt.meeting_date, a.title, ds.section_text
                     from document_sections ds join agenda_items a on a.id = ds.agenda_item_id join meetings mt on mt.id = a.meeting_id
                     where {any_variant("ds.text_search")}{meeting_filter}""", [*variants, *extra])
     for iid, matter_id, day, title, text in cur.fetchall():
         if iid not in items and pat.search(text or ""):
-            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name), "where": "document"}
+            items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title, "excerpt": excerpt(text, name),
+                          "context": text, "where": "document"}
     # Spoken mentions (public comment years later often names the place only aloud): a transcript line belongs
     # to the item whose discussion window holds its start time.
     segment_filter = " and t.meeting_id = any(%s)" if meeting_ids else ""
@@ -302,7 +304,7 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
     for iid, matter_id, day, title, text in cur.fetchall():
         if iid not in items and pat.search(text or ""):
             items[iid] = {"id": iid, "matter_id": matter_id, "date": str(day), "title": title,
-                          "excerpt": excerpt(text, name), "spoken": True, "where": "spoken"}
+                          "excerpt": excerpt(text, name), "context": text, "spoken": True, "where": "spoken"}
     from pipeline.ingestion.mention_hygiene import candidate_ok
 
     # A table row, a minutes echo or an omnibus bylaw's legal description is one line of many, not a mention.
@@ -314,12 +316,13 @@ def find_hits(cur, name: str, meeting_ids: list[int] | None = None) -> dict:
                        where {any_variant("p.text_search")}""", variants)
         for report_id, page, year, title, content in cur.fetchall():
             if pat.search(content):
-                pages.append({"report_id": report_id, "page": page, "year": year, "title": title, "excerpt": excerpt(content, name)})
+                pages.append({"report_id": report_id, "page": page, "year": year, "title": title, "excerpt": excerpt(content, name),
+                              "context": content})
     return {"items": list(items.values()), "pages": pages}
 
 
 def _describe(m: dict) -> str:
-    return f"\"{m['title']}\" ({m['first_seen']} to {m['last_seen']}) — {m['summary'][:400]}"
+    return f"\"{m['title']}\" ({m['first_seen']} to {m['last_seen']}) — {m['summary']}"
 
 
 def editor_examples(cur, limit: int = 8) -> str:
@@ -332,8 +335,8 @@ def editor_examples(cur, limit: int = 8) -> str:
     keep = [r for r in rows if r[0] == "accepted"][:limit // 2] + [r for r in rows if r[0] != "accepted"][:limit // 2]
     if not keep:
         return ""
-    lines = [f"- {'BELONGS' if review == 'accepted' else 'DOES NOT BELONG'}: matter \"{matter}\"; item \"{(title or '')[:90]}\""
-             f"{f'; passage: {quote[:160]}' if quote else ''}" for review, matter, title, quote in keep]
+    lines = [f"- {'BELONGS' if review == 'accepted' else 'DOES NOT BELONG'}: matter \"{matter}\"; item \"{title or ''}\""
+             f"{f'; passage: {quote}' if quote else ''}" for review, matter, title, quote in keep]
     return "\n\nAn editor has already decided these, as examples:\n" + "\n".join(lines)
 
 
@@ -631,8 +634,8 @@ def _timeline(cur, matter_id: int, name_links: bool = True) -> str:
                    union select mt.meeting_date, a.title from matter_links l join agenda_items a on a.id = l.agenda_item_id
                    join meetings mt on mt.id = a.meeting_id where l.matter_id = %s and l.kind = 'mention' and not l.hidden
                      and (%s or l.source not in ('name', 'name_mention'))
-                   order by 1 limit 40""", (matter_id, matter_id, name_links))
-    return "\n".join(f"- {d}: {(t or '').splitlines()[0][:120]}" for d, t in cur.fetchall()) or "(nothing yet)"
+                   order by 1""", (matter_id, matter_id, name_links))
+    return "\n".join(f"- {d}: {' '.join((t or '').split())}" for d, t in cur.fetchall()) or "(nothing yet)"
 
 
 def _candidate_line(i: int, c: dict) -> str:
@@ -640,7 +643,9 @@ def _candidate_line(i: int, c: dict) -> str:
         return f"{i}. ANOTHER TOPIC: {c['title']} ({c['date']}). {c['summary']}"
     if c["kind"] == "page":
         return f"{i}. ANNUAL REPORT {c['year']}, page {c['page']}: {c['excerpt']}"
-    return f"{i}. AGENDA ITEM {c['date']}: {(c['title'] or '').splitlines()[0][:140]}. Found {WHERE[c['where']]}: {c['excerpt']}"
+    # The whole text the name was found in (the item's own text, the report section, the spoken line), not the short
+    # quote the page shows, so the judge can tell what the item is actually about.
+    return f"{i}. AGENDA ITEM {c['date']}: {' '.join((c['title'] or '').split())}. Found {WHERE[c['where']]}: {c.get('context') or c['excerpt']}"
 
 
 def judge_story(target: dict, timeline: str, examples: str, candidates: list[dict]) -> list[_Verdict]:
@@ -658,7 +663,12 @@ def judge_story(target: dict, timeline: str, examples: str, candidates: list[dic
 
     by_name = [n for n, c in enumerate(candidates, 1) if c.get("where") != "similar"]
     by_meaning = [n for n, c in enumerate(candidates, 1) if c.get("where") == "similar"]
-    groups = [g[i : i + STORY_CHUNK] for g in (by_name, by_meaning) for i in range(0, len(g), STORY_CHUNK)]
+    # Grouped by size (the candidates' whole texts within the input budget, beside the topic and its timeline), never
+    # by cutting a candidate's text; at most STORY_CHUNK per call, since a long list loses care on the later ones.
+    fixed = ai.budget.size(STORY_PROMPT) + ai.budget.size(_describe(target)) + ai.budget.size(timeline) + ai.budget.size(examples)
+    line = lambda n: ai.budget.size(_candidate_line(n, candidates[n - 1]))
+    groups = [g for part in (by_name, by_meaning) if part
+              for g in ai.pack(part, budget=ai.INPUT_BUDGET_CHARS - fixed, measure=line, max_count=STORY_CHUNK)]
     # Independent calls: run them side by side (each takes ~8s on the reviewer model).
     with ThreadPoolExecutor(max_workers=max(1, len(groups))) as pool:
         return [v for part in pool.map(judge_group, groups) for v in part]
@@ -700,7 +710,7 @@ def similar_items(cur, matter_id: int, exclude: set[int], limit: int = SIMILAR_L
         if iid in exclude or not summary.strip():
             continue
         out.append({"kind": "item", "id": iid, "matter_id": owner, "date": str(day), "title": title,
-                    "excerpt": summary[:320], "where": "similar", "similarity": round(float(sim), 3)})
+                    "excerpt": summary[:320], "context": summary, "where": "similar", "similarity": round(float(sim), 3)})
         if len(out) >= limit:
             break
     return out
@@ -748,9 +758,8 @@ def suggest_links(matter_id: int, *, similar: bool = True, dry_run: bool = False
             pair = (min(matter_id, other["id"]), max(matter_id, other["id"]))
             if pair not in existing["related"] and ("topic", other["id"]) not in seen:
                 seen.add(("topic", other["id"]))
-                candidates.append({"kind": "topic", "id": other["id"], "title": other["title"], "summary": other["summary"][:300],
+                candidates.append({"kind": "topic", "id": other["id"], "title": other["title"], "summary": other["summary"],
                                    "date": str(other["first_seen"] or "")})
-        candidates = candidates[:60]
         if similar:
             taken = {c["id"] for c in candidates if c["kind"] == "item"} | {iid for (mid, iid) in existing["mentions"] if mid == matter_id}
             candidates += similar_items(cur, matter_id, taken)
@@ -824,7 +833,7 @@ def verify_hidden_related(*, dry_run: bool = False, link_ids: list[int] | None =
                                 "(for example its rezoning and later variance permit, or its purchase, repair budget and sale)? "
                                 "Answer no for two different applications, businesses, events or decisions that only share an "
                                 "address, a street, a building, or a kind of request."}
-    jobs = [(f"A: {ta} — {sa[:400]}\n\nB: {tb} — {sb[:400]}", [question]) for _, ta, sa, tb, sb in pairs]
+    jobs = [(f"A: {ta} — {sa}\n\nB: {tb} — {sb}", [question]) for _, ta, sa, tb, sb in pairs]
     drop = []
     for start in range(0, len(jobs), 200):
         for (lid, *_), res in zip(pairs[start : start + 200], ai.decide_many(jobs[start : start + 200])):
@@ -859,13 +868,13 @@ def rejudge(*, matter_ids: list[int] | None = None, limit: int | None = None, dr
         per_matter: dict[int, list[dict]] = defaultdict(list)
         for lid, mid, iid, title, day, quote in cur.fetchall():
             per_matter[mid].append({"kind": "item", "link_id": lid, "id": iid, "title": title, "date": str(day),
-                                    "excerpt": quote[:400], "where": "linked"})
+                                    "excerpt": quote, "where": "linked"})
         cur.execute("""select p.id, p.matter_id, p.report_id, p.page, r.year, coalesce(p.quote, '')
                        from matter_report_mentions p join public_reports r on r.id = p.report_id
                        where not p.hidden and p.source = 'name' and p.review is null and p.suggested_at is null
                          and (%(m)s::bigint[] is null or p.matter_id = any(%(m)s))""", {"m": matter_ids})
         for pid, mid, rid, page, year, quote in cur.fetchall():
-            per_matter[mid].append({"kind": "page", "page_id": pid, "report_id": rid, "page": page, "year": year, "excerpt": quote[:400]})
+            per_matter[mid].append({"kind": "page", "page_id": pid, "report_id": rid, "page": page, "year": year, "excerpt": quote})
         matters = {m["id"]: m for m in load_matters(cur)}
         ids = [mid for mid in sorted(per_matter) if mid in matters][:limit]
         timelines = {mid: _timeline(cur, mid, name_links=False) for mid in ids}

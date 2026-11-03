@@ -38,8 +38,8 @@ TOPICS = [
 RATE_LIMIT_DELAY = 1.0
 
 # Maximum evidence items to include in prompt
-MAX_KEY_STATEMENTS = 15
-MAX_VOTES = 10
+MAX_KEY_STATEMENTS = None  # all of them: the model reads every statement and vote on the topic
+MAX_VOTES = None
 
 
 
@@ -212,9 +212,9 @@ def _build_prompt(person_name: str, topic: str, evidence: dict) -> str:
         votes_text = "\nVoting Record:\n"
         for i, v in enumerate(evidence["votes"], 1):
             date_str = v.get("meeting_date", "unknown date")
-            motion_preview = (v.get("motion_text", "") or "")[:150]
+            motion_preview = v.get("motion_text", "") or ""
             votes_text += (
-                f"  {i}. [{date_str}] Voted {v['vote']} on: \"{motion_preview}...\" "
+                f"  {i}. [{date_str}] Voted {v['vote']} on: \"{motion_preview}\" "
                 f"(Result: {v.get('result', 'unknown')})\n"
             )
 

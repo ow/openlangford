@@ -97,11 +97,11 @@ def relink(supabase: Client, *, dry_run: bool = False, limit: int | None = None,
             "item",
             "A document was attached to a council meeting agenda. Which agenda item does it belong to? "
             "Choose 'none' if it is the agenda itself, minutes of this meeting, or fits no item.",
-            [(f"i{it['id']}", f"{it.get('item_order') or ''} {it.get('title') or ''} — {(it.get('plain_english_summary') or '')[:160]}".strip())
-             for it in items[:60]]
+            [(f"i{it['id']}", f"{it.get('item_order') or ''} {it.get('title') or ''} — {it.get('plain_english_summary') or ''}".strip())
+             for it in items]
             + [("none", "Not about any single agenda item.")],
         )
-        jobs.append((f"DOCUMENT: {d['title']} ({d.get('document_type')})\n{(d.get('summary') or '')[:800]}", [question]))
+        jobs.append((f"DOCUMENT: {d['title']} ({d.get('document_type')})\n{d.get('summary') or ''}", [question]))
         job_docs.append(d)
 
     linked = skipped = failed = 0

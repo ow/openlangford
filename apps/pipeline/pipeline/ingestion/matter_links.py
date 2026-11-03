@@ -159,7 +159,7 @@ def link_mentions(
     def item_text(it: dict) -> str:
         # Public comment summarized per speaker says far more than the one-line item summary.
         speakers = ((it.get("meta") or {}).get("participation") or {}).get("speakers") or []
-        lines = [f"- {sp.get('topic')}: {sp.get('point')}" for sp in speakers[:20]]
+        lines = [f"- {sp.get('topic')}: {sp.get('point')}" for sp in speakers]
         return f"{it['title']}. {it['plain_english_summary']}" + ("\nSpeakers:\n" + "\n".join(lines) if lines else "")
 
     # Mixed items cover several topics, so one embedding averages them away. Embed the item and
@@ -168,7 +168,7 @@ def link_mentions(
     for idx, it in enumerate(items):
         texts.append(f"{it['title']}. {it['plain_english_summary']}")
         owner.append(idx)
-        for sp in (((it.get("meta") or {}).get("participation") or {}).get("speakers") or [])[:20]:
+        for sp in (((it.get("meta") or {}).get("participation") or {}).get("speakers") or []):
             texts.append(f"{sp.get('topic')}: {sp.get('point')}")
             owner.append(idx)
     part_sims = _embed(texts) @ vecs.T
@@ -189,7 +189,7 @@ def link_mentions(
                 "instructions": f"Is this agenda item part of the story of this matter — it discusses it, proposes or "
                                 f"asks for it (e.g. a notice of motion that led to it), presents on it, or carries public "
                                 f"comment about it: \"{(matters[j].get('meta') or {}).get('display_title') or matters[j]['title']}\" — "
-                                f"{(matters[j].get('plain_english_summary') or '')[:300]}? Sharing only a broad topic "
+                                f"{matters[j].get('plain_english_summary') or ''}? Sharing only a broad topic "
                                 f"(housing, parks, budget) without being about this specific matter is not enough.",
             }
             for j in cands
