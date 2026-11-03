@@ -136,7 +136,7 @@ export function PageReviewBar() {
   const revalidator = useRevalidator();
   const lastStatus = useRef<string | null | undefined>(undefined);
   useEffect(() => {
-    if (lastStatus.current === "fixing" && review?.status && review.status !== "fixing") revalidator.revalidate();
+    if (lastStatus.current === "fixing" && review?.status && review.status !== "fixing") { revalidator.revalidate(); setOpen(true); }
     lastStatus.current = review?.status;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [review?.status]);
@@ -206,7 +206,7 @@ export function PageReviewBar() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-40 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
-      {(open || review?.status === "fixed") && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
+      {open && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
         <div ref={panel} className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-dashed border-amber-400 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
