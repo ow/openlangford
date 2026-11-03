@@ -250,7 +250,10 @@ export function PageReviewBar() {
                         title={open_ > 0 ? `The agent couldn't finish ${open_} ${open_ === 1 ? "flag" : "flags"}; they're set aside as handled` : undefined}
                         className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-60">
                         {spinner("reviewed")}{open_ > 0 ? `Looks good, set aside the ${open_} left` : "Looks good"}</button>
-                      <button type="button" disabled={busy} onClick={() => submit("needs_work")}
+                      {/* With something still agreed and unfixed, run the agent again; with nothing, rerunning would do
+                          nothing, so ask what's still wrong (that becomes the agent's next job). */}
+                      <button type="button" disabled={busy}
+                        onClick={() => (agreed > 0 ? submit("needs_work") : (setShowCheck(true), setNote(""), setEditing(-1)))}
                         className="rounded-md px-2.5 py-1 font-medium text-amber-800 hover:bg-amber-100">{spinner("needs_work")}Still needs work</button>
                     </div>
                   )}
@@ -283,7 +286,7 @@ export function PageReviewBar() {
                     className="w-full rounded-lg border border-zinc-200 bg-transparent p-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-500" />
                   <div className="mt-1 flex gap-2 text-xs">
                     <button type="submit" disabled={busy || !note.trim()} className="rounded-md bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-50">Add issue</button>
-                    <span className="self-center text-zinc-500">then press Needs work to send it to the agent</span>
+                    <span className="self-center text-zinc-500">then press Fix (or Still needs work) to send it to the agent</span>
                     <button type="button" onClick={() => setEditing(null)} className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Cancel</button>
                   </div>
                 </form>
