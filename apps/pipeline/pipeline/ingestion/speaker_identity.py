@@ -72,7 +72,7 @@ TITLE = (
     r"mayor|chair(?:person|man|woman)?|director|manager|chief|mr|mrs|ms|miss|dr|madam|commissioner|trustee)\.?"
 )
 WORD = r"[A-Za-z][A-Za-z'\-]+"
-WEIGHTS = {"called": 1.0, "introduced": 2.0, "chair": 1.0, "moved": 1.0, "seconded": 0.5, "role": 1.0, "presented": 1.0,
+WEIGHTS = {"called": 1.0, "introduced": 2.0, "sworn": 2.0, "chair": 1.0, "moved": 1.0, "seconded": 0.5, "role": 1.0, "presented": 1.0,
            "voice": 3.0}
 # Presenter evidence: the agenda item names who presents it; the label doing most of the talking during the item is them.
 PRESENTER_MIN_SECONDS = 45.0
@@ -382,34 +382,63 @@ INTRO_RE = re.compile(
 )
 
 
+def _spoken_person(n1: str, n2: str | None, titled: bool, index: NameIndex) -> Candidate | None:
+    """The one candidate a spoken "<first> <surname>" (or titled surname) names: the surname must match (exactly, or
+    >= 0.8 similar for ASR spelling), and a spoken first name must agree with the registry's first name or initial."""
+    if not n1[0].isupper():
+        return None
+    words = [_norm(n1)] + ([_norm(n2)] if n2 and n2[0].isupper() else [])
+    surname = words[-1]
+    given = words[0] if len(words) == 2 else None
+    if not given and not titled:
+        return None  # "I'm Wagner" without a first name or title is too thin
+    best = []
+    for c in index.candidates:
+        r = 1.0 if surname == c.surname else SequenceMatcher(None, surname, c.surname).ratio()
+        if r < 0.8:
+            continue
+        if given and not (c.first == given or (not c.first and c.initial == given[:1])
+                          or (c.first and SequenceMatcher(None, given, c.first).ratio() >= 0.8)):
+            continue
+        best.append((r, c.on_roster, c))
+    best.sort(key=lambda x: (-x[0], not x[1]))
+    if not best or (len(best) > 1 and best[0][:2] == best[1][:2]):
+        return None
+    return best[0][2]
+
+
 def self_introduction(text: str, index: NameIndex) -> tuple[Candidate, str] | None:
-    """"My name is Marie Watmough" near the start of a turn: the surname must match
-    (exactly, or >= 0.8 similar for ASR spelling), and a spoken first name must
-    agree with the registry's first name or initial."""
+    """"My name is Marie Watmough" near the start of a turn."""
     head = " ".join(text.split()[:40])
     for m in INTRO_RE.finditer(head):
-        n1, n2 = m.group("n1"), m.group("n2")
-        if not n1[0].isupper():
-            continue
-        words = [_norm(n1)] + ([_norm(n2)] if n2 and n2[0].isupper() else [])
-        surname = words[-1]
-        given = words[0] if len(words) == 2 else None
-        if not given and not m.group("title"):
-            continue  # "I'm Wagner" without a first name or title is too thin
-        best = []
-        for c in index.candidates:
-            r = 1.0 if surname == c.surname else SequenceMatcher(None, surname, c.surname).ratio()
-            if r < 0.8:
-                continue
-            if given and not (c.first == given or (not c.first and c.initial == given[:1])
-                              or (c.first and SequenceMatcher(None, given, c.first).ratio() >= 0.8)):
-                continue
-            best.append((r, c.on_roster, c))
-        best.sort(key=lambda x: (-x[0], not x[1]))
-        if not best or (len(best) > 1 and best[0][:2] == best[1][:2]):
-            continue
-        return best[0][2], m.group(0)
+        cand = _spoken_person(m.group("n1"), m.group("n2"), bool(m.group("title")), index)
+        if cand:
+            return cand, m.group(0)
     return None
+
+
+OATH_RE = re.compile(
+    rf"\bI,?\s+(?:do,?\s+)?(?P<n1>{WORD})\s+(?P<n2>{WORD}),?\s+(?:do\s+)?solemnly\s+(?:affirm|swear)", re.I)
+OATH_ECHO_SECONDS = 60.0
+
+
+def oath_evidence(turns: list[Turn], index: NameIndex) -> list[tuple[str, Candidate, Turn, str]]:
+    """An oath of office read line by line: the officer says "I, Lisa Foxall, do solemnly affirm" and the member
+    repeats it. The label that repeats a named oath line another label said just before is that member. A line only
+    one label says is not used: it may be the officer's prompt with the member's echo merged into it."""
+    said = []  # (turn, candidate, quote)
+    for turn in turns:
+        for m in OATH_RE.finditer(turn.text or ""):
+            cand = _spoken_person(m.group("n1"), m.group("n2"), False, index)
+            if cand:
+                said.append((turn, cand, m.group(0)))
+    out = []
+    for i, (turn, cand, quote) in enumerate(said):
+        # Measured from the end of the officer's turn: a turn can hold several minutes of oath lines.
+        if any(c.id == cand.id and t.label != turn.label and t.start <= turn.start and turn.start - t.end <= OATH_ECHO_SECONDS
+               for t, c, _ in said[:i]):
+            out.append((turn.label, cand, turn, quote))
+    return out
 
 
 CHAIR_ACT_RE = re.compile(
@@ -559,6 +588,8 @@ def text_evidence(turns: list[Turn], index: NameIndex, chair: Candidate | None,
                 add(turn.label, "chair", chair, turn, act.group(0))
             if prev and prev.label != turn.label and CHAIR_THANKS_RE.search(turn.text) and len(prev.text.split()) >= 2:
                 add(prev.label, "chair", chair, prev, turn.text[:60])
+    for label, cand, turn, quote in oath_evidence(turns, index):
+        add(label, "sworn", cand, turn, quote)
     for label, kind, cand, turn, quote in motion_evidence(turns, motions or [], index):
         add(label, kind, cand, turn, quote)
     for label, kind, cand, turn, quote, until in presenter_evidence(turns, items or [], index, roles or {}):
@@ -654,7 +685,7 @@ def decide(events: list[dict], voice: dict | None, roster: set[int], ignore: fro
         if top < MIN_SCORE:
             return None
         # One kind of text evidence alone must repeat (two calls, two thanks...).
-        if len(k) == 1 and not (k.get("introduced") or k.get("voice")) and sum(k.values()) < 2:
+        if len(k) == 1 and not (k.get("introduced") or k.get("sworn") or k.get("voice")) and sum(k.values()) < 2:
             return None
         # Opening the meeting / calling votes is also what a clerk or acting chair does.
         if set(k) == {"chair"} and k["chair"] < 3:

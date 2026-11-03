@@ -50,6 +50,7 @@ describe.skipIf(!container)("Postgres attendance aggregation parity and transfer
       GRANT SELECT ON ALL TABLES IN SCHEMA public TO service_role;`);
     const migration = readFileSync(new URL("../../../../supabase/migrations/20261021041012_47_17_council_attendance_summaries.sql", import.meta.url), "utf8");
     sql(migration); sql(migration); // Applying the additive definition twice is safe.
+    sql(readFileSync(new URL("../../../../supabase/migrations/20261103210000_attendance_video_evidence.sql", import.meta.url), "utf8"));
     const old = add("2016-01-01"), gap = add("2022-05-01"), start = add("2022-11-07"), current = add("2026-01-01"), missing = add("2026-02-01");
     add("2026-03-01", { status: "Cancelled" }); add("2026-03-02", { status: "cAnCeLeD" }); add("2026-11-02");
     add("2026-04-01", { has_minutes: false }); add("2026-04-02", { organization_id: 20, municipality_id: 2 });
@@ -92,6 +93,11 @@ describe.skipIf(!container)("Postgres attendance aggregation parity and transfer
       ...["1", 0, 1.5, null].map(source_page => evidence(1, 1, "2026-01-01", "present", { source_page })),
       ...["", "\u00a0\ufeff\t", "\u0000", "\\u0000", "\ud800\udc00", 4].map(source_quote => evidence(1, 1, "2026-01-01", "present", { source_quote })),
       evidence(1, 1, "2026-01-01", "present", { source_url: ["https://langford.ca/source"], source_sha256: [["a".repeat(64)]] }),
+      // A member's own oath on the video (no minutes): presence only, pinned to a transcript line and second.
+      ...[{}, { state: "absent" }, { source_seconds: 1.5 }, { source_seconds: -1 }, { source_seconds: "1433" }, { transcript_segment_id: 0 },
+        { transcript_segment_id: null }, { source_quote: " " }, { local_date: "2026-01-02" }]
+        .map(extra => evidence(1, 1, "2026-01-01", "present", { method: "video_self_identification", source_sha256: undefined,
+          source_page: undefined, transcript_segment_id: 202500, source_seconds: 1433, source_quote: "I, Lisa Foxall, do solemnly affirm that.", ...extra })),
     ];
     const cases = notes.flatMap(note => ["In Person", "Absent", "Regrets", "Remote", "Unknown"].map(mode => ({ note, mode })));
     const query = cases.map((c, i) => `SELECT ${i} AS n,s.* FROM _council_attendance_state(${literal(c.note)},${literal(c.mode)},1,1,'2026-01-01') s`).join(" UNION ALL ");

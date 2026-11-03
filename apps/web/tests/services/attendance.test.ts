@@ -35,6 +35,17 @@ describe("council attendance evidence", () => {
     expect(calculateAttendance(person, [meeting(1)], [arrival], 1)).toMatchObject({ attended: 1, absent: 0, unknown: 0 });
   });
 
+  it("accepts a member's own oath on the video as presence, never as an absence", () => {
+    // 2026-11-02: the inaugural meeting has no minutes; each member said "I, <name>, do solemnly affirm" on camera.
+    const oath = (state: string, extra = {}) => ({ ...record(1), notes: JSON.stringify({ schema: "council-attendance/v1",
+      method: "video_self_identification", state, person_id: 143, meeting_id: 1, local_date: "2019-01-21",
+      source_url: "https://openlangford.ca/meetings/x#transcript=5", transcript_segment_id: 5, source_seconds: 1433,
+      source_quote: "I Stew Young do solemnly affirm that.", ...extra }) });
+    expect(calculateAttendance(person, [meeting(1)], [oath("present")], 1)).toMatchObject({ attended: 1, unknown: 0, verified: 1 });
+    expect(calculateAttendance(person, [meeting(1)], [oath("absent")], 1)).toMatchObject({ attended: 0, absent: 0, unknown: 1 });
+    expect(calculateAttendance(person, [meeting(1)], [oath("present", { source_seconds: undefined })], 1)).toMatchObject({ unknown: 1 });
+  });
+
   it("keeps partial, conflicting, wrong-date and wrong-person evidence unresolved", () => {
     const wrongDate = record(3, "present");
     wrongDate.notes = wrongDate.notes!.replace("2019-01-21", "2019-02-04");

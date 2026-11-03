@@ -12,18 +12,27 @@ export interface AttendanceSummary {
   recorded: number;
 }
 
+/** A member saying their own name on the meeting video (the oath of office at an inaugural meeting with no minutes):
+ * presence only, pinned to the transcript line. */
+function videoSelfIdentification(evidence: any) {
+  return evidence.method === "video_self_identification" && evidence.state === "present" &&
+    Number.isInteger(evidence.transcript_segment_id) && evidence.transcript_segment_id >= 1 &&
+    Number.isInteger(evidence.source_seconds) && evidence.source_seconds >= 0;
+}
+
 /** Legacy AI attendee lists and default modes do not establish attendance. */
 export function attendanceEvidence(record: Pick<Attendance, "notes" | "meeting_id" | "person_id">) {
   try {
     const evidence = JSON.parse(record.notes || "null");
+    const document = ["original_roster", "original_minutes_attendance"].includes(evidence?.method) &&
+      /^[a-f0-9]{64}$/.test(evidence.source_sha256) &&
+      Number.isInteger(evidence.source_page) && evidence.source_page >= 1;
     if (
       evidence?.schema !== "council-attendance/v1" ||
-      !["original_roster", "original_minutes_attendance"].includes(evidence.method) ||
+      !(document || videoSelfIdentification(evidence)) ||
       !["present", "absent"].includes(evidence.state) ||
       evidence.person_id !== record.person_id || evidence.meeting_id !== record.meeting_id ||
       !/^https:\/\//.test(evidence.source_url) ||
-      !/^[a-f0-9]{64}$/.test(evidence.source_sha256) ||
-      !Number.isInteger(evidence.source_page) || evidence.source_page < 1 ||
       typeof evidence.source_quote !== "string" || !evidence.source_quote.trim()
     ) return null;
     return evidence as { state: "present" | "absent"; source_url: string; local_date: string };

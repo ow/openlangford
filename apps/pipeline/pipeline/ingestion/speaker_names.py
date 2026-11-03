@@ -50,7 +50,7 @@ from pipeline.paths import BASE_DIR
 
 ARCHIVE_BASE = Path(os.environ.get("ARCHIVE_BASE_DIR") or BASE_DIR)
 TRANSCRIPT_EXCLUDED = ("_raw_transcript", "_segments", "_benchmark", "_gemini_speakers")
-TEXT_KINDS = {"called", "introduced", "chair", "moved", "seconded", "role"}
+TEXT_KINDS = {"called", "introduced", "sworn", "chair", "moved", "seconded", "role"}
 # public_speaker_names decisions that withhold a name: an admin chose "Keep anonymous", or has not decided yet.
 WITHHELD_STATUSES = ("anonymous", "review")
 ROLE_MAX_DAYS = 400

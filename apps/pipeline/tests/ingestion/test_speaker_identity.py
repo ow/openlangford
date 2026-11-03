@@ -293,3 +293,17 @@ def test_nobody_is_named_after_their_death():
     assert former_on(people, "2026-09-08") == {35}  # all roles over
     assert former_on(people, "2026-04-07") == set()
     assert former_on(people, "2025-01-01") == set()  # a future councillor and staff without role records: unaffected
+
+
+def test_oath_echo_names_the_member_not_the_officer_reading_it():
+    # 2026-11-02 inaugural meeting: the CAO reads each oath line and the member repeats it.
+    idx = si.NameIndex(si.candidates_from_people([{"id": 353, "name": "Lisa Foxall"}, {"id": 60, "name": "Wendy Hobbs"}]))
+    # The officer's turn can run minutes (the previous oath, a congratulation, this prompt) before the echo.
+    turns = [si.Turn("Speaker_2", 1500.0, 1593.0, "Congratulations. Please raise your right hand and repeat after me. I, Lisa Foxall, do solemnly affirm that."),
+             si.Turn("Speaker_13", 1594.0, 1597.0, "I, Lisa Foxall, do solemnly affirm that."),
+             si.Turn("Speaker_2", 1711.0, 1717.0, "I, Wendy Hobbs, do solemnly affirm that.")]
+    found = si.oath_evidence(turns, idx)
+    assert [(label, cand.id) for label, cand, _, _ in found] == [("Speaker_13", 353)]
+    ev = si.text_evidence(turns, idx, None)
+    assert "sworn" in [e["kind"] for e in ev["Speaker_13"]]
+    assert "sworn" not in [e["kind"] for e in ev.get("Speaker_2", [])]

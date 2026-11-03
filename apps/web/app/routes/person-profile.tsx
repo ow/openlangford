@@ -639,8 +639,14 @@ export default function PersonProfile({ loaderData }: Route.ComponentProps) {
                                   </span>
                                 </td>
                                 <td className="px-5 py-2.5 text-right">
-                                  <Badge variant={tone}>{label}</Badge>
-                                  {evidence && state !== "unknown" && <a href={evidence.source_url} className="ml-2 underline text-xs">Source</a>}
+                                  {/* A verified status links to its source (the minutes page, or the moment on the video). */}
+                                  {evidence && state !== "unknown" ? (
+                                    <a href={evidence.source_url} title="View the source" className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600">
+                                      <Badge variant={tone} className="underline decoration-current/40 underline-offset-2 hover:decoration-current">{label}</Badge>
+                                    </a>
+                                  ) : (
+                                    <Badge variant={tone}>{label}</Badge>
+                                  )}
                                 </td>
                               </tr>
                             );
