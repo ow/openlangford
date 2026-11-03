@@ -80,6 +80,17 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, item: {
 /** A search suggestion's key for the agent: "suggestion-L12" (a meeting item or topic link) or "suggestion-R7" (a report page). */
 const suggestionKey = (s: Suggestion) => `suggestion-${s.table === "matter_links" ? "L" : "R"}${s.id}`;
 
+/** Whether a suggestion the plan names is already on the page: added in this run, or accepted earlier. */
+async function suggestionOnPage(supabase: SupabaseClient, key: string | null | undefined, added: Set<string>) {
+  if (!key) return false;
+  if (added.has(key)) return true;
+  const m = key.match(/^suggestion-([LR])(\d+)$/);
+  if (!m) return false;
+  const { data } = await supabase.from(m[1] === "L" ? "matter_links" : "matter_report_mentions")
+    .select("id").eq("id", Number(m[2])).eq("hidden", false).eq("review", "accepted").maybeSingle();
+  return !!data;
+}
+
 function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
   candidates: Map<string, Candidate[]>, records: string, lookalikes: Candidate[] = [], suggestions: Suggestion[] = [],
   internalNote: string | null = null) {
@@ -173,10 +184,12 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       return finish("needs_work", "Nothing to fix: no flags were rated 👍 and there's no note.");
     }
     const added: { title: string; key: string | null }[] = [];
+    const addedSuggestions = new Set<string>();
     for (const found of agreedFound) {
       try {
         await decideSuggestion(supabase, matterId, found.table, found.id, true, requester.id);
         added.push({ title: found.title, key: found.itemId ? `mention-${found.itemId}` : null });
+        addedSuggestions.add(suggestionKey(found));
       } catch (error) {
         console.error("[page-fix] adding a found entry failed:", error instanceof Error ? error.message : error);
       }
@@ -258,6 +271,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       }
       if (step.action === "accept_suggestion") {
         const found = suggestions.find((x) => suggestionKey(x) === step.key);
+        // The check's fix often names a suggestion staff agreed to, which was added above: nothing left to do.
+        if (!found && await suggestionOnPage(supabase, step.key, addedSuggestions)) continue;
         if (!found || found.kind === "related") left.push(`${step.reason} (that suggestion isn't one the agent can add${found ? "; related topics are added by an editor" : ""})`);
         else {
           try {
