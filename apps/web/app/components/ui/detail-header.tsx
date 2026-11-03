@@ -16,6 +16,8 @@ interface DetailHeaderProps {
   metaAction?: ReactNode;
   /** Right-aligned on desktop, below the title on mobile (source links, follow…). */
   actions?: ReactNode;
+  /** A small line under the facts (where the schedule came from). */
+  note?: ReactNode;
   /** Optional lead paragraph under the title. */
   description?: ReactNode;
   className?: string;
@@ -34,6 +36,7 @@ export function DetailHeader({
   metaAction,
   actions,
   description,
+  note,
   className,
 }: DetailHeaderProps) {
   const items = meta.filter(Boolean);
@@ -95,6 +98,7 @@ export function DetailHeader({
               ))}
             </p>
           )}
+          {note}
           {description && (
             <p className="mt-3 max-w-3xl text-base leading-relaxed text-zinc-600">
               {description}

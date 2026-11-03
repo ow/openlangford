@@ -559,9 +559,8 @@ function MeetingDetailContent({ loaderData }: any) {
               )}
             </>
           }
+          note={<CalendarProvenance meeting={meeting} />}
         />
-
-        <CalendarProvenance meeting={meeting} />
 
         {closedSentence && (
           <p className="mt-1 mb-8 text-sm text-zinc-600">
