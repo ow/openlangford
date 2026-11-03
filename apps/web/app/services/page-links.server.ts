@@ -77,16 +77,8 @@ export async function removeEntry(supabase: SupabaseClient, matterId: number, ke
   }
   // A background entry belongs to a related topic: removing it unlinks that topic (and all its entries) here.
   const owner = await relatedOwner(supabase, matterId, id);
-  if (!owner) {
-    // Its source can't be traced (it reached this page some other way): hide just this entry here.
-    const { data: m } = await supabase.from("matters").select("meta").eq("id", matterId).single();
-    const meta = (m?.meta || {}) as Record<string, any>;
-    const { error } = await supabase.from("matters").update({ meta: { ...meta, hidden_duplicates: {
-      ...(meta.hidden_duplicates || {}), [String(id)]: { reason: "removed from this page", by: userId, at: new Date().toISOString() } } } })
-      .eq("id", matterId);
-    if (error) throw new Error("Could not remove that entry.");
-    return "Removed the entry from this page.";
-  }
+  // Every background entry comes through a related topic; one that can't be traced is a bug to find, not to mask.
+  if (!owner) throw new Error("Could not trace which related topic brings that entry here, so it wasn't removed.");
   const { error } = await supabase.from("matter_links").update({ hidden: true, ...decided(userId, "removed") })
     .eq("kind", "related_matter")
     .or(`and(matter_id.eq.${matterId},related_matter_id.eq.${owner}),and(matter_id.eq.${owner},related_matter_id.eq.${matterId})`);
