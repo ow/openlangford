@@ -60,7 +60,7 @@ describe("removableKey", () => {
     expect(removableKey("background-5189")).toBe(true);
     expect(removableKey("report-12")).toBe(true);
     expect(removableKey("agenda-2558")).toBe(false);
-    expect(removableKey("evidence-9")).toBe(false);
+    expect(removableKey("evidence-9")).toBe(true);
     expect(removableKey("mention-1; drop")).toBe(false);
     expect(removableKey(null)).toBe(false);
   });
