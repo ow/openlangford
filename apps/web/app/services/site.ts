@@ -299,6 +299,19 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
           return { type: "agendaCount" as const, count: res.count };
         })(),
       );
+      // Pledges from a speech at the meeting (agenda_items.meta.commitments), called out on the card.
+      batch2Promises.push(
+        (async () => {
+          const res = await supabase
+            .from("agenda_items")
+            .select("id, title, commitments:meta->commitments")
+            .eq("meeting_id", recentMeeting.id)
+            .not("meta->commitments", "is", null)
+            .limit(1);
+          if (res.error) complete = false;
+          return { type: "commitments" as const, data: res.data };
+        })(),
+      );
     }
 
     const batch2Results = await Promise.all(batch2Promises);
@@ -362,6 +375,18 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         case "agendaCount":
           recentMeetingStats.agendaItems = result.count || 0;
           break;
+
+        case "commitments": {
+          const item = (result.data || [])[0];
+          const count = item?.commitments?.items?.length ?? 0;
+          if (item && count > 0) {
+            const key = (item.commitments.items as any[])
+              .filter((c) => c.key)
+              .map((c) => ({ text: c.short ?? c.text, start_time: c.start_time ?? null }));
+            recentMeeting = { ...recentMeeting, commitments: { itemId: item.id, title: item.title, count, key } };
+          }
+          break;
+        }
       }
     }
   } catch (error) {

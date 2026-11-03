@@ -8,12 +8,14 @@ import {
   CheckCircle2,
   XCircle,
   ArrowRight,
+  Flag,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { SectionHeading } from "../ui/section-heading";
 import { MeetingSummary } from "../meeting/MeetingSummary";
 import { displaySummary, highlightPoints } from "../../lib/meeting-summary";
 import { formatDate } from "../../lib/utils";
+import { displayTitle } from "../../lib/display-text";
 import { normalizeMotionResult } from "../../lib/motion-utils";
 
 interface RecentMeetingSectionProps {
@@ -77,6 +79,32 @@ export function RecentMeetingSection({
             limit={3}
             className="mb-5 text-[15px]"
           />
+        )}
+
+        {/* Pledges from a speech at this meeting get their own call-out (meeting page #commitments). */}
+        {meeting.commitments && (
+          <div className="relative z-10 mb-5 rounded-xl border border-brand-200 bg-brand-50/60 p-4">
+            <p className="mb-2.5 flex items-center gap-2 text-xs font-semibold text-brand-800">
+              <Flag className="h-3.5 w-3.5 text-brand-600" />
+              What the mayor committed to
+            </p>
+            {meeting.commitments.key?.length > 0 && (
+              <ul className="mb-3 grid gap-2 sm:grid-cols-2">
+                {meeting.commitments.key.map((c: { text: string }, i: number) => (
+                  <li key={i} className="rounded-lg bg-surface px-3 py-2 text-sm font-medium leading-snug text-zinc-900 shadow-xs">
+                    {c.text}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link
+              to={meetingPath(meeting, "#commitments")}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-800"
+            >
+              All {meeting.commitments.count} from the {displayTitle(meeting.commitments.title).toLowerCase()}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         )}
 
         {/* Stats Row */}
