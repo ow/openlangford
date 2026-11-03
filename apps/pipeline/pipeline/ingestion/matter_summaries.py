@@ -47,7 +47,10 @@ SYSTEM = f"""You explain city council matters to residents of a small Canadian c
 For each matter you get its raw title and its history (agenda items, oldest first), each with its "record" (motion
 wording and results, staff report excerpts, the video transcript of its discussion) and its "notes".
 """ + RECORD_RULE + f"""
-The report excerpts are the best source for what the matter actually is; use them.
+The agenda title is record too: it says what the item was (a public hearing, a staff report, a bylaw's readings).
+The report excerpts are the best source for what the matter actually is; use them. Be specific wherever the record is:
+the number of homes or lots, the amounts, the names, what exactly was approved. Text that stays vague when the record
+gives the details is as unhelpful as text that gets them wrong.
 Return for each matter:
 - "display_title": a short, plain title (max 8 words) naming the thing itself, e.g. "Solid waste collection bylaw", "854 Latoria Road rezoning". No reading stages, no "(Background report attached)", no years unless essential. Keep a street address when the matter is about a property.
 - "summary": 2-3 sentences, max 60 words, saying what the matter actually is and why it matters to residents. Be concrete and lead with the substance: for a development, what would be built (use, units, storeys, tenure) and where; for a bylaw or program, what changes for residents, what it costs them, and why the city is doing it. No bylaw numbers, no "Council" as the opening word, no jargon. Do not mention readings, approval or status here; that belongs in status_line.
@@ -103,6 +106,8 @@ class MatterSummaries(BaseModel):
 
 
 MAX_HISTORY = 12
+REPORT_TEXT_CAP = 6000  # characters of an item's report text given as record
+SECTION_CAP = 1500
 TRANSCRIPTS_PER_MATTER = 12000  # characters of video transcript per matter, newest discussed items first
 KEY_SECTION = re.compile(r"purpose|executive summary|proposal|commentary|recommendation|summary|background", re.I)
 
@@ -134,7 +139,7 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
             owner[int(alias_id)] = m["id"]
     items = (
         supabase.table("agenda_items")
-        .select("id, matter_id, meeting_id, title, plain_english_summary, debate_summary, discussion_start_time, "
+        .select("id, matter_id, meeting_id, title, description, plain_english_summary, debate_summary, discussion_start_time, "
                 "discussion_end_time, meetings(meeting_date, type)")
         .in_("matter_id", list(owner))
         .execute()
@@ -182,26 +187,25 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
         .data
         or []
     ) if item_ids else []
-    # The substance of a staff report lives in a few sections; the extracted one-line summary
-    # is often vague ("staff report and attachments for ..."), so pass those sections too.
-    sections = (
+    # The substance of a staff report lives in its sections; the extracted summary and key facts are notes (often
+    # vague, sometimes wrong), so the report's own text goes in as record: the key sections first (purpose,
+    # proposal, recommendation...), then the rest, up to REPORT_TEXT_CAP characters per item.
+    sections = _paginate(lambda: (
         supabase.table("document_sections")
         .select("agenda_item_id, section_title, section_text, section_order")
         .in_("agenda_item_id", item_ids)
-        .order("section_order")
-        .execute()
-        .data
-        or []
-    ) if item_ids else []
+        .order("agenda_item_id").order("section_order")
+    )) if item_ids else []
     excerpts_by_item: dict[int, list[str]] = {}
-    for sec in sections:
-        title = (sec.get("section_title") or "").lower()
-        if not KEY_SECTION.search(title):
+    used: dict[int, int] = {}
+    for sec in sorted(sections, key=lambda x: not KEY_SECTION.search((x.get("section_title") or ""))):
+        text = re.sub(r"\s+", " ", re.sub(r"[#|*]", " ", sec.get("section_text") or "")).strip()
+        room = REPORT_TEXT_CAP - used.get(sec["agenda_item_id"], 0)
+        if not text or room < 200:
             continue
-        bucket = excerpts_by_item.setdefault(sec["agenda_item_id"], [])
-        if len(bucket) < 3:
-            text = re.sub(r"\s+", " ", re.sub(r"[#|*]", " ", sec.get("section_text") or "")).strip()
-            bucket.append(text[:700])
+        piece = text[: min(SECTION_CAP, room)]
+        used[sec["agenda_item_id"]] = used.get(sec["agenda_item_id"], 0) + len(piece)
+        excerpts_by_item.setdefault(sec["agenda_item_id"], []).append(piece)
     docs_by_item: dict[int, list[dict]] = {}
     # Staff reports first; drawings, schedules and forms add little.
     rank = lambda d: 0 if "report" in (d.get("document_type") or "").lower() or "report" in (d.get("title") or "").lower() else 1
@@ -247,6 +251,7 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                     # What a model wrote about it earlier: for orientation, never the source of a fact.
                     "notes": {k: v for k, v in {
                         "summary": (item.get("plain_english_summary") or "")[:400],
+                        "description": (item.get("description") or "")[:400],
                         "video_summary": (item.get("debate_summary") or "")[:300],
                         "motion_summaries": [m["plain_english_summary"] for m in mine if m.get("plain_english_summary")],
                         "reports": [
