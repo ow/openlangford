@@ -126,7 +126,8 @@ export function PageReviewBar() {
   // What Fix will do: flags rated 👍 and not fixed yet, plus found entries rated 👍 (added by the agent on Fix).
   const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length + suggestions.filter((x) => x.agreed).length;
   useHighlights(flags, open, review?.status === "fixed" || (stayed && review?.status === "reviewed"));
-  const fixing = review?.status === "fixing";
+  // Fix keeps its request open until the agent is done, so a pending Fix counts as the agent working.
+  const fixing = review?.status === "fixing" || (save.state !== "idle" && save.formData?.get("intent") === "needs_work");
   const agentMode = fixing || review?.status === "fixed";
   // Fix pressed (or the agent finished): show its report from the top.
   useEffect(() => {

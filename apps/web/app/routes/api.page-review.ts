@@ -128,11 +128,14 @@ export async function action({ request, context }: Route.ActionArgs) {
         path, status: "fixing", userId: user.id,
         title: String(form.get("title") || "") || null, note: String(form.get("note") || "") || null,
       });
+      // The request waits for the agent: work left to waitUntil is cut off about 30 seconds after the response, which a
+      // fix that researches the record outlasts (2026-11-03: a page stayed "fixing" after its research calls). waitUntil
+      // still covers the run if the browser drops the request.
       const run = fixPage(supabase, new URL(request.url).origin, path, user);
       const ctx = (context as { cloudflare?: { ctx?: ExecutionContext } } | undefined)?.cloudflare?.ctx;
-      if (ctx?.waitUntil) ctx.waitUntil(run);
-      else void run;
-      message = "The agent is working on this page now.";
+      ctx?.waitUntil?.(run);
+      await run;
+      message = "The agent has finished with this page.";
     }
     return data({ ok: true as const, message, review: await getPageReview(supabase, path), links: await linkState(supabase, path) },
       { headers: privateAdminHeaders() });
