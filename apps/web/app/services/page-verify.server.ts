@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getAiClient } from "./ai/index.server";
 import { completeVoteCounts } from "../lib/vote-coverage";
 import type { PageFlag } from "../lib/page-review-types";
+import { research } from "./record-research.server";
 
 /**
  * The page check's second reading: the page's own statements against the records behind them. A topic page's
@@ -197,14 +198,34 @@ RECORDS
 ${input.records}`;
   const result = await getAiClient().json({ stage: "review", prompt, schema: VerifySchema, schemaName: "page_verify" });
   const byId = new Map(input.claims.map((c) => [c.id, c]));
-  return result.data.verdicts
-    .filter((v) => (v.verdict === "not_in_record" || v.verdict === "contradicted") && byId.has(v.id))
-    .map((v) => {
-      const claim = byId.get(v.id)!;
-      return {
-        key: claim.key, problem: "unsupported" as const, verdict: null, fix: v.fix,
-        reason: `${v.verdict === "contradicted" ? "Contradicted by the record" : "Not in the record"}: ${v.reason}${v.source ? ` The record says: “${v.source}”` : ""}`,
-        excerpt: claim.text,
-      };
-    });
+  const doubted = result.data.verdicts.filter((v) => (v.verdict === "not_in_record" || v.verdict === "contradicted") && byId.has(v.id));
+  // Before anything is flagged, the reviewer researches it in all of the City's records: a figure missing from the
+  // records filed on this page is often in a report filed under another meeting, or said on video.
+  const findings = await mapLimit(doubted, 4, (v) => research(supabase,
+    `Does the City's record support this statement on ${path}: "${byId.get(v.id)!.text}"?`,
+    `The records filed on this page ${v.verdict === "contradicted" ? "seem to contradict it" : "don't contain it"}: ${v.reason}` +
+      `${v.source ? ` They say: "${v.source}"` : ""}`).catch(() => null));
+  return doubted.flatMap((v, i) => {
+    const claim = byId.get(v.id)!;
+    const found = findings[i];
+    if (found?.verdict === "supported") return [];
+    const contradicted = found?.verdict === "contradicted" || (!found && v.verdict === "contradicted");
+    const said = found?.quote ? `${found.quote}${found.ref ? ` (${found.ref})` : ""}` : v.source;
+    return [{
+      key: claim.key, problem: "unsupported" as const, verdict: null, fix: v.fix,
+      reason: `${contradicted ? "Contradicted by the record" : "Not in the record"}: ${found ? found.explanation : v.reason}` +
+        `${said ? ` The record says: “${said}”` : ""}${found ? " (searched all of the City's records)" : ""}`,
+      excerpt: claim.text,
+    }];
+  });
+}
+
+/** Run `fn` over `items` with at most `limit` running at once, results in order. */
+async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) { const i = next++; out[i] = await fn(items[i]); }
+  }));
+  return out;
 }
