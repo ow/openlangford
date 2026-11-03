@@ -33,8 +33,9 @@ from pydantic import BaseModel
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, meeting_transcript
 
-HIGHLIGHTS_VERSION = "2"
+HIGHLIGHTS_VERSION = "3"  # 3: record vs notes, fact check against the record
 DESCRIPTION_MAX = 155
 # Meetings that never happened (or haven't yet) get no highlights.
 SKIP_STATUSES = ("Planned", "Cancelled")
@@ -43,7 +44,9 @@ SKIP_STATUSES = ("Planned", "Cancelled")
 SYSTEM = """You explain what happened at a council or committee meeting in Langford, BC, to a resident on a phone who has never read a council agenda.
 They want to know what happened and whether it affects them. Assume no knowledge of council procedure, bylaw numbers or city jargon.
 
-You get the meeting's existing insider summary, its recorded decisions (motions with results and votes) and, for context only, what was on the agenda.
+You get the meeting's recorded decisions (motions with their wording, results and votes), what was on the agenda, and notes:
+summaries a model wrote earlier (of the meeting, its items and motions). Without recorded decisions you get the video transcript instead.
+""" + RECORD_RULE + """
 Write:
 1. `bullets`: 2 to 4 bullets (1 only if the meeting had a single piece of real business). Each bullet is ONE sentence of at most 20 words, about one idea.
    Keep the headline of a decision and drop long lists of details: "Passed new developer charges to pay for future parks." and
@@ -56,10 +59,10 @@ Each bullet has `text` (the sentence) and `links`: 0 to 3 short noun phrases cop
 (a place, facility, project or topic, e.g. "2609 Sooke Road", "Jacklin Road", "the 2026–2030 budget"), each with the `agenda_item_id` of the agenda item
 (from `agenda_items_for_context_only` or a decision's `agenda_item_id`) that the phrase is about. Link only where the item clearly matches; no links is fine.
 Never link a whole sentence or a verb, and link each agenda item only once across all bullets (its first mention).
-When `decisions` is empty, the existing summary is the record: its past-tense outcomes ("Recommended…", "Approved…", "Gave first reading…",
-"Heard a presentation…") are outcomes to write up, the same as recorded decisions.
-Only if nothing happened beyond scheduling and housekeeping (the summary says what "will" be or was "scheduled", or only approves the agenda,
-minutes and adjournment), return an empty `bullets` list and an empty `description`;
+When `decisions` is empty, the video transcript is the record: what the meeting is heard deciding ("all in favour… carried",
+a recommendation moved and passed, a presentation heard) is what to write up; the meeting summary note helps you find it.
+Only if nothing happened beyond scheduling and housekeeping (only the agenda, minutes and adjournment were approved, or things
+were only scheduled), return an empty `bullets` list and an empty `description`;
 never write a bullet saying nothing was decided or recorded.
 
 Style rules (from the site's writing guide):
@@ -148,7 +151,7 @@ def _tally(votes: list[dict]) -> dict | None:
 
 
 def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, list[dict]],
-                 agenda_items: list[dict]) -> dict:
+                 agenda_items: list[dict], transcript: str = "") -> dict:
     """The JSON the model sees: meeting facts, decided motions (most informative first), agenda items."""
     titles = {a["id"]: a.get("title") or "" for a in agenda_items}
     decisions = []
@@ -164,12 +167,12 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
         entry = {
             "agenda_item_id": m.get("agenda_item_id") if m.get("agenda_item_id") in titles else None,
             "agenda_item": _trim(titles.get(m.get("agenda_item_id")), 160),
-            "decision": _trim(m.get("plain_english_summary"), 400),
-            "headline": (m.get("meta") or {}).get("headline") or "",
+            # The recorded wording is the record; the summaries are notes (record_sources.RECORD_RULE).
+            "motion_text": _trim(m.get("text_content"), 1200),
             "result": m.get("result"),
+            "notes": {k: v for k, v in {"summary": _trim(m.get("plain_english_summary"), 400),
+                                        "headline": (m.get("meta") or {}).get("headline") or ""}.items() if v},
         }
-        if not entry["decision"]:
-            entry["motion_text"] = _trim(m.get("text_content"), 600)
         # A count only for a complete vote (reconstructed from attendance); minutes often name just those opposed,
         # and counting those alone wrote "(passed 0–3)". Otherwise the opposed count, said as such.
         tally = _tally(votes_by_motion.get(m["id"], []))
@@ -180,7 +183,7 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
     # Every titled item (with its id, for links); summaries only where they add something.
     items = [
         {k: v for k, v in {"id": a["id"], "title": _trim(a.get("title"), 160),
-                           "summary": _trim(a.get("plain_english_summary"), 300)}.items() if v}
+                           "notes": _trim(a.get("plain_english_summary"), 300)}.items() if v}
         for a in agenda_items
         if a.get("title")
     ]
@@ -191,9 +194,11 @@ def build_inputs(meeting: dict, motions: list[dict], votes_by_motion: dict[int, 
             "date": meeting.get("meeting_date"),
             "has_minutes": meeting.get("has_minutes"),
         },
-        "existing_summary": meeting.get("summary") or "",
+        "notes_meeting_summary": meeting.get("summary") or "",
         "decisions": decisions,
         "agenda_items_for_context_only": items[:60],
+        # Without recorded decisions, the video is the record of what happened (``generate`` fills it in).
+        **({"video_transcript": transcript} if transcript else {}),
     }
 
 
@@ -362,14 +367,52 @@ def eligible(meeting: dict, motions: list[dict]) -> bool:
     return bool((meeting.get("summary") or "").strip()) or any(m.get("result") for m in motions)
 
 
+class FactProblem(BaseModel):
+    bullet: str
+    problem: str
+
+
+class FactCheck(BaseModel):
+    problems: list[FactProblem]
+
+
+FACT_CHECK = """You check plain-language highlights of a Langford council or committee meeting against its records: the
+recorded motions (with their full wording and results), its agenda items and, without recorded decisions, its video
+transcript. """ + CHECK_RULE + """
+List every problem of fact in the bullets and the description:
+- a figure, count, amount, name or place the records don't contain (e.g. a number of homes or a dollar amount that
+  appears nowhere in them), or that they give differently;
+- the wrong step for a decision. The writer explains readings in plain words, and only these are right: third
+  reading (with or without first and second) is "one step from final approval"; first or second reading only is
+  "early approval"; adoption is "passed" or "made final"; a committee only recommends; a direction to staff to bring a
+  bylaw forward or prepare something is a request to staff, not an approval. A committee recommending that Council
+  give three readings is a recommendation, which "one step from final approval" may describe only as what it
+  recommended.
+- an outcome the records don't show (something called passed, rejected or approved with no motion saying so).
+Wording and plain-language simplification are fine; judge facts only. Name the bullet (quote its start) and say
+what the records say instead. Return no problems when the highlights are right.
+
+"""
+
+
+def check_facts(inputs: dict, motions: list[dict], result: Highlights) -> list[str]:
+    """Problems of fact in the highlights, judged by the reviewer model against the meeting's records."""
+    records = inputs
+    text = {"bullets": [b.text for b in result.bullets], "description": result.description}
+    checked = ai.json(FACT_CHECK + json.dumps({"records": records, "highlights": text}, ensure_ascii=False, default=str),
+                      stage="review", schema=FactCheck)
+    return [f"{p.bullet[:80]}: {p.problem}" for p in checked.problems]
+
+
 def generate(supabase: Client, meeting_id: int) -> dict | None:
     """Model output for one meeting (nothing written). None when the meeting has nothing to highlight."""
     meeting, motions, votes, items = _load(supabase, meeting_id)
     if not meeting or not eligible(meeting, motions):
         return None
-    inputs = build_inputs(meeting, motions, votes, items)
+    decided = any(m.get("result") and (m.get("disposition") or "") != "Procedural" for m in motions)
+    inputs = build_inputs(meeting, motions, votes, items, "" if decided else meeting_transcript(supabase, meeting_id))
     prompt = build_prompt(inputs)
-    result = ai.json(prompt, stage="extraction", schema=Highlights, system=SYSTEM)
+    result = ai.json(prompt, stage="writing", schema=Highlights, system=SYSTEM)
     issues = problems(_texts(result))
     for _ in range(REVISION_PASSES):  # revise with the specific problems; keep whichever draft has fewer
         if not issues:
@@ -377,7 +420,7 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
         revised = ai.json(
             prompt + "\n\nYour previous draft:\n" + result.model_dump_json()
             + "\n\nFix these problems and return the full highlights again:\n- " + "\n- ".join(issues),
-            stage="extraction", schema=Highlights, system=SYSTEM,
+            stage="writing", schema=Highlights, system=SYSTEM,
         )
         remaining = problems(_texts(revised))
         # An empty revision has no problems but says nothing: keep the draft that does.
@@ -385,6 +428,25 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
             result, issues = revised, remaining
     if issues:
         print(f"  [Highlights] meeting {meeting_id}: kept with warnings: {'; '.join(issues)}")
+    # Facts, checked by the reviewer model against the records; one rewrite told what was wrong, keeping whichever
+    # draft has fewer problems (2026-11-03: invented counts and amounts, a first reading called "one step from final").
+    if result.bullets:
+        try:
+            facts = check_facts(inputs, motions, result)
+            if facts:
+                revised = ai.json(
+                    prompt + "\n\nYour previous draft:\n" + result.model_dump_json()
+                    + "\n\nA check against the records found these problems of fact. Fix each one using the records' own "
+                      "facts, or leave the statement out, and return the full highlights again:\n- " + "\n- ".join(facts),
+                    stage="writing", schema=Highlights, system=SYSTEM,
+                )
+                left = check_facts(inputs, motions, revised) if revised.bullets else facts
+                if revised.bullets and len(left) < len(facts):
+                    result, facts = revised, left
+            if facts:
+                print(f"  [Highlights] meeting {meeting_id}: kept with fact problems: {'; '.join(facts)}")
+        except Exception as exc:  # unchecked rather than unwritten
+            print(f"  [Highlights] meeting {meeting_id}: fact check failed: {exc}")
     room = DESCRIPTION_MAX - len(format_date(meeting["meeting_date"])) - 2
     for _ in range(2):  # shortening passes before falling back to a clause cut
         if len(_clean_line(result.description)) <= room:
@@ -392,7 +454,7 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
         shorter = ai.text(
             f"Shorten this sentence to at most {room - 5} characters. Keep the subject and the most significant "
             f"outcomes, same plain words, no new facts. Reply with the sentence only.\n\n{result.description}",
-            stage="extraction", system=SYSTEM,
+            stage="writing", system=SYSTEM,
         ).strip()
         result = Highlights(bullets=result.bullets, description=shorter or result.description)
     out = clean(result, meeting["meeting_date"], {a["id"] for a in items})

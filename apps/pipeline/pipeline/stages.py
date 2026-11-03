@@ -717,6 +717,16 @@ def run_closed_sessions(ctx: StageContext):
     return result
 
 
+def run_video_dissent(ctx: StageContext):
+    """Votes the video shows opposed but the minutes record without dissent (see pipeline/ingestion/video_dissent.py)."""
+    from pipeline.ingestion.video_dissent import run
+
+    if ctx.post_ingest and not ctx.meeting_ids:
+        return {"candidates": 0}
+    result = run(meeting_ids=list(ctx.meeting_ids) if ctx.post_ingest else None, dry_run=ctx.dry_run)
+    return {"candidates": result["candidates"], "confirmed": sum(map(len, result["confirmed"].values()))}
+
+
 def _meeting_highlight_stamps(ctx: StageContext) -> list[dict]:
     """Held meetings with a summary, with their highlights stamp."""
     from pipeline.ingestion.meeting_highlights import SKIP_STATUSES
@@ -1429,6 +1439,12 @@ STAGES: list[Stage] = [
                     "--target is a meeting id; --since DATE; --stale after a version bump.",
         run=run_closed_sessions, when="post_ingest", scope="meeting", version=CLOSED_SESSIONS_VERSION,
         stale=stale_closed_sessions,
+    ),
+    Stage(
+        name="video-dissent",
+        description="Motions the minutes record without dissent where the video summary names someone voting against: the "
+                    "reviewer model confirms it on the transcript (motions.meta.video_dissent; the meeting page shows both).",
+        run=run_video_dissent, when="post_ingest", scope="meeting", version="1",
     ),
     Stage(
         name="matter-images",

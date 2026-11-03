@@ -78,3 +78,26 @@ def test_same_application_is_the_permit_number_not_the_address():
     assert not same_application("Application to add retail sales at Unit 28 #103 977 Langford Parkway", flight)
     assert not same_application(None, flight)
     assert not same_application("TUP20-0002", {})
+
+
+def test_judge_story_sends_name_matches_and_similar_items_separately_and_maps_back(monkeypatch):
+    from pipeline.ingestion import matter_names as mn
+
+    calls = []
+
+    def fake_json(prompt, *, stage, schema):
+        calls.append((stage, prompt))
+        listed = [line for line in prompt.split("CANDIDATES:\n")[1].split("\n\n") if line.strip()]
+        # The first candidate of each call belongs, the rest are another application on the same lot.
+        return schema(verdicts=[mn._Verdict(n=k, verdict="belongs" if k == 1 else "unrelated", reason="r")
+                                for k in range(1, len(listed) + 1)])
+
+    monkeypatch.setattr(mn.ai, "json", fake_json)
+    target = {"title": "3380 Happy Valley Road rezoning", "first_seen": "2011-03-21", "last_seen": "2011-05-02",
+              "summary": "Two lots under Bylaw 1331."}
+    item = lambda i, where="item": {"kind": "item", "id": i, "date": "2011-01-01", "title": f"Item {i}", "excerpt": "…", "where": where}
+    candidates = [item(1), item(2), item(3, "similar"), {"kind": "page", "year": 2011, "page": 4, "excerpt": "…"}]
+    verdicts = mn.judge_story(target, "(nothing yet)", "", candidates)
+    assert all(stage == "review" for stage, _ in calls) and len(calls) == 2
+    assert all("different number of lots or units" in prompt for _, prompt in calls)
+    assert sorted((v.n, v.verdict) for v in verdicts) == [(1, "belongs"), (2, "unrelated"), (3, "belongs"), (4, "unrelated")]

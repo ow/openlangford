@@ -33,6 +33,9 @@ DEFAULT_EMBEDDING_DIMENSIONS = 384
 DEFAULT_DECISIONS_MODEL = "gpt-6-luna"  # the only model the Decisions API supports (Nov 2026)
 # Staff-facing judgments (link suggestions for the review bar): few calls, so the stronger model.
 DEFAULT_REVIEW_MODEL = "gpt-6.1-terra"
+# Public text residents read (topic summaries and headlines, meeting highlights): compared on 40 topics and 20
+# meetings on 2026-11-03, Luna's first drafts had problems of fact on 17 topics and 4 meetings, Terra's on 3 and 1.
+DEFAULT_WRITING_MODEL = "gpt-6.1-terra"
 DEFAULT_ASR_MODEL = "gpt-4o-transcribe"
 
 # Request timeouts (seconds). Long document/refinement calls can take minutes.
@@ -52,6 +55,7 @@ STAGE_PREFIX = {
     "embedding": "EMBEDDING",
     "decisions": "DECISIONS",
     "review": "REVIEW",
+    "writing": "WRITING",
     "asr": "ASR",
 }
 
@@ -135,6 +139,8 @@ def resolve(stage: str) -> StageConfig:
     prefix = STAGE_PREFIX.get(stage, stage.upper())
     if stage == "review":  # its own default, not the site-wide AI_MODEL
         return StageConfig(stage=stage, provider=provider, model=_env("REVIEW_AI_MODEL") or DEFAULT_REVIEW_MODEL, timeout=timeout)
+    if stage == "writing":  # likewise
+        return StageConfig(stage=stage, provider=provider, model=_env("WRITING_AI_MODEL") or DEFAULT_WRITING_MODEL, timeout=timeout)
     model = _env(f"{prefix}_AI_MODEL") or _env("AI_MODEL") or _env("OPENAI_MODEL") or DEFAULT_MODEL
     return StageConfig(stage=stage, provider=provider, model=model, timeout=timeout)
 

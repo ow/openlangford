@@ -57,18 +57,20 @@ def test_build_inputs_keeps_outcomes_and_notes_split_votes_only():
     items = [{"id": 10, "title": "Agenda"}, {"id": 11, "title": "Bylaws", "plain_english_summary": "Bylaw readings."}]
     inputs = mh.build_inputs(meeting, motions, votes, items)
     decisions = inputs["decisions"]
-    assert [d["decision"] for d in decisions] == ["Gave 1st-3rd readings to parking.", "Gave 1st-3rd readings to budget."]
-    assert decisions[0]["vote"] == "6–1" and decisions[0]["headline"] == "Parking minimums dropped"
+    # Model-written summaries go in as notes, apart from the record (record_sources.RECORD_RULE).
+    assert [d["notes"]["summary"] for d in decisions] == ["Gave 1st-3rd readings to parking.", "Gave 1st-3rd readings to budget."]
+    assert decisions[0]["vote"] == "6–1" and decisions[0]["notes"]["headline"] == "Parking minimums dropped"
     assert "vote" not in decisions[1]
     assert inputs["agenda_items_for_context_only"] == [
-        {"id": 10, "title": "Agenda"}, {"id": 11, "title": "Bylaws", "summary": "Bylaw readings."}]
+        {"id": 10, "title": "Agenda"}, {"id": 11, "title": "Bylaws", "notes": "Bylaw readings."}]
+    assert inputs["notes_meeting_summary"] == "- x" and "video_transcript" not in inputs
     assert decisions[0]["agenda_item_id"] == 11
 
 
 def test_procedural_motions_are_kept_when_they_are_the_only_business():
     motions = [{"id": 1, "plain_english_summary": "Closed the meeting to discuss land.", "disposition": "Procedural", "result": "CARRIED"}]
     inputs = mh.build_inputs({"meeting_date": "2026-04-20"}, motions, {}, [])
-    assert [d["decision"] for d in inputs["decisions"]] == ["Closed the meeting to discuss land."]
+    assert [d["notes"]["summary"] for d in inputs["decisions"]] == ["Closed the meeting to discuss land."]
 
 
 def test_eligible_skips_unheld_meetings_and_meetings_with_nothing_recorded():

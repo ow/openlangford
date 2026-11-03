@@ -23,10 +23,11 @@ from pydantic import BaseModel, Field
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, TRANSCRIPT_CAP, item_transcripts
 
 # Bump when the prompt/schema changes so `main.py --stage matter-summaries --stale`
 # re-runs matters summarized by an older version (stamped in meta.summary_version).
-SUMMARY_VERSION = "3"
+SUMMARY_VERSION = "4"
 
 TOPICS = [
     "Development",
@@ -43,9 +44,10 @@ TOPICS = [
 STATUSES = ["Active", "Adopted", "Approved", "Defeated", "Withdrawn", "Completed"]
 
 SYSTEM = f"""You explain city council matters to residents of a small Canadian city.
-For each matter you get its raw title and its history (agenda items, motions, and staff reports or
-attached documents with their key facts, oldest first). The reports are the best source for what the
-matter actually is; use them.
+For each matter you get its raw title and its history (agenda items, oldest first), each with its "record" (motion
+wording and results, staff report excerpts, the video transcript of its discussion) and its "notes".
+""" + RECORD_RULE + f"""
+The report excerpts are the best source for what the matter actually is; use them.
 Return for each matter:
 - "display_title": a short, plain title (max 8 words) naming the thing itself, e.g. "Solid waste collection bylaw", "854 Latoria Road rezoning". No reading stages, no "(Background report attached)", no years unless essential. Keep a street address when the matter is about a property.
 - "summary": 2-3 sentences, max 60 words, saying what the matter actually is and why it matters to residents. Be concrete and lead with the substance: for a development, what would be built (use, units, storeys, tenure) and where; for a bylaw or program, what changes for residents, what it costs them, and why the city is doing it. No bylaw numbers, no "Council" as the opening word, no jargon. Do not mention readings, approval or status here; that belongs in status_line.
@@ -54,6 +56,11 @@ Return for each matter:
   (e.g. "Draft presented to Council Apr 7, 2026; BC Transit is updating the plan."). Never say that history,
   records or a latest step are missing or not provided: that describes this site's data, not the matter.
 - "timeline": for each history entry, {{"item": <its item id>, "headline": "<max 12 words>"}} — a plain-English headline for that step that says what happened, e.g. "Staff propose city-run curbside garbage and organics pickup" or "Third reading for 120-unit rental building". No agenda numbering, no "(Background report attached)".
+  Take what happened from the entry's motions and their result, not the agenda title: a title saying "second and third
+  reading" with a motion giving first reading is a first reading; a motion directing staff to prepare a bylaw is not a
+  reading. With no motion, say what the item did (a report presented, a hearing held), never that something was
+  decided. Name what the step is about ("First reading for townhomes and suites on Latoria Road"), never only the procedure
+  ("Bylaw listed for first reading").
 - "category": exactly one of {", ".join(TOPICS)}.
 - "status": exactly one of {", ".join(STATUSES)}. Adopted = bylaw finally adopted; Approved = non-bylaw item approved; Defeated/Withdrawn when the latest decision says so; Completed = received for information or finished with nothing pending; otherwise Active.
 "mentions" are separately linked context, not decisions on this matter. They may describe
@@ -67,7 +74,7 @@ editor checked that quote against the council's documents, so it counts as an in
 for if neither says it.
 Never invent facts that are not in the inputs. If the history is too thin to say what it is about, base the summary on the title alone and keep it short.
 Figures and names are copied, never made: every amount, count, measurement, date and name comes exactly from the inputs,
-whole ("$4,408,940.67", "1.5 spaces per unit", not "$67" or "5 spaces"). Don't round, total, convert or estimate one,
+whole ("$4,408,940.67", "1.5 spaces per unit", not "$67" or "5 spaces"), and from a record, not the notes. Don't round, total, convert or estimate one,
 don't give a count (units, lots, homes) the inputs don't state, and don't expand a name or acronym the inputs don't spell out.
 "fix_these", when present, lists problems a check found in your last text for this matter, with what the records say:
 fix every one, using the records' own words and figures, or leave the statement out."""
@@ -96,6 +103,7 @@ class MatterSummaries(BaseModel):
 
 
 MAX_HISTORY = 12
+TRANSCRIPTS_PER_MATTER = 12000  # characters of video transcript per matter, newest discussed items first
 KEY_SECTION = re.compile(r"purpose|executive summary|proposal|commentary|recommendation|summary|background", re.I)
 
 
@@ -126,7 +134,8 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
             owner[int(alias_id)] = m["id"]
     items = (
         supabase.table("agenda_items")
-        .select("id, matter_id, title, plain_english_summary, debate_summary, meetings(meeting_date, type)")
+        .select("id, matter_id, meeting_id, title, plain_english_summary, debate_summary, discussion_start_time, "
+                "discussion_end_time, meetings(meeting_date, type)")
         .in_("matter_id", list(owner))
         .execute()
         .data
@@ -154,7 +163,7 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
             continue
         mentions_by_matter.setdefault(mid, []).append({
             "item": item["id"], "date": meeting.get("meeting_date"), "agenda_item": item["title"],
-            "summary": (item.get("plain_english_summary") or "")[:400], "source": "accepted mention",
+            "notes": {"summary": (item.get("plain_english_summary") or "")[:400]}, "source": "accepted mention",
         })
     item_ids = [i["id"] for i in items]
     motions = (
@@ -202,6 +211,18 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
     for m in motions:
         motions_by_item.setdefault(m["agenda_item_id"], []).append(m)
 
+    # The video is the original for what was said: each discussed item's transcript goes in as record, so a fact
+    # from its debate summary (a note) can be confirmed (newest items first, up to TRANSCRIPTS_PER_MATTER characters).
+    talked = sorted((i for i in items if i.get("debate_summary")), key=lambda i: (i.get("meetings") or {}).get("meeting_date") or "",
+                    reverse=True)
+    budget: dict[int, int] = {}
+    wanted = []
+    for item in talked:
+        if budget.get(item["matter_id"], 0) < TRANSCRIPTS_PER_MATTER:
+            budget[item["matter_id"]] = budget.get(item["matter_id"], 0) + TRANSCRIPT_CAP
+            wanted.append(item)
+    transcripts = item_transcripts(supabase, wanted)
+
     out = []
     for matter in matters:
         history = []
@@ -209,28 +230,30 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
             if item["matter_id"] != matter["id"]:
                 continue
             meeting = item.get("meetings") or {}
+            mine = motions_by_item.get(item["id"], [])
             history.append(
                 {
                     "item": item["id"],
                     "date": meeting.get("meeting_date"),
                     "meeting": meeting.get("type"),
                     "agenda_item": item.get("title"),
-                    "summary": (item.get("plain_english_summary") or "")[:400],
-                    "debate": (item.get("debate_summary") or "")[:300] or None,
-                    "motions": [
-                        {
-                            "decision": m.get("plain_english_summary") or None,
-                            # The recorded wording, whole enough to carry its figures: summaries dropped digits.
-                            "text": (m.get("text_content") or "")[:1200],
-                            "result": m.get("result"),
-                        }
-                        for m in motions_by_item.get(item["id"], [])
-                    ],
-                    "report_excerpts": excerpts_by_item.get(item["id"], []),
-                    "reports": [
-                        {"title": d.get("title"), "summary": (d.get("summary") or "")[:500], "key_facts": (d.get("key_facts") or [])[:10]}
-                        for d in docs_by_item.get(item["id"], [])[:3]
-                    ],
+                    # The City's own text (see record_sources.RECORD_RULE).
+                    "record": {k: v for k, v in {
+                        # The recorded wording, whole enough to carry its figures: summaries dropped digits.
+                        "motions": [{"text": (m.get("text_content") or "")[:1200], "result": m.get("result")} for m in mine],
+                        "report_excerpts": excerpts_by_item.get(item["id"], []),
+                        "video_transcript": transcripts.get(item["id"]),
+                    }.items() if v},
+                    # What a model wrote about it earlier: for orientation, never the source of a fact.
+                    "notes": {k: v for k, v in {
+                        "summary": (item.get("plain_english_summary") or "")[:400],
+                        "video_summary": (item.get("debate_summary") or "")[:300],
+                        "motion_summaries": [m["plain_english_summary"] for m in mine if m.get("plain_english_summary")],
+                        "reports": [
+                            {"title": d.get("title"), "summary": (d.get("summary") or "")[:500], "key_facts": (d.get("key_facts") or [])[:10]}
+                            for d in docs_by_item.get(item["id"], [])[:3]
+                        ],
+                    }.items() if v},
                 }
             )
         history.sort(key=lambda h: h["date"] or "")
@@ -260,13 +283,13 @@ def _prompt(batch: list[dict]) -> str:
 
 
 def _summarize(batch: list[dict]) -> dict[int, dict]:
-    result = ai.json(_prompt(batch), stage="extraction", schema=MatterSummaries, system=SYSTEM)
+    result = ai.json(_prompt(batch), stage="writing", schema=MatterSummaries, system=SYSTEM)
     return {m.id: m.model_dump() for m in result.matters if m.summary.strip()}
 
 
 class SummaryProblem(BaseModel):
     matter: int = Field(description="The matter's id")
-    statement: str = Field(description="The words in the summary or status that are wrong, quoted")
+    statement: str = Field(description="The words in the summary, status or a headline that are wrong, quoted")
     verdict: Literal["contradicted", "not_in_record"]
     record_says: str = Field(description="What the records say instead, quoted; empty when they say nothing about it")
 
@@ -276,11 +299,17 @@ class SummaryCheck(BaseModel):
 
 
 CHECK_PROMPT = """You check short texts written for residents about city council matters against the records they were
-written from. For each matter below you get its records (as given to the writer) and the text: a summary and a
-"where it stands" line. List every statement the records contradict (a different amount, count, measurement, date,
-name, address, outcome or step) or don't contain at all (an invented figure, count, name or detail). Paraphrase and
-plain-language simplification are fine; judge facts, not style. A statement about what the records don't say ("no
-decision is recorded") is fine when true. Missing detail is not a problem. Return no problems when the text is right.
+written from. """ + CHECK_RULE + """
+For each matter below you get its inputs (as given to the writer) and the text: a summary, a
+"where it stands" line, and a headline per timeline step (keyed by the history entry's item id). List every statement
+the records contradict (a different amount, count, measurement, date, name, address, outcome or step) or don't contain
+at all (an invented figure, count, name or detail). For a headline, compare it with that entry's motions and result:
+a different reading or step than the motion records (first reading called "second and third", a direction to prepare
+a bylaw called a reading, a decision where there was no motion) is contradicted, and a headline that names only the
+procedure ("Bylaw listed for first reading") without what it's about is a problem too (verdict not_in_record, quote
+it). Paraphrase and plain-language simplification are fine; judge facts, not style. A statement about what the
+records don't say ("no decision is recorded") is fine when true. Missing detail is not a problem. Return no problems
+when the text is right.
 
 """
 
@@ -293,7 +322,10 @@ def _check(batch: list[dict], updates: dict[int, dict]) -> dict[int, list[dict]]
         if not u:
             continue
         payload.append({"id": m["id"], "records": {k: v for k, v in m.items() if not k.startswith("_") and k != "fix_these"},
-                        "text": {"summary": u["plain_english_summary"], "where_it_stands": (u["meta"] or {}).get("status_line")}})
+                        "text": {"summary": u["plain_english_summary"], "where_it_stands": (u["meta"] or {}).get("status_line"),
+                                 # Lines staff approved stand as written, so only the writer's own are checked.
+                                 "timeline_headlines": {k: v for k, v in ((u["meta"] or {}).get("timeline_headlines") or {}).items()
+                                                        if k not in ((u["meta"] or {}).get("staff_headlines") or {})}}})
     if not payload:
         return {}
     result = ai.json(CHECK_PROMPT + json.dumps(payload, ensure_ascii=False, default=str), stage="review", schema=SummaryCheck)

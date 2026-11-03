@@ -128,7 +128,7 @@ def test_summary_context_keeps_mentions_out_of_owned_decisions_and_status(monkey
     monkeypatch.setattr(summaries, "_summarize", summarize)
     result = summaries.refresh_matter_summaries(db, [208], dry_run=True)
     assert seen[0]['history'] == []
-    assert seen[-1]['mentions'] == [{"item": 1368, "date": "2026-06-29", "agenda_item": "PRESENTATIONS", "summary": "Consultant presented draft parks DCC rates.", "source": "accepted mention"}]
+    assert seen[-1]['mentions'] == [{"item": 1368, "date": "2026-06-29", "agenda_item": "PRESENTATIONS", "notes": {"summary": "Consultant presented draft parks DCC rates."}, "source": "accepted mention"}]
     assert 'status' not in result[208]
     assert not result[208]['meta'].get('timeline_headlines')
     assert db.writes == []
