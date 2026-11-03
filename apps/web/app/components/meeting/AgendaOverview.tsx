@@ -32,6 +32,7 @@ import { normalizeMotionResult } from "../../lib/motion-utils";
 import { formatTimestamp } from "../../lib/timeline-utils";
 import { DocumentSections } from "./DocumentSections";
 import { ItemCommitmentsList } from "./item-commitments";
+import { ItemRemarksList } from "./item-remarks";
 
 interface AgendaOverviewProps {
   items: AgendaItem[];
@@ -571,8 +572,13 @@ function AgendaItemRow({
                 </div>
               )}
 
+              {/* Speeches: who spoke and what each said, in place of a debate summary */}
+              {item.meta?.remarks?.speakers?.length > 0 && (
+                <ItemRemarksList remarks={item.meta.remarks} onWatchVideo={onWatchVideo} />
+              )}
+
               {/* Debate */}
-              {item.debate_summary && (
+              {item.debate_summary && !(item.meta?.remarks?.speakers?.length > 0) && (
                 <div className="space-y-1">
                   <h4 className="flex items-center gap-2 text-xs font-semibold text-zinc-500">
                     <MessageSquare className="w-3 h-3 text-amber-500" />

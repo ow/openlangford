@@ -50,7 +50,11 @@ wording and results, staff report text, the video transcript of its discussion) 
 The agenda title is record too: it says what the item was (a public hearing, a staff report, a bylaw's readings).
 The report text is the best source for what the matter actually is; use it. Be specific wherever the record is:
 the number of homes or lots, the amounts, the names, what exactly was approved. Text that stays vague when the record
-gives the details is as unhelpful as text that gets them wrong.
+gives the details is as unhelpful as text that gets them wrong. The motions count as detail too: "impose 30km/hr speed
+zones throughout the roads designated local at Westhills" says what a speed-limit amendment does.
+Never write that something "concerns", "is about", "relates to", "is the subject of", "was raised" or "came up": say
+what it is. When the record gives little beyond a title, one short sentence naming the subject in plain words is
+right ("Zoning changes for secondary suites in accessory buildings."), not padding around it.
 Return for each matter:
 - "display_title": a short, plain title (max 8 words) naming the thing itself, e.g. "Solid waste collection bylaw", "854 Latoria Road rezoning". No reading stages, no "(Background report attached)", no years unless essential. Keep a street address when the matter is about a property.
 - "summary": 2-3 sentences, max 60 words, saying what the matter actually is and why it matters to residents. Be concrete and lead with the substance: for a development, what would be built (use, units, storeys, tenure) and where; for a bylaw or program, what changes for residents, what it costs them, and why the city is doing it. No bylaw numbers, no "Council" as the opening word, no jargon. Do not mention readings, approval or status here; that belongs in status_line.
