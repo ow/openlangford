@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collapseListedReadings, projectNumbers, readingStage, sameProject, showsInTimeline } from "../timeline-story";
+import { collapseListedReadings, foldSameMeetingSteps, projectNumbers, readingStage, sameProject, showsInTimeline } from "../timeline-story";
 
 describe("projectNumbers", () => {
   it("reads bylaw and application numbers, never city-wide bylaws", () => {
@@ -34,5 +34,33 @@ describe("collapseListedReadings", () => {
     expect(collapseListedReadings(entries, { "1": "Bylaw listed for first reading", "2": "First reading given" })).toHaveLength(2);
     expect(readingStage("Second and third readings given")).toBe("2-3");
     expect(readingStage("Public hearing held")).toBeNull();
+  });
+});
+
+describe("foldSameMeetingSteps", () => {
+  const entry = (id: number, meeting: number, title: string, motions: string[] = [], meta: any = {}) =>
+    ({ kind: "primary", item: { id, meeting_id: meeting, title, meta, motions: motions.map((text_content) => ({ text_content })) } });
+  it("folds a staff report with no decision into the reading it recommended at the same meeting", () => {
+    // 760 Latoria Road, Apr 2014: the application report and Bylaw 1518's first reading.
+    const entries = [entry(12255, 844, "Application to Rezone the property at 760 Latoria Road"),
+      entry(12277, 844, "BYLAW NO. 1518 (FIRST READING)", ["That Council give Bylaw No. 1518 First Reading."])];
+    const out = foldSameMeetingSteps(entries);
+    expect(out.map((e) => e.item.id)).toEqual([12277]);
+    expect((out[0] as any).folded.map((i: any) => i.id)).toEqual([12255]);
+  });
+  it("folds the same readings given twice, keeping the fuller motion", () => {
+    // The 2016 financial plan: the report's motion gives three readings and keeps class multiples; the bylaw item repeats the readings.
+    const entries = [entry(6003, 353, "REPORT - 2016-2020 Five-Year Financial Plan", ["1. Give Financial Plan Bylaw No. 1628, 2016 three readings; 2. That there be no change to the class multiples"]),
+      entry(6012, 353, "BYLAW NO. 1628 (FIRST, SECOND AND THIRD READING)", ["That Council give Bylaw No. 1628 First, Second and Third Reading."])];
+    expect(foldSameMeetingSteps(entries).map((e) => e.item.id)).toEqual([6003]);
+  });
+  it("keeps hearings, items with speakers, other meetings and other bylaws apart", () => {
+    const hearing = [entry(1, 5, "PUBLIC HEARING - BYLAW NO. 9"), entry(2, 5, "BYLAW NO. 9 (THIRD READING)", ["Third reading of Bylaw No. 9"])];
+    expect(foldSameMeetingSteps(hearing)).toHaveLength(2);
+    const speakers = [entry(3, 6, "Report - rezoning", [], { participation: { speakers: [{ name: "A resident" }] } }), entry(4, 6, "BYLAW NO. 9", ["First reading of Bylaw No. 9"])];
+    expect(foldSameMeetingSteps(speakers)).toHaveLength(2);
+    const apart = [entry(5, 7, "Report - rezoning"), entry(6, 8, "BYLAW NO. 9", ["First reading of Bylaw No. 9"]),
+      entry(7, 9, "BYLAW NO. 1510", ["First reading of Bylaw No. 1510"]), entry(8, 9, "BYLAW NO. 1511", ["First reading of Bylaw No. 1511"])];
+    expect(foldSameMeetingSteps(apart)).toHaveLength(4);
   });
 });

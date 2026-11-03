@@ -1,3 +1,4 @@
+import { VideoDissentNote } from "./video-dissent-note";
 import { isInferredChoice, voteTally } from "../lib/vote-coverage";
 import { CheckCircle2, MinusCircle, XCircle } from "lucide-react";
 import type { Motion } from "../lib/types";
@@ -91,6 +92,7 @@ export function MotionCard({ motion, context, onWatchVideo, className }: MotionC
             </button>
           )}
         </div>
+        <VideoDissentNote motion={motion} className="mt-1.5" />
       </div>
     </li>
   );

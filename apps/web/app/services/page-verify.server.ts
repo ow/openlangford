@@ -83,7 +83,8 @@ export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): 
     }
     for (const d of ((docs || []) as any[]).filter((d) => d.agenda_item_id === item.id)) {
       const facts = Array.isArray(d.key_facts) ? d.key_facts.slice(0, 12).join("; ") : "";
-      if (facts) lines.push(`  REPORT "${d.title}": ${facts}`);
+      // Extracted by a model from the report: a pointer to what the report covers, not the report's words.
+      if (facts) lines.push(`  NOTES (model-extracted from report "${d.title}"): ${facts}`);
     }
     const text = ((sections || []) as any[]).filter((s) => s.agenda_item_id === item.id)
       .map((s) => `${s.section_title ? `${s.section_title}: ` : ""}${s.section_text || ""}`).join(" ").replace(/\s+/g, " ");
@@ -146,13 +147,18 @@ export async function verifyAgainstRecords(supabase: SupabaseClient, path: strin
   if (!input || !input.claims.length || !input.records) return [];
   const prompt = `You check a page of Open Langford (a site that follows Langford City council) against the council's own
 records. For each numbered statement the page makes, say whether the records support it:
+Lines marked NOTES were written by a model from a report and may be wrong: they can tell you what a report covers, but
+a statement only a NOTES line backs is not_in_record ("only in a model-written summary of the report").
 - supported: the records say this (paraphrase is fine; a reasonable plain-language summary of a motion is supported).
 - not_in_record: nothing in the records says it (an invented detail, a number or outcome the records don't give).
 - contradicted: the records say something different (a different address, count, outcome, date or step).
 - cannot_check: the records given are too thin to judge it (only a title, or text that doesn't cover this
   part of the item). Missing records are not a problem with the page: use this, never not_in_record, when the
   records simply don't reach that far.
-Judge facts, not style. Quote the record's words in "source" whenever you can.
+Judge facts, not style. What follows from what something is, or from how a city council works, needs no record
+(development cost charges pay for growth's roads and parks; a public hearing is where residents speak; a bylaw
+adopted is in force): call it supported. Check what is specific to this item: its numbers, dates, places, steps,
+purpose and outcome. Quote the record's words in "source" whenever you can.
 
 STATEMENTS
 ${input.claims.map((c) => `[${c.id}] ${c.text}`).join("\n")}

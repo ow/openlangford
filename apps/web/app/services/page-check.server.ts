@@ -6,7 +6,7 @@ import { reviewKind } from "./page-reviews.server";
 import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-types";
 import { approvedGuidance, examplesFor, recordExample } from "./review-learning.server";
 import { verifyAgainstRecords } from "./page-verify.server";
-import { latestFindJob, listSuggestions, matterForPath, type Suggestion } from "./page-links.server";
+import { listSuggestions, matterForPath, type Suggestion } from "./page-links.server";
 
 /**
  * A reader's check of one public page: the page is rendered as a signed-out visitor sees it, and the model is
@@ -96,11 +96,14 @@ const KIND_GUIDANCE: Record<string, string> = {
   meetings: `This is one council or committee meeting. Each entry is an agenda item with its summary, motions, outcome and
 votes. Check that a summary says what the motions and outcome say; that a vote count, mover and seconder fit the people
 the page lists as attending; that an outcome isn't missing where a motion was made; and that speaker names make sense.
-Use wrong_detail for a contradiction, unclear_why for an item whose summary doesn't say what happened.`,
+Use wrong_detail for a contradiction, unclear_why for an item whose summary doesn't say what happened. A motion's
+wording is copied from the City's minutes: a slip in it (a unit conversion, a committee's name) is the City's own
+record, which the page rightly shows as written, so don't flag it unless the page's own summary repeats it as fact.`,
   people: `This is a person's page: their roles and terms, votes, attendance and what they said. Check that dates and roles
 agree with each other, and that any claim about how they voted or what they said fits what the page lists.`,
   properties: `This is a property's page: the council business about this address. Flag an entry that's about a different
-address or only mentions this one in passing.`,
+address or only mentions this one in passing. A street's page lists the addresses on it, each linking to its own page
+with that address's council business: a street page with only that list is complete, not empty.`,
 };
 
 /** A search suggestion's key, as the fix agent knows it ("suggestion-L12" a meeting item or topic, "suggestion-R7" a report page). */
@@ -138,24 +141,19 @@ When the page lacks a step or fact one of these supplies (its adoption, the deci
 just say it's missing: say which one supplies it in the fix, e.g. "Add the suggested entry ${suggestionKey(suggestions[0])}".` : ""}`;
 }
 
-/** The latest "find missing" search for a topic, once it's done (or after `waitMs`): the check reads its suggestions. */
-async function settledSuggestions(supabase: SupabaseClient, path: string, waitMs = 35_000): Promise<Suggestion[]> {
+/** A topic's suggestions waiting for a decision, for the check to point a missing step at. The check doesn't wait for a
+ * "find missing" search it started (about 30s): the review bar shows what that search finds when it's done. */
+async function pendingSuggestions(supabase: SupabaseClient, path: string): Promise<Suggestion[]> {
   const matterId = await matterForPath(supabase, path);
-  if (!matterId) return [];
-  for (const until = Date.now() + waitMs; Date.now() < until;) {
-    const job = await latestFindJob(supabase, matterId);
-    if (!job || (job.status !== "queued" && job.status !== "running")) break;
-    await new Promise((r) => setTimeout(r, 2000));
-  }
-  return listSuggestions(supabase, matterId).catch(() => []);
+  return matterId ? listSuggestions(supabase, matterId).catch(() => []) : [];
 }
 
 /** Check one page and store the result on its page_reviews row (keeping any review status and note). */
 export async function checkPage(supabase: SupabaseClient, origin: string, path: string): Promise<PageCheck> {
   const page = readPage(await renderPage(origin, path));
   const kind = reviewKind(path);
-  // Two readings at once: against the records behind the page (page-verify, starts now), and as a resident (this
-  // prompt), which first waits for the "find missing" search so it can point a missing step at what the search found.
+  // Two readings at once: against the records behind the page (page-verify), and as a resident (this prompt), which
+  // can point a missing step at a suggestion already found.
   const verifying = verifyAgainstRecords(supabase, path).catch((error) => {
     console.error("[page-check] verifying against the records failed:", error instanceof Error ? error.message : error);
     return [] as PageFlag[];
@@ -163,7 +161,7 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const [examples, guidance, suggestions] = await Promise.all([
     examplesFor(supabase, kind, [page.heading, page.description, ...page.entries.map((e) => e.text), page.body].join("\n").slice(0, 6000)),
     approvedGuidance(supabase, kind),
-    kind === "matters" ? settledSuggestions(supabase, path) : Promise.resolve([] as Suggestion[]),
+    kind === "matters" ? pendingSuggestions(supabase, path) : Promise.resolve([] as Suggestion[]),
   ]);
   const [result, unsupported] = await Promise.all([
     getAiClient().json({

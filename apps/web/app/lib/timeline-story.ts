@@ -7,6 +7,8 @@
  * editor confirmed the link. Otherwise the related topic stays in the Background list, one click away.
  */
 
+import { writtenLetters } from "./written";
+
 // City-wide bylaws that nearly every application cites; they never identify a project (pipeline CITY_WIDE_BYLAWS).
 const CITY_WIDE = new Set(["300", "1000", "500", "1200", "2200", "1160", "1250", "33", "34", "209"]);
 const BYLAW = /\bbylaws?\s+(?:nos?\.?\s*)?(\d+(?:\s*(?:,|&|and)\s*\d+)*)/gi;
@@ -39,7 +41,7 @@ export function showsInTimeline(link: Link | undefined, ownIdentifiers: (string 
 }
 
 const STAGES: [RegExp, string][] = [
-  [/\bfirst,? second,? (?:and|&) third\b/i, "1-2-3"],
+  [/\bfirst,? second,? (?:and|&) third\b|\bthree readings\b/i, "1-2-3"],
   [/\bsecond (?:and|&) third\b/i, "2-3"],
   [/\bfirst\b/i, "1"],
   [/\bsecond\b/i, "2"],
@@ -83,4 +85,46 @@ export function collapseListedReadings<T extends Entry>(entries: T[], headlines:
     }
   }
   return drop.size ? entries.filter((e) => !(e.kind === "primary" && e.item && drop.has(e.item.id))) : entries;
+}
+
+const REPORT = /^\s*(?:\d+[.)]?\s*)?(?:staff\s+)?(?:report|application|memo|memorandum|request)\b/i;
+const motionText = (item: any) => (item.motions || []).map((m: any) => `${m.text_content || ""} ${m.plain_english_summary || ""}`).join(" ");
+const hasSpeakers = (item: any) => Boolean(item.meta?.participation?.speakers?.length || writtenLetters(item.meta?.written_participation).length);
+
+/**
+ * One meeting's handling of a topic, filed as two agenda items, is one step: the staff report next to the bylaw
+ * reading it recommended (the report has no decision of its own), or two items giving the same readings to the same
+ * bylaw. The folded item's documents join the step it folds into (``folded``); both records stay on the topic.
+ * A public hearing, or anything with speakers or letters, is a step of its own and never folded.
+ */
+export function foldSameMeetingSteps<T extends Entry & { folded?: any[] }>(entries: T[], headlines: Record<string, string> = {}): T[] {
+  const primary = entries.filter((e) => e.kind === "primary" && e.item?.meeting_id != null);
+  const stage = (e: T) => readingStage(`${headlines[String(e.item.id)] || ""} ${motionText(e.item)}`);
+  const title = (e: T) => String(e.item.title || "").split("\n")[0];
+  const sameBylaw = (a: T, b: T) => {
+    const x = bylawNumbers(`${a.item.title} ${motionText(a.item)}`), y = bylawNumbers(`${b.item.title} ${motionText(b.item)}`);
+    return !x.size || !y.size || [...x].some((n) => y.has(n));
+  };
+  const foldable = (e: T) => !hasSpeakers(e.item) && !/\bhearing\b/i.test(`${title(e)} ${headlines[String(e.item.id)] || ""}`);
+  const into = new Map<T, T>();
+  for (const a of primary) {
+    if (!foldable(a)) continue;
+    const others = primary.filter((b) => b !== a && b.item.meeting_id === a.item.meeting_id && !into.has(b) && sameBylaw(a, b));
+    let target: T | undefined;
+    if (!(a.item.motions || []).length && REPORT.test(title(a))) {
+      target = others.find((b) => (b.item.motions || []).length > 0);
+    } else if (stage(a)) {
+      // The same readings twice: keep the item whose motion says more (the report's carries its other directions).
+      target = others.find((b) => stage(b) === stage(a) && motionText(b.item).length >= motionText(a.item).length);
+    }
+    if (target && into.get(target) !== a) into.set(a, target);
+  }
+  if (!into.size) return entries;
+  const folded = new Map<T, any[]>();
+  for (const [a, b] of into) {
+    let root = b;
+    while (into.has(root)) root = into.get(root)!;
+    folded.set(root, [...(folded.get(root) || []), a.item]);
+  }
+  return entries.filter((e) => !into.has(e)).map((e) => (folded.has(e) ? { ...e, folded: [...(e.folded || []), ...folded.get(e)!] } : e));
 }

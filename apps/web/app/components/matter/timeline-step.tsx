@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { completeVoteCounts } from "../../lib/vote-coverage";
+import { completeVoteCounts, videoDissent } from "../../lib/vote-coverage";
+import { VideoDissentNote } from "../video-dissent-note";
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "../ui/badge";
@@ -72,7 +73,8 @@ function outcome(motion: Motion) {
     tone: passed ? "text-emerald-700" : failed ? "text-red-700" : "text-zinc-600",
     count: t.counted ? `${t.yes}–${t.no}` : null,
     against: t.against,
-    unanimous: t.counted ? t.no === 0 : t.against.length === 0,
+    // Not unanimous when the video shows a vote against that the minutes don't record.
+    unanimous: (t.counted ? t.no === 0 : t.against.length === 0) && !videoDissent(motion).length,
   };
 }
 
@@ -222,6 +224,7 @@ export function TimelineStep({
                   )}
                 </p>
               )}
+              <VideoDissentNote motion={m} className="mt-1" />
             </div>
           ))}
         </div>

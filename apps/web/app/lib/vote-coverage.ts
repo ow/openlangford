@@ -46,3 +46,11 @@ export function voteTally(motion: MotionLike): string | null {
   const counts = completeVoteCounts(motion);
   return counts && counts.yes + counts.no > 0 ? `${counts.yes}–${counts.no}` : null;
 }
+
+/** Someone the video shows voting against a motion the minutes record without dissent (pipeline video_dissent.py). */
+export type VideoDissent = { person_id?: number | null; name: string; named_in_video?: boolean; quote?: string };
+
+export function videoDissent(motion: MotionLike): VideoDissent[] {
+  const list = motion.meta?.video_dissent;
+  return Array.isArray(list) ? list.filter((d: any) => d && typeof d.name === "string") : [];
+}

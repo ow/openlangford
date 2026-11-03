@@ -1,5 +1,5 @@
 import { SITE_NAME } from "../lib/site-name";
-import { collapseListedReadings } from "../lib/timeline-story";
+import { collapseListedReadings, foldSameMeetingSteps } from "../lib/timeline-story";
 import { getStaffRole } from "../lib/auth.server";
 import type { Route } from "./+types/matter-detail";
 import {
@@ -502,6 +502,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
   ].sort(
     (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime(),
   ) as any[], matter.meta?.timeline_headlines || {});
+  const timelineSteps = foldSameMeetingSteps(timelineEntries, matter.meta?.timeline_headlines || {});
 
   // People who both spoke and wrote in about this matter get a note on each side.
   const aboutMatter = `${matterTitle(matter)} ${matter.plain_english_summary || ""}`;
@@ -795,7 +796,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             ) : (
               <>
                 <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-zinc-200">
-                  {timelineEntries.map((entry: any) => {
+                  {timelineSteps.map((entry: any) => {
                     // Staff-approved wording for a linked entry (the fix agent, quoting the record) replaces the generated text.
                     const override: { line?: string; heading?: string } | undefined = matter.meta?.entry_lines?.[entry.key];
                     if (entry.kind === "report") {
@@ -908,7 +909,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     }
 
                     const item = entry.item;
-                    const itemDocs = docsByItem.get(item.id) || [];
+                    // A report folded into this step (same meeting) brings its documents.
+                    const itemDocs = [item, ...(entry.folded || [])].flatMap((i: any) => docsByItem.get(i.id) || []);
                     // Pipeline-written plain-English headline; the agenda wording lives in Details.
                     const headline: string | undefined = matter.meta?.timeline_headlines?.[String(item.id)];
                     const layout = images.layout && images.layout.agenda_item_id === item.id ? images.layout : null;

@@ -1,3 +1,4 @@
+import { VideoDissentNote } from "../video-dissent-note";
 import { isInferredChoice, voteTally } from "../../lib/vote-coverage";
 import { useMemo, useState } from "react";
 import { CheckCircle2, ChevronDown, MinusCircle, PlayCircle, XCircle } from "lucide-react";
@@ -107,6 +108,7 @@ function DecisionRow({ decision, onWatch }: { decision: Decision; onWatch?: (s: 
             </button>
           )}
         </div>
+        <VideoDissentNote motion={motion} className="mt-1.5" />
       </div>
     </li>
   );
