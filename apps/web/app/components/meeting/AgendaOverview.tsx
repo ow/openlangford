@@ -31,6 +31,7 @@ import { MotionOutcomeBadge } from "../motion-outcome-badge";
 import { normalizeMotionResult } from "../../lib/motion-utils";
 import { formatTimestamp } from "../../lib/timeline-utils";
 import { DocumentSections } from "./DocumentSections";
+import { ItemCommitmentsList } from "./item-commitments";
 
 interface AgendaOverviewProps {
   items: AgendaItem[];
@@ -581,6 +582,10 @@ function AgendaItemRow({
                     {item.debate_summary}
                   </p>
                 </div>
+              )}
+
+              {item.meta?.commitments && (
+                <ItemCommitmentsList commitments={item.meta.commitments} onWatchVideo={onWatchVideo} />
               )}
 
               {/* Watch discussion Button */}

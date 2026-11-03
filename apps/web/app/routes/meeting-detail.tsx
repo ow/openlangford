@@ -87,6 +87,8 @@ import { formatSpeakerName } from "../lib/speaker-labels";
 import { useSpeakerStats } from "../hooks/useSpeakerStats";
 import { getMeetingDuration } from "../lib/timeline-utils";
 import { AgendaOverview } from "../components/meeting/AgendaOverview";
+import { CommitmentsCard, meetingCommitments } from "../components/meeting/item-commitments";
+import { displayTitle } from "../lib/display-text";
 import { getPropertiesForItems } from "../services/properties";
 import { getMatterLinks } from "../services/matters";
 import { TranscriptDrawer } from "../components/meeting/TranscriptDrawer";
@@ -471,6 +473,7 @@ function MeetingDetailContent({ loaderData }: any) {
 
   const extractedDocs = extractedDocuments || [];
   const hasVideo = Boolean(meeting.video_url);
+  const commitments = useMemo(() => meetingCommitments(agendaItems), [agendaItems]);
 
   // Video lives in a collapsible "Watch" panel. Timestamps anywhere on the
   // page open it, scroll to it and seek.
@@ -691,6 +694,18 @@ function MeetingDetailContent({ loaderData }: any) {
                 </div>
               )}
             </section>
+
+            {commitments && (
+              <section id="commitments" className="scroll-mt-20">
+                <SectionHeading title={commitments.commitments.title ?? "Commitments"} />
+                <CommitmentsCard
+                  commitments={commitments.commitments}
+                  itemHref={`#item-${commitments.itemId}`}
+                  itemTitle={displayTitle(commitments.itemTitle)}
+                  onWatchVideo={hasVideo ? watchAt : undefined}
+                />
+              </section>
+            )}
 
             {allMotions.length > 0 && (
               <section id="decisions" className="scroll-mt-20">
