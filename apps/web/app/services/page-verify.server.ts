@@ -13,7 +13,9 @@ import type { PageFlag } from "../lib/page-review-types";
  */
 
 type Claim = { id: string; key: string | null; text: string };
-const RECORD_CAP = 120_000;  // characters of records per page; a big meeting's minutes are the long part
+const RECORD_CAP = 160_000;  // characters of records per page; a big meeting's minutes are the long part
+const DOCUMENT_CAP = 15_000;  // characters of one item's report text
+const KEY_SECTION = /purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial/i;
 
 const VerifySchema = z.object({
   verdicts: z.array(z.object({
@@ -52,7 +54,7 @@ export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): 
     supabase.from("motions").select("id, agenda_item_id, text_content, result, mover, seconder, meta, votes(person_id, vote)").in("agenda_item_id", itemIds),
     supabase.from("extracted_documents").select("agenda_item_id, title, key_facts").in("agenda_item_id", itemIds),
     supabase.from("document_sections").select("agenda_item_id, section_title, section_text, section_order").in("agenda_item_id", itemIds)
-      .order("section_order").limit(400),
+      .order("section_order").limit(3000),
   ]);
   const has = (id: number) => [motions, docs, sections].some((rows) => ((rows || []) as any[]).some((r) => r.agenda_item_id === id));
   const bare = ((items || []) as any[]).filter((i) => !has(i.id) && i.meeting_id);
@@ -86,9 +88,12 @@ export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): 
       // Extracted by a model from the report: a pointer to what the report covers, not the report's words.
       if (facts) lines.push(`  NOTES (model-extracted from report "${d.title}"): ${facts}`);
     }
+    // The report's own text is the record the page's figures are checked against (its extracted key facts are only
+    // notes), so the sections that carry them come first: a staff report's numbers are often in its comments.
     const text = ((sections || []) as any[]).filter((s) => s.agenda_item_id === item.id)
+      .sort((a, b) => Number(!KEY_SECTION.test(a.section_title || "")) - Number(!KEY_SECTION.test(b.section_title || "")))
       .map((s) => `${s.section_title ? `${s.section_title}: ` : ""}${s.section_text || ""}`).join(" ").replace(/\s+/g, " ");
-    if (text) lines.push(`  DOCUMENT TEXT: ${text.slice(0, 4000)}`);
+    if (text) lines.push(`  DOCUMENT TEXT: ${text.slice(0, DOCUMENT_CAP)}`);
     const pattern = !has(item.id) ? subjectPattern(item.title) : null;
     if (pattern) {
       const found = (loose.get(item.meeting_id) || []).map((t) => ({ t, at: t.search(pattern) })).filter((f) => f.at >= 0)

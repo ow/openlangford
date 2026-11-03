@@ -27,7 +27,7 @@ from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, TRANSCRIP
 
 # Bump when the prompt/schema changes so `main.py --stage matter-summaries --stale`
 # re-runs matters summarized by an older version (stamped in meta.summary_version).
-SUMMARY_VERSION = "4"
+SUMMARY_VERSION = "5"
 
 TOPICS = [
     "Development",
@@ -106,10 +106,10 @@ class MatterSummaries(BaseModel):
 
 
 MAX_HISTORY = 12
-REPORT_TEXT_CAP = 6000  # characters of an item's report text given as record
+REPORT_TEXT_CAP = 12000  # characters of an item's report text given as record
 SECTION_CAP = 1500
 TRANSCRIPTS_PER_MATTER = 12000  # characters of video transcript per matter, newest discussed items first
-KEY_SECTION = re.compile(r"purpose|executive summary|proposal|commentary|recommendation|summary|background", re.I)
+KEY_SECTION = re.compile(r"purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial", re.I)
 
 
 def _paginate(query_fn, page: int = 1000) -> list[dict]:
