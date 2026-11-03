@@ -61,9 +61,26 @@ def notice_only(folder_path) -> bool:
     return bool(files) and all("notice" in os.path.basename(f).lower() for f in files)
 
 
+# Item text an agenda-only run writes in the future tense; dropped when the held meeting's run has none.
+PLANNED_ITEM_TEXT = ("plain_english_summary", "debate_summary")
+
+
+def refreshed_item_fields(item_data: dict, held_after_plan: bool) -> dict:
+    """The fields a refresh writes to an existing agenda item. A missing enrichment value is not a request to erase a
+    populated field, except text written while the meeting was only planned ("Council is scheduled to...")."""
+    return {key: value for key, value in item_data.items()
+            if value is not None or (held_after_plan and key in PLANNED_ITEM_TEXT)}
+
+
+def minutes_not_expected(*metas) -> bool:
+    """An admin marked the meeting as one the City publishes no minutes for (meetings.meta.minutes_expected = false),
+    e.g. the 2026-11-02 inaugural meeting."""
+    return any((meta or {}).get("minutes_expected") is False for meta in metas)
+
+
 def motion_hold_applies(is_planned_meeting, classification, ballot_context, closed_only=False):
-    """True when AI motions are held as unverified: a non-Council body's ballot rules are unvalidated, or the
-    meeting was held entirely in camera, so no public minutes will ever exist to check them against."""
+    """True when AI motions are held as unverified: a non-Council body's ballot rules are unvalidated, or no public
+    minutes will ever exist to check them against (held entirely in camera, or marked as having no minutes)."""
     if not is_planned_meeting and closed_only:
         return True
     return (not is_planned_meeting and classification not in ("Council", "Committee of the Whole")
@@ -1614,8 +1631,9 @@ class MeetingIngester:
             )
             return None
 
-        persisted_meeting = self.supabase.table("meetings").select("id,status,has_minutes,has_transcript,has_agenda").eq("archive_path", normalized_path).execute().data
+        persisted_meeting = self.supabase.table("meetings").select("id,status,has_minutes,has_transcript,has_agenda,meta").eq("archive_path", normalized_path).execute().data
         persisted_meeting = persisted_meeting[0] if persisted_meeting else None
+        held_after_plan = not is_planned_meeting and (persisted_meeting or {}).get("status") == "Planned"
         if is_planned_meeting and persisted_meeting and persisted_meeting.get("status") in ("Occurred", "Completed"):
             raise RuntimeError("Refusing planned-source refresh of an already occurred meeting")
         if dry_run and persisted_meeting:
@@ -2263,7 +2281,8 @@ class MeetingIngester:
         # with validated rules (Community Advisory Committee) get status "available" and stay canonical.
         # Ingest items and documents and hold every AI motion reading as unverified.
         closed_only = notice_only(folder_path)
-        committee_hold = motion_hold_applies(is_planned_meeting, classification, ballot_context, closed_only)
+        no_minutes = minutes_not_expected(meeting_data.get("meta"), (persisted_meeting or {}).get("meta"))
+        committee_hold = motion_hold_applies(is_planned_meeting, classification, ballot_context, closed_only or no_minutes)
         canonical_enabled = not is_planned_meeting and not committee_hold and (
             ballot_context.get("status") == "available" or "archive/langford/" in normalized_path.replace("\\", "/")
         )
@@ -2271,7 +2290,8 @@ class MeetingIngester:
             for item in refined.get("items", []):
                 item["_unverified_motion_proposals"] = item.pop("motions", None) or []
                 item["motions"] = []
-            why = "held in camera; no public minutes" if closed_only else "no validated ballot rules for this body yet"
+            why = ("held in camera; no public minutes" if closed_only else "no minutes will be published" if no_minutes
+                   else "no validated ballot rules for this body yet")
             print(f"  [i] {classification}: motions held as unverified proposals ({why})")
         if canonical_enabled:
             if not valid_inventory(initial_claim_inventory, meeting_id):
@@ -2426,9 +2446,7 @@ class MeetingIngester:
                 if retained_item:
                     agenda_item_id = retained_item["id"]
                 elif old_item:
-                    # A missing enrichment value is not a request to erase a
-                    # previously populated agenda field during refresh.
-                    item_data = {key: value for key, value in item_data.items() if value is not None}
+                    item_data = refreshed_item_fields(item_data, held_after_plan)
                     # A re-run may render the same item as "4(a)" vs "4a" or with a
                     # retyped title; the persisted identity (and its unique slug) stays.
                     for identity_key in ("slug", "item_order", "title"):

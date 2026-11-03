@@ -1,6 +1,6 @@
 import pytest
 
-from pipeline.ingestion.ingester import motion_hold_applies, notice_only
+from pipeline.ingestion.ingester import minutes_not_expected, motion_hold_applies, notice_only, refreshed_item_fields
 
 UNVALIDATED = {"status": "committee_membership_rules_need_validation"}
 
@@ -31,6 +31,13 @@ def test_meeting_held_entirely_in_camera_is_held():
     assert not motion_hold_applies(False, "Council", {"status": "available"}, closed_only=False)
 
 
+def test_meeting_marked_as_having_no_minutes():
+    # 2026-11-02 inaugural meeting: the City publishes no minutes, so video readings stay unverified.
+    assert minutes_not_expected(None, {"minutes_expected": False})
+    assert not minutes_not_expected(None, {}, {"minutes_expected": True})
+    assert motion_hold_applies(False, "Council", {"status": "available"}, closed_only=minutes_not_expected({"minutes_expected": False}))
+
+
 def test_notice_only(tmp_path):
     def folder(name, files):
         for f in files:
@@ -45,3 +52,10 @@ def test_notice_only(tmp_path):
     assert not notice_only(folder("mixed", [notice, "Agenda/Agenda.pdf"]))
     assert not notice_only(folder("minuted", [notice, "Minutes/Minutes.pdf"]))
     assert not notice_only(folder("empty", []))
+
+
+def test_planned_item_text_is_dropped_once_the_meeting_is_held():
+    # 2026-11-02: the held meeting's run wrote no item summary, and "Council is scheduled to..." survived.
+    fresh = {"description": "Council approved the agenda.", "plain_english_summary": None, "financial_cost": None}
+    assert refreshed_item_fields(fresh, held_after_plan=True) == {"description": "Council approved the agenda.", "plain_english_summary": None}
+    assert refreshed_item_fields(fresh, held_after_plan=False) == {"description": "Council approved the agenda."}
