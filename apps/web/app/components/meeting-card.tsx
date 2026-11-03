@@ -6,7 +6,7 @@ import { formatDate, cn } from "../lib/utils";
 import { Badge } from "./ui/badge";
 import { ChevronRight, ClipboardList, FileText, Video } from "lucide-react";
 import { type TopicName, TOPICS } from "../lib/topic-utils";
-import { LinkedPoint, summaryPoints } from "./meeting/MeetingSummary";
+import { MeetingSummary, summaryPoints } from "./meeting/MeetingSummary";
 import { displaySummary, highlightPoints } from "../lib/meeting-summary";
 
 export interface MeetingStats {
@@ -73,7 +73,6 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
   // The whole row opens the meeting through the title's stretched link (after:inset-0), which leaves
   // room for highlight phrases to link straight to their agenda item (#item-{id}).
   const linksToMeeting = hasContent && !meeting.calendar_source_id;
-  const firstPoint = highlightPoints(meeting as any)?.[0];
 
   return (
     <article
@@ -135,17 +134,15 @@ export function MeetingCard({ meeting, stats }: MeetingCardProps) {
 
         <CalendarProvenance meeting={meeting} compact />
 
+        {/* The meeting's highlights, as on the home page's latest-meeting card (up to three). */}
         {meeting.summary && (
-          <p className="mt-1 max-w-[72ch] text-sm leading-relaxed text-zinc-600 line-clamp-2">
-            {firstPoint ? (
-              <LinkedPoint
-                point={firstPoint}
-                itemHref={linksToMeeting ? (id) => meetingPath(meeting, `#item-${id}`) : undefined}
-              />
-            ) : (
-              summaryPreview(displaySummary(meeting as any) || meeting.summary)
-            )}
-          </p>
+          <MeetingSummary
+            summary={displaySummary(meeting as any) || meeting.summary}
+            points={highlightPoints(meeting as any)}
+            itemHref={linksToMeeting ? (id) => meetingPath(meeting, `#item-${id}`) : undefined}
+            limit={3}
+            className="mt-1.5 max-w-[72ch] space-y-1 text-sm text-zinc-600"
+          />
         )}
 
         {(topics.length > 0 || carried + defeated > 0 || letters > 0) && (
