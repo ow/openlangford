@@ -205,7 +205,19 @@ function findRelevantSentence(sectionText: string, terms: string[]) {
     return terms.some((term) => lower.includes(term));
   }) || paragraphs[0] || "";
   if (!relevant) return "";
-  return relevant.length > 280 ? `${relevant.slice(0, 277).trim()}...` : relevant;
+  // Start at the sentence that names the topic when it would otherwise fall past the cut (a long budget
+  // paragraph that lists the stadium halfway through).
+  const lower = relevant.toLowerCase();
+  const at = Math.min(...terms.map((term) => lower.indexOf(term)).filter((i) => i >= 0));
+  let start = 0;
+  if (Number.isFinite(at) && at > 200) {
+    const before = relevant.slice(Math.max(0, at - 160), at);
+    const boundary = Math.max(before.lastIndexOf(". "), before.lastIndexOf("? "), before.lastIndexOf("! "));
+    start = boundary >= 0 ? at - before.length + boundary + 2 : Math.max(0, relevant.lastIndexOf(" ", at - 80) + 1);
+  }
+  const shown = relevant.slice(start);
+  const text = shown.length > 280 ? `${shown.slice(0, 277).trim()}...` : shown;
+  return start > 0 ? `...${text}` : text;
 }
 
 function inferTitleFromRelevantText(matter: any, sectionText: string, summary: string) {
