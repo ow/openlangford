@@ -204,6 +204,10 @@ def named_vote_declarations(block):
         # A second role-prefixed sentence is a separate clerk statement, not a
         # continuation of the first person's name list.
         scope = re.sub(r'(?<=[.;])\s+(?=(?:Mayor|Councillors?|Committee [Mm]embers?)\b)', '\n', scope)
+        # Some minutes put the dissent in parentheses after the outcome, "(Voting against: Councillor Szpak)": read it
+        # as the clerk's "AGAINST:" list (2026-11-03: three ballots had deemed that dissenter in favour).
+        scope = re.sub(r'\(\s*(?:Voting|Voted)\s+(against|in\s+favou?r)\s*:?\s*([^)\n]*)\)?',
+                       lambda m: f"\n{'AGAINST' if m.group(1).lower() == 'against' else 'IN FAVOUR'}: {m.group(2).strip()}\n", scope, flags=re.I)
         lines = [re.sub(r'[*_>]', '', line).strip() for line in scope.splitlines()]
         index = 0
         while index < len(lines):
@@ -242,7 +246,9 @@ def named_vote_declarations(block):
                 declared_count = None
                 quote = clean[:suffix.end()]
             else:
-                if starts_names and re.search(r'\b(?:opposed|against|abstain\w*|recus\w*|voted)\b', clean, re.I):
+                # Choice language the parser can't read holds the ballot; it is never taken as no dissent.
+                if (starts_names and re.search(r'\b(?:opposed|against|abstain\w*|recus\w*|voted)\b', clean, re.I)) or \
+                        re.search(r'\b(?:voting|voted)\s+against\b', clean, re.I):
                     declarations.append({'names':'', 'vote':None, 'source_quote':clean, 'unparsed':True})
                 continue
             names = re.split(r'\bOn the (?:Main )?Motion\b|\s+\d+\.(?:\d+)?\s', names, flags=re.I)[0].strip()

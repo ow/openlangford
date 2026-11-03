@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ingestion.record_sources import RECORD_RULE
 
 SYSTEM = """You rewrite council motion summaries for residents of a small Canadian city.
 Each summary is ONE sentence, at most 15 words, saying what the decision does in everyday terms.
@@ -22,7 +23,9 @@ Start with the outcome verb (Approved, Adopted, Rejected, Allowed, Raised, Direc
 No bylaw/permit numbers, policy codes, formal bylaw titles, quotation marks, or "Council" as the subject.
 Include the street/place or dollar amount when it is the point. Keep the exact bylaw stage (first/second/third reading, adoption).
 For procedural motions (agenda, minutes, adjournment, closed session) write a short plain phrase like "Approved the agenda."
-Never invent details that are not in the inputs."""
+Never invent details that are not in the inputs.
+""" + RECORD_RULE + """ Here the record is each motion's wording, its result and its agenda item title; the agenda
+item summary and the current summary are notes."""
 
 
 class MotionSummary(BaseModel):
@@ -39,15 +42,13 @@ def _prompt(rows: list[dict]) -> str:
         {
             "id": r["id"],
             "agenda_item": r.get("agenda_title") or "",
-            "agenda_item_summary": r.get("agenda_summary") or "",
-            "motion_text": r.get("text_content") or "",
-            "result": r.get("result") or "",
-            "current_summary": r.get("plain_english_summary") or "",
+            "record": {"motion_text": r.get("text_content") or "", "result": r.get("result") or ""},
+            "notes": {"agenda_item_summary": r.get("agenda_summary") or "", "current_summary": r.get("plain_english_summary") or ""},
         }
         for r in rows
     ]
     return (
-        "Rewrite `current_summary` for each motion below: one entry in `motions` per motion, same ids.\n\n"
+        "Rewrite the summary for each motion below: one entry in `motions` per motion, same ids.\n\n"
         + json.dumps(items, ensure_ascii=False)
     )
 
@@ -95,7 +96,7 @@ def regenerate_meeting_motion_summaries(supabase: Client, meeting_id: int, *, dr
     ]
     if not rows:
         return {}
-    summaries = _clean(ai.json(_prompt(rows), stage="extraction", schema=MotionSummaries, system=SYSTEM))
+    summaries = _clean(ai.json(_prompt(rows), stage="writing", schema=MotionSummaries, system=SYSTEM))
     valid = {mid: s for mid, s in summaries.items() if any(r["id"] == mid for r in rows)}
     if not dry_run:
         for mid, summary in valid.items():

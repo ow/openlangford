@@ -189,3 +189,17 @@ def test_printed_move_by_does_not_recover_prose_or_ambiguous_seconder_heading(pr
     from pipeline.ingestion.vote_evidence import minutes_motion_blocks
     text=prefix+'\nSECONDED: WAGNER\nTHAT Council adopt Bylaw No. 44.\nCARRIED.\n'
     assert list(minutes_motion_blocks(text))==[]
+
+
+def test_parenthesized_dissent_is_read_and_a_garbled_name_holds_the_ballot():
+    from pipeline.ingestion.vote_evidence import named_vote_declarations
+    block = {'after_outcome': '(Voting against: Councillor Szpak) 9.6 BYLAW NO. 2051',
+             'source_block': 'Motion CARRIED.\n(Voting against: Councillor Szpak) 9.6 BYLAW NO. 2051'}
+    declared = named_vote_declarations(block)
+    assert [(d['vote'], d['names']) for d in declared if not d.get('unparsed')] == [('No', 'Councillor Szpak')]
+    # An OCR-garbled name is still choice language: it can't resolve to a member, so the ballot is held downstream
+    # (vote_declaration_names_not_present_voting_members) instead of deeming everyone in favour.
+    block = {'after_outcome': '(Voting against:CQunciIlorSrpak) Councillor Wade left the meeting',
+             'source_block': 'Motion CARRIED.\n(Voting against:CQunciIlorSrpak) Councillor Wade left the meeting'}
+    declared = named_vote_declarations(block)
+    assert declared and all(d['vote'] == 'No' or d.get('unparsed') for d in declared)

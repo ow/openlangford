@@ -14,8 +14,9 @@ from pydantic import BaseModel
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ingestion.record_sources import RECORD_RULE
 
-HEADLINE_VERSION = "1"
+HEADLINE_VERSION = "2"  # 2: Terra, record vs notes
 
 SYSTEM = """You write headlines for council decisions in a small Canadian city, for residents skimming a front page.
 Each headline is 3 to 8 words, sentence case, no trailing period.
@@ -27,7 +28,9 @@ Write like a newspaper: "Garbage pickup capped at $280", "Developers to pay towa
 When the motion failed, say so: "Bid to extend patio hours rejected".
 When it is a bylaw step short of adoption, say which: "Walfred Road rezoning passes second reading".
 No bylaw or permit numbers, policy codes, quotation marks, "Council" as the subject, or the city name.
-Never invent details that are not in the inputs."""
+Never invent details that are not in the inputs.
+""" + RECORD_RULE + """ Here the record is each motion's wording, its result and its agenda item title; the decision
+summary is a note."""
 
 
 class MotionHeadline(BaseModel):
@@ -44,9 +47,8 @@ def _prompt(rows: list[dict]) -> str:
         {
             "id": r["id"],
             "agenda_item": r.get("agenda_title") or "",
-            "decision": r.get("plain_english_summary") or "",
-            "motion_text": r.get("text_content") or "",
-            "result": r.get("result") or "",
+            "record": {"motion_text": r.get("text_content") or "", "result": r.get("result") or ""},
+            "notes": {"decision_summary": r.get("plain_english_summary") or ""},
         }
         for r in rows
     ]
@@ -88,7 +90,7 @@ def headline_meeting_motions(supabase: Client, meeting_id: int, *, dry_run: bool
             titles[row["id"]] = row["title"]
     rows = [{**m, "agenda_title": titles.get(m.get("agenda_item_id"))} for m in motions]
 
-    result = ai.json(_prompt(rows), stage="extraction", schema=MotionHeadlines, system=SYSTEM)
+    result = ai.json(_prompt(rows), stage="writing", schema=MotionHeadlines, system=SYSTEM)
     by_id = {m["id"]: m for m in motions}
     headlines = {mid: h for mid, h in _clean(result).items() if mid in by_id}
     if not dry_run:

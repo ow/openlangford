@@ -6,6 +6,10 @@ import os
 from supabase import Client
 
 from pipeline import config
+from typing import Literal
+
+from pydantic import BaseModel
+
 from pipeline import ai
 from pipeline.ingestion.ingester import MeetingIngester
 from pipeline.paths import BASE_DIR
@@ -36,11 +40,15 @@ Output rules:
 - Return 3-5 Markdown bullets ("- "), one decision or outcome per bullet. No heading, no intro or closing sentence, no JSON.
 - Order bullets by how much they matter to residents (money, land use, housing, taxes, services first).
 - Keep each bullet under 18 words. Start with the outcome verb ("Approved", "Rejected", "Gave first reading to", "Directed staff to", "Deferred").
+  A committee only recommends: start its bullets with "Recommended" ("Recommended rezoning 1029 Marwood Avenue for three
+  lots"), never "Approved recommending".
 - Write for residents, not insiders. Say what the decision does in everyday terms, then at most one short identifier in parentheses at the end, e.g. "Adopted new fees developers pay toward community amenities (Bylaw 2275)." or "Allowed reduced setbacks for the RCMP building expansion on Atkins Ave; Guiry opposed."
 - Leave out amendment numbers, policy codes (e.g. POL-0185-FIN), formal bylaw titles, quotation marks and ALL-CAPS labels like "(ADOPTION)". Spell out acronyms (say "development variance permit", not "DVP").
 - Name the street or neighbourhood when relevant and include dollar amounts.
 - Name the exact bylaw stage (first/second/third reading or adoption); never blur it into "final readings" or "approved".
-- If any council member voted against or the vote was split, say who in the bullet (e.g. "Guiry opposed").
+- If any council member voted against or the vote was split, say who in the bullet (e.g. "Guiry opposed"), but only when
+  the minutes name them or the chair names them in the transcript. Arguing against a motion isn't voting against it, and
+  transcript speaker names are a machine's guess: when a vote against is heard but not named, say "one member opposed".
 - Do not repeat the meeting title, type or date — they are shown beside the summary.
 - Skip attendance, chair names, call to order, agenda adoption, consent-agenda housekeeping, closed-session motions and adjournment unless that was the only business (then one bullet saying so).
 - Never present an agenda proposal or discussion as a decision.
@@ -57,6 +65,54 @@ AGENDA:
 TRANSCRIPT:
 {transcript_text}
 """.strip()
+
+
+class _Problem(BaseModel):
+    statement: str
+    problem: str
+
+
+class _Dissent(BaseModel):
+    name: str
+    named_in: Literal["minutes", "chair_on_video", "nowhere"]
+    quote: str
+
+
+class _Check(BaseModel):
+    problems: list[_Problem]
+    dissents: list[_Dissent]
+
+
+def check_summary(summary: str, agenda_text: str, minutes_text: str, transcript_text: str) -> list[str]:
+    """Problems of fact in a meeting summary, judged by the reviewer model against the meeting's own records."""
+    prompt = f"""You check a short public summary of a Langford council or committee meeting against the meeting's records:
+its minutes, agenda and video transcript (whose speaker names are a machine's guess). List every statement the records
+contradict or don't contain: a figure, name, place, outcome or bylaw stage that differs or appears nowhere, and anyone
+named as voting against or opposed unless the minutes name them or the chair names them in the transcript (arguing
+against a motion is not voting against it). Wording and simplification are fine; judge facts only. Return no problems
+when it is right.
+Separately, under "dissents", list every person the summary names as voting against or opposed, with where the records
+name them doing so: "minutes" (the minutes record them as opposed), "chair_on_video" (the chair names them in the
+transcript, e.g. "opposed, Councillor X"), or "nowhere" (you'd have to infer it, e.g. from who argued against). Quote
+the words that name them; empty when nowhere.
+
+SUMMARY:
+{summary}
+
+MINUTES:
+{minutes_text}
+
+AGENDA:
+{agenda_text}
+
+TRANSCRIPT:
+{transcript_text}"""
+    if ai.budget.size(prompt) > ai.INPUT_BUDGET_CHARS:
+        raise ai.TooLarge(f"{ai.budget.size(prompt):,} characters to check")
+    checked = ai.json(prompt, stage="review", schema=_Check)
+    return [f"{p.statement}: {p.problem}" for p in checked.problems] + [
+        f"{d.name} is named as opposed, but no record names them voting against (say \"one member opposed\" or leave it out)"
+        for d in checked.dissents if d.named_in == "nowhere" or not d.quote.strip()]
 
 
 def regenerate_meeting_summary(
@@ -98,9 +154,23 @@ def regenerate_meeting_summary(
     prompt = build_summary_prompt(meeting, agenda_text or "", minutes_text or "", transcript_text or "")
     if ai.budget.size(prompt) > ai.INPUT_BUDGET_CHARS:  # never cut the minutes or transcript to fit; say so instead
         raise ai.TooLarge(f"meeting {meeting_id}: {ai.budget.size(prompt):,} characters of minutes, agenda and transcript")
-    summary = ai.text(prompt, stage="extraction", system=SUMMARY_SYSTEM)
+    summary = ai.text(prompt, stage="writing", system=SUMMARY_SYSTEM)
     if not summary or len(summary.strip()) < 20:
         raise RuntimeError("summary generation returned an empty response")
+    # Checked against the minutes, agenda and transcript; rewritten once if anything is unsupported, keeping whichever
+    # version has fewer problems (2026-11-03: a dissent attributed to whoever argued against, named nowhere).
+    problems = check_summary(summary, agenda_text or "", minutes_text or "", transcript_text or "")
+    if problems:
+        revised = ai.text(prompt + "\n\nYour previous summary:\n" + summary + "\n\nA check against the minutes, agenda and "
+                          "transcript found these problems. Fix each one from the records' own words, or leave the "
+                          "statement out, and return the whole summary again:\n- " + "\n- ".join(problems),
+                          stage="writing", system=SUMMARY_SYSTEM)
+        if revised and len(revised.strip()) >= 20:
+            left = check_summary(revised, agenda_text or "", minutes_text or "", transcript_text or "")
+            if len(left) < len(problems):
+                summary, problems = revised, left
+    if problems:
+        print(f"  [Summary] meeting {meeting_id}: kept with problems: {'; '.join(problems)}")
 
     summary = normalize_meeting_summary(summary)
     if dry_run:
