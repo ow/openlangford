@@ -30,11 +30,13 @@ import type { StaffRole } from "../lib/auth.server";
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "merge_topic", "accept_suggestion", "hide_page", "cannot_fix"]),
+      "rewrite_summary", "merge_topic", "accept_suggestion", "move_documents", "hide_page", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. Otherwise null."),
     other_matter_id: z.number().int().nullable().describe("merge_topic only, when two related topics below duplicate each other but not this page: the second one's id (to_matter_id is the first). Otherwise null."),
+    document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
+    to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
     source: z.string().nullable().describe("rewrite_summary / rewrite_entry / rewrite_heading: the record's own words that support the change, quoted exactly from the records above. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null otherwise."),
     reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
@@ -117,7 +119,7 @@ async function suggestionOnPage(supabase: SupabaseClient, key: string | null | u
 
 function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
   candidates: Map<string, Candidate[]>, records: string, lookalikes: Candidate[] = [], suggestions: Suggestion[] = [],
-  internalNote: string | null = null) {
+  internalNote: string | null = null, attachments = "") {
   const removable = entries.filter((e) => removableKey(e.key)).map((e) => e.key);
   const movable = [...candidates.entries()].map(([key, list]) =>
     `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no listed topic (move_item with null re-files it)"}`).join("\n");
@@ -171,6 +173,11 @@ the right date with the quote that gives it, or, if no record gives the right da
 which record and which date disagree. Work only from the records above, and never wait for more. When they don't
 say something, fix with what they do say: rewrite the line or summary to what they support (or to say plainly what
 they leave out), remove an entry they can't tie to this topic, and leave an entry that is about it as it is.
+- move_documents: when the documents attached to an entry are about another item at the same meeting (an agenda
+  reordered at the meeting can shift every report one item along), give the entry's key, the ids of the documents
+  that belong elsewhere and to_item_id, the item at that meeting they are about. The flagged entries' documents and
+  the other items at their meetings:
+${attachments || "(No flagged entry has documents attached.)"}
 - hide_page: when nothing in the records backs this page at all (no step of its own, nothing showing what it's
   about), hide it from the public. It can be undone, and the editor confirms it like every other change.
 Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what is wrong and
@@ -244,6 +251,23 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const { data: item } = await supabase.from("agenda_items").select("title, related_address").eq("id", itemId(flag.key)).maybeSingle();
       candidates.set(flag.key!, item?.title ? await candidatesFor(supabase, matterId, item as any) : []);
     }
+    // Each flagged entry's attached documents, and the other items at its meeting they might belong to (move_documents).
+    const attachedTo = new Map<number, { docs: Set<number>; siblings: Set<number> }>();
+    const attachmentLines: string[] = [];
+    for (const flag of agreed.filter((f) => movableKey(f.key))) {
+      const id = itemId(flag.key);
+      if (attachedTo.has(id)) continue;
+      const [{ data: docs }, { data: item }] = await Promise.all([
+        supabase.from("extracted_documents").select("id, title").eq("agenda_item_id", id).order("id"),
+        supabase.from("agenda_items").select("meeting_id").eq("id", id).maybeSingle(),
+      ]);
+      if (!docs?.length || !item?.meeting_id) continue;
+      const { data: others } = await supabase.from("agenda_items").select("id, item_order, title")
+        .eq("meeting_id", item.meeting_id).neq("id", id).order("id");
+      attachedTo.set(id, { docs: new Set(docs.map((d: any) => d.id)), siblings: new Set((others || []).map((o: any) => o.id)) });
+      attachmentLines.push(`- [${flag.key}] documents: ${docs.map((d: any) => `doc-${d.id} "${d.title}"`).join("; ")}\n` +
+        `  other items at its meeting: ${(others || []).map((o: any) => `${o.id} "${[o.item_order, String(o.title || "").split("\n")[0]].filter(Boolean).join(" ")}"`).join("; ")}`);
+    }
     // The records behind the page: every item filed here plus each flagged linked item, gathered the way the page
     // check gathers them (unattached minutes and reports of the same meeting included), and flagged report quotes.
     const { data: topic } = await supabase.from("matters").select("meta").eq("id", matterId).single();
@@ -279,7 +303,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const result = await getAiClient().json({
       stage: "review",
       prompt: planPrompt(page.heading || page.title, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates, records, lookalikes, suggestions,
-        (row as { internal_note?: string | null } | null)?.internal_note ?? null),
+        (row as { internal_note?: string | null } | null)?.internal_note ?? null, attachmentLines.join("\n")),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
     });
@@ -380,6 +404,22 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           fixedKeys.add(step.key);
           done.push(`${step.reason} New ${heading ? "heading" : "line"}: "${text}"`);
         }
+        continue;
+      }
+      if (step.action === "move_documents" && step.key && onPage.has(step.key) && step.to_item_id && step.document_ids?.length) {
+        const at = attachedTo.get(itemId(step.key));
+        const ids = step.document_ids.filter((d) => at?.docs.has(d));
+        if (at && ids.length && at.siblings.has(step.to_item_id)) {
+          // The documents and their text sections follow the item they're about (as the pipeline's relink writes them).
+          const { error: sectionError } = await supabase.from("document_sections").update({ agenda_item_id: step.to_item_id }).in("extracted_document_id", ids);
+          const { error } = sectionError ? { error: sectionError } : await supabase.from("extracted_documents").update({ agenda_item_id: step.to_item_id }).in("id", ids);
+          if (!error) {
+            done.push(step.reason);
+            fixedKeys.add(step.key);
+            continue;
+          }
+        }
+        left.push(`${step.reason} (the documents couldn't be moved)`);
         continue;
       }
       if (step.action === "unfile_item" && step.key?.startsWith("agenda-") && onPage.has(step.key)) {
