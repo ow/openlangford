@@ -895,11 +895,11 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               )}
                             </div>
                             <h3 className="text-base font-semibold leading-snug text-zinc-900">
-                              {displayTitle(entry.title)}
+                              {override?.heading || displayTitle(entry.title)}
                             </h3>
-                            {entry.snippet && (
+                            {(override?.line || entry.snippet) && (
                               <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-zinc-600">
-                                {entry.snippet}
+                                {override?.line || entry.snippet}
                               </p>
                             )}
                           </div>

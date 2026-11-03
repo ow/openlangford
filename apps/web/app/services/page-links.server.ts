@@ -44,14 +44,24 @@ const decided = (userId: string, review: "removed" | "accepted" | "rejected") =>
 /** Which timeline entries can be removed here: links found for this topic. An item filed under the topic itself
  * is moved in the pipeline's matter tools, not here. */
 export function removableKey(key: string | null | undefined) {
-  return !!key && /^(mention|background|report)-\d+$/.test(key);
+  return !!key && /^(mention|background|report|evidence)-\d+$/.test(key);
 }
 
 /** Remove one timeline entry from a topic page. Returns what was removed, in words, for the bar. */
 export async function removeEntry(supabase: SupabaseClient, matterId: number, key: string, userId: string): Promise<string> {
-  const [, kind, raw] = key.match(/^(mention|background|report)-(\d+)$/) || [];
+  const [, kind, raw] = key.match(/^(mention|background|report|evidence)-(\d+)$/) || [];
   const id = Number(raw);
   if (!kind || !Number.isSafeInteger(id)) throw new Error("That entry can't be removed here.");
+
+  if (kind === "evidence") {
+    // A supporting record (a page of a report or budget that names this topic), on this topic or one merged into it.
+    const { data: m } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+    const owners = [matterId, ...(((m?.meta as any)?.merged_matter_ids || []) as number[])];
+    const { data, error } = await supabase.from("matter_evidence").update({ hidden: true, ...decided(userId, "removed") })
+      .eq("id", id).in("matter_id", owners).select("id");
+    if (error || !data?.length) throw new Error("Could not remove that entry.");
+    return "Removed the supporting record from this page.";
+  }
 
   if (kind === "mention") {
     const { data, error } = await supabase.from("matter_links").update({ hidden: true, ...decided(userId, "removed") })

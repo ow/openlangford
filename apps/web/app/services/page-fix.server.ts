@@ -80,6 +80,37 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, item: {
 /** A search suggestion's key for the agent: "suggestion-L12" (a meeting item or topic link) or "suggestion-R7" (a report page). */
 const suggestionKey = (s: Suggestion) => `suggestion-${s.table === "matter_links" ? "L" : "R"}${s.id}`;
 
+/** The passages of each flagged supporting record that name this topic (by its title or aliases), so the agent can
+ * reword the entry from the record itself rather than from the page's short quote. */
+async function evidenceRecords(supabase: SupabaseClient, matterId: number, ids: number[]) {
+  if (!ids.length) return "";
+  const [{ data: m }, { data: rows }] = await Promise.all([
+    supabase.from("matters").select("title, meta").eq("id", matterId).single(),
+    supabase.from("matter_evidence").select("id, document_sections(section_title, section_text, documents(title))").in("id", ids),
+  ]);
+  const meta = (m?.meta || {}) as Record<string, any>;
+  const terms = [m?.title, meta.display_title, ...(Array.isArray(meta.aliases) ? meta.aliases : [])]
+    .filter((t): t is string => typeof t === "string" && t.length >= 4).map((t) => t.toLowerCase());
+  return ((rows || []) as any[]).map((r) => {
+    const section = Array.isArray(r.document_sections) ? r.document_sections[0] : r.document_sections;
+    const text = String(section?.section_text || "").replace(/\s+/g, " ").trim();
+    const lower = text.toLowerCase();
+    const hits = terms.flatMap((t) => { const out: number[] = []; let i = lower.indexOf(t); while (i >= 0 && out.length < 6) { out.push(i); i = lower.indexOf(t, i + t.length); } return out; })
+      .sort((a, b) => a - b);
+    // Each mention with ~500 characters either side, overlapping windows joined; the start of the record if none.
+    const spans: [number, number][] = [];
+    for (const at of hits) {
+      const span: [number, number] = [Math.max(0, at - 500), Math.min(text.length, at + 500)];
+      const last = spans[spans.length - 1];
+      if (last && span[0] <= last[1]) last[1] = span[1]; else spans.push(span);
+    }
+    const passages = (spans.length ? spans : [[0, Math.min(text.length, 1200)] as [number, number]]).slice(0, 4)
+      .map(([a, b]) => `${a > 0 ? "…" : ""}${text.slice(a, b)}${b < text.length ? "…" : ""}`).join("\n  ");
+    const title = section?.section_title || section?.documents?.title || "record";
+    return `SUPPORTING RECORD evidence-${r.id} (${title}${hits.length ? "" : "; doesn't name this topic"}):\n  ${passages}`;
+  }).join("\n\n");
+}
+
 /** Whether a suggestion the plan names is already on the page: added in this run, or accepted earlier. */
 async function suggestionOnPage(supabase: SupabaseClient, key: string | null | undefined, added: Set<string>) {
   if (!key) return false;
@@ -116,11 +147,15 @@ ${movable || "(No flagged items to move.)"}
   "Discussed in another item"). It becomes part of this topic's own history, so the summary can rely on it. Only when the item
   isn't filed on another topic; if it is, that other topic is probably the same project (merge_topic) or this page
   holds items that belong there (move_item).
-- rewrite_entry: a new line for any entry ("agenda-", "mention-", "background-", "report-"): one plain sentence of at most
+- rewrite_entry: a new line for any entry ("agenda-", "mention-", "background-", "report-", "evidence-"): one plain sentence of at most
   140 characters saying what this step did for this topic, outcome first ("Council gave second and third reading to the
   rezoning for the 165-home Costin Avenue apartments"). Use only facts in the records below; no file numbers, bylaw
   numbers or jargon unless the record gives nothing else.
-- rewrite_heading: a new heading for a "mention-", "background-" or "report-" entry whose heading is wrong or misleading.
+- rewrite_heading: a new heading for a "mention-", "background-", "report-" or "evidence-" entry whose heading is wrong or misleading.
+- "evidence-" entries are supporting records: a page of a report, budget or presentation that names this topic. Their
+  text is in the records below (the passages that name the topic). When the record says something about this topic,
+  rewrite_entry with what it says; when it only lists the topic in passing (a venue in a list, a facility among many),
+  remove_entry.
 - rewrite_summary: for the topic's summary or "where it stands", a short instruction for the summary writer in new_text.
   The summary writer treats only items filed on this topic as its history: it will not state a decision (an adoption,
   an approval) that appears here only as a "mention-" entry. When the fix rests on such a decision, first make it part
@@ -221,13 +256,21 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const { data: own } = await supabase.from("agenda_items").select("id").eq("matter_id", matterId).limit(60);
     const ids = [...new Set([...((own || []) as any[]).map((i) => i.id), ...agreed.map((f) => itemId(f.key)).filter(Number.isSafeInteger)])];
     const reportIds = agreed.map((f) => Number(f.key?.match(/^report-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
-    const [{ text: itemText }, { data: reports }] = await Promise.all([
+    const evidenceIds = agreed.map((f) => Number(f.key?.match(/^evidence-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
+    const [{ text: itemText }, { data: reports }, evidenceText] = await Promise.all([
       itemRecords(supabase, ids),
       reportIds.length ? supabase.from("matter_report_mentions").select("id, page, quote").in("id", reportIds) : Promise.resolve({ data: [] }),
+      evidenceRecords(supabase, matterId, evidenceIds),
     ]);
-    const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`)]
-      .filter(Boolean).join("\n\n");
-    const [lookalikes, suggestions] = await Promise.all([relatedOrSameNamed(supabase, matterId),
+    const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+      evidenceText].filter(Boolean).join("\n\n");
+    // Entries just added from the search are often filed on a topic of their own that's really this one (a lone
+    // 2019 extension of an agreement this page already has): offer those topics for merging too.
+    const addedItems = added.map((a) => itemId(a.key)).filter(Number.isSafeInteger);
+    const { data: addedOwners } = addedItems.length
+      ? await supabase.from("agenda_items").select("matter_id").in("id", addedItems) : { data: [] };
+    const [lookalikes, suggestions] = await Promise.all([
+      relatedOrSameNamed(supabase, matterId, ((addedOwners || []) as any[]).map((i) => i.matter_id).filter(Boolean)),
       listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])]);
     const result = await getAiClient().json({
       stage: "review",
@@ -320,7 +363,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         continue;
       }
       if ((step.action === "rewrite_entry" || step.action === "rewrite_heading") && step.key && onPage.has(step.key)
-          && /^(agenda|mention|background|report)-\d+$/.test(step.key)) {
+          && /^(agenda|mention|background|report|evidence)-\d+$/.test(step.key)) {
         const text = (step.new_text || "").replace(/\s+/g, " ").trim();
         const heading = step.action === "rewrite_heading";
         if (!quoteOf(step)) {
@@ -477,7 +520,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
 /** Topics that might be this one under another name: linked as related, with the same short title, or holding an
  * item mentioned on this page that names the same bylaw as one of this topic's own items (a bylaw's adoption filed on
  * another topic shows here only as "Discussed in another item"). */
-async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number): Promise<Candidate[]> {
+async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number, alsoIds: number[] = []): Promise<Candidate[]> {
   const { data: me } = await supabase.from("matters").select("meta").eq("id", matterId).single();
   const title = (me?.meta as any)?.display_title as string | undefined;
   const bylaws = (text: string) => new Set((text.match(/\bBylaw No\.?\s*(\d{3,4})\b/gi) || []).map((b) => b.replace(/\D/g, "")));
@@ -495,7 +538,7 @@ async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number): P
     title ? supabase.from("matters").select("id").eq("meta->>display_title", title).neq("id", matterId).limit(10) : Promise.resolve({ data: [] }),
   ]);
   const ids = [...new Set([...(links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)),
-    ...((named || []) as any[]).map((m) => m.id), ...sameBylaw])];
+    ...((named || []) as any[]).map((m) => m.id), ...sameBylaw, ...alsoIds])].filter((id) => id !== matterId);
   if (!ids.length) return [];
   const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", ids)
     .is("meta->>canonical_matter_id", null);

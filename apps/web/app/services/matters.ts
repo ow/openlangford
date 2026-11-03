@@ -245,6 +245,7 @@ export async function getMatterEvidence(
       "id, evidence_type, confidence, reason, agenda_item_id, document_section_id, agenda_item:agenda_items(id, meeting_id, item_order, title, meetings(slug, id, title, meeting_date, organizations(name))), document_section:document_sections(id, section_title, section_text, page_start, page_end, document_id, agenda_item_id, document:documents(id, title, meeting_id, meetings(slug, id, title, meeting_date, organizations(name))))",
     )
     .in("matter_id", [Number(matterId), ...mergedMatterIds])
+    .eq("hidden", false)
     .order("confidence", { ascending: false })
     .order("id", { ascending: true })
     .limit(25);
