@@ -77,6 +77,26 @@ export interface CouncilTermStats {
   /** Motions decided per month (YYYY-MM). */
   motionsByMonth: { month: string; carried: number; defeated: number }[];
   topics: { title: string; slug: string; meetings: number }[];
+  meetingsByMonth: { month: string; meetings: number }[];
+  /** Residents' comments at meetings and letters in agenda packages, as the pipeline recorded them. */
+  spokenComments: number;
+  letters: number;
+  publicSupports: number;
+  publicOpposes: number;
+  publicTopics: { title: string; slug: string; comments: number }[];
+}
+
+const count = (n: unknown) => (Number.isSafeInteger(n) && (n as number) >= 0 ? (n as number) : 0);
+
+/** Public input fields; zero/empty when the deployed function predates them. */
+function publicInput(row: any) {
+  return {
+    spokenComments: count(row.spoken_comments), letters: count(row.letters),
+    publicSupports: count(row.public_supports), publicOpposes: count(row.public_opposes),
+    publicTopics: (Array.isArray(row.public_topics) ? row.public_topics : [])
+      .filter((t: any) => typeof t?.title === "string" && typeof t?.slug === "string" && Number.isSafeInteger(t?.comments))
+      .map((t: any) => ({ title: t.title, slug: t.slug, comments: t.comments })),
+  };
 }
 
 /** Each term's totals (council_term_stats), keyed by term id. Counts only what the minutes record. */
@@ -99,6 +119,10 @@ export function getCouncilTermStats(municipalityId: number) {
         motionsByMonth: (Array.isArray(row.motions_by_month) ? row.motions_by_month : [])
           .filter((m: any) => typeof m?.month === "string" && /^\d{4}-\d{2}$/.test(m.month) && Number.isSafeInteger(m.carried) && Number.isSafeInteger(m.defeated))
           .map((m: any) => ({ month: m.month, carried: m.carried, defeated: m.defeated })),
+        meetingsByMonth: (Array.isArray(row.meetings_by_month) ? row.meetings_by_month : [])
+          .filter((m: any) => typeof m?.month === "string" && /^\d{4}-\d{2}$/.test(m.month) && Number.isSafeInteger(m.meetings))
+          .map((m: any) => ({ month: m.month, meetings: m.meetings })),
+        ...publicInput(row),
         bylawAdoptionDates: row.bylaw_adoption_dates.filter((d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)),
         topics: row.topics.filter((t: any) => typeof t?.title === "string" && typeof t?.slug === "string" && Number.isSafeInteger(t?.meetings))
           .map((t: any) => ({ title: t.title, slug: t.slug, meetings: t.meetings })),

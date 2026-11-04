@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { CalendarDays, CircleCheck, ScrollText, TrendingUp, type LucideIcon } from "lucide-react";
+import { CalendarDays, CircleCheck, MessageSquare, ScrollText, TrendingUp, type LucideIcon } from "lucide-react";
 import type { CouncilTermStats } from "../services/council-summary.server";
 
 const count = (n: number, one: string, many = `${one}s`) => `${n.toLocaleString()} ${n === 1 ? one : many}`;
@@ -73,6 +73,67 @@ function MotionKey({ parts }: { parts: Part[] }) {
   );
 }
 
+function CardHeading({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }) {
+  return (
+    <h3 className="flex items-center gap-2 text-sm font-medium text-zinc-600">
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+        <Icon className="h-4 w-4" />
+      </span>
+      {children}
+    </h3>
+  );
+}
+
+function TopicList({ topics }: { topics: { title: string; slug: string; label: string }[] }) {
+  return (
+    <ol className="mt-3 divide-y divide-zinc-100">
+      {topics.map((topic, i) => (
+        <li key={topic.slug} className="flex items-baseline gap-3 py-2 text-sm">
+          <span className="w-4 shrink-0 text-xs tabular-nums text-zinc-400">{i + 1}</span>
+          <Link to={`/matters/${topic.slug}`} className="min-w-0 flex-1 truncate font-medium text-zinc-800 hover:text-brand-700">
+            {topic.title}
+          </Link>
+          <span className="shrink-0 text-xs tabular-nums text-zinc-500">{topic.label}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** What residents said and wrote this term: how much, for or against, and about what. */
+function PublicInput({ stats, start }: { stats: CouncilTermStats; start: string }) {
+  const total = stats.spokenComments + stats.letters;
+  if (!total) return null;
+  const stance = ([
+    { label: "in support", value: stats.publicSupports, className: "bg-brand-500" },
+    { label: "opposed", value: stats.publicOpposes, className: "bg-amber-400" },
+    { label: "questions and other views", value: total - stats.publicSupports - stats.publicOpposes, className: "bg-zinc-400" },
+  ] as Part[]).filter((part) => part.value > 0);
+  return (
+    <div className="grid gap-6 rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="flex flex-col">
+        <CardHeading icon={MessageSquare}>Public input</CardHeading>
+        <p className="mt-3 text-4xl font-bold tracking-tight tabular-nums text-zinc-900">{total.toLocaleString()}</p>
+        <p className="mt-0.5 text-sm text-zinc-500">
+          {[stats.spokenComments && count(stats.spokenComments, "comment") + " at meetings", stats.letters && count(stats.letters, "letter")].filter(Boolean).join(" · ")}
+        </p>
+        <Breakdown parts={stance} />
+        {start < "2021-01-01" && (
+          <p className="mt-4 text-xs text-zinc-500">
+            Before 2021, comments come from the minutes, which record fewer of them, and there were fewer chances to comment.
+          </p>
+        )}
+      </div>
+      {stats.publicTopics.length > 0 && (
+        <div className="min-w-0">
+          <h4 className="text-xs text-zinc-500">What residents spoke and wrote about most</h4>
+          <TopicList topics={stats.publicTopics.map((t) => ({ title: t.title, slug: t.slug, label: count(t.comments, "comment") }))} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StatCard({ icon: Icon, label, value, children }: { icon: LucideIcon; label: string; value: number; children?: React.ReactNode }) {
   return (
     <div className="flex flex-col rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
@@ -114,7 +175,8 @@ export function TermStats({ stats, inProgress, start, end }: { stats: CouncilTer
       <h2 id="term-stats-heading" className="text-lg font-bold tracking-tight text-zinc-900">{inProgress ? "This term so far" : "This term"}</h2>
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard icon={CalendarDays} label="Meetings held" value={stats.meetings}>
-          <Breakdown parts={meetingParts} />
+          <QuarterBars points={stats.meetingsByMonth.map((m) => ({ month: m.month, values: [m.meetings] }))} colors={["bg-brand-500"]} what="Meetings held" start={start} end={end} />
+          {meetingParts.length > 1 && <p className="mt-2 text-xs text-zinc-500">{meetingParts.map((part) => `${part.value.toLocaleString()} ${part.label}`).join(" · ")}</p>}
         </StatCard>
         <StatCard icon={CircleCheck} label="Motions decided" value={stats.motionsCarried + stats.motionsDefeated}>
           <QuarterBars points={stats.motionsByMonth.map((m) => ({ month: m.month, values: [m.carried, m.defeated] }))} colors={["bg-brand-500", "bg-amber-400"]} what="Motions decided" start={start} end={end} />
@@ -125,25 +187,11 @@ export function TermStats({ stats, inProgress, start, end }: { stats: CouncilTer
           {months >= 3 && stats.bylawsAdopted > 0 && <p className="mt-2 text-xs text-zinc-500">{perMonth(stats.bylawsAdopted)}</p>}
         </StatCard>
       </div>
+      <PublicInput stats={stats} start={start} />
       {stats.topics.length > 0 && (
         <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
-          <h3 className="flex items-center gap-2 text-sm font-medium text-zinc-600">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
-              <TrendingUp className="h-4 w-4" />
-            </span>
-            On the agenda most often
-          </h3>
-          <ol className="mt-3 divide-y divide-zinc-100">
-            {stats.topics.map((topic, i) => (
-              <li key={topic.slug} className="flex items-baseline gap-3 py-2 text-sm">
-                <span className="w-4 shrink-0 text-xs tabular-nums text-zinc-400">{i + 1}</span>
-                <Link to={`/matters/${topic.slug}`} className="min-w-0 flex-1 truncate font-medium text-zinc-800 hover:text-brand-700">
-                  {topic.title}
-                </Link>
-                <span className="shrink-0 text-xs tabular-nums text-zinc-500">{count(topic.meetings, "meeting")}</span>
-              </li>
-            ))}
-          </ol>
+          <CardHeading icon={TrendingUp}>On the agenda most often</CardHeading>
+          <TopicList topics={stats.topics.map((t) => ({ title: t.title, slug: t.slug, label: count(t.meetings, "meeting") }))} />
         </div>
       )}
     </section>
