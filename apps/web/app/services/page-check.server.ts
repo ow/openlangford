@@ -5,7 +5,7 @@ import { renderPage } from "../lib/page-render.server";
 import { reviewKind } from "./page-reviews.server";
 import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-types";
 import { approvedGuidance, examplesFor, recordExample } from "./review-learning.server";
-import { verifyAgainstRecords } from "./page-verify.server";
+import { itemRecords, topicItemIds, verifyAgainstRecords } from "./page-verify.server";
 import { listSuggestions, matterForPath, type Suggestion } from "./page-links.server";
 
 /**
@@ -66,7 +66,10 @@ export function readPage(html: string): ReadPage {
     const from = m.index! + m[0].length;
     // The last entry ends where its list ends, or at the end of the page's main content, never in the footer.
     const ends = [html.indexOf("</ol>", from), mainEnd].filter((n) => n > from);
-    const next = starts[i + 1]?.index ?? (ends.length ? Math.min(...ends) : undefined);
+    let next = starts[i + 1]?.index ?? (ends.length ? Math.min(...ends) : undefined);
+    // A Related topics card is one flat list item: it ends with its own </li>, before the timeline that follows.
+    const close = m[1].startsWith("related-") ? html.indexOf("</li>", from) : -1;
+    if (close > from && (next === undefined || close < next)) next = close;
     return { key: m[1], text: plain(html.slice(from, next)) };
   }).filter(e => e.text);
   const mainStart = html.search(/<main\b/i);
@@ -111,6 +114,47 @@ with that address's council business: a street page with only that list is compl
 
 /** A search suggestion's key, as the fix agent knows it ("suggestion-L12" a meeting item or topic, "suggestion-R7" a report page). */
 export const suggestionKey = (s: Pick<Suggestion, "table" | "id">) => `suggestion-${s.table === "matter_links" ? "L" : "R"}${s.id}`;
+
+const RelatedSchema = z.object({
+  topics: z.array(z.object({
+    key: z.string().describe("The related topic's key exactly as given (related-<id>)."),
+    verdict: z.enum(["belongs", "same_project", "different"]).describe(
+      "belongs: a separate topic about the same place or project, rightly listed. same_project: the very same project or agreement as this page (a renewal, extension or later step of it), so the two should be one topic. different: about another place or project."),
+    reason: z.string().describe("One plain sentence a resident would understand, from the records."),
+  })),
+});
+
+/** Topics listed under Related topics, judged from the records of both topics (not their model-written summaries):
+ * flags one about a different place or project, or one that is this same project and should be merged. */
+export async function checkRelatedTopics(supabase: SupabaseClient, matterId: number, entries: PageEntry[]): Promise<PageFlag[]> {
+  const related = entries.filter((e) => /^related-\d+$/.test(e.key)).slice(0, 8);
+  if (!related.length) return [];
+  const own = (await itemRecords(supabase, await topicItemIds(supabase, matterId))).text;
+  const theirs = await Promise.all(related.map(async (e) =>
+    (await itemRecords(supabase, await topicItemIds(supabase, Number(e.key.slice(8)))).catch(() => ({ text: "" }))).text));
+  const result = await getAiClient().json({
+    stage: "review",
+    prompt: `A topic page on Open Langford, a site that follows Langford City council, lists other topics under "Related
+topics: Other topics about the same place or project." Decide for each listed topic, from the council's records of both
+topics, whether it belongs there. Judge from the records, not the titles.
+
+THIS TOPIC'S RECORDS:
+${own.slice(0, 20000) || "(none)"}
+
+${related.map((e, i) => `[${e.key}] as listed: ${e.text}\nIts records:\n${theirs[i].slice(0, 12000) || "(none)"}`).join("\n\n")}`,
+    schema: RelatedSchema,
+    schemaName: "related_topics_check",
+  });
+  const byKey = new Map(related.map((e) => [e.key, e.text]));
+  return result.data.topics.filter((t) => byKey.has(t.key) && t.verdict !== "belongs").map((t) => ({
+    key: t.key,
+    problem: t.verdict === "different" ? "different_story" as const : "duplicate" as const,
+    reason: t.reason,
+    fix: t.verdict === "different" ? "Take this topic off Related topics" : "Merge this topic with the page's topic",
+    excerpt: byKey.get(t.key)!,
+    verdict: null,
+  }));
+}
 
 export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = [], kind = "matters", suggestions: Suggestion[] = []) {
   // Approved guidance replaces the built-in description of its problem type.
@@ -157,6 +201,13 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const kind = reviewKind(path);
   // Two readings at once: against the records behind the page (page-verify), and as a resident (this prompt), which
   // can point a missing step at a suggestion already found.
+  const relatedMatterId = kind === "matters" && page.entries.some((e) => e.key.startsWith("related-")) ? await matterForPath(supabase, path) : null;
+  const relating = relatedMatterId ? checkRelatedTopics(supabase, relatedMatterId, page.entries).catch((error) => {
+    console.error("[page-check] checking related topics failed:", error instanceof Error ? error.message : error);
+    return [] as PageFlag[];
+  }) : Promise.resolve([] as PageFlag[]);
+  // Related topics are judged from their records by checkRelatedTopics, not by the reader's check.
+  const reading = { ...page, entries: page.entries.filter((e) => !e.key.startsWith("related-")) };
   const verifying = verifyAgainstRecords(supabase, path).catch((error) => {
     console.error("[page-check] verifying against the records failed:", error instanceof Error ? error.message : error);
     return [] as PageFlag[];
@@ -166,14 +217,15 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
     approvedGuidance(supabase, kind),
     kind === "matters" ? pendingSuggestions(supabase, path) : Promise.resolve([] as Suggestion[]),
   ]);
-  const [result, unsupported] = await Promise.all([
+  const [result, unsupported, relatedFlags] = await Promise.all([
     getAiClient().json({
       stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
-      prompt: checkPrompt(page, examples, guidance.rules, kind, suggestions),
+      prompt: checkPrompt(reading, examples, guidance.rules, kind, suggestions),
       schema: CheckSchema,
       schemaName: "page_check",
     }),
     verifying,
+    relating,
   ]);
   const byKey = new Map(page.entries.map(e => [e.key, e.text]));
   // What staff already decided on this page: a re-raised flag (same entry, same problem) keeps its rating;
@@ -193,6 +245,10 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
           verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
       }),
     ...unsupported.filter(f => !result.data.flags.some(c => c.key === f.key && (f.key !== null || c.problem === "wrong_detail"))).map(f => {
+      const before = priorFlags.find(p => decidedFlag(p) && same(p, f));
+      return { ...f, verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
+    }),
+    ...relatedFlags.map(f => {
       const before = priorFlags.find(p => decidedFlag(p) && same(p, f));
       return { ...f, verdict: before?.verdict ?? null, ...(before?.note ? { note: before.note } : {}), ...(before?.fixed ? { fixed: true } : {}) };
     }),

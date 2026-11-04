@@ -759,7 +759,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               />
               <ol className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm divide-y divide-zinc-100">
                 {story.related.map((r: any) => (
-                  <li key={r.id}>
+                  <li key={r.id} data-review-entry={`related-${r.id}`}>
                     <Link to={matterPath(r)} className="group block px-5 py-4 hover:bg-zinc-50">
                       <p className="text-xs tabular-nums text-zinc-500">
                         {r.first_seen ? shortDate(r.first_seen) : ""}

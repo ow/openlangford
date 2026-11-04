@@ -30,10 +30,10 @@ import type { StaffRole } from "../lib/auth.server";
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "merge_topic", "accept_suggestion", "move_documents", "hide_page", "cannot_fix"]),
+      "rewrite_summary", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "no_change", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
-    to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. Otherwise null."),
+    to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. unlink_related: the related topic's id. Otherwise null."),
     other_matter_id: z.number().int().nullable().describe("merge_topic only, when two related topics below duplicate each other but not this page: the second one's id (to_matter_id is the first). Otherwise null."),
     document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
@@ -43,7 +43,7 @@ const PlanSchema = z.object({
   })),
 });
 
-type Candidate = { id: number; title: string; dates: string };
+type Candidate = { id: number; title: string; dates: string; related?: boolean };
 
 /** Topics an item filed (or linked) here might belong to instead, not this topic: ones with the same permit or bylaw
  * number, ones holding other items at the same address, and full-text matches on its title. */
@@ -161,11 +161,19 @@ ${movable || "(No flagged items to move.)"}
   part of the same thing, like one year's budget split across several topics), with its id; one action per topic.
   When two related topics duplicate each other but are not this page's project, give both: to_matter_id and
   other_matter_id.
+- unlink_related: take a topic listed under Related topics off this page when its records (given below as "RELATED
+  TOPIC") show it isn't the same place or project (to_matter_id: its id). Its entries leave the timeline with it. If it is the very same project, merge_topic instead.
+  A "related-<id>" entry is a topic listed under Related topics: unlink_related or merge_topic it with to_matter_id <id>
+  (or no_change when its records show it belongs).
+- no_change: when the editor asks a question ("is this relevant?", "should this be here?") and the answer is that the
+  page is right as it is. Answer it in "reason": one or two plain sentences saying why, from the records (e.g. "The
+  2018 item renewed the same five-year access agreement Council granted in 2013, so it belongs here"). Use it too when
+  an agreed problem turns out not to be one. Give the key of the entry it's about, or null for the whole page.
 - accept_suggestion: add one of the entries the search found for this page (listed below, not yet on it) when it
   supplies what an agreed problem says is missing (e.g. the adoption or decision the status lacks), with its key.
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
-${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics:\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("\n")}\n` : ""}
+${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}`).join("\n")}\n` : ""}
 Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly. A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
@@ -183,7 +191,9 @@ ${attachments || "(No flagged entry has documents attached.)"}
 Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what is wrong and
 where, not "a person should look".
 
-For each agreed problem (and anything the note asks), give one action. Don't change anything the editor didn't
+For each agreed problem (and anything the note asks), give at least one action: never leave one unanswered. An
+instruction written as a question ("Is it relevant? If not, remove it") asks you to decide: act on it, or answer it
+with no_change. Don't change anything the editor didn't
 agree with or ask for.
 
 Records (each item's motions, reports and minutes; "MINUTES OR REPORT TEXT FROM THIS MEETING" was found in the same
@@ -302,9 +312,16 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const [lookalikes, suggestions] = await Promise.all([
       relatedOrSameNamed(supabase, matterId, ((addedOwners || []) as any[]).map((i) => i.matter_id).filter(Boolean)),
       listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])]);
+    // Each topic listed under Related topics is read from its own records (not its model-written summary), so the
+    // agent can judge whether it's the same place or project: keep it, unlink it, or merge it.
+    const relatedRecords = (await Promise.all(lookalikes.filter((c) => c.related).slice(0, 6).map(async (c) => {
+      const text = (await itemRecords(supabase, await topicItemIds(supabase, c.id)).catch(() => ({ text: "" }))).text;
+      return text ? `RELATED TOPIC ${c.id} "${c.title}": its own records\n${text.slice(0, 12000)}` : "";
+    }))).filter(Boolean).join("\n\n");
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates, records, lookalikes, suggestions,
+      prompt: planPrompt(page.heading || page.title, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates,
+        [records, relatedRecords].filter(Boolean).join("\n\n"), lookalikes, suggestions,
         (row as { internal_note?: string | null } | null)?.internal_note ?? null, attachmentLines.join("\n")),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
@@ -322,6 +339,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const lines: Record<string, { line?: string; heading?: string; source?: string }> = {};
     const summaryNotes: string[] = [];
     const waiting: string[] = [];
+    const answered: string[] = [];
+    const answeredKeys = new Set<string | null>();
     const hidden: Record<string, { keep: number; reason: string; by: string; at: string }> = {};
     const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim();
     for (const step of result.data.actions) {
@@ -331,6 +350,30 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         // Two related topics merged with each other, or one merged into this page.
         merges.push(other ? { matter_id: other, with_matter_id: step.to_matter_id, reason: step.reason }
           : { with_matter_id: step.to_matter_id, reason: step.reason });
+        continue;
+      }
+      if (step.action === "no_change") {
+        answered.push(step.reason);
+        answeredKeys.add(step.key && onPage.has(step.key) ? step.key : null);
+        continue;
+      }
+      // A flag on a Related topics card names the topic in its key.
+      const relatedId = Number(step.key?.match(/^related-(\d+)$/)?.[1] ?? NaN);
+      if ((step.action === "unlink_related" || step.action === "merge_topic") && !step.to_matter_id && Number.isSafeInteger(relatedId)) {
+        step.to_matter_id = relatedId;
+      }
+      if (step.action === "unlink_related" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id && c.related)) {
+        const { error } = await supabase.from("matter_links").update({ hidden: true, review: "removed", reviewed_by: requester.id, reviewed_at: new Date().toISOString() })
+          .eq("kind", "related_matter")
+          .or(`and(matter_id.eq.${matterId},related_matter_id.eq.${step.to_matter_id}),and(matter_id.eq.${step.to_matter_id},related_matter_id.eq.${matterId})`);
+        if (error) left.push(`${step.reason} (unlinking it didn't work)`);
+        else {
+          done.push(step.reason);
+          answeredKeys.add(null);
+          fixedKeys.add(`related-${step.to_matter_id}`);
+          await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:unlink_related",
+            detail: { matter_id: String(step.to_matter_id), reason: step.reason.slice(0, 400) } });
+        }
         continue;
       }
       if (step.action === "hide_page") {
@@ -528,7 +571,9 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     }
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it; a whole-page issue is
     // resolved by a summary rewrite.
-    const updated = flags.map((f) => (f.key && fixedKeys.has(f.key)) || (!f.key && f.verdict === "agree" && summaryNotes.length)
+    // An answered question (no_change) or an unlinked related topic settles the flag it was about.
+    const settled = (f: PageFlag) => f.verdict === "agree" && (answeredKeys.has(f.key ?? null) || (!f.key && answeredKeys.has(null)));
+    const updated = flags.map((f) => (f.key && fixedKeys.has(f.key)) || (!f.key && f.verdict === "agree" && summaryNotes.length) || settled(f)
       ? { ...f, key: renamed.get(f.key!) ?? f.key, fixed: true } : { ...f, key: renamed.get(f.key!) ?? f.key });
     if (moves.length || merges.length || done.length) {
       // The pipeline's quick worker moves items and rewrites the changed summaries, then finishes the page.
@@ -551,12 +596,14 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       left.push("Couldn't hand the rest to the pipeline worker, so items weren't moved and the summary wasn't rewritten.");
     }
     const note = [
-      done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : "Changed nothing.",
+      done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : answered.length ? "" : result.data.actions.length
+        ? "Changed nothing." : "Changed nothing: the agent didn't say what to do. Try rewording the issue as an instruction.",
+      answered.length ? `Left as is:\n${answered.map((d) => `• ${d}`).join("\n")}` : "",
       waiting.length ? `Needs a record that isn't on this page:\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
     ].filter(Boolean).join("\n\n");
     // Only waiting on records: nothing for a person to do now, so the page isn't sent back as needing work.
-    await finish(done.length || (waiting.length && !left.length) ? "fixed" : "needs_work", note, updated);
+    await finish(done.length || ((waiting.length || answered.length) && !left.length) ? "fixed" : "needs_work", note, updated);
   } catch (error) {
     console.error("[page-fix]", error instanceof Error ? error.message : error);
     await finish("needs_work", "The agent hit an error and changed nothing. Try again, or fix it by hand.");
@@ -586,8 +633,9 @@ async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number, al
   const ids = [...new Set([...(links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)),
     ...((named || []) as any[]).map((m) => m.id), ...sameBylaw, ...alsoIds])].filter((id) => id !== matterId);
   if (!ids.length) return [];
+  const relatedIds = new Set((links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)));
   const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", ids)
     .is("merged_into", null);
   return (data || []).map((m: any) => ({ id: m.id, title: m.meta?.display_title || m.title,
-    dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to ") }));
+    dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to "), related: relatedIds.has(m.id) }));
 }
