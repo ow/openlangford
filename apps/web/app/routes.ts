@@ -56,6 +56,7 @@ export default [
   route("admin/letters", "routes/admin-letters.tsx"),
   route("admin/contact", "routes/admin-contact.tsx"),
   route("admin/reviews", "routes/admin-reviews.tsx"),
+  route("admin/audit", "routes/admin-audit.tsx"),
   route("admin/reviews/next", "routes/admin-reviews-next.ts"),
   route("admin/pipeline/jobs/:id", "routes/admin-pipeline-job.tsx"),
 

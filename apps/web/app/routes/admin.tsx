@@ -90,6 +90,7 @@ function tools(data: AdminOverview & { staffRole?: string }): { heading: string;
       links: [
         { to: "/admin/pipeline", title: "Pipeline", status: waiting(q.failedJobs, "failed", "urgent") },
         { to: "/admin/people", title: "People and memberships", status: null },
+        { to: "/admin/audit", title: "Audit log", status: null },
       ],
     }]),
   ];
