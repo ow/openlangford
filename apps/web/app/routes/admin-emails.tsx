@@ -1,3 +1,4 @@
+import { accountEmailFor } from "../lib/redact-email";
 import type { Route } from "./+types/admin-emails";
 import { Link } from "react-router";
 import {
@@ -26,10 +27,13 @@ export const meta = () => [
 export const headers = privateAdminHeaders;
 export const action = adminReadOnlyAction;
 export async function loader({ request }: Route.LoaderArgs) {
-  return adminRead(request, async () => {
+  return adminRead(request, async (role) => {
     const filters = emailFilters(new URL(request.url));
+    const result = await getEmailPage(getSupabaseAdminClient(), filters);
+    const email = accountEmailFor(role);
     return {
-      ...(await getEmailPage(getSupabaseAdminClient(), filters)),
+      ...result,
+      messages: result.messages.map((m) => ({ ...m, recipient: email(m.recipient) ?? "" })),
       filters,
     };
   });

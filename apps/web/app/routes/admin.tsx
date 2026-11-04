@@ -1,3 +1,4 @@
+import { accountEmailFor } from "../lib/redact-email";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/admin";
@@ -18,7 +19,12 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   const env = ((context as any)?.cloudflare?.env ?? {}) as Record<string, unknown>;
   const ctx = (context as any)?.cloudflare?.ctx as { waitUntil?: (p: Promise<unknown>) => void } | undefined;
   const waitUntil = ctx?.waitUntil ? (p: Promise<unknown>) => ctx.waitUntil!(p) : undefined;
-  return adminRead(request, async (role) => ({ ...(await getAdminOverview(getSupabaseAdminClient(), env, new Date(), waitUntil)), staffRole: role }));
+  return adminRead(request, async (role) => {
+    const overview = await getAdminOverview(getSupabaseAdminClient(), env, new Date(), waitUntil);
+    const email = accountEmailFor(role);
+    const audience = overview.audience && { ...overview.audience, recent: overview.audience.recent.map((u) => ({ ...u, email: email(u.email) })) };
+    return { ...overview, audience, staffRole: role };
+  });
 }
 
 export const action = adminReadOnlyAction;
