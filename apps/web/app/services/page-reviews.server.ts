@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { UNREVIEWED_SECTIONS, isReviewable, unresolvedFlags, type PageFlag, type PageReview, type PageReviewStatus } from "../lib/page-review-types";
 import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap.server";
+import { todayKey } from "../lib/pipeline-status";
 
 export type { PageReview, PageReviewStatus } from "../lib/page-review-types";
 
@@ -129,6 +130,33 @@ export async function reviewCoverage(supabase: SupabaseClient, rows: { path: str
     total: list.reduce((n, s) => n + s.total, 0),
     reviewed: list.reduce((n, s) => n + s.reviewed, 0),
     checked: list.reduce((n, s) => n + s.checked, 0),
+  };
+}
+
+/** How many public pages are still waiting for a review, now and at the end of each of the last `days` days (the
+ * admin home's burn-down), plus this week's reviews and agent fixes waiting to be confirmed. A page counts as
+ * reviewed once a person has given it a status, the same rule as reviewCoverage. */
+export async function reviewBurndown(supabase: SupabaseClient, now = new Date(), days = 30) {
+  const kinds = SITEMAP_SECTIONS.filter((s) => !(UNREVIEWED_SECTIONS as readonly string[]).includes(s));
+  const [lists, rows] = await Promise.all([
+    Promise.all(kinds.map((s) => sitemapEntries(supabase, s).catch(() => []))),
+    supabase.from("page_reviews").select("path, status, reviewed_at").not("status", "is", null).limit(20000),
+  ]);
+  if (rows.error) throw rows.error;
+  const pages = new Set(lists.flat().map((e) => reviewPath(e.path)).filter((p): p is string => !!p));
+  const done = (rows.data || []).filter((r: { path: string }) => pages.has(r.path));
+  const doneDays = done.map((r: { reviewed_at: string | null }) => todayKey(new Date(r.reviewed_at || now)));
+  const weekAgo = todayKey(new Date(now.getTime() - 6 * 86_400_000));
+  const series = Array.from({ length: days }, (_, i) => {
+    const day = todayKey(new Date(now.getTime() - (days - 1 - i) * 86_400_000));
+    return { day, value: pages.size - doneDays.filter((d) => d <= day).length };
+  });
+  return {
+    total: pages.size,
+    left: pages.size - done.length,
+    reviewedThisWeek: doneDays.filter((d) => d >= weekAgo).length,
+    awaitingConfirmation: done.filter((r: { status: string }) => r.status === "fixed").length,
+    series,
   };
 }
 

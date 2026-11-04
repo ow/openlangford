@@ -4,6 +4,7 @@ import type { UnplacedDocument } from "../lib/written";
 import { getAiUsageDashboard } from "./ai-usage-admin.server";
 import { getMunicipality } from "./municipality";
 import { getFailureResolutions } from "./pipeline-admin.server";
+import { reviewBurndown } from "./page-reviews.server";
 import { getSiteTraffic, type DailyPoint } from "./site-traffic.server";
 
 const DAY = 86_400_000;
@@ -185,7 +186,7 @@ async function getCalendar(supabase: SupabaseClient, municipalityId: number | nu
 export async function getAdminOverview(supabase: SupabaseClient, env: Record<string, unknown>, now = new Date(),
   waitUntil?: (p: Promise<unknown>) => void) {
   const municipalityId = await section(async () => (await getMunicipality(supabase)).id as number);
-  const [queues, audience, email, questions, ai, calendar, traffic] = await Promise.all([
+  const [queues, audience, email, questions, ai, calendar, traffic, reviews] = await Promise.all([
     getQueues(supabase, municipalityId),
     section(() => getAudience(supabase, now)),
     section(() => getEmail(supabase, now)),
@@ -193,6 +194,7 @@ export async function getAdminOverview(supabase: SupabaseClient, env: Record<str
     getAiUsageDashboard(supabase, { windows: [7], now }),
     section(() => getCalendar(supabase, municipalityId)),
     getSiteTraffic(env, waitUntil),
+    section(() => reviewBurndown(supabase, now)),
   ]);
   return {
     generatedAt: now.toISOString(),
@@ -206,6 +208,7 @@ export async function getAdminOverview(supabase: SupabaseClient, env: Record<str
       : null,
     calendar,
     traffic,
+    reviews,
   };
 }
 

@@ -37,12 +37,12 @@ function ChartTable({ caption, data, unit }: { caption: string; data: Point[]; u
   );
 }
 
-function YAxis({ max }: { max: number }) {
+function YAxis({ max, min = 0 }: { max: number; min?: number }) {
   return (
     <>
       {[1, 0.5, 0].map((f) => (
         <div key={f} className="pointer-events-none absolute inset-x-0 flex items-center" style={{ top: `${(1 - f) * 100}%` }}>
-          <span className="absolute -left-1 -translate-x-full -translate-y-1/2 text-[11px] tabular-nums text-zinc-400">{n(max * f)}</span>
+          <span className="absolute -left-1 -translate-x-full -translate-y-1/2 text-[11px] tabular-nums text-zinc-400">{n(Math.round(min + (max - min) * f))}</span>
           <div className={cn("h-px w-full -translate-y-1/2", f === 0 ? "bg-zinc-300" : "bg-zinc-100")} />
         </div>
       ))}
@@ -77,12 +77,25 @@ function Tooltip({ x, point, unit }: { x: number; point: Point; unit: string }) 
 }
 
 /** One series over time: a 2px line with a soft fill, crosshair and tooltip on hover. */
-export function AreaChart({ data, unit, label, height = 220 }: { data: Point[]; unit: string; label: string; height?: number }) {
+/** An axis that starts just below the data instead of at zero, so a small change in a large number shows. */
+function zoomedRange(values: number[]) {
+  const lo = Math.min(...values), hi = Math.max(...values);
+  const span = niceMax(Math.max(hi - lo, 4) * 1.5);
+  const min = Math.max(0, Math.floor((lo - span * 0.2) / (span / 4)) * (span / 4));
+  return { min, max: min + Math.max(span, niceMax(hi - min)) };
+}
+
+export function AreaChart({ data, unit, label, height = 220, zoom = false }: {
+  data: Point[]; unit: string; label: string; height?: number;
+  /** Start the axis near the data rather than at zero (for a large total that changes a little). */
+  zoom?: boolean;
+}) {
   const [active, setActive] = useState<number | null>(null);
-  const max = niceMax(Math.max(0, ...data.map((d) => d.value)));
+  const values = data.map((d) => d.value);
+  const { min, max } = zoom && values.length ? zoomedRange(values) : { min: 0, max: niceMax(Math.max(0, ...values)) };
   const last = Math.max(data.length - 1, 1);
   const x = (i: number) => (i / last) * 100;
-  const y = (v: number) => 100 - (v / max) * 100;
+  const y = (v: number) => 100 - ((v - min) / (max - min)) * 100;
   const line = data.map((d, i) => `${i === 0 ? "M" : "L"}${x(i)},${y(d.value)}`).join(" ");
   const point = active == null ? null : data[active];
 
@@ -97,7 +110,7 @@ export function AreaChart({ data, unit, label, height = 220 }: { data: Point[]; 
         }}
         onMouseLeave={() => setActive(null)}
       >
-        <YAxis max={max} />
+        <YAxis max={max} min={min} />
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
           <path d={`${line} L100,100 L0,100 Z`} className="fill-brand-600/10" />
           <path d={line} fill="none" vectorEffect="non-scaling-stroke" strokeWidth={2} strokeLinejoin="round" className="stroke-brand-600" />

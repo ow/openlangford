@@ -199,6 +199,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
           </div>
 
           <aside className="min-w-0 space-y-6 lg:col-start-2 lg:row-start-2">
+            {data.reviews && <ReviewProgress reviews={data.reviews} />}
             <Panel title="Council calendar" flush>
               <Calendar calendar={data.calendar} />
             </Panel>
@@ -254,6 +255,48 @@ function ToolsPanel({ groups, contact }: { groups: { heading: string; links: Too
         )}
       </Panel>
     </div>
+  );
+}
+
+/** Pages still waiting for a person's review, and how that number has come down: a way into reviewing. */
+function ReviewProgress({ reviews }: { reviews: NonNullable<AdminOverview["reviews"]> }) {
+  const share = reviews.total ? Math.round(((reviews.total - reviews.left) / reviews.total) * 100) : 100;
+  return (
+    <Panel
+      title="Pages needing review"
+      subtitle={`${n(reviews.reviewedThisWeek)} reviewed this week`}
+      action={{ to: "/admin/reviews", label: "All" }}
+    >
+      {reviews.left === 0 ? (
+        <p className="text-sm text-zinc-600">Every page has been reviewed.</p>
+      ) : (
+        <>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-950">{n(reviews.left)}</span>
+            <span className="text-sm text-zinc-500">of {n(reviews.total)} left</span>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-zinc-100" role="img" aria-label={`${share}% of pages reviewed`}>
+            <div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.max(share, 1)}%` }} />
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">{share}% reviewed</p>
+          <div className="mt-3">
+            <AreaChart data={reviews.series} unit="pages left" label="Pages left to review, last 30 days" height={110} zoom />
+          </div>
+        </>
+      )}
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        {reviews.left > 0 && (
+          <Link to="/admin/reviews/next" className="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+            Review a page
+          </Link>
+        )}
+        {reviews.awaitingConfirmation > 0 && (
+          <Link to="/admin/reviews/next?status=fixed" className="text-sm font-medium text-brand-700 hover:text-brand-800">
+            Confirm {n(reviews.awaitingConfirmation)} agent {reviews.awaitingConfirmation === 1 ? "fix" : "fixes"}
+          </Link>
+        )}
+      </div>
+    </Panel>
   );
 }
 
