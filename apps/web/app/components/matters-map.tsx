@@ -123,6 +123,8 @@ export function MattersMap({
           maxZoom: 19,
           renderWorldCopies: false,
           attributionControl: false,
+          // On touch screens one finger scrolls the page; moving the map takes two.
+          cooperativeGestures: window.matchMedia("(pointer: coarse)").matches,
         }));
         current.addControl(
           new maplibre.NavigationControl({ showCompass: false }),
