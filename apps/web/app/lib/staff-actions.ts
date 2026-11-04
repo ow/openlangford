@@ -29,6 +29,10 @@ const LABELS: Record<string, string> = {
   assign_person_segments: "Assigned transcript lines to a person",
   relabel_segments: "Relabelled transcript lines",
   split_segment: "Split a transcript line",
+  edit_topic: "Edited a topic's text or photo",
+  reset_field: "Reset an edit to automatic",
+  keep_edits: "Kept edits after new entries",
+  assess: "Asked the agent to assess a report",
 };
 
 const words = (value: string) => value.replace(/[_-]+/g, " ").replace(/^\w/, (c) => c.toUpperCase());
