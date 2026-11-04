@@ -82,6 +82,7 @@ scripts/*
 
 # Legacy src/ (being migrated)
 src/
+!apps/email-router/src/
 
 GEMINI.md
 TASKLIST.md
