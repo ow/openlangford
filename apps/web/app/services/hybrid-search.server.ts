@@ -200,6 +200,7 @@ async function searchMatters(
       "id, slug, title, identifier, description, plain_english_summary, category, status, first_seen, last_seen, meta",
     )
     .or("meta->>hidden.is.null,meta->>hidden.neq.staff")  // pages staff hid from the public
+    .is("merged_into", null)  // a merged topic's page redirects to the one it was merged into
     .order("last_seen", { ascending: false, nullsFirst: false })
     .limit(1000);
 

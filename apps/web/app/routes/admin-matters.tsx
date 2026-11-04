@@ -188,37 +188,14 @@ export async function action({ request }: Route.ActionArgs) {
       return { ok: "Nothing left to merge: these matters were already combined." };
     }
     const plan = planMerge(currentIds.map((matterId) => byId.get(matterId)!));
-    const { data: repointRows, error: repointError } = plan.repointIds.length
-      ? await supabase.from("matters").select("id, meta").in("id", plan.repointIds)
-      : { data: [] as any[], error: null };
-    if (repointError) return { error: repointError.message };
-
-    const updates = [
-      supabase
-        .from("matters")
-        .update({
-          meta: { ...(plan.canonical.meta || {}), merged_matter_ids: plan.mergedIds },
-          last_seen: plan.lastSeen,
-        })
-        .eq("id", plan.canonical.id),
-      ...plan.aliases.map((a) => {
-        const { merged_matter_ids: _absorbed, ...meta } = a.meta || {};
-        return supabase
-          .from("matters")
-          .update({ meta: { ...meta, canonical_matter_id: plan.canonical.id, merge_reason: "admin-review" } })
-          .eq("id", a.id);
-      }),
-      // Earlier aliases of an absorbed matter point straight at the new canonical.
-      ...(repointRows || []).map((r: any) =>
-        supabase
-          .from("matters")
-          .update({ meta: { ...(r.meta || {}), canonical_matter_id: plan.canonical.id } })
-          .eq("id", r.id),
-      ),
-    ];
-    for (const res of await Promise.all(updates)) {
-      if (res.error) return { error: res.error.message };
-    }
+    // The database moves every agenda item and link onto the canonical and records the merge.
+    const { error: mergeError } = await supabase.rpc("merge_matters", {
+      p_canonical: plan.canonical.id,
+      p_aliases: plan.aliases.map((a) => a.id),
+      p_reason: "admin-review",
+      p_by: user.email ?? null,
+    });
+    if (mergeError) return { error: mergeError.message };
   } else if (intent !== "reject") {
     return { error: "Unknown action." };
   }

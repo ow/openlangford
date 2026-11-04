@@ -249,6 +249,7 @@ async function searchMatters(
     )
     .textSearch("text_search", q, { type: "websearch" })
     .eq("municipality_id", municipalityId)
+    .is("merged_into", null)  // merged topics redirect to the one they were merged into
     .limit(limit);
 
   if (error) {

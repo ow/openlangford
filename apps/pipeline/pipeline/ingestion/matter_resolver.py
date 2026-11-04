@@ -456,30 +456,19 @@ def apply_merges(supabase: Client, clusters: list[list[int]], *, reason: str = "
 
 
 def merge_flat(supabase: Client, ids: list[int], *, canonical: int | None = None, reason: str = "staff") -> dict:
-    """Merge topics into one (the alias convention), flattening chains: every alias of every member ends up pointing
-    straight at the canonical, which lists them all and spans all their dates. ``canonical`` defaults to the earliest."""
-    rows = supabase.table("matters").select("id, first_seen, last_seen, meta").in_("id", ids).execute().data or []
-    nested = sorted({a for r in rows for a in ((r.get("meta") or {}).get("merged_matter_ids") or [])} - set(ids))
-    if nested:
-        rows += supabase.table("matters").select("id, first_seen, last_seen, meta").in_("id", nested).execute().data or []
+    """Merge topics into one with the database's merge_matters(), which moves every agenda item and link onto the
+    canonical (collapsing duplicates) and records what moved in matter_merges. ``canonical`` defaults to the earliest."""
+    rows = supabase.table("matters").select("id, first_seen, merged_into").in_("id", ids).execute().data or []
     by_id = {r["id"]: r for r in rows}
     canonical = canonical or min(ids, key=lambda i: (str(by_id[i].get("first_seen") or "9999"), i))
-    aliases = sorted(set(by_id) - {canonical})
+    # A topic already merged elsewhere is merged through its current canonical.
+    canonical = by_id.get(canonical, {}).get("merged_into") or canonical
+    aliases = sorted({by_id[i].get("merged_into") or i for i in ids if i in by_id} - {canonical})
     if not aliases:
         return {"canonical": canonical, "aliases": []}
-    firsts = [r["first_seen"] for r in rows if r.get("first_seen")]
-    lasts = [r["last_seen"] for r in rows if r.get("last_seen")]
-    meta = dict(by_id[canonical].get("meta") or {})
-    meta["merged_matter_ids"] = sorted(set(meta.get("merged_matter_ids") or []) | set(aliases))
-    meta.pop("canonical_matter_id", None)
-    supabase.table("matters").update({"meta": meta, "first_seen": min(firsts) if firsts else None,
-                                      "last_seen": max(lasts) if lasts else None}).eq("id", canonical).execute()
-    for a in aliases:
-        ameta = dict(by_id[a].get("meta") or {})
-        ameta.pop("merged_matter_ids", None)
-        ameta.update(canonical_matter_id=canonical, merge_reason=reason)
-        supabase.table("matters").update({"meta": ameta}).eq("id", a).execute()
-    return {"canonical": canonical, "aliases": aliases}
+    result = supabase.rpc("merge_matters", {"p_canonical": canonical, "p_aliases": aliases, "p_reason": reason,
+                                            "p_by": "pipeline"}).execute().data or {}
+    return {"canonical": canonical, "aliases": result.get("aliases") or aliases, "result": result}
 
 
 # --- Ingest-time resolution ---------------------------------------------------

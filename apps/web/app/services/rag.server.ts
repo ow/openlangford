@@ -592,7 +592,8 @@ async function search_matters({
         `,
         )
         .in("id", matterIds)
-        .or("meta->>hidden.is.null,meta->>hidden.neq.staff");
+        .or("meta->>hidden.is.null,meta->>hidden.neq.staff")
+        .is("merged_into", null);
 
       if (status) {
         enrichQuery = enrichQuery.eq("status", status);
@@ -609,6 +610,7 @@ async function search_matters({
         "id, title, identifier, description, plain_english_summary, category, status, first_seen, last_seen, meta",
       )
       .or("meta->>hidden.is.null,meta->>hidden.neq.staff")  // pages staff hid from the public
+      .is("merged_into", null)  // merged topics redirect to the one they were merged into
       .limit(1000);
 
     const keywordData = (keywordMatches.data || []).filter((matter: any) => {

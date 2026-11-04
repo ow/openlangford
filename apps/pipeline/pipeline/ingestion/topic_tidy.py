@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from pipeline.ingestion.matter_matching import MatterMatcher, is_generic_or_procedural_matter, is_matter_eligible
+from pipeline.ingestion.matter_resolver import merge_flat
 from pipeline.ingestion.staff_fixes import staff_matter
 
 
@@ -233,12 +234,7 @@ def run(supabase, *, dry_run: bool = True, matter_ids: list[int] | None = None, 
             report["empty_aliased"].append({"id": mid, "title": display, "into": sibling})
             report["touched"].append(sibling)
             if not dry_run:
-                supabase.table("matters").update({"meta": {**(meta or {}), "canonical_matter_id": sibling,
-                                                           "merge_reason": "empty duplicate (topic tidy)"}}).eq("id", mid).execute()
-                target = supabase.table("matters").select("meta").eq("id", sibling).single().execute().data
-                tmeta = target.get("meta") or {}
-                merged = sorted(set(tmeta.get("merged_matter_ids") or []) | {mid})
-                supabase.table("matters").update({"meta": {**tmeta, "merged_matter_ids": merged}}).eq("id", sibling).execute()
+                merge_flat(supabase, [sibling, mid], canonical=sibling, reason="empty duplicate (topic tidy)")
         else:
             report["empty_hidden"].append({"id": mid, "title": display})
             if not dry_run:
