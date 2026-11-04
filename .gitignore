@@ -79,6 +79,8 @@ scripts/*
 # Keep deploy/test shell scripts
 !scripts/pre-deploy.sh
 !scripts/test-all.sh
+# Local development database (scripts/local-db/README.md); its data/ export stays ignored
+!scripts/local-db/
 
 # Legacy src/ (being migrated)
 src/

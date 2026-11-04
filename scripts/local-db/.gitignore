@@ -1,0 +1,5 @@
+# Supabase CLI state for the local stack
+supabase/.temp/
+supabase/.branches/
+# Exported public data (re-create with seed.sh --export)
+data/

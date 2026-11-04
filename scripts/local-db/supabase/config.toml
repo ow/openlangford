@@ -1,0 +1,65 @@
+# Local-only Supabase stack for development (scripts/local-db). Never used against production:
+# production migrations run from the repo's supabase/ directory (.github/workflows/supabase-migrations.yml).
+#
+# This directory is a separate Supabase CLI workdir (`--workdir scripts/local-db`) with its own project_id,
+# so the local stack never reads the repo's supabase/ config. Its migrations folder is empty on purpose:
+# scripts/local-db/apply-migrations.sh applies sql/bootstrap.sql, the local-only fixups and the repo's
+# supabase/migrations to the local database. See scripts/local-db/README.md.
+project_id = "langford-local"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+health_timeout = "2m"
+
+[db.pooler]
+enabled = false
+
+[db.migrations]
+enabled = true
+
+[db.seed]
+# Public data is loaded by scripts/local-db/seed.sh (COPY), not by `supabase db reset`.
+enabled = false
+
+[realtime]
+enabled = false
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+[local_smtp]
+# Catches local auth emails (http://127.0.0.1:54324).
+enabled = true
+port = 54324
+
+[storage]
+# The site only uses Storage for bylaw PDF downloads; those fail locally.
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173", "http://127.0.0.1:5173"]
+jwt_expiry = 3600
+enable_signup = true
+minimum_password_length = 6
+
+[auth.email]
+enable_confirmations = false
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false

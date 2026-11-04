@@ -43,7 +43,12 @@ export default defineConfig(({ mode }) => {
   const wranglerVars = loadWranglerVars();
   const rootEnv = loadEnv(mode, path.resolve(process.cwd(), "../../"), "");
   const localEnv = loadEnv(mode, process.cwd(), "");
-  const env = { ...wranglerVars, ...process.env, ...rootEnv, ...localEnv };
+  // scripts/local-db/dev.sh: the local database's settings come from process.env and must win, so the .env files
+  // (production's) give only the OpenAI key, for the AI features.
+  const dotEnv = process.env.OPEN_LANGFORD_LOCAL_DB === "1"
+    ? Object.fromEntries(Object.entries({ ...rootEnv, ...localEnv }).filter(([key]) => key === "OPENAI_API_KEY" && !process.env[key]))
+    : { ...rootEnv, ...localEnv };
+  const env = { ...wranglerVars, ...process.env, ...dotEnv };
 
   // Make all loaded environment variables available to the server-side
   // parts of the React Router dev server (loaders, actions).
