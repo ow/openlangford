@@ -66,6 +66,22 @@ importers:
         specifier: ^4.64.0
         version: 4.68.0(@cloudflare/workers-types@4.20260302.0)
 
+  apps/email-router:
+    dependencies:
+      postal-mime:
+        specifier: 4.0.11
+        version: 4.0.11
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20260101.0
+        version: 4.20260302.0
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@opentelemetry/api@1.9.1)(@types/node@22.19.11)(jiti@2.6.1)(jsdom@30.1.3)(lightningcss@1.31.1)(yaml@2.8.2)
+      wrangler:
+        specifier: ^4.64.0
+        version: 4.68.0(@cloudflare/workers-types@4.20260302.0)
+
   apps/vimeo-proxy:
     devDependencies:
       '@cloudflare/puppeteer':
@@ -4021,6 +4037,10 @@ packages:
 
   points-on-path@0.2.1:
     resolution: {integrity: sha512-25ClnWWuw7JbWZcgqY/gJ4FQWadKxGWk+3kR/7kD0tCaDtPPMj7oHu2ToLaVhfpnHrZzYby2w6tUA0eOIuUg8g==}
+
+  postal-mime@4.0.11:
+    resolution: {integrity: sha512-T0zAqYnuSB8s+zL9WdiGj/2DeWeObEjqrcw2LWq+hgwpCSbLt7xujsFXn6Kgr1wsLl8DJh+v+lG9GQSQfMcUyA==}
+    engines: {node: '>=20'}
 
   postcss-selector-parser@6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
@@ -8928,6 +8948,8 @@ snapshots:
     dependencies:
       path-data-parser: 0.1.0
       points-on-curve: 0.2.0
+
+  postal-mime@4.0.11: {}
 
   postcss-selector-parser@6.0.10:
     dependencies:

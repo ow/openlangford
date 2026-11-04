@@ -1,0 +1,18 @@
+{
+  "name": "email-router",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "postal-mime": "4.0.11"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260101.0",
+    "vitest": "^4.0.18",
+    "wrangler": "^4.64.0"
+  }
+}

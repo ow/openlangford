@@ -2,6 +2,7 @@ packages:
   - 'apps/web'
   - 'apps/docs'
   - 'apps/vimeo-proxy'
+  - 'apps/email-router'
 allowBuilds:
   core-js: true
   esbuild: true
