@@ -38,8 +38,8 @@ EMAIL_ALERT_DISPATCH_ENABLED = "true"
 # Worker-side enqueue cutoff (YYYY-MM-DD, match Edge ALERT_START_DATE). Empty disables enqueue.
 EMAIL_ALERT_START_DATE = "2026-10-29"
 # Contact-form notifications also go here (on top of ADMIN_EMAILS, without making it an admin login). Mail to
-# openlangford.ca is posted to Discord by apps/email-router (contact@ to its own channel when DISCORD_CONTACT_WEBHOOK_URL is set).
-CONTACT_ALSO_NOTIFY = "contact@openlangford.ca"
+# openlangford.ca is posted to a private Discord channel by apps/email-router.
+CONTACT_ALSO_NOTIFY = "admin@openlangford.ca"
 # Discord meeting digests (issue #67). Global pause: only "true" posts. The webhook is the
 # DISCORD_WEBHOOK_URL Worker secret; eligibility reuses EMAIL_ALERT_START_DATE.
 DISCORD_POSTS_ENABLED = "false"

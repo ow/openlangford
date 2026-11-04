@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { bodyText, discordPayload, failedSenderChecks, who } from "../src/format";
-import { webhookFor } from "../src/index";
 
 describe("discordPayload", () => {
   const base = { envelopeFrom: "jane@example.com", envelopeTo: "admin@openlangford.ca" };
@@ -48,11 +47,3 @@ describe("discordPayload", () => {
   });
 });
 
-describe("webhookFor", () => {
-  const env = { DISCORD_WEBHOOK_URL: "https://main", DISCORD_CONTACT_WEBHOOK_URL: "https://contact" };
-  it("sends contact@ to its own channel and everything else to the main one", () => {
-    expect(webhookFor("Contact@openlangford.ca", env)).toBe("https://contact");
-    expect(webhookFor("admin@openlangford.ca", env)).toBe("https://main");
-    expect(webhookFor("contact@openlangford.ca", { DISCORD_WEBHOOK_URL: "https://main" })).toBe("https://main");
-  });
-});

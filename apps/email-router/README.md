@@ -11,14 +11,13 @@ Discord channel. It only receives: the site's outgoing mail (alerts, contact not
 
 ## Setup
 
-1. Discord: create a webhook in a **private** channel (not the public meeting-digest channel). Optionally a second
-   webhook in another private channel for `contact@`, where the site sends contact-form notifications
-   (`CONTACT_ALSO_NOTIFY` in `apps/web/wrangler.toml`).
+1. Discord: create a webhook in a **private** channel (not the public meeting-digest channel). The site's contact-form
+   notifications arrive here too: they're also sent to `admin@openlangford.ca` (`CONTACT_ALSO_NOTIFY` in
+   `apps/web/wrangler.toml`).
 2. Deploy and set the secret, from this folder:
    ```
    npx wrangler deploy
    npx wrangler secret put DISCORD_WEBHOOK_URL
-   npx wrangler secret put DISCORD_CONTACT_WEBHOOK_URL   # optional; without it contact@ goes to the main channel
    ```
 3. Cloudflare dashboard → openlangford.ca → Email → Email Routing:
    - Enable it. This replaces the domain's MX records, so any other mail provider stops receiving.
