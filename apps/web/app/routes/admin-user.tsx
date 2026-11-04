@@ -1,3 +1,4 @@
+import { accountEmailFor } from "../lib/redact-email";
 import type { Route } from "./+types/admin-user";
 import { Link, data } from "react-router";
 import {
@@ -52,8 +53,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     const supabase = getSupabaseAdminClient();
     const audience = await getAudienceUser(supabase, id, page);  // 404s an unknown account first
     const staff = await getUserStaff(supabase, id);
+    const email = accountEmailFor(viewerRole);
     return {
       ...audience,
+      user: { ...audience.user, email: email(audience.user.email) },
+      preferences: audience.preferences && { ...audience.preferences, notificationEmail: email(audience.preferences.notificationEmail) },
       page,
       staff: { ...staff, ownerByEmail: isAdminEmail(audience.user.email) && !!audience.user.confirmedAt },
       canGrant: viewerRole === "admin",
