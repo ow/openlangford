@@ -130,6 +130,38 @@ export async function getPublicAboutStats() {
   return cachePublicValue(publicAboutCache, "all-municipalities", data);
 }
 
+/**
+ * The 15 most recent decided, non-procedural motions with their votes. Two steps: the ids first (ordering by the
+ * meeting's date sorts every motion), then the full rows for just those 15, so votes are gathered for 15 motions
+ * rather than for all of them before the sort.
+ * NOTE: Do NOT use motions.yes_votes/no_votes (always 0) — use nested votes(vote).
+ */
+async function recentMotions(supabase: SupabaseClient, municipalityId: number) {
+  const latest = await supabase
+    .from("motions")
+    .select("id, meetings!inner(meeting_date)")
+    .eq("meetings.municipality_id", municipalityId)
+    .not("result", "is", null)
+    .neq("disposition", "Procedural")
+    // Order parent motions through the many-to-one meeting relationship.
+    // referencedTable would only sort the embedded meeting rows.
+    .order("meetings(meeting_date)", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(15);
+  if (latest.error) return { data: null, error: latest.error };
+  const ids = (latest.data || []).map((m: any) => m.id as number);
+  if (!ids.length) return { data: [] as any[], error: null };
+  const full = await supabase
+    .from("motions")
+    .select(
+      "id, plain_english_summary, text_content, result, disposition, financial_cost, meeting_id, vote_coverage:meta->>individual_vote_coverage, headline:meta->>headline, meetings!inner(slug, id, meeting_date, title), votes(vote)",
+    )
+    .in("id", ids);
+  if (full.error) return { data: null, error: full.error };
+  const order = new Map(ids.map((id, i) => [id, i]));
+  return { data: (full.data || []).sort((a: any, b: any) => order.get(a.id)! - order.get(b.id)!), error: null };
+}
+
 async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, municipalityId = 1) {
   let complete = true;
   const today = new Date().toLocaleDateString("en-CA", {
@@ -191,20 +223,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         .limit(6),
 
       // 4. Recent non-procedural motions with vote data (15)
-      // NOTE: Do NOT use motions.yes_votes/no_votes (always 0) — use nested votes(vote)
-      supabase
-        .from("motions")
-        .select(
-          "id, plain_english_summary, text_content, result, disposition, financial_cost, meeting_id, vote_coverage:meta->>individual_vote_coverage, headline:meta->>headline, meetings!inner(slug, id, meeting_date, title), votes(vote)",
-        )
-        .eq("meetings.municipality_id", municipalityId)
-        .not("result", "is", null)
-        .neq("disposition", "Procedural")
-        // Order parent motions through the many-to-one meeting relationship.
-        // referencedTable would only sort the embedded meeting rows.
-        .order("meetings(meeting_date)", { ascending: false })
-        .order("id", { ascending: false })
-        .limit(15),
+      recentMotions(supabase, municipalityId),
     ]);
 
     for (const response of [recentMeetingRes, upcomingMeetingRes, activeMattersRes, recentMotionsRes]) {

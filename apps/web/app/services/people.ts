@@ -108,39 +108,46 @@ function hasExcludedMembership(
   });
 }
 
-async function fetchAllIdentifiedTranscriptSegments(
+/**
+ * One identified speaker's transcript time on one agenda item (or none) of
+ * one meeting, from public_participant_appearances (supabase/migrations/20261104100000_*).
+ */
+export interface IdentifiedAppearance {
+  person_id: number;
+  meeting_id: number;
+  agenda_item_id: number | null;
+  /** Sum of end_time - start_time over the appearance's segments (each longer than zero). */
+  seconds: number;
+  segments: number;
+  first_start: number;
+  meeting_slug: string | null;
+  meeting_title: string | null;
+  meeting_date: string;
+  municipality_id: number | null;
+  organization_id: number | null;
+  agenda_title: string | null;
+  category: string | null;
+}
+
+/**
+ * Identified transcript speech grouped in Postgres to one row per (person,
+ * meeting, agenda item), in order of each appearance's first segment. It used
+ * to page through every identified segment (~135k rows); the role and privacy
+ * checks below only ever needed person and meeting facts.
+ */
+async function fetchIdentifiedAppearances(
   supabase: SupabaseClient,
-  municipalityId?: number,
-  personId?: number,
-  today = civicToday(),
-): Promise<any[]> {
-  const allData: any[] = [];
-  let page = 0;
-  const pageSize = 1000;
-
-  while (true) {
-    let query = supabase
-      .from("transcript_segments")
-      .select(
-        "id, person_id, meeting_id, agenda_item_id, start_time, end_time, meetings!inner(slug, id, title, meeting_date, municipality_id, organization_id), agenda_items(id, title, category)",
-      )
-      .not("person_id", "is", null)
-      .lte("meetings.meeting_date", today)
-      .order("id", { ascending: true })
-      .range(page * pageSize, (page + 1) * pageSize - 1);
-    if (municipalityId) query = query.eq("meetings.municipality_id", municipalityId);
-    if (personId !== undefined) query = query.eq("person_id", personId);
-    const { data, error } = await query;
-
-    if (error) throw error;
-    if (!data || data.length === 0) break;
-
-    allData.push(...data);
-    if (data.length < pageSize) break;
-    page++;
-  }
-
-  return allData;
+  municipalityId: number | undefined,
+  personId: number | undefined,
+  today: string,
+): Promise<IdentifiedAppearance[]> {
+  const { data, error } = await supabase.rpc("public_participant_appearances", {
+    p_today: today,
+    p_municipality_id: municipalityId || null,
+    p_person_id: personId ?? null,
+  });
+  if (error) throw error;
+  return (data || []) as IdentifiedAppearance[];
 }
 
 export async function getPublicParticipantStats(
@@ -155,13 +162,13 @@ export async function getPublicParticipantStats(
   if (personId !== undefined) documentedHistories = documentedHistories.filter(history => history.personId === personId);
   const linked = [...(linkedStatements || new Map<number, readonly ParticipantStatement[]>())]
     .filter(([id, statements]) => statements.length > 0 && (personId === undefined || id === personId));
-  const segments = await fetchAllIdentifiedTranscriptSegments(supabase, municipalityId, personId, today);
-  const scopedSegments = municipalityId
-    ? segments.filter((segment) => segment.meetings?.municipality_id === municipalityId)
-    : segments;
+  const appearances = await fetchIdentifiedAppearances(supabase, municipalityId, personId, today);
+  const scopedAppearances = municipalityId
+    ? appearances.filter((appearance) => appearance.municipality_id === municipalityId)
+    : appearances;
 
   const personIds = Array.from(
-    new Set([...scopedSegments.map((segment) => segment.person_id).filter(Boolean),
+    new Set([...scopedAppearances.map((appearance) => appearance.person_id).filter(Boolean),
       ...documentedHistories.map(history => history.personId), ...linked.map(([id]) => id)]),
   );
   if (personIds.length === 0) return [];
@@ -169,7 +176,7 @@ export async function getPublicParticipantStats(
   const peopleById = new Map<number, Person & { memberships?: Membership[] }>();
   const rolesByMeeting = new Map<number, unknown>();
   const organizationByMeeting = new Map<number, number>();
-  const meetingIds = [...new Set([...scopedSegments.map(s => s.meeting_id),
+  const meetingIds = [...new Set([...scopedAppearances.map(a => a.meeting_id),
     ...documentedHistories.flatMap(history => history.records.map(record => record.meetingId))])];
   const chunkSize = 200;
   for (let i = 0; i < meetingIds.length; i += chunkSize) {
@@ -252,62 +259,46 @@ export async function getPublicParticipantStats(
     return stats;
   };
 
-  for (const segment of scopedSegments) {
-    const person = peopleById.get(segment.person_id);
-    const meetingDate = segment.meetings?.meeting_date;
-    const seconds = segment.end_time - segment.start_time;
+  // Every check here is a person or meeting fact, so it applies to a whole
+  // appearance exactly as it applied to each of its segments.
+  for (const appearance of scopedAppearances) {
+    const person = peopleById.get(appearance.person_id);
+    const meetingDate = appearance.meeting_date;
+    const seconds = appearance.seconds;
     if (!person || !isNamedParticipant(person.name) || !meetingDate || meetingDate > today ||
-      isOfficialService(person, segment.meeting_id, meetingDate, segment.meetings?.organization_id) ||
-      !Number.isFinite(seconds) || seconds <= 0) continue;
+      isOfficialService(person, appearance.meeting_id, meetingDate, appearance.organization_id ?? undefined) ||
+      !Number.isFinite(seconds) || seconds <= 0 || appearance.segments <= 0) continue;
     const stats = getStats(person, meetingDate);
 
     stats.totalSeconds += seconds;
-    stats.segmentCount += 1;
-    if (segment.meeting_id) {
-      stats.meetingIds.add(segment.meeting_id);
-      stats.audioMeetingIds.add(segment.meeting_id);
-    }
-    if (segment.agenda_item_id) stats.agendaItemIds.add(segment.agenda_item_id);
-    if (meetingDate && (!stats.firstSpokeAt || meetingDate < stats.firstSpokeAt)) {
-      stats.firstSpokeAt = meetingDate;
-    }
-    if (meetingDate && (!stats.lastSpokeAt || meetingDate > stats.lastSpokeAt)) {
-      stats.lastSpokeAt = meetingDate;
-    }
+    stats.segmentCount += appearance.segments;
+    stats.meetingIds.add(appearance.meeting_id);
+    stats.audioMeetingIds.add(appearance.meeting_id);
+    if (appearance.agenda_item_id) stats.agendaItemIds.add(appearance.agenda_item_id);
 
-    const category = segment.agenda_items?.category || "Public";
+    const category = appearance.category || "Public";
     const categoryStats = stats.categoryMap.get(category) || {
       category,
       seconds: 0,
       count: 0,
     };
     categoryStats.seconds += seconds;
-    categoryStats.count += 1;
+    categoryStats.count += appearance.segments;
     stats.categoryMap.set(category, categoryStats);
 
-    const appearanceKey = `${segment.meeting_id}:${segment.agenda_item_id || "none"}`;
-    const existingAppearance = stats.appearanceMap.get(appearanceKey);
-    if (existingAppearance) {
-      existingAppearance.seconds += seconds;
-      existingAppearance.segmentCount += 1;
-      existingAppearance.firstStartTime = Math.min(
-        existingAppearance.firstStartTime,
-        segment.start_time || 0,
-      );
-    } else {
-      stats.appearanceMap.set(appearanceKey, {
-        meetingId: segment.meeting_id,
-        meetingSlug: segment.meetings?.slug || null,
-        meetingTitle: segment.meetings?.title || "Untitled meeting",
-        meetingDate: meetingDate || "",
-        agendaItemId: segment.agenda_item_id || null,
-        agendaTitle: segment.agenda_items?.title || null,
-        category: segment.agenda_items?.category || "Public",
-        seconds,
-        segmentCount: 1,
-        firstStartTime: segment.start_time || 0,
-      });
-    }
+    // The RPC returns one row per (person, meeting, agenda item).
+    stats.appearanceMap.set(`${appearance.meeting_id}:${appearance.agenda_item_id || "none"}`, {
+      meetingId: appearance.meeting_id,
+      meetingSlug: appearance.meeting_slug || null,
+      meetingTitle: appearance.meeting_title || "Untitled meeting",
+      meetingDate,
+      agendaItemId: appearance.agenda_item_id || null,
+      agendaTitle: appearance.agenda_title || null,
+      category,
+      seconds,
+      segmentCount: appearance.segments,
+      firstStartTime: appearance.first_start || 0,
+    });
   }
 
   // Explicit person/municipality-bound inventories supply appearances, never
