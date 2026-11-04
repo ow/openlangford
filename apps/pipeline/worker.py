@@ -745,6 +745,9 @@ def main():
     parser = argparse.ArgumentParser(description="Pipeline ops queue worker")
     parser.add_argument("--once", action="store_true", help="Process one queued job then exit")
     parser.add_argument("--poll-interval", type=float, default=10.0)
+    parser.add_argument("--max-idle-interval", type=float, default=None,
+                        help="Back off while the queue stays empty, doubling the wait up to this many seconds "
+                             "(default: no backoff). Any claimed job resets it to --poll-interval.")
     parser.add_argument("--heartbeat-interval", type=float, default=30.0)
     parser.add_argument("--worker-id", default=f"{socket.gethostname()}:{os.getpid()}")
     parser.add_argument(
@@ -764,6 +767,7 @@ def main():
     scope = ",".join(job_types) if job_types else "all"
     print(f"[worker] started {args.worker_id} job_types={scope}")
     last_recovery = 0.0
+    idle_interval = args.poll_interval
     while True:
         if time.time() - last_recovery > 60:
             try:
@@ -780,8 +784,12 @@ def main():
             usage_sink.flush(timeout=5)
         if args.once:
             break
-        if not claimed:
-            time.sleep(args.poll_interval)
+        if claimed:
+            idle_interval = args.poll_interval
+        else:
+            time.sleep(idle_interval)
+            # An idle queue needn't be asked every few seconds all day (each poll is a claim and an email check).
+            idle_interval = min(idle_interval * 2, max(args.poll_interval, args.max_idle_interval or args.poll_interval))
 
 
 if __name__ == "__main__":

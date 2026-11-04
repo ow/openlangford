@@ -14,4 +14,4 @@ source "$PROJECT_ROOT/.env"
 set +a
 
 cd "$PIPELINE_DIR"
-exec "$PIPELINE_DIR/.venv/bin/python" -u worker.py --job-types ingest_meeting,diarize_meeting --poll-interval 5
+exec "$PIPELINE_DIR/.venv/bin/python" -u worker.py --job-types ingest_meeting,diarize_meeting --poll-interval 5 --max-idle-interval 60
