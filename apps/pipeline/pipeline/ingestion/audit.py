@@ -29,7 +29,8 @@ from pipeline.supabase_client import create_client
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
+# The secret key, as the rest of the pipeline uses: the publishable key reads fine but RLS silently drops its writes.
+SUPABASE_KEY = os.getenv("SUPABASE_SECRET_KEY") or os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
 ARCHIVE_ROOT = os.getenv("ARCHIVE_ROOT", "viewroyal_archive")
 
 
