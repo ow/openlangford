@@ -696,9 +696,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             <section>
               <SectionHeading title="Location" icon={MapPin} />
               {matter.locations && matter.locations.length > 0 && (
-                <div className="overflow-hidden rounded-2xl border border-zinc-200 shadow-sm">
-                  <MattersMap matters={[matter]} activeLocation={matter.locations?.[0]} />
-                </div>
+                <MattersMap matters={[matter]} activeLocation={matter.locations?.[0]} />
               )}
               {addressGroups.length > 0 && (
                 <ul className={cn("space-y-3", matter.locations?.length ? "mt-4" : "")}>

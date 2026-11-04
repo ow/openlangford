@@ -435,11 +435,6 @@ export function MattersMap({
           plot on the map.
         </p>
       )}
-      {!compact && !loading && !failed && (
-        <p className="px-1 text-xs text-zinc-500">
-          Numbered circles group nearby locations. Zoom in to explore.
-        </p>
-      )}
       {!compact && <details
         className="rounded-lg border border-zinc-200 bg-surface p-3 text-sm"
         open={failed || undefined}

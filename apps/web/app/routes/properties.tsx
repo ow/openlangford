@@ -147,7 +147,7 @@ export default function Properties({ loaderData }: Route.ComponentProps) {
               </div>
               <MattersMap compact tall matters={pins as any} hrefFor={(lot: any) => propertyPath(lot)} linkLabel="View address" />
               <p className="mt-2 text-xs text-zinc-500">
-                {plural(pins.length, "address")} with a known location{year === "all" ? "" : year === "earlier" ? ` before ${yearOptions.earlier! + 1}` : ` mentioned in council meetings in ${year}`}. Numbered circles group nearby addresses; zoom in to explore.
+                {plural(pins.length, "address")} with a known location{year === "all" ? "" : year === "earlier" ? ` before ${yearOptions.earlier! + 1}` : ` mentioned in council meetings in ${year}`}.
               </p>
             </section>
           )}
