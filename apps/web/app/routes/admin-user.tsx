@@ -9,7 +9,7 @@ import {
 } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getAudienceUser } from "../services/audience-admin.server";
-import { getUserStaff, setUserRole } from "../services/staff.server";
+import { getUserStaff, sendRoleGrantEmail, setUserRole } from "../services/staff.server";
 import { isAdminEmail, requireAdmin } from "../lib/auth.server";
 import { StaffAccessSection } from "../components/admin/staff-access-section";
 import {
@@ -26,7 +26,7 @@ export const meta = () => [
 ];
 export const headers = privateAdminHeaders;
 /** Admins grant or remove a staff role (recorded in staff_actions by requireAdmin). */
-export async function action({ request, params }: Route.ActionArgs) {
+export async function action({ request, params, context }: Route.ActionArgs) {
   try {
     const admin = await requireAdmin(request);
     const id = requireUuid(params.id);
@@ -35,7 +35,23 @@ export async function action({ request, params }: Route.ActionArgs) {
     if (form.get("intent") !== "role" || !["admin", "moderator", "none"].includes(role) || id === admin.id) {
       return data({ error: "Unknown change." }, { status: 400, headers: privateAdminHeaders() });
     }
-    await setUserRole(getSupabaseAdminClient(), id, role === "none" ? null : (role as "admin" | "moderator"), admin.id);
+    const supabase = getSupabaseAdminClient();
+    const before = (await getUserStaff(supabase, id)).grantedRole;
+    const granted = role === "none" ? null : (role as "admin" | "moderator");
+    await setUserRole(supabase, id, granted, admin.id);
+    // A new moderator or admin gets a welcome email at their confirmed account address.
+    if (granted && granted !== before) {
+      const { data: account } = await supabase.auth.admin.getUserById(id);
+      const cloudflare = (context as { cloudflare?: { env?: Partial<Env>; ctx?: ExecutionContext } } | undefined)?.cloudflare;
+      const sending = sendRoleGrantEmail({
+        apiKey: cloudflare?.env?.RESEND_API_KEY,
+        to: account.user?.email_confirmed_at ? account.user.email : null,
+        role: granted,
+        userId: id,
+      });
+      if (cloudflare?.ctx) cloudflare.ctx.waitUntil(sending);
+      else await sending;
+    }
     return data({ ok: true }, { headers: privateAdminHeaders() });
   } catch (error) {
     if (error instanceof Response) {

@@ -65,3 +65,51 @@ export async function setUserRole(supabase: SupabaseClient, userId: string, role
     : await supabase.from("user_roles").delete().eq("user_id", userId);
   if (error) throw new Error("Could not change the role.");
 }
+
+const ROLE_EMAIL_FROM = "Open Langford <alerts@openlangford.ca>";
+const ADMIN_URL = "https://openlangford.ca/admin";
+
+/** The welcome email for someone just made a moderator or admin. */
+export function buildRoleGrantEmail(role: StaffRole, to: string) {
+  const title = role === "admin" ? "admin" : "moderator";
+  const can = role === "admin"
+    ? "This means you can review content, contribute to the site, run its tools, manage staff and more."
+    : "This means you can review content, contribute to the site, and more.";
+  const subject = `You're now a ${title} on Open Langford`;
+  const text = [
+    `You have been granted ${title} powers on OpenLangford.ca. ${can}`,
+    "",
+    "With great power comes great responsibility, so please use it wisely. All activity is logged.",
+    "",
+    `You may now enter the restricted admin area: ${ADMIN_URL}`,
+  ].join("\n");
+  const html = `<p>You have been granted ${title} powers on OpenLangford.ca. ${can}</p>
+<p>With great power comes great responsibility, so please use it wisely. <em>All activity is logged.</em></p>
+<p>You may now enter the restricted admin area: <a href="${ADMIN_URL}">${ADMIN_URL}</a></p>`;
+  return { from: ROLE_EMAIL_FROM, to: [to], reply_to: "admin@openlangford.ca", subject, text, html };
+}
+
+/** Emails a newly granted moderator or admin. Never throws: the role change stands either way. */
+export async function sendRoleGrantEmail({ apiKey, to, role, userId, fetcher = fetch }: {
+  apiKey: string | undefined; to: string | null | undefined; role: StaffRole; userId: string; fetcher?: typeof fetch;
+}): Promise<"sent" | "skipped" | "failed"> {
+  if (!apiKey || !to) return "skipped";
+  try {
+    const response = await fetcher("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        // One welcome per person, role and day, however often the form is sent.
+        "Idempotency-Key": `role-grant-${userId}-${role}-${new Date().toISOString().slice(0, 10)}`,
+      },
+      body: JSON.stringify(buildRoleGrantEmail(role, to)),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) console.error(`[staff] Role email failed (status ${response.status})`);
+    return response.ok ? "sent" : "failed";
+  } catch {
+    console.error("[staff] Role email failed (network)");
+    return "failed";
+  }
+}

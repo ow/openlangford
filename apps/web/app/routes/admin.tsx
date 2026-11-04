@@ -157,7 +157,10 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
         <p className="mt-2 text-xs text-zinc-500">Numbers are for the last 7 days. Trend lines show 30 days.</p>
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:grid-rows-[auto_1fr]">
-          <ToolsPanel groups={groups} contact={data.queues.contact} />
+          <div className="min-w-0 space-y-6 lg:col-start-2 lg:row-start-1">
+            {data.reviews && <ReviewProgress reviews={data.reviews} />}
+            <ToolsPanel groups={groups} contact={data.queues.contact} />
+          </div>
 
           <div className="min-w-0 space-y-6 lg:col-start-1 lg:row-span-2 lg:row-start-1">
             <Panel title="Visitors" subtitle={`People per day, last 30 days${traffic ? ` · as of ${formatRelativeTime(traffic.asOf)}` : ""}`}>
@@ -200,7 +203,6 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
           </div>
 
           <aside className="min-w-0 space-y-6 lg:col-start-2 lg:row-start-2">
-            {data.reviews && <ReviewProgress reviews={data.reviews} />}
             <Panel title="Council calendar" flush>
               <Calendar calendar={data.calendar} />
             </Panel>
@@ -217,7 +219,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
 
 function ToolsPanel({ groups, contact }: { groups: { heading: string; links: Tool[] }[]; contact: AdminOverview["queues"]["contact"] }) {
   return (
-    <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+    <div className="min-w-0">
       <Panel title="Tools" flush>
         {groups.map((group) => (
           <div key={group.heading} className="border-t border-zinc-100 first:border-t-0">
