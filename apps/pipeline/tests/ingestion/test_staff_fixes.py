@@ -78,3 +78,23 @@ def test_a_move_with_no_destination_is_refiled_and_unfollowed_summary_notes_are_
     assert notes_update["meta"]["editor_notes"] == ["The last rewrite missed this: The adoption."]
     assert [f.get("fixed") for f in review["ai_flags"]] == [False, True]  # the page-wide flag stays open
     assert result["left"] == 1
+
+
+def test_a_merge_marks_the_flag_that_asked_for_it_fixed(monkeypatch):
+    # 2026-11-04, 2773 Strathmore Road: the duplicate topic was merged, but its "related-3342" flag stayed open, so the
+    # page asked a person to finish a merge that had already happened.
+    import pipeline.ingestion.staff_fixes as sf
+    import pipeline.ingestion.matter_resolver as resolver
+    import pipeline.ingestion.matter_summaries as summaries
+
+    db = _DB({"matters": {"plain_english_summary": "Text.", "meta": {}},
+              "page_reviews": {"ai_flags": [{"key": "related-3342", "verdict": "agree"}, {"key": "related-9", "verdict": "agree"}]}})
+    monkeypatch.setattr(resolver, "merge_flat", lambda supabase, ids, canonical, reason: {"canonical": canonical, "aliases": [i for i in ids if i != canonical]})
+    monkeypatch.setattr(sf, "check_summary_notes", lambda supabase, notes: [])
+    monkeypatch.setattr(summaries, "refresh_matter_summaries", lambda *a, **k: {1188: {}})
+    result = sf.run_fix_page(db, {"path": "/matters/x", "refresh": [1188],
+                                  "merges": [{"matter_id": 1188, "with_matter_id": 3342, "reason": "Same daycare.", "key": "related-3342"}]})
+    review = next(p for t, op, p in db.writes if t == "page_reviews")
+    assert [f.get("fixed") for f in review["ai_flags"]] == [True, None]  # only the merged topic's flag
+    assert review["status"] == "fixed" and "Needs a person" not in review["agent_note"]
+    assert result["merged"] == 1

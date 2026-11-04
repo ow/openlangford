@@ -143,6 +143,7 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
     touched: set[int] = {int(m) for m in args.get("refresh") or []}
     meetings: set[int] = set()
     fixed_keys: set[str] = set()
+    merged = 0
 
     for move in args.get("moves") or []:
         item_id, to = int(move["item_id"]), move.get("to_matter_id")
@@ -174,10 +175,13 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
         a, b = int(merge["matter_id"]), int(merge["with_matter_id"])
         try:
             # Flattened, so no topic is left pointing at another alias.
-            merged = merge_flat(supabase, [a, b], canonical=a, reason="staff")  # the page being fixed keeps its address
-            applied = [merged] if merged["aliases"] else []
+            result = merge_flat(supabase, [a, b], canonical=a, reason="staff")  # the page being fixed keeps its address
+            applied = [result] if result["aliases"] else []
             if applied:
                 touched.add(applied[0]["canonical"])
+                # The flag that asked for it is done: its own key (from the site), or the merged topics' Related cards.
+                fixed_keys.update(k for k in (merge.get("key"), f"related-{a}", f"related-{b}") if k)
+                merged += 1
                 done.append(merge.get("reason") or f"Merged topic {b} into this one.")
                 supabase.table("staff_actions").insert({
                     "user_id": by, "role": role, "path": path, "action": "agent:merge_topic",
@@ -234,7 +238,8 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
         "status": "fixed" if done or (waiting and not left) else "needs_work", "agent_note": note,
         "agent_at": datetime.now(timezone.utc).isoformat(), "ai_flags": flags,
     }).eq("path", path).execute()
-    return {"moved": len(fixed_keys), "summaries": len(summaries), "left": len(left)}
+    return {"moved": len([k for k in fixed_keys if k.startswith("agenda-")]), "merged": merged,
+            "summaries": len(summaries), "left": len(left)}
 
 
 def describe(args: dict) -> str:

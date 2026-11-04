@@ -337,7 +337,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const fixedKeys = new Set<string>();
     const moves: { item_id: number; to_matter_id: number | null; refile?: boolean; reason: string }[] = [];
     const mentionMoves: { item_id: number; to_matter_id: number; reason: string }[] = [];
-    const merges: { with_matter_id: number; matter_id?: number; reason: string }[] = [];
+    const merges: { with_matter_id: number; matter_id?: number; reason: string; key: string | null }[] = [];
     const rewrites: Record<string, string> = {};
     const lines: Record<string, { line?: string; heading?: string; source?: string }> = {};
     const summaryNotes: string[] = [];
@@ -353,23 +353,24 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     if (gone.length) answered.push(`Already off the page since it was flagged: ${gone.map((f) => f.key).join(", ")}.`);
     for (const step of result.data.actions) {
       if (step.key && !onPage.has(step.key) && fixedKeys.has(step.key)) continue;
+      // A flag on a Related topics card names the topic in its key.
+      const relatedId = Number(step.key?.match(/^related-(\d+)$/)?.[1] ?? NaN);
+      if ((step.action === "unlink_related" || step.action === "merge_topic") && !step.to_matter_id && Number.isSafeInteger(relatedId)) {
+        step.to_matter_id = relatedId;
+      }
       if (step.action === "merge_topic" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id)) {
         const other = step.other_matter_id && step.other_matter_id !== step.to_matter_id
           && lookalikes.some((c) => c.id === step.other_matter_id) ? step.other_matter_id : null;
-        // Two related topics merged with each other, or one merged into this page.
-        merges.push(other ? { matter_id: other, with_matter_id: step.to_matter_id, reason: step.reason }
-          : { with_matter_id: step.to_matter_id, reason: step.reason });
+        // Two related topics merged with each other, or one merged into this page. The flag's key goes along, so the
+        // pipeline marks it fixed once the merge is done.
+        merges.push(other ? { matter_id: other, with_matter_id: step.to_matter_id, reason: step.reason, key: step.key ?? null }
+          : { with_matter_id: step.to_matter_id, reason: step.reason, key: step.key ?? null });
         continue;
       }
       if (step.action === "no_change") {
         answered.push(step.reason);
         answeredKeys.add(step.key && onPage.has(step.key) ? step.key : null);
         continue;
-      }
-      // A flag on a Related topics card names the topic in its key.
-      const relatedId = Number(step.key?.match(/^related-(\d+)$/)?.[1] ?? NaN);
-      if ((step.action === "unlink_related" || step.action === "merge_topic") && !step.to_matter_id && Number.isSafeInteger(relatedId)) {
-        step.to_matter_id = relatedId;
       }
       if (step.action === "unlink_related" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id && c.related)) {
         const { error } = await supabase.from("matter_links").update({ hidden: true, review: "removed", reviewed_by: requester.id, reviewed_at: new Date().toISOString() })
