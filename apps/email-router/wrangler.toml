@@ -4,6 +4,9 @@ name = "langford-email-router"
 account_id = "ec49b1303ded6ef60011350d2912ddf6" # same account as the openlangford.ca zone and the site
 main = "src/index.ts"
 compatibility_date = "2026-02-10"
+# Mail only: no public web address.
+workers_dev = false
+preview_urls = false
 
 [observability]
 enabled = true
