@@ -52,3 +52,37 @@ export function staffActionPage(path: string, detail: Record<string, string> = {
   if (named && named.startsWith("/") && !named.startsWith("//")) return named;
   return path.startsWith("/api/") || path.startsWith("/admin") ? null : path;
 }
+
+type AuditRow = { id: number; created_at: string; user_id: string; role: string; action: string | null; path: string; detail: Record<string, string> };
+
+/** How far apart two actions can be and still read as one sitting on a page. */
+const SITTING_MS = 30 * 60_000;
+
+/** One person's run of actions on one page (rows newest first, as the log lists them): the steps in the order they
+ * were taken, with repeats counted ("Agreed with a flag ×5"). A page is the public page an action was about, or else
+ * the admin page it was made on; a bare API request with no page stays on its own. */
+export function groupAuditRows<T extends AuditRow>(rows: T[]) {
+  const groups: { id: number; first: string; last: string; user_id: string; role: string; page: string | null; path: string; rows: T[] }[] = [];
+  for (const row of rows) {
+    const page = staffActionPage(row.path, row.detail);
+    const where = page ?? (row.path.startsWith("/api/") ? null : row.path);
+    const prev = groups.at(-1);
+    if (prev && where && (prev.page ?? prev.path) === where && prev.user_id === row.user_id
+      && new Date(prev.first).getTime() - new Date(row.created_at).getTime() <= SITTING_MS) {
+      prev.rows.push(row);
+      prev.first = row.created_at;
+    } else {
+      groups.push({ id: row.id, first: row.created_at, last: row.created_at, user_id: row.user_id, role: row.role, page, path: row.path, rows: [row] });
+    }
+  }
+  return groups.map((g) => {
+    const steps: { label: string; count: number }[] = [];
+    for (const row of [...g.rows].reverse()) {
+      const label = staffActionLabel(row.action, row.detail);
+      const last = steps.at(-1);
+      if (last?.label === label) last.count++;
+      else steps.push({ label, count: 1 });
+    }
+    return { ...g, steps };
+  });
+}
