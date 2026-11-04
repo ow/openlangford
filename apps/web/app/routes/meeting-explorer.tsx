@@ -28,6 +28,7 @@ import { splitTranscript, findCurrentSubSegment } from "../lib/transcript-utils"
 import { formatSpeakerName, isUnidentifiedSpeaker, UNIDENTIFIED_SPEAKER_CLASS, UNKNOWN_SPEAKER } from "../lib/speaker-labels";
 import { getSpeakerColorIndex, SPEAKER_TEXT_COLORS } from "../lib/colors";
 import type { Person, Membership } from "../lib/types";
+import { notFoundIfHidden } from "../services/page-visibility.server";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const m = data?.meeting;
@@ -44,6 +45,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   try {
     const supabase = getSupabaseAdminClient();
     const resolved = await resolveSlugParam(supabase, "meetings", params.id, request, (m) => meetingPath(m, "/explorer"), "Meeting Not Found");
+    await notFoundIfHidden(request, "meetings", resolved.id);
     const data = await getMeetingById(supabase, String(resolved.id));
     // meetings.meta also holds pipeline-private data (voice centroids, cached media
     // URLs); the explorer only reads the poster frame.

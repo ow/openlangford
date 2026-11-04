@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ingestion.manual_edits import keep_text_edits
 from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, item_transcripts
 
 # Bump when the prompt/schema changes so `main.py --stage matter-summaries --stale`
@@ -430,9 +431,10 @@ def refresh_matter_summaries(
             if check and updates:
                 updates = _checked(batch, updates, context_only=context_only)
             for mid, update in updates.items():
-                results[mid] = update
                 if not dry_run:
+                    update = keep_text_edits(supabase, mid, update)  # fields staff edited by hand stay theirs
                     supabase.table("matters").update(update).eq("id", mid).execute()
+                results[mid] = update
         done += len(loaded)
         print(f"  [MatterSummaries] {done}/{len(ids)}", flush=True)
     return results

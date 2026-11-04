@@ -18,6 +18,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from pipeline.ingestion.manual_edits import keep_text_edits
+
 
 def staff_matter(meta: dict | None) -> dict | None:
     """The lock on an item moved by staff, or None. ``matter_id`` may be None (taken off every topic)."""
@@ -85,9 +87,9 @@ def direct_edit(supabase, matter_id: int, notes: list[str]) -> bool:
     owned = [r["id"] for r in supabase.table("agenda_items").select("id").eq("matter_id", matter_id).execute().data or []]
     staff_text = {"summary": edit.summary.strip(), "status_line": edit.status_line.strip(), "items": sorted(owned),
                   "notes": notes, "at": datetime.now(timezone.utc).isoformat()}
-    supabase.table("matters").update({"plain_english_summary": staff_text["summary"] or m.get("plain_english_summary"),
+    supabase.table("matters").update(keep_text_edits(supabase, matter_id, {"plain_english_summary": staff_text["summary"] or m.get("plain_english_summary"),
                                       "meta": {**meta, "status_line": staff_text["status_line"] or meta.get("status_line"),
-                                               "staff_text": staff_text}}).eq("id", matter_id).execute()
+                                               "staff_text": staff_text}})).eq("id", matter_id).execute()
     return True
 
 

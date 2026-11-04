@@ -17,6 +17,7 @@ import httpx
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ingestion.manual_edits import keep_image_edit
 
 # Bump when judging/selection changes; stamped in matters.meta.images_version.
 IMAGES_VERSION = "1"
@@ -148,5 +149,6 @@ def pick_matter_images(supabase: Client, matter_id: int, *, dry_run: bool = Fals
             new_meta["images"] = images
         else:
             new_meta.pop("images", None)
+        new_meta = keep_image_edit(supabase, matter_id, new_meta)  # a photo staff picked stays
         supabase.table("matters").update({"meta": new_meta}).eq("id", matter_id).execute()
     return images

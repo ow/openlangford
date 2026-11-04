@@ -20,6 +20,7 @@ import { isGenericParticipationHeading, mergeParticipation, participationSummary
 import { cn } from "../lib/utils";
 import { formatDate } from "../lib/utils";
 import type { Person } from "../lib/types";
+import { notFoundIfHidden } from "../services/page-visibility.server";
 
 export const meta: Route.MetaFunction = ({ data }) => data
   ? pageMeta(`${data.person.name} — Public participation`, participationSummary(data.person.name, data.summary?.meetingCount ?? 0, data.summary?.agendaItemCount ?? 0, data.summary?.firstDate ?? null, data.summary?.lastDate ?? null, data.summary?.letterCount ?? 0, data.summary?.lettersOnly ?? false), participantPath(data.person), "profile")
@@ -28,6 +29,7 @@ export const meta: Route.MetaFunction = ({ data }) => data
 export async function loader({ params, request }: Route.LoaderArgs) {
   const supabase = getSupabaseAdminClient();
   const resolved = await resolvePersonParam(supabase, params.id, request, "", participantPath);
+  await notFoundIfHidden(request, "people", resolved.id);
   const municipality = await getMunicipality(supabase);
   const { data: person, error } = await supabase.from("people")
     .select("id, name, slug, image_url, is_councillor, created_at, memberships(*, organization:organizations(*))")

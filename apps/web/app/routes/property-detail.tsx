@@ -19,6 +19,7 @@ import { firstSentence, ogImageUrl } from "../lib/og";
 import { metaDescription, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd, propertyPlace } from "../lib/structured-data";
 import { formatDate } from "../lib/utils";
+import { notFoundIfHidden } from "../services/page-visibility.server";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.property) return [{ title: `Property | ${SITE_NAME}` }];
@@ -55,10 +56,11 @@ export const meta: Route.MetaFunction = ({ data }) => {
 };
 
 // Session-free (so the edge can share it, signed in or not): the admin flag comes from the root loader.
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   // getPropertyBySlug throws on a failed query and returns null only when no row matched.
   const result = await getPropertyBySlug(getSupabaseAdminClient(), params.slug).catch((error) => { throw unavailable(error); });
   if (!result) throw new Response("Property Not Found", { status: 404 });
+  await notFoundIfHidden(request, "properties", result.property.id);
   return result;
 }
 

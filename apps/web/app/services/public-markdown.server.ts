@@ -1,10 +1,11 @@
 import { PUBLIC_MEETING_FILTER } from "~/lib/public-meetings";
-import { getSupabasePublicClient } from "../lib/supabase.server";
+import { getSupabaseAdminClient, getSupabasePublicClient } from "../lib/supabase.server";
 import { documentPath, meetingPath } from "../lib/paths";
 import { SITE_ORIGIN } from "../lib/og";
 import { recordDate } from "../lib/page-meta";
 import { displaySummary } from "../lib/meeting-summary";
 import { findMeetingBySlugHistory } from "../lib/slug-params.server";
+import { isRecordHidden } from "./page-visibility.server";
 
 // Deliberately smaller than an export API: one meeting overview or extracted
 // document per request, no transcript pagination, auth, private fields or AI.
@@ -55,6 +56,7 @@ export async function publicMarkdown(request: Request, meetingParam?: string, do
       if (error) throw error;
     }
     if (!meeting) return response("Meeting not found\n", "", 404);
+    if (await isRecordHidden(getSupabaseAdminClient(), "meetings", meeting.id)) return response("Meeting not found\n", "", 404);
     const path = docId ? documentPath(meeting, docId) : meetingPath(meeting);
     const mdPath = path + (docId ? "/content.md" : "/summary.md");
     if (new URL(request.url).pathname !== mdPath) {

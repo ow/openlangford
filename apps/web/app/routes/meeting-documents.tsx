@@ -20,6 +20,7 @@ import {
   getDocumentTypeLabel,
   getDocumentTypeColor,
 } from "../lib/document-types";
+import { notFoundIfHidden } from "../services/page-visibility.server";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const m = data?.meeting;
@@ -36,6 +37,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const supabase = getSupabaseAdminClient();
   const resolved = await resolveSlugParam(supabase, "meetings", params.id, request, (m) => meetingDocumentsPath(m), "Meeting Not Found");
   const meetingId = String(resolved.id);
+  await notFoundIfHidden(request, "meetings", meetingId);
 
   const [meetingRes, docsRes, extractedDocs] = await Promise.all([
     supabase

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useLocation, useNavigate, useRevalidator } from "react-router";
-import { OPEN_INTERNAL_NOTE } from "./internal-note-banner";
+import { INTERNAL_NOTE_CHANGED, OPEN_INTERNAL_NOTE } from "./internal-note-banner";
+import { TopicEditDialog } from "./topic-edit-dialog";
 import { Tip } from "../ui/tooltip";
-import { ArrowRight, Check, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, StickyNote, ThumbsDown, ThumbsUp, Undo2, Wrench, X } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, StickyNote, ThumbsDown, ThumbsUp, Undo2, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
@@ -12,9 +13,9 @@ type Suggestion = {
 };
 const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic", similar: "Similar in meaning (doesn't name this topic)" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
-type Links = { suggestions: Suggestion[]; findJob: FindJob | null; hidden?: boolean } | null;
-type Loaded = { path: string | null; review: PageReview | null; links: Links };
-type Saved = { ok?: true; review?: PageReview | null; links?: Links; message?: string | null; error?: string };
+type Links = { suggestions: Suggestion[]; findJob: FindJob | null; edited?: { locked: string[]; newEntries: number } } | null;
+type Loaded = { path: string | null; review: PageReview | null; links: Links; hidden?: boolean };
+type Saved = { ok?: true; review?: PageReview | null; links?: Links; hidden?: boolean; message?: string | null; error?: string };
 
 /** Entries found for this topic can be removed here; items filed under the topic itself can't. */
 const removable = (key: string | null) => !!key && /^(mention|background|report)-\d+$/.test(key);
@@ -76,6 +77,9 @@ export function PageReviewBar() {
   const [showCheck, setShowCheck] = useState(false);  // unfold the check's details while the agent's report is shown
   const panel = useRef<HTMLDivElement>(null);
   const sentFrom = useRef<string | null>(null);  // the page the last save was sent from
+  const [hiding, setHiding] = useState(false);  // the "Hide page" card is open
+  const [hideNote, setHideNote] = useState("");
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     setEditing(null);
@@ -85,6 +89,9 @@ export function PageReviewBar() {
     setFixedRun(false);
     setStayed(false);
     setShowCheck(false);
+    setHiding(false);
+    setHideNote("");
+    setEditOpen(false);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -95,6 +102,11 @@ export function PageReviewBar() {
     finishing.current = false;
     if (save.data.ok) navigate(`/admin/reviews/next?from=${encodeURIComponent(pathname)}`);  // another page of the same kind
   }, [save.state, save.data, navigate, pathname]);
+
+  // Hiding saves the reason as the internal note: the banner shows it straight away.
+  useEffect(() => {
+    if (save.state === "idle" && save.data?.ok && save.data.hidden) window.dispatchEvent(new Event(INTERNAL_NOTE_CHANGED));
+  }, [save.state, save.data]);
 
   // Open the panel by itself once per page when there's something to act on.
   const autoOpened = useRef<string | null>(null);
@@ -115,6 +127,8 @@ export function PageReviewBar() {
   const saved = latest === "save" && save.data && "review" in save.data && save.data.review?.path === pathname ? save.data : undefined;
   const review = saved ? saved.review ?? null : loaded?.review ?? null;
   const links: Links = saved && saved.links !== undefined ? saved.links ?? null : loaded?.links ?? null;
+  const hidden = !!(saved && saved.hidden !== undefined ? saved.hidden : loaded?.hidden);
+  const edited = links?.edited;
   const suggestions = links?.suggestions || [];
   const searching = links?.findJob?.status === "queued" || links?.findJob?.status === "running";
   // Ratings are sent on their own (not through the router, which would reload the whole page after each one): they
@@ -243,7 +257,7 @@ export function PageReviewBar() {
                   Rate or fix the {open_} open {open_ === 1 ? "flag" : "flags"} below first, then mark the page Reviewed.
                 </p>
               )}
-              {links?.hidden && (
+              {hidden && (
                 <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2.5 py-2 text-xs text-zinc-700">
                   <span className="flex items-center gap-1.5"><EyeOff className="h-3.5 w-3.5" />Hidden from the public. Only staff can see this page.</span>
                   <button type="button" disabled={busy} onClick={() => submit("unhide_page")} className="font-medium text-brand-700 hover:underline">Unhide</button>
@@ -483,22 +497,6 @@ export function PageReviewBar() {
               {/* The page tools belong with the check: folded away with it while the agent's report is shown. */}
               {(!agentMode || showCheck) && (
                 <>
-              {links && !links.hidden && (
-                confirming === "hide" ? (
-                  <div className="mb-3 rounded-lg border border-red-200 px-2.5 py-2 text-xs">
-                    <p className="text-zinc-700">Remove this page from the site? It leaves topic lists, links and search, and anyone with an old link sees a short note that it was removed, with links to its meetings. You can undo it.</p>
-                    <div className="mt-1.5 flex gap-2">
-                      <button type="button" disabled={busy} onClick={() => { submit("hide_page"); setConfirming(null); }} className="rounded-md bg-red-600 px-2 py-1 font-medium text-white hover:bg-red-700">Hide page</button>
-                      <button type="button" onClick={() => setConfirming(null)} className="rounded-md px-2 py-1 text-zinc-600 hover:bg-zinc-100">Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <button type="button" disabled={busy} onClick={() => setConfirming("hide")}
-                    className="mb-3 inline-flex items-center gap-1.5 text-xs font-medium text-red-700 hover:underline">
-                    <EyeOff className="h-3.5 w-3.5" />Hide this page
-                  </button>
-                )
-              )}
               <details className="text-xs text-zinc-500">
                 <summary className="cursor-pointer select-none font-medium text-zinc-600">What it looks for</summary>
                 <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
@@ -516,12 +514,55 @@ export function PageReviewBar() {
           )}
         </div>
       )}
+      {hiding && (
+        <div className="w-full rounded-2xl border border-dashed border-red-300 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
+          {hidden ? (
+            <>
+              <p className="font-semibold text-zinc-900">Hidden from the public</p>
+              <p className="mt-1 text-xs text-zinc-600">Anyone who isn't staff gets “not found” here. The reason is in this page's internal note.</p>
+              <div className="mt-3 flex gap-2">
+                <button type="button" disabled={busy} onClick={() => { submit("unhide_page"); setHiding(false); }}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700"><Eye className="h-3.5 w-3.5" />Make it public again</button>
+                <button type="button" onClick={() => setHiding(false)} className="rounded-lg px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-100">Close</button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={(e) => { e.preventDefault(); if (!hideNote.trim()) return; submit("hide_page", { note: hideNote.trim() }); setHiding(false); setHideNote(""); }}>
+              <p className="font-semibold text-zinc-900">Hide this page?</p>
+              <p className="mt-1 text-xs text-zinc-600">
+                It goes at once: anyone who isn't staff gets “not found”, and search engines drop it.
+                {links ? " The topic also leaves topic lists, links and search." : ""} You can make it public again from here.
+              </p>
+              <label className="mt-3 grid gap-1 text-xs">
+                <span className="font-medium text-zinc-800">Why? <span className="font-normal text-zinc-500">(saved as the page's internal note; only staff see it)</span></span>
+                <textarea autoFocus required rows={2} maxLength={1000} value={hideNote} onChange={(e) => setHideNote(e.target.value)}
+                  className="rounded-lg border border-zinc-300 bg-surface px-2.5 py-1.5 text-sm" placeholder="e.g. Names a resident's medical details; checking with the City" />
+              </label>
+              <div className="mt-3 flex gap-2">
+                <button type="submit" disabled={busy || !hideNote.trim()}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"><EyeOff className="h-3.5 w-3.5" />Hide page</button>
+                <button type="button" onClick={() => setHiding(false)} className="rounded-lg px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-100">Cancel</button>
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+      {links && (
+        <TopicEditDialog open={editOpen} onOpenChange={setEditOpen} path={pathname}
+          onSaved={() => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`)} />
+      )}
       {(
         <div className={cn(
           // The admin-only treatment (components/ui/admin-only.tsx): a dashed amber frame.
           "flex max-w-full items-center gap-0.5 rounded-full border border-dashed border-amber-400 bg-amber-50 py-1 pl-3 pr-1 text-sm shadow-lg",
           busy && !checking && "opacity-60",
         )}>
+          {hidden && (
+            <button type="button" onClick={() => setHiding(!hiding)} title="Hidden from the public. Click to make it public again."
+              className="mr-1 flex items-center gap-1 whitespace-nowrap rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-red-700">
+              <EyeOff className="h-3.5 w-3.5" />Hidden
+            </button>
+          )}
           {fixing ? (
             <button type="button" onClick={() => setOpen(true)} className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-brand-700"><Loader2 className="h-4 w-4 animate-spin" />Agent fixing…</button>
           ) : review?.status === "fixed" ? (
@@ -574,6 +615,23 @@ export function PageReviewBar() {
           </Tip>
           {/* Words for the decisions above; icons for the tools around them, with Next last. */}
           <span aria-hidden="true" className="mx-1 h-4 w-px bg-amber-300" />
+          {links && (
+            <Tip label={edited?.newEntries ? `Edit the title, summary or photo. ${edited.newEntries} new ${edited.newEntries === 1 ? "entry" : "entries"} since the last edit: check it still holds` : edited?.locked.length ? "Edit the title, summary or photo (some are edited by hand)" : "Edit the title, summary or photo"}>
+              <button type="button" onClick={() => setEditOpen(true)} aria-label="Edit this topic"
+                className={cn("relative rounded-full p-1.5 hover:bg-amber-100", edited?.locked.length ? "text-brand-700" : "text-zinc-500")}>
+                <Pencil className="h-4 w-4" />
+                {!!edited?.newEntries && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-red-600" aria-hidden="true" />}
+              </button>
+            </Tip>
+          )}
+          {!hidden && (
+            <Tip label="Hide this page from the public">
+              <button type="button" onClick={() => setHiding(!hiding)} aria-label="Hide this page"
+                className={cn("rounded-full p-1.5 hover:bg-red-100 hover:text-red-700", hiding ? "text-red-700" : "text-zinc-500")}>
+                <EyeOff className="h-4 w-4" />
+              </button>
+            </Tip>
+          )}
           <Tip label={review?.internal_note ? "Edit the internal note (only staff see it)" : "Add an internal note (only staff see it)"}>
             <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_INTERNAL_NOTE))}
               aria-label={review?.internal_note ? "Edit the internal note" : "Add an internal note"}

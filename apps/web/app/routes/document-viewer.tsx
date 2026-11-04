@@ -37,6 +37,7 @@ import {
 } from "../lib/cross-references";
 import { CrossRefBadge } from "../components/document/CrossRefBadge";
 import { RelatedDocuments } from "../components/document/RelatedDocuments";
+import { notFoundIfHidden } from "../services/page-visibility.server";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.extractedDoc)
@@ -77,6 +78,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const supabase = getSupabaseAdminClient();
   const resolved = await resolveSlugParam(supabase, "meetings", params.id, request, (m) => documentPath(m, docId), "Meeting Not Found");
   const meetingId = String(resolved.id);
+  await notFoundIfHidden(request, "meetings", meetingId);
 
   // docId is now an extracted_documents.id
   const [edRes, meetingRes] = await Promise.all([

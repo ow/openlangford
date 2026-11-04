@@ -10,19 +10,28 @@ import { fixPage } from "../services/page-fix.server";
 import { unresolvedFlags } from "../lib/page-review-types";
 import {
   agreeSuggestion, decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
-  setTopicHidden, topicHidden,
 } from "../services/page-links.server";
+import { isPageHidden, setPageHidden } from "../services/page-visibility.server";
+import { confirmTopicEdits, resetTopicField, saveTopicEdit, topicEditState, type TopicEdit } from "../services/topic-edit.server";
+import { EDIT_FIELDS, type EditField } from "../lib/topic-edit";
 
-const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note"];
+const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note",
+  "edit_topic", "reset_field", "keep_edits"];
 
 /** On a topic page: suggestions waiting for a decision, and the latest "find missing" search. */
 async function linkState(supabase: SupabaseClient, path: string) {
   const matterId = await matterForPath(supabase, path);
   if (!matterId) return null;
-  const [suggestions, findJob, hidden] = await Promise.all([
-    listSuggestions(supabase, matterId), latestFindJob(supabase, matterId), topicHidden(supabase, matterId),
+  const [suggestions, findJob, edit] = await Promise.all([
+    listSuggestions(supabase, matterId), latestFindJob(supabase, matterId), topicEditState(supabase, matterId),
   ]);
-  return { suggestions, findJob, hidden };
+  return { suggestions, findJob, edited: { locked: edit.locked, newEntries: edit.newEntries } };
+}
+
+/** What every page's bar needs, and on a topic page its links and edits. */
+async function pageState(supabase: SupabaseClient, path: string) {
+  const [links, hidden] = await Promise.all([linkState(supabase, path), isPageHidden(supabase, path)]);
+  return { links, hidden };
 }
 
 /** Staff only: a public page's review. GET ?path=/matters/x. POST to mark or clear it; run a reader's check
@@ -33,10 +42,16 @@ export async function loader({ request }: Route.LoaderArgs) {
   return adminRead(request, async () => {
     const path = reviewPath(new URL(request.url).searchParams.get("path"));
     const supabase = getSupabaseAdminClient();
+    const params = new URL(request.url).searchParams;
+    // The edit panel asks for the topic's current text and the pictures it can choose from.
+    if (path && params.get("edit") === "1") {
+      const matterId = await matterForPath(supabase, path);
+      return { path, edit: matterId ? await topicEditState(supabase, matterId, { withImages: true }) : null };
+    }
     return {
       path,
       review: path ? await getPageReview(supabase, path) : null,
-      links: path ? await linkState(supabase, path) : null,
+      ...(path ? await pageState(supabase, path) : { links: null, hidden: false }),
     };
   });
 }
@@ -67,15 +82,34 @@ export async function action({ request, context }: Route.ActionArgs) {
       const verdict = String(form.get("verdict") || "");
       if (!Number.isInteger(index) || index < 0 || !["agree", "disagree", "none"].includes(verdict)) return bad("Unknown rating.");
       await rateFlag(supabase, path, index, verdict === "none" ? null : verdict as "agree" | "disagree", user.id);
-    } else if (["remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page"].includes(intent)) {
+    } else if (intent === "hide_page" || intent === "unhide_page") {
+      const note = String(form.get("note") || "").trim();
+      if (intent === "hide_page" && !note) return bad("Say why you're hiding this page.");
+      await setPageHidden(supabase, path, intent === "hide_page", { note, userId: user.id, title: String(form.get("title") || "") || null });
+      message = intent === "hide_page" ? "This page is now hidden from the public: anyone else gets “not found”." : "This page is public again.";
+    } else if (["remove_entry", "find_missing", "accept", "reject", "edit_topic", "reset_field", "keep_edits"].includes(intent)) {
       const matterId = await matterForPath(supabase, path);
       if (!matterId) return bad("This only works on a topic page.");
-      if (intent === "hide_page" || intent === "unhide_page") {
-        await setTopicHidden(supabase, matterId, intent === "hide_page", user.id);
-        if (intent === "hide_page") {
-          await setPageReview(supabase, { path, status: "reviewed", userId: user.id, title: String(form.get("title") || "") || null, note: "Hidden from the public." });
+      if (intent === "edit_topic") {
+        const edit: TopicEdit = {};
+        for (const [field, key] of [["title", "title"], ["summary", "summary"], ["status_line", "status_line"]] as const) {
+          if (form.has(field)) edit[key] = String(form.get(field));
         }
-        message = intent === "hide_page" ? "This page is now hidden from the public." : "This page is public again.";
+        if (form.has("image")) {
+          const image = String(form.get("image"));
+          edit.image = { id: image === "none" ? "none" : Number(image), kind: String(form.get("image_kind") || "") || null };
+          if (edit.image.id !== "none" && !Number.isSafeInteger(edit.image.id)) return bad("Unknown picture.");
+        }
+        const { changed } = await saveTopicEdit(supabase, matterId, edit, user.id);
+        message = changed ? "Saved. The pipeline will leave the fields you edited alone." : "Nothing changed.";
+      } else if (intent === "reset_field") {
+        const field = String(form.get("field") || "") as EditField;
+        if (!EDIT_FIELDS.includes(field)) return bad("Unknown field.");
+        await resetTopicField(supabase, matterId, field);
+        message = "Back to the automatic version.";
+      } else if (intent === "keep_edits") {
+        await confirmTopicEdits(supabase, matterId);
+        message = "Kept your edits.";
       } else if (intent === "remove_entry") {
         const key = String(form.get("key") || "");
         if (!removableKey(key)) return bad("That entry can't be removed here.");
@@ -138,7 +172,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         ? "Nothing new for the agent: every flag rated 👍 is already fixed. Rate an open flag 👍, or say what's still wrong, to send it more."
         : "The agent has finished with this page.";
     }
-    return data({ ok: true as const, message, review: await getPageReview(supabase, path), links: await linkState(supabase, path) },
+    return data({ ok: true as const, message, review: await getPageReview(supabase, path), ...(await pageState(supabase, path)) },
       { headers: privateAdminHeaders() });
   } catch (error) {
     if (error instanceof Response) {

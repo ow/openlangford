@@ -58,6 +58,7 @@ import { getPropertiesForMatter, propertyPath, propertyPin } from "../services/p
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 import { loaderFailure } from "../lib/loader-errors";
+import { IMAGE_KIND_LABELS } from "../lib/topic-edit";
 
 
 const GENERIC_EVIDENCE_TITLES = new Set([
@@ -81,12 +82,7 @@ const GENERIC_EVIDENCE_TITLES = new Set([
   "staff report",
 ]);
 
-const IMAGE_CAPTION: Record<string, string> = {
-  rendering: "What's proposed",
-  site_photo: "The site today",
-  location: "Where it is",
-  site_plan: "Proposed layout",
-};
+const IMAGE_CAPTION: Record<string, string> = IMAGE_KIND_LABELS;
 
 function mentionLabel(title: string | null | undefined) {
   const t = (title || "").toLowerCase();
@@ -352,6 +348,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     if (["staff", "container", "no_records"].includes(matter.meta?.hidden)) {
       const { data: { user } } = await createSupabaseServerClient(request).supabase.auth.getUser();
       if (!(await getStaffRole(user))) {
+        // Hidden with the review bar's "Hide page" switch: simply not found.
+        if (matter.meta?.hidden === "staff") throw new Response("Not Found", { status: 404, headers: { "X-Robots-Tag": "noindex" } });
         const meetings = new Map<string, { slug: string; title: string; date: string }>();
         for (const item of matter.agenda_items || []) {
           const m = (item as any).meetings;

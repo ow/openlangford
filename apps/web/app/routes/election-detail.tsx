@@ -36,6 +36,7 @@ import { Badge } from "../components/ui/badge";
 import { DetailHeader } from "../components/ui/detail-header";
 import { OfficeResults } from "../components/elections/office-results";
 import { formatDate } from "../lib/utils";
+import { notFoundIfHidden } from "../services/page-visibility.server";
 
 /** Mayor first, then other offices alphabetically. */
 function officeRank(name: string) {
@@ -48,6 +49,7 @@ function officeRank(name: string) {
 export async function loader({ params, request }: Route.LoaderArgs) {
   const supabase = getSupabaseAdminClient();
   const resolved = await resolveSlugParam(supabase, "elections", params.id, request, (e) => electionPath(e), "Election Not Found");
+  await notFoundIfHidden(request, "elections", resolved.id);
 
   try {
     const election = await getElectionById(supabase, String(resolved.id));

@@ -105,6 +105,7 @@ import {
   getDocumentTypeLabel,
 } from "../lib/document-types";
 import { AdminOnly } from "../components/ui/admin-only";
+import { notFoundIfHidden } from "../services/page-visibility.server";
 
 
 export function HydrateFallback() {
@@ -179,6 +180,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const { supabase } = createSupabaseServerClient(request);
     const resolved = await timed("meeting-resolve", resolveSlugParam(supabase, "meetings", params.id, request, (m) => meetingPath(m), "Meeting Not Found"));
     const id = String(resolved.id);
+    await notFoundIfHidden(request, "meetings", id);
     const municipalityPromise = getMunicipality(supabase).catch(() => null);
     const [data, documentSections, extractedDocuments, municipality, terms] = await Promise.all([
       timed("meeting-record", getMeetingById(supabase, id, { includeText: false })),

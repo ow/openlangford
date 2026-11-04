@@ -8,6 +8,8 @@ type Loaded = { path?: string; review?: PageReview | null };
 
 /** Opens the banner's editor from elsewhere (the review bar's note button). */
 export const OPEN_INTERNAL_NOTE = "internal-note:open";
+/** The review bar changed the note (hiding a page saves the reason here): load it again. */
+export const INTERNAL_NOTE_CHANGED = "internal-note:changed";
 
 /**
  * Staff's internal note on this page, as a banner at the top of the page (moderators and admins only; root.tsx
@@ -26,12 +28,20 @@ export function InternalNoteBanner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
   useEffect(() => {
+    const reload = () => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
+    window.addEventListener(INTERNAL_NOTE_CHANGED, reload);
+    return () => window.removeEventListener(INTERNAL_NOTE_CHANGED, reload);
+  });
+  useEffect(() => {
     const open = () => { setText(note || ""); setEditing(true); window.scrollTo({ top: 0, behavior: "smooth" }); };
     window.addEventListener(OPEN_INTERNAL_NOTE, open);
     return () => window.removeEventListener(OPEN_INTERNAL_NOTE, open);
   });
 
-  const saved = save.data && save.data.review?.path === pathname ? save.data.review : undefined;
+  const [latest, setLatest] = useState<"save" | "load">("load");
+  useEffect(() => { if (save.state === "idle" && save.data) setLatest("save"); }, [save.state, save.data]);
+  useEffect(() => { if (load.state === "idle" && load.data) setLatest("load"); }, [load.state, load.data]);
+  const saved = latest === "save" && save.data && save.data.review?.path === pathname ? save.data.review : undefined;
   const review = saved ?? (load.data?.path === pathname ? load.data.review : null);
   const pending = save.state !== "idle" ? String(save.formData?.get("note") ?? "") : null;
   const note = pending ?? review?.internal_note ?? null;
