@@ -3,10 +3,13 @@ import { z } from "zod";
 import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { readPage } from "./page-check.server";
-import { claimsAndRecords } from "./page-verify.server";
+import { claimsAndRecords, itemRecords, topicItemIds } from "./page-verify.server";
+import { matterForPath } from "./page-links.server";
 import { addEditorIssue } from "./page-check.server";
 import { escapeHtml, CONTACT_FROM_EMAIL } from "./contact-messages.server";
-import { REPORT_CATEGORIES, type ReportCategory } from "../lib/data-reports";
+import { REPORT_CATEGORIES, type DataReport, type ReportAssessment, type ReportCategory, type ReportFilter } from "../lib/data-reports";
+export { REPORT_FILTERS, VERDICT_LABELS } from "../lib/data-reports";
+export type { DataReport, ReportAssessment, ReportFilter, ReportVerdict } from "../lib/data-reports";
 
 /**
  * Readers' data-issue reports (data_reports). An agent reads each new report against the page and the records
@@ -14,47 +17,6 @@ import { REPORT_CATEGORIES, type ReportCategory } from "../lib/data-reports";
  * issue on the page, for the page agent), edits the fix first, or declines. The reader is emailed the outcome
  * unless they opted out.
  */
-
-export type ReportVerdict = "confirmed" | "likely" | "not_supported" | "unclear" | "privacy";
-export const VERDICT_LABELS: Record<ReportVerdict, string> = {
-  confirmed: "The records back the reader",
-  likely: "Probably right, not fully checked",
-  not_supported: "The records don't back it",
-  unclear: "Can't tell from the records",
-  privacy: "Privacy concern",
-};
-
-export type ReportAssessment = {
-  verdict: ReportVerdict;
-  summary: string;
-  findings: string;
-  proposed_fix: string | null;
-  reply: string;
-  model: string;
-};
-
-export type DataReport = {
-  id: number;
-  created_at: string;
-  user_id: string | null;
-  path: string;
-  entry_key: string | null;
-  quote: string | null;
-  category: ReportCategory;
-  note: string | null;
-  suggestion: string | null;
-  source_url: string | null;
-  notify_reporter: boolean;
-  status: "new" | "assessed" | "resolved" | "declined" | "duplicate";
-  assessment: ReportAssessment | null;
-  assessed_at: string | null;
-  resolution: string | null;
-  resolved_at: string | null;
-  notified_at: string | null;
-};
-
-export const REPORT_FILTERS = [["open", "To decide"], ["resolved", "Fixed"], ["declined", "Declined"], ["all", "All"]] as const;
-export type ReportFilter = (typeof REPORT_FILTERS)[number][0];
 
 const AssessmentSchema = z.object({
   verdict: z.enum(["confirmed", "likely", "not_supported", "unclear", "privacy"]).describe(
@@ -90,7 +52,7 @@ export function assessPrompt(report: Pick<DataReport, "category" | "quote" | "no
     report.suggestion ? `They think it should say: ${report.suggestion}` : "",
     report.source_url ? `They cited: ${report.source_url}` : "",
     "",
-    records ? `OFFICIAL RECORDS BEHIND THIS PAGE (minutes, motions, votes, agenda text; shortened):\n${records.slice(0, 40000)}` : "There are no official records attached to this page.",
+    records ? `OFFICIAL RECORDS BEHIND THIS PAGE, then any related topics it lists (minutes, motions, votes, agenda text; shortened):\n${records.slice(0, 60000)}` : "There are no official records attached to this page.",
   ].filter((line) => line !== "").join("\n");
 }
 
@@ -100,7 +62,11 @@ export async function assessReport(supabase: SupabaseClient, origin: string, id:
   if (error || !report) throw new Error("Report not found.");
   const page = readPage(await renderPage(origin, report.path));
   const entry = report.entry_key ? page.entries.find((e) => e.key === report.entry_key)?.text ?? null : null;
-  const records = await claimsAndRecords(supabase, report.path).then((r) => r?.records ?? null).catch(() => null);
+  const [own, related] = await Promise.all([
+    claimsAndRecords(supabase, report.path).then((r) => r?.records ?? null).catch(() => null),
+    relatedTopicRecords(supabase, report.path).catch(() => ""),
+  ]);
+  const records = [own, related].filter(Boolean).join("\n\n") || null;
   const result = await getAiClient().json({
     stage: "review",
     prompt: assessPrompt(report, { heading: page.heading || page.title, entry, body: page.body }, records),
@@ -113,6 +79,22 @@ export async function assessReport(supabase: SupabaseClient, origin: string, id:
     .eq("id", id);
   if (saveError) throw new Error("Could not save the assessment.");
   return assessment;
+}
+
+/** On a topic page, the records of each topic listed under Related topics (a report is often about one of them). */
+async function relatedTopicRecords(supabase: SupabaseClient, path: string) {
+  const matterId = await matterForPath(supabase, path);
+  if (!matterId) return "";
+  const { data: links } = await supabase.from("matter_links").select("matter_id, related_matter_id")
+    .eq("kind", "related_matter").eq("hidden", false).or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`);
+  const ids = [...new Set((links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)))].slice(0, 6);
+  if (!ids.length) return "";
+  const { data: topics } = await supabase.from("matters").select("id, title, meta").in("id", ids).is("merged_into", null);
+  const parts = await Promise.all((topics || []).map(async (t: any) => {
+    const text = (await itemRecords(supabase, await topicItemIds(supabase, t.id))).text;
+    return text ? `RELATED TOPIC listed on this page, "${t.meta?.display_title || t.title}": its own records\n${text.slice(0, 12000)}` : "";
+  }));
+  return parts.filter(Boolean).join("\n\n");
 }
 
 /** For the cron: assess the oldest new reports, a few at a time. */

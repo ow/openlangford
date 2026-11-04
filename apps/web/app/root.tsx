@@ -125,7 +125,9 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       const profile = await timed("root-profile", getUserProfile(supabase, user.id));
       // No profile or onboarding not completed -> redirect to onboarding
       if (!profile || !profile.onboarding_completed) {
-        throw redirect("/onboarding", { headers });
+        // Back to where they were afterwards (e.g. a report they started before signing in).
+        const back = pathname === "/" ? "" : `?redirectTo=${encodeURIComponent(pathname + url.search)}`;
+        throw redirect(`/onboarding${back}`, { headers });
       }
     }
   }

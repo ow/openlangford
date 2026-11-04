@@ -49,3 +49,45 @@ export function parseReport(input: unknown): { report: NewReport } | { error: st
     },
   };
 }
+
+// The moderators' queue (shared by the server and the /admin/reports page).
+export type ReportVerdict = "confirmed" | "likely" | "not_supported" | "unclear" | "privacy";
+export const VERDICT_LABELS: Record<ReportVerdict, string> = {
+  confirmed: "The records back the reader",
+  likely: "Probably right, not fully checked",
+  not_supported: "The records don't back it",
+  unclear: "Can't tell from the records",
+  privacy: "Privacy concern",
+};
+
+export type ReportAssessment = {
+  verdict: ReportVerdict;
+  summary: string;
+  findings: string;
+  proposed_fix: string | null;
+  reply: string;
+  model: string;
+};
+
+export type DataReport = {
+  id: number;
+  created_at: string;
+  user_id: string | null;
+  path: string;
+  entry_key: string | null;
+  quote: string | null;
+  category: ReportCategory;
+  note: string | null;
+  suggestion: string | null;
+  source_url: string | null;
+  notify_reporter: boolean;
+  status: "new" | "assessed" | "resolved" | "declined" | "duplicate";
+  assessment: ReportAssessment | null;
+  assessed_at: string | null;
+  resolution: string | null;
+  resolved_at: string | null;
+  notified_at: string | null;
+};
+
+export const REPORT_FILTERS = [["open", "To decide"], ["resolved", "Fixed"], ["declined", "Declined"], ["all", "All"]] as const;
+export type ReportFilter = (typeof REPORT_FILTERS)[number][0];

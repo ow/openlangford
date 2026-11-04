@@ -9,11 +9,8 @@ import { adminCard, adminLink } from "../components/admin/audience-layout";
 import { PageHeader } from "../components/ui/page-header";
 import { cn } from "../lib/utils";
 import { reviewTime } from "../lib/page-review-types";
-import { REPORT_CATEGORIES } from "../lib/data-reports";
-import {
-  REPORT_FILTERS, VERDICT_LABELS, approveReport, assessReport, declineReport, getReport, listReports, notifyReporter,
-  type DataReport, type ReportFilter,
-} from "../services/data-reports.server";
+import { REPORT_CATEGORIES, REPORT_FILTERS, VERDICT_LABELS, type DataReport, type ReportFilter } from "../lib/data-reports";
+import { approveReport, assessReport, declineReport, getReport, listReports, notifyReporter } from "../services/data-reports.server";
 
 export const meta = () => [
   { title: "Reader reports | Admin | Open Langford" },

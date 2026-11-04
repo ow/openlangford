@@ -13,6 +13,7 @@ import { readPlaceUpdate, readRadius, savePlace } from "../services/saved-place.
 import { redirect, useNavigation, useSubmit } from "react-router";
 import type { Route } from "./+types/onboarding";
 import { createSupabaseServerClient } from "../lib/supabase.server";
+import { safeRedirect } from "../lib/safe-redirect";
 import { getTopics } from "../services/topics";
 import {
   getUserProfile,
@@ -50,9 +51,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     getTopics(supabase),
   ]);
 
-  // Already completed onboarding — go home
+  // Already completed onboarding — back where they came from, or home
   if (profile?.onboarding_completed) {
-    throw redirect("/", { headers });
+    throw redirect(safeRedirect(new URL(request.url).searchParams.get("redirectTo"), "/"), { headers });
   }
 
   return { user, profile, topics, emailAlertsAvailable: emailAlertsAvailable() };
@@ -137,7 +138,7 @@ export async function action({ request }: Route.ActionArgs) {
     headers.append("Set-Cookie", await onboardingNotice.serialize("complete", {
       secure: new URL(request.url).protocol === "https:",
     }));
-    return redirect("/", { headers });
+    return redirect(safeRedirect(new URL(request.url).searchParams.get("redirectTo"), "/"), { headers });
   } catch (err) {
     console.error("Onboarding action error:", err);
     return { error: err instanceof Error ? err.message : "Something went wrong" };
