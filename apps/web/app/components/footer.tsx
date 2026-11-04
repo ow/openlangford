@@ -2,12 +2,14 @@ import { Link, useRouteLoaderData } from "react-router";
 import type { Municipality } from "../lib/types";
 import { siteName } from "../lib/site-name";
 import { useSiteFlags } from "../lib/use-site-flags";
+import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 
 export function Footer() {
   const rootData = useRouteLoaderData("root") as { municipality?: Municipality; user?: unknown } | undefined;
   const name = siteName(rootData?.municipality);
   const { signupsEnabled } = useSiteFlags();
   const signedOut = !rootData?.user;
+  const cityName = rootData?.municipality?.name || DEFAULT_MUNICIPALITY.name;
 
   return (
     <footer className="mt-auto border-t border-zinc-200 bg-surface py-8 text-sm text-zinc-500">
@@ -32,6 +34,12 @@ export function Footer() {
           )}
         </nav>
       </div>
+      <p className="container mx-auto mt-4 max-w-7xl px-4 text-xs text-zinc-500">
+        Independent, not affiliated with the {cityName}. AI summaries can contain mistakes; check the{" "}
+        <a href={DEFAULT_MUNICIPALITY.meetingPortalUrl} className="underline underline-offset-2 hover:text-zinc-900" target="_blank" rel="noopener noreferrer">
+          official record
+        </a>.
+      </p>
     </footer>
   );
 }
