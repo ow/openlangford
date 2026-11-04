@@ -16,6 +16,7 @@ declare namespace Cloudflare {
 		AI_GATEWAY_ID: "langford-open-a-i";
 		AI_SEARCH_DAILY_LIMIT: "1000";
 		ADMIN_EMAILS: string; // secret: wrangler secret put ADMIN_EMAILS
+		CONTACT_ALSO_NOTIFY?: string; // comma-separated; contact notifications only, never an admin login
 		ENABLE_SIGNUPS: "true";
 		PUBLIC_SIGNUP_LINKS: "true";
 		EMAIL_ALERTS_AVAILABLE: "false";

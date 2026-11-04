@@ -4,8 +4,16 @@ import { discordPayload } from "./format";
 export interface Env {
   /** A private channel's webhook (secret). */
   DISCORD_WEBHOOK_URL?: string;
+  /** Optional webhook for mail to contact@ (the site's contact-form notifications), so they get their own channel. */
+  DISCORD_CONTACT_WEBHOOK_URL?: string;
   /** Optional verified Email Routing destination that also receives every message. */
   FORWARD_TO?: string;
+}
+
+/** contact@ goes to its own channel when that webhook is set; everything else to the main one. */
+export function webhookFor(to: string, env: Env) {
+  const mailbox = to.toLowerCase().split("@")[0];
+  return (mailbox === "contact" && env.DISCORD_CONTACT_WEBHOOK_URL) || env.DISCORD_WEBHOOK_URL;
 }
 
 export default {
@@ -18,10 +26,11 @@ export default {
       authenticationResults: message.headers.get("authentication-results"),
     });
 
+    const webhook = webhookFor(message.to, env);
     let posted = false;
-    if (env.DISCORD_WEBHOOK_URL) {
+    if (webhook) {
       try {
-        const response = await fetch(`${env.DISCORD_WEBHOOK_URL}?wait=true`, {
+        const response = await fetch(`${webhook}?wait=true`, {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(payload),

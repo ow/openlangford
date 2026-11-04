@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildContactNotification,
+  contactNotificationRecipients,
   notifyContactMessage,
   replyMailto,
 } from "~/services/contact-messages.server";
@@ -289,5 +290,12 @@ describe("contact form action", () => {
     expect(bad.waitUntil).not.toHaveBeenCalled();
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(mocks.adminClient).not.toHaveBeenCalled();
+  });
+});
+
+describe("contactNotificationRecipients", () => {
+  it("adds the extra addresses to the admins, once each", () => {
+    expect(contactNotificationRecipients(["owner@example.com"], " Admin@OpenLangford.ca , owner@example.com")).toEqual(["owner@example.com", "admin@openlangford.ca"]);
+    expect(contactNotificationRecipients(["owner@example.com"], undefined)).toEqual(["owner@example.com"]);
   });
 });

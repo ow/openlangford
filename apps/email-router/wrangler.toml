@@ -11,6 +11,7 @@ preview_urls = false
 [observability]
 enabled = true
 
-# Secrets (wrangler secret put): DISCORD_WEBHOOK_URL, a private channel's webhook, never the public digest channel's.
+# Secrets (wrangler secret put): DISCORD_WEBHOOK_URL, a private channel's webhook, never the public digest channel's;
+# optional DISCORD_CONTACT_WEBHOOK_URL, a separate channel for contact@ (the site's contact-form notifications).
 # Optional var: FORWARD_TO, a verified Email Routing destination that also gets each message (and every message if
 # Discord is down).

@@ -90,6 +90,13 @@ export function buildContactNotification(message: NewContactMessage, recipients:
  * Never throws: a missing key, no admins or a provider error only leave notified_at null.
  * Logs carry no addresses or message content.
  */
+/** Who gets contact-form notifications: the admins plus any CONTACT_ALSO_NOTIFY addresses (which grant no admin
+ * access), lower-cased and without repeats. */
+export function contactNotificationRecipients(admins: string[], alsoNotify?: string | null) {
+  const extra = (alsoNotify || "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
+  return [...new Set([...admins, ...extra])];
+}
+
 export async function notifyContactMessage({
   apiKey,
   recipients,

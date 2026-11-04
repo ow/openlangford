@@ -4,7 +4,7 @@ import { Form, useActionData, useNavigation } from "react-router";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { PageHeader } from "../components/ui/page-header";
 import { getConfiguredAdminEmails } from "../lib/auth.server";
-import { notifyContactMessage } from "../services/contact-messages.server";
+import { contactNotificationRecipients, notifyContactMessage } from "../services/contact-messages.server";
 
 export const meta = () => pageMeta("Contact", "Contact Open Langford with questions, feedback or corrections about Langford council records.", "/contact");
 
@@ -61,7 +61,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const cloudflare = (context as { cloudflare?: { env?: Partial<Env>; ctx?: ExecutionContext } } | undefined)?.cloudflare;
   const notification = notifyContactMessage({
     apiKey: cloudflare?.env?.RESEND_API_KEY,
-    recipients: getConfiguredAdminEmails(),
+    recipients: contactNotificationRecipients(getConfiguredAdminEmails(), cloudflare?.env?.CONTACT_ALSO_NOTIFY),
     message: { id: saved.id, created_at: saved.created_at, name: name || null, email, message },
     supabase,
   }).catch(() => {
