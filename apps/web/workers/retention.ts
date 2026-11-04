@@ -29,3 +29,13 @@ export async function applyPrivacyRetention(supabase: SupabaseClient, { dryRun =
   if (error) throw new Error(`Privacy retention failed: ${error.message}`);
   return data as { dry_run: boolean; contact_messages_deleted: number; email_messages_anonymized: number };
 }
+
+/**
+ * Keeps 90 days of raw AI usage rows (older days rolled into ai_usage_daily first) and of pipeline progress
+ * events (`apply_log_retention`). One batch per table per run. Returns counts only.
+ */
+export async function applyLogRetention(supabase: SupabaseClient, { dryRun = false } = {}) {
+  const { data, error } = await supabase.rpc("apply_log_retention", { p_dry_run: dryRun });
+  if (error) throw new Error(`Log retention failed: ${error.message}`);
+  return data as { dry_run: boolean; cutoff: string; ai_usage_rolled_up?: number; run_events_deleted?: number };
+}

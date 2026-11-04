@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import { applyPrivacyRetention, purgeExpiredQuestions } from "../../workers/retention";
+import { applyLogRetention, applyPrivacyRetention, purgeExpiredQuestions } from "../../workers/retention";
 
 function fakeClient(result: { count: number | null; error: { message: string } | null }) {
   const calls: Array<{ table: string; column: string; value: string; opts: unknown }> = [];
@@ -38,4 +38,13 @@ it("runs the 12-month contact and email retention through the database function"
   expect(rpc).toHaveBeenCalledWith("apply_privacy_retention", { p_dry_run: false });
   rpc.mockResolvedValue({ data: null, error: { message: "offline" } });
   await expect(applyPrivacyRetention({ rpc } as any)).rejects.toThrow("offline");
+});
+
+it("rolls up and trims the log tables through apply_log_retention", async () => {
+  const summary = { dry_run: false, cutoff: "2026-08-06T00:00:00Z", ai_usage_rolled_up: 50, run_events_deleted: 50 };
+  const rpc = vi.fn().mockResolvedValue({ data: summary, error: null });
+  expect(await applyLogRetention({ rpc } as any)).toEqual(summary);
+  expect(rpc).toHaveBeenCalledWith("apply_log_retention", { p_dry_run: false });
+  rpc.mockResolvedValue({ data: null, error: { message: "offline" } });
+  await expect(applyLogRetention({ rpc } as any)).rejects.toThrow("offline");
 });
