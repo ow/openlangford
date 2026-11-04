@@ -62,3 +62,42 @@ export async function getPublicPersonAttendance(municipalityId: number, personId
   if (!summary) throw new Error("Incomplete council attendance summary");
   return summary;
 }
+
+export interface CouncilTermStats {
+  meetings: number;
+  regularCouncil: number;
+  specialCouncil: number;
+  committeeOfTheWhole: number;
+  committees: number;
+  motionsCarried: number;
+  motionsDefeated: number;
+  bylawsAdopted: number;
+  /** One date per bylaw adopted (YYYY-MM-DD), oldest first. */
+  bylawAdoptionDates: string[];
+  topics: { title: string; slug: string; meetings: number }[];
+}
+
+/** Each term's totals (council_term_stats), keyed by term id. Counts only what the minutes record. */
+export function getCouncilTermStats(municipalityId: number) {
+  const today = civicToday();
+  return publicData(`council-term-stats:${municipalityId}:${today}`, async () => {
+    const { data, error } = await getSupabaseAdminClient().rpc("council_term_stats", { p_municipality_id: municipalityId, p_as_of: today });
+    if (error) throw error;
+    const stats: Record<string, CouncilTermStats> = {};
+    for (const row of data || []) {
+      const counts = [row.meetings, row.regular_council, row.special_council, row.committee_of_the_whole, row.committees, row.motions_carried, row.motions_defeated, row.bylaws_adopted];
+      if (!Number.isSafeInteger(row.term_id) || !counts.every((n) => Number.isSafeInteger(n) && n >= 0) || !Array.isArray(row.topics) || !Array.isArray(row.bylaw_adoption_dates)) {
+        throw new Error("Invalid council term stats");
+      }
+      stats[String(row.term_id)] = {
+        meetings: row.meetings, regularCouncil: row.regular_council, specialCouncil: row.special_council,
+        committeeOfTheWhole: row.committee_of_the_whole, committees: row.committees,
+        motionsCarried: row.motions_carried, motionsDefeated: row.motions_defeated, bylawsAdopted: row.bylaws_adopted,
+        bylawAdoptionDates: row.bylaw_adoption_dates.filter((d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)),
+        topics: row.topics.filter((t: any) => typeof t?.title === "string" && typeof t?.slug === "string" && Number.isSafeInteger(t?.meetings))
+          .map((t: any) => ({ title: t.title, slug: t.slug, meetings: t.meetings })),
+      };
+    }
+    return stats;
+  }, () => true, undefined, { shareWithSignedIn: true });
+}

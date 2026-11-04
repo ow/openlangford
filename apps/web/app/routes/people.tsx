@@ -26,7 +26,8 @@ export const meta: Route.MetaFunction = ({ matches }) => {
     { name: "twitter:card", content: "summary_large_image" },
   ];
 };
-import { getPublicCouncilSummary } from "../services/council-summary.server";
+import { getCouncilTermStats, getPublicCouncilSummary } from "../services/council-summary.server";
+import { TermStats } from "../components/term-stats";
 import { getMunicipality } from "../services/municipality";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { councilTermStatus, councilTermLabel, councilRoster, membershipIsActiveOn } from "../lib/council-terms";
@@ -40,11 +41,19 @@ import { formatDate } from "../lib/utils";
 export async function loader() {
   const supabase = getSupabaseAdminClient();
   const municipality = await getMunicipality(supabase);
-  return getPublicCouncilSummary(municipality.id);
+  const [summary, termStats] = await Promise.all([
+    getPublicCouncilSummary(municipality.id),
+    // The page still works without the term totals.
+    getCouncilTermStats(municipality.id).catch((error) => {
+      console.error("Error loading council term stats:", error);
+      return {} as Awaited<ReturnType<typeof getCouncilTermStats>>;
+    }),
+  ]);
+  return { ...summary, termStats };
 }
 
 export default function PeopleList({ loaderData }: Route.ComponentProps) {
-  const { people, terms, today, stats: statsByTerm } = loaderData;
+  const { people, terms, today, stats: statsByTerm, termStats } = loaderData;
   const rootData = useRouteLoaderData("root") as { municipality?: Municipality } | undefined;
   const shortName = rootData?.municipality?.short_name || "Council";
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,6 +134,10 @@ export default function PeopleList({ loaderData }: Route.ComponentProps) {
             {status === "upcoming" && <p className="text-sm text-muted-foreground">Election results identify the incoming council. Members currently serving remain in office until the new term begins. There are no attendance or voting statistics for this term yet.</p>}
             {!selected && <p className="text-sm text-muted-foreground">Verified term dates have not been recorded. Only members serving today are shown.</p>}
           </div>
+          {selected && status !== "upcoming" && termStats[String(selected.id)] && (
+            <TermStats stats={termStats[String(selected.id)]} inProgress={status === "current"} start={selected.start_date} end={selected.end_date && selected.end_date < today ? selected.end_date : today} />
+          )}
+          {selected && status !== "upcoming" && termStats[String(selected.id)]?.meetings > 0 && <h2 className="mt-4 text-lg font-bold tracking-tight text-zinc-900">Members</h2>}
           <div className="grid gap-4">{renderMembers(members)}</div>
           {!members.length && <p className="py-6 text-muted-foreground">No members match this selection.</p>}
         </section>
