@@ -69,9 +69,9 @@ export async function notFoundIfHidden(request: Request, table: HiddenTable, id:
 
 /** A failed lookup counts as not hidden: it shows the page rather than taking a public one down. */
 export async function isRecordHidden(supabase: SupabaseClient, table: HiddenTable, id: number | string) {
-  const { data, error } = await supabase.from("hidden_pages").select("record_id")
-    .eq("record_table", table).eq("record_id", Number(id)).maybeSingle();
-  return !error && !!data;
+  // page_hidden() answers for any client, so public routes that never use admin access can ask too.
+  const { data, error } = await supabase.rpc("page_hidden", { p_table: table, p_id: Number(id) });
+  return !error && data === true;
 }
 
 export async function viewerIsStaff(request: Request) {

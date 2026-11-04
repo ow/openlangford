@@ -14,3 +14,16 @@ CREATE TABLE IF NOT EXISTS public.hidden_pages (
 ALTER TABLE public.hidden_pages ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.hidden_pages FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.hidden_pages TO service_role;
+
+-- Public routes that must not use admin access (the Markdown representations) ask only whether one record is hidden.
+CREATE OR REPLACE FUNCTION public.page_hidden(p_table text, p_id bigint)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (SELECT 1 FROM public.hidden_pages WHERE record_table = p_table AND record_id = p_id);
+$$;
+REVOKE ALL ON FUNCTION public.page_hidden(text, bigint) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.page_hidden(text, bigint) TO anon, authenticated, service_role;

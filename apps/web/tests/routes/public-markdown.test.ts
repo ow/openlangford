@@ -1,10 +1,11 @@
 import { beforeEach, expect, it, vi } from "vitest";
 
-const state = vi.hoisted(() => ({ rows: {} as Record<string, any[]>, errorTable: "", reads: [] as string[] }));
+const state = vi.hoisted(() => ({ rows: {} as Record<string, any[]>, errorTable: "", reads: [] as string[], hidden: [] as number[] }));
 vi.mock("../../app/lib/supabase.server", () => ({
   getSupabaseAdminClient: () => { throw new Error("Markdown must not use admin access"); },
   createSupabaseServerClient: () => { throw new Error("Markdown must not use user sessions"); },
-  getSupabasePublicClient: () => ({ from: (table: string) => {
+  getSupabasePublicClient: () => ({ rpc: async (fn: string, args: { p_table: string; p_id: number }) =>
+    ({ data: fn === "page_hidden" && args.p_table === "meetings" && state.hidden.includes(args.p_id), error: null }), from: (table: string) => {
     state.reads.push(table);
     let rows = [...(state.rows[table] || [])];
     const result = () => ({ data: rows, error: state.errorTable === table ? new Error("Database unavailable") : null });
@@ -26,7 +27,7 @@ const base = `https://openlangford.ca/meetings/${slug}`;
 const load = (doc = false, url = `${base}${doc ? "/documents/8/content.md" : "/summary.md"}`, cookie = "") =>
   (doc ? documentLoader : meetingLoader)({ request: new Request(url, { headers: { Cookie: cookie } }), params: { id: slug, ...(doc ? { docId: "8" } : {}) } } as any);
 beforeEach(() => {
-  state.errorTable = ""; state.reads = [];
+  state.errorTable = ""; state.reads = []; state.hidden = [];
   state.rows = {
     meetings: [{ id: 1, municipality_id: 1, slug, title: "Regular Council", meeting_date: "2026-05-19", summary: "Existing summary", has_minutes: true, minutes_url: "https://langford.ca/minutes.pdf", updated_at: "2026-05-20T12:00:00Z", meta: { private: "secret" } }],
     documents: [{ id: 3, meeting_id: 1, title: "Staff report", source_url: "https://langford.ca/report.pdf" }],
@@ -101,4 +102,10 @@ it.each([false, true])("301s a renamed meeting slug to the current markdown URL 
   const res = await (doc ? documentLoader : meetingLoader)({ request, params: { id: old, ...(doc ? { docId: "8" } : {}) } } as any);
   expect(res.status).toBe(301);
   expect(res.headers.get("Location")).toBe(`${base}${doc ? "/documents/8/content.md" : "/summary.md"}`);
+});
+
+it("answers a meeting staff hid from the review bar as not found, page and documents alike", async () => {
+  state.hidden = [state.rows.meetings[0].id];
+  expect((await load()).status).toBe(404);
+  expect((await load(true)).status).toBe(404);
 });
