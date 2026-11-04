@@ -5,6 +5,7 @@ import { getAiUsageDashboard } from "./ai-usage-admin.server";
 import { getMunicipality } from "./municipality";
 import { getFailureResolutions } from "./pipeline-admin.server";
 import { reviewBurndown } from "./page-reviews.server";
+import { estimateCostUsd } from "./ai/pricing";
 import { getSiteTraffic, type DailyPoint } from "./site-traffic.server";
 
 const DAY = 86_400_000;
@@ -138,6 +139,36 @@ async function getEmail(supabase: SupabaseClient, now: Date) {
   };
 }
 
+/** Residents' questions from the last 7 days, newest first, each with what its AI calls cost (estimated). */
+async function getRecentQuestions(supabase: SupabaseClient, now: Date) {
+  const since = new Date(now.getTime() - 7 * DAY).toISOString();
+  const { data: questions, error } = await supabase.from("search_results_cache")
+    .select("id, query, created_at, request_id").gte("created_at", since)
+    .order("created_at", { ascending: false }).limit(100);
+  if (error) throw error;
+  const requestIds = [...new Set((questions || []).map((q) => q.request_id).filter(Boolean))] as string[];
+  const cost = new Map<string, { usd: number; tokens: number; unpriced: boolean }>();
+  for (let i = 0; i < requestIds.length; i += 100) {
+    const { data: usage, error: usageError } = await supabase.from("ai_usage")
+      .select("request_id, model, operation, input_tokens, output_tokens")
+      .in("request_id", requestIds.slice(i, i + 100)).eq("source", "web");
+    if (usageError) throw usageError;
+    for (const u of usage || []) {
+      const usd = estimateCostUsd(u.model, u.operation, u.input_tokens ?? 0, u.output_tokens ?? 0);
+      const entry = cost.get(u.request_id) ?? { usd: 0, tokens: 0, unpriced: false };
+      entry.usd += usd ?? 0;
+      entry.tokens += (u.input_tokens ?? 0) + (u.output_tokens ?? 0);
+      entry.unpriced ||= usd == null;
+      cost.set(u.request_id, entry);
+    }
+  }
+  return (questions || []).map((q) => {
+    const c = q.request_id ? cost.get(q.request_id) : undefined;
+    return { id: q.id as string, query: String(q.query || "").slice(0, 300), askedAt: q.created_at as string,
+      costUsd: c ? c.usd : null, tokens: c ? c.tokens : null, partialCost: c?.unpriced ?? false };
+  });
+}
+
 async function getAsk(supabase: SupabaseClient, now: Date) {
   // One "answer" call per question a resident asks; the other web calls serve it.
   const data = await rows<{ created_at: string }>(
@@ -186,7 +217,7 @@ async function getCalendar(supabase: SupabaseClient, municipalityId: number | nu
 export async function getAdminOverview(supabase: SupabaseClient, env: Record<string, unknown>, now = new Date(),
   waitUntil?: (p: Promise<unknown>) => void) {
   const municipalityId = await section(async () => (await getMunicipality(supabase)).id as number);
-  const [queues, audience, email, questions, ai, calendar, traffic, reviews] = await Promise.all([
+  const [queues, audience, email, questions, ai, calendar, traffic, reviews, recentQuestions] = await Promise.all([
     getQueues(supabase, municipalityId),
     section(() => getAudience(supabase, now)),
     section(() => getEmail(supabase, now)),
@@ -195,6 +226,7 @@ export async function getAdminOverview(supabase: SupabaseClient, env: Record<str
     section(() => getCalendar(supabase, municipalityId)),
     getSiteTraffic(env, waitUntil),
     section(() => reviewBurndown(supabase, now)),
+    section(() => getRecentQuestions(supabase, now)),
   ]);
   return {
     generatedAt: now.toISOString(),
@@ -209,6 +241,7 @@ export async function getAdminOverview(supabase: SupabaseClient, env: Record<str
     calendar,
     traffic,
     reviews,
+    recentQuestions,
   };
 }
 

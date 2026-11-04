@@ -14,6 +14,7 @@ import { formatSpeakerName } from "~/lib/speaker-labels";
 import { attachSourceSlugs } from "./source-slugs.server";
 import { identifierMatches, matterRecencyBoost, matterStatusBoost } from "../lib/matter-rank";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { getAiRequestContext } from "./ai/usage-sink.server";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -644,6 +645,8 @@ export async function saveSearchResultCache(data: {
       sources: data.sources,
       suggested_followups: data.suggested_followups,
       source_count: data.source_count,
+      // Links the answer to its ai_usage rows (what it cost), for the admin home.
+      request_id: getAiRequestContext()?.requestId ?? null,
     })
     .select("id")
     .single();

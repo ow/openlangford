@@ -23,7 +23,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     const overview = await getAdminOverview(getSupabaseAdminClient(), env, new Date(), waitUntil);
     const email = accountEmailFor(role);
     const audience = overview.audience && { ...overview.audience, recent: overview.audience.recent.map((u) => ({ ...u, email: email(u.email) })) };
-    return { ...overview, audience, staffRole: role };
+    // Residents' question text and per-question cost: admins only.
+    return { ...overview, audience, recentQuestions: role === "admin" ? overview.recentQuestions : null, staffRole: role };
   });
 }
 
@@ -179,6 +180,8 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
               </Panel>
             </div>
 
+            {data.recentQuestions && <RecentQuestions questions={data.recentQuestions} />}
+
             {traffic && (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <Panel title="Most viewed pages" subtitle="Page views, last 7 days">
@@ -258,6 +261,40 @@ function ToolsPanel({ groups, contact }: { groups: { heading: string; links: Too
         )}
       </Panel>
     </div>
+  );
+}
+
+/** What residents asked this week and what each answer cost to generate. */
+function RecentQuestions({ questions }: { questions: NonNullable<AdminOverview["recentQuestions"]> }) {
+  const total = questions.reduce((sum, q) => sum + (q.costUsd ?? 0), 0);
+  const priced = questions.filter((q) => q.costUsd != null).length;
+  return (
+    <Panel
+      title="Questions asked this week"
+      subtitle={`${n(questions.length)} ${questions.length === 1 ? "question" : "questions"}${priced ? ` · ${formatCost(total)} in AI calls` : ""}`}
+      flush
+    >
+      {questions.length ? (
+        <ul className="max-h-[28rem] divide-y divide-zinc-100 overflow-y-auto border-t border-zinc-100">
+          {questions.map((q) => (
+            <li key={q.id} className="flex items-baseline gap-3 px-5 py-2.5 text-sm">
+              <Link to={`/search?id=${encodeURIComponent(q.id)}`} className="min-w-0 flex-1 text-zinc-800 hover:text-brand-700">
+                {q.query}
+              </Link>
+              <span className="shrink-0 text-xs text-zinc-500">{formatRelativeTime(q.askedAt)}</span>
+              <span
+                className="w-16 shrink-0 text-right text-xs tabular-nums text-zinc-700"
+                title={q.tokens != null ? `${n(q.tokens)} tokens` : "Cost not recorded for this question"}
+              >
+                {q.costUsd != null ? `${formatCost(q.costUsd)}${q.partialCost ? "+" : ""}` : "—"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="px-5 pb-5"><Empty>No questions this week.</Empty></div>
+      )}
+    </Panel>
   );
 }
 
