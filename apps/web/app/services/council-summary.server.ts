@@ -74,6 +74,8 @@ export interface CouncilTermStats {
   bylawsAdopted: number;
   /** One date per bylaw adopted (YYYY-MM-DD), oldest first. */
   bylawAdoptionDates: string[];
+  /** Motions decided per month (YYYY-MM). */
+  motionsByMonth: { month: string; carried: number; defeated: number }[];
   topics: { title: string; slug: string; meetings: number }[];
 }
 
@@ -93,6 +95,10 @@ export function getCouncilTermStats(municipalityId: number) {
         meetings: row.meetings, regularCouncil: row.regular_council, specialCouncil: row.special_council,
         committeeOfTheWhole: row.committee_of_the_whole, committees: row.committees,
         motionsCarried: row.motions_carried, motionsDefeated: row.motions_defeated, bylawsAdopted: row.bylaws_adopted,
+        // Older deployments of the function have no monthly counts: the chart is left out.
+        motionsByMonth: (Array.isArray(row.motions_by_month) ? row.motions_by_month : [])
+          .filter((m: any) => typeof m?.month === "string" && /^\d{4}-\d{2}$/.test(m.month) && Number.isSafeInteger(m.carried) && Number.isSafeInteger(m.defeated))
+          .map((m: any) => ({ month: m.month, carried: m.carried, defeated: m.defeated })),
         bylawAdoptionDates: row.bylaw_adoption_dates.filter((d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)),
         topics: row.topics.filter((t: any) => typeof t?.title === "string" && typeof t?.slug === "string" && Number.isSafeInteger(t?.meetings))
           .map((t: any) => ({ title: t.title, slug: t.slug, meetings: t.meetings })),

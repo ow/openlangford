@@ -27,22 +27,27 @@ function Breakdown({ parts }: { parts: Part[] }) {
   );
 }
 
-/** Bylaws adopted per quarter of the term, as small bars. */
-function QuarterBars({ dates, start, end }: { dates: string[]; start: string; end: string }) {
+/** Counts per quarter of the term as small bars, stacked when there are several series (carried, defeated). */
+function QuarterBars({ points, colors, what, start, end }: {
+  points: { month: string; values: number[] }[]; colors: string[]; what: string; start: string; end: string;
+}) {
   const monthIndex = (date: string) => Number(date.slice(0, 4)) * 12 + Number(date.slice(5, 7)) - 1;
   const first = monthIndex(start);
-  const quarters = Array.from({ length: Math.floor((monthIndex(end) - first) / 3) + 1 }, () => 0);
-  for (const date of dates) {
-    const q = Math.floor((monthIndex(date) - first) / 3);
-    if (q >= 0 && q < quarters.length) quarters[q]++;
+  const quarters = Array.from({ length: Math.floor((monthIndex(end) - first) / 3) + 1 }, () => colors.map(() => 0));
+  for (const point of points) {
+    const q = Math.floor((monthIndex(point.month) - first) / 3);
+    if (q >= 0 && q < quarters.length) point.values.forEach((n, k) => { if (k < colors.length) quarters[q][k] += n; });
   }
-  const max = Math.max(...quarters);
+  const totals = quarters.map((q) => q.reduce((a, b) => a + b, 0));
+  const max = Math.max(...totals);
   if (quarters.length < 2 || !max) return null;
   return (
     <div className="mt-4">
-      <div className="flex h-12 items-end gap-0.5" role="img" aria-label={`Bylaws adopted each quarter, from ${start.slice(0, 4)} to ${end.slice(0, 4)}; the most in one quarter was ${max}.`}>
-        {quarters.map((n, i) => (
-          <div key={i} className="flex-1 rounded-sm bg-brand-500" style={{ height: `${Math.max(n ? 8 : 2, (n / max) * 100)}%`, opacity: n ? 1 : 0.25 }} title={`${n} in quarter ${i + 1}`} />
+      <div className="flex h-12 items-end gap-0.5" role="img" aria-label={`${what} each quarter, from ${start.slice(0, 4)} to ${end.slice(0, 4)}; the most in one quarter was ${max}.`}>
+        {quarters.map((values, i) => (
+          <div key={i} className="flex flex-1 flex-col-reverse overflow-hidden rounded-sm" style={{ height: `${Math.max(totals[i] ? 8 : 2, (totals[i] / max) * 100)}%`, opacity: totals[i] ? 1 : 0.25 }} title={`${totals[i]} in quarter ${i + 1}`}>
+            {totals[i] ? values.map((n, k) => n > 0 && <div key={k} className={colors[k]} style={{ height: `${(n / totals[i]) * 100}%` }} />) : <div className={`h-full ${colors[0]}`} />}
+          </div>
         ))}
       </div>
       <div className="mt-1.5 flex justify-between text-xs tabular-nums text-zinc-500">
@@ -51,6 +56,20 @@ function QuarterBars({ dates, start, end }: { dates: string[]; start: string; en
         <span>{end.slice(0, 4)}</span>
       </div>
     </div>
+  );
+}
+
+/** The key under the motions chart: carried and (when any are minuted) defeated. */
+function MotionKey({ parts }: { parts: Part[] }) {
+  return (
+    <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-zinc-500">
+      {parts.map((part) => (
+        <li key={part.label} className="flex items-center gap-1.5">
+          <span aria-hidden className={`h-2 w-2 rounded-full ${part.className}`} />
+          <span className="tabular-nums">{part.value.toLocaleString()}</span> {part.label}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -98,10 +117,11 @@ export function TermStats({ stats, inProgress, start, end }: { stats: CouncilTer
           <Breakdown parts={meetingParts} />
         </StatCard>
         <StatCard icon={CircleCheck} label="Motions decided" value={stats.motionsCarried + stats.motionsDefeated}>
-          <Breakdown parts={motionParts} />
+          <QuarterBars points={stats.motionsByMonth.map((m) => ({ month: m.month, values: [m.carried, m.defeated] }))} colors={["bg-brand-500", "bg-amber-400"]} what="Motions decided" start={start} end={end} />
+          <MotionKey parts={motionParts} />
         </StatCard>
         <StatCard icon={ScrollText} label="Bylaws adopted" value={stats.bylawsAdopted}>
-          <QuarterBars dates={stats.bylawAdoptionDates} start={start} end={end} />
+          <QuarterBars points={stats.bylawAdoptionDates.map((date) => ({ month: date, values: [1] }))} colors={["bg-brand-500"]} what="Bylaws adopted" start={start} end={end} />
           {months >= 3 && stats.bylawsAdopted > 0 && <p className="mt-2 text-xs text-zinc-500">{perMonth(stats.bylawsAdopted)}</p>}
         </StatCard>
       </div>
