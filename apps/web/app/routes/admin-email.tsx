@@ -87,6 +87,20 @@ export default function AdminEmail({ loaderData }: Route.ComponentProps) {
               </p>
             )}
           </section>
+          {message.html && (
+            <section className={`${adminCard} mb-5`}>
+              <h2 className="font-bold">The email as sent</h2>
+              <p className="mt-1 text-xs text-zinc-500">
+                Rebuilt from what was stored when it was queued. The recipient&apos;s unsubscribe link is hidden.
+              </p>
+              <iframe
+                title="Email as sent"
+                srcDoc={message.html}
+                sandbox=""
+                className="mt-4 h-[640px] w-full rounded-lg border border-zinc-200 bg-white"
+              />
+            </section>
+          )}
           <section className={`${adminCard} mb-5`}>
             <h2 className="font-bold">Safe plain-text preview</h2>
             <p className="mt-1 text-xs text-zinc-500">

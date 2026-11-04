@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { boundedPage, requireUuid } from "../lib/admin-read.server";
+import { providerBody } from "../../../../supabase/functions/_shared/alerts";
 
 export const EMAIL_PAGE_SIZE = 25;
 import { EMAIL_STATUSES, EMAIL_TYPES } from "../lib/email-ledger";
@@ -143,6 +144,25 @@ export async function getEmailPage(
   };
 }
 
+// A valid-looking stand-in so the real renderer runs; its link is then replaced, so no unsubscribe link (which
+// unsubscribes whoever holds it) ever reaches the admin page.
+const HIDDEN_TOKEN = "00000000-0000-4000-8000-000000000000";
+
+/** The alert email as it was sent, rebuilt from its stored payload by the sender's own renderer, with the
+ * personal unsubscribe link removed. Null for messages it can't rebuild (staff emails use the text preview). */
+export function renderedEmail(row: { id: string; subject: string; payload: unknown; is_test?: boolean; message_type: string }) {
+  if (row.message_type !== "meeting_digest" && row.message_type !== "pre_meeting") return null;
+  try {
+    const { html } = providerBody({
+      id: row.id, recipient: "", subject: row.subject, payload: row.payload, unsubscribe_token: HIDDEN_TOKEN,
+      lease_token: "", attempt_count: 0, is_test: !!row.is_test,
+    });
+    return html.replaceAll(`/email/unsubscribe/${HIDDEN_TOKEN}`, "/email/unsubscribe/(hidden)");
+  } catch {
+    return null;
+  }
+}
+
 export async function getEmailDetail(
   client: SupabaseClient,
   id: string,
@@ -150,7 +170,7 @@ export async function getEmailDetail(
 ) {
   const result = await client
     .from("email_messages")
-    .select(`${columns}, preview_text`)
+    .select(`${columns}, preview_text, payload, is_test`)
     .eq("id", id)
     .maybeSingle();
   if (missingSchema(result.error))
@@ -176,6 +196,7 @@ export async function getEmailDetail(
     message: {
       ...message(result.data),
       preview: preview(result.data.preview_text),
+      html: renderedEmail(result.data),
     },
     events: (events.data ?? []).map((event) => ({
       id: event.id,
