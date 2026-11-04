@@ -13,7 +13,9 @@ import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
 
 /** Plain-language meaning of a bylaw stage, for residents who don't know what "second reading" means. */
 const STAGES: { test: RegExp; label: string }[] = [
-  { test: /rescind/i, label: "An earlier step was redone to correct the bylaw." },
+  // Rescinding cancels an earlier decision; the record rarely says why, so the label doesn't guess.
+  { test: /rescind\w*.{0,60}\b(reading|readings)\b|\b(reading|readings)\b.{0,40}rescind/i, label: "Council cancelled an earlier reading of the bylaw." },
+  { test: /rescind/i, label: "Council cancelled an earlier decision." },
   { test: /\badopt(ed|ion)?\b|final adoption/i, label: "Final approval." },
   { test: /second (and|&) third reading|second, third|2nd (and|&) 3rd/i, label: "Council approved the content and final wording. Adoption is the last step." },
   { test: /third reading|3rd reading/i, label: "Council approved the final wording. Adoption is the last step." },
@@ -21,6 +23,8 @@ const STAGES: { test: RegExp; label: string }[] = [
   { test: /second reading|2nd reading/i, label: "Council approved the bylaw's content in principle." },
   { test: /first reading|1st reading/i, label: "Introduced to council. A bylaw needs several readings before it becomes law." },
 ];
+
+const ADOPTION = STAGES.find((s) => s.label === "Final approval.")!.test;
 
 /** Words that make an "adopt" a recommendation or an instruction, not the adoption itself. */
 const NOT_ADOPTING = /\brecommend|\bdirect(s|ed)? staff|\bstaff (were |was )?directed|\bprepare\b|proceed with consideration|\brefer(red)? /i;
@@ -31,7 +35,7 @@ export function stageExplanation(texts: (string | null | undefined)[], { committ
   const parts = texts.filter(Boolean) as string[];
   const text = parts.join(" ");
   // Judged per text: a headline "Council adopts the policy" is final even beside a motion that also directs staff.
-  const adopts = !committee && parts.some((t) => STAGES[1].test.test(t) && !NOT_ADOPTING.test(t));
+  const adopts = !committee && parts.some((t) => ADOPTION.test(t) && !NOT_ADOPTING.test(t));
   return STAGES.find((s) => s.label === "Final approval." ? adopts : s.test.test(text))?.label ?? null;
 }
 

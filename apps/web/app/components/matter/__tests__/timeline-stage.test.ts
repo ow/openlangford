@@ -16,6 +16,10 @@ describe("stageExplanation", () => {
   it("still explains readings", () => {
     expect(stageExplanation(["Bylaw 1613 (Second and Third Reading)"])).toMatch(/content and final wording/);
   });
+  it("says a rescinding cancels a decision, without guessing why", () => {
+    expect(stageExplanation(["That Council rescind its direction to prepare a permit bylaw and direct staff to seek a licensed operator."])).toBe("Council cancelled an earlier decision.");
+    expect(stageExplanation(["That Council rescind third reading of Bylaw 2105."])).toBe("Council cancelled an earlier reading of the bylaw.");
+  });
   it("tells committee meetings from Council's", () => {
     expect(isCommitteeItem({ meetings: { organizations: { name: "Community Advisory Committee" } } })).toBe(true);
     expect(isCommitteeItem({ meetings: { organizations: { name: "Council" } } })).toBe(false);
