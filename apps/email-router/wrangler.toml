@@ -1,6 +1,7 @@
 # Inbound mail for openlangford.ca: Cloudflare Email Routing hands every message (catch-all) to this Worker, which
 # posts it to a private Discord channel. Receive-only; outgoing mail stays on Resend.
 name = "langford-email-router"
+account_id = "ec49b1303ded6ef60011350d2912ddf6" # same account as the openlangford.ca zone and the site
 main = "src/index.ts"
 compatibility_date = "2026-02-10"
 
