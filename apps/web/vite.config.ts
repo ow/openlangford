@@ -66,6 +66,11 @@ export default defineConfig(({ mode }) => {
         .map((host: string) => host.trim())
         .filter(Boolean),
     },
+    build: {
+      // Rollup opens up to 1,000 files at once by default; lucide-react alone is thousands of small icon modules, and
+      // Cloudflare's build machine ran out of file handles (EMFILE, 2026-11-04). A smaller cap barely slows the build.
+      rollupOptions: { maxParallelFileOps: 100 },
+    },
     plugins: [
       // CF_REMOTE_BINDINGS=false runs dev without a Wrangler login (AI calls then fail; pages render).
       cloudflare({ viteEnvironment: { name: "ssr" }, remoteBindings: process.env.CF_REMOTE_BINDINGS !== "false" }),
