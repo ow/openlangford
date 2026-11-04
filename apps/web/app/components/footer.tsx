@@ -1,5 +1,6 @@
 import { Link, useLocation, useRouteLoaderData } from "react-router";
 import { openReportIssue } from "./report-issue";
+import { REPORTS_STAFF_ONLY } from "../lib/data-reports";
 import { isReviewable } from "../lib/page-review-types";
 import type { Municipality } from "../lib/types";
 import { siteName } from "../lib/site-name";
@@ -7,7 +8,7 @@ import { useSiteFlags } from "../lib/use-site-flags";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 
 export function Footer() {
-  const rootData = useRouteLoaderData("root") as { municipality?: Municipality; user?: unknown } | undefined;
+  const rootData = useRouteLoaderData("root") as { municipality?: Municipality; user?: unknown; isAdmin?: boolean } | undefined;
   const name = siteName(rootData?.municipality);
   const { signupsEnabled } = useSiteFlags();
   const signedOut = !rootData?.user;
@@ -26,7 +27,7 @@ export function Footer() {
             <a href={DEFAULT_MUNICIPALITY.meetingPortalUrl} className="underline underline-offset-2 hover:text-zinc-900" target="_blank" rel="noopener noreferrer">
               official record
             </a>.
-            {isReviewable(pathname) && (
+            {isReviewable(pathname) && (!REPORTS_STAFF_ONLY || rootData?.isAdmin) && (
               <>
                 {" "}See something wrong on this page?{" "}
                 <button type="button" onClick={() => openReportIssue()} className="underline underline-offset-2 hover:text-zinc-900">

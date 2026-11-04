@@ -38,6 +38,7 @@ import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledF
 import { getStaffRole } from "./lib/auth.server";
 import { PageReviewBar } from "./components/admin/page-review-bar";
 import { ReportIssue } from "./components/report-issue";
+import { REPORTS_STAFF_ONLY } from "./lib/data-reports";
 import { InternalNoteBanner } from "./components/admin/internal-note-banner";
 import { isReviewable } from "./lib/page-review-types";
 
@@ -229,7 +230,7 @@ export default function App() {
       </main>
       <Footer />
       {root?.isAdmin && isReviewable(pathname) && <PageReviewBar />}
-      {isReviewable(pathname) && <ReportIssue />}
+      {isReviewable(pathname) && (!REPORTS_STAFF_ONLY || root?.isAdmin) && <ReportIssue />}
     </div>
   );
 }

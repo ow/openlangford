@@ -1,8 +1,8 @@
 import { data } from "react-router";
 import type { Route } from "./+types/api.report-issue";
 import { createSupabaseServerClient, getSupabaseAdminClient } from "../lib/supabase.server";
-import { parseReport } from "../lib/data-reports";
-import { getConfiguredAdminEmails } from "../lib/auth.server";
+import { parseReport, REPORTS_STAFF_ONLY } from "../lib/data-reports";
+import { getConfiguredAdminEmails, getStaffRole } from "../lib/auth.server";
 import { escalatePrivacyReport } from "../services/data-reports.server";
 import { contactNotificationRecipients } from "../services/contact-messages.server";
 
@@ -16,6 +16,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const { supabase } = createSupabaseServerClient(request);
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return data({ error: "Sign in to send a report." }, { status: 401 });
+  if (REPORTS_STAFF_ONLY && !(await getStaffRole(user))) return data({ error: "Reporting isn't open yet." }, { status: 403 });
 
   const parsed = parseReport(await request.json().catch(() => null));
   if ("error" in parsed) return data({ error: parsed.error }, { status: 400 });

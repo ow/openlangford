@@ -42,6 +42,6 @@ describe("groupAuditRows", () => {
   it("groups actions made on the same admin page", () => {
     const groups = groupAuditRows([row(2, 14, "approve", { path: "/admin/reports", detail: {} }), row(1, 10, "assess", { path: "/admin/reports", detail: {} })]);
     expect(groups).toHaveLength(1);
-    expect(groups[0].steps.map((s) => s.label)).toEqual(["Assess", "Approved"]);
+    expect(groups[0].steps.map((s) => s.label)).toEqual(["Asked the agent to assess a report", "Approved"]);
   });
 });
