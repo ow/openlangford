@@ -90,26 +90,39 @@ export function buildRoleGrantEmail(role: StaffRole, to: string) {
 }
 
 /** Emails a newly granted moderator or admin. Never throws: the role change stands either way. */
-export async function sendRoleGrantEmail({ apiKey, to, role, userId, fetcher = fetch }: {
-  apiKey: string | undefined; to: string | null | undefined; role: StaffRole; userId: string; fetcher?: typeof fetch;
+export async function sendRoleGrantEmail({ apiKey, to, role, userId, supabase, fetcher = fetch }: {
+  apiKey: string | undefined; to: string | null | undefined; role: StaffRole; userId: string;
+  /** Records the email in the ledger (email_messages) so it shows in /admin/emails. */
+  supabase?: SupabaseClient; fetcher?: typeof fetch;
 }): Promise<"sent" | "skipped" | "failed"> {
   if (!apiKey || !to) return "skipped";
+  // One welcome per person, role and day, however often the form is sent.
+  const key = `role-grant-${userId}-${role}-${new Date().toISOString().slice(0, 10)}`;
+  const email = buildRoleGrantEmail(role, to);
+  let providerId: string | null = null;
+  let error: string | null = null;
   try {
     const response = await fetcher("https://api.resend.com/emails", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        // One welcome per person, role and day, however often the form is sent.
-        "Idempotency-Key": `role-grant-${userId}-${role}-${new Date().toISOString().slice(0, 10)}`,
-      },
-      body: JSON.stringify(buildRoleGrantEmail(role, to)),
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": key },
+      body: JSON.stringify(email),
       signal: AbortSignal.timeout(15000),
     });
-    if (!response.ok) console.error(`[staff] Role email failed (status ${response.status})`);
-    return response.ok ? "sent" : "failed";
+    if (response.ok) providerId = ((await response.json().catch(() => null)) as { id?: string } | null)?.id ?? null;
+    else error = `Resend answered ${response.status}`;
   } catch {
-    console.error("[staff] Role email failed (network)");
-    return "failed";
+    error = "Network error";
   }
+  if (error) console.error(`[staff] Role email failed (${error})`);
+  if (supabase) {
+    const now = new Date().toISOString();
+    const { error: ledgerError } = await supabase.from("email_messages").upsert({
+      user_id: userId, recipient: to, subject: email.subject, message_type: "staff_role", deduplication_key: key,
+      status: error ? "failed" : "accepted", attempt_count: 1, provider_message_id: providerId,
+      preview_text: email.text.slice(0, 4000), last_error: error, accepted_at: error ? null : now, failed_at: error ? now : null,
+      expires_at: now, next_attempt_at: now,
+    }, { onConflict: "deduplication_key", ignoreDuplicates: true });
+    if (ledgerError) console.error("[staff] Could not record the role email:", ledgerError.message);
+  }
+  return error ? "failed" : "sent";
 }

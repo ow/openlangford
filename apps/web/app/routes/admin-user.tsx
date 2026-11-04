@@ -48,6 +48,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
         to: account.user?.email_confirmed_at ? account.user.email : null,
         role: granted,
         userId: id,
+        supabase,
       });
       if (cloudflare?.ctx) cloudflare.ctx.waitUntil(sending);
       else await sending;
