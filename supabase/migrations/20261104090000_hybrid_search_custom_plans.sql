@@ -15,6 +15,10 @@
 -- the ~11-36k an exact scan reads. Signatures and grants are unchanged; results match the old exact search
 -- except where the index misses a near neighbour.
 
+-- pgvector's hnsw.* settings exist only once its library is loaded in this session; a function cannot SET a
+-- setting the server doesn't know yet without superuser rights, which migrations don't have. A cast loads it.
+SELECT '[1]'::halfvec;
+
 CREATE OR REPLACE FUNCTION public.hybrid_search_document_sections(query_text text, query_embedding halfvec, match_count integer, full_text_weight double precision DEFAULT 1, semantic_weight double precision DEFAULT 1, rrf_k integer DEFAULT 50, date_from date DEFAULT NULL::date, date_to date DEFAULT NULL::date, filter_municipality_id bigint DEFAULT NULL::bigint)
  RETURNS TABLE(id bigint, document_id bigint, meeting_id bigint, agenda_item_id bigint, section_title text, content text, rank_score double precision)
  LANGUAGE plpgsql
