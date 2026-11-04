@@ -53,7 +53,7 @@ class _Filer:
 
 def _visible(cur, where: str, params: tuple = ()) -> list[tuple]:
     cur.execute(f"""select m.id, m.title, coalesce(m.meta->>'display_title', m.title), m.municipality_id, m.meta
-                    from matters m where m.meta->>'canonical_matter_id' is null and m.meta->>'hidden' is null and {where}""",
+                    from matters m where m.merged_into is null and m.meta->>'hidden' is null and {where}""",
                 params)
     return cur.fetchall()
 
@@ -64,8 +64,6 @@ def heading_topics(cur) -> list[tuple]:
 
 def empty_topics(cur, ids: list[int] | None = None) -> list[tuple]:
     where = """not exists (select 1 from agenda_items a where a.matter_id = m.id)
-      and not exists (select 1 from agenda_items a where a.matter_id::text in
-                      (select jsonb_array_elements_text(coalesce(m.meta->'merged_matter_ids', '[]'::jsonb))))
       and not exists (select 1 from matter_links l where l.matter_id = m.id and l.kind = 'mention' and not l.hidden)
       and not exists (select 1 from matter_report_mentions r where r.matter_id = m.id and not r.hidden)"""
     if ids is not None:
@@ -116,7 +114,7 @@ def heading_entries(cur, ids: list[int] | None = None) -> list[tuple]:
                              and a.item_order is not null and b.item_order like rtrim(a.item_order, '.') || '_%%'
                              and length(b.item_order) > length(rtrim(a.item_order, '.')))
                    from agenda_items a join matters m on m.id = a.matter_id
-                   where m.meta->>'canonical_matter_id' is null and m.meta->>'hidden' is null""")
+                   where m.merged_into is null and m.meta->>'hidden' is null""")
     first = lambda t: (t or "").split("\n")[0].strip()
     out = []
     rows = cur.fetchall()
@@ -202,8 +200,9 @@ def run(supabase, *, dry_run: bool = True, matter_ids: list[int] | None = None, 
         emptied = sorted({e["from"] for e in report["heading_entries"]})
         rows = supabase.table("agenda_items").select("matter_id").in_("matter_id", emptied).execute().data or []
         for mid in sorted(set(emptied) - {r["matter_id"] for r in rows}):
-            meta = supabase.table("matters").select("meta").eq("id", mid).single().execute().data.get("meta") or {}
-            if meta.get("hidden") or meta.get("canonical_matter_id"):
+            row = supabase.table("matters").select("meta, merged_into").eq("id", mid).single().execute().data
+            meta = row.get("meta") or {}
+            if meta.get("hidden") or row.get("merged_into"):
                 continue
             supabase.table("matters").update({"meta": {**meta, "hidden": "container",
                 "tidied": {"at": now, "reason": "made from a section heading"}}}).eq("id", mid).execute()
@@ -220,7 +219,7 @@ def run(supabase, *, dry_run: bool = True, matter_ids: list[int] | None = None, 
     empties = empty_topics(cur, matter_ids)
     siblings: dict[int, int | None] = {}
     for mid, title, display, _, meta in empties:
-        cur.execute("""select m.id from matters m where m.id <> %s and m.meta->>'canonical_matter_id' is null
+        cur.execute("""select m.id from matters m where m.id <> %s and m.merged_into is null
                        and m.meta->>'hidden' is null and coalesce(m.meta->>'display_title', m.title) = %s
                        and exists (select 1 from agenda_items a where a.matter_id = m.id) order by m.first_seen limit 1""",
                     (mid, display))

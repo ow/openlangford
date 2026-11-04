@@ -157,8 +157,8 @@ def load_properties(supabase, this_year: int | None = None) -> list[dict]:
                    .select("property_id, matter_id, agenda_item_id, hidden, agenda_items(title, category, meetings(meeting_date))")
                    .eq("hidden", False).order("id"))
     matter_rows = _pages(lambda: supabase.table("matters")
-                         .select("id, first_seen, last_seen, canonical:meta->>canonical_matter_id, hidden:meta->>hidden").order("id"))
-    visible = {m["id"] for m in matter_rows if not m.get("canonical") and m.get("hidden") not in ("true", True)}
+                         .select("id, first_seen, last_seen, merged_into, hidden:meta->>hidden").order("id"))
+    visible = {m["id"] for m in matter_rows if not m.get("merged_into") and m.get("hidden") not in ("true", True)}
     spans = {m["id"]: (_year(m.get("first_seen")), _year(m.get("last_seen"))) for m in matter_rows}
     by_property: dict[int, list[dict]] = {}
     for link in links:

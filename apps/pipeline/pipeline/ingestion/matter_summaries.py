@@ -141,19 +141,14 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
     requests by size instead (pipeline.ai.budget)."""
     matters = _in_chunks(lambda ids: supabase.table("matters").select("id, municipality_id, title, identifier, category, status, meta")
                          .in_("id", ids).order("id"), matter_ids)
-    # Merged duplicates (aliases) keep their agenda items; read them as the canonical's history.
-    owner = {m["id"]: m["id"] for m in matters}
-    for m in matters:
-        for alias_id in (m.get("meta") or {}).get("merged_matter_ids") or []:
-            owner[int(alias_id)] = m["id"]
+    # A merge moves every item and mention onto the canonical (merge_matters), so a matter's own rows are its history.
+    matter_ids = [m["id"] for m in matters]
     items = _in_chunks(lambda ids: supabase.table("agenda_items")
                        .select("id, matter_id, meeting_id, title, description, plain_english_summary, debate_summary, "
                                "discussion_start_time, discussion_end_time, meetings(meeting_date, type)")
-                       .in_("matter_id", ids).order("id"), list(owner))
-    for item in items:
-        item["matter_id"] = owner.get(item["matter_id"], item["matter_id"])
+                       .in_("matter_id", ids).order("id"), matter_ids)
     links = _in_chunks(lambda ids: supabase.table("matter_links").select("id,matter_id,agenda_item_id").in_("matter_id", ids)
-                       .eq("kind", "mention").eq("hidden", False).order("id"), list(owner))
+                       .eq("kind", "mention").eq("hidden", False).order("id"), matter_ids)
     mention_ids = sorted({link["agenda_item_id"] for link in links if link.get("agenda_item_id")})
     mention_items = _in_chunks(lambda ids: supabase.table("agenda_items")
                                .select("id,matter_id,title,plain_english_summary,meetings!inner(meeting_date,municipality_id)")
@@ -163,9 +158,9 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
     item_by_id = {item["id"]: item for item in mention_items}
     owned = {(item["matter_id"], item["id"]) for item in items}
     for link in links:
-        mid = owner.get(link["matter_id"])
+        mid = link["matter_id"]
         item = item_by_id.get(link.get("agenda_item_id"))
-        if not item or (mid, item["id"]) in owned:
+        if not item or mid not in matter_by_id or (mid, item["id"]) in owned:
             continue
         meeting = item.get("meetings") or {}
         if meeting.get("municipality_id") != matter_by_id[mid]["municipality_id"]:
@@ -491,7 +486,7 @@ def matters_for_meetings(supabase: Client, meeting_ids: list[int]) -> list[int]:
 
 def all_matter_ids(supabase: Client, only_missing: bool = False, since: str | None = None) -> list[int]:
     def q():
-        query = supabase.table("matters").select("id").order("id").is_("meta->>canonical_matter_id", "null")
+        query = supabase.table("matters").select("id").order("id").is_("merged_into", "null")
         if since:
             query = query.gte("last_seen", since)
         return query.is_("plain_english_summary", "null") if only_missing else query

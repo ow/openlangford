@@ -674,7 +674,7 @@ def policy_candidates(matters, title, day):
     if not key:
         return []
     candidates = [m for m in matters if policy_identity(m.get("title")) == key
-                  and not (m.get("meta") or {}).get("canonical_matter_id")
+                  and not m.get("merged_into")
                   and (m.get("meta") or {}).get("hidden") != "container"]
     if not day:
         return candidates
@@ -762,7 +762,7 @@ class MatterMatcher:
         while True:
             res = (
                 self.supabase.table("matters")
-                .select("id, title, identifier, status, category, meta, first_seen, last_seen, plain_english_summary")
+                .select("id, title, identifier, status, category, meta, first_seen, last_seen, plain_english_summary, merged_into")
                 .eq("municipality_id", self.municipality_id)
                 .range(page * page_size, (page + 1) * page_size - 1)
                 .execute()
@@ -814,8 +814,8 @@ class MatterMatcher:
         for m in all_data:
             m["_addresses"] = matter_addrs.get(m["id"], set())
 
-        # Merged source IDs remain valid history, but must not win future matches.
-        return [m for m in all_data if not (m.get("meta") or {}).get("canonical_matter_id")]
+        # Merged matters only redirect to their canonical; they must not win future matches.
+        return [m for m in all_data if not m.get("merged_into")]
 
     def _build_identifier_index(self):
         """Build an index from normalized sub-identifiers to matters."""

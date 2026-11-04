@@ -4,9 +4,8 @@ A matter links to bylaw X when the first bylaw number in its title (falling
 back to its identifier) is X, or is one of X's amending bylaws that has no
 bylaw row of its own ("Elections Bylaw No. 1819, Amendment No. 2, Bylaw No.
 2267" -> 1819). Numbers are read with ``find_bylaw_numbers``, which refuses
-street addresses and bare years. Merged alias matters
-(``meta.canonical_matter_id``) resolve to their canonical matter, so only the
-canonical gets the link.
+street addresses and bare years. Merged matters (``merged_into``) resolve to
+their canonical matter, so only the canonical gets the link.
 
 Pure planning; the caller writes.
 """
@@ -52,7 +51,7 @@ def plan_links(
     amendment_numbers: list[str] | None = None,
     numbers_with_rows: set[str] | None = None,
 ) -> list[PlannedLink]:
-    """``matters`` rows need id, title, identifier, slug, meta, bylaw_id."""
+    """``matters`` rows need id, title, identifier, slug, meta, bylaw_id, merged_into."""
     number = normalize_number(bylaw_number)
     amendments = {normalize_number(n) for n in (amendment_numbers or []) if normalize_number(n)}
     others = {normalize_number(n) for n in (numbers_with_rows or set())} - {number}
@@ -63,7 +62,7 @@ def plan_links(
         via = _match(m, number, amendments, others)
         if not via:
             continue
-        canonical_id = (m.get("meta") or {}).get("canonical_matter_id")
+        canonical_id = m.get("merged_into")
         target = by_id.get(canonical_id) if canonical_id else m
         if target is None:
             target = m
@@ -230,8 +229,8 @@ def plan_all_links(matters: list[dict], bylaws: list[dict]) -> tuple[list[BulkLi
 
     ``bylaws`` rows: id, bylaw_number, title, year, status, and ``amendments``
     (numbers listed in its consolidation). Name matching only uses current
-    bylaws (status set from the City's directory). Merged aliases
-    (``meta.canonical_matter_id``) resolve to the canonical matter. Returns
+    bylaws (status set from the City's directory). Merged matters
+    (``merged_into``) resolve to the canonical matter. Returns
     (links, ambiguous) where ambiguous lists canonicals whose aliases point at
     different bylaws (not linked).
     """
@@ -257,7 +256,7 @@ def plan_all_links(matters: list[dict], bylaws: list[dict]) -> tuple[list[BulkLi
         if not hit:
             continue
         number, via, detail = hit
-        canonical_id = (m.get("meta") or {}).get("canonical_matter_id")
+        canonical_id = m.get("merged_into")
         target = by_id.get(canonical_id) if canonical_id else m
         target = target or m
         proposals.setdefault(target["id"], []).append((VIA_RANK[via], number, via, detail, m["id"]))

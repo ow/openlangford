@@ -35,9 +35,8 @@ def move_item(supabase, item_id: int, to_matter_id: int | None, *, by: str | Non
     """File one agenda item under another topic (or none) and lock it there. Returns {from, to, meeting_id}."""
     item = supabase.table("agenda_items").select("id, matter_id, meeting_id, meta").eq("id", item_id).single().execute().data
     if to_matter_id is not None:
-        target = supabase.table("matters").select("id, meta").eq("id", to_matter_id).single().execute().data
-        canonical = (target.get("meta") or {}).get("canonical_matter_id")
-        to_matter_id = int(canonical) if canonical else to_matter_id
+        target = supabase.table("matters").select("id, merged_into").eq("id", to_matter_id).single().execute().data
+        to_matter_id = target.get("merged_into") or to_matter_id
     meta = {**(item.get("meta") or {}), "staff_matter": {
         "matter_id": to_matter_id, "by": by, "at": datetime.now(timezone.utc).isoformat(), "reason": reason[:300],
         "from": item.get("matter_id"),
@@ -104,9 +103,9 @@ def check_summary_notes(supabase, notes: list[dict]) -> list[dict]:
 
     unfollowed = []
     for entry in notes:
-        matter = supabase.table("matters").select("plain_english_summary, meta").eq("id", int(entry["matter_id"])).single().execute().data
+        matter = supabase.table("matters").select("plain_english_summary, meta, merged_into").eq("id", int(entry["matter_id"])).single().execute().data
         matter_id = int(entry["matter_id"])
-        canonical = (matter.get("meta") or {}).get("canonical_matter_id")
+        canonical = matter.get("merged_into")
         if canonical:
             matter_id = int(canonical)  # merged away during this fix: the page now shows the topic it was merged into
             matter = supabase.table("matters").select("plain_english_summary, meta").eq("id", int(canonical)).single().execute().data

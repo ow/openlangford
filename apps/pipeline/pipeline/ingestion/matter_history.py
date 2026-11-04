@@ -31,7 +31,7 @@ def _title(value):
 def plan_history(matters, items, *, focus_ids=None, review_meeting_ids=None):
     titles = defaultdict(list)
     for matter in matters:
-        if not matter.get("canonical_matter_id") and matter.get("hidden") != "container":
+        if not matter.get("merged_into") and matter.get("hidden") != "container":
             titles[(matter["municipality_id"], _title(matter["title"]))].append(matter)
     assignments, review, unmatched = [], [], []
     missing_policies = defaultdict(list)
@@ -48,11 +48,11 @@ def plan_history(matters, items, *, focus_ids=None, review_meeting_ids=None):
         policy_match = False
         if policy_key:
             exact = policy_candidates([m for m in matters if m["municipality_id"] == city
-                                       and not m.get("canonical_matter_id") and m.get("hidden") != "container"], item["title"], day)
+                                       and not m.get("merged_into") and m.get("hidden") != "container"], item["title"], day)
             policy_match = bool(exact)
             if not exact:
                 previous = policy_candidates([m for m in matters if m["municipality_id"] == city
-                                              and not m.get("canonical_matter_id") and m.get("hidden") != "container"], item["title"], None)
+                                              and not m.get("merged_into") and m.get("hidden") != "container"], item["title"], None)
                 if previous:
                     review.append({"agenda_item_id": item["id"], "meeting_id": item["meeting_id"],
                                    "meeting_date": day, "title": item["title"],
@@ -127,7 +127,7 @@ def reconcile_history(supabase, *, municipality_ids=None, focus_ids=None, meetin
         # review, scoped strictly to its meetings rather than all city history.
         focus_ids = None
     matters = _pages(lambda: supabase.table("matters")
-                    .select("id, municipality_id, title, identifier, first_seen, last_seen, canonical_matter_id:meta->>canonical_matter_id, hidden:meta->>hidden")
+                    .select("id, municipality_id, title, identifier, first_seen, last_seen, merged_into, hidden:meta->>hidden")
                     .order("id"))
     if focus_ids is not None:
         focus = set(focus_ids)

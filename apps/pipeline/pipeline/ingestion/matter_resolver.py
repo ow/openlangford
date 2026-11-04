@@ -12,9 +12,10 @@ title. This resolver works in two steps:
    same_matter / same_project / different with a confidence.
 
 ``audit()`` runs this over every canonical matter and returns proposed merge
-clusters; ``apply_merges()`` records them with the existing non-destructive
-alias convention (alias ``meta.canonical_matter_id`` + canonical
-``meta.merged_matter_ids``), so merges are reversible.
+clusters; ``apply_merges()`` carries them out with ``merge_flat``, which calls the
+database's ``merge_matters()``: every agenda item and link moves onto the
+canonical, the merged matter keeps only ``merged_into`` (its address redirects),
+and ``matter_merges`` records what moved so a merge can be undone.
 """
 from __future__ import annotations
 
@@ -96,16 +97,16 @@ def _parse_vec(v) -> list[float] | None:
 def load_records(supabase: Client, municipality_id: int = 1) -> dict[int, MatterRecord]:
     matters = _paginate(
         lambda: supabase.table("matters")
-        .select("id, title, identifier, category, first_seen, last_seen, meta, embedding")
+        .select("id, title, identifier, category, first_seen, last_seen, meta, embedding, merged_into")
         .eq("municipality_id", municipality_id)
         .order("id")
     )
     records: dict[int, MatterRecord] = {}
     for m in matters:
         meta = m.get("meta") or {}
-        # Aliases are already merged; hidden matters (procedural containers,
-        # empty records) are kept out of listings, so never propose them.
-        if meta.get("canonical_matter_id") or meta.get("hidden") is not None:
+        # Merged matters are already merged; hidden matters (procedural
+        # containers, empty records) are kept out of listings, so never propose them.
+        if m.get("merged_into") or meta.get("hidden") is not None:
             continue
         records[m["id"]] = MatterRecord(
             id=m["id"],
@@ -126,14 +127,8 @@ def load_records(supabase: Client, municipality_id: int = 1) -> dict[int, Matter
         .order("id"),
         page=1000,
     )
-    # Alias matters' history belongs to their canonical matter.
-    alias_to_canonical = {
-        m["id"]: int(m["meta"]["canonical_matter_id"])
-        for m in matters
-        if (m.get("meta") or {}).get("canonical_matter_id")
-    }
     for it in items:
-        rec = records.get(alias_to_canonical.get(it["matter_id"], it["matter_id"]))
+        rec = records.get(it["matter_id"])
         if not rec:
             continue
         addrs = it.get("related_address")
@@ -431,27 +426,14 @@ def audit(supabase: Client, *, municipality_id: int = 1) -> dict:
 
 
 def apply_merges(supabase: Client, clusters: list[list[int]], *, reason: str = "resolver") -> list[dict]:
-    """Merge each cluster into its earliest matter using the alias convention."""
+    """Merge each cluster into its earliest matter (``merge_flat``)."""
     applied = []
     for ids in clusters:
-        rows = (
-            supabase.table("matters").select("id, first_seen, last_seen, meta").in_("id", ids).execute().data or []
-        )
-        if len(rows) < 2:
+        if len(set(ids)) < 2:
             continue
-        rows.sort(key=lambda r: (r.get("first_seen") or "9999", r["id"]))
-        canonical, aliases = rows[0], rows[1:]
-        meta = dict(canonical.get("meta") or {})
-        merged = sorted(set(meta.get("merged_matter_ids") or []) | {r["id"] for r in aliases})
-        meta["merged_matter_ids"] = merged
-        last = max((r.get("last_seen") or "" for r in rows), default=None) or canonical.get("last_seen")
-        supabase.table("matters").update({"meta": meta, "last_seen": last}).eq("id", canonical["id"]).execute()
-        for alias in aliases:
-            ameta = dict(alias.get("meta") or {})
-            ameta["canonical_matter_id"] = canonical["id"]
-            ameta["merge_reason"] = reason
-            supabase.table("matters").update({"meta": ameta}).eq("id", alias["id"]).execute()
-        applied.append({"canonical": canonical["id"], "aliases": [r["id"] for r in aliases]})
+        merged = merge_flat(supabase, list(ids), reason=reason)
+        if merged["aliases"]:
+            applied.append({"canonical": merged["canonical"], "aliases": merged["aliases"]})
     return applied
 
 
@@ -505,7 +487,7 @@ def ingest_candidates(matcher, identifier: str | None, title: str | None, addres
         from .matter_matching import compatible_policy_scope
         if not compatible_policy_scope(title, m.get("title")):
             return  # A plan and procurement/implementation are distinct scopes.
-        if (m.get("meta") or {}).get("canonical_matter_id"):
+        if m.get("merged_into"):
             return
         if m["id"] not in found or found[m["id"]][0] < score:
             found[m["id"]] = (score, m)

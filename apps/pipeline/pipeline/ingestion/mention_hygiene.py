@@ -96,14 +96,14 @@ def plan(cur) -> dict[str, Any]:
                    where ml.kind = 'mention' and not ml.hidden and ml.review is distinct from 'accepted'
                      and ml.source is distinct from 'manual'""")
     links = cur.fetchall()
-    # Every page shows its aliases' items too, so a topic's days include them.
-    cur.execute("""select coalesce((m.meta->>'canonical_matter_id')::int, m.id), mt.meeting_date
+    # A topic's days, its merged topics' included (merge_matters moves their items, so this is a safety net).
+    cur.execute("""select coalesce(m.merged_into, m.id), mt.meeting_date
                    from agenda_items ai join matters m on m.id = ai.matter_id join meetings mt on mt.id = ai.meeting_id""")
     days: dict[int, set] = defaultdict(set)
     for mid, d in cur.fetchall():
         days[mid].add(d)
-    cur.execute("select id, meta->>'canonical_matter_id' from matters")
-    canonical = {mid: int(c) if c else mid for mid, c in cur.fetchall()}
+    cur.execute("select id, merged_into from matters")
+    canonical = {mid: c or mid for mid, c in cur.fetchall()}
     for lid, mid, iid, title, quote, conf, source, day, org in links:  # other visible mentions are on the topic too
         if not is_minutes_echo(title):
             days[canonical.get(mid, mid)].add(day)
@@ -314,9 +314,9 @@ BUSY_MIN_TOPICS = 4
 def load_topics(cur) -> dict[int, dict]:
     """Each topic's bylaws, addresses and dates, its aliases' included (a merged page is one project)."""
     cur.execute("""select m.id, m.identifier, coalesce(m.meta->>'display_title', m.title) || ' ' || m.title,
-                          m.meta->>'canonical_matter_id', m.meta->>'hidden', m.first_seen, m.last_seen from matters m""")
+                          m.merged_into, m.meta->>'hidden', m.first_seen, m.last_seen from matters m""")
     topics = {mid: {"bylaws": _bylaws(ident), "addresses": _numbered_addresses(title), "numbers": civic_numbers(title),
-                    "canonical": int(c) if c else None, "hidden": hidden, "first": None, "last": None}
+                    "canonical": c, "hidden": hidden, "first": None, "last": None}
               for mid, ident, title, c, hidden, first, last in cur.fetchall()}
     # Dates from the topic's own items (first_seen/last_seen can carry other things' dates).
     cur.execute("""select ai.matter_id, min(mt.meeting_date), max(mt.meeting_date) from agenda_items ai
@@ -376,7 +376,7 @@ def own_step_plan(cur) -> dict[str, Any]:
     cur.execute("""select ml.id, ml.matter_id, ai.id, ai.title, ai.matter_id, ai.item_order, ai.meta->'staff_matter'
                    from matter_links ml join matters m on m.id = ml.matter_id join agenda_items ai on ai.id = ml.agenda_item_id
                    where ml.kind = 'mention' and not ml.hidden and m.identifier is not null
-                     and m.meta->>'canonical_matter_id' is null""")
+                     and m.merged_into is null""")
     out: dict[str, list] = {"move": [], "duplicate": [], "merge": [], "skip": []}
     for lid, mid, iid, title, owner, order, lock in cur.fetchall():
         mine, named = topics[mid]["bylaws"], _bylaws(first_line(title))
@@ -452,7 +452,7 @@ def fix_own_steps(supabase, *, dry_run: bool = True, backup_path: str | None = N
             if len(_bylaws_of(cur_ident, ranked[0]["matter_id"])) < len(_bylaws_of(cur_ident, ranked[1]["matter_id"])):
                 moves.append(ranked[0])
         ids = sorted({i for g in merges for i in g} | {m["matter_id"] for m in moves})
-        cur.execute("select row_to_json(m) from matters m where id = any(%s) or (meta->>'canonical_matter_id')::int = any(%s)", (ids, ids))
+        cur.execute("select row_to_json(m) from matters m where id = any(%s) or merged_into = any(%s)", (ids, ids))
         matters_before = [r[0] for r in cur.fetchall()]
         cur.execute("select id, matter_id, meeting_id, meta from agenda_items where id = any(%s)", ([m["item_id"] for m in moves],))
         items_before = [{"id": i, "matter_id": mid, "meeting_id": mt, "meta": meta} for i, mid, mt, meta in cur.fetchall()]

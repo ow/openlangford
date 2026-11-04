@@ -209,11 +209,8 @@ def _related(value) -> list[str]:
 def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | None = None) -> dict:
     """Rebuild properties and their links from every agenda item and matter. Admin links and hidden
     (admin-rejected) links are kept as they are."""
-    matters = _pages(lambda: supabase.table("matters").select("id,title,meta").order("id"))
-    canonical = {}
-    for m in matters:
-        meta = m.get("meta") or {}
-        canonical[m["id"]] = int(meta["canonical_matter_id"]) if meta.get("canonical_matter_id") else m["id"]
+    matters = _pages(lambda: supabase.table("matters").select("id,title,meta,merged_into").order("id"))
+    canonical = {m["id"]: m.get("merged_into") or m["id"] for m in matters}
     hidden = {m["id"] for m in matters if (m.get("meta") or {}).get("hidden")}
 
     def matter_of(matter_id):

@@ -48,9 +48,7 @@ SIDEWAYS_QUESTION = {
 
 
 def _candidate_images(supabase: Client, matter_id: int) -> list[dict]:
-    matter = supabase.table("matters").select("id, meta").eq("id", matter_id).single().execute().data
-    ids = [matter_id] + list((matter.get("meta") or {}).get("merged_matter_ids") or [])
-    items = supabase.table("agenda_items").select("id, meeting_id").in_("matter_id", ids).execute().data or []
+    items = supabase.table("agenda_items").select("id, meeting_id").eq("matter_id", matter_id).execute().data or []
     if not items:
         return []
     meeting_of = {i["id"]: i["meeting_id"] for i in items}

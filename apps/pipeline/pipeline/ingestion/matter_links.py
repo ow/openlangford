@@ -67,7 +67,7 @@ def load_matters(supabase: Client, since: str | None) -> list[dict]:
         query = (
             supabase.table("matters")
             .select("id, municipality_id, title, plain_english_summary, meta, first_seen, last_seen")
-            .is_("meta->>canonical_matter_id", "null")
+            .is_("merged_into", "null")
             .or_("meta->>hidden.is.null,meta->>hidden.neq.container")  # "no_records" matters can gain mentions
             .not_.is_("plain_english_summary", "null")
             .order("id")

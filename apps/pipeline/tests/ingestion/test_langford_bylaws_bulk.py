@@ -247,8 +247,9 @@ BYLAWS = [
 ]
 
 
-def M(id, title, identifier=None, *, meta=None, bylaw_id=None, first_seen="2022-01-01"):
-    return {"id": id, "title": title, "identifier": identifier, "meta": meta, "bylaw_id": bylaw_id, "first_seen": first_seen}
+def M(id, title, identifier=None, *, meta=None, bylaw_id=None, first_seen="2022-01-01", merged_into=None):
+    return {"id": id, "title": title, "identifier": identifier, "meta": meta, "bylaw_id": bylaw_id, "first_seen": first_seen,
+            "merged_into": merged_into}
 
 
 def test_plan_all_links_rules():
@@ -275,8 +276,8 @@ def test_plan_all_links_rules():
         M(8, "Rezoning 300 Goldstream Avenue", "REZ 300 Goldstream Avenue"),
         # regional bylaw
         M(9, "Capital Regional District Bylaw No. 300 amendment", "Bylaw No. 300"),
-        # alias of 1 -> resolves to the canonical
-        M(10, "Zoning amendment 709 Massie Drive (adoption)", "Bylaw No. 2236", meta={"canonical_matter_id": 1}),
+        # merged into 1 -> resolves to the canonical
+        M(10, "Zoning amendment 709 Massie Drive (adoption)", "Bylaw No. 2236", merged_into=1),
         # already linked to something else
         M(11, "Review of Elections Bylaw No. 1819", "Bylaw No. 1819", bylaw_id=99),
         # already linked to the same row
@@ -303,8 +304,8 @@ def test_plan_all_links_rules():
 def test_plan_all_links_ambiguous_aliases():
     matters = [
         M(1, "Something", None),
-        M(2, "Elections Bylaw No. 1819 review", "Bylaw No. 1819", meta={"canonical_matter_id": 1}),
-        M(3, "Zoning Bylaw No. 300 review", "Bylaw No. 300", meta={"canonical_matter_id": 1}),
+        M(2, "Elections Bylaw No. 1819 review", "Bylaw No. 1819", merged_into=1),
+        M(3, "Zoning Bylaw No. 300 review", "Bylaw No. 300", merged_into=1),
     ]
     links, ambiguous = plan_all_links(matters, BYLAWS)
     assert links == [] and ambiguous[0]["numbers"] == ["300", "1819"]

@@ -89,8 +89,8 @@ MATTERS = [
     {"id": 72, "title": "Review of Elections Bylaw No. 1819", "identifier": "Bylaw No. 1819", "meta": None, "bylaw_id": None},
     {"id": 504, "title": "Elections Bylaw No. 1819, Amendment No. 2, Bylaw No. 2267, 2026 (Adoption)", "identifier": "Bylaw No. 2267", "meta": {}, "bylaw_id": None},
     {"id": 903, "title": "Election Bylaw Amendment No. 1", "identifier": "BYLAW 2057", "meta": None, "bylaw_id": None},
-    # alias of 72 -> resolves to the canonical
-    {"id": 9001, "title": "Elections Bylaw No. 1819 (adoption)", "identifier": None, "meta": {"canonical_matter_id": 72}, "bylaw_id": None},
+    # merged into 72 -> resolves to the canonical
+    {"id": 9001, "title": "Elections Bylaw No. 1819 (adoption)", "identifier": None, "meta": {}, "merged_into": 72, "bylaw_id": None},
     # an address that happens to be 1819, not the bylaw
     {"id": 9002, "title": "Rezoning Bylaw 1819 Island Highway", "identifier": "REZ 1819 Island Hwy", "meta": None, "bylaw_id": None},
     # mentions 1819 but is principally about another bylaw

@@ -154,7 +154,7 @@ def _matter_stamps(ctx: StageContext, key: str) -> list[dict]:
         query = (
             ctx.supabase.table("matters")
             .select(f"id, stamp:meta->>{key}")
-            .is_("meta->>canonical_matter_id", "null")
+            .is_("merged_into", "null")
             .order("id")
         )
         if ctx.since:

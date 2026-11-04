@@ -429,7 +429,7 @@ def load_matters(sb, municipality_id: int) -> list[dict]:
     while True:
         batch = (
             sb.table("matters")
-            .select("id, title, identifier, slug, meta, bylaw_id")
+            .select("id, title, identifier, slug, meta, bylaw_id, merged_into")
             .eq("municipality_id", municipality_id)
             .order("id")
             .range(off, off + 999)

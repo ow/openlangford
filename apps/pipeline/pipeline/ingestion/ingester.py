@@ -463,7 +463,7 @@ class MeetingIngester:
             if not existing:
                 raise
             row = existing[0]
-            canonical = (row.get("meta") or {}).get("canonical_matter_id")
+            canonical = row.get("merged_into")
             print(f"  [~] {identifier} already exists as matter {row['id']}; linking to it")
             self.matcher._add_matter_to_indices(row)
             self.last_matter_match = _match_note(f"identifier_exists:{identifier}", 1.0)

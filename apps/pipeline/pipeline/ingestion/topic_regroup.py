@@ -96,7 +96,7 @@ Entries:
 
 def _load(cur) -> tuple[dict[int, dict], dict[int, list[dict]]]:
     cur.execute("""select m.id, m.title, m.identifier, coalesce(m.meta->>'display_title', m.title), m.slug
-                   from matters m where m.meta->>'canonical_matter_id' is null and m.meta->>'hidden' is null""")
+                   from matters m where m.merged_into is null and m.meta->>'hidden' is null""")
     topics = {r[0]: {"id": r[0], "title": r[1], "identifier": r[2], "display": r[3], "slug": r[4]} for r in cur.fetchall()}
     cur.execute("""select a.id, a.matter_id, mt.meeting_date, a.title, a.related_address, a.plain_english_summary, a.meta
                    from agenda_items a join meetings mt on mt.id = a.meeting_id

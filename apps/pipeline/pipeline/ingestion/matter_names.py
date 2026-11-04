@@ -154,7 +154,7 @@ def load_matters(cur) -> list[dict]:
                coalesce((select json_agg(distinct p.address) from property_links pl join properties p on p.id = pl.property_id
                          where pl.matter_id = m.id and not pl.hidden and not p.hidden and p.civic_number is not null), '[]')
         from matters m
-        where m.meta->>'canonical_matter_id' is null and coalesce(m.meta->>'hidden', '') <> 'container'
+        where m.merged_into is null and coalesce(m.meta->>'hidden', '') <> 'container'
         order by m.id""")
     out = []
     for mid, title, summary, meta, first, last, identifier, items, addresses in cur.fetchall():
