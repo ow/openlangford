@@ -16,6 +16,7 @@ import { negotiateMarkdown } from "./markdown-negotiation";
 import { publicMeetingCache } from "./public-meeting-cache";
 import { contentVersion } from "./content-version";
 import { canonicalRedirect } from "./canonical-redirect";
+import { posthogProxy } from "./posthog-proxy";
 import { applyPrivacyRetention, purgeExpiredQuestions } from "./retention";
 
 declare module "react-router" {
@@ -67,6 +68,9 @@ export default {
     const url = new URL(request.url);
     // Page checks render a page as a signed-out visitor, without the caches (no cookies are passed on).
     setPageRenderer((pageRequest) => requestHandler(pageRequest, { cloudflare: { env, ctx } }));
+    // Analytics relay first: PostHog's endpoints end in a slash, which the canonical redirect would strip.
+    const relayed = await posthogProxy(request, url);
+    if (relayed) return relayed;
     const redirect = canonicalRedirect(request, url);
     if (redirect) return redirect;
     // AI usage rows are written via ctx.waitUntil, labelled with the route and request id.

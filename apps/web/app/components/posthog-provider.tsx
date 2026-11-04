@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router";
 import posthog from "posthog-js";
 import { anonymizeEvent } from "../lib/analytics-privacy";
 
 /**
  * Client-side PostHog analytics provider.
- * Initializes PostHog on mount and tracks $pageview on every route change.
- * Renders nothing -- this is a side-effect-only component.
+ * Initializes PostHog on mount. It records a $pageview on every route change (history_change) and a $pageleave
+ * when a page is left, which bounce rate and time on page need. Events go through the site's own /relay path
+ * (workers/posthog-proxy.ts). Renders nothing -- this is a side-effect-only component.
  *
  * Anonymous by design (lib/analytics-privacy.ts): no person profiles and never identify(), no session
  * recording, no IP or GeoIP. A random id is kept in a first-party cookie (a year, like Google Analytics'
@@ -16,8 +16,6 @@ import { anonymizeEvent } from "../lib/analytics-privacy";
  * issues on Cloudflare Workers.
  */
 export function PostHogProvider() {
-  const { pathname, search } = useLocation();
-
   // Initialize PostHog once on mount (client-side only)
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -28,7 +26,7 @@ export function PostHogProvider() {
     if (!key) return; // Graceful no-op when key is missing (e.g. local dev)
 
     posthog.init(key, {
-      api_host: "https://us.i.posthog.com",
+      api_host: "/relay",
       ui_host: "https://us.posthog.com",
       person_profiles: "never",
       // A random id kept in this tab only: no cookie, nothing that outlives the visit.
@@ -39,17 +37,10 @@ export function PostHogProvider() {
       custom_personal_data_properties: ["code", "token", "token_hash", "access_token", "refresh_token", "email"],
       // Never send opt-out bearer URLs or admin pages; strip identifiers from everything else.
       before_send: (event) => anonymizeEvent(event, window.location.pathname),
-      capture_pageview: false, // We track route changes manually (SPA)
+      capture_pageview: "history_change", // the first load and every client-side route change
+      capture_pageleave: true,
     });
   }, []);
-
-  // Track pageview on every route change
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!posthog.__loaded) return; // Skip if PostHog wasn't initialized
-
-    posthog.capture("$pageview");
-  }, [pathname, search]);
 
   return null;
 }
