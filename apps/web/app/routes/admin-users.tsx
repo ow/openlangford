@@ -127,7 +127,7 @@ export default function AdminUsers({ loaderData }: Route.ComponentProps) {
                   colSpan={5}
                 >
                   {q
-                    ? "No matching accounts on this page."
+                    ? "No accounts match."
                     : "No accounts on this page."}
                 </td>
               </tr>

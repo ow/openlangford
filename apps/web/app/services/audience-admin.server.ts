@@ -27,50 +27,63 @@ export async function getAudiencePage(
   page: number,
   query: string,
 ) {
+  const needle = query.trim().toLocaleLowerCase();
+  if (needle) return searchAudience(client, page, needle);
   // Auth is canonical: confirmation-pending accounts may not have a profile yet.
   const { data, error } = await client.auth.admin.listUsers({
     page,
     perPage: AUDIENCE_PAGE_SIZE,
   });
   if (error) throw error;
-  const ids = data.users.map((user) => user.id);
-  if (!ids.length)
-    return { users: [], hasMore: false, total: data.total ?? null };
-  const { data: profiles, error: profileError } = await client
-    .from("user_profiles")
-    .select(profileColumns)
-    .in("id", ids);
-  if (profileError) throw profileError;
-  const byId = new Map(
-    (profiles ?? []).map((profile) => [profile.id, profile]),
-  );
-  // Exact HEAD counts transfer no subscription contents and are bounded to 25 users.
-  const users = await Promise.all(
-    data.users.map(async (user) => {
-      const { count, error } = await client
-        .from("subscriptions")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("is_active", true);
-      if (error) throw error;
-      return {
-        ...account(user, byId.get(user.id)),
-        subscriptionCount: count ?? 0,
-      };
-    }),
-  );
-  const needle = query.toLocaleLowerCase();
   return {
-    users: users.filter(
-      (user) =>
-        !needle ||
-        `${user.email ?? ""} ${user.name ?? ""}`
-          .toLocaleLowerCase()
-          .includes(needle),
-    ),
+    users: await withSubscriptionCounts(client, await withProfiles(client, data.users)),
     hasMore: Boolean(data.nextPage) || page < (data.lastPage ?? page),
     total: data.total ?? null,
   };
+}
+
+/** A search looks through every account (Auth can't filter by email), then pages the matches. */
+async function searchAudience(client: SupabaseClient, page: number, needle: string) {
+  const everyone: User[] = [];
+  for (let p = 1; p <= 50; p++) {
+    const { data, error } = await client.auth.admin.listUsers({ page: p, perPage: 1000 });
+    if (error) throw error;
+    everyone.push(...data.users);
+    if (!data.nextPage || data.users.length < 1000) break;
+  }
+  const accounts = await withProfiles(client, everyone);
+  const matches = accounts.filter((user) =>
+    `${user.email ?? ""} ${user.name ?? ""}`.toLocaleLowerCase().includes(needle));
+  const start = (page - 1) * AUDIENCE_PAGE_SIZE;
+  return {
+    users: await withSubscriptionCounts(client, matches.slice(start, start + AUDIENCE_PAGE_SIZE)),
+    hasMore: matches.length > start + AUDIENCE_PAGE_SIZE,
+    total: matches.length,
+  };
+}
+
+async function withProfiles(client: SupabaseClient, users: User[]) {
+  const byId = new Map<string, any>();
+  const ids = users.map((user) => user.id);
+  for (let i = 0; i < ids.length; i += 200) {
+    const { data: profiles, error } = await client.from("user_profiles").select(profileColumns).in("id", ids.slice(i, i + 200));
+    if (error) throw error;
+    for (const profile of profiles ?? []) byId.set(profile.id, profile);
+  }
+  return users.map((user) => account(user, byId.get(user.id)));
+}
+
+// Exact HEAD counts transfer no subscription contents and are bounded to one page of accounts.
+async function withSubscriptionCounts(client: SupabaseClient, accounts: ReturnType<typeof account>[]) {
+  return Promise.all(accounts.map(async (user) => {
+    const { count, error } = await client
+      .from("subscriptions")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_active", true);
+    if (error) throw error;
+    return { ...user, subscriptionCount: count ?? 0 };
+  }));
 }
 
 export async function getAudienceUser(
