@@ -1,3 +1,4 @@
+import { zonedMidnightIso } from "./civic-time";
 import { SITE_ORIGIN } from "./og";
 import { SITE_NAME } from "./site-name";
 
@@ -86,6 +87,7 @@ export function isoDuration(seconds: number): string {
 /**
  * The meeting recording, embedded on the meeting page from the City's eSCRIBE player. eSCRIBE
  * has no thumbnails, so the page's share card stands in. recordedAt ties it to the meeting Event.
+ * Google wants uploadDate as a full datetime with a time zone, so it's the meeting day's local midnight.
  */
 export function meetingVideo(
   m: { title: string; meeting_date: string; video_url?: string | null },
@@ -97,7 +99,7 @@ export function meetingVideo(
     "@type": "VideoObject",
     name: `${m.title} — ${m.meeting_date.slice(0, 10)} (Langford council meeting video)`,
     description: opts.description,
-    uploadDate: m.meeting_date.slice(0, 10),
+    uploadDate: zonedMidnightIso(m.meeting_date, "America/Vancouver"),
     thumbnailUrl: opts.thumbnailUrl,
     duration: opts.durationSeconds ? isoDuration(opts.durationSeconds) : null,
     embedUrl: m.video_url,
