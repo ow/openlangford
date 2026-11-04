@@ -9,4 +9,4 @@ export const EMAIL_STATUSES = [
   "complained",
   "suppressed",
 ] as const;
-export const EMAIL_TYPES = ["meeting_digest", "pre_meeting", "staff_role"] as const;
+export const EMAIL_TYPES = ["meeting_digest", "pre_meeting", "staff_role", "data_report"] as const;

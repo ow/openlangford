@@ -1,4 +1,6 @@
-import { Link, useRouteLoaderData } from "react-router";
+import { Link, useLocation, useRouteLoaderData } from "react-router";
+import { openReportIssue } from "./report-issue";
+import { isReviewable } from "../lib/page-review-types";
 import type { Municipality } from "../lib/types";
 import { siteName } from "../lib/site-name";
 import { useSiteFlags } from "../lib/use-site-flags";
@@ -9,6 +11,7 @@ export function Footer() {
   const name = siteName(rootData?.municipality);
   const { signupsEnabled } = useSiteFlags();
   const signedOut = !rootData?.user;
+  const { pathname } = useLocation();
   const cityName = rootData?.municipality?.name || DEFAULT_MUNICIPALITY.name;
 
   return (
@@ -23,6 +26,14 @@ export function Footer() {
             <a href={DEFAULT_MUNICIPALITY.meetingPortalUrl} className="underline underline-offset-2 hover:text-zinc-900" target="_blank" rel="noopener noreferrer">
               official record
             </a>.
+            {isReviewable(pathname) && (
+              <>
+                {" "}See something wrong on this page?{" "}
+                <button type="button" onClick={() => openReportIssue()} className="underline underline-offset-2 hover:text-zinc-900">
+                  Report it
+                </button>.
+              </>
+            )}
           </p>
         </div>
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2" aria-label="Footer">

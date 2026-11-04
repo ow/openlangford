@@ -37,6 +37,7 @@ import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { getStaffRole } from "./lib/auth.server";
 import { PageReviewBar } from "./components/admin/page-review-bar";
+import { ReportIssue } from "./components/report-issue";
 import { InternalNoteBanner } from "./components/admin/internal-note-banner";
 import { isReviewable } from "./lib/page-review-types";
 
@@ -226,6 +227,7 @@ export default function App() {
       </main>
       <Footer />
       {root?.isAdmin && isReviewable(pathname) && <PageReviewBar />}
+      {isReviewable(pathname) && <ReportIssue />}
     </div>
   );
 }

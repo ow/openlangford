@@ -19,6 +19,7 @@ import { canonicalRedirect } from "./canonical-redirect";
 import { posthogProxy } from "./posthog-proxy";
 import { applyLogRetention, applyPrivacyRetention, purgeExpiredQuestions } from "./retention";
 import { recordServerMetrics } from "./server-metrics";
+import { assessNewReports } from "../app/services/data-reports.server";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -99,6 +100,11 @@ export default {
       ctx.waitUntil(recordServerMetrics(getSupabaseAdminClient()).catch((error) => {
         console.error("[Server metrics]", error instanceof Error ? error.message : "failed");
       }));
+      // Readers' new data-issue reports: the agent's recommendation for the moderators' queue.
+      setPageRenderer((pageRequest) => requestHandler(pageRequest, { cloudflare: { env, ctx } }));
+      ctx.waitUntil(assessNewReports(getSupabaseAdminClient(), "https://openlangford.ca").then((s) => {
+        if (s.assessed || s.waiting) console.log("[Reports]", JSON.stringify(s));
+      }).catch((error) => { console.error("[Reports]", error instanceof Error ? error.message : "failed"); }));
       // Enqueue recently held meetings first (no-op unless all gates are set), then dispatch.
       ctx.waitUntil(
         (enqueueEnabled(env)

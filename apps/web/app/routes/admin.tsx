@@ -83,6 +83,7 @@ function tools(data: AdminOverview & { staffRole?: string }): { heading: string;
         { to: "/admin/matters", title: "Duplicate issues", status: waiting(q.merges, "to review") },
         { to: "/admin/profiles", title: "Councillor profiles", status: waiting(q.profiles, q.profiles === 1 ? "draft" : "drafts") },
         { to: "/admin/reviews?show=needs_work", title: "Page reviews", status: waiting(q.pages, "need work") },
+        { to: "/admin/reports", title: "Reader reports", status: waiting(q.reports, "to decide") },
         { to: "/speaker-alias", title: "Speaker aliases", status: null },
       ],
     },

@@ -52,7 +52,7 @@ function daily(timestamps: (string | null | undefined)[], now: Date, days = OVER
 /** What waits in each admin tool, keyed by tool. null means the count couldn't be read. */
 async function getQueues(supabase: SupabaseClient, municipalityId: number | null) {
   const head = { count: "exact" as const, head: true };
-  const [contact, names, letters, merges, profiles, pages, failedJobs] = await Promise.all([
+  const [contact, names, letters, merges, profiles, pages, reports, failedJobs] = await Promise.all([
     section(async () => {
       const { data, count, error } = await supabase
         .from("contact_messages")
@@ -82,13 +82,14 @@ async function getQueues(supabase: SupabaseClient, municipalityId: number | null
     section(() => count(supabase.from("matter_merge_proposals").select("id", head).eq("status", "pending"))),
     section(() => count(supabase.from("councillor_highlights").select("person_id", head).not("draft_generated_at", "is", null))),
     section(() => count(supabase.from("page_reviews").select("path", head).eq("status", "needs_work"))),
+    section(() => count(supabase.from("data_reports").select("id", head).in("status", ["new", "assessed"]))),
     section(async () => {
       if (municipalityId == null) return null;
       const resolutions = await getFailureResolutions(supabase, municipalityId);
       return [...resolutions.values()].filter((r) => !r.resolved).length;
     }),
   ]);
-  return { contact, names, letters, merges, profiles, pages, failedJobs };
+  return { contact, names, letters, merges, profiles, pages, reports, failedJobs };
 }
 
 async function getAudience(supabase: SupabaseClient, now: Date) {
