@@ -3,10 +3,10 @@ import { publicData, withPublicDataCache } from "../../app/services/public-data-
 let entries: Map<string, { response: Response; expires: number }>;
 let jobs: Promise<unknown>[];
 const settle = async () => { while (jobs.length) await Promise.all(jobs.splice(0)); };
-type Opts = { headers?: HeadersInit; stamp?: string; cacheable?: (value: any) => boolean; kv?: KVNamespace; ttl?: number; shared?: boolean };
-const run = (key: string, compute: () => Promise<any>, { headers, stamp = "1000", cacheable, kv, ttl, shared }: Opts = {}) => withPublicDataCache({
+type Opts = { headers?: HeadersInit; stamp?: string; cacheable?: (value: any) => boolean; kv?: KVNamespace; ttl?: number; shared?: boolean; grace?: number };
+const run = (key: string, compute: () => Promise<any>, { headers, stamp = "1000", cacheable, kv, ttl, shared, grace }: Opts = {}) => withPublicDataCache({
   request: new Request("https://openlangford.ca/people.data?_routes=routes%2Fpeople", { headers }), stamp, posthogKey: "phc_test", waitUntil: job => jobs.push(job), kv,
-}, async () => Response.json(await publicData(key, compute, cacheable, ttl, { shareWithSignedIn: shared })));
+}, async () => Response.json(await publicData(key, compute, cacheable, ttl, { shareWithSignedIn: shared, changeGraceSeconds: grace })));
 const state = (response: Response) => response.headers.get("X-Public-Data-Cache");
 
 function memoryKv() {
@@ -140,4 +140,23 @@ it("works identically without KV, and a failing KV never breaks a read", async (
   const response = await run("a", compute, { kv: broken });
   expect(state(response)).toBe("MISS"); expect(await response.json()).toEqual({ v: 1 }); await settle();
   expect(state(await run("a", compute, { kv: broken }))).toBe("HIT");
+});
+
+it("keeps a heavy aggregate through content changes for its grace period, then refreshes on the next change", async () => {
+  const compute = vi.fn(async () => ({ v: "first" }));
+  await run("participants:1", compute, { stamp: "1000", ttl: 3600, grace: 900 }); await settle();
+  compute.mockResolvedValue({ v: "second" });
+  // The pipeline moves the stamp every minute; within the grace the entry is still fresh.
+  vi.advanceTimersByTime(60_000);
+  expect(state(await run("participants:1", compute, { stamp: "2000", ttl: 3600, grace: 900 }))).toBe("HIT");
+  vi.advanceTimersByTime(600_000);
+  expect(state(await run("participants:1", compute, { stamp: "3000", ttl: 3600, grace: 900 }))).toBe("HIT");
+  expect(compute).toHaveBeenCalledTimes(1);
+  // Past the grace, a newer stamp makes it stale: served at once, rebuilt once in the background.
+  vi.advanceTimersByTime(300_000);
+  const stale = await run("participants:1", compute, { stamp: "4000", ttl: 3600, grace: 900 });
+  expect(state(stale)).toBe("STALE"); await settle(); expect(compute).toHaveBeenCalledTimes(2);
+  // Without a content change it stays fresh for its whole TTL.
+  vi.advanceTimersByTime(1_800_000);
+  expect(state(await run("participants:1", compute, { stamp: "4000", ttl: 3600, grace: 900 }))).toBe("HIT");
 });

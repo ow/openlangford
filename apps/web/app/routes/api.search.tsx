@@ -11,6 +11,7 @@ import {
 import { getDateRange } from "../lib/search-params";
 import { runQuestionAgent, type AgentEvent } from "../services/rag.server";
 import { getSupabaseAdminClient, createSupabaseServerClient } from "../lib/supabase.server";
+import { publicData } from "../services/public-data-cache.server";
 import { getMunicipality } from "../services/municipality";
 import { captureServerEvent } from "../lib/analytics.server";
 import { z } from "zod";
@@ -149,13 +150,16 @@ export async function loader({ request, context: loaderContext }: Route.LoaderAr
       if (dateTo && dateFrom > dateTo) return Response.json({ results: [], query, intent: "keyword" });
     }
 
-    const results = await hybridSearchAll(query, {
+    // The same search from anyone is the same result: cached across the site for ten minutes (a common word
+    // otherwise costs seconds of database time per request).
+    const cacheKey = JSON.stringify(["search-v1", query.trim().replace(/\s+/g, " "), [...filterTypes].sort(), dateFrom ?? null, dateTo ?? null, sortParam || null]);
+    const results = await publicData(cacheKey, () => hybridSearchAll(query, {
       types: filterTypes.length > 0 ? filterTypes : undefined,
       limit: 30,
       dateFrom,
       dateTo,
       sort: (sortParam as "relevance" | "newest" | "oldest") || undefined,
-    });
+    }), (value) => Array.isArray(value), 600, { shareWithSignedIn: true, changeGraceSeconds: 600 });
 
     return Response.json({ results, query, intent: "keyword" });
   }

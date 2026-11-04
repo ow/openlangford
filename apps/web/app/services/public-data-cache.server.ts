@@ -66,13 +66,13 @@ function validEntry<T>(entry: unknown): entry is Entry<T> {
  * Signed-in visitors bypass by default; `shareWithSignedIn` lets them use the same value too, for
  * values computed with no session (an explicit refresh still recomputes).
  *
- * Stale-while-revalidate: a value is fresh while its stamp is current and it is younger than
- * `ttlSeconds`. Otherwise an entry up to MAX_STALE_SECONDS old is served at once and recomputed in
+ * Stale-while-revalidate: a value is fresh while it is younger than `ttlSeconds` and its stamp is current
+ * (or it is younger than `changeGraceSeconds`, for values too heavy to rebuild on every content change). Otherwise an entry up to MAX_STALE_SECONDS old is served at once and recomputed in
  * the background; with no entry at all the value is computed inline. Reads go Cache API (this
  * datacenter) → KV (global, when bound) → compute; writes go to both.
  */
 export async function publicData<T>(key: string, compute: () => Promise<T>, cacheable: (value: T) => boolean = () => true, ttlSeconds = TTL_SECONDS,
-  { shareWithSignedIn = false }: { shareWithSignedIn?: boolean } = {}): Promise<T> {
+  { shareWithSignedIn = false, changeGraceSeconds = 0 }: { shareWithSignedIn?: boolean; changeGraceSeconds?: number } = {}): Promise<T> {
   const scope = storage.getStore();
   const admitted = scope && (shareWithSignedIn ? publicReadRequest(scope.request) : anonymousPublicRequest(scope.request, scope.posthogKey));
   if (!scope?.stamp || !admitted || typeof caches === "undefined") {
@@ -86,7 +86,10 @@ export async function publicData<T>(key: string, compute: () => Promise<T>, cach
   const request = new Request(`https://openlangford.ca/__public-data-cache/${encodeURIComponent(prefix)}/${encodeURIComponent(key)}`);
   const staleLimit = Math.max(ttlSeconds, MAX_STALE_SECONDS);
   const now = Date.now();
-  const fresh = (entry: Entry<T>) => stampIsCurrent(entry.stamp, stamp) && now - entry.storedAt <= ttlSeconds * 1000;
+  // A content change makes an entry stale at once, unless it's younger than changeGraceSeconds: heavy aggregates
+  // would otherwise be recomputed every minute while the pipeline writes (the stamp moves up to once a minute).
+  const fresh = (entry: Entry<T>) => now - entry.storedAt <= ttlSeconds * 1000 &&
+    (stampIsCurrent(entry.stamp, stamp) || (changeGraceSeconds > 0 && now - entry.storedAt < changeGraceSeconds * 1000));
   const usable = (entry: Entry<T>) => now - entry.storedAt <= staleLimit * 1000;
 
   const putCache = (entry: Entry<T>) => cache.put(request, Response.json(entry, {

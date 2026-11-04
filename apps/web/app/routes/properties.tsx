@@ -5,6 +5,7 @@ import type { Route } from "./+types/properties";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { getPropertiesIndex, propertyPath, type PropertyIndexEntry } from "../services/properties";
 import { publicData } from "../services/public-data-cache.server";
+import { HEAVY_CHANGE_GRACE_SECONDS } from "../services/computed-cache.server";
 import { MattersMap } from "../components/matters-map";
 import { Input } from "../components/ui/input";
 import { PageHeader, PAGE_CONTAINER } from "../components/ui/page-header";
@@ -30,7 +31,7 @@ export const meta: Route.MetaFunction = () => [
 
 export async function loader() {
   // The pipeline's properties stage changes this a few times a day at most.
-  return publicData("properties-index:mentions", () => getPropertiesIndex(getSupabaseAdminClient()), (v) => v.lots.length > 0, 3600, { shareWithSignedIn: true });
+  return publicData("properties-index:mentions", () => getPropertiesIndex(getSupabaseAdminClient()), (v) => v.lots.length > 0, 3600, { changeGraceSeconds: HEAVY_CHANGE_GRACE_SECONDS, shareWithSignedIn: true });
 }
 
 const plural = (n: number, word: string) => `${n.toLocaleString()} ${word}${n === 1 ? "" : word.endsWith("s") ? "es" : "s"}`;

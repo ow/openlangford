@@ -1,6 +1,7 @@
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { historicalPublicDate, HISTORICAL_PUBLIC_TTL, RECENT_PUBLIC_TTL } from "../lib/public-content-cache";
 import { publicData } from "./public-data-cache.server";
+import { HEAVY_CHANGE_GRACE_SECONDS } from "./computed-cache.server";
 import { getSpeakingTimeStats, getSpeakingTimeByMeeting, getSpeakingTimeByTopic } from "./profiling";
 
 // Only public aggregates from a fixed server client enter shared storage. Never
@@ -10,7 +11,7 @@ function summary<T>(kind: string, personId: number | null, startDate: string | u
   // The council-wide ranking is the heavy RPC and changes only when a meeting is ingested.
   const ttl = historicalPublicDate(endDate) ? HISTORICAL_PUBLIC_TTL : personId === null ? 3600 : RECENT_PUBLIC_TTL;
   return publicData(JSON.stringify(["speaking-v1", kind, municipalityId, personId, startDate ?? null, endDate ?? null]), compute, () => true,
-    ttl, { shareWithSignedIn: true });
+    ttl, { shareWithSignedIn: true, changeGraceSeconds: personId === null ? HEAVY_CHANGE_GRACE_SECONDS : 0 });
 }
 
 export function getPublicSpeakingTimeStats(startDate?: string, endDate?: string, municipalityId = 1) {

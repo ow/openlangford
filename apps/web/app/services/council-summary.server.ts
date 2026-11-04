@@ -5,6 +5,7 @@ import type { Person, Membership } from "../lib/types";
 import type { PersonWithStats } from "./people";
 import { getCouncilTerms } from "./council-terms";
 import { publicData } from "./public-data-cache.server";
+import { HEAVY_CHANGE_GRACE_SECONDS } from "./computed-cache.server";
 
 /** One complete public roster/count DTO reused by council, comparison and profiles. */
 function getPublicCouncilData(municipalityId: number) {
@@ -40,7 +41,7 @@ function getPublicCouncilData(municipalityId: number) {
     }
     if (!stats.all) throw new Error("Incomplete council attendance summary");
     return { people, terms, today, stats };
-  }, () => true, undefined, { shareWithSignedIn: true });
+  }, () => true, undefined, { shareWithSignedIn: true, changeGraceSeconds: HEAVY_CHANGE_GRACE_SECONDS });
 }
 
 export async function getPublicCouncilSummary(municipalityId: number) {
@@ -129,5 +130,5 @@ export function getCouncilTermStats(municipalityId: number) {
       };
     }
     return stats;
-  }, () => true, undefined, { shareWithSignedIn: true });
+  }, () => true, undefined, { shareWithSignedIn: true, changeGraceSeconds: HEAVY_CHANGE_GRACE_SECONDS });
 }
