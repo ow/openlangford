@@ -54,7 +54,7 @@ import { TimelineStep, isProceduralStep } from "../components/matter/timeline-st
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
 import { matterStatusVariant, quietSince } from "../lib/matter-status";
-import { getPropertiesForMatter, propertyPath, propertyPin } from "../services/properties";
+import { getPropertiesForMatter, propertyPath, propertyPin, sameSiteTopics } from "../services/properties";
 import { bylawPath, documentPath, matterPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
 import { loaderFailure } from "../lib/loader-errors";
@@ -365,10 +365,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     // Fetch documents for all agenda items in this matter (batch query)
     const agendaItemIds = (matter.agenda_items || []).map((ai) => ai.id);
     const matterDocuments = await getDocumentsForAgendaItems(supabase, agendaItemIds);
-    const [matterEvidence, story, properties] = await Promise.all([
+    const [matterEvidence, story, properties, sameSite] = await Promise.all([
       getMatterEvidence(supabase, matter.id),
       getMatterStory(supabase, matter.id),
       getPropertiesForMatter(supabase, matter.id),
+      sameSiteTopics(supabase, matter.id),
     ]);
 
     // Pipeline-picked pictures from the staff reports (meta.images), resolved to public URLs.
@@ -393,7 +394,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const lots = properties.map(propertyPin).filter((p): p is NonNullable<typeof p> => p !== null);
     (matter as any).locations = lots.length ? lots : Array.from(pins.values());
 
-    return { matter, matterDocuments, matterEvidence, story, images, properties };
+    return { matter, matterDocuments, matterEvidence, story, images, properties, sameSite };
   } catch (error) {
     throw loaderFailure(error, "Matter Not Found");
   }
@@ -401,7 +402,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function MatterDetail({ loaderData }: Route.ComponentProps) {
   if ("removed" in loaderData) return <RemovedTopic {...loaderData.removed} />;
-  const { matter, matterDocuments, matterEvidence, story, images, properties = [] } = loaderData;
+  const { matter, matterDocuments, matterEvidence, story, images, properties = [], sameSite = [] } = loaderData;
 
   // Sort agenda items by meeting date
   const timeline = [...(matter.agenda_items || [])].sort(
@@ -543,7 +544,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
   // Addresses that share the same other topics are one card ("3044, 3108 and 3127 Glen Lake Road"), and topics already
   // shown under Background aren't repeated for every address.
-  const relatedIds = new Set((story.related || []).map((r: any) => r.id));
+  // Topics shown under Related topics or "Also at" above aren't repeated here.
+  const relatedIds = new Set([...(story.related || []).map((r: any) => r.id), ...sameSite.map((m) => m.id)]);
   const addressGroups = (() => {
     const groups = new Map<string, { key: string; properties: any[]; others: any[]; relatedHere: boolean }>();
     for (const p of properties as any[]) {
@@ -614,6 +616,34 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               <span className="font-semibold text-zinc-900">Where it stands: </span>
               {matter.meta.status_line}
             </p>
+          )}
+
+          {sameSite.length > 0 && (
+            // Earlier or later applications for the same land: a rezoning, then another rezoning or a variance years on.
+            <div id="topic-same-site" className="mt-4 max-w-2xl rounded-xl border border-zinc-200 bg-surface px-4 py-3">
+              <p className="text-sm font-semibold text-zinc-900">
+                Also at {new Set(sameSite.map((m) => m.address)).size === 1 ? sameSite[0].address : "this site"}
+              </p>
+              <ul className="mt-1.5 space-y-1">
+                {sameSite.slice(0, 4).map((m) => (
+                  <li key={m.id} className="flex items-baseline gap-2 text-sm">
+                    <span className="w-24 shrink-0 text-xs tabular-nums text-zinc-500">
+                      {/* An earlier application by the year it finished, a later one by the year it started. */}
+                      {m.when === "earlier" ? "Earlier" : m.when === "later" ? "Later" : "Alongside"} · {String((m.when === "earlier" ? m.last_seen : m.first_seen) || m.first_seen || "").slice(0, 4)}
+                    </span>
+                    <Link to={matterPath(m)} className="min-w-0 text-zinc-700 hover:text-brand-700 hover:underline">
+                      {m.title}
+                    </Link>
+                    {m.status && matterStatusVariant(m.status) && <Badge variant={matterStatusVariant(m.status)!} className="shrink-0">{m.status}</Badge>}
+                  </li>
+                ))}
+              </ul>
+              {sameSite.length > 4 && (
+                <Link to={propertyPath(properties[0])} className="mt-1.5 inline-block text-sm font-medium text-brand-700 hover:underline">
+                  See all {sameSite.length + 1} at {properties[0]?.address}
+                </Link>
+              )}
+            </div>
           )}
 
           {matter.identifier && (
@@ -720,8 +750,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                         {!(g.others.length === 0 && g.relatedHere) && (
                           <span className="text-sm text-zinc-500">
                             {g.others.length === 0
-                              ? `No other matters at ${g.properties.length > 1 ? "these addresses" : "this address"}`
-                              : `${g.others.length} other ${g.others.length === 1 ? "matter" : "matters"} at ${g.properties.length > 1 ? "these addresses" : "this address"}`}
+                              ? `Nothing else at ${g.properties.length > 1 ? "these addresses" : "this address"}`
+                              : `${g.others.length} other ${g.others.length === 1 ? "topic" : "topics"} at ${g.properties.length > 1 ? "these addresses" : "this address"}`}
                           </span>
                         )}
                       </div>

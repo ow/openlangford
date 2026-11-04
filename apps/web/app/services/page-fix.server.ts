@@ -7,6 +7,7 @@ import { readPage } from "./page-check.server";
 import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, topicItemIds } from "./page-verify.server";
 import { research } from "./record-research.server";
+import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
 import type { StaffRole } from "../lib/auth.server";
 
@@ -43,7 +44,7 @@ const PlanSchema = z.object({
   })),
 });
 
-type Candidate = { id: number; title: string; dates: string; related?: boolean };
+type Candidate = { id: number; title: string; dates: string; related?: boolean; sameSite?: boolean };
 
 /** Topics an item filed (or linked) here might belong to instead, not this topic: ones with the same permit or bylaw
  * number, ones holding other items at the same address, and full-text matches on its title. */
@@ -168,6 +169,11 @@ ${movable || "(No flagged items to move.)"}
   TOPIC") show it isn't the same place or project (to_matter_id: its id). Its entries leave the timeline with it. If it is the very same project, merge_topic instead.
   A "related-<id>" entry is a topic listed under Related topics: unlink_related or merge_topic it with to_matter_id <id>
   (or no_change when its records show it belongs).
+- Another application for the same site (marked below): the same land often comes back years later, a rezoning and
+  then a second rezoning or a variance. Those are separate topics, each with its own steps. Steps of the other
+  application come off this page (remove_entry, or move_item to it), but never unlink_related or merge_topic it for
+  being a different application: the link is how readers find the earlier or later one. Unlink it only when its
+  records show it isn't the same land at all.
 - no_change: when the editor asks a question ("is this relevant?", "should this be here?") and the answer is that the
   page is right as it is. Answer it in "reason": one or two plain sentences saying why, from the records (e.g. "The
   2018 item renewed the same five-year access agreement Council granted in 2013, so it belongs here"). Use it too when
@@ -176,7 +182,7 @@ ${movable || "(No flagged items to move.)"}
   supplies what an agreed problem says is missing (e.g. the adoption or decision the status lacks), with its key.
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
-${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}`).join("\n")}\n` : ""}
+${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}${c.sameSite ? " [another application for the same site]" : ""}`).join("\n")}\n` : ""}
 Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly. A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
@@ -635,17 +641,19 @@ async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number, al
   const sameBylaw = ((mentions || []) as any[]).map((l) => (Array.isArray(l.agenda_items) ? l.agenda_items[0] : l.agenda_items))
     .filter((i) => i?.matter_id && i.matter_id !== matterId && [...bylaws(String(i.title || ""))].some((b) => mine.has(b)))
     .map((i) => i.matter_id as number);
-  const [{ data: links }, { data: named }] = await Promise.all([
+  const [{ data: links }, { data: named }, sameSite] = await Promise.all([
     supabase.from("matter_links").select("matter_id, related_matter_id").eq("kind", "related_matter").eq("hidden", false)
       .or(`matter_id.eq.${matterId},related_matter_id.eq.${matterId}`),
     title ? supabase.from("matters").select("id").eq("meta->>display_title", title).neq("id", matterId).limit(10) : Promise.resolve({ data: [] }),
+    sameSiteTopics(supabase, matterId),
   ]);
+  const sameSiteIds = new Set(sameSite.map((m) => m.id));
   const ids = [...new Set([...(links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)),
-    ...((named || []) as any[]).map((m) => m.id), ...sameBylaw, ...alsoIds])].filter((id) => id !== matterId);
+    ...((named || []) as any[]).map((m) => m.id), ...sameBylaw, ...sameSiteIds, ...alsoIds])].filter((id) => id !== matterId);
   if (!ids.length) return [];
   const relatedIds = new Set((links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)));
   const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", ids)
     .is("merged_into", null);
   return (data || []).map((m: any) => ({ id: m.id, title: m.meta?.display_title || m.title,
-    dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to "), related: relatedIds.has(m.id) }));
+    dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to "), related: relatedIds.has(m.id), sameSite: sameSiteIds.has(m.id) }));
 }

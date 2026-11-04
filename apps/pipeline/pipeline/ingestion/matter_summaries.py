@@ -58,6 +58,11 @@ what it is. When the record gives little beyond a title, one short sentence nami
 right ("Zoning changes for secondary suites in accessory buildings."), not padding around it.
 Return for each matter:
 - "display_title": a short, plain title (max 8 words) naming the thing itself, e.g. "Solid waste collection bylaw", "854 Latoria Road rezoning". No reading stages, no "(Background report attached)", no years unless essential. Keep a street address when the matter is about a property.
+  "same_site", when present, lists other matters for the same land (an earlier or later application: a rezoning, then
+  a second rezoning or a variance). This title must tell them apart: add what differs, from this matter's own record
+  (the scale, "for 11 lots", or the kind of application), and the year when nothing else does. Keep the full address
+  ("Road", "Avenue"), no colons. If one of them is this same application under another topic (the same bylaw or
+  file, the same proposal), keep the plain title: don't invent a difference between two halves of one application.
 - "summary": 2-3 sentences, max 60 words, saying what the matter actually is and why it matters to residents. Be concrete and lead with the substance: for a development, what would be built (use, units, storeys, tenure) and where; for a bylaw or program, what changes for residents, what it costs them, and why the city is doing it. No bylaw numbers, no "Council" as the opening word, no jargon. Do not mention readings, approval or status here; that belongs in status_line.
 - "status_line": max 18 words on where it stands now: the latest step and its date (e.g. "Third reading given Sep 28, 2026; final adoption still to come."). Use the dates provided.
   When "history" is empty and only "mentions" exist, say where it last came up, as discussion, not a decision
@@ -199,6 +204,7 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
     # fact from its debate summary (a note) can be confirmed.
     transcripts = item_transcripts(supabase, [i for i in items if i.get("discussion_start_time") is not None])
 
+    same_site = _same_site(supabase, matter_ids)
     out = []
     for matter in matters:
         history = []
@@ -238,6 +244,7 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                 "identifier": matter.get("identifier"),
                 "history": history,
                 "mentions": sorted(mentions_by_matter.get(matter["id"], []), key=lambda row: row["date"] or ""),
+                **({"same_site": same_site[matter["id"]]} if same_site.get(matter["id"]) else {}),
                 **({"editor_notes": notes} if (notes := [n for n in ((matter.get("meta") or {}).get("editor_notes") or [])
                                                           if isinstance(n, str) and n.strip()]) else {}),
                 "_has_mentions": bool(mentions_by_matter.get(matter["id"])),
@@ -245,6 +252,50 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                 "_meta": matter.get("meta") or {},
             }
         )
+    return out
+
+
+SAME_SITE_MAX_LOTS = 4  # a matter naming more lots is a list (tax exemptions, permit parking), not one site's application
+
+
+def _same_site(supabase: Client, matter_ids: list[int]) -> dict[int, list[dict]]:
+    """Other matters for the same land as each matter: sharing a lot (a public, numbered one), neither naming more than
+    SAME_SITE_MAX_LOTS lots. The web's sameSiteTopics (app/services/properties.ts) shows the same set on the page."""
+    own = _in_chunks(lambda ids: supabase.table("property_links").select("matter_id, property_id")
+                     .in_("matter_id", ids).eq("hidden", False).order("id"), matter_ids)
+    lots: dict[int, set[int]] = {}
+    for link in own:
+        lots.setdefault(link["matter_id"], set()).add(link["property_id"])
+    lots = {m: p for m, p in lots.items() if len(p) <= SAME_SITE_MAX_LOTS}
+    property_ids = sorted({p for ps in lots.values() for p in ps})
+    if not property_ids:
+        return {}
+    public = {p["id"] for p in _in_chunks(lambda ids: supabase.table("properties").select("id").in_("id", ids)
+                                          .eq("hidden", False).neq("civic_number", "").order("id"), property_ids)}
+    sharing = _in_chunks(lambda ids: supabase.table("property_links").select("matter_id, property_id")
+                         .in_("property_id", ids).eq("hidden", False).not_.is_("matter_id", "null").order("id"),
+                         sorted(public))
+    other_ids = sorted({l["matter_id"] for l in sharing} - set(lots))
+    their = _in_chunks(lambda ids: supabase.table("property_links").select("matter_id, property_id")
+                       .in_("matter_id", ids).eq("hidden", False).order("id"), other_ids) if other_ids else []
+    for link in their:
+        lots.setdefault(link["matter_id"], set()).add(link["property_id"])
+    small = {m for m, ps in lots.items() if len(ps) <= SAME_SITE_MAX_LOTS}
+    candidates = sorted({l["matter_id"] for l in sharing} & small)
+    rows = {m["id"]: m for m in _in_chunks(lambda ids: supabase.table("matters").select("id, title, meta, first_seen, last_seen, merged_into")
+                                           .in_("id", ids).order("id"), candidates)}
+    out: dict[int, list[dict]] = {}
+    for mid in matter_ids:
+        mine = lots.get(mid, set()) & public
+        if not mine or mid not in small:
+            continue
+        siblings = sorted({l["matter_id"] for l in sharing if l["property_id"] in mine and l["matter_id"] != mid})
+        for sid in siblings:
+            row = rows.get(sid)
+            if not row or row.get("merged_into") or (row.get("meta") or {}).get("hidden"):
+                continue
+            out.setdefault(mid, []).append({"title": (row.get("meta") or {}).get("display_title") or row["title"],
+                                            "dates": f"{row.get('first_seen')} to {row.get('last_seen')}"})
     return out
 
 

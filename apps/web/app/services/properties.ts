@@ -43,6 +43,49 @@ export async function getPropertiesForMatter(supabase: SupabaseClient, matterId:
     .sort((a, b) => b.others.length - a.others.length);
 }
 
+/** A topic naming more lots than this is a list (tax exemptions, permit parking), not one site's application. */
+export const SAME_SITE_MAX_LOTS = 4;
+
+export type SameSiteTopic = { id: number; slug: string | null; title: string; status: string | null; first_seen: string | null;
+  last_seen: string | null; meta: any; address: string; when: "earlier" | "later" | "same time" };
+
+/**
+ * Other applications for the same site: topics sharing a lot with this one, where neither is a list of many lots.
+ * A rezoning and the later rezoning or variance for the same land are separate topics; this is how each points to the
+ * other. Earliest first.
+ */
+export async function sameSiteTopics(supabase: SupabaseClient, matterId: number): Promise<SameSiteTopic[]> {
+  const { data: own } = await supabase.from("property_links").select("property_id").eq("matter_id", matterId).eq("hidden", false);
+  const lots = [...new Set((own || []).map((l) => l.property_id as number))];
+  if (!lots.length || lots.length > SAME_SITE_MAX_LOTS) return [];
+  const [{ data: properties }, { data: links }, { data: me }] = await Promise.all([
+    supabase.from("properties").select("id, address, civic_number").in("id", lots).eq("hidden", false).neq("civic_number", ""),
+    supabase.from("property_links").select("property_id, matter_id").in("property_id", lots).not("matter_id", "is", null).neq("matter_id", matterId).eq("hidden", false),
+    supabase.from("matters").select("first_seen, last_seen").eq("id", matterId).maybeSingle(),
+  ]);
+  const addressOf = new Map((properties || []).map((p) => [p.id as number, p.address as string]));
+  const at = new Map<number, string>();
+  for (const l of links || []) if (addressOf.has(l.property_id) && !at.has(l.matter_id)) at.set(l.matter_id, addressOf.get(l.property_id)!);
+  if (!at.size) return [];
+  const ids = [...at.keys()];
+  const [{ data: matters }, { data: theirLots }] = await Promise.all([
+    supabase.from("matters").select(MATTER_FIELDS).in("id", ids),
+    supabase.from("property_links").select("matter_id, property_id").in("matter_id", ids).eq("hidden", false).limit(5000),
+  ]);
+  const lotCount = new Map<number, Set<number>>();
+  for (const l of theirLots || []) lotCount.set(l.matter_id, (lotCount.get(l.matter_id) || new Set()).add(l.property_id));
+  const mine = { start: me?.first_seen || "", end: me?.last_seen || me?.first_seen || "" };
+  return ((matters || []) as any[])
+    .filter((m) => visible(m) && (lotCount.get(m.id)?.size || 0) <= SAME_SITE_MAX_LOTS)
+    .map((m) => {
+      const end = m.last_seen || m.first_seen || "";
+      const when = end && mine.start && end < mine.start ? "earlier" : m.first_seen && mine.end && m.first_seen > mine.end ? "later" : "same time";
+      return { id: m.id, slug: m.slug, title: m.meta?.display_title || m.title, status: m.status, first_seen: m.first_seen,
+        last_seen: m.last_seen, meta: m.meta, address: at.get(m.id)!, when } as SameSiteTopic;
+    })
+    .sort((a, b) => String(a.first_seen || "").localeCompare(String(b.first_seen || "")));
+}
+
 /** One property: its matters (newest activity first) and agenda items that named it outside any matter. */
 export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) {
   // A hidden lot (a resident's home known only from public input) has no page: same as no lot at all.
