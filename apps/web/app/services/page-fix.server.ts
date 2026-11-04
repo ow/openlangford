@@ -128,8 +128,11 @@ reviewed the page "${heading}" and agreed these problems are real:
 ${flags.map((f) => `- [${f.key ?? "whole page"}] ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.fix ? `\n  Approved fix (do this): ${f.fix}` : ""}${f.note ? `\n  Editor's instruction for this entry (follow it, over the fix above): ${f.note}` : ""}`).join("\n")}
 ${note ? `\nTheir note: ${note}\n` : ""}${internalNote ? `\nStaff's internal note on this page (background to keep in mind, not an instruction): ${internalNote}\n` : ""}
 What you can do:
-- remove_entry: drop a link found for this topic (${removable.join(", ") || "none here"}). Removing a "background-" entry
-  unlinks the whole related topic it came from, so prefer rewrite_entry or rewrite_heading when only its wording is wrong.
+- remove_entry: drop a link found for this topic (${removable.join(", ") || "none here"}). A "background-" entry is
+  borrowed from a related topic and already lives on its own topic: remove_entry takes just that entry off this page
+  (the related topic stays linked, with its other entries). So a flag saying a background entry belongs to another
+  topic, or should "move" there, is fixed with remove_entry. Use unlink_related only when the whole related topic
+  doesn't belong here; prefer rewrite_entry or rewrite_heading when only an entry's wording is wrong.
 - move_item: an item filed under this topic ("agenda-") or a linked mention ("mention-") that belongs to another topic.
   Pick a listed candidate when it clearly fits; otherwise to_matter_id null, and it is re-filed the way new meetings
   are filed (onto the topic for its own address or permit, or a new one), never back here.

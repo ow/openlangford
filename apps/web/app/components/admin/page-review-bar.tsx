@@ -377,7 +377,7 @@ export function PageReviewBar() {
                         confirming === flag.key ? (
                           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                             <span className="text-zinc-600">
-                              {flag.key!.startsWith("background-") ? "Unlink the related topic this came from, with all its entries?" : "Remove this entry from the page?"}
+                              {flag.key!.startsWith("background-") ? "Take this entry off this page? Its own topic keeps it." : "Remove this entry from the page?"}
                             </span>
                             <button type="button" disabled={busy} onClick={() => { submit("remove_entry", { key: flag.key! }); setConfirming(null); }}
                               className="rounded-md bg-red-600 px-2 py-1 font-medium text-white hover:bg-red-700">Remove</button>
@@ -386,7 +386,7 @@ export function PageReviewBar() {
                         ) : (
                           <button type="button" disabled={busy} onClick={() => setConfirming(flag.key)}
                             className="mt-1.5 text-xs font-medium text-red-700 hover:underline">
-                            {flag.key!.startsWith("background-") ? "Unlink related topic" : "Remove from page"}
+                            Remove from page
                           </button>
                         )
                       )}

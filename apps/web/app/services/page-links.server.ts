@@ -72,15 +72,18 @@ export async function removeEntry(supabase: SupabaseClient, matterId: number, ke
     if (error || !data?.length) throw new Error("Could not remove that entry.");
     return "Removed the annual report page from this topic.";
   }
-  // A background entry belongs to a related topic: removing it unlinks that topic (and all its entries) here.
+  // A background entry is borrowed from a related topic: only this entry comes off this page (meta.hidden_background).
+  // The related topic stays linked, with its other entries, and keeps this item on its own page.
   const owner = await relatedOwner(supabase, matterId, id);
   // Every background entry comes through a related topic; one that can't be traced is a bug to find, not to mask.
   if (!owner) throw new Error("Could not trace which related topic brings that entry here, so it wasn't removed.");
-  const { error } = await supabase.from("matter_links").update({ hidden: true, ...decided(userId, "removed") })
-    .eq("kind", "related_matter")
-    .or(`and(matter_id.eq.${matterId},related_matter_id.eq.${owner}),and(matter_id.eq.${owner},related_matter_id.eq.${matterId})`);
-  if (error) throw new Error("Could not unlink the related topic.");
-  return "Unlinked the related topic, with all of its entries, from this page.";
+  const { data: topic, error: readError } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+  if (readError || !topic) throw new Error("Could not remove that entry.");
+  const meta = (topic.meta || {}) as Record<string, any>;
+  const hidden = { ...(meta.hidden_background || {}), [String(id)]: { by: userId, at: new Date().toISOString(), via: owner } };
+  const { error } = await supabase.from("matters").update({ meta: { ...meta, hidden_background: hidden } }).eq("id", matterId);
+  if (error) throw new Error("Could not remove that entry.");
+  return "Took the entry off this page. Its own topic still has it, and the related topic stays linked.";
 }
 
 async function relatedOwner(supabase: SupabaseClient, matterId: number, itemId: number): Promise<number | null> {

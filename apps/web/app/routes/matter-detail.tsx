@@ -476,6 +476,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
   // Entries staff hid as repeats of another entry (meta.hidden_duplicates) stay on the topic but not in its timeline.
   const hiddenDuplicates = (matter.meta?.hidden_duplicates || {}) as Record<string, unknown>;
+  // Entries borrowed from a related topic that staff (or the fix agent) took off this page one by one.
+  const hiddenBackground = (matter.meta?.hidden_background || {}) as Record<string, unknown>;
   const timelineEntries = collapseListedReadings([
     ...timeline.filter((item) => !hiddenDuplicates[String(item.id)]).map((item) => ({
       kind: "primary" as const,
@@ -495,7 +497,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     ...(story.background || [])
       // Staff (or the fix agent) can take one borrowed entry off this page without unlinking its whole topic.
       .filter((item: any) => !primaryAgendaItemIds.has(item.id) && !story.mentions.some((direct: any) => direct.id === item.id)
-        && !hiddenDuplicates[String(item.id)])
+        && !hiddenDuplicates[String(item.id)] && !hiddenBackground[String(item.id)])
       .map((item: any) => ({ kind: "mention" as const, key: `background-${item.id}`, date: item.meetings?.meeting_date, item, relatedMatter: item.relatedMatter })),
     // An annual report covers its year, so it sits at the year's end.
     ...(story.reports || []).map((report: ReportMention) => ({ kind: "report" as const, key: `report-${report.id}`, date: `${report.year}-12-31`, report })),
