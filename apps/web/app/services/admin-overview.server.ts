@@ -6,6 +6,7 @@ import { getMunicipality } from "./municipality";
 import { getFailureResolutions } from "./pipeline-admin.server";
 import { reviewBurndown } from "./page-reviews.server";
 import { estimateCostUsd } from "./ai/pricing";
+import { hourlyIncrease, type ServerSample } from "../lib/server-metrics";
 import { getSiteTraffic, type DailyPoint } from "./site-traffic.server";
 
 const DAY = 86_400_000;
@@ -139,6 +140,35 @@ async function getEmail(supabase: SupabaseClient, now: Date) {
   };
 }
 
+/** The database host over the last 24 hours, from the Worker's five-minute readings (server_metrics). */
+async function getServerHealth(supabase: SupabaseClient, now: Date) {
+  const { data, error } = await supabase.from("server_metrics").select("*")
+    .gte("sampled_at", new Date(now.getTime() - 25 * 3600_000).toISOString()).order("sampled_at", { ascending: true });
+  if (error) throw error;
+  const rows = (data || []) as (ServerSample & { sampled_at: string })[];
+  if (!rows.length) return null;
+  const latest = rows[rows.length - 1];
+  const hourAgo = rows.find((r) => r.sampled_at >= new Date(now.getTime() - 3600_000).toISOString()) ?? rows[0];
+  const delta = (key: keyof ServerSample) => latest[key] != null && hourAgo[key] != null && latest[key]! >= hourAgo[key]!
+    ? latest[key]! - hourAgo[key]! : null;
+  const cpuTotal = delta("cpu_total_seconds");
+  const swapInLastHourMb = delta("swap_in_pages") != null ? (delta("swap_in_pages")! * 4096) / 1e6 : null;
+  const stalledLastHour = delta("io_stalled_seconds");
+  return {
+    sampledAt: latest.sampled_at,
+    memTotal: latest.mem_total_bytes, memAvailable: latest.mem_available_bytes,
+    swapTotal: latest.swap_total_bytes, swapUsed: latest.swap_total_bytes != null && latest.swap_free_bytes != null ? latest.swap_total_bytes - latest.swap_free_bytes : null,
+    databaseBytes: latest.database_bytes, connections: latest.connections,
+    cpuBusyPct: cpuTotal ? Math.round((delta("cpu_busy_seconds")! / cpuTotal) * 100) : null,
+    swapInLastHourMb, stalledLastHour,
+    // Heavy swapping or long disk stalls in the last hour mean visitors are waiting on the database.
+    pressure: (swapInLastHourMb ?? 0) > 200 || (stalledLastHour ?? 0) > 60,
+    swapIn: hourlyIncrease(rows, "swap_in_pages", 4096 / 1e6),
+    diskRead: hourlyIncrease(rows, "root_read_bytes", 1 / 1e6).map((p, i) => ({ ...p, value: Math.round(p.value + (hourlyIncrease(rows, "data_read_bytes", 1 / 1e6)[i]?.value ?? 0)) })),
+    stalled: hourlyIncrease(rows, "io_stalled_seconds"),
+  };
+}
+
 /** Residents' questions from the last 7 days, newest first, each with what its AI calls cost (estimated). */
 async function getRecentQuestions(supabase: SupabaseClient, now: Date) {
   const since = new Date(now.getTime() - 7 * DAY).toISOString();
@@ -217,7 +247,7 @@ async function getCalendar(supabase: SupabaseClient, municipalityId: number | nu
 export async function getAdminOverview(supabase: SupabaseClient, env: Record<string, unknown>, now = new Date(),
   waitUntil?: (p: Promise<unknown>) => void) {
   const municipalityId = await section(async () => (await getMunicipality(supabase)).id as number);
-  const [queues, audience, email, questions, ai, calendar, traffic, reviews, recentQuestions] = await Promise.all([
+  const [queues, audience, email, questions, ai, calendar, traffic, reviews, recentQuestions, server] = await Promise.all([
     getQueues(supabase, municipalityId),
     section(() => getAudience(supabase, now)),
     section(() => getEmail(supabase, now)),
@@ -227,6 +257,7 @@ export async function getAdminOverview(supabase: SupabaseClient, env: Record<str
     getSiteTraffic(env, waitUntil),
     section(() => reviewBurndown(supabase, now)),
     section(() => getRecentQuestions(supabase, now)),
+    section(() => getServerHealth(supabase, now)),
   ]);
   return {
     generatedAt: now.toISOString(),
@@ -242,6 +273,7 @@ export async function getAdminOverview(supabase: SupabaseClient, env: Record<str
     traffic,
     reviews,
     recentQuestions,
+    server,
   };
 }
 

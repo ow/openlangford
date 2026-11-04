@@ -24,7 +24,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     const email = accountEmailFor(role);
     const audience = overview.audience && { ...overview.audience, recent: overview.audience.recent.map((u) => ({ ...u, email: email(u.email) })) };
     // Residents' question text and per-question cost: admins only.
-    return { ...overview, audience, recentQuestions: role === "admin" ? overview.recentQuestions : null, staffRole: role };
+    return { ...overview, audience, recentQuestions: role === "admin" ? overview.recentQuestions : null,
+      server: role === "admin" ? overview.server : null, staffRole: role };
   });
 }
 
@@ -215,6 +216,8 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
             </Panel>
           </aside>
         </div>
+
+        {data.server && <ServerPanel server={data.server} />}
       </div>
     </div>
   );
@@ -261,6 +264,50 @@ function ToolsPanel({ groups, contact }: { groups: { heading: string; links: Too
         )}
       </Panel>
     </div>
+  );
+}
+
+const mb = (bytes: number | null) => (bytes == null ? "—" : bytes >= 1e9 ? `${(bytes / 1e9).toFixed(2)} GB` : `${Math.round(bytes / 1e6)} MB`);
+
+/** The database host: memory, swap and disk over the last day (five-minute readings by the Worker). */
+function ServerPanel({ server }: { server: NonNullable<AdminOverview["server"]> }) {
+  const tiles: [string, string, string?][] = [
+    ["Memory free", mb(server.memAvailable), server.memTotal ? `of ${mb(server.memTotal)}` : undefined],
+    ["Swap in use", mb(server.swapUsed), server.swapTotal ? `of ${mb(server.swapTotal)}` : undefined],
+    ["Database size", mb(server.databaseBytes)],
+    ["Connections", server.connections == null ? "—" : n(server.connections)],
+    ["CPU busy", server.cpuBusyPct == null ? "—" : `${server.cpuBusyPct}%`, "last hour"],
+  ];
+  return (
+    <section className="mt-8">
+      <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h2 className="text-lg font-semibold text-zinc-900">Database server</h2>
+        <span className={cn("rounded-full px-2 py-0.5 text-xs font-semibold", server.pressure ? "bg-amber-100 text-amber-900" : "bg-emerald-50 text-emerald-800")}>
+          {server.pressure ? "Under memory pressure" : "Healthy"}
+        </span>
+        <span className="text-xs text-zinc-500">Read {formatRelativeTime(server.sampledAt)} · every 5 minutes</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {tiles.map(([label, value, detail]) => (
+          <div key={label} className={cn(card, "px-4 py-3")}>
+            <div className="text-xs text-zinc-500">{label}</div>
+            <div className="mt-0.5 text-xl font-semibold tabular-nums text-zinc-900">{value}</div>
+            {detail && <div className="text-xs text-zinc-500">{detail}</div>}
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Panel title="Swapped in" subtitle="MB per hour, last 24 hours. Heavy swapping is what stalls the site.">
+          <BarChart data={server.swapIn} unit="MB" label="Memory swapped in from disk per hour" />
+        </Panel>
+        <Panel title="Disk reads" subtitle="MB per hour, system and database disks">
+          <BarChart data={server.diskRead} unit="MB" label="Disk reads per hour" />
+        </Panel>
+        <Panel title="Stalled on disk" subtitle="Seconds per hour everything waited on disk">
+          <BarChart data={server.stalled} unit="seconds" label="Seconds stalled on disk per hour" />
+        </Panel>
+      </div>
+    </section>
   );
 }
 

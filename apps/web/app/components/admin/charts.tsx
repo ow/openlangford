@@ -7,6 +7,15 @@ const SHORT_DAY: Intl.DateTimeFormatOptions = { weekday: "short", month: "short"
 const AXIS_DAY: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
 const n = (value: number) => value.toLocaleString();
 
+/** A point's label: days as dates; hourly points (an ISO time) as Pacific times. */
+function when(day: string, options: Intl.DateTimeFormatOptions) {
+  if (!day.includes("T")) return formatDate(day, options);
+  const date = new Date(day);
+  return date.toLocaleString("en-CA", options === SHORT_DAY
+    ? { timeZone: "America/Vancouver", weekday: "short", hour: "numeric", minute: "2-digit" }
+    : { timeZone: "America/Vancouver", hour: "numeric" });
+}
+
 /** Rounds up to 1, 2 or 5 times a power of ten, so axis labels read cleanly. */
 function niceMax(value: number) {
   if (value <= 4) return 4;
@@ -28,7 +37,7 @@ function ChartTable({ caption, data, unit }: { caption: string; data: Point[]; u
       <tbody>
         {data.map((d) => (
           <tr key={d.day}>
-            <td>{formatDate(d.day, SHORT_DAY)}</td>
+            <td>{when(d.day, SHORT_DAY)}</td>
             <td>{d.value}</td>
           </tr>
         ))}
@@ -55,9 +64,9 @@ function XAxis({ data }: { data: Point[] }) {
   const mid = data[Math.floor((data.length - 1) / 2)];
   return (
     <div className="mt-1.5 flex justify-between text-[11px] text-zinc-400">
-      <span>{formatDate(data[0].day, AXIS_DAY)}</span>
-      <span>{formatDate(mid.day, AXIS_DAY)}</span>
-      <span>{formatDate(data.at(-1)!.day, AXIS_DAY)}</span>
+      <span>{when(data[0].day, AXIS_DAY)}</span>
+      <span>{when(mid.day, AXIS_DAY)}</span>
+      <span>{when(data.at(-1)!.day, AXIS_DAY)}</span>
     </div>
   );
 }
@@ -68,7 +77,7 @@ function Tooltip({ x, point, unit }: { x: number; point: Point; unit: string }) 
       className="pointer-events-none absolute -top-2 z-10 -translate-y-full whitespace-nowrap rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs text-white shadow-lg"
       style={{ left: `${x}%`, transform: `translate(${x > 75 ? "-100%" : x < 25 ? "0" : "-50%"}, -100%)` }}
     >
-      <div className="text-zinc-300">{formatDate(point.day, SHORT_DAY)}</div>
+      <div className="text-zinc-300">{when(point.day, SHORT_DAY)}</div>
       <div className="font-semibold tabular-nums">
         {n(point.value)} {unit}
       </div>

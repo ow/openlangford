@@ -18,6 +18,7 @@ import { contentVersion } from "./content-version";
 import { canonicalRedirect } from "./canonical-redirect";
 import { posthogProxy } from "./posthog-proxy";
 import { applyLogRetention, applyPrivacyRetention, purgeExpiredQuestions } from "./retention";
+import { recordServerMetrics } from "./server-metrics";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -94,6 +95,10 @@ export default {
 
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     if (controller.cron === EMAIL_DISPATCH_CRON) {
+      // A reading of the database host's memory, swap and disk for the admin home (every 5 minutes).
+      ctx.waitUntil(recordServerMetrics(getSupabaseAdminClient()).catch((error) => {
+        console.error("[Server metrics]", error instanceof Error ? error.message : "failed");
+      }));
       // Enqueue recently held meetings first (no-op unless all gates are set), then dispatch.
       ctx.waitUntil(
         (enqueueEnabled(env)
