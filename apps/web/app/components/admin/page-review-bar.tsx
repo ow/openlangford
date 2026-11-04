@@ -117,11 +117,14 @@ export function PageReviewBar() {
   const suggestions = links?.suggestions || [];
   const searching = links?.findJob?.status === "queued" || links?.findJob?.status === "running";
   // Ratings are sent on their own (not through the router, which would reload the whole page after each one): they
-  // show the moment they're pressed, and a failed save puts the stored rating back.
-  const [ratings, setRatings] = useState<Record<number, "agree" | "disagree" | null>>({});
+  // show the moment they're pressed, and a failed save puts the stored rating back. A rating holds for the check it
+  // was given on: a new check replaces the list, and a 👍 left on its position would show on a different flag the
+  // server never got a rating for (2026-11-03: two such flags looked agreed, so Fix kept sending nothing to do).
+  const [ratings, setRatings] = useState<Record<string, "agree" | "disagree" | null>>({});
   const ratingQueue = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => setRatings({}), [pathname]);
-  const flags = (review?.ai_flags || []).map((f, i) => (i in ratings ? { ...f, verdict: ratings[i] } : f));
+  const slot = (index: number) => `${review?.ai_checked_at ?? ""}#${index}`;
+  const flags = (review?.ai_flags || []).map((f, i) => (slot(i) in ratings ? { ...f, verdict: ratings[slot(i)] } : f));
   const open_ = unresolvedFlags(flags).length;
   // What Fix will do: flags rated 👍 and not fixed yet, plus found entries rated 👍 (added by the agent on Fix).
   const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length + suggestions.filter((x) => x.agreed).length;
@@ -166,20 +169,21 @@ export function PageReviewBar() {
   // One rating, sent on its own; the returned promise settles when it's saved (or rolled back).
   const sendRating = (index: number, verdict: "agree" | "disagree" | null) => {
     // Queued: each save rewrites the page's list of flags, so two at once could overwrite each other.
-    const next = ratingQueue.current.then(() => sendOne(index, verdict));
+    const at = slot(index);
+    const next = ratingQueue.current.then(() => sendOne(index, verdict, at));
     ratingQueue.current = next;
     return next;
   };
-  const sendOne = (index: number, verdict: "agree" | "disagree" | null) => {
+  const sendOne = (index: number, verdict: "agree" | "disagree" | null, at: string) => {
     const body = new FormData();
     Object.entries({ intent: "rate", path: pathname, title: document.title, index: String(index), verdict: verdict ?? "none" })
       .forEach(([k, v]) => body.set(k, v));
     return fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } })
       .then((res) => { if (!res.ok) throw new Error(String(res.status)); })
-      .catch(() => setRatings((r) => { const next = { ...r }; delete next[index]; return next; }));
+      .catch(() => setRatings((r) => { const next = { ...r }; delete next[at]; return next; }));
   };
   const rate = (index: number, verdict: "agree" | "disagree" | null) => {
-    setRatings((r) => ({ ...r, [index]: verdict }));
+    setRatings((r) => ({ ...r, [slot(index)]: verdict }));
     sendRating(index, verdict).then(() => load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`));
   };
   // The "All" row: every undecided flag and found entry at once (already-decided ones are left alone).
@@ -187,7 +191,7 @@ export function PageReviewBar() {
   const undecidedFound = suggestions.filter((x) => !x.agreed);
   const decideAll = async (verdict: "agree" | "disagree") => {
     // Shown at once; saved one at a time, since each save rewrites the page's list of flags.
-    setRatings((r) => ({ ...r, ...Object.fromEntries(undecidedFlags.map(({ i }) => [i, verdict])) }));
+    setRatings((r) => ({ ...r, ...Object.fromEntries(undecidedFlags.map(({ i }) => [slot(i), verdict])) }));
     for (const { i } of undecidedFlags) await sendRating(i, verdict);
     for (const x of undecidedFound) {
       const body = new FormData();

@@ -194,8 +194,10 @@ Timeline entries:
 ${entries.map((e) => `[${e.key}] ${e.text}`).join("\n\n")}`;
 }
 
-/** Runs the agent for one page. Never throws: a failure is written to the page as "needs work" with a note. */
-export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }) {
+/** Runs the agent for one page. Never throws: a failure is written to the page as "needs work" with a note. Returns
+ * "nothing_new" when every flag rated 👍 was already fixed and there's no note or found entry, so the caller can say
+ * so rather than show the last run's report as if this run had done it. */
+export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | void> {
   const finish = async (status: "fixed" | "needs_work", agent_note: string, flags?: PageFlag[]) => {
     await supabase.from("page_reviews").update({
       status, agent_note, agent_at: new Date().toISOString(), ...(flags ? { ai_flags: flags } : {}),
@@ -214,7 +216,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       // (returning without that would leave the page saying the agent is still working).
       if (flags.some((f) => f.verdict === "agree" && f.fixed)) {
         await supabase.from("page_reviews").update({ status: "fixed" }).eq("path", path);
-        return;
+        return "nothing_new";
       }
       return finish("needs_work", "Nothing to fix: no flags were rated 👍 and there's no note.");
     }

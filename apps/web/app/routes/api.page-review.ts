@@ -134,8 +134,9 @@ export async function action({ request, context }: Route.ActionArgs) {
       const run = fixPage(supabase, new URL(request.url).origin, path, user);
       const ctx = (context as { cloudflare?: { ctx?: ExecutionContext } } | undefined)?.cloudflare?.ctx;
       ctx?.waitUntil?.(run);
-      await run;
-      message = "The agent has finished with this page.";
+      message = (await run) === "nothing_new"
+        ? "Nothing new for the agent: every flag rated 👍 is already fixed. Rate an open flag 👍, or say what's still wrong, to send it more."
+        : "The agent has finished with this page.";
     }
     return data({ ok: true as const, message, review: await getPageReview(supabase, path), links: await linkState(supabase, path) },
       { headers: privateAdminHeaders() });
