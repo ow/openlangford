@@ -42,6 +42,18 @@ export async function getBylawById(supabase: SupabaseClient, id: string) {
     .single();
 
   if (error) throw error;
+  // A topic merged into another can still hold the link to this bylaw (its main topic links a different one):
+  // show the main topic instead, once.
+  const merged = [...new Set(((data as any).matters || []).map((m: any) => m.merged_into).filter(Boolean))] as number[];
+  if (merged.length) {
+    const { data: mains, error: mainsError } = await supabase.from("matters")
+      .select("id, slug, title, status, identifier, plain_english_summary, merged_into, meta, agenda_items(id, meetings(meeting_date))")
+      .in("id", merged).is("merged_into", null);
+    if (mainsError) throw mainsError;
+    const own = ((data as any).matters || []).filter((m: any) => !m.merged_into);
+    const seen = new Set(own.map((m: any) => m.id));
+    (data as any).matters = [...own, ...(mains || []).filter((m: any) => !seen.has(m.id))];
+  }
   return data as Bylaw;
 }
 

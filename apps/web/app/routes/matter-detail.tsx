@@ -647,13 +647,13 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             </figure>
           )}
 
-          {matter.bylaw && (
-            <div className="mt-6 rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
+          {[matter.bylaw, ...((matter as any).other_bylaws || [])].filter(Boolean).map((bylaw: any, index: number, bylaws: any[]) => (
+            <div key={bylaw.id} className={cn("rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm", index === 0 ? "mt-6" : "mt-3")}>
               <p className="mb-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-zinc-500">
                 {[
-                  "Governing bylaw",
-                  matter.bylaw.bylaw_number ? `No. ${matter.bylaw.bylaw_number}` : null,
-                  bylawStatus(matter.bylaw.status)?.label ?? null,
+                  bylaws.length > 1 ? "Bylaw" : "Governing bylaw",
+                  bylaw.bylaw_number ? `No. ${bylaw.bylaw_number}` : null,
+                  bylawStatus(bylaw.status)?.label ?? null,
                 ]
                   .filter(Boolean)
                   .map((part, i) => (
@@ -664,22 +664,22 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                   ))}
               </p>
               <Link
-                to={bylawPath(matter.bylaw)}
+                to={bylawPath(bylaw)}
                 className="block text-base font-semibold leading-snug text-zinc-900 hover:text-brand-700"
               >
-                {displayTitle(matter.bylaw.title)}
+                {displayTitle(bylaw.title)}
               </Link>
-              {bylawLead(matter.bylaw.plain_english_summary) && (
+              {bylawLead(bylaw.plain_english_summary) && (
                 <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
-                  {bylawLead(matter.bylaw.plain_english_summary)}
+                  {bylawLead(bylaw.plain_english_summary)}
                 </p>
               )}
               <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
-                <Link to={bylawPath(matter.bylaw)} className="text-brand-700 hover:text-brand-800">
+                <Link to={bylawPath(bylaw)} className="text-brand-700 hover:text-brand-800">
                   Key rules and full text
                 </Link>
                 <a
-                  href={matter.bylaw.source_url || `/api/bylaws/${matter.bylaw.id}/download`}
+                  href={bylaw.source_url || `/api/bylaws/${bylaw.id}/download`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-zinc-600 hover:text-brand-700"
@@ -688,7 +688,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                 </a>
               </div>
             </div>
-          )}
+          ))}
         </header>
 
         <div className="space-y-12">

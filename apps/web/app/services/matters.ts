@@ -153,6 +153,13 @@ export async function getMatterById(
   let matter = await load(id);
   // A merged topic's address shows the topic it was merged into, which holds all of its entries.
   if (matter.merged_into) matter = await load(String(matter.merged_into));
+  // A topic holds one bylaw; topics merged into it can hold others (a follow-up amendment, a second area's bylaw).
+  const { data: parts } = await supabase.from("matters")
+    .select("bylaw:bylaws(id, slug, title, bylaw_number, year, category, status, plain_english_summary, source_url, created_at)")
+    .eq("merged_into", matter.id).not("bylaw_id", "is", null);
+  const otherBylaws = [...new Map(((parts || []) as any[]).map((p) => p.bylaw).filter((b) => b && b.id !== (matter as any).bylaw_id)
+    .map((b) => [b.id, b])).values()];
+  if (otherBylaws.length) (matter as any).other_bylaws = otherBylaws;
 
   return matter as unknown as Matter & {
     agenda_items: (AgendaItem & {
