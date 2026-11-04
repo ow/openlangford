@@ -27,6 +27,7 @@ declare namespace Cloudflare {
 		DISCORD_POSTS_ENABLED?: string; // global pause for Discord digests; only "true" posts
 		DISCORD_POSTS_START_DATE?: string; // optional YYYY-MM-DD override of EMAIL_ALERT_START_DATE for Discord
 		DISCORD_WEBHOOK_URL?: string; // runtime-only secret (wrangler secret put DISCORD_WEBHOOK_URL); never inlined by Vite
+		DISCORD_REPORTS_WEBHOOK_URL?: string; // runtime-only secret: the moderators' channel, where new reader reports are posted
 		AI_PROVIDER: "openai";
 		AI_MODEL: "gpt-6-luna";
 		VITE_SUPABASE_URL: "https://zxcvifwkaxtdfpanlwtl.supabase.co";

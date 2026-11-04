@@ -4,6 +4,7 @@ import { createSupabaseServerClient, getSupabaseAdminClient } from "../lib/supab
 import { parseReport, REPORTS_STAFF_ONLY } from "../lib/data-reports";
 import { getConfiguredAdminEmails, getStaffRole } from "../lib/auth.server";
 import { escalatePrivacyReport } from "../services/data-reports.server";
+import { postReportToDiscord } from "../services/data-reports-discord.server";
 import { contactNotificationRecipients } from "../services/contact-messages.server";
 
 const HOURLY_LIMIT = 10;
@@ -46,9 +47,13 @@ export async function action({ request, context }: Route.ActionArgs) {
     console.error("[report-issue]", error.message);
     return data({ error: "Could not send the report." }, { status: 500 });
   }
+  const { cloudflare } = context as {
+    cloudflare?: { env?: { RESEND_API_KEY?: string; CONTACT_ALSO_NOTIFY?: string; DISCORD_REPORTS_WEBHOOK_URL?: string }; ctx?: ExecutionContext };
+  };
+  // The moderators' Discord channel hears about every report as it comes in.
+  cloudflare?.ctx?.waitUntil?.(postReportToDiscord(cloudflare?.env?.DISCORD_REPORTS_WEBHOOK_URL, { ...report, id: saved.id }));
   // Private information on a page shouldn't wait for the queue: the admins hear about it now.
   if (report.category === "private") {
-    const { cloudflare } = context as { cloudflare?: { env?: { RESEND_API_KEY?: string; CONTACT_ALSO_NOTIFY?: string }; ctx?: ExecutionContext } };
     const recipients = contactNotificationRecipients(getConfiguredAdminEmails(), cloudflare?.env?.CONTACT_ALSO_NOTIFY);
     const sending = escalatePrivacyReport({ apiKey: cloudflare?.env?.RESEND_API_KEY, recipients, report: { ...report, id: saved.id } });
     cloudflare?.ctx?.waitUntil?.(sending);

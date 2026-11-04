@@ -43,6 +43,7 @@ CONTACT_ALSO_NOTIFY = "admin@openlangford.ca"
 # Discord meeting digests (issue #67). Global pause: only "true" posts. The webhook is the
 # DISCORD_WEBHOOK_URL Worker secret; eligibility reuses EMAIL_ALERT_START_DATE.
 DISCORD_POSTS_ENABLED = "false"
+# New reader reports go to the moderators' Discord channel: the DISCORD_REPORTS_WEBHOOK_URL Worker secret (unset: no posts).
 AI_PROVIDER = "openai"
 AI_MODEL = "gpt-6-luna"
 # Staff page checks (services/page-check.server.ts) read pages on a stronger model.
