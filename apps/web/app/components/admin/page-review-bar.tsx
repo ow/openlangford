@@ -75,6 +75,7 @@ export function PageReviewBar() {
   const [stayed, setStayed] = useState(false);  // a fix was sent or confirmed here: offer Next instead of moving on
   const [showCheck, setShowCheck] = useState(false);  // unfold the check's details while the agent's report is shown
   const panel = useRef<HTMLDivElement>(null);
+  const sentFrom = useRef<string | null>(null);  // the page the last save was sent from
 
   useEffect(() => {
     setEditing(null);
@@ -130,7 +131,11 @@ export function PageReviewBar() {
   const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length + suggestions.filter((x) => x.agreed).length;
   useHighlights(flags, open, review?.status === "fixed" || (stayed && review?.status === "reviewed"));
   // Fix keeps its request open until the agent is done, so a pending Fix counts as the agent working.
-  const fixing = review?.status === "fixing" || (save.state !== "idle" && save.formData?.get("intent") === "needs_work");
+  // The save request can outlive the page it was sent from (Fix waits for the agent, and you may move on): only a
+  // request for this page counts as this page's.
+  const savingHere = save.state !== "idle" && save.formData?.get("path") === pathname;
+  const savedHere = save.state === "idle" && sentFrom.current === pathname;
+  const fixing = review?.status === "fixing" || (savingHere && save.formData?.get("intent") === "needs_work");
   const agentMode = fixing || review?.status === "fixed";
   // Fix pressed (or the agent finished): show its report from the top.
   useEffect(() => {
@@ -153,15 +158,16 @@ export function PageReviewBar() {
   }, [waiting, pathname]);
   if (!loaded?.path) return null;
 
-  const pending = save.formData?.get("intent");
+  const pending = savingHere ? save.formData?.get("intent") : undefined;
   const checking = pending === "check";
-  const busy = save.state !== "idle";
+  const busy = savingHere;
   const submit = (intent: string, extra: Record<string, string> = {}) => {
     // Plain "Reviewed" moves on to the next page. Sending fixes to the agent, or confirming its fixes, stays here so
     // the edits can be seen; the Next button moves on from there.
     const confirmingFix = intent === "reviewed" && (fixedRun || review?.status === "fixed");
     finishing.current = intent === "reviewed" && !confirmingFix;
     if (intent === "needs_work" || confirmingFix) setStayed(true);
+    sentFrom.current = pathname;
     save.submit({ intent, path: pathname, title: document.title, ...extra }, { method: "post", action: "/api/page-review" });
     if (intent === "check") setOpen(true);
     setEditing(null);
@@ -189,6 +195,7 @@ export function PageReviewBar() {
   // The "All" row: every undecided flag and found entry at once (already-decided ones are left alone).
   const undecidedFlags = flags.map((f, i) => ({ f, i })).filter(({ f }) => f.verdict === null && !f.fixed && f.problem !== "editor_issue");
   const undecidedFound = suggestions.filter((x) => !x.agreed);
+  const unrated = undecidedFlags.length + undecidedFound.length;  // still waiting for a 👍 or 👎
   const decideAll = async (verdict: "agree" | "disagree") => {
     // Shown at once; saved one at a time, since each save rewrites the page's list of flags.
     setRatings((r) => ({ ...r, ...Object.fromEntries(undecidedFlags.map(({ i }) => [slot(i), verdict])) }));
@@ -251,15 +258,20 @@ export function PageReviewBar() {
                   <p className="whitespace-pre-line text-zinc-800">{review.agent_note}</p>
                   {review.status === "fixed" && (
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                      <button type="button" disabled={busy} onClick={() => (open_ > 0 ? submit("reviewed", { set_aside: "1" }) : markReviewed())}
-                        title={open_ > 0 ? `The agent couldn't finish ${open_} ${open_ === 1 ? "flag" : "flags"}; they're set aside as handled` : undefined}
-                        className="rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-700 disabled:opacity-60">
+                      {/* Flags or found entries nobody has rated yet must be answered first: then the next step is
+                          Still needs work (rate them, or say what's wrong), shown as the main button. */}
+                      <button type="button" disabled={busy || unrated > 0} onClick={() => (open_ > 0 ? submit("reviewed", { set_aside: "1" }) : markReviewed())}
+                        title={unrated > 0 ? `Rate the ${unrated} ${unrated === 1 ? "item" : "items"} the check found first (👍 or 👎)`
+                          : open_ > 0 ? `The agent couldn't finish ${open_} ${open_ === 1 ? "flag" : "flags"}; they're set aside as handled` : undefined}
+                        className={cn("rounded-md px-2.5 py-1 font-medium disabled:cursor-not-allowed",
+                          unrated > 0 ? "border border-zinc-200 text-zinc-400" : "bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60")}>
                         {spinner("reviewed")}{open_ > 0 ? `Looks good, set aside the ${open_} left` : "Looks good"}</button>
                       {/* With something still agreed and unfixed, run the agent again; with nothing, rerunning would do
                           nothing, so ask what's still wrong (that becomes the agent's next job). */}
                       <button type="button" disabled={busy}
-                        onClick={() => (agreed > 0 ? submit("needs_work") : (setShowCheck(true), setNote(""), setEditing(-1)))}
-                        className="rounded-md px-2.5 py-1 font-medium text-amber-800 hover:bg-amber-100">{spinner("needs_work")}Still needs work</button>
+                        onClick={() => (unrated > 0 ? setShowCheck(true) : agreed > 0 ? submit("needs_work") : (setShowCheck(true), setNote(""), setEditing(-1)))}
+                        className={cn("rounded-md px-2.5 py-1 font-medium",
+                          unrated > 0 ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-800 hover:bg-amber-100")}>{spinner("needs_work")}Still needs work</button>
                     </div>
                   )}
                 </div>
@@ -267,8 +279,11 @@ export function PageReviewBar() {
               {/* While the agent works, or waits for its fix to be confirmed, its report is what matters: the check's
                   details fold away behind a link. */}
               {agentMode && !showCheck ? (
-                <button type="button" onClick={() => setShowCheck(true)} className="block text-xs font-medium text-brand-700 hover:underline">
+                <button type="button" onClick={() => setShowCheck(true)} className="flex items-center gap-1.5 text-xs font-medium text-brand-700 hover:underline">
                   Show what the check found
+                  {unrated > 0 && (
+                    <span className="rounded-full bg-red-600 px-1.5 text-[11px] font-semibold text-white no-underline" title={`${unrated} to rate`}>{unrated} to rate</span>
+                  )}
                 </button>
               ) : (
                 <>
@@ -464,7 +479,7 @@ export function PageReviewBar() {
               )}
                 </>
               )}
-              {save.data?.message && save.state === "idle" && <p className="mb-3 rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-700">{save.data.message}</p>}
+              {save.data?.message && savedHere && <p className="mb-3 rounded-lg bg-zinc-50 px-2.5 py-2 text-xs text-zinc-700">{save.data.message}</p>}
               {/* The page tools belong with the check: folded away with it while the agent's report is shown. */}
               {(!agentMode || showCheck) && (
                 <>
@@ -583,7 +598,7 @@ export function PageReviewBar() {
           </Tip>
         </div>
       )}
-      {save.data?.error && save.state === "idle" && <p className="rounded-lg bg-surface px-2 py-1 text-xs text-red-700 shadow">{save.data.error}</p>}
+      {save.data?.error && savedHere && <p className="rounded-lg bg-surface px-2 py-1 text-xs text-red-700 shadow">{save.data.error}</p>}
     </div>
   );
 }

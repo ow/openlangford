@@ -346,7 +346,13 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const answeredKeys = new Set<string | null>();
     const hidden: Record<string, { keep: number; reason: string; by: string; at: string }> = {};
     const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim();
+    // A flagged entry that has left the page since (its topic merged in or unlinked, the entry removed or moved) needs
+    // nothing more: the flag is done, whatever the plan says for it.
+    const gone = agreed.filter((f) => f.key && !f.fixed && !onPage.has(f.key));
+    for (const f of gone) fixedKeys.add(f.key!);
+    if (gone.length) answered.push(`Already off the page since it was flagged: ${gone.map((f) => f.key).join(", ")}.`);
     for (const step of result.data.actions) {
+      if (step.key && !onPage.has(step.key) && fixedKeys.has(step.key)) continue;
       if (step.action === "merge_topic" && step.to_matter_id && lookalikes.some((c) => c.id === step.to_matter_id)) {
         const other = step.other_matter_id && step.other_matter_id !== step.to_matter_id
           && lookalikes.some((c) => c.id === step.other_matter_id) ? step.other_matter_id : null;
