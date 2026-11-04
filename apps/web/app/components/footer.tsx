@@ -14,9 +14,17 @@ export function Footer() {
   return (
     <footer className="mt-auto border-t border-zinc-200 bg-surface py-8 text-sm text-zinc-500">
       <div className="container mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:flex-row sm:items-center sm:justify-between">
-        <p>
-          © {new Date().getFullYear()} {name}
-        </p>
+        <div>
+          <p>
+            © {new Date().getFullYear()} {name}
+          </p>
+          <p className="mt-1 text-xs">
+            Independent, not affiliated with the {cityName}. AI summaries can contain mistakes; check the{" "}
+            <a href={DEFAULT_MUNICIPALITY.meetingPortalUrl} className="underline underline-offset-2 hover:text-zinc-900" target="_blank" rel="noopener noreferrer">
+              official record
+            </a>.
+          </p>
+        </div>
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2" aria-label="Footer">
           <Link to="/about" className="hover:text-zinc-900">About</Link>
           <Link to="/updates" className="hover:text-zinc-900">Updates</Link>
@@ -34,12 +42,6 @@ export function Footer() {
           )}
         </nav>
       </div>
-      <p className="container mx-auto mt-4 max-w-7xl px-4 text-xs text-zinc-500">
-        Independent, not affiliated with the {cityName}. AI summaries can contain mistakes; check the{" "}
-        <a href={DEFAULT_MUNICIPALITY.meetingPortalUrl} className="underline underline-offset-2 hover:text-zinc-900" target="_blank" rel="noopener noreferrer">
-          official record
-        </a>.
-      </p>
     </footer>
   );
 }
