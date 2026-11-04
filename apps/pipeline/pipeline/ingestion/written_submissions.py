@@ -202,8 +202,10 @@ import re as _re
 from .participation_evidence import digest
 
 TITLE = _re.compile(r"correspondence|submissions?\b|letters?\b|e-?mails?\b|petition", _re.I)
-NOT_RESIDENTS = _re.compile(r"staff report|grant|\bGIA\b|funding request|budget|financial plan|RCMP|ministry|"
-                            r"province of|regional district|library|school district|union of bc", _re.I)
+# Agencies' and staff documents, not residents'. "Budget" alone isn't here: residents email council about the budget
+# ("Budget 2024 feedback", "Thoughts on budget"); budget documents are staff reports or financial plans.
+NOT_RESIDENTS = _re.compile(r"staff report|grant|\bGIA\b|funding request|financial plan|RCMP|ministry|"
+                            r"province of|regional district|library|school district|union of bc|parks and recreation", _re.I)
 MAX_CHARS = 700000  # read in chunks of CHUNK_CHARS
 PLACE_MIN = 0.7
 NONE = -1  # decider index for "not about any single agenda item"

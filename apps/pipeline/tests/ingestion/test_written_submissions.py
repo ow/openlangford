@@ -1,5 +1,5 @@
 """Written submissions: admission, placement and storage merging."""
-from pipeline.ingestion.written_submissions import admit_letters, is_correspondence, merge_written, place_letters
+from pipeline.ingestion.written_submissions import NOT_RESIDENTS, admit_letters, is_correspondence, merge_written, place_letters
 
 SECTIONS = [{"id": 1, "section_text": "### Submission: Chantelle Lehoux\nI am not in agreement with Bylaw 2037.\n"
              "Chantelle Lehoux\n3581 Kelly Dawn Place\nVictoria, BC V9C 4J1\nchantelle@example.com 250-555-1234"}]
@@ -31,6 +31,11 @@ def test_correspondence_titles():
     assert is_correspondence("Correspondence - Email from Dale R. Douglas re: Zoning")
     assert not is_correspondence("GIA Package — Remaining funding request letters")
     assert not is_correspondence("Staff Report: Rezoning")
+    # Residents' emails about the budget are correspondence; agencies' budget letters aren't.
+    assert NOT_RESIDENTS.search("Budget 2024 feedback") is None
+    assert NOT_RESIDENTS.search("Thoughts on budget") is None
+    assert NOT_RESIDENTS.search("Correspondence - West Shore Parks and Recreation RE: Amendment to the WSPR 2020 Budget")
+    assert NOT_RESIDENTS.search("DRAFT 2024–2028 Financial Plan (document package)")
 
 
 def test_linked_documents_keep_all_letters_on_their_item():
