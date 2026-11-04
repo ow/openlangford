@@ -31,10 +31,9 @@ export type FindJob = { id: string; status: string; requested_at: string; finish
 export async function matterForPath(supabase: SupabaseClient, path: string): Promise<number | null> {
   const slug = path.match(/^\/matters\/([^/]+)$/)?.[1];
   if (!slug) return null;
-  const { data } = await supabase.from("matters").select("id, meta").eq("slug", slug).maybeSingle();
+  const { data } = await supabase.from("matters").select("id, merged_into").eq("slug", slug).maybeSingle();
   if (!data) return null;
-  const canonical = Number((data.meta as Record<string, unknown> | null)?.canonical_matter_id);
-  return Number.isSafeInteger(canonical) && canonical > 0 ? canonical : data.id;
+  return data.merged_into ?? data.id;
 }
 
 const decided = (userId: string, review: "removed" | "accepted" | "rejected") => ({
@@ -54,11 +53,9 @@ export async function removeEntry(supabase: SupabaseClient, matterId: number, ke
   if (!kind || !Number.isSafeInteger(id)) throw new Error("That entry can't be removed here.");
 
   if (kind === "evidence") {
-    // A supporting record (a page of a report or budget that names this topic), on this topic or one merged into it.
-    const { data: m } = await supabase.from("matters").select("meta").eq("id", matterId).single();
-    const owners = [matterId, ...(((m?.meta as any)?.merged_matter_ids || []) as number[])];
+    // A supporting record (a page of a report or budget that names this topic).
     const { data, error } = await supabase.from("matter_evidence").update({ hidden: true, ...decided(userId, "removed") })
-      .eq("id", id).in("matter_id", owners).select("id");
+      .eq("id", id).eq("matter_id", matterId).select("id");
     if (error || !data?.length) throw new Error("Could not remove that entry.");
     return "Removed the supporting record from this page.";
   }

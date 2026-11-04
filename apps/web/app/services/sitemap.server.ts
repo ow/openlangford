@@ -133,7 +133,7 @@ async function buildSitemapEntries(
           .from("matters")
           .select("id, slug, first_seen, last_seen")
           .eq("municipality_id", municipality.id)
-          .is("meta->>canonical_matter_id", null)
+          .is("merged_into", null)
           .is("meta->>hidden", null)
           .order("id")
           .range(from, to),

@@ -74,7 +74,7 @@ async function candidatesFor(supabase: SupabaseClient, matterId: number, item: {
   }
   if (!ids.size) return [];
   const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", [...ids.keys()])
-    .is("meta->>canonical_matter_id", null).is("meta->>hidden", null);
+    .is("merged_into", null).is("meta->>hidden", null);
   return ((data || []) as any[]).sort((a, b) => (ids.get(a.id)! - ids.get(b.id)!)).slice(0, 8).map((m) => ({
     id: m.id, title: m.meta?.display_title || m.title, dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to "),
   }));
@@ -271,7 +271,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // The records behind the page: every item filed here plus each flagged linked item, gathered the way the page
     // check gathers them (unattached minutes and reports of the same meeting included), and flagged report quotes.
     const { data: topic } = await supabase.from("matters").select("meta").eq("id", matterId).single();
-    const own = await topicItemIds(supabase, matterId, topic?.meta as any);
+    const own = await topicItemIds(supabase, matterId);
     const ids = [...new Set([...own, ...agreed.map((f) => itemId(f.key)).filter(Number.isSafeInteger)])];
     const reportIds = agreed.map((f) => Number(f.key?.match(/^report-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
     const evidenceIds = agreed.map((f) => Number(f.key?.match(/^evidence-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
@@ -568,9 +568,8 @@ async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number, al
   const { data: me } = await supabase.from("matters").select("meta").eq("id", matterId).single();
   const title = (me?.meta as any)?.display_title as string | undefined;
   const bylaws = (text: string) => new Set((text.match(/\bBylaw No\.?\s*(\d{3,4})\b/gi) || []).map((b) => b.replace(/\D/g, "")));
-  const merged = (((me?.meta as any)?.merged_matter_ids || []) as number[]).filter(Number.isSafeInteger);
   const [ownItems, mentions] = await Promise.all([
-    fetchAll((from, to) => supabase.from("agenda_items").select("title").in("matter_id", [matterId, ...merged]).order("id").range(from, to)),
+    fetchAll((from, to) => supabase.from("agenda_items").select("title").eq("matter_id", matterId).order("id").range(from, to)),
     fetchAll((from, to) => supabase.from("matter_links").select("agenda_items(matter_id, title)").eq("matter_id", matterId).eq("kind", "mention").eq("hidden", false).order("id").range(from, to)),
   ]);
   const mine = new Set(((ownItems || []) as any[]).flatMap((i) => [...bylaws(String(i.title || ""))]));
@@ -586,7 +585,7 @@ async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number, al
     ...((named || []) as any[]).map((m) => m.id), ...sameBylaw, ...alsoIds])].filter((id) => id !== matterId);
   if (!ids.length) return [];
   const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", ids)
-    .is("meta->>canonical_matter_id", null);
+    .is("merged_into", null);
   return (data || []).map((m: any) => ({ id: m.id, title: m.meta?.display_title || m.title,
     dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to ") }));
 }

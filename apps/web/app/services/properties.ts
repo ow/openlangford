@@ -9,10 +9,10 @@ import { PUBLIC_INPUT, residentOnly } from "../lib/public-input";
 
 export type PropertyRef = { id: number; slug: string; address: string; civic_number: string; geo: any };
 
-const MATTER_FIELDS = "id, slug, title, status, category, first_seen, last_seen, plain_english_summary, meta";
+const MATTER_FIELDS = "id, slug, title, status, category, first_seen, last_seen, plain_english_summary, merged_into, meta";
 
 function visible(matter: any) {
-  return matter && !matter.meta?.canonical_matter_id && !matter.meta?.hidden;
+  return matter && !matter.merged_into && !matter.meta?.hidden;
 }
 
 /** The properties a matter names, each with the other matters at that lot (newest first). */

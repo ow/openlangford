@@ -87,7 +87,7 @@ export async function getAboutStats(supabase: SupabaseClient, requireComplete = 
       supabase
         .from("matters")
         .select("*", { count: "exact", head: true })
-        .is("meta->>canonical_matter_id", null)
+        .is("merged_into", null)
         .is("meta->>hidden", null),
       supabase
         .from("transcript_segments")
@@ -185,7 +185,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         .select("id, slug, title, category, status, first_seen, last_seen, meta, plain_english_summary")
         .eq("municipality_id", municipalityId)
         .eq("status", "Active")
-        .is("meta->>canonical_matter_id", null)
+        .is("merged_into", null)
         .is("meta->>hidden", null)
         .order("last_seen", { ascending: false, nullsFirst: false })
         .limit(6),

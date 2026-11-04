@@ -76,7 +76,7 @@ export default function BylawDetail({ loaderData }: Route.ComponentProps) {
 
   // Linked matters (canonical only), most recently discussed first.
   const matters = (bylaw.matters || [])
-    .filter((m: any) => !m.meta?.canonical_matter_id)
+    .filter((m: any) => !m.merged_into)
     .map((m: any) => {
       const dates = (m.agenda_items || [])
         .map((item: any) => item.meetings?.meeting_date)

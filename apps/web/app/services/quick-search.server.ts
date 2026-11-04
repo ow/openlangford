@@ -78,7 +78,7 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
       .from("matters")
       .select("id, slug, title, identifier, category, status, last_seen, meta")
       .or(`title.ilike.${like},meta->>display_title.ilike.${like},identifier.ilike.${like}`)
-      .is("meta->>canonical_matter_id", null)
+      .is("merged_into", null)
       .is("meta->>hidden", null)
       .order("last_seen", { ascending: false, nullsFirst: false })
       .limit(8),

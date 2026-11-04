@@ -233,7 +233,7 @@ export async function rateFlag(supabase: SupabaseClient, path: string, index: nu
 /** A random public matter page nobody has reviewed or checked yet. */
 export async function randomUncheckedMatterPath(supabase: SupabaseClient): Promise<string | null> {
   const visible = () => supabase.from("matters").select("slug", { count: "exact" })
-    .not("slug", "is", null).is("meta->>canonical_matter_id", null).or("meta->>hidden.is.null,meta->>hidden.neq.container");
+    .not("slug", "is", null).is("merged_into", null).or("meta->>hidden.is.null,meta->>hidden.neq.container");
   const { count } = await visible().limit(1);
   if (!count) return null;
   const { data: seen } = await supabase.from("page_reviews").select("path").eq("kind", "matters").limit(10000);

@@ -8,6 +8,7 @@ export type MatterMergeRow = {
   id: number;
   first_seen: string | null;
   last_seen: string | null;
+  merged_into: number | null;
   meta: Record<string, any> | null;
 };
 
@@ -16,13 +17,13 @@ export function isHiddenMatter(meta: Record<string, any> | null | undefined) {
   return meta?.hidden != null;
 }
 
-/** Follows `canonical_matter_id` to the matter that currently owns this one. */
+/** Follows `merged_into` to the matter that currently owns this one (one hop in practice; guarded anyway). */
 export function canonicalMatterId(id: number, byId: Map<number, MatterMergeRow>) {
   let current = id;
   const seen = new Set<number>();
   while (!seen.has(current)) {
     seen.add(current);
-    const next = Number(byId.get(current)?.meta?.canonical_matter_id);
+    const next = Number(byId.get(current)?.merged_into);
     if (!next) break;
     current = next;
   }
@@ -43,23 +44,14 @@ export function currentMatterIds(ids: number[], byId: Map<number, MatterMergeRow
   return [...result].sort((a, b) => a - b);
 }
 
-/**
- * Earliest matter becomes canonical; the rest become its aliases, and any
- * aliases they already had move to the new canonical so lookups stay one hop.
- */
+/** The earliest matter becomes canonical and the rest merge into it (merge_matters moves their records). */
 export function planMerge(rows: MatterMergeRow[]) {
   const sorted = [...rows].sort(
     (x, y) =>
       String(x.first_seen || "9999").localeCompare(String(y.first_seen || "9999")) || x.id - y.id,
   );
   const [canonical, ...aliases] = sorted;
-  const aliasIds = aliases.map((a) => a.id);
-  const repointIds = aliases.flatMap((a) => (a.meta?.merged_matter_ids as number[] | undefined) || []);
-  const mergedIds = [
-    ...new Set([...(canonical.meta?.merged_matter_ids || []), ...aliasIds, ...repointIds]),
-  ].sort((x, y) => x - y);
-  const lastSeen = rows.map((r) => r.last_seen || "").sort().pop() || canonical.last_seen;
-  return { canonical, aliases, aliasIds, repointIds: [...new Set(repointIds)].sort((x, y) => x - y), mergedIds, lastSeen };
+  return { canonical, aliases, aliasIds: aliases.map((a) => a.id) };
 }
 
 export type MergeDecision = {

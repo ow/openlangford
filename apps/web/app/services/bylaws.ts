@@ -27,6 +27,7 @@ export async function getBylawById(supabase: SupabaseClient, id: string) {
         status,
         identifier,
         plain_english_summary,
+        merged_into,
         meta,
         agenda_items (
           id,
@@ -50,7 +51,7 @@ export async function getPolicies(supabase: SupabaseClient): Promise<PolicyRow[]
     .from("matters")
     .select("id, slug, title, identifier, status, category, last_seen, plain_english_summary, meta")
     .ilike("identifier", "%POL-%")
-    .is("meta->>canonical_matter_id", null)
+    .is("merged_into", null)
     .is("meta->>hidden", null)
     .order("last_seen", { ascending: false, nullsFirst: false });
 

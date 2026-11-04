@@ -22,16 +22,16 @@ export async function getReviewedPages(supabase: SupabaseClient): Promise<Review
     .filter((r) => isResolved(r.ai_flags) && (r.kind === "matters" || r.kind === "meetings"));
   // A topic since merged into another, or hidden, is no longer the page that was reviewed.
   const slugs = rows.filter((r) => r.kind === "matters").map((r) => r.path.slice("/matters/".length));
-  const topics = new Map<string, { title: string; meta: Record<string, any> | null }>();
+  const topics = new Map<string, { title: string; merged_into: number | null; meta: Record<string, any> | null }>();
   for (let i = 0; i < slugs.length; i += 100) {
-    const { data: matters, error: mErr } = await supabase.from("matters").select("slug, title, meta").in("slug", slugs.slice(i, i + 100));
+    const { data: matters, error: mErr } = await supabase.from("matters").select("slug, title, merged_into, meta").in("slug", slugs.slice(i, i + 100));
     if (mErr) throw mErr;
     for (const m of (matters || []) as any[]) topics.set(m.slug, m);
   }
   return rows.flatMap((r): ReviewedPage[] => {
     if (r.kind === "meetings") return [{ path: r.path, title: r.title || "Meeting", kind: "meeting", reviewedAt: r.reviewed_at }];
     const topic = topics.get(r.path.slice("/matters/".length));
-    if (!topic || topic.meta?.canonical_matter_id || topic.meta?.hidden) return [];
+    if (!topic || topic.merged_into || topic.meta?.hidden) return [];
     return [{ path: r.path, title: topic.meta?.display_title || topic.title || r.title || "Topic", kind: "topic", reviewedAt: r.reviewed_at }];
   });
 }

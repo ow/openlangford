@@ -20,7 +20,7 @@ import {
 
 export const meta: Route.MetaFunction = () => [{ title: "Matter merge review" }];
 
-const MERGE_ROW_FIELDS = "id, first_seen, last_seen, meta";
+const MERGE_ROW_FIELDS = "id, first_seen, last_seen, merged_into, meta";
 
 /** Loads the given matters plus whatever they're aliased to, so proposals resolve to today's matters. */
 async function loadMergeRows(supabase: ReturnType<typeof getSupabaseAdminClient>, ids: number[]) {
@@ -33,7 +33,7 @@ async function loadMergeRows(supabase: ReturnType<typeof getSupabaseAdminClient>
     pending = [
       ...new Set(
         (data || [])
-          .map((row: any) => Number(row.meta?.canonical_matter_id))
+          .map((row: any) => Number(row.merged_into))
           .filter((id) => id && !byId.has(id)),
       ),
     ];
@@ -67,10 +67,7 @@ export async function loadMergeQueue(supabase: ReturnType<typeof getSupabaseAdmi
     .filter((p) => p.current_ids.length >= 2);
 
   const ids = [...new Set(open.flatMap((p) => p.current_ids))];
-  // History includes agenda items filed under matters already merged into these.
-  const historyIds = [
-    ...new Set([...ids, ...ids.flatMap((id) => (byId.get(id)?.meta?.merged_matter_ids as number[]) || [])]),
-  ];
+  const historyIds = ids;
   const [{ data: matters, error: mattersError }, { data: items, error: itemsError }] = ids.length
     ? await Promise.all([
         supabase

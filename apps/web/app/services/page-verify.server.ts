@@ -60,11 +60,10 @@ export async function fetchAll<T = any>(build: (from: number, to: number) => Pro
   }
 }
 
-/** A topic's own agenda items, including those of topics merged into it. */
-export async function topicItemIds(supabase: SupabaseClient, matterId: number, meta?: Record<string, any> | null): Promise<number[]> {
-  const merged = ((meta?.merged_matter_ids || []) as number[]).filter(Number.isSafeInteger);
+/** A topic's own agenda items. */
+export async function topicItemIds(supabase: SupabaseClient, matterId: number): Promise<number[]> {
   const rows = await fetchAll<{ id: number }>((from, to) =>
-    supabase.from("agenda_items").select("id").in("matter_id", [matterId, ...merged]).order("id").range(from, to));
+    supabase.from("agenda_items").select("id").eq("matter_id", matterId).order("id").range(from, to));
   return rows.map((r) => r.id);
 }
 
@@ -143,7 +142,7 @@ export async function claimsAndRecords(supabase: SupabaseClient, path: string): 
     const { data: m } = await supabase.from("matters").select("id, plain_english_summary, meta").eq("slug", topic).maybeSingle();
     if (!m) return null;
     const meta = (m.meta || {}) as Record<string, any>;
-    const ids = await topicItemIds(supabase, m.id, meta);
+    const ids = await topicItemIds(supabase, m.id);
     const claims: Claim[] = [
       ...sentences(m.plain_english_summary || "").map((t, i) => ({ id: `summary-${i}`, key: null, text: `Summary: ${t}` })),
       ...(meta.status_line ? [{ id: "status", key: null, text: `Where it stands: ${meta.status_line}` }] : []),

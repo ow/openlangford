@@ -58,13 +58,12 @@ export async function getMatters(
         geo_location,
         display_title:meta->>display_title,
         lead_image_key:meta->images->lead->>r2_key,
-        merged_matter_ids:meta->merged_matter_ids,
         bylaw:bylaws(slug, title, bylaw_number),
         agenda_items(related_address, geo_location, written:meta->written_participation)
       `,
       )
       .eq("municipality_id", municipality.id)
-      .is("meta->>canonical_matter_id", null)
+      .is("merged_into", null)
       .is("meta->>hidden", null)
       .order("last_seen", { ascending: false, nullsFirst: false })
       .range(offset, offset + pageSize - 1);
@@ -76,29 +75,6 @@ export async function getMatters(
     offset += pageSize;
 
     if (data.length < pageSize) break;
-  }
-
-  // Retained source IDs may hold the only location evidence for a matter.
-  // Fetch those agenda links before aggregating map/filter fields, while the
-  // canonical list itself remains filtered and paginated in the database.
-  const canonicalById = new Map(allData.map((matter) => [matter.id, matter]));
-  const aliasLocations = new Map<number, any[]>();
-  const aliasIds: number[] = [...new Set<number>(allData.flatMap((matter) =>
-    (matter.merged_matter_ids || []).filter((value: unknown): value is number =>
-      Number.isSafeInteger(value) && Number(value) > 0),
-  ))];
-  for (let start = 0; start < aliasIds.length; start += 100) {
-    const { data: aliases, error } = await supabase.from("matters")
-      .select("id, canonical_matter_id:meta->>canonical_matter_id, geo_location, agenda_items(related_address, geo_location, written:meta->written_participation)")
-      .eq("municipality_id", municipality.id).in("id", aliasIds.slice(start, start + 100));
-    if (error) throw error;
-    for (const alias of aliases || []) {
-      const canonical = canonicalById.get(Number(alias.canonical_matter_id));
-      if (canonical && canonical.merged_matter_ids?.includes(alias.id)) {
-        canonical.agenda_items = [...(canonical.agenda_items || []), ...(alias.agenda_items || [])];
-        if (alias.geo_location) aliasLocations.set(canonical.id, [...(aliasLocations.get(canonical.id) || []), alias.geo_location]);
-      }
-    }
   }
 
   // Pins from the matters' properties (BC-geocoded) beat the ones agenda items got at ingest.
@@ -116,10 +92,9 @@ export async function getMatters(
 
     // Aggregate locations from matter + agenda items
     const locationsMap = new Map<string, any>();
-    for (const mGeo of [matter.geo_location, ...(aliasLocations.get(matter.id) || [])]) {
-      if (mGeo?.lat && mGeo?.lng) {
-        locationsMap.set(`${mGeo.lat},${mGeo.lng}`, mGeo);
-      }
+    const mGeo = matter.geo_location;
+    if (mGeo?.lat && mGeo?.lng) {
+      locationsMap.set(`${mGeo.lat},${mGeo.lng}`, mGeo);
     }
     (matter.agenda_items || []).forEach((item: any) => {
       const g = item.geo_location;
@@ -133,9 +108,9 @@ export async function getMatters(
 
     const lots = propertyPins.get(matter.id);
 
-    // The list only renders a row and a pin per matter: drop agenda items, merge bookkeeping
+    // The list only renders a row and a pin per matter: drop agenda items
     // and the long description when a plain-English summary exists (keeps the payload small).
-    const { agenda_items, geo_location, merged_matter_ids, display_title, description, ...rest } = matter;
+    const { agenda_items, geo_location, display_title, description, ...rest } = matter;
     return {
       ...rest,
       description: matter.plain_english_summary ? null : description,
@@ -168,7 +143,7 @@ export async function getMatterById(
     municipalityOrId,
     maybeId,
   );
-  const detailSelection = "id, slug, title, identifier, description, category, plain_english_summary, status, first_seen, last_seen, bylaw_id, meta, created_at, bylaw:bylaws(id, slug, title, bylaw_number, year, category, status, plain_english_summary, source_url, created_at), agenda_items(id, meeting_id, item_order, title, description, category, debate_summary, plain_english_summary, is_controversial, is_consent_agenda, discussion_start_time, financial_cost, funding_source, related_address, geo_location, matter_status_snapshot, meta, meetings(slug, id, title, meeting_date, organizations(name)), motions(id, meeting_id, agenda_item_id, mover, seconder, mover_id, seconder_id, text_content, plain_english_summary, result, disposition, yes_votes, no_votes, abstain_votes, absent_votes, meta, votes(id, motion_id, person_id, vote, recusal_reason, person:people(id, name, image_url))))";
+  const detailSelection = "id, slug, title, identifier, description, category, plain_english_summary, status, first_seen, last_seen, bylaw_id, merged_into, meta, created_at, bylaw:bylaws(id, slug, title, bylaw_number, year, category, status, plain_english_summary, source_url, created_at), agenda_items(id, meeting_id, item_order, title, description, category, debate_summary, plain_english_summary, is_controversial, is_consent_agenda, discussion_start_time, financial_cost, funding_source, related_address, geo_location, matter_status_snapshot, meta, meetings(slug, id, title, meeting_date, organizations(name)), motions(id, meeting_id, agenda_item_id, mover, seconder, mover_id, seconder_id, text_content, plain_english_summary, result, disposition, yes_votes, no_votes, abstain_votes, absent_votes, meta, votes(id, motion_id, person_id, vote, recusal_reason, person:people(id, name, image_url))))";
   const load = async (matterId: string) => {
     const { data, error } = await supabase.from("matters").select(detailSelection)
       .eq("id", matterId).eq("municipality_id", municipality.id).single();
@@ -176,23 +151,8 @@ export async function getMatterById(
     return data;
   };
   let matter = await load(id);
-  const visited = new Set<number>();
-  while (matter.meta?.canonical_matter_id) {
-    if (visited.has(matter.id) || visited.size >= 8) throw new Error("Invalid matter alias chain");
-    visited.add(matter.id);
-    matter = await load(String(matter.meta.canonical_matter_id));
-  }
-  const mergedIds: number[] = (matter.meta?.merged_matter_ids || [])
-    .filter((value: unknown): value is number => Number.isSafeInteger(value) && Number(value) > 0);
-  if (mergedIds.length) {
-    const { data: aliases, error } = await supabase.from("matters")
-      .select(detailSelection).eq("municipality_id", municipality.id).in("id", mergedIds);
-    if (error) throw error;
-    const historicalItems = (aliases || [])
-      .filter((alias: any) => Number(alias.meta?.canonical_matter_id) === matter.id)
-      .flatMap((alias: any) => alias.agenda_items || []);
-    matter.agenda_items = [...(matter.agenda_items || []), ...historicalItems];
-  }
+  // A merged topic's address shows the topic it was merged into, which holds all of its entries.
+  if (matter.merged_into) matter = await load(String(matter.merged_into));
 
   return matter as unknown as Matter & {
     agenda_items: (AgendaItem & {
@@ -237,14 +197,13 @@ export async function getDocumentsForAgendaItems(
 export async function getMatterEvidence(
   supabase: SupabaseClient,
   matterId: string | number,
-  mergedMatterIds: number[] = [],
 ) {
   const { data, error } = await supabase
     .from("matter_evidence")
     .select(
       "id, evidence_type, confidence, reason, agenda_item_id, document_section_id, agenda_item:agenda_items(id, meeting_id, item_order, title, meetings(slug, id, title, meeting_date, organizations(name))), document_section:document_sections(id, section_title, section_text, page_start, page_end, document_id, agenda_item_id, document:documents(id, title, meeting_id, meetings(slug, id, title, meeting_date, organizations(name))))",
     )
-    .in("matter_id", [Number(matterId), ...mergedMatterIds])
+    .eq("matter_id", Number(matterId))
     .eq("hidden", false)
     .order("confidence", { ascending: false })
     .order("id", { ascending: true })
@@ -294,9 +253,8 @@ export async function getFiscalData(supabase: SupabaseClient) {
  * public participation) that discussed it. Written by the pipeline's
  * matter_links step.
  */
-export async function getMatterStory(supabase: SupabaseClient, matterId: number, municipalityId = 1, mergedIds: number[] = []) {
-  // A merged page is one topic: its aliases' mentions and related links are its own.
-  const ownIds = [matterId, ...mergedIds.filter((id) => Number.isSafeInteger(id) && id > 0 && id !== matterId)];
+export async function getMatterStory(supabase: SupabaseClient, matterId: number, municipalityId = 1) {
+  const ownIds = [matterId];
   const own = new Set(ownIds);
   const rows = async (build: () => any): Promise<{ data: any[]; error: any }> => {
     const data: any[] = [];
@@ -328,7 +286,7 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
   const [relatedResult, mentionsResult] = await Promise.all([
     relatedIds.length ? rows(() => supabase.from("matters")
       .select("id, slug, title, identifier, status, first_seen, last_seen, meta, plain_english_summary")
-      .in("id", relatedIds).eq("municipality_id", municipalityId).is("meta->>canonical_matter_id", null).order("id"))
+      .in("id", relatedIds).eq("municipality_id", municipalityId).is("merged_into", null).order("id"))
       : Promise.resolve({ data: [] as any[], error: null }),
     mentionIds.length ? rows(() => supabase.from("agenda_items").select(selection).in("id", mentionIds)
       .eq("meetings.municipality_id", municipalityId).order("id"))
@@ -384,7 +342,7 @@ export async function getMatterReportMentions(supabase: SupabaseClient, matterId
     .select("id, page, quote, public_reports!inner(year, title, source_url, municipality_id)")
     .in("matter_id", ids).eq("hidden", false).eq("public_reports.municipality_id", municipalityId);
   if (error) { console.error("Error fetching annual report mentions:", error); return []; }
-  const seen = new Set<string>();  // merged topics can each cite the same page
+  const seen = new Set<string>();  // several topics passed together can cite the same page
   return (data || []).map((row: any) => {
     const report = Array.isArray(row.public_reports) ? row.public_reports[0] : row.public_reports;
     return { id: row.id, year: report.year, title: report.title, page: row.page, quote: row.quote,
@@ -396,13 +354,13 @@ export async function getMatterReportMentions(supabase: SupabaseClient, matterId
 export type MatterLink = { id: number; slug: string | null; title: string };
 
 /**
- * Matter id -> the public matter page an agenda item belongs to (aliases resolve to their canonical
- * matter; hidden matters are left out), for linking meeting agenda items to their matter.
+ * Matter id -> the public matter page an agenda item belongs to (a merged topic resolves to the one it was merged
+ * into; hidden matters are left out), for linking meeting agenda items to their matter.
  */
 export async function getMatterLinks(supabase: SupabaseClient, matterIds: (number | null | undefined)[]): Promise<Record<number, MatterLink>> {
   const ids = [...new Set(matterIds.filter((id): id is number => !!id))];
   if (!ids.length) return {};
-  const fields = "id, slug, title, hidden:meta->>hidden, canonical:meta->>canonical_matter_id";
+  const fields = "id, slug, title, hidden:meta->>hidden, canonical:merged_into";
   const { data, error } = await supabase.from("matters").select(fields).in("id", ids);
   if (error) {
     console.error("Error fetching agenda item matters:", error);

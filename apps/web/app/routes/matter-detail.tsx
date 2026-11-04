@@ -368,8 +368,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const agendaItemIds = (matter.agenda_items || []).map((ai) => ai.id);
     const matterDocuments = await getDocumentsForAgendaItems(supabase, agendaItemIds);
     const [matterEvidence, story, properties] = await Promise.all([
-      getMatterEvidence(supabase, matter.id, matter.meta?.merged_matter_ids || []),
-      getMatterStory(supabase, matter.id, undefined, matter.meta?.merged_matter_ids || []),
+      getMatterEvidence(supabase, matter.id),
+      getMatterStory(supabase, matter.id),
       getPropertiesForMatter(supabase, matter.id),
     ]);
 
@@ -506,7 +506,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
   // People who both spoke and wrote in about this matter get a note on each side.
   const aboutMatter = `${matterTitle(matter)} ${matter.plain_english_summary || ""}`;
-  const matterIds: number[] = [matter.id, ...((matter.meta?.merged_matter_ids || []) as number[])];
+  const matterIds: number[] = [matter.id];
   const notes = crossNotes(
     timelineEntries.flatMap((entry: any) =>
       entry.kind === "mention"
