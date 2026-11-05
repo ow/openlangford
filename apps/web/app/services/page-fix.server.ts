@@ -436,7 +436,14 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       if (step.action === "file_here" && step.key?.startsWith("mention-") && onPage.has(step.key)) {
         const { data: item } = await supabase.from("agenda_items").select("matter_id, meta").eq("id", itemId(step.key)).maybeSingle();
         const lock = (item?.meta as any)?.staff_matter;
-        if (!item) left.push(`${step.reason} (that item couldn't be found)`);
+        // An item on a bundle topic (a meeting's committee resolutions, a consent agenda) covers other subjects too, so
+        // it can't be filed here: it rightly stays a mention on this page, and its line says what it shows.
+        const home = item?.matter_id && item.matter_id !== matterId
+          ? (await supabase.from("matters").select("meta").eq("id", item.matter_id).maybeSingle()).data : null;
+        if (item && !lock && (home?.meta as any)?.hidden === "container") {
+          fixedKeys.add(step.key);
+          done.push(`${step.reason} It stays a mention here: it's part of a bundle of resolutions about other subjects too.`);
+        } else if (!item) left.push(`${step.reason} (that item couldn't be found)`);
         else if (lock && "matter_id" in lock && lock.matter_id !== matterId) left.push(`${step.reason} (an editor placed that item ${lock.matter_id ? `on topic ${lock.matter_id}` : "off every topic"}, so it stays there)`);
         else if (item.matter_id && item.matter_id !== matterId) left.push(`${step.reason} (that item is filed on topic ${item.matter_id}; if that topic is the same project, merge it, otherwise it stays there)`);
         else {
