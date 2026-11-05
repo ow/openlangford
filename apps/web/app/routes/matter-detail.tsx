@@ -620,14 +620,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
           {sameSite.length > 0 && (
             // Earlier or later applications for the same land: a rezoning, then another rezoning or a variance years on.
-            <div id="topic-same-site" className="mt-4 max-w-2xl rounded-xl border border-zinc-200 bg-surface px-4 py-3">
+            <div id="topic-same-site" className="mt-4 rounded-2xl border border-zinc-200 bg-surface px-5 py-4 shadow-sm">
               <p className="text-sm font-semibold text-zinc-900">
                 Also at {new Set(sameSite.map((m) => m.address)).size === 1 ? sameSite[0].address : "this site"}
               </p>
               <ul className="mt-1.5 space-y-1">
                 {sameSite.slice(0, 4).map((m) => (
                   <li key={m.id} className="flex items-baseline gap-2 text-sm">
-                    <span className="w-24 shrink-0 text-xs tabular-nums text-zinc-500">
+                    <span className="w-[5.5rem] shrink-0 text-xs tabular-nums text-zinc-500">
                       {/* An earlier application by the year it finished, a later one by the year it started. */}
                       {m.when === "earlier" ? "Earlier" : m.when === "later" ? "Later" : "Alongside"} · {String((m.when === "earlier" ? m.last_seen : m.first_seen) || m.first_seen || "").slice(0, 4)}
                     </span>
