@@ -605,7 +605,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
 
           {/* The status line, under the summary; it carries its own date (without one, when the topic first came up). */}
           {(matter.meta?.status_line || firstSeen) && (
-            <div id="topic-status" className="mt-4 max-w-2xl border-l-2 border-brand-500 pl-3">
+            <div id="topic-status" className="mt-4 max-w-2xl rounded-r-lg border-l-2 border-brand-500 bg-brand-50 py-2 pl-3 pr-4">
               {/* The label on its own line, in the border's colour, so a long status wraps cleanly under itself. */}
               <p className="text-xs font-semibold text-brand-700">Status</p>
               <p className="mt-0.5 text-sm leading-relaxed text-zinc-700">
