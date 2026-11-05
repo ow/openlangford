@@ -601,7 +601,8 @@ export function PageReviewBar() {
             <button type="button" disabled={busy} onClick={markReviewed}
               className={cn(button, "text-emerald-700 hover:bg-emerald-100", open_ > 0 && "text-emerald-700/60")}>{spinner("reviewed")}Reviewed</button>
           )}
-          {(!review?.status || review.status === "needs_work") && !fixing && (
+          {/* After a review or a fix, an issue you add or a flag you agree with still needs a way to the agent. */}
+          {(!review?.status || review.status === "needs_work" || agreed > 0) && !fixing && (
             <button type="button" disabled={busy}
               onClick={() => (agreed > 0 || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
               title={agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent` : "Describe what needs work"}
