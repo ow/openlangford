@@ -168,8 +168,28 @@ def stale_matter_summaries(ctx: StageContext) -> list[int]:
     return select_stale(_matter_stamps(ctx, "summary_version"), "summary_version", SUMMARY_VERSION)
 
 
+def _images_changed(ctx: StageContext) -> list[int]:
+    """Matters whose report pictures changed since they were picked (a merge or a late report adds some)."""
+    from pipeline.ingestion.matter_images import images_changed, usable_image_counts
+
+    def q():
+        query = (
+            ctx.supabase.table("matters")
+            .select("id, images_seen:meta->>images_seen, lead:meta->images->lead->>r2_key")
+            .is_("merged_into", "null")
+            .order("id")
+        )
+        if ctx.since:
+            query = query.gte("last_seen", ctx.since)
+        return query
+
+    rows = [{"id": r["id"], "images_seen": r.get("images_seen"), "has_lead": bool(r.get("lead"))} for r in _paginate(q)]
+    return images_changed(rows, usable_image_counts())
+
+
 def stale_matter_images(ctx: StageContext) -> list[int]:
-    return select_stale(_matter_stamps(ctx, "images_version"), "images_version", IMAGES_VERSION)
+    stale = select_stale(_matter_stamps(ctx, "images_version"), "images_version", IMAGES_VERSION)
+    return sorted(set(stale) | set(_images_changed(ctx)))
 
 
 PARTICIPATION_ILIKE = ",".join(
@@ -934,7 +954,9 @@ def run_matter_images(ctx: StageContext):
     def missing() -> list[int]:
         return [r["id"] for r in _matter_stamps(ctx, "images_version") if ctx.force or r.get("images_version") is None]
 
-    ids = _choose(ctx, "matter-images", from_meetings=ctx.matters_for_meetings, backfill=missing)
+    # After an ingest: the meetings' matters, and any whose pictures changed since (merges add pictures too).
+    ids = _choose(ctx, "matter-images", from_meetings=lambda: sorted(set(ctx.matters_for_meetings()) | set(_images_changed(ctx))),
+                  backfill=missing)
     if ctx.dry_run:
         _preview("matters to pick images for", ids)
         return None

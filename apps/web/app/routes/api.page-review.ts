@@ -12,7 +12,7 @@ import {
   agreeSuggestion, decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
 } from "../services/page-links.server";
 import { isPageHidden, setPageHidden } from "../services/page-visibility.server";
-import { confirmTopicEdits, resetTopicField, saveTopicEdit, topicEditState, type TopicEdit } from "../services/topic-edit.server";
+import { confirmTopicEdits, imageCandidates, resetTopicField, saveTopicEdit, topicEditState, type TopicEdit } from "../services/topic-edit.server";
 import { EDIT_FIELDS, type EditField } from "../lib/topic-edit";
 
 const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note",
@@ -25,7 +25,9 @@ async function linkState(supabase: SupabaseClient, path: string) {
   const [suggestions, findJob, edit] = await Promise.all([
     listSuggestions(supabase, matterId), latestFindJob(supabase, matterId), topicEditState(supabase, matterId),
   ]);
-  return { suggestions, findJob, edited: { locked: edit.locked, newEntries: edit.newEntries } };
+  // No feature photo, but report pictures to choose one from: the bar points at the edit dialog.
+  const photos = edit.image ? 0 : (await imageCandidates(supabase, matterId)).length;
+  return { suggestions, findJob, edited: { locked: edit.locked, newEntries: edit.newEntries, photos } };
 }
 
 /** What every page's bar needs, and on a topic page its links and edits. */

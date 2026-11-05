@@ -13,7 +13,7 @@ type Suggestion = {
 };
 const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic", similar: "Similar in meaning (doesn't name this topic)" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
-type Links = { suggestions: Suggestion[]; findJob: FindJob | null; edited?: { locked: string[]; newEntries: number } } | null;
+type Links = { suggestions: Suggestion[]; findJob: FindJob | null; edited?: { locked: string[]; newEntries: number; photos?: number } } | null;
 type Loaded = { path: string | null; review: PageReview | null; links: Links; hidden?: boolean };
 type Saved = { ok?: true; review?: PageReview | null; links?: Links; hidden?: boolean; message?: string | null; error?: string };
 
@@ -261,6 +261,12 @@ export function PageReviewBar() {
                 <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-sm text-amber-900">
                   Rate or fix the {open_} open {open_ === 1 ? "flag" : "flags"} below first, then mark the page Reviewed.
                 </p>
+              )}
+              {!!edited?.photos && (
+                <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2.5 py-2 text-xs text-zinc-700">
+                  <span>No feature photo yet: {edited.photos} report {edited.photos === 1 ? "picture" : "pictures"} to choose from.</span>
+                  <button type="button" onClick={() => setEditOpen(true)} className="font-medium text-brand-700 hover:underline">Choose one</button>
+                </div>
               )}
               {hidden && (
                 <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2.5 py-2 text-xs text-zinc-700">
@@ -620,11 +626,13 @@ export function PageReviewBar() {
           {/* Words for the decisions above; icons for the tools around them, with Next last. */}
           <span aria-hidden="true" className="mx-1 h-4 w-px bg-amber-300" />
           {links && (
-            <Tip label={edited?.newEntries ? `Edit the title, summary or photo. ${edited.newEntries} new ${edited.newEntries === 1 ? "entry" : "entries"} since the last edit: check it still holds` : edited?.locked.length ? "Edit the title, summary or photo (some are edited by hand)" : "Edit the title, summary or photo"}>
+            <Tip label={edited?.newEntries ? `Edit the title, summary or photo. ${edited.newEntries} new ${edited.newEntries === 1 ? "entry" : "entries"} since the last edit: check it still holds`
+              : edited?.photos ? `No feature photo yet: ${edited.photos} report ${edited.photos === 1 ? "picture" : "pictures"} to choose from`
+              : edited?.locked.length ? "Edit the title, summary or photo (some are edited by hand)" : "Edit the title, summary or photo"}>
               <button type="button" onClick={() => setEditOpen(true)} aria-label="Edit this topic"
                 className={cn("relative rounded-full p-1.5 hover:bg-amber-100", edited?.locked.length ? "text-brand-700" : "text-zinc-500")}>
                 <Pencil className="h-4 w-4" />
-                {!!edited?.newEntries && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-red-600" aria-hidden="true" />}
+                {!!(edited?.newEntries || edited?.photos) && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-red-600" aria-hidden="true" />}
               </button>
             </Tip>
           )}

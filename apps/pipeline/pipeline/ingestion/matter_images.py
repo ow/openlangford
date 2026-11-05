@@ -19,7 +19,9 @@ from supabase import Client
 from pipeline import ai
 from pipeline.ingestion.manual_edits import keep_image_edit
 
-# Bump when judging/selection changes; stamped in matters.meta.images_version.
+# Bump when judging/selection changes; stamped in matters.meta.images_version. meta.images_seen records how many
+# usable pictures the matter had when they were judged, so a matter that gains pictures (a merge, a late report) is
+# picked again.
 IMAGES_VERSION = "1"
 
 IMAGE_BASE = "https://pub-62dc9711e31a49c39b0544c981bf613e.r2.dev/viewroyal-document-images"
@@ -91,7 +93,47 @@ def _candidate_images(supabase: Client, matter_id: int) -> list[dict]:
                 "report_title": doc.get("title"),
             }
         )
-    return out[:MAX_CANDIDATES]
+    return out
+
+
+# The same filters and repeat rule as _candidate_images, counted for every matter at once.
+USABLE_COUNTS_SQL = f"""
+    select a.matter_id, count(distinct (di.width, di.height, di.file_size))
+    from agenda_items a
+    join extracted_documents ed on ed.agenda_item_id = a.id
+    join document_images di on di.extracted_document_id = ed.id
+    where a.matter_id is not null and di.width >= {MIN_W} and di.height >= {MIN_H} and di.file_size >= {MIN_BYTES}
+    group by a.matter_id
+"""
+
+
+def usable_image_counts() -> dict[int, int]:
+    """How many usable report pictures each matter has now (matters with none are left out)."""
+    from pipeline.db import connect
+
+    conn = connect()
+    try:
+        cur = conn.cursor()
+        cur.execute(USABLE_COUNTS_SQL)
+        return {mid: n for mid, n in cur.fetchall()}
+    finally:
+        conn.rollback()
+        conn.close()
+
+
+def images_changed(rows: list[dict], counts: dict[int, int]) -> list[int]:
+    """Matters to pick pictures for again: their pictures changed since they were judged, or (judged before that
+    was recorded) they have pictures but no lead. ``rows``: id, images_seen, has_lead."""
+    out = []
+    for r in rows:
+        now = counts.get(r["id"], 0)
+        seen = r.get("images_seen")
+        if seen is not None:
+            if int(seen) != now:
+                out.append(r["id"])
+        elif now and not r.get("has_lead"):
+            out.append(r["id"])
+    return sorted(out)
 
 
 def _judge(img: dict, context: str) -> dict | None:
@@ -121,12 +163,14 @@ def pick_matter_images(supabase: Client, matter_id: int, *, dry_run: bool = Fals
     matter = supabase.table("matters").select("id, title, meta, plain_english_summary").eq("id", matter_id).single().execute().data
     meta = matter.get("meta") or {}
     context = f"Matter: {meta.get('display_title') or matter['title']}. {matter.get('plain_english_summary') or ''}"
-    candidates = _candidate_images(supabase, matter_id)
+    usable = _candidate_images(supabase, matter_id)
+    candidates = usable[:MAX_CANDIDATES]
     if not candidates:
         # Stamp it so --stale doesn't keep revisiting matters with nothing to judge.
-        if not dry_run and meta.get("images_version") != IMAGES_VERSION:
+        if not dry_run and (meta.get("images_version") != IMAGES_VERSION or meta.get("images_seen") != 0):
             stamped = dict(meta)
             stamped["images_version"] = IMAGES_VERSION
+            stamped["images_seen"] = 0
             supabase.table("matters").update({"meta": stamped}).eq("id", matter_id).execute()
         return {}
     with ThreadPoolExecutor(max_workers=6) as pool:
@@ -145,6 +189,7 @@ def pick_matter_images(supabase: Client, matter_id: int, *, dry_run: bool = Fals
     if not dry_run:
         new_meta = dict(meta)
         new_meta["images_version"] = IMAGES_VERSION
+        new_meta["images_seen"] = len(usable)
         if images:
             new_meta["images"] = images
         else:
