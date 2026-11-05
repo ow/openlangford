@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useRouteLoaderData } from "react-router";
 import { Flag } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { REPORT_CATEGORIES, type ReportCategory } from "../lib/data-reports";
 
-/** Other entry points (the footer link, an entry's menu) open the panel with this event. */
+/** Other entry points (the header's Report issue button) open the panel with this event. */
 const OPEN_EVENT = "open-report-issue";
 const DRAFT_KEY = "report-issue-draft";
 
@@ -12,6 +12,24 @@ type Draft = { path: string; quote: string; entryKey: string | null; category: R
 
 export function openReportIssue(detail: { quote?: string; entryKey?: string | null } = {}) {
   window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail }));
+}
+
+/** Whether this page takes reports (set by the root layout, which also renders the panel). */
+export const ReportsEnabled = createContext(false);
+
+/** A quiet "Report issue" button for a page's header, beside Follow; nothing on pages that can't be reported. */
+export function ReportIssueButton() {
+  if (!useContext(ReportsEnabled)) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => openReportIssue()}
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-800"
+    >
+      <Flag className="h-3 w-3" />
+      Report issue
+    </button>
+  );
 }
 
 /** The entry a node sits in: a topic's timeline step (id="timeline-<key>") or a meeting item (data-review-entry). */
@@ -30,8 +48,8 @@ const saveDraft = (draft: Draft | null) => {
 };
 
 /**
- * "Report an issue": select text on a public page and a flag appears beside it; the footer link and entry menus
- * open the same panel. Anyone can fill it in; sending needs an account (the draft survives signing in).
+ * "Report an issue": select text on a public page and a flag appears beside it; the header's Report issue button
+ * opens the same panel. Anyone can fill it in; sending needs an account (the draft survives signing in).
  */
 export function ReportIssue() {
   const { pathname } = useLocation();

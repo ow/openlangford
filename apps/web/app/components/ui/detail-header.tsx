@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "~/lib/utils";
+import { ReportIssueButton } from "../report-issue";
 
 interface DetailHeaderProps {
   /** Parent page; the breadcrumb trail is Home / parent. */
@@ -60,7 +61,10 @@ export function DetailHeader({
           </ol>
         </nav>
         ) : <span />}
-        {metaAction && <div className="shrink-0">{metaAction}</div>}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <ReportIssueButton />
+          {metaAction}
+        </div>
         </div>
       )}
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

@@ -37,7 +37,7 @@ import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { getStaffRole } from "./lib/auth.server";
 import { PageReviewBar } from "./components/admin/page-review-bar";
-import { ReportIssue } from "./components/report-issue";
+import { ReportIssue, ReportsEnabled } from "./components/report-issue";
 import { REPORTS_STAFF_ONLY } from "./lib/data-reports";
 import { InternalNoteBanner } from "./components/admin/internal-note-banner";
 import { isReviewable } from "./lib/page-review-types";
@@ -215,7 +215,9 @@ function NavigationProgress() {
 export default function App() {
   const root = useRouteLoaderData<typeof loader>("root");
   const { pathname } = useLocation();
+  const reports = isReviewable(pathname) && (!REPORTS_STAFF_ONLY || !!root?.isAdmin);
   return (
+    <ReportsEnabled.Provider value={reports}>
     <div className="min-h-screen flex flex-col">
       <NavigationProgress />
       <div className="bg-amber-50 border-b border-amber-200 text-center text-xs text-amber-800 py-1.5 px-4">
@@ -230,8 +232,9 @@ export default function App() {
       </main>
       <Footer />
       {root?.isAdmin && isReviewable(pathname) && <PageReviewBar />}
-      {isReviewable(pathname) && (!REPORTS_STAFF_ONLY || root?.isAdmin) && <ReportIssue />}
+      {reports && <ReportIssue />}
     </div>
+    </ReportsEnabled.Provider>
   );
 }
 
