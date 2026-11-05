@@ -64,3 +64,6 @@ const REVIEWABLE_PAGE = /^\/(matters|meetings|properties|participants|elections)
 export function isReviewable(path: string) {
   return REVIEWABLE_PAGE.test(path);
 }
+
+/** Disagreements with the check it takes before a problem type is worth a rule, or its rule worth another look. */
+export const DRAFT_AFTER = 5, RECONSIDER_AFTER = 3;

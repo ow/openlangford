@@ -70,13 +70,15 @@ export async function clearPageReview(supabase: SupabaseClient, path: string) {
   if (error) throw new Error("Could not clear the page review.");
 }
 
-export type ReviewFilter = PageReviewStatus | "flagged" | null;
+/** "attention": what is waiting on staff (fixes to confirm, pages needing work, open flags). */
+export type ReviewFilter = PageReviewStatus | "flagged" | "attention" | null;
 
 export async function listPageReviews(supabase: SupabaseClient, filter: ReviewFilter) {
   let query = supabase.from("page_reviews").select(COLUMNS)
     .order("reviewed_at", { ascending: false, nullsFirst: false })
     .order("ai_checked_at", { ascending: false, nullsFirst: false }).limit(500);
   if (filter === "flagged") query = query.not("ai_flags", "is", null).neq("ai_flags", "[]");
+  else if (filter === "attention") query = query.or("status.in.(fixed,needs_work,fixing),ai_flags.not.is.null");
   else if (filter === "needs_work") query = query.in("status", ["needs_work", "fixing"]);
   else if (filter) query = query.eq("status", filter);
   const [{ data, error }, all] = await Promise.all([
@@ -96,7 +98,9 @@ export async function listPageReviews(supabase: SupabaseClient, filter: ReviewFi
   // "Open flags": checked pages with a flag still to rate or fix (resolved ones have nothing left to do).
   const listed = (data || []) as PageReview[];
   return {
-    reviews: filter === "flagged" ? listed.filter((r) => unresolvedFlags(r.ai_flags).length > 0) : listed,
+    reviews: filter === "flagged" ? listed.filter((r) => unresolvedFlags(r.ai_flags).length > 0)
+      : filter === "attention" ? listed.filter((r) => r.status !== "reviewed" && (!!r.status || unresolvedFlags(r.ai_flags).length > 0))
+      : listed,
     rows,
     byKind,
     agreement: { rated: rated.length, agreed: rated.filter(f => f.verdict === "agree").length },

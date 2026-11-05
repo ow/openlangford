@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getAiClient } from "./ai/index.server";
-import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-types";
+import { DRAFT_AFTER, RECONSIDER_AFTER, type FlagProblem, type FlagVerdict, type PageFlag } from "../lib/page-review-types";
 
 /**
  * How the page check learns, for good:
@@ -17,7 +17,7 @@ export const CHECKED_PROBLEMS: FlagProblem[] = ["unclear_why", "generic_text", "
 const PER_VERDICT = 3;
 
 export type Example = { problem: FlagProblem; entry_text: string; reason: string; verdict: FlagVerdict; note?: string | null };
-export type Guidance = { id: number; problem: string; page_kind: string | null; text: string; status: string; based_on: number; created_at: string };
+export type Guidance = { id: number; problem: string; page_kind: string | null; text: string; status: string; based_on: number; created_at: string; decided_at?: string | null };
 
 const embed = async (text: string): Promise<number[] | null> => {
   try {
@@ -118,11 +118,17 @@ export async function decideGuidance(supabase: SupabaseClient, id: number, decis
   if (error) throw new Error("Could not save the rule.");
 }
 
+/** What a problem type needs from staff: a rule drafted, its rule looked at again, a draft decided, or nothing. */
+export type LearningNeed = "draft_rule" | "reconsider" | "decide_draft" | null;
 export type LearningRow = {
   problem: FlagProblem; rated: number; agreed: number; sinceDraft: number;
   approved: Guidance | null; draft: Guidance | null;
   byVersion: { version: number | null; rated: number; agreed: number }[];
+  /** Ratings since the rule in use was approved (all ratings when the built-in instruction is in use). */
+  sinceRule: { rated: number; agreed: number };
+  need: LearningNeed;
 };
+
 
 /** Per problem type: how often staff agree, by guidance version, and where its written rule stands. */
 export async function learningOverview(supabase: SupabaseClient): Promise<LearningRow[]> {
@@ -143,10 +149,18 @@ export async function learningOverview(supabase: SupabaseClient): Promise<Learni
       v.rated++; if (r.verdict === "agree") v.agreed++;
       versions.set(r.guidance_version, v);
     }
+    const ruleFrom = approved ? approved.decided_at || approved.created_at : "";
+    const sinceRuleRows = mine.filter((r) => r.created_at > ruleFrom);
+    const sinceRule = { rated: sinceRuleRows.length, agreed: sinceRuleRows.filter((r) => r.verdict === "agree").length };
+    const disagreed = sinceRule.rated - sinceRule.agreed;
+    const need: LearningNeed = draft ? "decide_draft"
+      : approved ? (disagreed >= RECONSIDER_AFTER ? "reconsider" : null)
+      : disagreed >= DRAFT_AFTER ? "draft_rule" : null;
     return {
       problem, rated: mine.length, agreed: mine.filter((r) => r.verdict === "agree").length,
       sinceDraft: mine.filter((r) => r.created_at > lastDraftAt).length, approved, draft,
       byVersion: [...versions].map(([version, v]) => ({ version, ...v })).sort((a, b) => (a.version ?? 0) - (b.version ?? 0)),
+      sinceRule, need,
     };
   });
 }

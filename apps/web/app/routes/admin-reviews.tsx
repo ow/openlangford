@@ -1,4 +1,5 @@
-import { Link } from "react-router";
+import { Form, Link, useActionData, useNavigation } from "react-router";
+import { Loader2 } from "lucide-react";
 import type { Route } from "./+types/admin-reviews";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
@@ -8,6 +9,8 @@ import { cn } from "../lib/utils";
 import { reviewTime, unresolvedFlags } from "../lib/page-review-types";
 import { listPageReviews, reviewCoverage, type ReviewFilter } from "../services/page-reviews.server";
 import { decideGuidance, draftGuidance, learningOverview } from "../services/review-learning.server";
+import { PRECHECK_MAX, precheckState, queuePrecheck } from "../services/page-precheck.server";
+import { SITEMAP_SECTIONS, type SitemapSection } from "../services/sitemap.server";
 import { ReviewLearningSection } from "../components/admin/review-learning-section";
 import { FLAG_PROBLEM_LABELS, type FlagProblem } from "../lib/page-review-types";
 import { requireModerator } from "../lib/auth.server";
@@ -19,27 +22,32 @@ export const meta = () => [
 ];
 export const headers = privateAdminHeaders;
 
-const FILTERS = [["all", "All"], ["fixed", "Fixed, to confirm"], ["needs_work", "Needs work"], ["flagged", "Open flags"], ["reviewed", "Reviewed"]] as const;
+const FILTERS = [["attention", "Needs you"], ["fixed", "Fixed, to confirm"], ["needs_work", "Needs work"], ["flagged", "Open flags"], ["reviewed", "Reviewed"]] as const;
 
 export async function loader({ request }: Route.LoaderArgs) {
   return adminRead(request, async () => {
     const show = new URL(request.url).searchParams.get("show");
-    const filter: ReviewFilter = show === "needs_work" || show === "reviewed" || show === "flagged" || show === "fixed" ? show : null;
+    const filter: ReviewFilter = show === "needs_work" || show === "reviewed" || show === "flagged" || show === "fixed" ? show : "attention";
     const supabase = getSupabaseAdminClient();
     const { rows, ...list } = await listPageReviews(supabase, filter);
-    const [coverage, learning] = await Promise.all([reviewCoverage(supabase, rows), learningOverview(supabase)]);
-    return { show: filter ?? "all", ...list, coverage, learning };
+    const [coverage, learning, precheck] = await Promise.all([reviewCoverage(supabase, rows), learningOverview(supabase), precheckState(supabase)]);
+    return { show: filter, ...list, coverage, learning, precheck };
   });
 }
 
-/** Draft, approve or discard a guidance rule for the page check. */
+/** Queue pages for a check ahead of review; draft, approve or discard a guidance rule for the page check. */
 export async function action({ request }: Route.ActionArgs) {
   const user = await requireModerator(request);
   const form = await request.formData();
   const intent = String(form.get("intent") || "");
   const supabase = getSupabaseAdminClient();
   try {
-    if (intent === "draft_rule") {
+    if (intent === "precheck") {
+      const kind = String(form.get("kind") || "matters");
+      const section = kind === "any" || (SITEMAP_SECTIONS as readonly string[]).includes(kind) ? kind as SitemapSection | "any" : "matters";
+      const queued = await queuePrecheck(supabase, section, Number(form.get("count")) || 10);
+      return data({ ok: true, queued }, { headers: privateAdminHeaders() });
+    } else if (intent === "draft_rule") {
       const problem = String(form.get("problem") || "") as FlagProblem;
       if (!(problem in FLAG_PROBLEM_LABELS)) return data({ error: "Unknown problem type." }, { status: 400, headers: privateAdminHeaders() });
       await draftGuidance(supabase, problem, FLAG_PROBLEM_LABELS[problem]);
@@ -54,7 +62,10 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function AdminReviews({ loaderData }: Route.ComponentProps) {
-  const { show, reviews, agreement, coverage, learning } = loaderData;
+  const { show, reviews, coverage, learning, precheck } = loaderData;
+  const answer = useActionData<typeof action>();
+  const navigation = useNavigation();
+  const queueing = navigation.formData?.get("intent") === "precheck";
   const n = (value: number) => value.toLocaleString();
   return (
     <main className="min-h-screen bg-zinc-50">
@@ -83,12 +94,41 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
           </ul>
         </div>
         <div className="mb-5 grid gap-3 sm:grid-cols-2">
+          {/* Pre-check: queue a batch so each page's check is done before you get to it. */}
           <div className={cn(adminCard, "px-5 py-4")}>
-            <div className="text-sm font-medium text-zinc-600">Check flags you agreed with</div>
-            <div className="mt-1 text-3xl font-semibold tabular-nums text-zinc-950">
-              {agreement.rated ? `${Math.round((agreement.agreed / agreement.rated) * 100)}%` : "—"}
-            </div>
-            <p className="mt-1 text-xs text-zinc-500">{agreement.agreed} of {agreement.rated} rated flags were real problems. Your ratings guide later checks.</p>
+            <div className="text-sm font-medium text-zinc-600">Pre-check a batch</div>
+            <p className="mt-1 text-xs text-zinc-500">
+              Picks pages nobody has reviewed or checked and checks them in the background, a few every five minutes,
+              so you can go through them without waiting on each check.
+            </p>
+            <Form method="post" className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <input type="hidden" name="intent" value="precheck" />
+              <input type="number" name="count" min={1} max={PRECHECK_MAX} defaultValue={20} aria-label="How many pages"
+                className="w-16 rounded-lg border border-zinc-300 bg-surface px-2 py-1 tabular-nums" />
+              <select name="kind" defaultValue="matters" aria-label="Which pages" className="rounded-lg border border-zinc-300 bg-surface px-2 py-1">
+                {coverage.sections.map((sec) => <option key={sec.section} value={sec.section}>{sec.label}</option>)}
+                <option value="any">Any kind</option>
+              </select>
+              <button type="submit" disabled={queueing}
+                className="rounded-lg border border-brand-300 px-3 py-1 font-medium text-brand-800 hover:bg-brand-50">
+                {queueing ? <><Loader2 className="mr-1 inline h-3.5 w-3.5 animate-spin align-[-2px]" />Queueing…</> : "Queue"}
+              </button>
+            </Form>
+            {answer && "queued" in answer && (
+              <p className="mt-2 text-xs text-zinc-600">{answer.queued ? `Queued ${answer.queued}. The first ones are checked within five minutes.` : "No unchecked pages of that kind left."}</p>
+            )}
+            {(precheck.queued > 0 || precheck.ready > 0) && (
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-100 pt-3 text-sm">
+                <span className="tabular-nums text-zinc-600">
+                  {precheck.ready > 0 && <>{n(precheck.ready)} checked and ready</>}
+                  {precheck.ready > 0 && precheck.queued > 0 && " · "}
+                  {precheck.queued > 0 && <>{n(precheck.queued)} still to check</>}
+                </span>
+                {precheck.ready > 0 && (
+                  <Link to="/admin/reviews/next?kind=checked" className="rounded-lg bg-brand-600 px-3 py-1.5 font-medium text-white hover:bg-brand-700">Review checked pages</Link>
+                )}
+              </div>
+            )}
           </div>
           <div className={cn(adminCard, "flex flex-col justify-between px-5 py-4")}>
             <div>
@@ -102,14 +142,14 @@ export default function AdminReviews({ loaderData }: Route.ComponentProps) {
         <ReviewLearningSection rows={learning} />
         <nav aria-label="Filter reviews" className="mb-4 flex flex-wrap gap-2 text-sm">
           {FILTERS.map(([value, label]) => (
-            <Link key={value} to={value === "all" ? "/admin/reviews" : `/admin/reviews?show=${value}`}
+            <Link key={value} to={value === "attention" ? "/admin/reviews" : `/admin/reviews?show=${value}`}
               className={cn("rounded-full border px-3 py-1", show === value ? "border-brand-300 bg-brand-50 text-brand-800" : "border-zinc-200 text-zinc-600 hover:bg-zinc-100")}>
               {label}
             </Link>
           ))}
         </nav>
         {reviews.length === 0 ? (
-          <p className="text-sm text-zinc-500">Nothing here yet.</p>
+          <p className="text-sm text-zinc-500">{show === "attention" ? "Nothing is waiting on you." : "Nothing here yet."}</p>
         ) : (
           <ul className={cn(adminCard, "divide-y divide-zinc-100 overflow-hidden")}>
             {reviews.map((r) => {

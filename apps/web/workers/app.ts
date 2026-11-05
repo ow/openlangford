@@ -20,6 +20,7 @@ import { posthogProxy } from "./posthog-proxy";
 import { applyLogRetention, applyPrivacyRetention, purgeExpiredQuestions } from "./retention";
 import { recordServerMetrics } from "./server-metrics";
 import { assessNewReports } from "../app/services/data-reports.server";
+import { runPrecheckQueue } from "../app/services/page-precheck.server";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -105,6 +106,10 @@ export default {
       ctx.waitUntil(assessNewReports(getSupabaseAdminClient(), "https://openlangford.ca").then((s) => {
         if (s.assessed || s.waiting) console.log("[Reports]", JSON.stringify(s));
       }).catch((error) => { console.error("[Reports]", error instanceof Error ? error.message : "failed"); }));
+      // Pages staff queued for a check ahead of review ("Pre-check" on the reviews page), a few at a time.
+      ctx.waitUntil(runPrecheckQueue(getSupabaseAdminClient(), "https://openlangford.ca").then((s) => {
+        if (s.checked || s.failed) console.log("[Pre-check]", JSON.stringify(s));
+      }).catch((error) => { console.error("[Pre-check]", error instanceof Error ? error.message : "failed"); }));
       // Enqueue recently held meetings first (no-op unless all gates are set), then dispatch.
       ctx.waitUntil(
         (enqueueEnabled(env)

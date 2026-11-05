@@ -74,7 +74,7 @@ function outcome(motion: Motion) {
   const label = passed ? "Passed" : failed ? "Defeated" : motion.result ? displayTitle(motion.result) : null;
   return {
     label,
-    tone: passed ? "text-emerald-700" : failed ? "text-red-700" : "text-zinc-600",
+    variant: passed ? "success" as const : failed ? "danger" as const : /defer|tabled|postpone|refer/i.test(motion.result || "") ? "warning" as const : "muted" as const,
     count: t.counted ? `${t.yes}–${t.no}` : null,
     against: t.against,
     // Not unanimous when the video shows a vote against that the minutes don't record.
@@ -148,21 +148,20 @@ export function TimelineStep({
   );
   const isFinal = /final approval/i.test(stage || "");
   const decisions = motions.map((m) => ({ m, o: outcome(m) }));
-  const outcomeMark = (o: ReturnType<typeof outcome>) =>
-    isFinal && o.label === "Passed" ? (
-      <Badge variant="success">Adopted{o.count ? ` ${o.count}` : ""}</Badge>
-    ) : (
-      <span className={cn("shrink-0 text-xs font-medium tabular-nums", o.tone)}>
-        {o.label}
-        {o.count && ` ${o.count}`}
-      </span>
-    );
+  // A badge like the topic's own status: "Adopted" for a final approval that passed.
+  const outcomeMark = (o: ReturnType<typeof outcome>) => (
+    <Badge variant={o.variant} className="shrink-0 tabular-nums">
+      {isFinal && o.label === "Passed" ? "Adopted" : o.label}{o.count ? ` ${o.count}` : ""}
+    </Badge>
+  );
+  // One decision: its outcome sits beside the step's title. Several: each decision line leads with its own.
+  const single = decisions.length === 1 && decisions[0].o.label ? decisions[0].o : null;
 
   if (procedural) {
     return (
       <div className="py-1">
         {meetingLine}
-        <div className="mt-0.5 flex flex-wrap items-baseline justify-between gap-x-3">
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
           <h3 className="font-semibold leading-snug text-zinc-900">{title}</h3>
           {decisions[0]?.o.label && outcomeMark(decisions[0].o)}
         </div>
@@ -174,7 +173,10 @@ export function TimelineStep({
   return (
     <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
       {meetingLine}
-      <h3 className="mt-1 text-lg font-semibold leading-snug text-zinc-900">{title}</h3>
+      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+        <h3 className="text-lg font-semibold leading-snug text-zinc-900">{title}</h3>
+        {single && outcomeMark(single)}
+      </div>
       {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>}
       {stage && !item.plain_english_summary && <p className="mt-1.5 text-sm text-zinc-600">{stage}</p>}
 
@@ -217,14 +219,14 @@ export function TimelineStep({
           {decisions.map(({ m, o }) => (
             <div key={m.id} className="text-sm">
               <p className="text-zinc-800">
+                {!single && o.label && <>{outcomeMark(o)}{" "}</>}
                 <span className="font-medium">Decision:</span> {m.plain_english_summary || displayTitle(m.text_content || "")}
               </p>
-              {(o.label || isTranscribedMotion(m)) && (
-                <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs">
-                  {o.label && outcomeMark(o)}
-                  {o.label && o.against.length > 0 && <span className="text-zinc-500">· Against: {o.against.join(", ")}</span>}
+              {((o.label && o.against.length > 0) || isTranscribedMotion(m)) && (
+                <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs text-zinc-500">
+                  {o.label && o.against.length > 0 && <span>Against: {o.against.join(", ")}</span>}
                   {isTranscribedMotion(m) && (
-                    <span className="text-zinc-500" title={TRANSCRIBED_TITLE}>{o.label ? "· " : ""}{TRANSCRIBED_NOTE}</span>
+                    <span title={TRANSCRIBED_TITLE}>{o.label && o.against.length > 0 ? "· " : ""}{TRANSCRIBED_NOTE}</span>
                   )}
                 </p>
               )}
