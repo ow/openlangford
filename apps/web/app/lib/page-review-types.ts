@@ -67,3 +67,6 @@ export function isReviewable(path: string) {
 
 /** Disagreements with the check it takes before a problem type is worth a rule, or its rule worth another look. */
 export const DRAFT_AFTER = 5, RECONSIDER_AFTER = 3;
+
+/** The most pages one "Pre-check" queues. */
+export const PRECHECK_MAX = 50;

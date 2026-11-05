@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { UNREVIEWED_SECTIONS, isReviewable } from "../lib/page-review-types";
+import { PRECHECK_MAX, UNREVIEWED_SECTIONS, isReviewable } from "../lib/page-review-types";
 import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap.server";
 import { reviewKind, reviewPath } from "./page-reviews.server";
 import { checkPage } from "./page-check.server";
@@ -9,7 +9,6 @@ import { checkPage } from "./page-check.server";
  * five-minute cron runs the check on a few at a time, and "Ready to review" then walks through the checked pages
  * without waiting on each check. The queue is page_reviews.check_requested_at.
  */
-export const PRECHECK_MAX = 50;
 /** Per cron run: checks take about a minute each, so a few at once, a few rounds per run. */
 const PER_RUN = 15, AT_ONCE = 5;
 
