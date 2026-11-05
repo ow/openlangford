@@ -1,4 +1,5 @@
 import { Form, useNavigation } from "react-router";
+import { Loader2 } from "lucide-react";
 import { FLAG_PROBLEM_LABELS } from "../../lib/page-review-types";
 import type { LearningRow } from "../../services/review-learning.server";
 import { cn } from "../../lib/utils";
@@ -7,7 +8,13 @@ const pct = (agreed: number, rated: number) => (rated ? `${Math.round((agreed / 
 
 /** How the page check is learning: agreement per problem type and guidance version, and the written rules. */
 export function ReviewLearningSection({ rows }: { rows: LearningRow[] }) {
-  const busy = useNavigation().state !== "idle";
+  const navigation = useNavigation();
+  const busy = navigation.state !== "idle";
+  // Drafting is a model call (about ten seconds): the pressed button says so while it runs.
+  const pending = navigation.formData;
+  const drafting = (problem: string) => pending?.get("intent") === "draft_rule" && pending.get("problem") === problem;
+  const deciding = (id: number, intent: string) => pending?.get("intent") === intent && pending.get("id") === String(id);
+  const spin = <Loader2 className="mr-1 inline h-3.5 w-3.5 animate-spin align-[-2px]" />;
   return (
     <section aria-labelledby="learning-heading" className="mb-6">
       <h2 id="learning-heading" className="text-lg font-semibold text-zinc-900">How the check is learning</h2>
@@ -43,8 +50,8 @@ export function ReviewLearningSection({ rows }: { rows: LearningRow[] }) {
                 <textarea id={`draft-${r.draft.id}`} name="text" rows={3} defaultValue={r.draft.text}
                   className="mt-1 w-full rounded-lg border border-zinc-200 bg-transparent p-2 text-sm text-zinc-900" />
                 <div className="mt-1 flex gap-2 text-sm">
-                  <button name="intent" value="approve_rule" disabled={busy} className="rounded-lg bg-emerald-600 px-3 py-1 font-medium text-white hover:bg-emerald-700">Approve</button>
-                  <button name="intent" value="reject_rule" disabled={busy} className="rounded-lg px-3 py-1 text-zinc-600 hover:bg-zinc-100">Discard</button>
+                  <button name="intent" value="approve_rule" disabled={busy} className="rounded-lg bg-emerald-600 px-3 py-1 font-medium text-white hover:bg-emerald-700">{deciding(r.draft.id, "approve_rule") && spin}Approve</button>
+                  <button name="intent" value="reject_rule" disabled={busy} className="rounded-lg px-3 py-1 text-zinc-600 hover:bg-zinc-100">{deciding(r.draft.id, "reject_rule") && spin}Discard</button>
                 </div>
               </Form>
             ) : r.rated >= 3 && (
@@ -53,7 +60,8 @@ export function ReviewLearningSection({ rows }: { rows: LearningRow[] }) {
                 <button name="intent" value="draft_rule" disabled={busy}
                   className={cn("rounded-lg border px-3 py-1 text-sm font-medium",
                     r.sinceDraft >= 5 ? "border-brand-300 text-brand-800 hover:bg-brand-50" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50")}>
-                  {r.approved ? "Redraft the rule" : "Draft a rule"}{r.sinceDraft ? ` (${r.sinceDraft} new ratings)` : ""}
+                  {drafting(r.problem) ? <>{spin}Drafting from your ratings…</>
+                    : <>{r.approved ? "Redraft the rule" : "Draft a rule"}{r.sinceDraft ? ` (${r.sinceDraft} new ratings)` : ""}</>}
                 </button>
               </Form>
             )}
