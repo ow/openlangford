@@ -586,16 +586,17 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             reportButton={false}
           />
 
-          {/* Where it stands, once: the status, what last happened and when it began, then what a reader can do about it. */}
-          <div id="topic-status" className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          {/* Where it stands, once: the status and what last happened, then what a reader can do about it. */}
+          <div id="topic-status" className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
             <p className="text-sm leading-7 text-zinc-500">
               {statusVariant ? (
                 <Badge variant={statusVariant} className="mr-2">{matter.status}</Badge>
               ) : quietSince(matter.status, lastSeen || matter.last_seen) ? (
                 <Badge variant="muted" className="mr-2">No activity since {quietSince(matter.status, lastSeen || matter.last_seen)}</Badge>
               ) : null}
-              {matter.meta?.status_line && <span className="text-zinc-800">{matter.meta.status_line} </span>}
-              {firstSeen && <span className="whitespace-nowrap">First discussed {formatDate(firstSeen, { month: "short", year: "numeric" })}</span>}
+              {/* The status line carries its own date; without one, when the topic first came up. */}
+              {matter.meta?.status_line ? <span className="text-zinc-800">{matter.meta.status_line}</span>
+                : firstSeen && <span className="whitespace-nowrap">First discussed {formatDate(firstSeen, { month: "short", year: "numeric" })}</span>}
             </p>
             <div className="-mx-2 flex shrink-0 items-center gap-1 sm:mx-0 sm:-mr-2">
               <SubscribeButton type="matter" targetId={matter.id} label="Follow" icon quiet />
