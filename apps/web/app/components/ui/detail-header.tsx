@@ -15,6 +15,8 @@ interface DetailHeaderProps {
   metaLead?: ReactNode;
   /** On the breadcrumb row, at the right (a compact follow button). */
   metaAction?: ReactNode;
+  /** False when the page puts its own Report issue button elsewhere (topic pages, beside their status). */
+  reportButton?: boolean;
   /** Right-aligned on desktop, below the title on mobile (source links, follow…). */
   actions?: ReactNode;
   /** A small line under the facts (where the schedule came from). */
@@ -35,6 +37,7 @@ export function DetailHeader({
   badges,
   metaLead,
   metaAction,
+  reportButton = true,
   actions,
   description,
   note,
@@ -62,7 +65,7 @@ export function DetailHeader({
         </nav>
         ) : <span />}
         <div className="flex shrink-0 items-center gap-1.5">
-          <ReportIssueButton />
+          {reportButton && <ReportIssueButton />}
           {metaAction}
         </div>
         </div>

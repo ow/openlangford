@@ -13,6 +13,7 @@ import { createSupabaseServerClient, getSupabaseAdminClient } from "../lib/supab
 import { parseRelatedAddresses } from "../lib/addresses";
 import { documentImageUrl } from "../lib/document-images.server";
 import { Link, data, redirect } from "react-router";
+import { ReportIssueButton } from "../components/report-issue";
 import { SubscribeButton } from "../components/subscribe-button";
 import { firstSentence, ogImageUrl } from "../lib/og";
 import { fitTitle, pageMeta } from "../lib/page-meta";
@@ -574,14 +575,6 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     d
       ? formatDate(d, { year: "numeric", month: "short", day: "numeric" })
       : "";
-  // One line: "Discussed May 4 – Jun 1, 2020" (the year once when it's the same).
-  const discussed = (() => {
-    if (!firstSeen) return null;
-    if (!lastSeen || lastSeen === firstSeen) return `Discussed ${shortDate(firstSeen)}`;
-    const sameYear = String(firstSeen).slice(0, 4) === String(lastSeen).slice(0, 4);
-    const start = sameYear ? formatDate(firstSeen, { month: "short", day: "numeric" }) : shortDate(firstSeen);
-    return `Discussed ${start} – ${shortDate(lastSeen)}`;
-  })();
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -589,32 +582,30 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
         <header className="mb-10">
           <DetailHeader
             className="mb-0"
-            back={{ to: "/matters", label: "Decisions" }}
-            meta={[
-              matter.category || "General",
-              discussed ? <span className="tabular-nums">{discussed}</span> : null,
-            ]}
             title={matterTitle(matter)}
-            metaLead={
-              statusVariant ? (
-                <Badge variant={statusVariant}>{matter.status}</Badge>
-              ) : quietSince(matter.status, lastSeen || matter.last_seen) ? (
-                <Badge variant="muted">No activity since {quietSince(matter.status, lastSeen || matter.last_seen)}</Badge>
-              ) : undefined
-            }
-            metaAction={<SubscribeButton type="matter" targetId={matter.id} label="Follow" compact icon />}
+            reportButton={false}
           />
+
+          {/* Where it stands, once: the status, what last happened and when it began, then what a reader can do about it. */}
+          <div id="topic-status" className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <p className="text-sm leading-7 text-zinc-500">
+              {statusVariant ? (
+                <Badge variant={statusVariant} className="mr-2">{matter.status}</Badge>
+              ) : quietSince(matter.status, lastSeen || matter.last_seen) ? (
+                <Badge variant="muted" className="mr-2">No activity since {quietSince(matter.status, lastSeen || matter.last_seen)}</Badge>
+              ) : null}
+              {matter.meta?.status_line && <span className="text-zinc-800">{matter.meta.status_line} </span>}
+              {firstSeen && <span className="whitespace-nowrap">First discussed {formatDate(firstSeen, { month: "short", year: "numeric" })}</span>}
+            </p>
+            <div className="-mx-2 flex shrink-0 items-center gap-1 sm:mx-0 sm:-mr-2">
+              <SubscribeButton type="matter" targetId={matter.id} label="Follow" icon quiet />
+              <ReportIssueButton />
+            </div>
+          </div>
 
           {(matter.plain_english_summary || matter.description) && (
             <p id="topic-summary" className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-700">
               {matter.plain_english_summary || matter.description}
-            </p>
-          )}
-
-          {matter.meta?.status_line && (
-            <p id="topic-status" className="mt-4 max-w-2xl border-l-2 border-brand-500 pl-3 text-sm leading-relaxed text-zinc-600">
-              <span className="font-semibold text-zinc-900">Where it stands: </span>
-              {matter.meta.status_line}
             </p>
           )}
 
@@ -627,10 +618,6 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               <ul className="mt-1.5 space-y-1">
                 {sameSite.slice(0, 4).map((m) => (
                   <li key={m.id} className="flex items-baseline gap-2 text-sm">
-                    <span className="w-[5.5rem] shrink-0 text-xs tabular-nums text-zinc-500">
-                      {/* An earlier application by the year it finished, a later one by the year it started. */}
-                      {m.when === "earlier" ? "Earlier" : m.when === "later" ? "Later" : "Alongside"} · {String((m.when === "earlier" ? m.last_seen : m.first_seen) || m.first_seen || "").slice(0, 4)}
-                    </span>
                     <Link to={matterPath(m)} className="min-w-0 text-zinc-700 hover:text-brand-700 hover:underline">
                       {m.title}
                     </Link>

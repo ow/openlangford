@@ -14,7 +14,11 @@ interface SubscribeButtonProps {
   compact?: boolean;
   /** A bell before the label. */
   icon?: boolean;
+  /** A quiet text button (beside a topic's status), instead of the brand pill. */
+  quiet?: boolean;
 }
+
+const QUIET = "rounded-md px-2 py-1 text-sm font-medium";
 
 export function SubscribeButton({
   type,
@@ -23,6 +27,7 @@ export function SubscribeButton({
   className,
   compact = false,
   icon = false,
+  quiet = false,
 }: SubscribeButtonProps) {
   const rootData = useRouteLoaderData("root") as { user: any } | undefined;
   const user = rootData?.user;
@@ -60,11 +65,9 @@ export function SubscribeButton({
       <Link
         to={`/signup?redirectTo=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "/")}`}
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-full text-sm font-semibold transition-colors",
-          compact
-            ? "px-2.5 py-1 text-xs"
-            : "px-3 py-1.5",
-          "bg-brand-50 text-brand-600 hover:bg-brand-100",
+          "inline-flex items-center gap-1.5 transition-colors",
+          quiet ? cn(QUIET, "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900")
+            : cn("rounded-full text-sm font-semibold bg-brand-50 text-brand-600 hover:bg-brand-100", compact ? "px-2.5 py-1 text-xs" : "px-3 py-1.5"),
           className,
         )}
       >
@@ -78,9 +81,8 @@ export function SubscribeButton({
     return (
       <div
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-full text-sm",
-          compact ? "px-2.5 py-1" : "px-3 py-1.5",
-          "bg-zinc-100 text-zinc-400",
+          "inline-flex items-center gap-1.5",
+          quiet ? cn(QUIET, "text-zinc-300") : cn("rounded-full text-sm bg-zinc-100 text-zinc-400", compact ? "px-2.5 py-1" : "px-3 py-1.5"),
           className,
         )}
       >
@@ -146,11 +148,14 @@ export function SubscribeButton({
       onClick={handleToggle}
       disabled={loading}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full text-sm font-semibold transition-all",
-        compact ? "px-2.5 py-1 text-xs" : "px-3 py-1.5",
-        subscribed
-          ? "bg-brand-600 text-white hover:bg-red-500"
-          : "bg-brand-50 text-brand-600 hover:bg-brand-100",
+        "inline-flex items-center gap-1.5 transition-all",
+        quiet
+          ? cn(QUIET, subscribed
+            ? "text-brand-700 hover:bg-red-50 hover:text-red-700"
+            : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900")
+          : cn("rounded-full text-sm font-semibold", compact ? "px-2.5 py-1 text-xs" : "px-3 py-1.5", subscribed
+            ? "bg-brand-600 text-white hover:bg-red-500"
+            : "bg-brand-50 text-brand-600 hover:bg-brand-100"),
         loading && "opacity-50 cursor-wait",
         className,
       )}

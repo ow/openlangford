@@ -24,9 +24,9 @@ export function ReportIssueButton() {
     <button
       type="button"
       onClick={() => openReportIssue()}
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-800"
+      className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
     >
-      <Flag className="h-3 w-3" />
+      <Flag className="h-3.5 w-3.5" />
       Report issue
     </button>
   );
