@@ -76,8 +76,10 @@ export function ReportIssue() {
         const el = anchor instanceof Element ? anchor : anchor.parentElement;
         // Only the page's own content: not forms, the review bar, or this panel.
         if (!el?.closest("main") || el.closest("input, textarea, [contenteditable], [data-report-ignore]")) return setFlag(null);
-        const rect = range.getBoundingClientRect();
-        setFlag({ top: rect.bottom + 6, left: Math.min(rect.right, window.innerWidth - 150), quote: text, entryKey: entryKeyOf(anchor) });
+        // Next to where the selection ends (its last line), not the corner of the box around every selected line.
+        const lines = Array.from(range.getClientRects()).filter((r) => r.width > 0);
+        const rect = lines[lines.length - 1] || range.getBoundingClientRect();
+        setFlag({ top: rect.bottom + 6, left: Math.max(8, Math.min(rect.right - 24, window.innerWidth - 150)), quote: text, entryKey: entryKeyOf(anchor) });
       }, 200);
     };
     const hide = () => setFlag(null);

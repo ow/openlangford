@@ -7,6 +7,7 @@ import type { FlagProblem, FlagVerdict, PageFlag } from "../lib/page-review-type
 import { approvedGuidance, examplesFor, recordExample } from "./review-learning.server";
 import { itemRecords, topicItemIds, verifyAgainstRecords } from "./page-verify.server";
 import { listSuggestions, matterForPath, type Suggestion } from "./page-links.server";
+import { sameSiteTopics } from "./properties";
 
 /**
  * A reader's check of one public page: the page is rendered as a signed-out visitor sees it, and the model is
@@ -126,7 +127,7 @@ const RelatedSchema = z.object({
 
 /** Topics listed under Related topics, judged from the records of both topics (not their model-written summaries):
  * flags one about a different place or project, or one that is this same project and should be merged. */
-export async function checkRelatedTopics(supabase: SupabaseClient, matterId: number, entries: PageEntry[]): Promise<PageFlag[]> {
+export async function checkRelatedTopics(supabase: SupabaseClient, matterId: number, entries: PageEntry[], sameSiteIds: Set<number> = new Set()): Promise<PageFlag[]> {
   const related = entries.filter((e) => /^related-\d+$/.test(e.key)).slice(0, 8);
   if (!related.length) return [];
   const own = (await itemRecords(supabase, await topicItemIds(supabase, matterId))).text;
@@ -136,12 +137,14 @@ export async function checkRelatedTopics(supabase: SupabaseClient, matterId: num
     stage: "review",
     prompt: `A topic page on Open Langford, a site that follows Langford City council, lists other topics under "Related
 topics: Other topics about the same place or project." Decide for each listed topic, from the council's records of both
-topics, whether it belongs there. Judge from the records, not the titles.
+topics, whether it belongs there. Judge from the records, not the titles. A topic marked as another application for the
+same site (an earlier or later rezoning, permit or subdivision of the same land) belongs, though it's a different
+application: it's same_project only when the records show the very same application (the same file or bylaw number).
 
 THIS TOPIC'S RECORDS:
 ${own.slice(0, 20000) || "(none)"}
 
-${related.map((e, i) => `[${e.key}] as listed: ${e.text}\nIts records:\n${theirs[i].slice(0, 12000) || "(none)"}`).join("\n\n")}`,
+${related.map((e, i) => `[${e.key}]${sameSiteIds.has(Number(e.key.slice(8))) ? " [another application for the same site]" : ""} as listed: ${e.text}\nIts records:\n${theirs[i].slice(0, 12000) || "(none)"}`).join("\n\n")}`,
     schema: RelatedSchema,
     schemaName: "related_topics_check",
   });
@@ -156,7 +159,7 @@ ${related.map((e, i) => `[${e.key}] as listed: ${e.text}\nIts records:\n${theirs
   }));
 }
 
-export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = [], kind = "matters", suggestions: Suggestion[] = []) {
+export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] = [], kind = "matters", suggestions: Suggestion[] = [], sameSite: string[] = []) {
   // Approved guidance replaces the built-in description of its problem type.
   const ruleFor = new Map(rules.map((r) => [r.problem, r.text]));
   const problems = CHECK_PROBLEMS.map((k) => `- ${k}: ${ruleFor.get(k) ?? FLAG_PROBLEMS[k]}`).join("\n");
@@ -170,7 +173,11 @@ export function checkPrompt(page: ReadPage, examples: Example[], rules: Rule[] =
   return `You're a Langford resident reading this page on Open Langford, a site that follows City council. Point out what
 would confuse or mislead you. Only flag clear problems a careful reader would notice; most entries are fine,
 and a page with nothing wrong gets no flags. Raise each problem once, on the entry it's about. A timeline entry may be a small mention of this subject inside a
-meeting about something else; that's fine if the entry shows why it's there.
+meeting about something else; that's fine if the entry shows why it's there.${sameSite.length ? `
+
+The same land had other applications, shown on the page under "Also at": ${sameSite.map((t) => `"${t}"`).join(", ")}.
+Entries marked "Part of" one of them are there on purpose, as this land's history: don't flag them as different_story or
+duplicate for being a different application, only when the entry itself is about other land.` : ""}
 
 Problems:
 ${problems}${KIND_GUIDANCE[kind] ? `\n\n${KIND_GUIDANCE[kind]}` : ""}${calibration}
@@ -190,8 +197,7 @@ just say it's missing: say which one supplies it in the fix, e.g. "Add the sugge
 
 /** A topic's suggestions waiting for a decision, for the check to point a missing step at. The check doesn't wait for a
  * "find missing" search it started (about 30s): the review bar shows what that search finds when it's done. */
-async function pendingSuggestions(supabase: SupabaseClient, path: string): Promise<Suggestion[]> {
-  const matterId = await matterForPath(supabase, path);
+async function pendingSuggestions(supabase: SupabaseClient, matterId: number | null): Promise<Suggestion[]> {
   return matterId ? listSuggestions(supabase, matterId).catch(() => []) : [];
 }
 
@@ -201,8 +207,11 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const kind = reviewKind(path);
   // Two readings at once: against the records behind the page (page-verify), and as a resident (this prompt), which
   // can point a missing step at a suggestion already found.
-  const relatedMatterId = kind === "matters" && page.entries.some((e) => e.key.startsWith("related-")) ? await matterForPath(supabase, path) : null;
-  const relating = relatedMatterId ? checkRelatedTopics(supabase, relatedMatterId, page.entries).catch((error) => {
+  const matterId = kind === "matters" ? await matterForPath(supabase, path) : null;
+  // Earlier and later applications for the same land: context the page shows on purpose, not stray entries.
+  const sameSite = matterId ? await sameSiteTopics(supabase, matterId).catch(() => []) : [];
+  const relatedMatterId = page.entries.some((e) => e.key.startsWith("related-")) ? matterId : null;
+  const relating = relatedMatterId ? checkRelatedTopics(supabase, relatedMatterId, page.entries, new Set(sameSite.map((m) => m.id))).catch((error) => {
     console.error("[page-check] checking related topics failed:", error instanceof Error ? error.message : error);
     return [] as PageFlag[];
   }) : Promise.resolve([] as PageFlag[]);
@@ -215,12 +224,12 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   const [examples, guidance, suggestions] = await Promise.all([
     examplesFor(supabase, kind, [page.heading, page.description, ...page.entries.map((e) => e.text), page.body].join("\n").slice(0, 6000)),
     approvedGuidance(supabase, kind),
-    kind === "matters" ? pendingSuggestions(supabase, path) : Promise.resolve([] as Suggestion[]),
+    kind === "matters" ? pendingSuggestions(supabase, matterId) : Promise.resolve([] as Suggestion[]),
   ]);
   const [result, unsupported, relatedFlags] = await Promise.all([
     getAiClient().json({
       stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
-      prompt: checkPrompt(reading, examples, guidance.rules, kind, suggestions),
+      prompt: checkPrompt(reading, examples, guidance.rules, kind, suggestions, sameSite.map((m) => m.title)),
       schema: CheckSchema,
       schemaName: "page_check",
     }),
