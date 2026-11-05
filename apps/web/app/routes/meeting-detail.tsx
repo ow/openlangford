@@ -1,4 +1,5 @@
 import { CalendarProvenance } from "../components/calendar-provenance";
+import { labelSpeakerRoles } from "../services/speaker-roles.server";
 import { pageMeta, recordDate, markdownAlternate, metaDescription } from "../lib/page-meta";
 import { ogImageUrl } from "../lib/og";
 import { withLinkedPeople } from "../lib/written";
@@ -212,6 +213,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     // meetings.meta also holds pipeline-private data (speaker voice centroids/samples, cached
     // direct media URLs); ship only the keys the page reads.
     const meeting = data.meeting && { ...data.meeting, meta: publicMeetingMeta(data.meeting.meta) };
+    await labelSpeakerRoles(supabase, [data.agendaItems], meeting.meeting_date);
     return { ...data, meeting, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties, itemMatters };
   } catch (error) {
     throw loaderFailure(error, "Meeting Not Found");

@@ -57,6 +57,15 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   };
 }
 
+const outsideRoles = (person: any) =>
+  ((person.memberships || []) as any[]).filter((m) => !/^(council|staff)$/i.test(m.organization?.classification || ""));
+const monthYear = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString("en-CA", { month: "short", year: "numeric" });
+function roleDates(m: { start_date?: string | null; end_date?: string | null }) {
+  if (m.start_date && m.end_date) return `${monthYear(m.start_date)} to ${monthYear(m.end_date)}`;
+  if (m.start_date) return `since ${monthYear(m.start_date)}`;
+  return m.end_date ? `until ${monthYear(m.end_date)}` : "dates not recorded";
+}
+
 function duration(seconds: number) {
   const rounded = Math.round(seconds);
   return rounded < 60 ? `${rounded}s` : rounded < 3600 ? `${Math.floor(rounded / 60)}m ${rounded % 60}s` : `${Math.floor(Math.round(rounded / 60) / 60)}h ${Math.round(rounded / 60) % 60}m`;
@@ -83,6 +92,14 @@ export default function ParticipantProfile({ loaderData }: Route.ComponentProps)
             <div>
               <p className="mb-1 text-sm font-medium text-zinc-500">{hasParticipation ? "Public participant" : "Meeting participant"}</p>
               <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900">{person.name}</h1>
+              {/* Roles staff recorded (an industry group, a company), with when each held: council and staff roles
+                  are on the council profile instead. */}
+              {outsideRoles(person).map((m: any) => (
+                <p key={m.id} className="mt-1 text-sm text-zinc-600">
+                  <span className="font-medium text-zinc-800">{[m.role, m.organization?.name].filter(Boolean).join(", ")}</span>
+                  <span className="text-zinc-500 tabular-nums"> · {roleDates(m)}</span>
+                </p>
+              ))}
             </div>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-zinc-600">Recorded appearances and letters as a member of the public at council and committee meetings.</p>

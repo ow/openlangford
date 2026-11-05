@@ -13,6 +13,8 @@ export type ParticipationSpeaker = {
   person_id?: number | null;
   /** Hydrated by the loader when available, for the profile slug. */
   person?: { id: number; name?: string | null; slug?: string | null };
+  /** Their role on that day, from the people page ("President, West Shore Developers Association"). */
+  role?: string;
 };
 export type Participation = {
   overview?: string; source?: "minutes" | "transcript"; speakers?: ParticipationSpeaker[];
@@ -81,6 +83,7 @@ export function ParticipationList({
           ) : (
             <span className="font-medium text-zinc-900">{s.who}</span>
           )}
+          {s.role && <span className="text-zinc-500"> · {s.role}</span>}
           {POSITION_LABEL[s.position] && (
             <span className={cn("ml-1.5 text-xs font-medium", POSITION_TONE[s.position] || "text-zinc-500")}>
               {POSITION_LABEL[s.position]}

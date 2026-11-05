@@ -199,4 +199,22 @@ def test_an_older_stamp_is_rewritten_even_when_nothing_changes():
     current = {"id": 13, "updated_at": "t", "meta": {STAMP: "1", "participation": {"speakers": [{"who": "A resident"}]}}}
     result = link_item(sb, current, registry())
     assert not result["changed"] and result["would_write"] and result["written"]
-    assert sb.log[0][1]["meta"][STAMP] == LINKS_VERSION == "2"
+    assert sb.log[0][1]["meta"][STAMP] == LINKS_VERSION == "3"
+
+
+def test_staff_listed_spellings_and_representing_clauses_link():
+    from pipeline.ingestion.participation_person_links import build_registry, link_speakers
+
+    people = [{"id": 316, "name": "Ron Coutre", "variants": ["Ron Coutrey", "R. Coutre"]}, {"id": 9, "name": "Jane Doe"}]
+    registry = build_registry(people, set())
+    speakers = [{"who": w} for w in ("Ron Coutre (Goldstream Avenue)", "Ron Coutrey", "R. Coutre",
+                                     "Ron Coutre representing the South Skirt Development Group", "R. Coutts", "Jane Doe")]
+    linked, _ = link_speakers(speakers, registry)
+    assert [s.get("person_id") for s in linked] == [316, 316, 316, 316, None, 9]
+
+
+def test_a_spelling_two_people_claim_links_nobody():
+    from pipeline.ingestion.participation_person_links import build_registry, person_for
+
+    registry = build_registry([{"id": 1, "name": "Ann Lee", "variants": ["A. Lee"]}, {"id": 2, "name": "Al Lee", "variants": ["A. Lee"]}], set())
+    assert person_for("A. Lee", registry) is None

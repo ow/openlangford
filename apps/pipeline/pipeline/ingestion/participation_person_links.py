@@ -14,6 +14,10 @@ passes:
    a Council or Staff membership, an official role, or a documented
    government-staff role at any meeting).
 
+A name staff list on the person as another spelling of it (``people.meta.name_variants``: "Ron Coutrey", "R. Coutre")
+links too, exactly as written, even where rule 1 would not (an initial). Before either match, a trailing
+"representing …" ("Ron Coutre representing the South Skirt Development Group") is dropped like the "(Street)" note.
+
 Anything else removes a stale ``person_id``, so re-running is idempotent. No
 model calls: this is a cheap backfill over existing summaries and runs after
 the participation and written-submission stages so a redraft gets its links
@@ -27,10 +31,14 @@ from typing import Any
 
 # Bump when the linking rule changes; stamped in agenda_items.meta.participation_links_version.
 # "2": letter authors in meta.written_participation are linked too.
-LINKS_VERSION = "2"
+# "3": staff-listed name variants, and names followed by "representing …".
+LINKS_VERSION = "3"
 STAMP = "participation_links_version"
 
 QUALIFIER = re.compile(r"\s*\([^()]*\)\s*$")
+REPRESENTING = re.compile(r"\s*,?\s+(?:representing|on behalf of)\s.*$", re.I)
+# Registry keys for staff-listed spellings, kept apart from names so rule 1 still applies to everything else.
+VARIANT = "variant:"
 INITIAL = re.compile(r"^[A-Za-z]\.?$|^(?:[A-Za-z]\.){2,}$")
 # Words that make a "name" a label or an organization, not a person.
 NOT_A_PERSON = {
@@ -54,9 +62,14 @@ def name_key(name: str) -> str:
     return " ".join((name or "").split()).casefold()
 
 
+def bare_name(who: str) -> str:
+    """The speaker's name without a trailing "(Street)" note or "representing …" clause."""
+    return " ".join(REPRESENTING.sub("", QUALIFIER.sub("", who or "")).split())
+
+
 def full_name(who: str) -> str | None:
     """The speaker's name without a trailing "(Street)" qualifier, or None unless it is a full name."""
-    name = " ".join(QUALIFIER.sub("", who or "").split())
+    name = bare_name(who)
     words = name.split(" ") if name else []
     if len(words) < 2 or any(INITIAL.match(w) for w in words):
         return None
@@ -89,10 +102,22 @@ def build_registry(people: list[dict], excluded: set[int]) -> dict[str, int | No
     registry: dict[str, int | None] = {}
     for key, ids in by_name.items():
         registry[key] = next(iter(ids)) if len(ids) == 1 and not ids & excluded else None
+    variants: dict[str, set[int]] = {}
+    for p in people:
+        for v in p.get("variants") or []:
+            if isinstance(v, str) and v.strip():
+                variants.setdefault(name_key(bare_name(v)), set()).add(p["id"])
+    for key, ids in variants.items():
+        # A spelling two people claim, or one that is someone else's name, links nobody.
+        other = by_name.get(key, set()) - ids
+        registry[VARIANT + key] = next(iter(ids)) if len(ids) == 1 and not other and not ids & excluded else None
     return registry
 
 
 def person_for(who: str, registry: dict[str, int | None]) -> int | None:
+    variant = VARIANT + name_key(bare_name(who))
+    if variant in registry:
+        return registry[variant]
     name = full_name(who)
     return registry.get(name_key(name)) if name else None
 
@@ -148,7 +173,7 @@ def _paginate(build, page: int = 1000) -> list[dict]:
 
 
 def load_registry(supabase: Any) -> tuple[dict[str, int | None], set[int]]:
-    people = _paginate(lambda: supabase.table("people").select("id,name,is_councillor").order("id"))
+    people = _paginate(lambda: supabase.table("people").select("id,name,is_councillor,variants:meta->name_variants").order("id"))
     memberships = _paginate(lambda: supabase.table("memberships")
                             .select("id,person_id,role,organizations(classification)").order("id"))
     roles = []

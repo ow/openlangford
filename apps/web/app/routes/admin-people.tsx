@@ -10,6 +10,9 @@ import {
   updatePerson,
   addMembership,
   deleteMembership,
+  createOrganization,
+  requestParticipantLinks,
+  setNameVariants,
 } from "../services/admin";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { Button } from "../components/ui/button";
@@ -38,7 +41,7 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  await requireAdmin(request);
+  const user = await requireAdmin(request);
   const supabase = getSupabaseAdminClient();
   const formData = await request.formData();
   const intent = formData.get("intent");
@@ -52,9 +55,19 @@ export async function action({ request }: Route.ActionArgs) {
       const name = formData.get("name") as string;
       const is_councillor = formData.get("is_councillor") === "on";
       await updatePerson(supabase, id, { name, is_councillor });
+      // Other spellings in the minutes: saved on the person, then every speaker is linked again in the background.
+      const variants = String(formData.get("name_variants") || "").split(",").map((v) => v.replace(/\s+/g, " ").trim()).filter(Boolean);
+      const before = String(formData.get("name_variants_before") || "");
+      const nameBefore = String(formData.get("name_before") || "");
+      if (variants.join(",") !== before) await setNameVariants(supabase, id, variants);
+      if (variants.join(",") !== before || name !== nameBefore) await requestParticipantLinks(supabase, user.id);
     } else if (intent === "add_membership") {
       const person_id = formData.get("person_id") as string;
-      const organization_id = formData.get("organization_id") as string;
+      const newOrganization = String(formData.get("new_organization") || "").trim();
+      const organization_id = newOrganization
+        ? String(await createOrganization(supabase, newOrganization))
+        : (formData.get("organization_id") as string);
+      if (!organization_id) throw new Error("Choose an organization or name a new one.");
       const role = formData.get("role") as string;
       const start_date = (formData.get("start_date") as string) || undefined;
       const end_date = (formData.get("end_date") as string) || undefined;
@@ -208,6 +221,8 @@ export default function AdminPeople({ loaderData }: Route.ComponentProps) {
               <Form method="post" className="space-y-4">
                 <input type="hidden" name="intent" value="update_person" />
                 <input type="hidden" name="id" value={selectedPerson.id} />
+                <input type="hidden" name="name_before" value={selectedPerson.name} />
+                <input type="hidden" name="name_variants_before" value={(selectedPerson.name_variants || []).join(",")} />
                 <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
                   <div>
                     <label htmlFor="edit-person-name" className={fieldLabel}>
@@ -232,6 +247,22 @@ export default function AdminPeople({ loaderData }: Route.ComponentProps) {
                     />
                     Councillor or mayor
                   </label>
+                </div>
+                <div>
+                  <label htmlFor="edit-person-variants" className={fieldLabel}>
+                    Also appears as
+                  </label>
+                  <Input
+                    id="edit-person-variants"
+                    name="name_variants"
+                    defaultValue={(selectedPerson.name_variants || []).join(", ")}
+                    placeholder="e.g. Ron Coutrey, R. Coutre"
+                  />
+                  <p className="mt-1 text-xs text-zinc-500">
+                    Other spellings the minutes use, separated by commas. Speakers and letter writers under this name or
+                    these spellings link to this person's page (a few minutes after saving). A note like "(Goldstream
+                    Avenue)" or "representing …" after a name is ignored.
+                  </p>
                 </div>
                 <Button type="submit" variant="outline" size="sm">
                   Save details
@@ -308,7 +339,6 @@ export default function AdminPeople({ loaderData }: Route.ComponentProps) {
                       <NativeSelect
                         id="membership-org"
                         name="organization_id"
-                        required
                         defaultValue=""
                       >
                         <option value="" disabled>
@@ -320,6 +350,8 @@ export default function AdminPeople({ loaderData }: Route.ComponentProps) {
                           </option>
                         ))}
                       </NativeSelect>
+                      <Input name="new_organization" className="mt-2" aria-label="Or a new organization"
+                        placeholder="Or name a new one, e.g. West Shore Developers Association" />
                     </div>
 
                     <div className="sm:col-span-2">
@@ -329,7 +361,7 @@ export default function AdminPeople({ loaderData }: Route.ComponentProps) {
                       <Input
                         id="membership-role"
                         name="role"
-                        placeholder="e.g. Member, Chair"
+                        placeholder="e.g. President, Member, Chair"
                         required
                       />
                     </div>

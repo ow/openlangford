@@ -669,6 +669,12 @@ def run_job(supabase, job: dict):
 
         return suggest_links(int(args["matter_id"]))
 
+    if job_type == "link_participants":
+        # Staff changed a person's name spellings on the people page: link every speaker and letter writer again.
+        from pipeline.stages import StageContext, run_participation_person_links
+
+        return run_participation_person_links(StageContext(supabase=supabase))
+
     raise ValueError(f"Unsupported job_type: {job_type}")
 
 

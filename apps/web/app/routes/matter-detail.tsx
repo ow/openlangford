@@ -1,4 +1,5 @@
 import { SITE_NAME } from "../lib/site-name";
+import { labelSpeakerRoles } from "../services/speaker-roles.server";
 import { collapseListedReadings, foldSameMeetingSteps } from "../lib/timeline-story";
 import { getStaffRole } from "../lib/auth.server";
 import type { Route } from "./+types/matter-detail";
@@ -394,6 +395,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const lots = properties.map(propertyPin).filter((p): p is NonNullable<typeof p> => p !== null);
     (matter as any).locations = lots.length ? lots : Array.from(pins.values());
 
+    await labelSpeakerRoles(supabase, [matter, story]);
     return { matter, matterDocuments, matterEvidence, story, images, properties, sameSite };
   } catch (error) {
     throw loaderFailure(error, "Matter Not Found");
