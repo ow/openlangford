@@ -45,7 +45,6 @@ import {
 } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { SectionHeading } from "../components/ui/section-heading";
-import { DetailHeader } from "../components/ui/detail-header";
 import { cn, formatDate } from "../lib/utils";
 import { displayTitle, matterTitle } from "../lib/display-text";
 import { bylawLead, bylawStatus } from "../lib/bylaw-summary";
@@ -576,36 +575,36 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       ? formatDate(d, { year: "numeric", month: "short", day: "numeric" })
       : "";
 
+  const photoAndMap = !!images.lead && (matter.locations?.length ?? 0) > 0;
+
   return (
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-4xl px-4 pt-6 pb-12 md:pt-10">
         <header className="mb-10">
-          <DetailHeader
-            className="mb-0"
-            title={matterTitle(matter)}
-            reportButton={false}
-          />
-
-          {/* Where it stands, once: the status and what last happened, then what a reader can do about it. */}
-          <div id="topic-status" className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-            <p className="text-sm leading-7 text-zinc-500">
+          {/* Above the title, the status badge and the page's buttons share a row; where it stands follows the title. */}
+          <div className="mb-1.5 flex items-center justify-between gap-3">
+            <div className="min-w-0">
               {statusVariant ? (
-                <Badge variant={statusVariant} className="mr-2">{matter.status}</Badge>
+                <Badge variant={statusVariant}>{matter.status}</Badge>
               ) : quietSince(matter.status, lastSeen || matter.last_seen) ? (
-                <Badge variant="muted" className="mr-2">No activity since {quietSince(matter.status, lastSeen || matter.last_seen)}</Badge>
+                <Badge variant="muted">No activity since {quietSince(matter.status, lastSeen || matter.last_seen)}</Badge>
               ) : null}
-              {/* The status line carries its own date; without one, when the topic first came up. */}
-              {matter.meta?.status_line ? <span className="text-zinc-800">{matter.meta.status_line}</span>
-                : firstSeen && <span className="whitespace-nowrap">First discussed {formatDate(firstSeen, { month: "short", year: "numeric" })}</span>}
-            </p>
-            <div className="-mx-2 flex shrink-0 items-center gap-1 sm:mx-0 sm:-mr-2">
-              <SubscribeButton type="matter" targetId={matter.id} label="Follow" icon quiet />
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5">
               <ReportIssueButton />
+              <SubscribeButton type="matter" targetId={matter.id} label="Follow" icon />
             </div>
           </div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">{matterTitle(matter)}</h1>
+          {/* The status line carries its own date; without one, when the topic first came up. */}
+          {(matter.meta?.status_line || firstSeen) && (
+            <p id="topic-status" className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-800">
+              {matter.meta?.status_line || <span className="text-zinc-500">First discussed {formatDate(firstSeen!, { month: "short", year: "numeric" })}</span>}
+            </p>
+          )}
 
           {(matter.plain_english_summary || matter.description) && (
-            <p id="topic-summary" className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-700">
+            <p id="topic-summary" className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-700">
               {matter.plain_english_summary || matter.description}
             </p>
           )}
@@ -640,14 +639,16 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
           )}
 
           {images.lead && (
-            <figure className="mt-6">
+            // With a map too, the picture and the map share a row (stacked on a phone) instead of two tall blocks.
+            <div className={cn("mt-6", photoAndMap && "grid gap-4 md:grid-cols-2")}>
+            <figure>
               <a href={images.lead.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl border border-zinc-200 bg-surface">
                 <img
                   src={images.lead.url}
                   alt={`${IMAGE_CAPTION[images.lead.kind] || "From the staff report"}: ${matterTitle(matter)}`}
                   width={images.lead.width}
                   height={images.lead.height}
-                  className="max-h-[420px] w-full object-cover"
+                  className={cn("w-full object-cover", photoAndMap ? "h-[260px] sm:h-[320px]" : "max-h-[420px]")}
                   loading="eager"
                 />
               </a>
@@ -663,6 +664,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                 ) : null}
               </figcaption>
             </figure>
+            {photoAndMap && <MattersMap compact short matters={[matter]} activeLocation={matter.locations?.[0]} />}
+            </div>
           )}
 
           {[matter.bylaw, ...((matter as any).other_bylaws || [])].filter(Boolean).map((bylaw: any, index: number, bylaws: any[]) => (
@@ -710,14 +713,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
         </header>
 
         <div className="space-y-12">
-          {((matter.locations && matter.locations.length > 0) || properties.length > 0) && (
+          {((!photoAndMap && matter.locations && matter.locations.length > 0) || properties.length > 0) && (
             <section>
               <SectionHeading title="Location" icon={MapPin} />
-              {matter.locations && matter.locations.length > 0 && (
+              {!photoAndMap && matter.locations && matter.locations.length > 0 && (
                 <MattersMap matters={[matter]} activeLocation={matter.locations?.[0]} />
               )}
               {addressGroups.length > 0 && (
-                <ul className={cn("space-y-3", matter.locations?.length ? "mt-4" : "")}>
+                <ul className={cn("space-y-3", matter.locations?.length && !photoAndMap ? "mt-4" : "")}>
                   {addressGroups.map((g) => (
                     <li key={g.key} className="rounded-2xl border border-zinc-200 bg-surface p-4 shadow-sm">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">

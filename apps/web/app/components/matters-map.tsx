@@ -44,6 +44,7 @@ export function MattersMap({
   linkLabel = "View matter",
   compact = false,
   tall = false,
+  short = false,
   fitToMarkers = false,
   bleed = false,
 }: {
@@ -55,6 +56,8 @@ export function MattersMap({
   compact?: boolean;
   /** A page-leading map (the properties index): taller, same compact chrome. */
   tall?: boolean;
+  /** Beside a picture of the same size (a topic with both): a shorter map. */
+  short?: boolean;
   /** Frame every pin on load (a street page) instead of the default town view. */
   fitToMarkers?: boolean;
   /** Edge to edge on phones (cancels the page's px-4 gutter); a rounded card from sm up. */
@@ -66,6 +69,9 @@ export function MattersMap({
 }) {
   const container = useRef<HTMLDivElement>(null);
   const markers = useMemo(() => matterMapMarkers(matters), [matters]);
+  const few = markers.length <= 3;
+  // A short map shows less around its pin at the same zoom, so it starts a step further out.
+  const focusZoom = short ? 15 : 16;
   const latest = useRef({ markers, onMarkerClick, activeLocation, mapCenter, fitToMarkers });
   latest.current = { markers, onMarkerClick, activeLocation, mapCenter, fitToMarkers };
   const [map, setMap] = useState<LibreMap | null>(null);
@@ -119,7 +125,7 @@ export function MattersMap({
           container: container.current,
           style: dark ? MAP_STYLE_DARK : MAP_STYLE,
           center: [center.lng, center.lat],
-          zoom: isMapLocation(focus) ? 16 : 12.8,
+          zoom: isMapLocation(focus) ? focusZoom : 12.8,
           maxZoom: 19,
           renderWorldCopies: false,
           attributionControl: false,
@@ -231,9 +237,10 @@ export function MattersMap({
             filter: ["!", ["has", "point_count"]],
             paint: {
               "circle-color": "#287779",
-              "circle-radius": 6,
+              // A town map's many pins stay small; a page with a pin or two marks its place clearly.
+              "circle-radius": few ? 11 : 6,
               "circle-stroke-color": "#fff",
-              "circle-stroke-width": 2,
+              "circle-stroke-width": few ? 3 : 2,
             },
           });
           current.addLayer({
@@ -336,7 +343,7 @@ export function MattersMap({
     if (map && isMapLocation(activeLocation))
       map.easeTo({
         center: [activeLocation.lng, activeLocation.lat],
-        zoom: 16,
+        zoom: focusZoom,
       });
   }, [map, activeLocation?.lat, activeLocation?.lng]);
 
@@ -387,7 +394,7 @@ export function MattersMap({
   return (
     <div className="space-y-2">
       <div
-        className={`relative z-0 overflow-hidden border-zinc-200 bg-zinc-100 ${bleed ? "-mx-4 w-[calc(100%+2rem)] border-y sm:mx-0 sm:w-full sm:rounded-2xl sm:border sm:shadow-sm" : "w-full rounded-2xl border shadow-sm"} ${tall ? "h-[420px] sm:h-[640px]" : compact ? "h-[360px] sm:h-[450px]" : "h-[360px] sm:h-[560px]"}`}
+        className={`relative z-0 overflow-hidden border-zinc-200 bg-zinc-100 ${bleed ? "-mx-4 w-[calc(100%+2rem)] border-y sm:mx-0 sm:w-full sm:rounded-2xl sm:border sm:shadow-sm" : "w-full rounded-2xl border shadow-sm"} ${tall ? "h-[420px] sm:h-[640px]" : short ? "h-[260px] sm:h-[320px]" : compact ? "h-[360px] sm:h-[450px]" : "h-[360px] sm:h-[560px]"}`}
         role="region"
         aria-label={hrefFor === matterPath ? "Map of council matters" : "Map of addresses"}
         aria-busy={loading}
