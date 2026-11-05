@@ -581,7 +581,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen bg-zinc-50">
       <div className="container mx-auto max-w-4xl px-4 pt-6 pb-12 md:pt-10">
         <header className="mb-10">
-          {/* Above the title, the status badge and the page's buttons share a row; where it stands follows the title. */}
+          {/* Above the title, the status badge and the page's buttons share a row. */}
           <div className="mb-1.5 flex items-center justify-between gap-3">
             <div className="min-w-0">
               {statusVariant ? (
@@ -596,17 +596,22 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">{matterTitle(matter)}</h1>
-          {/* The status line carries its own date; without one, when the topic first came up. */}
-          {(matter.meta?.status_line || firstSeen) && (
-            <p id="topic-status" className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-800">
-              {matter.meta?.status_line || <span className="text-zinc-500">First discussed {formatDate(firstSeen!, { month: "short", year: "numeric" })}</span>}
-            </p>
-          )}
 
           {(matter.plain_english_summary || matter.description) && (
             <p id="topic-summary" className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-700">
               {matter.plain_english_summary || matter.description}
             </p>
+          )}
+
+          {/* The status line, under the summary; it carries its own date (without one, when the topic first came up). */}
+          {(matter.meta?.status_line || firstSeen) && (
+            <div id="topic-status" className="mt-4 max-w-2xl border-l-2 border-brand-500 pl-3">
+              {/* The label on its own line, in the border's colour, so a long status wraps cleanly under itself. */}
+              <p className="text-xs font-semibold text-brand-700">Status</p>
+              <p className="mt-0.5 text-sm leading-relaxed text-zinc-700">
+                {matter.meta?.status_line || `First discussed ${formatDate(firstSeen!, { month: "short", year: "numeric" })}`}
+              </p>
+            </div>
           )}
 
           {sameSite.length > 0 && (

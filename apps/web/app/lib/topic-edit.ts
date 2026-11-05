@@ -4,7 +4,7 @@ export const EDIT_FIELDS = ["title", "summary", "status_line", "image"] as const
 export type EditField = (typeof EDIT_FIELDS)[number];
 
 export const FIELD_LABELS: Record<EditField, string> = {
-  title: "Title", summary: "Summary", status_line: "Where it stands", image: "Feature photo",
+  title: "Title", summary: "Summary", status_line: "Status", image: "Feature photo",
 };
 
 /** The photo's caption on the page (matter-detail's IMAGE_CAPTION); none reads "From the staff report". */
