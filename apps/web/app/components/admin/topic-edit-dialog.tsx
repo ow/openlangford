@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFetcher, useRevalidator } from "react-router";
 import { ImageOff, Loader2, RotateCcw } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
@@ -32,9 +32,12 @@ export function TopicEditDialog({ open, onOpenChange, path, onSaved }: {
   }, [state, open]);
 
   // After a save: the page shows the new text, the bar its new state, and the panel the stored values.
+  // Acts on the server's answer, not on the page reload that follows it: a reload can hang (a deploy landing mid-save
+  // swaps the build it loads from), and the dialog shouldn't sit on "Saving…" for a save that's done.
   const [sent, setSent] = useState<string | null>(null);
+  const answerBefore = useRef<unknown>(undefined);
   useEffect(() => {
-    if (save.state !== "idle" || !sent) return;
+    if (!sent || save.state === "submitting" || save.data === answerBefore.current) return;
     const intent = sent;
     setSent(null);
     if (!save.data?.ok) return;
@@ -43,19 +46,20 @@ export function TopicEditDialog({ open, onOpenChange, path, onSaved }: {
     if (intent === "edit_topic") onOpenChange(false);
     else load.load(`/api/page-review?path=${encodeURIComponent(path)}&edit=1`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [save.state]);
+  }, [save.state, save.data]);
 
   const send = (intent: string, fields: Record<string, string> = {}) => {
+    answerBefore.current = save.data;
     setSent(intent);
     save.submit({ intent, path, title: document.title, ...fields }, { method: "post", action: "/api/page-review" });
   };
-  const busy = save.state !== "idle";
+  const busy = save.state === "submitting" || !!sent;
   const locked = (field: EditField) => state?.locked.includes(field);
 
   const submit = () => {
     if (!state || !draft) return;
     const fields: Record<string, string> = {};
-    if (draft.title.trim() !== state.title) fields.title = draft.title;
+    if (draft.title.trim() !== state.title) fields.topic_title = draft.title;
     if (draft.summary.trim() !== state.summary) fields.summary = draft.summary;
     if (draft.statusLine.trim() !== state.statusLine) fields.status_line = draft.statusLine;
     if (draft.image !== "current") { fields.image = String(draft.image); fields.image_kind = draft.kind; }

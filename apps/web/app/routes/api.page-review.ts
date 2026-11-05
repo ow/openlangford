@@ -92,7 +92,8 @@ export async function action({ request, context }: Route.ActionArgs) {
       if (!matterId) return bad("This only works on a topic page.");
       if (intent === "edit_topic") {
         const edit: TopicEdit = {};
-        for (const [field, key] of [["title", "title"], ["summary", "summary"], ["status_line", "status_line"]] as const) {
+        // "topic_title", not "title": every request also sends the browser tab's title as "title" (the review's label).
+        for (const [field, key] of [["topic_title", "title"], ["summary", "summary"], ["status_line", "status_line"]] as const) {
           if (form.has(field)) edit[key] = String(form.get(field));
         }
         if (form.has("image")) {
