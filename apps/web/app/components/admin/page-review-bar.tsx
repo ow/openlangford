@@ -103,6 +103,14 @@ export function PageReviewBar() {
     if (save.data.ok) navigate(`/admin/reviews/next?from=${encodeURIComponent(pathname)}`);  // another page of the same kind
   }, [save.state, save.data, navigate, pathname]);
 
+  // A check runs with only the Check button showing it; the panel opens with the results.
+  const checkSent = useRef(false);
+  useEffect(() => {
+    if (!checkSent.current || save.state !== "idle" || !save.data) return;
+    checkSent.current = false;
+    setOpen(true);
+  }, [save.state, save.data]);
+
   // Hiding saves the reason as the internal note: the banner shows it straight away.
   useEffect(() => {
     if (save.state === "idle" && save.data?.ok && save.data.hidden) window.dispatchEvent(new Event(INTERNAL_NOTE_CHANGED));
@@ -183,7 +191,7 @@ export function PageReviewBar() {
     if (intent === "needs_work" || confirmingFix) setStayed(true);
     sentFrom.current = pathname;
     save.submit({ intent, path: pathname, title: document.title, ...extra }, { method: "post", action: "/api/page-review" });
-    if (intent === "check") setOpen(true);
+    if (intent === "check") { checkSent.current = true; setOpen(false); }
     setEditing(null);
   };
   // One rating, sent on its own; the returned promise settles when it's saved (or rolled back).
@@ -232,15 +240,15 @@ export function PageReviewBar() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-40 flex flex-col items-start gap-2 sm:right-auto print:hidden" aria-label="Page review (staff)">
-      {open && (review?.ai_checked_at || checking || links || review?.agent_note || editing === -1) && (
+      {open && !checking && (review?.ai_checked_at || links || review?.agent_note || editing === -1) && (
         <div ref={panel} className="max-h-[60vh] w-full overflow-y-auto rounded-2xl border border-dashed border-amber-400 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           <div className="mb-2 flex items-start justify-between gap-2">
             <div>
               <div className="font-semibold text-zinc-900">
-                {checking ? "Reading the page…" : !review?.ai_checked_at ? "Not checked yet" : !flags.length ? "No problems flagged"
+                {!review?.ai_checked_at ? "Not checked yet" : !flags.length ? "No problems flagged"
                   : open_ ? `${open_} of ${flags.length} ${flags.length === 1 ? "flag" : "flags"} still open` : `All ${flags.length} ${flags.length === 1 ? "flag" : "flags"} resolved`}
               </div>
-              {!checking && review?.ai_checked_at && (
+              {review?.ai_checked_at && (
                 <p className="text-xs text-zinc-500">Read {readWhat(review)} · {reviewTime(review.ai_checked_at)}</p>
               )}
             </div>
@@ -248,9 +256,6 @@ export function PageReviewBar() {
               <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="rounded-full p-1 text-zinc-400 hover:bg-zinc-100"><X className="h-4 w-4" /></button>
             </Tip>
           </div>
-          {checking ? (
-            <p className="text-zinc-500">The model is reading this page as a resident would. This takes a few seconds.</p>
-          ) : (
             <>
               {blocked && open_ > 0 && (
                 <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-sm text-amber-900">
@@ -511,7 +516,6 @@ export function PageReviewBar() {
                 </>
               )}
             </>
-          )}
         </div>
       )}
       {hiding && (
@@ -605,8 +609,8 @@ export function PageReviewBar() {
             <button type="button" disabled={busy}
               onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
               className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-100")}>
-              <Sparkles className={cn("h-4 w-4", checking && "animate-pulse")} />
-              {checking ? "Checking…" : "Check"}
+              {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              {checking ? "AI checking…" : "Check"}
               {/* One count, like an unread count: open flags plus entries the search found that need a decision. */}
               {!checking && open_ + suggestions.length > 0 && (
                 <span className="rounded-full bg-red-600 px-1.5 text-xs font-semibold text-white">{open_ + suggestions.length}</span>
