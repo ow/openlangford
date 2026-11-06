@@ -195,7 +195,7 @@ ${input.claims.map((c) => `[${c.id}] ${c.text}`).join("\n")}
 
 RECORDS
 ${input.records}`;
-  const result = await getAiClient().json({ stage: "review", prompt, schema: VerifySchema, schemaName: "page_verify" });
+  const result = await getAiClient().json({ stage: "verify", prompt, schema: VerifySchema, schemaName: "page_verify" });
   const byId = new Map(input.claims.map((c) => [c.id, c]));
   const doubted = result.data.verdicts.filter((v) => (v.verdict === "not_in_record" || v.verdict === "contradicted") && byId.has(v.id));
   // Before anything is flagged, the reviewer researches it in all of the City's records: a figure missing from the

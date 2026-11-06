@@ -335,7 +335,7 @@ async function checkAll(batch: Loaded[], updates: Map<number, Update>, notes: Ma
   const asked = new Map([...notes].filter(([m]) => updates.has(m)));
   if (!payload.length) return { problems: new Map(), unfollowed: [], failed: false };
   try {
-    const { data } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM,
+    const { data } = await getAiClient().json({ stage: "summary_check", system: DEFAULT_SYSTEM,
       prompt: shared.check_prompt + (asked.size ? shared.check_notes_prompt : "") + JSON.stringify(payload),
       schema: CombinedCheck, schemaName: "SummaryCheck", timeoutMs: TIMEOUT_MS, signal });
     return { ...readVerdict(data, updates, asked), failed: false };
@@ -502,7 +502,7 @@ export async function checkSummaryNotes(supabase: SupabaseClient, notes: { matte
     }
     const text = `Summary: ${matter?.plain_english_summary || ""}\nWhere it stands: ${matter?.meta?.status_line || ""}`;
     try {
-      const { data } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, schema: NoteCheck, schemaName: "_NoteCheck",
+      const { data } = await getAiClient().json({ stage: "note_check", system: DEFAULT_SYSTEM, schema: NoteCheck, schemaName: "_NoteCheck",
         prompt: `An editor asked for this change to a topic page's summary on a site that follows a city council:\n\n${entry.note}\n\n`
           + `The page now reads:\n${text}\n\nThe page's dates (when it was discussed) and its timeline are drawn from its records `
           + `and shown separately, so judge only what the summary and status should say. Judge substance, not wording: it follows `

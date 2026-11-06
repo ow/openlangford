@@ -65,6 +65,17 @@ describe("resolveAiConfig", () => {
     expect(cfg.stages.extraction.model).toBe("extract-model");
   });
 
+  it("picks each check's model: verify, summary and note checks follow REVIEW_AI_MODEL, the related-topics check AI_MODEL, each overridable", () => {
+    const base = { AI_MODEL: "fast", REVIEW_AI_MODEL: "strong" };
+    const cfg = resolveAiConfig(base);
+    expect(cfg.stages.verify.model).toBe("strong");
+    expect(cfg.stages.summary_check.model).toBe("strong");
+    expect(cfg.stages.note_check.model).toBe("strong");
+    expect(cfg.stages.related_check.model).toBe("fast");
+    const over = resolveAiConfig({ ...base, NOTE_CHECK_AI_MODEL: "n", RELATED_CHECK_AI_MODEL: "r", VERIFY_AI_MODEL: "v" });
+    expect([over.stages.note_check.model, over.stages.related_check.model, over.stages.verify.model]).toEqual(["n", "r", "v"]);
+  });
+
   it("flags non-openai providers instead of silently using them", () => {
     const cfg = resolveAiConfig({ OPENAI_API_KEY: "k", RERANK_AI_PROVIDER: "gemini" });
     expect(cfg.problems).toHaveLength(1);

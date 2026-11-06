@@ -20,7 +20,15 @@ export type AiStage =
   | "review"
   /** Public text: a topic's summary, rewritten after a staff fix (services/topic-summaries.server.ts), as the pipeline's
    * "writing" stage writes it. */
-  | "writing";
+  | "writing"
+  /** The page check's comparison of a page's statements with the records (page-verify.server.ts). Strong model. */
+  | "verify"
+  /** The summary check after a rewrite: facts and staff instructions in one call (topic-summaries.server.ts). Strong model. */
+  | "summary_check"
+  /** Whether a summary follows a staff instruction, checked alone (topic-summaries.server.ts). Strong model by default. */
+  | "note_check"
+  /** Whether a Related topics card belongs (page-check.server.ts). Fast model. */
+  | "related_check";
 
 export type AiProviderName = "openai";
 
@@ -40,7 +48,16 @@ const STAGE_ENV_PREFIX: Record<AiStage, string> = {
   extraction: "EXTRACTION",
   review: "REVIEW",
   writing: "WRITING",
+  verify: "VERIFY",
+  summary_check: "SUMMARY_CHECK",
+  note_check: "NOTE_CHECK",
+  related_check: "RELATED_CHECK",
 };
+
+/** Stages whose model falls back to the review stage's (REVIEW_AI_MODEL) before the site's AI_MODEL. related_check
+ * defaults to the fast AI_MODEL. Each is overridable by its own env var (NOTE_CHECK_AI_MODEL, RELATED_CHECK_AI_MODEL, ...).
+ * note_check stays on the strong model: replayed on 40 real instructions, the fast model disagreed on 25% (scripts/replay-checks.ts). */
+const FOLLOWS_REVIEW: AiStage[] = ["verify", "summary_check", "note_check"];
 
 /** Per-attempt timeouts. Streams use this as the total budget for the stream. */
 export const STAGE_TIMEOUT_MS: Record<AiStage, number> = {
@@ -51,6 +68,10 @@ export const STAGE_TIMEOUT_MS: Record<AiStage, number> = {
   extraction: 120_000,
   review: 90_000,
   writing: 300_000,
+  verify: 90_000,
+  summary_check: 90_000,
+  note_check: 20_000,
+  related_check: 30_000,
 };
 
 export const EMBEDDING_TIMEOUT_MS = 10_000;
@@ -88,6 +109,14 @@ export function readAiEnv(): AiEnv {
     REVIEW_AI_MODEL: process.env.REVIEW_AI_MODEL,
     WRITING_AI_PROVIDER: process.env.WRITING_AI_PROVIDER,
     WRITING_AI_MODEL: process.env.WRITING_AI_MODEL,
+    VERIFY_AI_PROVIDER: process.env.VERIFY_AI_PROVIDER,
+    VERIFY_AI_MODEL: process.env.VERIFY_AI_MODEL,
+    SUMMARY_CHECK_AI_PROVIDER: process.env.SUMMARY_CHECK_AI_PROVIDER,
+    SUMMARY_CHECK_AI_MODEL: process.env.SUMMARY_CHECK_AI_MODEL,
+    NOTE_CHECK_AI_PROVIDER: process.env.NOTE_CHECK_AI_PROVIDER,
+    NOTE_CHECK_AI_MODEL: process.env.NOTE_CHECK_AI_MODEL,
+    RELATED_CHECK_AI_PROVIDER: process.env.RELATED_CHECK_AI_PROVIDER,
+    RELATED_CHECK_AI_MODEL: process.env.RELATED_CHECK_AI_MODEL,
     EMBEDDING_MODEL: process.env.EMBEDDING_MODEL,
     EMBEDDING_DIMENSIONS: process.env.EMBEDDING_DIMENSIONS,
   };
@@ -117,6 +146,7 @@ export function resolveAiConfig(env: AiEnv): AiConfig {
       provider: "openai",
       model:
         pick(env, `${prefix}_AI_MODEL`) ||
+        (FOLLOWS_REVIEW.includes(stage) ? pick(env, "REVIEW_AI_MODEL") : undefined) ||
         pick(env, "AI_MODEL") ||
         pick(env, "OPENAI_MODEL") ||
         DEFAULT_MODEL,

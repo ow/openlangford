@@ -134,7 +134,7 @@ export async function checkRelatedTopics(supabase: SupabaseClient, matterId: num
   const theirs = await Promise.all(related.map(async (e) =>
     (await itemRecords(supabase, await topicItemIds(supabase, Number(e.key.slice(8)))).catch(() => ({ text: "" }))).text));
   const result = await getAiClient().json({
-    stage: "review",
+    stage: "related_check",
     prompt: `A topic page on Open Langford, a site that follows Langford City council, lists other topics under "Related
 topics: Other topics about the same place or project." Decide for each listed topic, from the council's records of both
 topics, whether it belongs there. Judge from the records, not the titles. A topic marked as another application for the
