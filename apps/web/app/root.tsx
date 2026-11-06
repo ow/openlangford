@@ -225,8 +225,8 @@ export default function App() {
     <div className="min-h-screen flex flex-col">
       <NavigationProgress />
       <Navbar />
-      {/* A current notice (a change to when Council meets, a chance to have a say) on the home and meetings pages. */}
-      {(pathname === "/" || pathname === "/meetings") && notice && (
+      {/* A current notice (a change to when Council meets, a chance to have a say), on every page but the notice itself. */}
+      {notice && pathname !== `/notices/${notice.slug}` && (
         <Link to={`/notices/${notice.slug}`} className="block border-b border-brand-100 bg-brand-50 px-4 py-2 text-center text-sm text-brand-800 hover:bg-brand-100">
           <span className="font-semibold">Notice:</span> {notice.title}<span aria-hidden="true"> →</span>
         </Link>

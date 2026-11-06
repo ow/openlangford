@@ -3,11 +3,11 @@
  * Markdown files in app/content/notices/ with a small header:
  *
  *   ---
- *   title: Council moves its last two meetings of 2026 earlier
- *   date: 2026-11-05
+ *   title: A short headline
+ *   date: YYYY-MM-DD
  *   summary: One sentence for the list and the banner.
- *   banner_until: 2026-12-09   (optional: a line on the home and meetings pages through this day)
- *   change: Mon, Nov 23 · 7:00 pm => Tue, Nov 24 · 5:30 pm | Regular Council | /meetings/2026-11-24-special-council
+ *   banner_until: YYYY-MM-DD   (optional: a line across the top of every page through this day)
+ *   change: What it was => What it is now | Meeting name | /meetings/<slug>
  *     (optional, one line each: a was/now card at the top; the meeting's name and page link are optional)
  *   ---
  *
