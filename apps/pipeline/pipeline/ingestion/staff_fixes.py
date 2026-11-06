@@ -50,16 +50,24 @@ def move_item(supabase, item_id: int, to_matter_id: int | None, *, by: str | Non
     return {"from": item.get("matter_id"), "to": to_matter_id, "meeting_id": item["meeting_id"]}
 
 
-def refile_target(supabase, item_id: int) -> int | None:
-    """Where ingest would file this item if it weren't on its current topic (never that topic): an existing topic
-    for its permit, bylaw or address, a new one, or none for a heading."""
+def refile_targets(supabase, item_ids: list[int]) -> dict[int, int | None]:
+    """Where ingest would file these items if they weren't on their current topics (never those topics): an existing
+    topic for their permit, bylaw or address, a new one, or none for a heading. Filed together, earliest first, so the
+    steps of one application land on one topic: the first founds it and the later ones join it."""
     from pipeline.ingestion.topic_regroup import refile
 
-    item = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data
+    if not item_ids:
+        return {}
+    rows = supabase.table("agenda_items").select("id, matter_id").in_("id", item_ids).execute().data or []
     # An approved move overrides an earlier staff placement: that placement is what's being corrected.
-    results = refile(supabase, [{"item": item_id, "from": item.get("matter_id"), "override_lock": True}], dry_run=False, log=lambda *_: None)
-    target = results[0].get("to") if results else None
-    return int(target) if isinstance(target, int) else None
+    entries = [{"item": r["id"], "from": r.get("matter_id"), "override_lock": True} for r in rows]
+    results = refile(supabase, entries, dry_run=False, log=lambda *_: None)
+    return {int(r["item"]): (int(r["to"]) if isinstance(r.get("to"), int) else None) for r in results}
+
+
+def refile_target(supabase, item_id: int) -> int | None:
+    """``refile_targets`` for one item."""
+    return refile_targets(supabase, [item_id]).get(item_id)
 
 
 # Shared with the site's fix agent (apps/web/app/services/topic-summaries.server.ts), which does these steps itself.
@@ -149,17 +157,31 @@ def run_fix_page(supabase, args: dict[str, Any]) -> dict[str, Any]:
     fixed_keys: set[str] = set()
     merged = 0
 
+    moves = []
     for move in args.get("moves") or []:
+        to = move.get("to_matter_id")
+        if to is not None:
+            current = supabase.table("agenda_items").select("matter_id").eq("id", int(move["item_id"])).single().execute().data.get("matter_id")
+            if int(to) == current:  # "move" onto the topic it's already on: re-file it instead
+                move = {**move, "to_matter_id": None, "refile": True}
+        moves.append(move)
+    # Every item to re-file goes in one batch, so the steps of one application land on one topic together.
+    refiling = [int(m["item_id"]) for m in moves if m.get("refile") and m.get("to_matter_id") is None]
+    origins = {r["id"]: r.get("matter_id") for r in (supabase.table("agenda_items").select("id, matter_id").in_("id", refiling)
+                                                     .execute().data or [])} if refiling else {}
+    try:
+        refiled = refile_targets(supabase, refiling)
+    except Exception as exc:
+        refiled = {}
+        left.extend(f"{m.get('reason') or 'Re-filing an item'} (it didn't work: {exc})" for m in moves if int(m["item_id"]) in refiling)
+        moves = [m for m in moves if int(m["item_id"]) not in refiling]
+    touched.update(m for m in origins.values() if m)
+
+    for move in moves:
         item_id, to = int(move["item_id"]), move.get("to_matter_id")
         try:
-            current = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data.get("matter_id")
-            if to is not None and int(to) == current:  # "move" onto the topic it's already on: re-file it instead
-                to = None
-                move = {**move, "refile": True}
-            if move.get("refile") and to is None:
-                origin = supabase.table("agenda_items").select("matter_id").eq("id", item_id).single().execute().data.get("matter_id")
-                to = refile_target(supabase, item_id)
-                touched.update(m for m in (origin,) if m)
+            if item_id in refiling:
+                to = refiled.get(item_id)
             result = move_item(supabase, item_id, int(to) if to is not None else None, by=by, reason=move.get("reason") or "")
             touched.update(m for m in (result["from"], result["to"]) if m)
             meetings.add(result["meeting_id"])

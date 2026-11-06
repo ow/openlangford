@@ -29,6 +29,10 @@ class _Q:
     def eq(self, *_):
         return self
 
+    def in_(self, _column, ids):
+        self.ids = list(ids)
+        return self
+
     def single(self):
         return self
 
@@ -38,7 +42,10 @@ class _Q:
     def execute(self):
         if self.op != "select":
             self.db.writes.append((self.table, self.op, self.payload))
-        return type("R", (), {"data": self.db.rows.get(self.table, {})})()
+        row = self.db.rows.get(self.table, {})
+        if getattr(self, "ids", None) is not None:  # .in_(): one copy of the row per id
+            return type("R", (), {"data": [{**row, "id": i} for i in self.ids]})()
+        return type("R", (), {"data": row})()
 
 
 class _DB:
@@ -57,7 +64,7 @@ def test_a_move_with_no_destination_is_refiled_and_unfollowed_summary_notes_are_
     db = _DB({"agenda_items": {"matter_id": 5, "meeting_id": 9, "meta": {}},
               "matters": {"plain_english_summary": "Old text.", "meta": {}},
               "page_reviews": {"ai_flags": [{"key": None, "verdict": "agree"}, {"key": "agenda-1", "verdict": "agree"}]}})
-    monkeypatch.setattr(sf, "refile_target", lambda supabase, item_id: 77)
+    monkeypatch.setattr(sf, "refile_targets", lambda supabase, item_ids: {i: 77 for i in item_ids})
     checks = []
     monkeypatch.setattr(sf, "check_summary_notes", lambda supabase, notes: checks.append(notes) or
                         [{"note": n["note"], "matter_id": 5, "missing": "The adoption."} for n in notes])
@@ -98,3 +105,21 @@ def test_a_merge_marks_the_flag_that_asked_for_it_fixed(monkeypatch):
     assert [f.get("fixed") for f in review["ai_flags"]] == [True, None]  # only the merged topic's flag
     assert review["status"] == "fixed" and "Needs a person" not in review["agent_note"]
     assert result["merged"] == 1
+
+
+def test_every_item_to_refile_goes_in_one_batch(monkeypatch):
+    # 2026-11-06, Secretariat Way: three steps of Bylaw 1554 were re-filed one at a time and landed on three topics.
+    # Re-filed together (earliest first), the first founds the topic and the others join it.
+    import pipeline.ingestion.staff_fixes as sf
+    import pipeline.ingestion.matter_lifecycle as lifecycle
+    import pipeline.ingestion.matter_summaries as summaries
+
+    db = _DB({"agenda_items": {"matter_id": 5, "meeting_id": 9, "meta": {}}, "matters": {"meta": {}}, "page_reviews": {"ai_flags": []}})
+    batches = []
+    monkeypatch.setattr(sf, "refile_targets", lambda supabase, item_ids: batches.append(list(item_ids)) or {i: 40 for i in item_ids})
+    monkeypatch.setattr(lifecycle, "refresh_meeting_matter_lifecycles", lambda *a, **k: None)
+    monkeypatch.setattr(summaries, "refresh_matter_summaries", lambda *a, **k: {})
+    sf.run_fix_page(db, {"path": "/matters/x", "refresh": [5], "moves": [
+        {"item_id": i, "to_matter_id": None, "refile": True, "reason": f"Step {i}."} for i in (1, 2, 3)]})
+    assert batches == [[1, 2, 3]]
+    assert [p["matter_id"] for t, op, p in db.writes if t == "agenda_items" and op == "update"] == [40, 40, 40]
