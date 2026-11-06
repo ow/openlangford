@@ -16,6 +16,8 @@ The change was posted on the City's [meetings page](https://www.langford.ca/meet
 
 The City has reworded it since it was first posted. The first version cited Section 126 of the Community Charter and said the meetings "shall now be held" on those dates. The new one drops the reference to the Charter and calls the change a postponement. The dates and times are the same.
 
+On November 6 the City's Corporate Officer, Marie Watmough, also signed a formal notice of postponement under the City's Procedure Bylaw. It says the council meeting scheduled for Monday, November 23 is postponed to 5:30 pm on Tuesday, November 24. It does not mention the December 8 meeting.
+
 Council did not vote on it. It was not on the agenda of the inaugural meeting on November 2, the only council meeting since the election, and it does not appear in any other published agenda or minutes.
 
 The order covers 2026 only. The 2027 meeting schedule has not been published yet.
