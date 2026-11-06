@@ -124,6 +124,8 @@ export default defineConfig(({ mode }) => {
       ),
       "process.env.REVIEW_AI_PROVIDER": JSON.stringify(env.REVIEW_AI_PROVIDER || ""),
       "process.env.REVIEW_AI_MODEL": JSON.stringify(env.REVIEW_AI_MODEL || ""),
+      "process.env.WRITING_AI_PROVIDER": JSON.stringify(env.WRITING_AI_PROVIDER || ""),
+      "process.env.WRITING_AI_MODEL": JSON.stringify(env.WRITING_AI_MODEL || ""),
       "process.env.EMBEDDING_MODEL": JSON.stringify(env.EMBEDDING_MODEL || ""),
       "process.env.EMBEDDING_DIMENSIONS": JSON.stringify(
         env.EMBEDDING_DIMENSIONS || "",

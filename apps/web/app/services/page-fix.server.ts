@@ -9,6 +9,8 @@ import { fetchAll, itemRecords, topicItemIds } from "./page-verify.server";
 import { research } from "./record-research.server";
 import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
+import { checkSummaryNotes, directEdit, refreshTopicSummaries } from "./topic-summaries.server";
+import { mergeFlat, moveItem, refreshMeetingLifecycles } from "./topic-moves.server";
 import type { StaffRole } from "../lib/auth.server";
 
 /**
@@ -23,8 +25,9 @@ import type { StaffRole } from "../lib/auth.server";
  * matters.meta.timeline_headlines, kept through summary rewrites as meta.staff_headlines; a linked mention, related
  * topic's entry or annual report entry: meta.entry_lines, which the page shows instead of the generated text); move a
  * linked mention to the topic it belongs to; and move an item filed under the wrong topic to the right one, or re-file
- * it the way ingest would when no listed topic fits (a fix_page job on the pipeline's quick worker, which also
- * rewrites the summaries of the topics whose timelines changed and checks that each summary instruction was followed).
+ * it the way ingest would when no listed topic fits (the one step left to a fix_page job on the pipeline's quick
+ * worker). It then rewrites the summaries of the topics whose timelines changed (services/topic-summaries.server.ts)
+ * and checks that each summary instruction was followed, all in the same request.
  * Every rewrite carries the record's words it rests on.
  */
 
@@ -216,7 +219,7 @@ ${entries.map((e) => `[${e.key}] ${e.text}`).join("\n\n")}`;
 /** Runs the agent for one page. Never throws: a failure is written to the page as "needs work" with a note. Returns
  * "nothing_new" when every flag rated 👍 was already fixed and there's no note or found entry, so the caller can say
  * so rather than show the last run's report as if this run had done it. */
-export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | void> {
+export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | "refiling" | void> {
   const finish = async (status: "fixed" | "needs_work", agent_note: string, flags?: PageFlag[]) => {
     await supabase.from("page_reviews").update({
       status, agent_note, agent_at: new Date().toISOString(), ...(flags ? { ai_flags: flags } : {}),
@@ -351,6 +354,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const answered: string[] = [];
     const answeredKeys = new Set<string | null>();
     const hidden: Record<string, { keep: number; reason: string; by: string; at: string }> = {};
+    let summaryUnfollowed = false;
     const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim();
     // A flagged entry that has left the page since (its topic merged in or unlinked, the entry removed or moved) needs
     // nothing more: the flag is done, whatever the plan says for it.
@@ -455,7 +459,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
         const quote = quoteOf(step);
         summaryNotes.push(`${(step.new_text || "").trim().slice(0, 500)}${quote ? ` The record says: “${quote}”` : ""}`);
-        done.push(`${step.reason} The summary is being rewritten with this note: "${(step.new_text || "").trim()}"`);
+        done.push(`${step.reason} Rewrote the summary with this note: "${(step.new_text || "").trim()}"`);
         continue;
       }
       if ((step.action === "rewrite_entry" || step.action === "rewrite_heading") && step.key && onPage.has(step.key)
@@ -584,7 +588,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         detail: Object.fromEntries(Object.entries(hidden).map(([id, h]) => [`item ${id}`, `kept item ${h.keep}`])) });
     }
     if (summaryNotes.length) {
-      // Kept on the topic: every later summary rewrite follows them too (pipeline matter_summaries).
+      // Kept on the topic: this rewrite and every later one follow them (topic-summaries.server.ts, pipeline matter_summaries).
       const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
       const meta = (matter?.meta || {}) as Record<string, any>;
       await supabase.from("matters").update({ meta: { ...meta, editor_notes: [...(meta.editor_notes || []), ...summaryNotes].slice(-10) } })
@@ -592,31 +596,113 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:rewrite_summary",
         detail: { notes: summaryNotes.join(" | ").slice(0, 500) } });
     }
+    // Moves, merges and the summary rewrite happen here, in this request. Only re-filing an item the way ingest files
+    // it (no listed topic fits) needs the pipeline's matcher: that one step goes to its quick worker, after the rest.
+    const refiles: typeof moves = [];
+    let rewrote: number[] = [];
+    if (moves.length || merges.length || done.length) {
+      const touched = new Set<number>([matterId]);
+      const meetings = new Set<number>();
+      for (const move of moves) {
+        try {
+          const { data: item } = await supabase.from("agenda_items").select("matter_id").eq("id", move.item_id).single();
+          // A "move" onto the topic it's already on, or onto no listed topic: re-filed by the worker.
+          if ((move.refile && move.to_matter_id === null) || (move.to_matter_id !== null && move.to_matter_id === item?.matter_id)) {
+            refiles.push({ ...move, to_matter_id: null, refile: true });
+            continue;
+          }
+          const result = await moveItem(supabase, move.item_id, move.to_matter_id, requester.id, move.reason);
+          for (const m of [result.from, result.to]) if (m) touched.add(m);
+          meetings.add(result.meetingId);
+          fixedKeys.add(`agenda-${move.item_id}`);
+          done.push(move.reason || `Moved item ${move.item_id}.`);
+          await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:move_item",
+            detail: { agenda_item_id: String(move.item_id), from: String(result.from), to: String(result.to), reason: move.reason.slice(0, 400) } });
+        } catch (error) {  // one failed move doesn't stop the rest
+          left.push(`${move.reason || `Moving item ${move.item_id}`} (it didn't work: ${error instanceof Error ? error.message : "unknown error"})`);
+        }
+      }
+      for (const merge of merges) {
+        const a = merge.matter_id ?? matterId, b = merge.with_matter_id;
+        try {
+          // The page being fixed keeps its address.
+          const result = await mergeFlat(supabase, [a, b], a);
+          if (!result.aliases.length) continue;
+          touched.add(result.canonical);
+          for (const k of [merge.key, `related-${a}`, `related-${b}`]) if (k) fixedKeys.add(k);
+          done.push(merge.reason || `Merged topic ${b} into this one.`);
+          await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:merge_topic",
+            detail: { canonical: String(result.canonical), aliases: result.aliases.join(","), reason: merge.reason.slice(0, 400) } });
+        } catch (error) {
+          left.push(`${merge.reason || "Merging a duplicate topic"} (it didn't work: ${error instanceof Error ? error.message : "unknown error"})`);
+        }
+      }
+      for (const meetingId of meetings) {
+        await refreshMeetingLifecycles(supabase, meetingId).catch((error) =>
+          console.error(`[page-fix] lifecycle refresh for meeting ${meetingId} failed:`, error instanceof Error ? error.message : error));
+      }
+      // Topics merged away during this fix are rewritten as the topic they were merged into.
+      const { data: current } = await supabase.from("matters").select("id, merged_into").in("id", [...touched]);
+      rewrote = await refreshTopicSummaries(supabase, ((current || []) as any[]).map((m) => m.merged_into || m.id));
+      if (rewrote.length && (moves.length > refiles.length || merges.length)) {
+        done.push(`Rewrote the summary of ${rewrote.length} ${rewrote.length === 1 ? "topic" : "topics"} whose timeline changed.`);
+      }
+      // Each approved summary instruction is checked against the new text; one more rewrite told what it missed, then
+      // the agent edits the text itself, checked the same way.
+      let unfollowed = await checkSummaryNotes(supabase, summaryNotes.map((note) => ({ matter_id: matterId, note })));
+      if (unfollowed.length) {
+        const retry = [...new Set(unfollowed.map((u) => u.matter_id))];
+        for (const id of retry) {
+          const asks = unfollowed.filter((u) => u.matter_id === id && u.missing).map((u) => `The last rewrite missed this: ${u.missing}`);
+          if (!asks.length) continue;
+          const { data: m } = await supabase.from("matters").select("meta").eq("id", id).single();
+          await supabase.from("matters").update({ meta: { ...(m?.meta || {}), editor_notes: [...((m?.meta as any)?.editor_notes || []), ...asks] } }).eq("id", id);
+        }
+        await refreshTopicSummaries(supabase, retry);
+        unfollowed = await checkSummaryNotes(supabase, unfollowed.map((u) => ({ matter_id: u.matter_id, note: u.note })));
+      }
+      if (unfollowed.length) {
+        for (const id of [...new Set(unfollowed.map((u) => u.matter_id))]) {
+          if (await directEdit(supabase, id, unfollowed.filter((u) => u.matter_id === id).map((u) => u.note))) {
+            done.push("Edited the summary directly, since the summary writer didn't follow the instruction.");
+          }
+        }
+        unfollowed = await checkSummaryNotes(supabase, unfollowed.map((u) => ({ matter_id: u.matter_id, note: u.note })));
+      }
+      for (const u of unfollowed) {
+        left.push(`The summary was rewritten but doesn't yet say what was asked: "${u.note.slice(0, 300)}"${u.missing ? ` Still missing: ${u.missing}` : ""}`);
+        const said = u.note.split(" The record says:")[0].slice(0, 80);
+        for (let i = done.length - 1; i >= 0; i--) if (done[i].includes(said)) done.splice(i, 1);
+      }
+      summaryUnfollowed = unfollowed.length > 0;
+    }
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it; a whole-page issue is
-    // resolved by a summary rewrite.
+    // resolved by a summary rewrite that follows its instruction.
     // An answered question (no_change) or an unlinked related topic settles the flag it was about.
     const settled = (f: PageFlag) => f.verdict === "agree" && (answeredKeys.has(f.key ?? null) || (!f.key && answeredKeys.has(null)));
-    const updated = flags.map((f) => (f.key && fixedKeys.has(f.key)) || (!f.key && f.verdict === "agree" && summaryNotes.length) || settled(f)
+    const updated = flags.map((f) => (f.key && fixedKeys.has(f.key)) || (!f.key && f.verdict === "agree" && summaryNotes.length && !summaryUnfollowed) || settled(f)
       ? { ...f, key: renamed.get(f.key!) ?? f.key, fixed: true } : { ...f, key: renamed.get(f.key!) ?? f.key });
-    if (moves.length || merges.length || done.length) {
-      // The pipeline's quick worker moves items and rewrites the changed summaries, then finishes the page.
+    if (refiles.length) {
+      // The pipeline's quick worker re-files these items, rewrites the summaries they leave and join, then finishes the
+      // page with this run's report (done, left, waiting) and its own.
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
       const { error } = await supabase.from("pipeline_jobs").insert({
         municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1,
-        args: { path, moves, merges: merges.map((m) => ({ ...m, matter_id: m.matter_id ?? matterId })), refresh: [matterId], done, left, waiting,
-          summary_notes: summaryNotes.map((note) => ({ matter_id: matterId, note })),
+        args: { path, moves: refiles, merges: [], refresh: [], done, left, waiting, summary_notes: [],
           requested_by: requester.id, role: requester.staffRole },
       });
       if (!error) {
+        const count = `${refiles.length} ${refiles.length === 1 ? "item" : "items"}`;
         await supabase.from("page_reviews").update({
           ai_flags: updated, agent_at: new Date().toISOString(),
-          agent_note: [done.length ? `Done so far:\n${done.map((d) => `• ${d}`).join("\n")}` : "",
-            `Next, on the pipeline worker: ${moves.length ? `move ${moves.length} ${moves.length === 1 ? "item" : "items"}, then ` : ""}${merges.length ? `merge ${merges.length} duplicate ${merges.length === 1 ? "topic" : "topics"}, then ` : ""}rewrite the summary${summaryNotes.length ? " and check it follows the instructions" : ""}.`]
+          agent_note: [done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : "",
+            left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
+            `Still to do, on the pipeline worker: re-file ${count} the way new meetings are filed (no listed topic fits), then rewrite the summaries they leave and join.`]
             .filter(Boolean).join("\n\n"),
         }).eq("path", path);
-        return;
+        return "refiling";
       }
-      left.push("Couldn't hand the rest to the pipeline worker, so items weren't moved and the summary wasn't rewritten.");
+      left.push(`Couldn't hand the re-filing of ${refiles.length === 1 ? "an item" : "items"} to the pipeline worker, so ${refiles.length === 1 ? "it stays" : "they stay"} where ${refiles.length === 1 ? "it is" : "they are"}.`);
     }
     const note = [
       done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : answered.length ? "" : result.data.actions.length

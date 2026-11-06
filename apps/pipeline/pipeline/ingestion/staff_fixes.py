@@ -1,11 +1,10 @@
 """Page fixes staff asked for, run by the quick worker (job ``fix_page``).
 
-Marking a topic page "needs work" in the site's review bar starts the fix agent on the site
-(apps/web/app/services/page-fix.server.ts). It removes wrong links itself, then queues this job for what needs the
-pipeline: moving an agenda item filed under the wrong topic (or, when no listed topic fits, re-filing it the way
-ingest files an item, never back onto the topic it left), and rewriting the summaries of the topics whose timelines
-changed, then checking that each summary instruction staff approved was actually followed. When this finishes, the
-page is "fixed" for staff to confirm.
+The site's fix agent (apps/web/app/services/page-fix.server.ts) carries out almost every fix itself, in its own
+request: moves to a named topic, merges, the summary rewrite and its checks (see docs/page-review-fixes.md). It queues
+this job only to re-file an item the way ingest files one (no listed topic fits), which needs the ingest matcher.
+``run_fix_page`` re-files those items, rewrites the summaries of the topics they left and joined, and finishes the
+page with the site's report and its own. It still handles every step below, so older queued jobs run as before.
 
 A moved item carries a lock, ``agenda_items.meta.staff_matter`` ({"matter_id", "by", "at", "reason"}), which the
 ingester and the history step respect: re-processing a meeting never files it back.
@@ -14,6 +13,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -62,9 +62,13 @@ def refile_target(supabase, item_id: int) -> int | None:
     return int(target) if isinstance(target, int) else None
 
 
+# Shared with the site's fix agent (apps/web/app/services/topic-summaries.server.ts), which does these steps itself.
+_FIELDS = json.loads((Path(__file__).resolve().parents[4] / "shared" / "prompts" / "topic-summaries.json").read_text())["fields"]
+
+
 class _DirectEdit(BaseModel):
-    summary: str = Field(description="The topic's summary with the instruction applied; unchanged if it doesn't concern the summary.")
-    status_line: str = Field(description="The 'where it stands' line with the instruction applied; unchanged if it doesn't concern it.")
+    summary: str = Field(description=_FIELDS["direct_summary"])
+    status_line: str = Field(description=_FIELDS["direct_status_line"])
 
 
 def direct_edit(supabase, matter_id: int, notes: list[str]) -> bool:
@@ -94,8 +98,8 @@ def direct_edit(supabase, matter_id: int, notes: list[str]) -> bool:
 
 
 class _NoteCheck(BaseModel):
-    followed: bool = Field(description="True when the summary or status says what the instruction asks (or leaves out what it says to leave out).")
-    missing: str = Field(description="When not followed, what the summary still needs, in one plain sentence; empty otherwise.")
+    followed: bool = Field(description=_FIELDS["note_followed"])
+    missing: str = Field(description=_FIELDS["note_missing"])
 
 
 def check_summary_notes(supabase, notes: list[dict]) -> list[dict]:

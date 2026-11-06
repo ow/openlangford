@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import re
+from pathlib import Path
 from typing import Iterable, Literal
 
 from datetime import datetime, timezone
@@ -24,81 +25,25 @@ from supabase import Client
 
 from pipeline import ai
 from pipeline.ingestion.manual_edits import keep_text_edits
-from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, item_transcripts
+from pipeline.ingestion.record_sources import item_transcripts
 
-# Bump when the prompt/schema changes so `main.py --stage matter-summaries --stale`
-# re-runs matters summarized by an older version (stamped in meta.summary_version).
-SUMMARY_VERSION = "5"
-
-TOPICS = [
-    "Development",
-    "Housing",
-    "Transportation",
-    "Environment",
-    "Parks & Recreation",
-    "Finance",
-    "Public Safety",
-    "Utilities & Infrastructure",
-    "Community",
-    "Administration",
-]
-STATUSES = ["Active", "Adopted", "Approved", "Defeated", "Withdrawn", "Completed"]
-
-SYSTEM = f"""You explain city council matters to residents of a small Canadian city.
-For each matter you get its raw title and its history (agenda items, oldest first), each with its "record" (motion
-wording and results, staff report text, the video transcript of its discussion) and its "notes".
-""" + RECORD_RULE + f"""
-The agenda title is record too: it says what the item was (a public hearing, a staff report, a bylaw's readings).
-The report text is the best source for what the matter actually is; use it. Be specific wherever the record is:
-the number of homes or lots, the amounts, the names, what exactly was approved. Text that stays vague when the record
-gives the details is as unhelpful as text that gets them wrong. The motions count as detail too: "impose 30km/hr speed
-zones throughout the roads designated local at Westhills" says what a speed-limit amendment does.
-Never write that something "concerns", "is about", "relates to", "is the subject of", "was raised" or "came up": say
-what it is. When the record gives little beyond a title, one short sentence naming the subject in plain words is
-right ("Zoning changes for secondary suites in accessory buildings."), not padding around it.
-Return for each matter:
-- "display_title": a short, plain title (max 8 words) naming the thing itself, e.g. "Solid waste collection bylaw", "854 Latoria Road rezoning". No reading stages, no "(Background report attached)", no years unless essential. Keep a street address when the matter is about a property.
-  "same_site", when present, lists other matters for the same land (an earlier or later application: a rezoning, then
-  a second rezoning or a variance). This title must tell them apart: add what differs, from this matter's own record
-  (the scale, "for 11 lots", or the kind of application), and the year when nothing else does. Keep the full address
-  ("Road", "Avenue"), no colons. If one of them is this same application under another topic (the same bylaw or
-  file, the same proposal), keep the plain title: don't invent a difference between two halves of one application.
-- "summary": 2-3 sentences, max 60 words, saying what the matter actually is and why it matters to residents. Be concrete and lead with the substance: for a development, what would be built (use, units, storeys, tenure) and where; for a bylaw or program, what changes for residents, what it costs them, and why the city is doing it. No bylaw numbers, no "Council" as the opening word, no jargon. Do not mention readings, approval or status here; that belongs in status_line.
-- "status_line": max 18 words on where it stands now: the latest step and its date (e.g. "Third reading given Sep 28, 2026; final adoption still to come."). Use the dates provided.
-  When "history" is empty and only "mentions" exist, say where it last came up, as discussion, not a decision
-  (e.g. "Draft presented to Council Apr 7, 2026; BC Transit is updating the plan."). Never say that history,
-  records or a latest step are missing or not provided: that describes this site's data, not the matter.
-- "timeline": for each history entry, {{"item": <its item id>, "headline": "<max 12 words>"}} — a plain-English headline for that step that says what happened, e.g. "Staff propose city-run curbside garbage and organics pickup" or "Third reading for 120-unit rental building". No agenda numbering, no "(Background report attached)".
-  Take what happened from the entry's motions and their result, not the agenda title: a title saying "second and third
-  reading" with a motion giving first reading is a first reading; a motion directing staff to prepare a bylaw is not a
-  reading. With no motion, say what the item did (a report presented, a hearing held), never that something was
-  decided. Name what the step is about ("First reading for townhomes and suites on Latoria Road"), never only the procedure
-  ("Bylaw listed for first reading").
-- "category": exactly one of {", ".join(TOPICS)}.
-- "status": exactly one of {", ".join(STATUSES)}. Adopted = bylaw finally adopted; Approved = non-bylaw item approved; Defeated/Withdrawn when the latest decision says so; Completed = received for information or finished with nothing pending; otherwise Active.
-"mentions" are separately linked context, not decisions on this matter. They may describe
-public comments or earlier presentations: retain their source dates, attribute them, and do not
-use them to infer adoption, approval, a vote, or a change in legal status. Only "history" entries
-are owned proceedings and may receive timeline headlines. A date mentioned inside a report is
-not necessarily the date of its containing council meeting; never silently substitute one for the other.
-"editor_notes", when present, are an editor's requests about this matter's text (from the site's page review):
-follow them where the history and mentions support it, or where the note quotes the record ("The record says: …"; an
-editor checked that quote against the council's documents, so it counts as an input), and leave out what they ask
-for if neither says it.
-Never invent facts that are not in the inputs. If the history is too thin to say what it is about, base the summary on the title alone and keep it short.
-Figures and names are copied, never made: every amount, count, measurement, date and name comes exactly from the inputs,
-whole ("$4,408,940.67", "1.5 spaces per unit", not "$67" or "5 spaces"), and from a record, not the notes. Don't round, total, convert or estimate one,
-don't give a count (units, lots, homes) the inputs don't state, and don't expand a name or acronym the inputs don't spell out.
-"fix_these", when present, lists problems a check found in your last text for this matter, with what the records say:
-fix every one, using the records' own words and figures, or leave the statement out."""
+# The writer's prompts, topics and version are shared with the site's fix agent, which rewrites a topic's summary
+# straight after a staff fix (apps/web/app/services/topic-summaries.server.ts): change them in that file.
+# Bump "version" when the prompt/schema changes so `main.py --stage matter-summaries --stale` re-runs matters
+# summarized by an older version (stamped in meta.summary_version).
+SHARED = json.loads((Path(__file__).resolve().parents[4] / "shared" / "prompts" / "topic-summaries.json").read_text())
+SUMMARY_VERSION = SHARED["version"]
+TOPICS = SHARED["topics"]
+STATUSES = SHARED["statuses"]
+SYSTEM = SHARED["system"]
 
 Topic = Literal[tuple(TOPICS)]  # type: ignore[valid-type]
 Status = Literal[tuple(STATUSES)]  # type: ignore[valid-type]
 
 
 class TimelineHeadline(BaseModel):
-    item: int = Field(description="The history entry's item id")
-    headline: str = Field(description="Max 12 words: what happened at this step")
+    item: int = Field(description=SHARED["fields"]["timeline_item"])
+    headline: str = Field(description=SHARED["fields"]["timeline_headline"])
 
 
 class MatterSummary(BaseModel):
@@ -302,7 +247,7 @@ def _same_site(supabase: Client, matter_ids: list[int]) -> dict[int, list[dict]]
 def _prompt(batch: list[dict]) -> str:
     payload = [{k: v for k, v in m.items() if not k.startswith("_")} for m in batch]
     return (
-        "Write context for each matter below: one entry in `matters` per matter, same ids.\n\n"
+        SHARED["prompt_intro"]
         + json.dumps(payload, ensure_ascii=False, default=str)
     )
 
@@ -313,30 +258,17 @@ def _summarize(batch: list[dict]) -> dict[int, dict]:
 
 
 class SummaryProblem(BaseModel):
-    matter: int = Field(description="The matter's id")
-    statement: str = Field(description="The words in the summary, status or a headline that are wrong, quoted")
+    matter: int = Field(description=SHARED["fields"]["problem_matter"])
+    statement: str = Field(description=SHARED["fields"]["problem_statement"])
     verdict: Literal["contradicted", "not_in_record"]
-    record_says: str = Field(description="What the records say instead, quoted; empty when they say nothing about it")
+    record_says: str = Field(description=SHARED["fields"]["problem_record_says"])
 
 
 class SummaryCheck(BaseModel):
     problems: list[SummaryProblem]
 
 
-CHECK_PROMPT = """You check short texts written for residents about city council matters against the records they were
-written from. """ + CHECK_RULE + """
-For each matter below you get its inputs (as given to the writer) and the text: a summary, a
-"where it stands" line, and a headline per timeline step (keyed by the history entry's item id). List every statement
-the records contradict (a different amount, count, measurement, date, name, address, outcome or step) or don't contain
-at all (an invented figure, count, name or detail). For a headline, compare it with that entry's motions and result:
-a different reading or step than the motion records (first reading called "second and third", a direction to prepare
-a bylaw called a reading, a decision where there was no motion) is contradicted, and a headline that names only the
-procedure ("Bylaw listed for first reading") without what it's about is a problem too (verdict not_in_record, quote
-it). Paraphrase and plain-language simplification are fine; judge facts, not style. A statement about what the
-records don't say ("no decision is recorded") is fine when true. Missing detail is not a problem. Return no problems
-when the text is right.
-
-"""
+CHECK_PROMPT = SHARED["check_prompt"]
 
 
 def _check(batch: list[dict], updates: dict[int, dict]) -> dict[int, list[dict]]:

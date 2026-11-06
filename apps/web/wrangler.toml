@@ -48,6 +48,8 @@ AI_PROVIDER = "openai"
 AI_MODEL = "gpt-6-luna"
 # Staff page checks (services/page-check.server.ts) read pages on a stronger model.
 REVIEW_AI_MODEL = "gpt-6.1-terra"
+# Topic summaries the fix agent rewrites (services/topic-summaries.server.ts), on the pipeline's writing model.
+WRITING_AI_MODEL = "gpt-6.1-terra"
 # No VIMEO_PROXY_URL / VIMEO_PROXY_FALLBACK_URL: Langford's video provider is eSCRIBE (ISI Live).
 # A Vimeo deployment sets them here or in source_config.video_source.proxy_url / proxy_fallback_url.
 VITE_SUPABASE_URL = "https://zxcvifwkaxtdfpanlwtl.supabase.co"

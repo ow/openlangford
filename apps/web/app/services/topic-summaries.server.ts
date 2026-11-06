@@ -1,0 +1,475 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
+import shared from "../../../../shared/prompts/topic-summaries.json";
+import { getAiClient } from "./ai/index.server";
+import { fetchAll } from "./page-verify.server";
+
+/**
+ * A topic's summary, "where it stands" line, title and timeline headlines, rewritten from its records straight after a
+ * staff fix, so the fix agent finishes in one request instead of handing the rewrite to the pipeline's worker.
+ *
+ * This is the pipeline's summary writer (apps/pipeline/pipeline/ingestion/matter_summaries.py, which writes every
+ * topic during ingest) carried over step for step: the same records, the same prompts and schema (both read
+ * shared/prompts/topic-summaries.json), the same check against the records with one rewrite, and the same stamp in
+ * meta.summary_version. A change to how summaries are written goes in both, or in the shared file.
+ */
+
+const SUMMARY_VERSION: string = shared.version;
+const TOPICS = shared.topics as [string, ...string[]];
+const STATUSES = shared.statuses as [string, ...string[]];
+const FIELDS = shared.fields;
+/** The pipeline's system prompt for calls that don't give one (pipeline/ai/client.py DEFAULT_SYSTEM). */
+const DEFAULT_SYSTEM = "You are a careful assistant processing municipal council records.";
+/** Characters of input per request (pipeline/ai/budget.py INPUT_BUDGET_CHARS). */
+const INPUT_BUDGET_CHARS = 1_000_000;
+const BATCH_SIZE = 8;
+const SAME_SITE_MAX_LOTS = 4;
+const KEY_SECTION = /purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial/i;
+const TIMEOUT_MS = 300_000;
+/** Python's \s, which also matches the separator controls \x1c-\x1f and \x85 (they turn up in OCR'd reports). */
+const SPACE = /[\s\x1c-\x1f\x85]+/g;
+
+const MatterSummaries = z.object({
+  matters: z.array(z.object({
+    id: z.number().int(),
+    display_title: z.string(),
+    summary: z.string(),
+    status_line: z.string(),
+    timeline: z.array(z.object({
+      item: z.number().int().describe(FIELDS.timeline_item),
+      headline: z.string().describe(FIELDS.timeline_headline),
+    })),
+    category: z.enum(TOPICS),
+    status: z.enum(STATUSES),
+  })),
+});
+type Written = z.infer<typeof MatterSummaries>["matters"][number];
+
+const SummaryCheck = z.object({
+  problems: z.array(z.object({
+    matter: z.number().int().describe(FIELDS.problem_matter),
+    statement: z.string().describe(FIELDS.problem_statement),
+    verdict: z.enum(["contradicted", "not_in_record"]),
+    record_says: z.string().describe(FIELDS.problem_record_says),
+  })),
+});
+type Problem = { statement: string; verdict: string; record_says: string };
+
+type Meta = Record<string, any>;
+type Update = { plain_english_summary: string; meta: Meta; category?: string; status?: string };
+/** A topic's inputs as the writer sees them; the "_" fields stay out of the prompt. */
+type Loaded = {
+  id: number; title: string; identifier: string | null; history: any[]; mentions: any[];
+  same_site?: { title: string; dates: string }[]; editor_notes?: string[]; fix_these?: Problem[];
+  _has_mentions: boolean; _owned_item_ids: Set<number>; _meta: Meta;
+};
+
+const one = <T>(v: T | T[] | null | undefined): T | undefined => (Array.isArray(v) ? v[0] : v ?? undefined);
+/** Python truthiness for the record and notes fields: empty strings and lists are left out. */
+const filled = (o: Record<string, unknown>) =>
+  Object.fromEntries(Object.entries(o).filter(([, v]) => (Array.isArray(v) ? v.length > 0 : !!v)));
+
+/** Every row of `build(chunk)` for the ids in chunks of 200 (a long id list overflows a request URL), all pages. */
+async function inChunks<T = any>(ids: number[], build: (chunk: number[], from: number, to: number) => PromiseLike<{ data: T[] | null; error: any }>) {
+  const rows: T[] = [];
+  for (let start = 0; start < ids.length; start += 200) {
+    const chunk = ids.slice(start, start + 200);
+    rows.push(...await fetchAll<T>((from, to) => build(chunk, from, to)));
+  }
+  return rows;
+}
+
+/** The whole video transcript of each item's discussion (pipeline record_sources.item_transcripts). */
+async function itemTranscripts(supabase: SupabaseClient, items: any[]): Promise<Map<number, string>> {
+  const out = new Map<number, string>();
+  for (const item of items) {
+    const start = item.discussion_start_time;
+    if (start === null || start === undefined || !item.meeting_id) continue;
+    const end = item.discussion_end_time !== null && item.discussion_end_time !== undefined ? Number(item.discussion_end_time) : Number(start) + 1800;
+    const segments = await fetchAll((from, to) => supabase.from("transcript_segments").select("start_time, speaker_name, text_content")
+      .eq("meeting_id", item.meeting_id).gte("start_time", Number(start)).lt("start_time", end).order("start_time").range(from, to));
+    const text = segments.map((s: any) => `${s.speaker_name || "Speaker"}: ${s.text_content || ""}`).join("\n");
+    if (text.trim()) out.set(item.id, text);
+  }
+  return out;
+}
+
+/** Other topics for the same land as each topic (pipeline matter_summaries._same_site). */
+async function sameSite(supabase: SupabaseClient, matterIds: number[]): Promise<Map<number, { title: string; dates: string }[]>> {
+  const out = new Map<number, { title: string; dates: string }[]>();
+  const own = await inChunks(matterIds, (ids, from, to) => supabase.from("property_links").select("matter_id, property_id")
+    .in("matter_id", ids).eq("hidden", false).order("id").range(from, to));
+  const lots = new Map<number, Set<number>>();
+  for (const l of own as any[]) lots.set(l.matter_id, (lots.get(l.matter_id) || new Set()).add(l.property_id));
+  for (const [m, p] of lots) if (p.size > SAME_SITE_MAX_LOTS) lots.delete(m);
+  const propertyIds = [...new Set([...lots.values()].flatMap((p) => [...p]))].sort((a, b) => a - b);
+  if (!propertyIds.length) return out;
+  // Hidden lots (a resident's home known only from public input) never count.
+  const publicIds = new Set((await inChunks(propertyIds, (ids, from, to) => supabase.from("properties").select("id").in("id", ids)
+    .eq("hidden", false).neq("civic_number", "").order("id").range(from, to)) as any[]).map((p) => p.id as number));
+  const sharing = await inChunks([...publicIds].sort((a, b) => a - b), (ids, from, to) => supabase.from("property_links")
+    .select("matter_id, property_id").in("property_id", ids).eq("hidden", false).not("matter_id", "is", null).order("id").range(from, to)) as any[];
+  const otherIds = [...new Set(sharing.map((l) => l.matter_id as number))].filter((m) => !lots.has(m)).sort((a, b) => a - b);
+  const theirs = otherIds.length ? await inChunks(otherIds, (ids, from, to) => supabase.from("property_links").select("matter_id, property_id")
+    .in("matter_id", ids).eq("hidden", false).order("id").range(from, to)) as any[] : [];
+  for (const l of theirs) lots.set(l.matter_id, (lots.get(l.matter_id) || new Set()).add(l.property_id));
+  const small = new Set([...lots].filter(([, p]) => p.size <= SAME_SITE_MAX_LOTS).map(([m]) => m));
+  const candidates = [...new Set(sharing.map((l) => l.matter_id as number))].filter((m) => small.has(m)).sort((a, b) => a - b);
+  const rows = new Map((await inChunks(candidates, (ids, from, to) => supabase.from("matters")
+    .select("id, title, meta, first_seen, last_seen, merged_into").in("id", ids).order("id").range(from, to)) as any[]).map((m) => [m.id as number, m]));
+  for (const mid of matterIds) {
+    const mine = new Set([...(lots.get(mid) || [])].filter((p) => publicIds.has(p)));
+    if (!mine.size || !small.has(mid)) continue;
+    const siblings = [...new Set(sharing.filter((l) => mine.has(l.property_id) && l.matter_id !== mid).map((l) => l.matter_id as number))].sort((a, b) => a - b);
+    for (const sid of siblings) {
+      const row = rows.get(sid);
+      if (!row || row.merged_into || row.meta?.hidden) continue;
+      // Python's f-string prints a missing date as "None"; kept so both writers see the same input.
+      const list = out.get(mid) || [];
+      list.push({ title: row.meta?.display_title || row.title, dates: `${row.first_seen ?? "None"} to ${row.last_seen ?? "None"}` });
+      out.set(mid, list);
+    }
+  }
+  return out;
+}
+
+/** Each topic's whole history and its accepted mentions, with every record in full (pipeline _load_context). */
+export async function loadTopicContext(supabase: SupabaseClient, matterIds: number[]): Promise<Loaded[]> {
+  const matters = await inChunks(matterIds, (ids, from, to) => supabase.from("matters")
+    .select("id, municipality_id, title, identifier, category, status, meta").in("id", ids).order("id").range(from, to)) as any[];
+  const ids = matters.map((m) => m.id as number);
+  const items = await inChunks(ids, (chunk, from, to) => supabase.from("agenda_items")
+    .select("id, matter_id, meeting_id, title, description, plain_english_summary, debate_summary, discussion_start_time, discussion_end_time, meetings(meeting_date, type)")
+    .in("matter_id", chunk).order("id").range(from, to)) as any[];
+  const links = await inChunks(ids, (chunk, from, to) => supabase.from("matter_links").select("id, matter_id, agenda_item_id")
+    .in("matter_id", chunk).eq("kind", "mention").eq("hidden", false).order("id").range(from, to)) as any[];
+  const mentionIds = [...new Set(links.map((l) => l.agenda_item_id as number).filter(Boolean))].sort((a, b) => a - b);
+  const mentionItems = mentionIds.length ? await inChunks(mentionIds, (chunk, from, to) => supabase.from("agenda_items")
+    .select("id, matter_id, title, plain_english_summary, meetings!inner(meeting_date, municipality_id)").in("id", chunk).order("id").range(from, to)) as any[] : [];
+  const matterById = new Map(matters.map((m) => [m.id as number, m]));
+  const mentionById = new Map(mentionItems.map((i) => [i.id as number, i]));
+  const owned = new Set(items.map((i) => `${i.matter_id}:${i.id}`));
+  const mentionsByMatter = new Map<number, any[]>();
+  for (const link of links) {
+    const item = mentionById.get(link.agenda_item_id);
+    const mid = link.matter_id as number;
+    if (!item || !matterById.has(mid) || owned.has(`${mid}:${item.id}`)) continue;
+    const meeting = one<any>(item.meetings) || {};
+    if (meeting.municipality_id !== matterById.get(mid).municipality_id) continue;
+    const list = mentionsByMatter.get(mid) || [];
+    list.push({ item: item.id, date: meeting.meeting_date ?? null, agenda_item: item.title,
+      notes: { summary: item.plain_english_summary || "" }, source: "accepted mention" });
+    mentionsByMatter.set(mid, list);
+  }
+  const itemIds = items.map((i) => i.id as number);
+  const [motions, docs, sections] = itemIds.length ? await Promise.all([
+    inChunks(itemIds, (chunk, from, to) => supabase.from("motions").select("id, agenda_item_id, plain_english_summary, text_content, result")
+      .in("agenda_item_id", chunk).order("id").range(from, to)),
+    inChunks(itemIds, (chunk, from, to) => supabase.from("extracted_documents").select("id, agenda_item_id, title, document_type, summary, key_facts")
+      .in("agenda_item_id", chunk).order("id").range(from, to)),
+    // The substance of a staff report lives in its sections, so its own text goes in as record, key sections first.
+    inChunks(itemIds, (chunk, from, to) => supabase.from("document_sections").select("id, agenda_item_id, section_title, section_text, section_order")
+      .in("agenda_item_id", chunk).order("agenda_item_id").order("section_order").order("id").range(from, to)),
+  ]) as any[][] : [[], [], []];
+  const excerpts = new Map<number, string[]>();
+  const keyFirst = [...sections].sort((a, b) => Number(!KEY_SECTION.test(a.section_title || "")) - Number(!KEY_SECTION.test(b.section_title || "")));
+  for (const sec of keyFirst) {
+    const text = String(sec.section_text || "").replace(/[#|*]/g, " ").replace(SPACE, " ").trim();
+    if (!text) continue;
+    excerpts.set(sec.agenda_item_id, [...(excerpts.get(sec.agenda_item_id) || []), sec.section_title ? `${sec.section_title}: ${text}` : text]);
+  }
+  // Staff reports first; drawings, schedules and forms add little.
+  const rank = (d: any) => (String(d.document_type || "").toLowerCase().includes("report") || String(d.title || "").toLowerCase().includes("report") ? 0 : 1);
+  const docsByItem = new Map<number, any[]>();
+  for (const d of [...docs].sort((a, b) => rank(a) - rank(b))) docsByItem.set(d.agenda_item_id, [...(docsByItem.get(d.agenda_item_id) || []), d]);
+  const motionsByItem = new Map<number, any[]>();
+  for (const m of motions) motionsByItem.set(m.agenda_item_id, [...(motionsByItem.get(m.agenda_item_id) || []), m]);
+  // The video is the original for what was said: every item discussed on video brings its transcript as record.
+  const transcripts = await itemTranscripts(supabase, items.filter((i) => i.discussion_start_time !== null && i.discussion_start_time !== undefined));
+  const site = await sameSite(supabase, ids);
+
+  return matters.map((matter) => {
+    const history = items.filter((item) => item.matter_id === matter.id).map((item) => {
+      const meeting = one<any>(item.meetings) || {};
+      const mine = motionsByItem.get(item.id) || [];
+      return {
+        item: item.id,
+        date: meeting.meeting_date ?? null,
+        meeting: meeting.type ?? null,
+        agenda_item: item.title ?? null,
+        // The City's own text (record_sources.RECORD_RULE).
+        record: filled({
+          motions: mine.map((m) => ({ text: m.text_content || "", result: m.result ?? null })),
+          report_text: excerpts.get(item.id) || [],
+          video_transcript: transcripts.get(item.id),
+        }),
+        // What a model wrote about it earlier: for orientation, never the source of a fact.
+        notes: filled({
+          summary: item.plain_english_summary || "",
+          description: item.description || "",
+          video_summary: item.debate_summary || "",
+          motion_summaries: mine.filter((m) => m.plain_english_summary).map((m) => m.plain_english_summary),
+          reports: (docsByItem.get(item.id) || []).map((d) => ({ title: d.title ?? null, summary: d.summary || "", key_facts: d.key_facts || [] })),
+        }),
+      };
+    }).sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+    const mentions = (mentionsByMatter.get(matter.id) || []).sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+    const notes = ((matter.meta?.editor_notes || []) as unknown[]).filter((n): n is string => typeof n === "string" && !!n.trim());
+    return {
+      id: matter.id, title: matter.title, identifier: matter.identifier ?? null, history, mentions,
+      ...(site.get(matter.id)?.length ? { same_site: site.get(matter.id) } : {}),
+      ...(notes.length ? { editor_notes: notes } : {}),
+      _has_mentions: mentions.length > 0,
+      _owned_item_ids: new Set(history.map((h) => h.item as number)),
+      _meta: matter.meta || {},
+    };
+  });
+}
+
+const visibleFields = (m: Loaded) => Object.fromEntries(Object.entries(m).filter(([k]) => !k.startsWith("_")));
+const promptFor = (batch: Loaded[]) => shared.prompt_intro + JSON.stringify(batch.map(visibleFields));
+
+async function summarize(batch: Loaded[]): Promise<Map<number, Written>> {
+  const { data } = await getAiClient().json({ stage: "writing", system: shared.system, prompt: promptFor(batch),
+    schema: MatterSummaries, schemaName: "MatterSummaries", timeoutMs: TIMEOUT_MS });
+  return new Map(data.matters.filter((m) => m.summary.trim()).map((m) => [m.id, m]));
+}
+
+/** The updates for a batch: decisions from owned proceedings, descriptions with linked context. */
+async function generate(batch: Loaded[]): Promise<Map<number, Update>> {
+  const context = batch.filter((m) => m._has_mentions);
+  const [decisions, descriptions] = await Promise.all([
+    summarize(batch.map((m) => ({ ...m, mentions: [] }))),
+    context.length ? summarize(context) : Promise.resolve(new Map<number, Written>()),
+  ]);
+  const out = new Map<number, Update>();
+  for (const matter of batch) {
+    const fields = decisions.get(matter.id);
+    let descriptive: Pick<Written, "display_title" | "summary" | "category"> | undefined = descriptions.get(matter.id) || fields;
+    if (!descriptive) continue;
+    const meta: Meta = { ...matter._meta };
+    meta.display_title = (descriptive.display_title || "").trim() || null;
+    meta.summary_version = SUMMARY_VERSION;
+    // Lines staff approved through the page review bar (meta.staff_headlines) outlive every rewrite.
+    const staffLines = Object.fromEntries(Object.entries(meta.staff_headlines || {}).filter(([, v]) => typeof v === "string" && v.trim()));
+    // A recorded replacement (meta.superseded_by) is a later decision the topic's own history doesn't show.
+    const superseded = !!meta.superseded_by;
+    if (fields && matter.history.length && !superseded) {
+      meta.status_line = (fields.status_line || "").trim() || null;
+      meta.timeline_headlines = Object.fromEntries(fields.timeline
+        .filter((t) => matter._owned_item_ids.has(t.item) && (t.headline || "").trim())
+        .map((t) => [String(t.item), t.headline.trim()]));
+    } else if (!matter.history.length && !superseded) {
+      // Only mentions: where it last came up, as discussion. Without mentions either, no line at all.
+      const line = matter._has_mentions ? (descriptions.get(matter.id)?.status_line || "").trim() : "";
+      meta.status_line = line || null;
+    }
+    if (Object.keys(staffLines).length) meta.timeline_headlines = { ...(meta.timeline_headlines || {}), ...staffLines };
+    // Text the fix agent edited directly stands until the topic gains a step of its own.
+    const staffText = meta.staff_text && typeof meta.staff_text === "object" && !Array.isArray(meta.staff_text) ? meta.staff_text : null;
+    if (staffText && [...matter._owned_item_ids].every((id) => (staffText.items || []).includes(id))) {
+      if (staffText.status_line) meta.status_line = staffText.status_line;
+      if (staffText.summary) descriptive = { ...descriptive, summary: staffText.summary };
+    }
+    const update: Update = { plain_english_summary: descriptive.summary.trim(), meta };
+    if (TOPICS.includes(descriptive.category)) update.category = descriptive.category;
+    if (fields && matter.history.length && !superseded && STATUSES.includes(fields.status)) update.status = fields.status;
+    out.set(matter.id, update);
+  }
+  return out;
+}
+
+/** Problems per topic in the written text, judged against the topic's own inputs. */
+async function check(batch: Loaded[], updates: Map<number, Update>): Promise<Map<number, Problem[]>> {
+  const payload = batch.filter((m) => updates.has(m.id)).map((m) => {
+    const u = updates.get(m.id)!;
+    const staff = u.meta.staff_headlines || {};
+    return {
+      id: m.id,
+      records: Object.fromEntries(Object.entries(m).filter(([k]) => !k.startsWith("_") && k !== "fix_these")),
+      text: {
+        summary: u.plain_english_summary,
+        where_it_stands: u.meta.status_line ?? null,
+        // Lines staff approved stand as written, so only the writer's own are checked.
+        timeline_headlines: Object.fromEntries(Object.entries(u.meta.timeline_headlines || {}).filter(([k]) => !(k in staff))),
+      },
+    };
+  });
+  const found = new Map<number, Problem[]>();
+  if (!payload.length) return found;
+  const { data } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, prompt: shared.check_prompt + JSON.stringify(payload),
+    schema: SummaryCheck, schemaName: "SummaryCheck", timeoutMs: TIMEOUT_MS });
+  for (const { matter, ...problem } of data.problems) {
+    if (updates.has(matter)) found.set(matter, [...(found.get(matter) || []), problem]);
+  }
+  return found;
+}
+
+/** Check the written text against the records; a topic with problems is rewritten once, told what they were, and
+ * keeps whichever version has fewer. The outcome is stamped in meta.summary_check. */
+async function checked(batch: Loaded[], updates: Map<number, Update>): Promise<Map<number, Update>> {
+  let problems: Map<number, Problem[]>;
+  try {
+    problems = await check(batch, updates);
+  } catch (error) {  // unchecked rather than unwritten
+    console.error("[topic-summaries] check failed:", error instanceof Error ? error.message : error);
+    return updates;
+  }
+  const retry = batch.filter((m) => problems.get(m.id)?.length).map((m) => ({ ...m, fix_these: problems.get(m.id)! }));
+  let second = new Map<number, Update>();
+  let secondProblems = new Map<number, Problem[]>();
+  if (retry.length) {
+    try {
+      second = await generate(retry);
+      secondProblems = await check(retry, second);
+    } catch (error) {
+      console.error("[topic-summaries] rewrite after check failed:", error instanceof Error ? error.message : error);
+    }
+  }
+  const at = new Date().toISOString();
+  const out = new Map<number, Update>();
+  for (const [mid, first] of updates) {
+    const firstProblems = problems.get(mid) || [];
+    const better = second.has(mid) && (secondProblems.get(mid) || []).length < firstProblems.length;
+    const update = better ? second.get(mid)! : first;
+    const left = better ? secondProblems.get(mid) || [] : firstProblems;
+    update.meta.summary_check = { at, problems: left.length, first_problems: firstProblems.length, rewritten: better,
+      ...(left.length ? { unresolved: left } : {}) };
+    out.set(mid, update);
+  }
+  return out;
+}
+
+/** An update to a topic's title, summary or status line, with any field staff edited by hand kept as they left it
+ * (pipeline manual_edits.keep_text_edits; see services/topic-edit.server.ts). */
+export async function keepTextEdits(supabase: SupabaseClient, matterId: number, update: { plain_english_summary?: string | null; meta?: Meta } & Record<string, any>) {
+  const { data: row } = await supabase.from("matters").select("plain_english_summary, meta").eq("id", matterId).single();
+  const stored: Meta = row?.meta || {};
+  const manual: Meta = stored.manual || {};
+  if (!["title", "summary", "status_line"].some((f) => f in manual)) return update;
+  const out = { ...update };
+  const meta: Meta = { ...(out.meta || stored) };
+  const kept: Meta = { ...manual };
+  for (const [field, key] of [["title", "display_title"], ["status_line", "status_line"]] as const) {
+    if (field in kept && key in meta) {
+      kept[field] = { ...kept[field], auto: meta[key] ?? null };
+      meta[key] = stored[key] ?? null;
+    }
+  }
+  if ("summary" in kept && "plain_english_summary" in out) {
+    kept.summary = { ...kept.summary, auto: out.plain_english_summary ?? null };
+    out.plain_english_summary = row?.plain_english_summary ?? null;
+  }
+  meta.manual = kept;
+  out.meta = meta;
+  return out;
+}
+
+/** Rewrite and check the summaries of these topics, and save them. Returns the ids written. With `dryRun`, nothing is
+ * saved and each update goes to `onUpdate` instead. */
+export async function refreshTopicSummaries(supabase: SupabaseClient, matterIds: Iterable<number>,
+  opts: { dryRun?: boolean; onUpdate?: (matterId: number, update: Update) => void } = {}): Promise<number[]> {
+  const ids = [...new Set([...matterIds].map(Number))].sort((a, b) => a - b);
+  if (!ids.length) return [];
+  const loaded = await loadTopicContext(supabase, ids);
+  // A topic too large for one request is left as it was, never cut to fit.
+  const size = (m: Loaded) => promptFor([m]).length;
+  const fits = loaded.filter((m) => size(m) <= INPUT_BUDGET_CHARS);
+  for (const m of loaded) if (!fits.includes(m)) console.error(`[topic-summaries] topic ${m.id} is too large for one request; not rewritten`);
+  const batches: Loaded[][] = [];
+  let used = 0;
+  for (const m of fits) {
+    const last = batches[batches.length - 1];
+    if (!last || used + size(m) > INPUT_BUDGET_CHARS || last.length >= BATCH_SIZE) {
+      batches.push([m]);
+      used = size(m);
+    } else {
+      last.push(m);
+      used += size(m);
+    }
+  }
+  const written: number[] = [];
+  await Promise.all(batches.map(async (batch) => {
+    let updates: Map<number, Update>;
+    try {
+      updates = await checked(batch, await generate(batch));
+    } catch (error) {
+      console.error(`[topic-summaries] topics ${batch.map((m) => m.id).join(", ")}:`, error instanceof Error ? error.message : error);
+      return;
+    }
+    for (const [mid, update] of updates) {
+      if (opts.dryRun) {
+        opts.onUpdate?.(mid, update);
+        written.push(mid);
+        continue;
+      }
+      const { error } = await supabase.from("matters").update(await keepTextEdits(supabase, mid, update)).eq("id", mid);
+      if (error) console.error(`[topic-summaries] saving topic ${mid} failed:`, error.message);
+      else written.push(mid);
+    }
+  }));
+  return written.sort((a, b) => a - b);
+}
+
+const NoteCheck = z.object({
+  followed: z.boolean().describe(FIELDS.note_followed),
+  missing: z.string().describe(FIELDS.note_missing),
+});
+
+/** The approved summary instructions the rewritten summary doesn't follow, each with the topic the page now shows
+ * and what is still missing. */
+export async function checkSummaryNotes(supabase: SupabaseClient, notes: { matter_id: number; note: string }[]) {
+  return (await Promise.all(notes.map(async (entry) => {
+    let matterId = entry.matter_id;
+    let { data: matter } = await supabase.from("matters").select("plain_english_summary, meta, merged_into").eq("id", matterId).single();
+    if (matter?.merged_into) {  // merged away during this fix: the page now shows the topic it was merged into
+      matterId = matter.merged_into;
+      ({ data: matter } = await supabase.from("matters").select("plain_english_summary, meta, merged_into").eq("id", matterId).single());
+    }
+    const text = `Summary: ${matter?.plain_english_summary || ""}\nWhere it stands: ${matter?.meta?.status_line || ""}`;
+    try {
+      const { data } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, schema: NoteCheck, schemaName: "_NoteCheck",
+        prompt: `An editor asked for this change to a topic page's summary on a site that follows a city council:\n\n${entry.note}\n\n`
+          + `The page now reads:\n${text}\n\nThe page's dates (when it was discussed) and its timeline are drawn from its records `
+          + `and shown separately, so judge only what the summary and status should say. Judge substance, not wording: it follows `
+          + `the instruction when the facts it asks for are there (in the summary or the status) and nothing it says to drop is `
+          + `left; asides such as "noting that…" are optional. Does it follow the instruction?` });
+      return data.followed ? null : { note: entry.note, matter_id: matterId, missing: data.missing };
+    } catch (error) {  // can't check: say so rather than claim it
+      console.error("[topic-summaries] summary check failed:", error instanceof Error ? error.message : error);
+      return { note: entry.note, matter_id: matterId, missing: "" };
+    }
+  }))).filter((u): u is { note: string; matter_id: number; missing: string } => !!u);
+}
+
+const DirectEdit = z.object({
+  summary: z.string().describe(FIELDS.direct_summary),
+  status_line: z.string().describe(FIELDS.direct_status_line),
+});
+
+/** Last step when the summary writer won't follow an approved instruction: edit the current summary and status line
+ * directly, using only the instruction and the record's words it quotes. Kept as meta.staff_text, which later rewrites
+ * keep until the topic gains a step of its own. True when saved. */
+export async function directEdit(supabase: SupabaseClient, matterId: number, notes: string[]): Promise<boolean> {
+  const { data: m } = await supabase.from("matters").select("plain_english_summary, meta").eq("id", matterId).single();
+  const meta: Meta = m?.meta || {};
+  let edit: z.infer<typeof DirectEdit>;
+  try {
+    ({ data: edit } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, schema: DirectEdit, schemaName: "_DirectEdit",
+      prompt: "Apply these approved instructions to a topic page on a site that follows a city council. Change only what they ask; "
+        + "keep everything else, and use only facts the instructions or their quoted records give.\n\nInstructions:\n"
+        + notes.map((n) => `- ${n}`).join("\n")
+        + `\n\nCurrent summary: ${m?.plain_english_summary || ""}\nCurrent where it stands: ${meta.status_line || ""}` }));
+  } catch (error) {
+    console.error("[topic-summaries] direct edit failed:", error instanceof Error ? error.message : error);
+    return false;
+  }
+  const owned = await fetchAll<{ id: number }>((from, to) => supabase.from("agenda_items").select("id").eq("matter_id", matterId).order("id").range(from, to));
+  const staffText = { summary: edit.summary.trim(), status_line: edit.status_line.trim(), items: owned.map((r) => r.id).sort((a, b) => a - b),
+    notes, at: new Date().toISOString() };
+  const { error } = await supabase.from("matters").update(await keepTextEdits(supabase, matterId, {
+    plain_english_summary: staffText.summary || m?.plain_english_summary,
+    meta: { ...meta, status_line: staffText.status_line || meta.status_line, staff_text: staffText },
+  })).eq("id", matterId);
+  return !error;
+}
