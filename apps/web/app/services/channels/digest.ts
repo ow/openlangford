@@ -11,6 +11,7 @@
  * - Dissent only as a count ("passed 6–1"), never a name.
  */
 import { SITE_ORIGIN } from "../../lib/og";
+import { rewriteImageUrl } from "../../lib/image-url";
 import { meetingPath } from "../../lib/paths";
 import { recordDate } from "../../lib/page-meta";
 import { meetingHighlights } from "../../lib/meeting-summary";
@@ -215,7 +216,7 @@ export function buildMeetingDigest(meeting: DigestMeetingRow, motions: DigestMot
     moreDecisions: Math.max(0, decisions.length - MAX_DECISIONS),
     decisionsUrl: absolute(meetingPath(ref, "#decisions")),
     videoUrl: hasVideo ? absolute(meetingPath(ref, "?t=0")) : null,
-    imageUrl: safeUrl(meeting.title_card?.url) ?? safeUrl(meeting.poster?.url) ?? safeUrl(meeting.share_card?.url),
+    imageUrl: safeUrl(rewriteImageUrl(meeting.title_card?.url)) ?? safeUrl(rewriteImageUrl(meeting.poster?.url)) ?? safeUrl(rewriteImageUrl(meeting.share_card?.url)),
     footer: DIGEST_FOOTER,
   };
 }

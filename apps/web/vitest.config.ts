@@ -50,6 +50,7 @@ export default defineConfig({
     "process.env.VIMEO_PROXY_FALLBACK_API_KEY": JSON.stringify(""),
     "process.env.VIMEO_TOKEN": JSON.stringify(""),
     "process.env.DOCUMENT_IMAGE_PUBLIC_BASE_URL": JSON.stringify(""),
+    "process.env.DOCUMENT_IMAGE_CDN_BASE_URL": JSON.stringify(""),
     "process.env.R2_PUBLIC_URL": JSON.stringify(""),
   },
 });
