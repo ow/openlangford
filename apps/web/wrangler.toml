@@ -20,6 +20,13 @@ mode = "smart"
 binding = "AI"
 
 # Global second tier for public data caches (read when the per-datacenter cache misses).
+# Pooled Postgres for the typed SQL path (app/db, docs/db-sql-path.md): "langford-db", pointed at the
+# Supavisor session-mode pooler. Hyperdrive keeps connections warm between requests. For local dev, set
+# WRANGLER_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE to the same URL (never commit it).
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "2565758ad7ea4f688af2fe635eb26cf9"
+
 [[kv_namespaces]]
 binding = "PUBLIC_CACHE"
 id = "723e71f9a2b249aab101970d0be104e1"
