@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { THEME_SCRIPT } from "./lib/theme";
 import { bannerNotice } from "./lib/notices";
 import { civicToday } from "./lib/council-terms";
@@ -39,11 +40,13 @@ import { Footer } from "./components/footer";
 import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { getStaffRole } from "./lib/auth.server";
-import { PageReviewBar } from "./components/admin/page-review-bar";
 import { ReportIssue, ReportsEnabled } from "./components/report-issue";
 import { REPORTS_STAFF_ONLY } from "./lib/data-reports";
-import { InternalNoteBanner } from "./components/admin/internal-note-banner";
 import { isReviewable } from "./lib/page-review-types";
+
+// Staff-only tools: loaded on demand so the editing dialogs don't ship to every visitor.
+const PageReviewBar = lazy(() => import("./components/admin/page-review-bar").then((m) => ({ default: m.PageReviewBar })));
+const InternalNoteBanner = lazy(() => import("./components/admin/internal-note-banner").then((m) => ({ default: m.InternalNoteBanner })));
 
 export const meta: Route.MetaFunction = ({ matches, error }) => {
   // Error pages (404s, 503s) are never indexed.
@@ -232,11 +235,11 @@ export default function App() {
         </Link>
       )}
       <main className="flex-1 flex flex-col">
-        {root?.isAdmin && isReviewable(pathname) && <InternalNoteBanner />}
+        {root?.isAdmin && isReviewable(pathname) && <Suspense fallback={null}><InternalNoteBanner /></Suspense>}
         <Outlet />
       </main>
       <Footer />
-      {root?.isAdmin && isReviewable(pathname) && <PageReviewBar />}
+      {root?.isAdmin && isReviewable(pathname) && <Suspense fallback={null}><PageReviewBar /></Suspense>}
       {reports && <ReportIssue />}
     </div>
     </ReportsEnabled.Provider>
