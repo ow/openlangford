@@ -23,15 +23,20 @@ function collect(node: unknown, date: string | null, out: Found[], seen: Set<obj
   for (const value of Object.values(record)) if (value && typeof value === "object") collect(value, here, out, seen, depth + 1);
 }
 
-export async function labelSpeakerRoles(supabase: SupabaseClient, roots: unknown[], date: string | null = null) {
+type RoleMembership = { person_id: number; role?: string | null; start_date?: string | null; end_date?: string | null; organization?: { name?: string | null; classification?: string | null } | null };
+
+/** Person ids of every linked public speaker found under `roots`. */
+export function speakerPersonIds(roots: unknown[]): number[] {
+  const found: Found[] = [];
+  collect(roots, null, found, new Set());
+  return [...new Set(found.flatMap((f) => f.speakers.map((s) => s.person_id).filter((id): id is number => !!id)))];
+}
+
+/** The pure half of labelSpeakerRoles: sets `role` in place from memberships already in hand (council and staff never apply). */
+export function applySpeakerRoles(roots: unknown[], memberships: RoleMembership[], date: string | null = null) {
   const found: Found[] = [];
   collect(roots, date, found, new Set());
-  const ids = [...new Set(found.flatMap((f) => f.speakers.map((s) => s.person_id).filter((id): id is number => !!id)))];
-  if (!ids.length) return;
-  const { data } = await supabase.from("memberships")
-    .select("person_id, role, start_date, end_date, organization:organizations(name, classification)")
-    .in("person_id", ids);
-  const roles = ((data || []) as any[]).filter((m) => !/^(council|staff)$/i.test(m.organization?.classification || ""));
+  const roles = memberships.filter((m) => !/^(council|staff)$/i.test(m.organization?.classification || ""));
   for (const { speakers, date: day } of found) {
     for (const s of speakers) {
       if (!s.person_id || !day) continue;
@@ -39,4 +44,18 @@ export async function labelSpeakerRoles(supabase: SupabaseClient, roots: unknown
       if (m) s.role = [m.role, m.organization?.name].filter(Boolean).join(", ");
     }
   }
+}
+
+/** Memberships out of a loader's people map ({ [id]: { id, memberships: [...] } }), for applySpeakerRoles. */
+export function membershipsFromPeople(people: Record<string | number, { id: number; memberships?: Omit<RoleMembership, "person_id">[] | null } | undefined>): RoleMembership[] {
+  return Object.values(people).flatMap((p) => (p?.memberships || []).map((m) => ({ ...m, person_id: p!.id })));
+}
+
+export async function labelSpeakerRoles(supabase: SupabaseClient, roots: unknown[], date: string | null = null) {
+  const ids = speakerPersonIds(roots);
+  if (!ids.length) return;
+  const { data } = await supabase.from("memberships")
+    .select("person_id, role, start_date, end_date, organization:organizations(name, classification)")
+    .in("person_id", ids);
+  applySpeakerRoles(roots, (data || []) as any[], date);
 }

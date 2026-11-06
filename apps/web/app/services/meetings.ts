@@ -257,7 +257,11 @@ export function categoryTopic(category: string | null): string {
   return TOPIC_PATTERNS.find(([, needles]) => needles.some((needle) => value.includes(needle)))?.[0] ?? "General";
 }
 
-type MeetingTextOptions = { includeText?: boolean };
+type MeetingTextOptions = {
+  includeText?: boolean;
+  /** Called as soon as the agenda rows are in, so a caller can start item-keyed queries while the transcript still loads. */
+  onAgendaItems?: (items: AgendaItem[]) => void;
+};
 
 export async function getMeetingById(supabase: SupabaseClient, id: string, options?: MeetingTextOptions): Promise<any>;
 export async function getMeetingById(
@@ -272,12 +276,20 @@ export async function getMeetingById(
   idOrOptions?: string | MeetingTextOptions,
   options: MeetingTextOptions = {},
 ) {
-  const includeText = (typeof idOrOptions === "object" ? idOrOptions : options).includeText !== false;
+  const opts = typeof idOrOptions === "object" ? idOrOptions : options;
+  const includeText = opts.includeText !== false;
   const [municipality, id] = resolveMunicipalityAndId(
     municipalityOrId,
     typeof idOrOptions === "string" ? idOrOptions : undefined,
   );
-  // 1. Fetch meeting, agenda, aliases, attendance
+  // 1. Everything keyed only on the meeting id runs at once: meeting, agenda, aliases, attendance,
+  // the transcript (paged) and council memberships (filtered by date in JS, since the date isn't known yet).
+  const transcriptPromise = fetchTranscriptSegments(supabase, id, includeText);
+  const membershipsPromise = supabase
+    .from("memberships")
+    .select("person_id, start_date, end_date, organization:organizations!inner(classification, municipality_id)")
+    .eq("organization.classification", "Council")
+    .eq("organization.municipality_id", municipality.id);
   const [meetingRes, agendaRes, aliasRes, attendanceRes] = await Promise.all([
     supabase
       .from("meetings")
@@ -306,6 +318,9 @@ export async function getMeetingById(
       .eq("meeting_id", id),
   ]);
 
+  // The meeting row may be missing or hidden; the early-started queries are then simply dropped.
+  transcriptPromise.catch(() => {});
+  membershipsPromise.then(undefined, () => {});
   if (meetingRes.error) {
     console.error("Error fetching meeting:", meetingRes.error);
     if (meetingRes.error.code === "PGRST116") {
@@ -326,51 +341,9 @@ export async function getMeetingById(
     console.error("Error fetching attendance:", attendanceRes.error);
   }
 
-  // Fetch active council members for this meeting date to track regrets
-  // We need to know who *should* be there, even if they aren't in the attendance list
-  const { data: councilMemberships } = await supabase
-    .from("memberships")
-    .select("person_id, organization:organizations!inner(classification, municipality_id)")
-    .eq("organization.classification", "Council")
-    .eq("organization.municipality_id", municipality.id)
-    .lte("start_date", meetingRes.data.meeting_date)
-    .or(`end_date.is.null,end_date.gte.${meetingRes.data.meeting_date}`);
-
-  const activeCouncilMemberIds = (councilMemberships || []).map(
-    (m: any) => m.person_id,
-  );
-
-  // 2. Fetch transcript segments with manual pagination to bypass 1000 limit
-  const transcript: TranscriptSegment[] = [];
-  let page = 0;
-  const pageSize = 1000;
-  let hasMore = true;
-
-  while (hasMore) {
-    const { data, error } = await supabase
-      .from("transcript_segments")
-      .select(
-        includeText
-          ? "id, start_time, end_time, text_content, person_id, agenda_item_id, motion_id, speaker_name, speaker_role"
-          : "id, start_time, end_time, person_id, agenda_item_id, motion_id, speaker_name, speaker_role",
-      )
-      .eq("meeting_id", id)
-      .order("start_time", { ascending: true })
-      .range(page * pageSize, (page + 1) * pageSize - 1);
-
-    if (error) {
-      console.error("Error fetching transcript segments:", error);
-      break;
-    }
-
-    if (data && data.length > 0) {
-      transcript.push(...(data as unknown as TranscriptSegment[]));
-      hasMore = data.length === pageSize;
-      page++;
-    } else {
-      hasMore = false;
-    }
-  }
+  opts.onAgendaItems?.((agendaRes.data || []) as AgendaItem[]);
+  const { data: councilMemberships } = await membershipsPromise;
+  const activeCouncilMemberIds = activeMemberIdsOn(councilMemberships || [], meetingRes.data.meeting_date);
 
   // 3. Collect all unique person IDs to fetch details once
   const personIds = new Set<number>();
@@ -396,27 +369,30 @@ export async function getMeetingById(
 
   (aliasRes.data || []).forEach((a: any) => personIds.add(a.person_id));
   (attendanceRes.data || []).forEach((a: any) => personIds.add(a.person_id));
-  transcript.forEach((s) => {
-    if (s.person_id) personIds.add(s.person_id);
-  });
   activeCouncilMemberIds.forEach((id: number) => personIds.add(id));
 
-  // 4. Fetch people details with memberships once
-  const peopleMap: Record<number, any> = {};
-  if (personIds.size > 0) {
-    const { data: peopleData } = await supabase
+  // 4. Fetch people details with memberships while the transcript is still loading; only
+  // speakers found nowhere else (rare) need a second small lookup afterwards.
+  const fetchPeople = async (ids: number[]) => {
+    if (ids.length === 0) return [] as any[];
+    const { data } = await supabase
       .from("people")
       .select(
         "id, name, slug, is_councillor, memberships(role, start_date, end_date, organization:organizations(name, classification))",
       )
-      .in("id", Array.from(personIds));
-
-    if (peopleData) {
-      peopleData.forEach((p) => {
-        peopleMap[p.id] = p;
-      });
-    }
-  }
+      .in("id", ids);
+    return (data || []) as any[];
+  };
+  const peoplePromise = fetchPeople(Array.from(personIds));
+  const transcript = await transcriptPromise;
+  const peopleMap: Record<number, any> = {};
+  const peopleRows = await peoplePromise;
+  peopleRows.forEach((p) => { peopleMap[p.id] = p; });
+  const missing = new Set<number>();
+  transcript.forEach((s) => {
+    if (s.person_id && !personIds.has(s.person_id)) missing.add(s.person_id);
+  });
+  (await fetchPeople(Array.from(missing))).forEach((p) => { peopleMap[p.id] = p; });
 
   // 5. Build Normalized Response
   // We return the people map separately and let the client look up people by ID
@@ -430,6 +406,43 @@ export async function getMeetingById(
     people: peopleMap,
     activeCouncilMemberIds,
   };
+}
+
+/** Person ids of council memberships covering `date` (null end_date = still serving). Dates are YYYY-MM-DD strings. */
+export function activeMemberIdsOn(
+  memberships: Array<{ person_id: number; start_date: string | null; end_date: string | null }>,
+  date: string,
+): number[] {
+  const day = String(date).slice(0, 10);
+  return memberships
+    .filter((m) => m.start_date != null && m.start_date <= day && (m.end_date == null || m.end_date >= day))
+    .map((m) => m.person_id);
+}
+
+/** Transcript segments in start order, paged past the 1,000-row API cap. A failed page ends the list. */
+async function fetchTranscriptSegments(supabase: SupabaseClient, id: string, includeText: boolean): Promise<TranscriptSegment[]> {
+  const transcript: TranscriptSegment[] = [];
+  const pageSize = 1000;
+  for (let page = 0; ; page++) {
+    const { data, error } = await supabase
+      .from("transcript_segments")
+      .select(
+        includeText
+          ? "id, start_time, end_time, text_content, person_id, agenda_item_id, motion_id, speaker_name, speaker_role"
+          : "id, start_time, end_time, person_id, agenda_item_id, motion_id, speaker_name, speaker_role",
+      )
+      .eq("meeting_id", id)
+      .order("start_time", { ascending: true })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+    if (error) {
+      console.error("Error fetching transcript segments:", error);
+      break;
+    }
+    if (!data || data.length === 0) break;
+    transcript.push(...(data as unknown as TranscriptSegment[]));
+    if (data.length < pageSize) break;
+  }
+  return transcript;
 }
 
 export async function getDividedDecisions(
@@ -501,7 +514,8 @@ export async function getDocumentSectionsForMeeting(
   idOrOptions?: string | MeetingTextOptions,
   options: MeetingTextOptions = {},
 ): Promise<DocumentSection[]> {
-  const includeText = (typeof idOrOptions === "object" ? idOrOptions : options).includeText !== false;
+  const opts = typeof idOrOptions === "object" ? idOrOptions : options;
+  const includeText = opts.includeText !== false;
   const [, meetingId] = resolveMunicipalityAndId(
     municipalityOrMeetingId,
     typeof idOrOptions === "string" ? idOrOptions : undefined,

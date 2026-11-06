@@ -1,5 +1,5 @@
 import { CalendarProvenance } from "../components/calendar-provenance";
-import { labelSpeakerRoles } from "../services/speaker-roles.server";
+import { applySpeakerRoles, membershipsFromPeople } from "../services/speaker-roles.server";
 import { pageMeta, recordDate, markdownAlternate, metaDescription } from "../lib/page-meta";
 import { ogImageUrl } from "../lib/og";
 import { rewriteImageUrl } from "../lib/image-url";
@@ -16,6 +16,7 @@ import {
   getExtractedDocumentsForMeeting,
 } from "../services/meetings";
 import { createSupabaseServerClient } from "../lib/supabase.server";
+import { publicAgendaItemMeta, transcriptStub } from "../lib/meeting-payload";
 import { timed } from "../lib/server-timing.server";
 import { getAttendanceInfo } from "../lib/attendance";
 import type { AttendanceInfo } from "../lib/attendance";
@@ -182,16 +183,31 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const { supabase } = createSupabaseServerClient(request);
     const resolved = await timed("meeting-resolve", resolveSlugParam(supabase, "meetings", params.id, request, (m) => meetingPath(m), "Meeting Not Found"));
     const id = String(resolved.id);
-    await notFoundIfHidden(request, "meetings", id);
     const municipalityPromise = getMunicipality(supabase).catch(() => null);
-    const [data, documentSections, extractedDocuments, municipality, terms] = await Promise.all([
-      timed("meeting-record", getMeetingById(supabase, id, { includeText: false })),
+    // Item-keyed links start the moment the agenda rows arrive, while the transcript is still paging in.
+    let linksPromise: Promise<[any, any]> | null = null;
+    const startLinks = (items: any[]) => {
+      linksPromise = timed("meeting-links", Promise.all([
+        getPropertiesForItems(supabase, items.map((it) => it.id)),
+        getMatterLinks(supabase, items.map((it) => it.matter_id)),
+      ]));
+      linksPromise.catch(() => {});
+    };
+    // The hidden-page check (privacy) runs alongside the reads; its 404 still rejects the whole loader
+    // before anything is returned, so a hidden meeting's data never reaches the response.
+    const [, data, documentSections, extractedDocuments, municipality, terms] = await Promise.all([
+      timed("meeting-hidden-check", notFoundIfHidden(request, "meetings", id)),
+      timed("meeting-record", getMeetingById(supabase, id, { includeText: false, onAgendaItems: startLinks })),
       timed("meeting-sections", getDocumentSectionsForMeeting(supabase, id, { includeText: false })),
       timed("meeting-documents", getExtractedDocumentsForMeeting(supabase, id)),
       municipalityPromise,
       // Council terms only need the municipality: fetched alongside, not after, the meeting.
       timed("meeting-terms", municipalityPromise.then((m) => m ? getCouncilTerms(supabase, m.id) : [])),
     ]);
+    const [itemProperties, itemMatters] = linksPromise ? await linksPromise : await timed("meeting-links", Promise.all([
+      getPropertiesForItems(supabase, (data.agendaItems || []).map((it: any) => it.id)),
+      getMatterLinks(supabase, (data.agendaItems || []).map((it: any) => it.matter_id)),
+    ]));
 
     // Only show attendance info for future meetings (Vancouver timezone)
     const today = new Date().toLocaleDateString("en-CA", {
@@ -205,17 +221,16 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const councilTerm = terms.find((term) => membershipIsActiveOn(term, data.meeting.meeting_date)) || null;
     // Transcript and report-section text run to megabytes; ship timings/titles only and let
     // the page fetch the text from /api/meeting-text (transcript on demand, sections on expand).
-    const transcript = (data.transcript || []).map(({ text_content, ...rest }: any) => rest);
+    const transcript = (data.transcript || []).map(transcriptStub);
     const sections = (documentSections || []).map(({ section_text, ...rest }: any) => rest);
-    const [itemProperties, itemMatters] = await timed("meeting-links", Promise.all([
-      getPropertiesForItems(supabase, (data.agendaItems || []).map((it: any) => it.id)),
-      getMatterLinks(supabase, (data.agendaItems || []).map((it: any) => it.matter_id)),
-    ]));
     // meetings.meta also holds pipeline-private data (speaker voice centroids/samples, cached
     // direct media URLs); ship only the keys the page reads.
     const meeting = data.meeting && { ...data.meeting, meta: publicMeetingMeta(data.meeting.meta) };
-    await labelSpeakerRoles(supabase, [data.agendaItems], meeting.meeting_date);
-    return { ...data, meeting, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties, itemMatters };
+    // Speaker roles come from the memberships the people map already carries: no extra query.
+    applySpeakerRoles([data.agendaItems], membershipsFromPeople(data.people), meeting.meeting_date);
+    // agenda_items.meta also carries pipeline stamps and drafts; ship the keys the page reads.
+    const agendaItems = (data.agendaItems || []).map((it: any) => ({ ...it, meta: publicAgendaItemMeta(it.meta) }));
+    return { ...data, agendaItems, meeting, transcript, documentSections: sections, extractedDocuments, attendanceInfo, councilTerm, itemProperties, itemMatters };
   } catch (error) {
     throw loaderFailure(error, "Meeting Not Found");
   }
