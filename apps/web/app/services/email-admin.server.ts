@@ -151,7 +151,7 @@ const HIDDEN_TOKEN = "00000000-0000-4000-8000-000000000000";
 /** The alert email as it was sent, rebuilt from its stored payload by the sender's own renderer, with the
  * personal unsubscribe link removed. Null for messages it can't rebuild (staff emails use the text preview). */
 export function renderedEmail(row: { id: string; subject: string; payload: unknown; is_test?: boolean; message_type: string }) {
-  if (row.message_type !== "meeting_digest" && row.message_type !== "pre_meeting") return null;
+  if (!["meeting_digest", "pre_meeting", "agenda_preview"].includes(row.message_type)) return null;
   try {
     const { html } = providerBody({
       id: row.id, recipient: "", subject: row.subject, payload: row.payload, unsubscribe_token: HIDDEN_TOKEN,

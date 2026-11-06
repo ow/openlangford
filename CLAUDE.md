@@ -99,6 +99,9 @@ Every model call goes through one client per app; never call a provider SDK dire
 ### Page review fixes
 The review bar's fix agent (`services/page-fix.server.ts`) carries out every fix in its own request, including moves, merges and the summary rewrite (`services/topic-summaries.server.ts`, a port of the pipeline's `matter_summaries.py`). Only re-filing an item through the ingest matcher goes to the quick worker as a `fix_page` job. Both summary writers read `shared/prompts/topic-summaries.json`: change prompts there. See `docs/page-review-fixes.md`.
 
+### Email alerts
+The 5-minute cron (`workers/email-enqueue.ts`) asks the `send-alerts` Edge function (deployed by hand, not CI) to queue post-meeting digests and, with `mode: "agenda"`, before-meeting agenda previews; both match subscribers through the SQL `alert_subscription_matches`. See `docs/agenda-alerts.md`.
+
 ### Pipeline stages
 `pipeline/stages.py` registers every post-ingest/enrichment stage (name, function, `post_ingest`|`backfill_only`, scope, version, dependencies) in run order. After ingestion the orchestrator runs the `post_ingest` stages in order, each isolated. Run one on demand with `main.py --stage NAME [--target ID] [--since DATE] [--stale] [--force] [--dry-run]` (`--stages` lists them). Stages that write AI output stamp a version (`matters.meta.summary_version`, `matters.meta.images_version`, `agenda_items.meta.participation_version`, `agenda_items.meta.participation_minutes_version` for the transcript-less `participation-from-minutes` stage); bump the module's `*_VERSION` after a prompt change and run `--stage X --stale`. Add new enrichment steps to the registry, not as new one-off flags.
 

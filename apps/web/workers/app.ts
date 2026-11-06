@@ -11,7 +11,7 @@ import { withAuthCookies } from "../app/lib/auth-cookies.server";
 import publicContent from "../public-content-version.json";
 
 import { EMAIL_DISPATCH_CRON, dispatchEmailAlerts } from "./email-dispatch";
-import { enqueueEnabled, enqueueMeetingEmails } from "./email-enqueue";
+import { enqueueAgendaAlerts, enqueueEnabled, enqueueMeetingEmails } from "./email-enqueue";
 import { discordPostsEnabled, runDiscordPosts } from "./discord-posts";
 import { negotiateMarkdown } from "./markdown-negotiation";
 import { publicMeetingCache } from "./public-meeting-cache";
@@ -113,12 +113,15 @@ export default {
       ctx.waitUntil(runPrecheckQueue(getSupabaseAdminClient(), "https://openlangford.ca").then((s) => {
         if (s.checked || s.failed) console.log("[Pre-check]", JSON.stringify(s));
       }).catch((error) => { console.error("[Pre-check]", error instanceof Error ? error.message : "failed"); }));
-      // Enqueue recently held meetings first (no-op unless all gates are set), then dispatch.
+      // Enqueue recently held meetings, then upcoming agendas (no-op unless all gates are set), then dispatch.
       ctx.waitUntil(
         (enqueueEnabled(env)
           ? enqueueMeetingEmails(env, getSupabaseAdminClient())
               .then((s) => { if (s.calls) console.log("[Email alerts] Enqueue", JSON.stringify(s)); })
               .catch(() => { console.error("[Email alerts] Enqueue failed; will retry next run"); })
+              .then(() => enqueueAgendaAlerts(env, getSupabaseAdminClient()))
+              .then((s) => { if (s?.calls) console.log("[Email alerts] Agenda enqueue", JSON.stringify(s)); })
+              .catch(() => { console.error("[Email alerts] Agenda enqueue failed; will retry next run"); })
           : Promise.resolve()
         ).then(() => dispatchEmailAlerts(env).catch(() => { console.error("[Email alerts] Dispatch failed; durable queue retained"); })),
       );

@@ -362,6 +362,8 @@ export interface UserProfile {
   email_alerts_enabled?: boolean;
   digest_frequency: DigestFrequency;
   digest_enabled: boolean;
+  /** Email before a meeting when its agenda includes something followed; needs email alerts on. */
+  agenda_alerts_enabled?: boolean;
   onboarding_completed?: boolean;
   created_at: string;
   updated_at: string;

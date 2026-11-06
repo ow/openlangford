@@ -116,7 +116,34 @@ it("retains the normal opt-in flow once delivery has been verified available", a
     onboarding_completed: false,
     digest_enabled: true,
     digest_frequency: "each_meeting",
+    // Before-meeting agenda emails default on.
+    agenda_alerts_enabled: true,
   });
+});
+
+it("saves the before-meeting choice with email alerts, and leaves it alone when alerts stay off", async () => {
+  vi.stubEnv("EMAIL_ALERTS_AVAILABLE", "true");
+  await onboard(args({ digest_enabled: "true", agenda_alerts_enabled: "false" }));
+  expect(mocks.profile.mock.calls[0][2]).toMatchObject({ digest_enabled: true, agenda_alerts_enabled: false });
+  mocks.profile.mockClear();
+  await onboard(args({ digest_enabled: "false", agenda_alerts_enabled: "false" }));
+  expect(mocks.profile.mock.calls[0][2]).not.toHaveProperty("agenda_alerts_enabled");
+  expect(mocks.consent).toHaveBeenLastCalledWith("set_email_alert_consent", { p_enabled: false, p_complete_onboarding: true });
+});
+
+it("saves the before-meeting toggle from settings next to the other alert choices", async () => {
+  vi.stubEnv("EMAIL_ALERTS_AVAILABLE", "true");
+  await settings(args({ intent: "update_profile", email_alerts_enabled: "on", agenda_alerts_enabled: "on" }));
+  expect(mocks.profile.mock.calls[0][2]).toMatchObject({ agenda_alerts_enabled: true, digest_enabled: false });
+  mocks.profile.mockClear();
+  await settings(args({ intent: "update_profile", email_alerts_enabled: "on" }));
+  expect(mocks.profile.mock.calls[0][2]).toMatchObject({ agenda_alerts_enabled: false });
+  expect(mocks.consent).toHaveBeenLastCalledWith("set_email_alert_consent", { p_enabled: true });
+});
+
+it("does not touch the before-meeting choice while email delivery is unavailable", async () => {
+  await settings(args({ intent: "update_profile", display_name: "Reader", agenda_alerts_enabled: "on" }));
+  expect(mocks.profile.mock.calls[0][2]).not.toHaveProperty("agenda_alerts_enabled");
 });
 
 it("only issues success after the completion write succeeds", async () => {
