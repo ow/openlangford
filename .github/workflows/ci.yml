@@ -97,9 +97,9 @@ jobs:
         working-directory: apps/pipeline
     steps:
       - uses: actions/checkout@v4
-      # Some tests check original PDFs and skip when pdftotext is absent.
-      - name: Install poppler
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+      # Some tests check original PDFs and skip when pdftotext is absent; the transcript identity tests run ffmpeg.
+      - name: Install poppler and ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils ffmpeg
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
