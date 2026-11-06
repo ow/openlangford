@@ -1,3 +1,4 @@
+import { timed } from "../lib/server-timing.server";
 import { getPublicSpeakingTimeStats, getPublicSpeakingTimeByTopic } from "../services/public-speaking.server";
 import { attendanceCoverageText } from "../lib/attendance-evidence";
 import { SITE_NAME } from "../lib/site-name";
@@ -119,14 +120,16 @@ export async function loader({ request }: Route.LoaderArgs) {
   const bParam = url.searchParams.get("b");
   const supabase = getSupabaseAdminClient();
 
-  const municipality = await getMunicipality(supabase);
-  const terms = (await getCouncilTerms(supabase, municipality.id)).filter((term) => councilTermStatus(term) !== "upcoming");
+  const municipality = await timed("compare-municipality", getMunicipality(supabase));
+  // Terms and the councillor list only need the municipality id, so they load together.
+  const [allTerms, councillors] = await timed("compare-roster", Promise.all([
+    getCouncilTerms(supabase, municipality.id),
+    getPublicCouncilComparisonPeople(municipality.id),
+  ]));
+  const terms = allTerms.filter((term) => councilTermStatus(term) !== "upcoming");
   const termParam = url.searchParams.get("term");
   const selectedTerm = termParam === "all" ? null : terms.find((term) => String(term.id) === termParam)
     || terms.find((term) => councilTermStatus(term) === "current") || null;
-
-  // Always load councillor list for selectors
-  const councillors = await getPublicCouncilComparisonPeople(municipality.id);
 
   // People are addressed by slug (?a=scott-goodmanson); legacy numeric ids 301.
   const slugOf = (id: number) => councillors.find((c) => c.id === id)?.slug;
@@ -169,37 +172,25 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Speaking-time RPCs can time out; degrade to "unavailable" rather than
   // failing the whole page.
   const orNull = <T,>(promise: Promise<T>) => promise.catch(() => null);
-  const [stancesA, stancesB, speakingARes, speakingBRes, speakingStatsRes] = await Promise.all([
+  // The council organization lookup and A's votes do not depend on the stances/speaking calls, so all run together.
+  const councilOrgId = Promise.resolve(
+    supabase.from("organizations").select("id").eq("classification", "Council").eq("municipality_id", municipality.id).single(),
+  ).then((r: any) => r.data?.id || 1);
+  const [stancesA, stancesB, speakingARes, speakingBRes, speakingStatsRes, votesA, membershipsRes] = await timed("compare-data", Promise.all([
     getCouncillorStances(supabase, parseInt(aId)),
     getCouncillorStances(supabase, parseInt(bId)),
     orNull(getPublicSpeakingTimeByTopic(parseInt(aId), selectedTerm?.start_date, selectedTerm?.end_date || undefined, municipality.id)),
     orNull(getPublicSpeakingTimeByTopic(parseInt(bId), selectedTerm?.start_date, selectedTerm?.end_date || undefined, municipality.id)),
     orNull(getPublicSpeakingTimeStats(selectedTerm?.start_date, selectedTerm?.end_date || undefined, municipality.id)),
-  ]);
+    fetchRelevantVotesForAlignment(supabase, aId, municipality.id),
+    councilOrgId.then((orgId: number) => supabase.from("memberships").select("*, people(id, name, image_url)").eq("organization_id", orgId)),
+  ]));
   const speakingUnavailable = !speakingARes || !speakingBRes || !speakingStatsRes;
   const speakingA = speakingARes ?? [];
   const speakingB = speakingBRes ?? [];
   const speakingStatsAll = speakingStatsRes ?? [];
 
-  // Compute pairwise voting alignment
-  const [votesA, membershipsRes] = await Promise.all([
-    fetchRelevantVotesForAlignment(supabase, aId, municipality.id),
-    supabase
-      .from("memberships")
-      .select("*, people(id, name, image_url)")
-      .eq(
-        "organization_id",
-        (
-          await supabase
-            .from("organizations")
-            .select("id")
-            .eq("classification", "Council")
-            .eq("municipality_id", municipality.id)
-            .single()
-        ).data?.id || 1,
-      ),
-  ]);
-
+  // Pairwise voting alignment
   const alignmentResults = calculateAlignmentForPerson(
     parseInt(aId),
     votesA,

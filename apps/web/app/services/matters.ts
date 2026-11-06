@@ -32,19 +32,48 @@ function resolveMunicipalityAndIds(
   return [DEFAULT_MUNICIPALITY, municipalityOrIds];
 }
 
+/** What the index page's counts, categories and page links need: one narrow row per public matter, newest activity first. */
+export type MatterIndexRow = { id: number; title: string; category: string | null; status: string; last_seen: string | null };
+
+/** The public matter list's order and filters, shared by the narrow index and the full rows so a page of ids lines up. */
+function publicMatters(supabase: SupabaseClient, municipality: Municipality, columns: string) {
+  return supabase
+    .from("matters")
+    .select(columns)
+    .eq("municipality_id", municipality.id)
+    .is("merged_into", null)
+    .is("meta->>hidden", null)
+    .order("last_seen", { ascending: false, nullsFirst: false })
+    .order("id", { ascending: false });
+}
+
+/** Narrow rows (no agenda-item join, no pins) for every public matter: cheap enough to rebuild often. */
+export async function getMatterIndex(supabase: SupabaseClient, municipality: Municipality = DEFAULT_MUNICIPALITY): Promise<MatterIndexRow[]> {
+  const rows: MatterIndexRow[] = [];
+  for (let start = 0; ; start += 1000) {
+    const { data, error } = await publicMatters(supabase, municipality, "id, title, category, status, last_seen").range(start, start + 999);
+    if (error) throw error;
+    rows.push(...((data || []) as unknown as MatterIndexRow[]));
+    if (!data || data.length < 1000) return rows;
+  }
+}
+
 export async function getMatters(
   supabase: SupabaseClient,
   municipality: Municipality = DEFAULT_MUNICIPALITY,
+  /** Only these matters (a page of the index). Rows come back in the list's usual order. */
+  onlyIds?: number[],
 ) {
   const allData: any[] = [];
   const pageSize = 1000;
   let offset = 0;
+  if (onlyIds && !onlyIds.length) return [];
 
   while (true) {
-    const { data, error } = await supabase
-      .from("matters")
-      .select(
-        `
+    let query = publicMatters(
+      supabase,
+      municipality,
+      `
         id,
         slug,
         title,
@@ -61,12 +90,9 @@ export async function getMatters(
         bylaw:bylaws(slug, title, bylaw_number),
         agenda_items(related_address, geo_location, written:meta->written_participation)
       `,
-      )
-      .eq("municipality_id", municipality.id)
-      .is("merged_into", null)
-      .is("meta->>hidden", null)
-      .order("last_seen", { ascending: false, nullsFirst: false })
-      .range(offset, offset + pageSize - 1);
+    );
+    if (onlyIds) query = query.in("id", onlyIds);
+    const { data, error } = await query.range(offset, offset + pageSize - 1);
 
     if (error) throw error;
     if (!data || data.length === 0) break;
@@ -78,7 +104,7 @@ export async function getMatters(
   }
 
   // Pins from the matters' properties (BC-geocoded) beat the ones agenda items got at ingest.
-  const propertyPins = await getPropertyPinsByMatter(supabase).catch((error) => {
+  const propertyPins = await getPropertyPinsByMatter(supabase, onlyIds).catch((error) => {
     console.error("Error fetching property pins:", error);
     return new Map<number, Pin[]>();
   });
@@ -199,6 +225,24 @@ export async function getDocumentsForAgendaItems(
     return [];
   }
   return data ?? [];
+}
+
+/**
+ * The same rows as getDocumentsForAgendaItems for all of a matter's agenda items, in one query that needs
+ * only the matter id, so it can start before the matter itself has loaded.
+ */
+export async function getDocumentsForMatter(supabase: SupabaseClient, matterId: number): Promise<any[]> {
+  const { data, error } = await supabase
+    .from("extracted_documents")
+    .select("id, document_id, agenda_item_id, title, document_type, page_start, page_end, agenda_items!inner(matter_id)")
+    .eq("agenda_items.matter_id", matterId)
+    .order("agenda_item_id")
+    .order("page_start", { ascending: true, nullsFirst: false });
+  if (error) {
+    console.error("Error fetching documents for matter:", error);
+    return [];
+  }
+  return (data ?? []).map(({ agenda_items: _join, ...row }: any) => row);
 }
 
 export async function getMatterEvidence(

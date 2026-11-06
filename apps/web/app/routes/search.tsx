@@ -1,3 +1,4 @@
+import { timed } from "../lib/server-timing.server";
 import { useSiteFlags } from "../lib/use-site-flags";
 import { SITE_NAME } from "../lib/site-name";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
@@ -76,8 +77,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const id = url.searchParams.get("id") || "";
 
   const { supabase } = createSupabaseServerClient(request);
-  const municipality = await getMunicipality(supabase);
-  const councilTerms = await getCouncilTerms(supabase, municipality.id);
+  const municipality = await timed("search-municipality", getMunicipality(supabase));
+  const councilTerms = await timed("search-terms", getCouncilTerms(supabase, municipality.id));
   const mode = url.searchParams.get("mode");
 
   // If there's a cached result ID, fetch it from the API
