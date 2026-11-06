@@ -40,6 +40,14 @@ Regular council meetings are where Council makes most of its decisions and where
 - **Go in person.** Council Chambers, third floor of City Hall, 877 Goldstream Avenue.
 - **Join online.** The City posts Zoom instructions on its [meetings page](https://www.langford.ca/meetings/), and streams each meeting live there.
 - **Write to Mayor and Council** using the City's [feedback form](https://www.langford.ca/city-hall/council-committees/mayor-council/#feedback-form). You can ask them to keep evening meetings, or to set the 2027 schedule by a vote in an open meeting.
-- **Email Mayor and Council directly.** [WHobbs@langford.ca](mailto:WHobbs@langford.ca); [BHill@langford.ca](mailto:BHill@langford.ca); [JDunnett@langford.ca](mailto:JDunnett@langford.ca); [BGordon@langford.ca](mailto:BGordon@langford.ca); [CHarder@langford.ca](mailto:CHarder@langford.ca); [SYoung@langford.ca](mailto:SYoung@langford.ca); [LFoxall@langford.ca](mailto:LFoxall@langford.ca); [Agendas@langford.ca](mailto:Agendas@langford.ca). Or [write to all of them at once](mailto:WHobbs@langford.ca,BHill@langford.ca,JDunnett@langford.ca,BGordon@langford.ca,CHarder@langford.ca,SYoung@langford.ca,LFoxall@langford.ca,Agendas@langford.ca).
+- **Email Mayor and Council directly**, or [write to all of them at once](mailto:SYoung@langford.ca,BGordon@langford.ca,CHarder@langford.ca,BHill@langford.ca,JDunnett@langford.ca,LFoxall@langford.ca,WHobbs@langford.ca,Agendas@langford.ca):
+  - Mayor Stew Young ([SYoung@langford.ca](mailto:SYoung@langford.ca))
+  - Councillor Jennifer Dunnett ([JDunnett@langford.ca](mailto:JDunnett@langford.ca))
+  - Councillor Lisa Foxall ([LFoxall@langford.ca](mailto:LFoxall@langford.ca))
+  - Councillor Brandy Gordon ([BGordon@langford.ca](mailto:BGordon@langford.ca))
+  - Councillor Colby Harder ([CHarder@langford.ca](mailto:CHarder@langford.ca))
+  - Councillor Bryson Hill ([BHill@langford.ca](mailto:BHill@langford.ca))
+  - Councillor Wendy Hobbs ([WHobbs@langford.ca](mailto:WHobbs@langford.ca))
+  - Council agendas inbox ([Agendas@langford.ca](mailto:Agendas@langford.ca))
 
 Open Langford will list each meeting's agenda on its [meetings page](/meetings) as soon as the City publishes it.
