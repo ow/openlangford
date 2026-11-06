@@ -71,3 +71,23 @@ can invoke import functions; this state table has RLS and no public policies.
 Verify the deployed Cloudflare Cron list and public homepage/calendar afterwards.
 An initial **manual** receipt does not prove a recurring execution. Confirm a later
 `last_trigger=cron` receipt after a scheduled boundary before claiming Cron ran.
+
+## Agendas before the meeting (pipeline agenda watch)
+
+Calendar sync creates the "Planned" meeting; the pipeline's agenda watch fills in its
+agenda. `main.py --upcoming-agendas` (run every 2 hours by the launchd job in
+`apps/pipeline/launchd/`, see its README) reads the same `GetCalendarMeetings` feed,
+because eSCRIBE's PastMeetings list only shows a meeting after it happens. For each
+meeting from today on with a posted agenda it downloads only the agenda and runs the
+normal ingest, so the meeting gets agenda items, topics and embeddings before it is held.
+
+- It attaches to the calendar's meeting through the same eSCRIBE ID: recording the
+  archive folder on that `source_meetings` row keeps `ingested_meeting_id`, and
+  `find_scheduled_meeting` then updates that meeting (or links an annual-schedule
+  placeholder through `reconcile_calendar_source`). No second meeting is created.
+- It skips a meeting whose `meetings.agenda_url` already matches the posted agenda
+  and has items, so repeated runs cost nothing. A new agenda link is a revised agenda:
+  the meeting is re-ingested and the same agenda items are updated.
+- When minutes and video arrive after the meeting, the normal run updates those same
+  agenda items (matched by item number and title) and replaces the future-tense text.
+- It never downloads minutes, audio or video and never queues email.

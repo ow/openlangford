@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import hashlib
+import json
 import re
 import time
 from datetime import date, datetime, timezone
@@ -69,57 +70,129 @@ class EscribeScraper(BaseScraper):
                 if since_date and meeting_date < since_date:
                     continue
 
-                links = raw.get("MeetingLinks") or []
-                documents: list[ScrapedDocument] = []
-                agenda_url = None
-                minutes_url = None
-
-                for link in links:
-                    link_url = link.get("Url")
-                    if not link_url or (link.get("Format") or "").lower() != ".pdf":
-                        continue
-
-                    category = self._document_category(link)
-                    title = self._clean_title(link.get("Title") or category or "Document")
-                    full_url = urljoin(f"{self.base_url}/", link_url)
-
-                    if category == "Agenda" and not agenda_url and link.get("Type") == "Agenda":
-                        agenda_url = full_url
-                    if category == "Minutes" and not minutes_url:
-                        minutes_url = full_url
-
-                    documents.append(
-                        ScrapedDocument(
-                            title=title,
-                            url=full_url,
-                            category=category,
-                            file_format="pdf",
-                        )
-                    )
-
-                title = raw.get("MeetingType") or meeting_type
-                video_url = raw.get("VideoUrl")
-                if video_url:
-                    video_url = urljoin(f"{self.base_url}/", video_url)
-
-                meetings.append(
-                    ScrapedMeeting(
-                        date=meeting_date,
-                        title=title,
-                        meeting_type=utils.infer_meeting_type(title),
-                        organization_name=self.municipality.name,
-                        agenda_url=agenda_url,
-                        minutes_url=minutes_url,
-                        video_url=video_url,
-                        source_id=meeting_id,
-                        documents=documents,
-                        meta={"escribe_meeting": raw},
-                    )
-                )
+                meetings.append(self._scraped_meeting(raw, meeting_date, meeting_type))
 
         meetings.sort(key=lambda m: m.date, reverse=True)
         print(f"  [eSCRIBE] Discovered {len(meetings)} meeting(s)")
         return meetings
+
+    def _scraped_meeting(self, raw: dict, meeting_date: date, fallback_type: str) -> ScrapedMeeting:
+        """One portal meeting (a PastMeetings row, or a calendar row in the same shape) as a ScrapedMeeting."""
+        documents: list[ScrapedDocument] = []
+        agenda_url = None
+        minutes_url = None
+
+        for link in raw.get("MeetingLinks") or []:
+            link_url = link.get("Url")
+            if not link_url or (link.get("Format") or "").lower() != ".pdf":
+                continue
+
+            category = self._document_category(link)
+            title = self._clean_title(link.get("Title") or category or "Document")
+            full_url = urljoin(f"{self.base_url}/", link_url)
+
+            if category == "Agenda" and not agenda_url and link.get("Type") == "Agenda":
+                agenda_url = full_url
+            if category == "Minutes" and not minutes_url:
+                minutes_url = full_url
+
+            documents.append(
+                ScrapedDocument(
+                    title=title,
+                    url=full_url,
+                    category=category,
+                    file_format="pdf",
+                )
+            )
+
+        title = raw.get("MeetingType") or fallback_type
+        video_url = raw.get("VideoUrl")
+        if video_url:
+            video_url = urljoin(f"{self.base_url}/", video_url)
+
+        return ScrapedMeeting(
+            date=meeting_date,
+            title=title,
+            meeting_type=utils.infer_meeting_type(title),
+            organization_name=self.municipality.name,
+            agenda_url=agenda_url,
+            minutes_url=minutes_url,
+            video_url=video_url,
+            source_id=raw.get("Id"),
+            documents=documents,
+            meta={"escribe_meeting": raw},
+        )
+
+    def discover_calendar_meetings(self, start: date, end: date) -> list[ScrapedMeeting]:
+        """Meetings on the portal calendar from ``start`` to ``end`` (inclusive), upcoming ones included.
+
+        PastMeetings (``discover_meetings``) lists a meeting only once it has happened. The calendar (the
+        GetCalendarMeetings feed the web app's calendar sync also reads) lists scheduled meetings and carries
+        their documents as soon as the City posts them. One request, no paging. Rows are put in the
+        PastMeetings shape (``Id``, ``MeetingType``, ``MeetingDate``, ``MeetingTime``, ``MeetingLinks``) so
+        archive folders, source identity and downloads work exactly as for a scraped meeting.
+        """
+        resp = self.session.post(
+            f"{self.base_url}/MeetingsCalendarView.aspx/GetCalendarMeetings",
+            json={
+                "calendarStartDate": f"{start.isoformat()}T00:00:00",
+                "calendarEndDate": f"{end.isoformat()}T23:59:59",
+            },
+            headers={
+                "Content-Type": "application/json; charset=UTF-8",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            timeout=config.REQUEST_TIMEOUT,
+        )
+        resp.raise_for_status()
+        payload = resp.json().get("d")
+        rows = json.loads(payload) if isinstance(payload, str) else payload
+        if not isinstance(rows, list):
+            raise ValueError("Unexpected eSCRIBE calendar payload")
+
+        wanted = set(self.meeting_types)
+        meetings: list[ScrapedMeeting] = []
+        seen: set[str] = set()
+        for row in rows:
+            raw = self.calendar_row_as_meeting(row) if isinstance(row, dict) else None
+            if raw is None or raw["MeetingType"] not in wanted or raw["Id"] in seen:
+                continue
+            meeting_date = self._parse_meeting_date(raw)
+            if not meeting_date or not (start <= meeting_date <= end):
+                continue
+            seen.add(raw["Id"])
+            meetings.append(self._scraped_meeting(raw, meeting_date, raw["MeetingType"]))
+
+        meetings.sort(key=lambda m: m.date)
+        print(f"  [eSCRIBE] Calendar lists {len(meetings)} meeting(s) from {start} to {end}")
+        return meetings
+
+    @staticmethod
+    def calendar_row_as_meeting(row: dict) -> dict | None:
+        """A GetCalendarMeetings row in the PastMeetings shape, or None without an ID, type or start time."""
+        meeting_id = str(row.get("ID") or "").strip().lower()
+        meeting_type = row.get("MeetingType")
+        # StartDate is the local wall-clock start, e.g. "2026/11/24 17:30:00".
+        match = re.match(r"^(\d{4})/(\d{2})/(\d{2}) (\d{2}):(\d{2})", str(row.get("StartDate") or ""))
+        if not meeting_id or not meeting_type or not match:
+            return None
+        try:
+            start = datetime(*(int(part) for part in match.groups()))
+        except ValueError:
+            return None
+        return {
+            "Id": meeting_id,
+            "MeetingType": meeting_type,
+            # PastMeetings' display formats ("November 02, 2026", "6:30 PM"), so the archive folder
+            # name matches the one a later full scrape derives for the same meeting.
+            "MeetingDate": start.strftime("%B %d, %Y"),
+            "MeetingTime": f"{start.hour % 12 or 12}:{start.minute:02d} {'AM' if start.hour < 12 else 'PM'}",
+            "MeetingLinks": [link for link in row.get("MeetingDocumentLink") or [] if isinstance(link, dict)],
+            "LocationName": row.get("Location"),
+            "FormattedStart": row.get("FormattedStart"),
+            "HasAgenda": row.get("HasAgenda"),
+            "FromCalendar": True,
+        }
 
     def download_documents(self, meeting: ScrapedMeeting, target_dir: str) -> list[str]:
         os.makedirs(target_dir, exist_ok=True)

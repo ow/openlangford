@@ -155,6 +155,22 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--upcoming-agendas",
+        action="store_true",
+        help="Agenda watch: ingest posted agendas of meetings from today on (agenda only: no minutes, audio, "
+             "diarization or video). Skips meetings whose agenda is unchanged. With --dry-run: print the plan, "
+             "write nothing. Run by launchd/run_agenda_watch.sh.",
+    )
+    parser.add_argument(
+        "--days-back", type=int, default=None,
+        help="With --upcoming-agendas: also list meetings this many days back (default 14; reported, not ingested).",
+    )
+    parser.add_argument(
+        "--days-ahead", type=int, default=None,
+        help="With --upcoming-agendas: look this many days ahead (default 60).",
+    )
+
+    parser.add_argument(
         "--test",
         action="store_true",
         help="Mark this as a test run. Push notifications will be prefixed with [TEST].",
@@ -298,7 +314,8 @@ if __name__ == "__main__":
 
     cli_job = args.stage or next(
         (name for name in (
-            "classify_topics", "discover", "check_updates", "update_mode", "generate_stances", "generate_highlights",
+            "classify_topics", "discover", "upcoming_agendas", "check_updates", "update_mode", "generate_stances",
+            "generate_highlights",
             "detect_key_votes", "generate_profiles", "ingest_only", "embed_only", "reextract_images",
             "extract_documents", "backfill_sections", "process_only", "rediarize",
         ) if getattr(args, name)),
@@ -313,7 +330,7 @@ if __name__ == "__main__":
         municipality = load_configured_municipality(args.municipality)
         print(f"[*] Municipality: {municipality.name} ({municipality.slug})")
 
-        app = Archiver(municipality=municipality, initialize_diarizer=not args.discover)
+        app = Archiver(municipality=municipality, initialize_diarizer=not (args.discover or args.upcoming_agendas))
 
         # The municipality's archive unless --input-dir says otherwise.
         output_dir = args.input_dir if args.input_dir else app.archive_root
@@ -336,6 +353,10 @@ if __name__ == "__main__":
                 if entry["action"] != "linked":
                     print(f"  {entry['action']:<7} {entry['date']} {entry['title']} -> "
                           f"{entry.get('conflicts') or entry['archive_root']}")
+        elif args.upcoming_agendas:
+            print(f"\n--- Upcoming agendas{' (dry run)' if args.dry_run else ''} ---")
+            app.run_upcoming_agendas(days_back=args.days_back, days_ahead=args.days_ahead,
+                                     dry_run=args.dry_run, skip_embed=args.skip_embed)
         elif args.check_updates:
             print("\n--- Update Check (Dry Run) ---")
             app.run_update_check()
