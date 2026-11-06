@@ -17,6 +17,7 @@ Usage:
 import logging
 import time
 from collections import defaultdict
+from pipeline.postgrest import paginate
 
 logger = logging.getLogger(__name__)
 
@@ -35,18 +36,6 @@ RATE_LIMIT_DELAY = 0.5
 # ── Vote Count Computation (from votes table, not motions columns) ──────
 
 
-def _paginate(query_fn, page_size: int = 1000) -> list[dict]:
-    """Read every row from a Supabase query builder factory (PostgREST caps pages)."""
-    rows: list[dict] = []
-    start = 0
-    while True:
-        page = query_fn().range(start, start + page_size - 1).execute().data or []
-        rows.extend(page)
-        if len(page) < page_size:
-            return rows
-        start += page_size
-
-
 def complete_roll_call_motion_ids(supabase) -> set[int]:
     """Motions whose individual votes form a complete roll call.
 
@@ -55,7 +44,7 @@ def complete_roll_call_motion_ids(supabase) -> set[int]:
     vote, so key-vote detection only uses reconstructed complete roll calls
     (meta.individual_vote_coverage, written by ballot reconstruction).
     """
-    rows = _paginate(
+    rows = paginate(
         lambda: supabase.table("motions")
         .select("id")
         .eq("meta->>individual_vote_coverage", "reconstructed_complete")
@@ -65,7 +54,7 @@ def complete_roll_call_motion_ids(supabase) -> set[int]:
 
 def _complete_votes(supabase) -> list[dict]:
     complete = complete_roll_call_motion_ids(supabase)
-    rows = _paginate(lambda: supabase.table("votes").select("person_id, motion_id, vote").order("id"))
+    rows = paginate(lambda: supabase.table("votes").select("person_id, motion_id, vote").order("id"))
     return [r for r in rows if r["motion_id"] in complete]
 
 
@@ -290,7 +279,7 @@ def _fallback_context_summary(
 
 def _fetch_person_votes(supabase, person_id: int, complete: set[int] | None = None) -> list[dict]:
     """Fetch a person's votes on complete roll calls, with motion and meeting details."""
-    rows = _paginate(
+    rows = paginate(
         lambda: supabase.table("votes")
         .select(
             "id, vote, motion_id, person_id, "
@@ -474,7 +463,7 @@ def detect_all_key_votes(
     print("[Key Votes] Computing vote counts from votes table...")
     complete = complete_roll_call_motion_ids(supabase)
     complete_votes = [
-        r for r in _paginate(lambda: supabase.table("votes").select("person_id, motion_id, vote").order("id"))
+        r for r in paginate(lambda: supabase.table("votes").select("person_id, motion_id, vote").order("id"))
         if r["motion_id"] in complete
     ]
     vote_counts = compute_vote_counts(supabase, complete_votes)

@@ -34,6 +34,7 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 
 from pipeline import ai
+from pipeline.postgrest import in_chunks
 
 PROPERTY_SUMMARY_VERSION = "2"
 MIN_RECORDS = 2
@@ -266,28 +267,17 @@ def needs_clearing(p: dict) -> bool:
     return not eligible(p) and bool((p.get("meta") or {}).get("summary"))
 
 
-def _chunks(ids: list[int], size: int = 200):
-    for start in range(0, len(ids), size):
-        yield ids[start:start + size]
-
-
 def load_inputs(supabase, props: list[dict]) -> dict[int, dict]:
     """Property id -> the model's input."""
     every = [q for p in props for q in [p, *summary_lots(p)]]
     matter_ids = sorted({int(k[1:]) for p in every for k in p["records"] if k[0] == "m"})
     item_ids = sorted({int(k[1:]) for p in every for k in p["records"] if k[0] == "i"})
-    matters: dict[int, dict] = {}
-    for chunk in _chunks(matter_ids):
-        for m in supabase.table("matters").select(
-            "id, title, category, status, first_seen, last_seen, plain_english_summary, meta"
-        ).in_("id", chunk).execute().data or []:
-            matters[m["id"]] = m
-    items: dict[int, dict] = {}
-    for chunk in _chunks(item_ids):
-        for i in supabase.table("agenda_items").select(
-            "id, title, plain_english_summary, meetings(meeting_date)"
-        ).in_("id", chunk).execute().data or []:
-            items[i["id"]] = i
+    matters = {m["id"]: m for m in in_chunks(lambda chunk: supabase.table("matters").select(
+        "id, title, category, status, first_seen, last_seen, plain_english_summary, meta"
+    ).in_("id", chunk), matter_ids)}
+    items = {i["id"]: i for i in in_chunks(lambda chunk: supabase.table("agenda_items").select(
+        "id, title, plain_english_summary, meetings(meeting_date)"
+    ).in_("id", chunk), item_ids)}
     return {p["id"]: build_input(p, matters, items) for p in props}
 
 

@@ -21,6 +21,7 @@ import numpy as np
 from supabase import Client
 
 from pipeline import ai
+from pipeline.postgrest import paginate
 
 RELATED_SIM = 0.55
 MENTION_SIM = 0.45
@@ -33,16 +34,6 @@ MIXED_ITEM = re.compile(
     re.I,
 )
 MENTION_MIN_PROBABILITY = 0.85  # mixed items touch many topics; be stricter than for related matters
-
-
-def _paginate(build, page: int = 1000) -> list[dict]:
-    rows, start = [], 0
-    while True:
-        chunk = build().range(start, start + page - 1).execute().data or []
-        rows.extend(chunk)
-        if len(chunk) < page:
-            return rows
-        start += page
 
 
 def _years_apart(a: str | None, b: str | None) -> float:
@@ -74,7 +65,7 @@ def load_matters(supabase: Client, since: str | None) -> list[dict]:
         )
         return query.gte("last_seen", since) if since else query
 
-    return _paginate(q)
+    return paginate(q)
 
 
 def link_related(
@@ -152,7 +143,7 @@ def link_mentions(
             return query.in_("meeting_id", meeting_ids)
         return query.gte("meetings.meeting_date", since) if since else query
 
-    items = [it for it in _paginate(q) if MIXED_ITEM.search(it.get("title") or "") and it["meeting_id"] not in (exclude_meeting_ids or set())]
+    items = [it for it in paginate(q) if MIXED_ITEM.search(it.get("title") or "") and it["meeting_id"] not in (exclude_meeting_ids or set())]
     if not items:
         return []
 

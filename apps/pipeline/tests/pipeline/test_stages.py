@@ -211,7 +211,7 @@ class TestMotionHeadlinesStale:
             {"meeting_id": 3, "headline_version": "0"},
             {"meeting_id": 3, "headline_version": "1"},
         ]
-        monkeypatch.setattr(stages, "_paginate", lambda build: rows)
+        monkeypatch.setattr(stages, "paginate", lambda build: rows)
         monkeypatch.setattr(stages, "HEADLINE_VERSION", "1")
         assert stages.stale_motion_headlines(StageContext(supabase=MagicMock())) == [1, 3]
 
@@ -225,7 +225,7 @@ class TestMeetingHighlightsStale:
             {"id": 4, "status": "Cancelled", "stamp": None},
             {"id": 5, "status": "Planned", "stamp": None},
         ]
-        monkeypatch.setattr(stages, "_paginate", lambda build: rows)
+        monkeypatch.setattr(stages, "paginate", lambda build: rows)
         monkeypatch.setattr(stages, "HIGHLIGHTS_VERSION", "1")
         assert stages.stale_meeting_highlights(StageContext(supabase=MagicMock())) == [1, 3]
 
