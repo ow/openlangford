@@ -10,10 +10,22 @@ err() { echo "::error file=$1::$2"; fail=1; }
 
 # Files added by this PR (modified/renamed applied migrations are flagged separately).
 mapfile -t added < <(git diff --name-only --diff-filter=A "$base"...HEAD -- "$dir")
-mapfile -t changed < <(git diff --name-only --diff-filter=MDR "$base"...HEAD -- "$dir")
+mapfile -t changed < <(git diff --name-only --no-renames --diff-filter=MD "$base"...HEAD -- "$dir")
 
+# One exception: a baseline squash. When the PR adds <ts>_baseline.sql, applied files may leave this
+# directory as long as each one reappears unchanged under supabase/migrations_archive/ (see supabase/BASELINE-RUNBOOK.md).
+baseline="$(printf '%s\n' "${added[@]}" | grep -E '/[0-9]{14}_baseline\.sql$' || true)"
 for f in "${changed[@]}"; do
-  [ -n "$f" ] && err "$f" "Applied migrations must never be modified, renamed or deleted. Add a new migration instead."
+  [ -n "$f" ] || continue
+  if [ -n "$baseline" ] && ! git cat-file -e "HEAD:$f" 2>/dev/null; then
+    archived="supabase/migrations_archive/$(basename "$f")"
+    if git cat-file -e "HEAD:$archived" 2>/dev/null && [ "$(git rev-parse "$base:$f")" = "$(git rev-parse "HEAD:$archived")" ]; then
+      continue
+    fi
+    err "$f" "Removed from $dir but not archived unchanged as $archived."
+    continue
+  fi
+  err "$f" "Applied migrations must never be modified, renamed or deleted. Add a new migration instead."
 done
 
 if [ "${#added[@]}" -eq 0 ] || [ -z "${added[0]}" ]; then
