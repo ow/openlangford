@@ -7,6 +7,7 @@ import { runWithAiRequestContext } from "../app/services/ai/usage-sink.server";
 import { withPublicDataCache } from "../app/services/public-data-cache.server";
 import { timed, withServerTiming } from "../app/lib/server-timing.server";
 import { setPageRenderer } from "../app/lib/page-render.server";
+import { withAuthCookies } from "../app/lib/auth-cookies.server";
 import publicContent from "../public-content-version.json";
 
 import { EMAIL_DISPATCH_CRON, dispatchEmailAlerts } from "./email-dispatch";
@@ -63,7 +64,8 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, url: UR
     stamp,
     posthogKey: env.VITE_POSTHOG_KEY,
   }, ctx, (publicRequest) =>
-    requestHandler(publicRequest, { cloudflare: { env, ctx } }),
+    // A session refreshed during the request sends its new cookies back, whatever the route returns.
+    withAuthCookies(() => requestHandler(publicRequest, { cloudflare: { env, ctx } })),
   ));
 }
 

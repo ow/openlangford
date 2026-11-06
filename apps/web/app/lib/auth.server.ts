@@ -60,14 +60,28 @@ export async function requireAuth(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    const url = new URL(request.url);
     // Include headers in redirect just in case (e.g. clearing invalid session)
-    throw redirect(`/login?redirectTo=${encodeURIComponent(url.pathname + url.search)}`, {
-      headers,
-    });
+    throw redirect(`/login?redirectTo=${encodeURIComponent(loginReturnPath(request))}`, { headers });
   }
   
   return user;
+}
+
+/** Where to come back to after signing in. An API request (the review bar's polling, say) returns to the page it
+ * was about, never to the API URL itself: signing in would then show a JSON response. */
+export function loginReturnPath(request: Request) {
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith("/api/")) return url.pathname + url.search;
+  const page = url.searchParams.get("path");
+  if (page && /^\/(?!\/)[^\s]*$/.test(page)) return page;
+  const referer = request.headers.get("referer");
+  if (referer) {
+    try {
+      const from = new URL(referer);
+      if (from.origin === url.origin && !from.pathname.startsWith("/api/")) return from.pathname + from.search;
+    } catch { /* not a URL */ }
+  }
+  return "/";
 }
 
 // 3. Helpers to require a staff role: requireModerator for most tools, requireAdmin for the rest
