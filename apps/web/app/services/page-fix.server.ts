@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
-import { FLAG_PROBLEM_LABELS, type PageFlag } from "../lib/page-review-types";
+import { FLAG_PROBLEM_LABELS, keepStaffRatings, type PageFlag } from "../lib/page-review-types";
 import { readPage } from "./page-check.server";
 import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
@@ -229,9 +229,14 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
   // Every model call in the fix shares this deadline: when it fires, in-flight calls are cancelled.
   const budget = AbortSignal.timeout(FIX_BUDGET_MS);
   const timeLeft = () => FIX_BUDGET_MS - (Date.now() - startedAt);
+  // The flags were read when the run started; staff may have rated more, or marked one handled, since.
+  const withStaffRatings = async (mine: PageFlag[]) => {
+    const { data: now } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
+    return keepStaffRatings(now?.ai_flags as PageFlag[] | null, mine);
+  };
   const finish = async (status: "fixed" | "needs_work", agent_note: string, flags?: PageFlag[]) => {
     await supabase.from("page_reviews").update({
-      status, agent_note, agent_at: new Date().toISOString(), ...(flags ? { ai_flags: flags } : {}),
+      status, agent_note, agent_at: new Date().toISOString(), ...(flags ? { ai_flags: await withStaffRatings(flags) } : {}),
     }).eq("path", path);
   };
   try {
@@ -690,7 +695,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       if (!error) {
         const count = `${refiles.length} ${refiles.length === 1 ? "item" : "items"}`;
         await supabase.from("page_reviews").update({
-          ai_flags: updated, agent_at: new Date().toISOString(),
+          ai_flags: await withStaffRatings(updated), agent_at: new Date().toISOString(),
           agent_note: [done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : "",
             left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
             `Still to do, on the pipeline worker: re-file ${count} the way new meetings are filed (no listed topic fits), then rewrite the summaries they leave and join.`]

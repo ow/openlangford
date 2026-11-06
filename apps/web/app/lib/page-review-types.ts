@@ -22,6 +22,17 @@ export type PageFlag = {
 export function unresolvedFlags(flags: PageFlag[] | null | undefined) {
   return (flags || []).filter((f) => f.verdict === null || (f.verdict === "agree" && !f.fixed));
 }
+/** The fix agent's flags written back after its run, keeping what staff did to them while it ran: a rating, a note,
+ * or marking one handled. (2026-11-06: "Yes to all" was still saving when Fix was pressed, and the agent's write-back
+ * put three 👍s back to unrated, so the next Fix had nothing to do.) A list of a different length belongs to a new
+ * check that replaced the agent's: it wins untouched. */
+export function keepStaffRatings(current: PageFlag[] | null | undefined, mine: PageFlag[]): PageFlag[] {
+  const now = current || [];
+  if (now.length !== mine.length) return now;
+  return mine.map((f, i) => ({
+    ...f, verdict: now[i].verdict, fixed: !!(f.fixed || now[i].fixed), ...("note" in now[i] ? { note: now[i].note } : {}),
+  }));
+}
 export type PageReview = {
   path: string;
   kind: string;

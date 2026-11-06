@@ -145,6 +145,10 @@ export function PageReviewBar() {
   // server never got a rating for (2026-11-03: two such flags looked agreed, so Fix kept sending nothing to do).
   const [ratings, setRatings] = useState<Record<string, "agree" | "disagree" | null>>({});
   const ratingQueue = useRef<Promise<unknown>>(Promise.resolve());
+  // Ratings still on their way to the server: Fix waits for them, or the agent would start with the old ratings
+  // (2026-11-06: "Yes to all" had saved one of four when Fix was pressed).
+  const [savingRatings, setSavingRatings] = useState(0);
+  const tracked = <T,>(p: Promise<T>) => { setSavingRatings((n) => n + 1); return p.finally(() => setSavingRatings((n) => n - 1)); };
   useEffect(() => setRatings({}), [pathname]);
   const slot = (index: number) => `${review?.ai_checked_at ?? ""}#${index}`;
   const flags = (review?.ai_flags || []).map((f, i) => (slot(i) in ratings ? { ...f, verdict: ratings[slot(i)] } : f));
@@ -200,7 +204,7 @@ export function PageReviewBar() {
     const at = slot(index);
     const next = ratingQueue.current.then(() => sendOne(index, verdict, at));
     ratingQueue.current = next;
-    return next;
+    return tracked(next);
   };
   const sendOne = (index: number, verdict: "agree" | "disagree" | null, at: string) => {
     const body = new FormData();
@@ -218,10 +222,20 @@ export function PageReviewBar() {
   const undecidedFlags = flags.map((f, i) => ({ f, i })).filter(({ f }) => f.verdict === null && !f.fixed && f.problem !== "editor_issue");
   const undecidedFound = suggestions.filter((x) => !x.agreed);
   const unrated = undecidedFlags.length + undecidedFound.length;  // still waiting for a 👍 or 👎
-  const decideAll = async (verdict: "agree" | "disagree") => {
-    // Shown at once; saved one at a time, since each save rewrites the page's list of flags.
-    setRatings((r) => ({ ...r, ...Object.fromEntries(undecidedFlags.map(({ i }) => [slot(i), verdict])) }));
-    for (const { i } of undecidedFlags) await sendRating(i, verdict);
+  const decideAll = (verdict: "agree" | "disagree") => tracked((async () => {
+    // Shown at once and saved in one request (rate_all), after any single rating still on its way; a failed save puts
+    // the stored ratings back.
+    const slots = undecidedFlags.map(({ i }) => slot(i));
+    setRatings((r) => ({ ...r, ...Object.fromEntries(slots.map((s) => [s, verdict])) }));
+    if (slots.length) {
+      const body = new FormData();
+      Object.entries({ intent: "rate_all", path: pathname, title: document.title, verdict }).forEach(([k, v]) => body.set(k, v));
+      const next = ratingQueue.current.then(() => fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } })
+        .then((res) => { if (!res.ok) throw new Error(String(res.status)); })
+        .catch(() => setRatings((r) => { const next = { ...r }; for (const s of slots) delete next[s]; return next; })));
+      ratingQueue.current = next;
+      await next;
+    }
     for (const x of undecidedFound) {
       const body = new FormData();
       Object.entries({ intent: verdict === "agree" ? "accept" : "reject", path: pathname, title: document.title, table: x.table, id: String(x.id), agree: "1" })
@@ -229,7 +243,7 @@ export function PageReviewBar() {
       await fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } }).catch(() => null);
     }
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
-  };
+  })());
   const button = "whitespace-nowrap rounded-full px-2.5 py-1 font-medium";
   const markReviewed = () => {
     if (open_ > 0) { setBlocked(true); setOpen(true); return; }
@@ -293,7 +307,7 @@ export function PageReviewBar() {
                         {spinner("reviewed")}{open_ > 0 ? `Looks good, set aside the ${open_} left` : "Looks good"}</button>
                       {/* With something still agreed and unfixed, run the agent again; with nothing, rerunning would do
                           nothing, so ask what's still wrong (that becomes the agent's next job). */}
-                      <button type="button" disabled={busy}
+                      <button type="button" disabled={busy || savingRatings > 0} title={savingRatings > 0 ? "Saving your ratings…" : undefined}
                         onClick={() => (unrated > 0 ? setShowCheck(true) : agreed > 0 ? submit("needs_work") : (setShowCheck(true), setNote(""), setEditing(-1)))}
                         className={cn("rounded-md px-2.5 py-1 font-medium",
                           unrated > 0 ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-800 hover:bg-amber-100")}>{spinner("needs_work")}Still needs work</button>
@@ -604,9 +618,9 @@ export function PageReviewBar() {
           )}
           {/* After a review or a fix, an issue you add or a flag you agree with still needs a way to the agent. */}
           {(!review?.status || review.status === "needs_work" || agreed > 0) && !fixing && (
-            <button type="button" disabled={busy}
+            <button type="button" disabled={busy || savingRatings > 0}
               onClick={() => (agreed > 0 || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
-              title={agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent` : "Describe what needs work"}
+              title={savingRatings > 0 ? "Saving your ratings…" : agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent` : "Describe what needs work"}
               className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-200/70")}>
               {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>
           )}
