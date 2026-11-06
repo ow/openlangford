@@ -37,6 +37,7 @@ from pipeline.ingestion.matter_matching import (
     parse_compound_identifier,
     strip_stage,
 )
+from pipeline.postgrest import paginate
 
 EMBED_THRESHOLD = 0.86
 TITLE_THRESHOLD = 0.72
@@ -73,16 +74,6 @@ def _keys(identifier: str | None, title: str | None) -> set[str]:
     return {k.upper() for k in keys}
 
 
-def _paginate(build, page: int = 500) -> list[dict]:
-    rows, start = [], 0
-    while True:
-        chunk = build().range(start, start + page - 1).execute().data or []
-        rows.extend(chunk)
-        if len(chunk) < page:
-            return rows
-        start += page
-
-
 def _parse_vec(v) -> list[float] | None:
     if v is None:
         return None
@@ -95,11 +86,12 @@ def _parse_vec(v) -> list[float] | None:
 
 
 def load_records(supabase: Client, municipality_id: int = 1) -> dict[int, MatterRecord]:
-    matters = _paginate(
+    matters = paginate(
         lambda: supabase.table("matters")
         .select("id, title, identifier, category, first_seen, last_seen, meta, embedding, merged_into")
         .eq("municipality_id", municipality_id)
-        .order("id")
+        .order("id"),
+        page_size=500,
     )
     records: dict[int, MatterRecord] = {}
     for m in matters:
@@ -120,12 +112,12 @@ def load_records(supabase: Client, municipality_id: int = 1) -> dict[int, Matter
             embedding=_parse_vec(m.get("embedding")),
             meta=meta,
         )
-    items = _paginate(
+    items = paginate(
         lambda: supabase.table("agenda_items")
         .select("matter_id, title, plain_english_summary, related_address, meetings(meeting_date)")
         .not_.is_("matter_id", "null")
         .order("id"),
-        page=1000,
+        page_size=1000,
     )
     for it in items:
         rec = records.get(it["matter_id"])

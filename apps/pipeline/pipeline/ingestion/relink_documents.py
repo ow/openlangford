@@ -13,20 +13,11 @@ from collections import defaultdict
 from supabase import Client
 
 from pipeline import ai
+from pipeline.postgrest import paginate
 
 MIN_PROBABILITY = 0.75
 PROCEDURAL = ("call to order", "adjourn", "approval of the agenda", "territorial acknowledgement",
               "meeting conduct", "in camera", "closed meeting")
-
-
-def _paginate(build, page: int = 1000) -> list[dict]:
-    rows, start = [], 0
-    while True:
-        chunk = build().range(start, start + page - 1).execute().data or []
-        rows.extend(chunk)
-        if len(chunk) < page:
-            return rows
-        start += page
 
 
 def _write_link(supabase: Client, extracted_id: int, item_id: int, attempts: int = 3) -> bool:
@@ -50,7 +41,7 @@ def unlinked_documents(supabase: Client, meeting_ids: list[int] | None = None) -
     """Extracted documents with no agenda item, optionally only those of the given meetings."""
     select = "id, document_id, title, document_type, summary, documents(meeting_id)"
     if meeting_ids is None:
-        return _paginate(
+        return paginate(
             lambda: supabase.table("extracted_documents").select(select).is_("agenda_item_id", "null").order("id")
         )
     ids = sorted({int(i) for i in meeting_ids})

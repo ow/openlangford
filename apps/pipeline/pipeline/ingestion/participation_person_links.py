@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import re
 from typing import Any
+from pipeline.postgrest import paginate
 
 # Bump when the linking rule changes; stamped in agenda_items.meta.participation_links_version.
 # "2": letter authors in meta.written_participation are linked too.
@@ -163,21 +164,12 @@ def link_letters(written: dict, registry: dict[str, int | None]) -> tuple[dict, 
     return ({**written, "letters": letters} if changed else written), changed
 
 
-def _paginate(build, page: int = 1000) -> list[dict]:
-    rows: list[dict] = []
-    while True:
-        chunk = build().range(len(rows), len(rows) + page - 1).execute().data or []
-        rows.extend(chunk)
-        if len(chunk) < page:
-            return rows
-
-
 def load_registry(supabase: Any) -> tuple[dict[str, int | None], set[int]]:
-    people = _paginate(lambda: supabase.table("people").select("id,name,is_councillor,variants:meta->name_variants").order("id"))
-    memberships = _paginate(lambda: supabase.table("memberships")
+    people = paginate(lambda: supabase.table("people").select("id,name,is_councillor,variants:meta->name_variants").order("id"))
+    memberships = paginate(lambda: supabase.table("memberships")
                             .select("id,person_id,role,organizations(classification)").order("id"))
     roles = []
-    for meeting in _paginate(lambda: supabase.table("meetings").select("id,roles:meta->participant_roles")
+    for meeting in paginate(lambda: supabase.table("meetings").select("id,roles:meta->participant_roles")
                              .not_.is_("meta->participant_roles", "null").order("id")):
         roles.extend(r for r in (meeting.get("roles") or {}).values() if isinstance(r, dict))
     excluded = official_ids(people, memberships, roles)
