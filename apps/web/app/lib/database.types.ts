@@ -791,14 +791,14 @@ isOneToOne: false
                   ]
                 },"matters": {
                   Row: {
-                    "bylaw_id": number | null,"category": string | null,"created_at": string,"description": string | null,"embedding": unknown,"first_seen": string | null,"geo_location": Json | null,"id": number,"identifier": string | null,"last_seen": string | null,"merged_into": number | null,"meta": Json | null,"municipality_id": number | null,"plain_english_summary": string | null,"slug": string,"status": string | null,"text_search": unknown,"title": string,"updated_at": string
+                    "bylaw_id": number | null,"category": string | null,"content_updated_at": string | null,"created_at": string,"description": string | null,"embedding": unknown,"first_seen": string | null,"geo_location": Json | null,"id": number,"identifier": string | null,"last_seen": string | null,"merged_into": number | null,"meta": Json | null,"municipality_id": number | null,"plain_english_summary": string | null,"slug": string,"status": string | null,"text_search": unknown,"title": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "bylaw_id"?: number | null,"category"?: string | null,"created_at"?: string,"description"?: string | null,"embedding"?: unknown,"first_seen"?: string | null,"geo_location"?: Json | null,"id"?: number,"identifier"?: string | null,"last_seen"?: string | null,"merged_into"?: number | null,"meta"?: Json | null,"municipality_id"?: number | null,"plain_english_summary"?: string | null,"slug": string,"status"?: string | null,"text_search"?: never,"title": string,"updated_at"?: string
+                    "bylaw_id"?: number | null,"category"?: string | null,"content_updated_at"?: string | null,"created_at"?: string,"description"?: string | null,"embedding"?: unknown,"first_seen"?: string | null,"geo_location"?: Json | null,"id"?: number,"identifier"?: string | null,"last_seen"?: string | null,"merged_into"?: number | null,"meta"?: Json | null,"municipality_id"?: number | null,"plain_english_summary"?: string | null,"slug": string,"status"?: string | null,"text_search"?: never,"title": string,"updated_at"?: string
                   }
                   Update: {
-                    "bylaw_id"?: number | null,"category"?: string | null,"created_at"?: string,"description"?: string | null,"embedding"?: unknown,"first_seen"?: string | null,"geo_location"?: Json | null,"id"?: number,"identifier"?: string | null,"last_seen"?: string | null,"merged_into"?: number | null,"meta"?: Json | null,"municipality_id"?: number | null,"plain_english_summary"?: string | null,"slug"?: string,"status"?: string | null,"text_search"?: never,"title"?: string,"updated_at"?: string
+                    "bylaw_id"?: number | null,"category"?: string | null,"content_updated_at"?: string | null,"created_at"?: string,"description"?: string | null,"embedding"?: unknown,"first_seen"?: string | null,"geo_location"?: Json | null,"id"?: number,"identifier"?: string | null,"last_seen"?: string | null,"merged_into"?: number | null,"meta"?: Json | null,"municipality_id"?: number | null,"plain_english_summary"?: string | null,"slug"?: string,"status"?: string | null,"text_search"?: never,"title"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
