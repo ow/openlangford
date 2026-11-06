@@ -48,6 +48,7 @@ from pipeline.ingestion.property_summaries import PROPERTY_SUMMARY_VERSION
 from pipeline.ingestion.speaker_identity import IDENTITY_VERSION as SPEAKER_IDENTITY_VERSION
 from pipeline.video.posters import POSTER_VERSION
 from pipeline.video.share_cards import CARD_VERSION as SHARE_CARD_VERSION, TITLE_CARD_VERSION
+from pipeline.postgrest import paginate
 
 When = Literal["post_ingest", "backfill_only"]
 Scope = Literal["meeting", "matter", "global"]
@@ -138,17 +139,6 @@ def select_stale(rows: Iterable[dict], stamp_key: str, current: str) -> list[int
     return sorted(r["id"] for r in rows if is_stale(r.get(stamp_key), current))
 
 
-def _paginate(build: Callable[[], Any], page: int = 1000) -> list[dict]:
-    rows: list[dict] = []
-    start = 0
-    while True:
-        chunk = build().range(start, start + page - 1).execute().data or []
-        rows.extend(chunk)
-        if len(chunk) < page:
-            return rows
-        start += page
-
-
 def _matter_stamps(ctx: StageContext, key: str) -> list[dict]:
     def q():
         query = (
@@ -161,7 +151,7 @@ def _matter_stamps(ctx: StageContext, key: str) -> list[dict]:
             query = query.gte("last_seen", ctx.since)
         return query
 
-    return [{"id": r["id"], key: r.get("stamp")} for r in _paginate(q)]
+    return [{"id": r["id"], key: r.get("stamp")} for r in paginate(q)]
 
 
 def stale_matter_summaries(ctx: StageContext) -> list[int]:
@@ -183,7 +173,7 @@ def _images_changed(ctx: StageContext) -> list[int]:
             query = query.gte("last_seen", ctx.since)
         return query
 
-    rows = [{"id": r["id"], "images_seen": r.get("images_seen"), "has_lead": bool(r.get("lead"))} for r in _paginate(q)]
+    rows = [{"id": r["id"], "images_seen": r.get("images_seen"), "has_lead": bool(r.get("lead"))} for r in paginate(q)]
     return images_changed(rows, usable_image_counts())
 
 
@@ -216,7 +206,7 @@ def participation_items(ctx: StageContext, meeting_ids: list[int] | None = None)
 
     if meeting_ids is not None and not meeting_ids:
         return []
-    rows = _paginate(q)
+    rows = paginate(q)
     return [
         {"id": r["id"], "meeting_id": r["meeting_id"], "participation_version": r.get("stamp"),
          "has_summary": bool(r.get("has_summary")), "has_times": r.get("discussion_start_time") is not None}
@@ -252,7 +242,7 @@ def minutes_participation_items(ctx: StageContext, meeting_ids: list[int] | None
     if meeting_ids is not None and not meeting_ids:
         return []
     return [{"id": r["id"], "meeting_id": r["meeting_id"], "participation_minutes_version": r.get("stamp")}
-            for r in _paginate(q)
+            for r in paginate(q)
             if PARTICIPATION_TITLE.search(r.get("title") or "") and (not r.get("has_summary") or r.get("source") == "minutes")]
 
 
@@ -275,7 +265,7 @@ def speaker_items(ctx: StageContext, meeting_ids: list[int] | None = None) -> li
 
     if meeting_ids is not None and not meeting_ids:
         return []
-    return _paginate(q, page=200)
+    return paginate(q, page_size=200)
 
 
 def stale_participation_links(ctx: StageContext) -> list[int]:
@@ -502,7 +492,7 @@ def _speaker_targets(ctx: StageContext) -> list[int]:
                 q = q.gte("meeting_date", ctx.since)
             return q.order("meeting_date").order("id")
 
-        return [r["id"] for r in _paginate(query) if wanted is None or r["id"] in wanted]
+        return [r["id"] for r in paginate(query) if wanted is None or r["id"] in wanted]
     if not ids:
         return []
     rows = ctx.supabase.table("meetings").select("id, meeting_date").in_("id", ids).execute().data or []
@@ -659,7 +649,7 @@ def run_participation_person_links(ctx: StageContext):
 
 def _motion_headline_stamps(ctx: StageContext) -> list[dict]:
     """One row per meeting with decided, non-procedural motions: the oldest headline stamp among them."""
-    rows = _paginate(
+    rows = paginate(
         lambda: ctx.supabase.table("motions")
         .select("meeting_id, headline_version:meta->>headline_version")
         .neq("disposition", "Procedural")
@@ -716,7 +706,7 @@ def _closed_session_rows(ctx: StageContext, meeting_ids: list[int] | None = None
             query = query.gte("meeting_date", ctx.since)
         return query
 
-    return _paginate(q)
+    return paginate(q)
 
 
 def stale_closed_sessions(ctx: StageContext) -> list[int]:
@@ -761,7 +751,7 @@ def _meeting_highlight_stamps(ctx: StageContext) -> list[dict]:
         return query
 
     return [{"id": r["id"], "highlights_version": r.get("stamp")}
-            for r in _paginate(q) if (r.get("status") or "") not in SKIP_STATUSES]
+            for r in paginate(q) if (r.get("status") or "") not in SKIP_STATUSES]
 
 
 def stale_meeting_highlights(ctx: StageContext) -> list[int]:
@@ -1129,7 +1119,7 @@ def _poster_rows(ctx: StageContext, meeting_ids: list[int] | None = None) -> lis
 
     if meeting_ids is not None and not meeting_ids:
         return []
-    return [{**r, "poster_version": r.get("stamp")} for r in _paginate(q)]
+    return [{**r, "poster_version": r.get("stamp")} for r in paginate(q)]
 
 
 def stale_video_posters(ctx: StageContext) -> list[int]:
@@ -1211,7 +1201,7 @@ def _card_rows(ctx: StageContext, meeting_ids: list[int] | None = None, *, highl
 
     if meeting_ids is not None and not meeting_ids:
         return []
-    return _paginate(q)
+    return paginate(q)
 
 
 def stale_share_cards(ctx: StageContext) -> list[int]:
@@ -1273,7 +1263,7 @@ def _title_card_rows(ctx: StageContext, meeting_ids: list[int] | None = None) ->
 
     if meeting_ids is not None and not meeting_ids:
         return []
-    return _paginate(q)
+    return paginate(q)
 
 
 def stale_title_cards(ctx: StageContext) -> list[int]:

@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Callable, Iterable
 
+from pipeline.postgrest import paginate
 from pipeline.utils import natural_sort_key
 
 # ---------------------------------------------------------------------------
@@ -525,24 +526,13 @@ def align_items(items: list[dict], segments: list[dict], motions: list[dict] | N
 # ---------------------------------------------------------------------------
 
 
-def _fetch_all(query_fn: Callable[[int, int], Any], page: int = 1000) -> list[dict]:
-    rows: list[dict] = []
-    offset = 0
-    while True:
-        batch = query_fn(offset, offset + page - 1).execute().data or []
-        rows.extend(batch)
-        if len(batch) < page:
-            return rows
-        offset += page
-
-
 def load_meeting(supabase, meeting_id: int) -> tuple[list[dict], list[dict], list[dict]]:
     items = supabase.table("agenda_items").select(
         "id, item_order, title, plain_english_summary, discussion_start_time, discussion_end_time, meta"
     ).eq("meeting_id", meeting_id).execute().data or []
-    segments = _fetch_all(lambda a, b: supabase.table("transcript_segments").select(
+    segments = paginate(lambda: supabase.table("transcript_segments").select(
         "start_time, end_time, text_content, speaker_name, agenda_item_id"
-    ).eq("meeting_id", meeting_id).order("start_time").range(a, b))
+    ).eq("meeting_id", meeting_id).order("start_time"))
     motions = supabase.table("motions").select(
         "id, agenda_item_id, text_content, time_offset_seconds"
     ).eq("meeting_id", meeting_id).order("id").execute().data or []

@@ -94,7 +94,7 @@ def test_partial_roll_calls_are_excluded(monkeypatch, mock_supabase):
     monkeypatch.setattr(kvd, "complete_roll_call_motion_ids", lambda sb: {100})
     monkeypatch.setattr(
         kvd,
-        "_paginate",
+        "paginate",
         lambda fn, page_size=1000: [
             {"person_id": 1, "motion_id": 100, "vote": "Yes"},
             {"person_id": 2, "motion_id": 100, "vote": "No"},

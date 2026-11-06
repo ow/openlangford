@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import re
+from functools import partial
 from typing import Iterable, Literal
 
 from datetime import datetime, timezone
@@ -25,6 +26,7 @@ from supabase import Client
 from pipeline import ai
 from pipeline.ingestion.manual_edits import keep_text_edits
 from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, item_transcripts
+from pipeline.postgrest import in_chunks, paginate
 
 # Bump when the prompt/schema changes so `main.py --stage matter-summaries --stale`
 # re-runs matters summarized by an older version (stamped in meta.summary_version).
@@ -118,27 +120,11 @@ class MatterSummaries(BaseModel):
 KEY_SECTION = re.compile(r"purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial", re.I)
 
 
-def _paginate(query_fn, page: int = 1000) -> list[dict]:
-    rows: list[dict] = []
-    start = 0
-    while True:
-        chunk = query_fn().range(start, start + page - 1).execute().data or []
-        rows.extend(chunk)
-        if len(chunk) < page:
-            return rows
-        start += page
-
+# Every row of build(chunk) for the ids in chunks (long id lists overflow a request URL), all pages: each build is
+# ordered, so a chunk with more than 1000 rows is read page by page.
+_in_chunks = partial(in_chunks, paged=True)
 
 LOAD_CHUNK = 32  # matters whose records are loaded at once (then packed into requests by size)
-
-
-def _in_chunks(build, ids: list[int], size: int = 200) -> list[dict]:
-    """Every row of ``build(chunk)`` for the ids in chunks (long id lists overflow a request URL), all pages."""
-    rows: list[dict] = []
-    for start in range(0, len(ids), size):
-        chunk = ids[start : start + size]
-        rows.extend(_paginate(lambda: build(chunk)))
-    return rows
 
 
 def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
@@ -544,4 +530,4 @@ def all_matter_ids(supabase: Client, only_missing: bool = False, since: str | No
             query = query.gte("last_seen", since)
         return query.is_("plain_english_summary", "null") if only_missing else query
 
-    return [r["id"] for r in _paginate(q)]
+    return [r["id"] for r in paginate(q)]
