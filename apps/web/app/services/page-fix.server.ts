@@ -358,6 +358,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       ? [`Added ${added.length === 1 ? "the entry" : `${added.length} entries`} the search found: ${added.map((a) => a.title).join("; ")}.`] : [];
     const left: string[] = [];
     const fixedKeys = new Set<string>();
+    // Entries taken off the page. A rewritten entry is fixed but still there, so a later remove_entry still applies.
+    const removed = new Set<string>();
     const moves: { item_id: number; to_matter_id: number | null; refile?: boolean; reason: string }[] = [];
     const mentionMoves: { item_id: number; to_matter_id: number; reason: string }[] = [];
     const merges: { with_matter_id: number; matter_id?: number; reason: string; key: string | null }[] = [];
@@ -526,6 +528,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           try {
             await removeEntry(supabase, matterId, step.key!, requester.id);
             fixedKeys.add(step.key!);
+            removed.add(step.key!);
             done.push(step.reason);
           } catch (error) {
             left.push(`${step.reason} (it didn't work: ${error instanceof Error ? error.message : "unknown error"})`);
@@ -533,10 +536,13 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         }
         continue;
       }
-      if (step.action === "remove_entry" && step.key && removableKey(step.key) && onPage.has(step.key) && !fixedKeys.has(step.key)) {
+      if (step.action === "remove_entry" && step.key && removableKey(step.key) && onPage.has(step.key) && !removed.has(step.key)) {
         try {
           await removeEntry(supabase, matterId, step.key, requester.id);
           fixedKeys.add(step.key);
+          removed.add(step.key);
+          // A line or heading rewritten earlier in this plan would be saved for an entry that's gone.
+          delete lines[step.key];
           done.push(step.reason);
           await logStaffAction(supabase, {
             userId: requester.id, role: requester.staffRole, path, action: "agent:remove_entry",
@@ -545,6 +551,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         } catch (error) {
           left.push(`${step.reason} (it didn't work: ${error instanceof Error ? error.message : "unknown error"})`);
         }
+      } else if (step.action === "remove_entry" && step.key && removed.has(step.key)) {
+        continue; // Already taken off by an earlier step of this plan.
       } else {
         const why = step.action === "cannot_fix" ? "" : step.key && !onPage.has(step.key) ? " (that entry isn't on the page any more)"
           : " (that action doesn't apply to this entry)";
