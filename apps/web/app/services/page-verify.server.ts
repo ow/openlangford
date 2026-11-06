@@ -215,6 +215,7 @@ ${input.records}`;
       reason: `${contradicted ? "Contradicted by the record" : "Not in the record"}: ${found ? found.explanation : v.reason}` +
         `${said ? ` The record says: “${said}”` : ""}${found ? " (searched all of the City's records)" : ""}`,
       excerpt: claim.text,
+      ...(found ? { research: { verdict: found.verdict, explanation: found.explanation, quote: found.quote, ref: found.ref } } : {}),
     }];
   });
 }

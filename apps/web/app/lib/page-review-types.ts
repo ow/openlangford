@@ -2,6 +2,8 @@
 export type PageReviewStatus = "reviewed" | "needs_work" | "fixing" | "fixed";
 export type FlagProblem = "unclear_why" | "generic_text" | "different_story" | "duplicate" | "wrong_detail" | "unsupported" | "editor_issue" | "page_issue";
 export type FlagVerdict = "agree" | "disagree";
+/** What researching a flagged statement in all of the City's records found (services/record-research.server.ts). */
+export type FlagResearch = { verdict: "supported" | "contradicted" | "not_found"; explanation: string; quote: string | null; ref: string | null };
 export type PageFlag = {
   key: string | null; problem: FlagProblem; reason: string; excerpt: string; verdict: FlagVerdict | null;
   /** Set when the entry was removed (by staff or the fix agent): an agreed flag is then resolved. */
@@ -10,6 +12,8 @@ export type PageFlag = {
   note?: string | null;
   /** The check's proposed fix, which a thumbs-up approves ("Rewrite the status to say…"). */
   fix?: string | null;
+  /** For a statement checked against the records: the research behind the flag, so the fix agent needn't redo it. `reason` stays the display text. */
+  research?: FlagResearch;
 };
 
 /** A flag still needs attention until it's rated 👎 (fine) or rated 👍 and fixed. Reviewed waits for none. */

@@ -7,6 +7,7 @@ import { readPage } from "./page-check.server";
 import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, topicItemIds } from "./page-verify.server";
 import { research } from "./record-research.server";
+import { researchLine } from "../lib/flag-research";
 import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
 import { checkSummaryNotes, directEdit, refreshTopicSummaries } from "./topic-summaries.server";
@@ -307,13 +308,12 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // Each approved problem of fact is researched in all of the City's records first, so the fix says what the
     // record says (with its words) rather than only deleting what the page couldn't back from its own filings.
     const factual = agreed.filter((f) => f.problem === "unsupported" || f.problem === "wrong_detail");
-    const researched = await Promise.all(factual.map((f) => research(supabase,
+    // The check that raised a flag already researched it and stored the finding on the flag; only a flag without one
+    // (an editor-added issue) is researched here.
+    const researched = await Promise.all(factual.map((f) => f.research ? Promise.resolve(f.research) : research(supabase,
       `What does the City's record actually say about this? The page says: "${f.excerpt}". The problem found: ${f.reason}`,
       `This is the topic page ${path}.${f.note ? ` The editor's note: ${f.note}` : ""}`).catch(() => null)));
-    const researchText = factual.map((f, i) => {
-      const r = researched[i];
-      return r ? `RESEARCH on "${f.excerpt}": ${r.verdict}. ${r.explanation}${r.quote ? ` The record says: “${r.quote}”${r.ref ? ` (${r.ref})` : ""}` : ""}` : "";
-    }).filter(Boolean).join("\n");
+    const researchText = factual.map((f, i) => researchLine(f.excerpt, researched[i])).filter(Boolean).join("\n");
     const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
     // Entries just added from the search are often filed on a topic of their own that's really this one (a lone
