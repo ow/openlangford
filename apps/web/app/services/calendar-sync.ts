@@ -82,7 +82,9 @@ export async function discoverCalendarEvents(now = new Date()) {
     seen.add(row.ID.toLowerCase());
     events.push({ source_type: "escribe", source_id: row.ID.toLowerCase(), meeting_date: date,
       type: mapping[0], organization_name: mapping[1], title: mapping[2], start_time: stamp[4],
-      source_url: PORTAL, cancelled: row.IsCancelled === true || row.Cancelled === true || /\bcancell?ed\b/i.test(String(row.MeetingName)) });
+      source_url: PORTAL, cancelled: row.IsCancelled === true || row.Cancelled === true || /\bcancell?ed\b/i.test(String(row.MeetingName))
+        // Langford cancels by attaching a "Meeting Cancellation Notice" to the calendar entry.
+        || (Array.isArray(row.MeetingDocumentLink) && row.MeetingDocumentLink.some((d: any) => /\bcancell?ation notice\b/i.test(String(d?.Title)))) });
   }
   // The PDF encodes meeting categories by colour. Use a human-reviewed, hash-pinned
   // manifest; a changed PDF is held for review, never interpreted by an LLM/OCR.

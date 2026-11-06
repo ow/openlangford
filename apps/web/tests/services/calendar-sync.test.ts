@@ -35,6 +35,12 @@ it("uses published GUID identity, rejects past/unknown rows and preserves explic
   expect(result.events.some(e => e.meeting_date < "2026-10-20")).toBe(false);
   expect(result.warnings).toContain("Unsupported calendar event held for review");
 });
+it("treats an attached cancellation notice as a cancellation", async () => {
+  rows = [{...event, MeetingDocumentLink:[{Title:"Meeting Cancellation Notice ", Type:"AdditionalDocuments"}]},
+    {...event, ID:"44444444-4444-4444-a444-444444444444", StartDate:"2026/11/24 17:30:00", MeetingType:"Special Council Meeting", MeetingDocumentLink:[{Title:"Agenda"}]}];
+  const result = await discoverCalendarEvents();
+  expect(result.events.filter(e => e.source_type === "escribe").map(e => e.cancelled)).toEqual([true, false]);
+});
 it("holds a changed PDF instead of interpreting its dates or colours", async () => {
   pdfBytes = new TextEncoder().encode("changed official calendar"); rows = [event];
   const result = await discoverCalendarEvents();

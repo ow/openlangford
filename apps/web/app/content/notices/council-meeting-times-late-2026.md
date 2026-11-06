@@ -19,6 +19,8 @@ Council did not vote on it. It was not on the agenda of the inaugural meeting on
 
 The order covers 2026 only. The 2027 meeting schedule has not been published yet.
 
+The City has also cancelled two advisory committee meetings: the Sustainable Development Advisory Committee on November 9 and the Community Advisory Committee on November 24. Its [updated schedule](https://langford.ca/wp-content/uploads/2025/12/2026-Council-Year-Calendar-Council-Committees-Updated-November-3-2026.pdf) lists no other committee meetings this year apart from the Capital West Accessibility Advisory Committee on November 25.
+
 ## It has happened before
 
 Council's start time has changed twice before, both times by a vote in an open meeting:
