@@ -1,0 +1,48 @@
+name: Web types
+
+# Keeps apps/web/app/lib/database.types.ts in step with the live schema, and runs the web
+# typecheck (nothing else in CI does). Regenerate locally with `pnpm --filter web db:types`.
+#
+# The types are generated from the production database, which only receives a migration when it
+# merges to main (supabase-migrations.yml). So on a PR that adds a migration the regenerated file
+# will not yet include it; commit the regenerated file after the migration is applied.
+on:
+  pull_request:
+    paths:
+      - "supabase/migrations/**"
+      - "apps/web/app/lib/database.types.ts"
+      - ".github/workflows/web-types.yml"
+  push:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "apps/web/app/lib/database.types.ts"
+      - ".github/workflows/web-types.yml"
+  workflow_dispatch:
+
+jobs:
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Regenerate database types
+        # Needs a repo secret holding the database connection string (the same one the
+        # migrations workflow uses). Unavailable on fork PRs, so this step is skipped there.
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        run: supabase gen types typescript --db-url "$DATABASE_URL" --schema public > apps/web/app/lib/database.types.ts
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+      - name: Fail if the committed types are stale
+        run: git diff --exit-code -- apps/web/app/lib/database.types.ts
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+        working-directory: apps/web
