@@ -3,6 +3,8 @@ import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { civicToday, councilTermStatus, membershipIsActiveOn, membershipOverlapsRange } from "../lib/council-terms";
 import { getCouncilTerms } from "../services/council-terms";
 import type { Route } from "./+types/alignment";
+import { withDb, type SqlEnv } from "../db/index.server";
+import { getVotingAlignmentSql } from "../services/analytics-sql.server";
 import { getContestedMotions, getVotingAlignment } from "../services/analytics";
 import { cachedCompute, HOURLY_SHARED } from "../services/computed-cache.server";
 import { VoteMatrix } from "../components/alignment/vote-matrix";
@@ -33,12 +35,24 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export async function loader() {
+/** One SQL query pair when the DATABASE_URL secret (or Hyperdrive) is set; otherwise, or on failure, PostgREST paging. */
+async function loadAlignment(supabase: ReturnType<typeof getSupabaseAdminClient>, municipalityId: number, cloudflare?: { env: SqlEnv; ctx: ExecutionContext }) {
+  if (cloudflare && (cloudflare.env.HYPERDRIVE || cloudflare.env.DATABASE_URL)) {
+    try {
+      return await withDb(cloudflare.env, cloudflare.ctx, (db) => getVotingAlignmentSql(db, municipalityId));
+    } catch (error) {
+      console.error("alignment over SQL failed; falling back to PostgREST:", error instanceof Error ? error.message : "failed");
+    }
+  }
+  return getVotingAlignment(supabase, municipalityId);
+}
+
+export async function loader({ context }: Route.LoaderArgs) {
   try {
     const supabase = getSupabaseAdminClient();
     const municipality = await getMunicipality(supabase);
     const [data, councilTerms] = await Promise.all([
-      getVotingAlignment(supabase, municipality.id),
+      loadAlignment(supabase, municipality.id, context.cloudflare),
       getCouncilTerms(supabase, municipality.id),
     ]);
     const contestedMotions = await cachedCompute(

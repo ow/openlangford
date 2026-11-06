@@ -1,6 +1,6 @@
 name: Web types
 
-# Keeps apps/web/app/lib/database.types.ts in step with the live schema, and runs the web
+# Keeps apps/web/app/lib/database.types.ts and apps/web/app/db/schema.d.ts (Kysely) in step with the live schema, and runs the web
 # typecheck (nothing else in CI does). Regenerate locally with `pnpm --filter web db:types`.
 #
 # The types are generated from the production database, which only receives a migration when it
@@ -11,12 +11,14 @@ on:
     paths:
       - "supabase/migrations/**"
       - "apps/web/app/lib/database.types.ts"
+      - "apps/web/app/db/schema.d.ts"
       - ".github/workflows/web-types.yml"
   push:
     branches: [main]
     paths:
       - "supabase/migrations/**"
       - "apps/web/app/lib/database.types.ts"
+      - "apps/web/app/db/schema.d.ts"
       - ".github/workflows/web-types.yml"
   workflow_dispatch:
 
@@ -43,6 +45,14 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Regenerate Kysely types
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        run: pnpm db:kysely-types
+        working-directory: apps/web
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+      - name: Fail if the committed Kysely types are stale
+        run: git diff --exit-code -- apps/web/app/db/schema.d.ts
       - name: Typecheck
         run: pnpm typecheck
         working-directory: apps/web
