@@ -20,6 +20,15 @@ export interface SqlEnv {
 
 export type Db = Kysely<DB>;
 
+/**
+ * Whether the SQL path may run for this env. A per-request connection to the pooler costs ~350 ms to set up, so
+ * a query that PostgREST already answers quickly passes `requireWarmPool` and only runs with a Hyperdrive binding.
+ */
+export function sqlPathAvailable(env: SqlEnv | undefined, { requireWarmPool = false }: { requireWarmPool?: boolean } = {}): boolean {
+  if (!env) return false;
+  return requireWarmPool ? !!env.HYPERDRIVE?.connectionString : !!(env.HYPERDRIVE?.connectionString || env.DATABASE_URL);
+}
+
 /** The one place the connection string is chosen: Hyperdrive when bound, otherwise the DATABASE_URL secret. */
 export function connectionString(env: SqlEnv): string {
   const url = env.HYPERDRIVE?.connectionString || env.DATABASE_URL;

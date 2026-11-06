@@ -2,7 +2,7 @@ import { publicData } from "./public-data-cache.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAttendanceInfo } from "../lib/attendance";
 import { getSupabasePublicClient } from "../lib/supabase.server";
-import { withDb, type SqlEnv } from "../db/index.server";
+import { withDb, sqlPathAvailable, type SqlEnv } from "../db/index.server";
 import { recentMotionsSql } from "./site-sql.server";
 
 /** The Worker env and context, for the typed SQL path; absent in tests and scripts (supabase-js is used then). */
@@ -113,8 +113,9 @@ export async function getPublicAboutStats() {
  * NOTE: Do NOT use motions.yes_votes/no_votes (always 0) — use nested votes(vote).
  */
 export async function recentMotions(supabase: SupabaseClient, municipalityId: number, sqlContext?: SqlContext) {
-  // One SQL query when the DATABASE_URL secret (or Hyperdrive) is configured; otherwise, or if it fails, PostgREST.
-  if (sqlContext && (sqlContext.env.HYPERDRIVE || sqlContext.env.DATABASE_URL)) {
+  // One SQL query only with a Hyperdrive binding (a warm pooled connection: a per-request connect costs more
+  // than the PostgREST path); otherwise, or if it fails, PostgREST.
+  if (sqlContext && sqlPathAvailable(sqlContext.env, { requireWarmPool: true })) {
     try {
       const data = await withDb(sqlContext.env, sqlContext.ctx, (db) => recentMotionsSql(db, municipalityId));
       return { data: data as any[], error: null };
