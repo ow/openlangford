@@ -3,7 +3,7 @@ import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import { civicToday, councilTermStatus, membershipIsActiveOn, membershipOverlapsRange } from "../lib/council-terms";
 import { getCouncilTerms } from "../services/council-terms";
 import type { Route } from "./+types/alignment";
-import { withDb, type SqlEnv } from "../db/index.server";
+import { withDb, sqlPathAvailable, type SqlEnv } from "../db/index.server";
 import { getVotingAlignmentSql } from "../services/analytics-sql.server";
 import { getContestedMotions, getVotingAlignment } from "../services/analytics";
 import { cachedCompute, HOURLY_SHARED } from "../services/computed-cache.server";
@@ -37,7 +37,7 @@ export const meta: Route.MetaFunction = () => {
 
 /** One SQL query pair when the DATABASE_URL secret (or Hyperdrive) is set; otherwise, or on failure, PostgREST paging. */
 async function loadAlignment(supabase: ReturnType<typeof getSupabaseAdminClient>, municipalityId: number, cloudflare?: { env: SqlEnv; ctx: ExecutionContext }) {
-  if (cloudflare && (cloudflare.env.HYPERDRIVE || cloudflare.env.DATABASE_URL)) {
+  if (cloudflare && sqlPathAvailable(cloudflare.env)) {
     try {
       return await withDb(cloudflare.env, cloudflare.ctx, (db) => getVotingAlignmentSql(db, municipalityId));
     } catch (error) {

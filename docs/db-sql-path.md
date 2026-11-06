@@ -2,7 +2,7 @@
 
 A second way to read the database, for queries PostgREST (supabase-js) handles badly: aggregates, self-joins, "limit first, then aggregate", and anything that would otherwise page a whole table into the Worker or need a SQL function shipped by migration. Everything else (simple reads, writes, auth, realtime) stays on supabase-js.
 
-Code: `apps/web/app/db/` (`getSql(env)`, `getDb(env)`, `withDb(env, ctx, fn)`, generated `schema.d.ts`). Queries live in `app/services/*-sql.server.ts`. Moved so far: voting alignment (`analytics-sql.server.ts`, `/alignment`) and the homepage's recent decisions (`site-sql.server.ts`). Both fall back to the PostgREST version if no connection is configured or the query fails.
+Code: `apps/web/app/db/` (`getSql(env)`, `getDb(env)`, `withDb(env, ctx, fn)`, generated `schema.d.ts`). Queries live in `app/services/*-sql.server.ts`. Moved so far: voting alignment (`analytics-sql.server.ts`, `/alignment`) and the homepage's recent decisions (`site-sql.server.ts`). Both fall back to the PostgREST version if no connection is configured or the query fails. Alignment runs on either `DATABASE_URL` or a Hyperdrive binding. The homepage query runs **only with a Hyperdrive binding** (`sqlPathAvailable(env, { requireWarmPool: true })`): a per-request connect to the pooler costs about 350 ms, more than the PostgREST path it replaces (about 170 ms), so it only pays off on a warm pooled connection.
 
 ## When to use which
 
@@ -18,7 +18,7 @@ This path connects as the database role, so it **bypasses RLS exactly like `getS
 
 `getSql(env)` opens a short-lived postgres.js connection: `max: 1`, `prepare: false` (required by Supavisor transaction pooling), `idle_timeout: 5`. bigint and numeric are parsed to JavaScript numbers, as PostgREST returns them. `withDb` closes the connection with `ctx.waitUntil` after the response. Never run a plain `SET` over this URL (see CLAUDE.md, Database Gotchas).
 
-The string is read at runtime from the request `env`, never inlined by Vite: `env.HYPERDRIVE?.connectionString || env.DATABASE_URL`. Without either, the callers fall back to supabase-js.
+The string is read at runtime from the request `env`, never inlined by Vite: `env.HYPERDRIVE?.connectionString || env.DATABASE_URL`. Without either, the callers fall back to supabase-js. `sqlPathAvailable(env, { requireWarmPool })` is the one check callers use: pass `requireWarmPool: true` for queries that are already fast over PostgREST, so they don't run on a per-request connection.
 
 ## Owner steps
 
@@ -30,7 +30,7 @@ The string is read at runtime from the request `env`, never inlined by Vite: `en
    binding = "HYPERDRIVE"
    id = "<config id>"
    ```
-   `getSql` prefers `env.HYPERDRIVE.connectionString` automatically; keep the pool small (the database has `max_connections = 60` and PostgREST holds up to 20). Hyperdrive replaces per-request connection setup (about 300 ms from a laptop) with a warm pooled connection.
+   `getSql` prefers `env.HYPERDRIVE.connectionString` automatically, and this is what switches the homepage query onto SQL; keep the pool small (the database has `max_connections = 60` and PostgREST holds up to 20). Hyperdrive replaces per-request connection setup (about 300 ms from a laptop) with a warm pooled connection.
 4. Local dev: put `DATABASE_URL=...` in `apps/web/.dev.vars` (gitignored) and run `CF_REMOTE_BINDINGS=false pnpm dev` if you aren't logged in to Cloudflare.
 
 ## Types
