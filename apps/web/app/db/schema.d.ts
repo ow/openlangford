@@ -1016,6 +1016,7 @@ export interface MatterReportMentions {
 export interface Matters {
   bylaw_id: Int8 | null;
   category: string | null;
+  content_updated_at: Generated<Timestamp | null>;
   created_at: Generated<Timestamp>;
   description: string | null;
   embedding: string | null;

@@ -6,8 +6,10 @@ import { sitemapEntries, sitemapIndexEntries } from "../../app/services/sitemap.
 const tables: Record<string, any[]> = {
   municipalities: [{ id: 1, slug: "langford" }],
   matters: [
-    { id: 1, slug: "old-rezoning", first_seen: "2019-02-04", last_seen: "2019-06-17", updated_at: "2026-10-27T18:00:00+00:00" },
-    { id: 2, slug: "new-item", first_seen: "2026-09-08", last_seen: null, updated_at: "2026-10-27T18:00:00+00:00" },
+    { id: 1, slug: "old-rezoning", first_seen: "2019-02-04", last_seen: "2019-06-17", content_updated_at: "2019-06-17T00:00:00+00:00", updated_at: "2026-10-27T18:00:00+00:00" },
+    { id: 2, slug: "new-item", first_seen: "2026-09-08", last_seen: null, content_updated_at: null, updated_at: "2026-10-27T18:00:00+00:00" },
+    // Its summary was rewritten after the last meeting (late evening in Langford, already the next day in UTC).
+    { id: 3, slug: "summary-rewritten", first_seen: "2025-01-13", last_seen: "2025-02-03", content_updated_at: "2026-10-02T05:30:00+00:00", updated_at: "2026-10-27T18:00:00+00:00" },
   ],
   properties: [
     { id: 10, slug: "2140-caribou-drive", street: "Caribou Drive", civic_number: "2140", updated_at: "2026-10-27T18:00:00+00:00" },
@@ -38,10 +40,11 @@ beforeAll(() => { vi.useFakeTimers({ toFake: ["Date"] }); vi.setSystemTime(new D
 afterAll(() => { vi.useRealTimers(); });
 const client = createClient("https://example.supabase.co", "synthetic-key", { auth: { persistSession: false }, global: { fetch: fetchMock as typeof fetch } });
 
-it("dates matters by their latest meeting, not the bulk-touched updated_at", async () => {
+it("dates matters by their latest meeting or visible change, not the bulk-touched updated_at", async () => {
   expect(await sitemapEntries(client, "matters")).toMatchObject([
     { path: "/matters/old-rezoning", lastmod: "2019-06-17" },
     { path: "/matters/new-item", lastmod: "2026-09-08" },
+    { path: "/matters/summary-rewritten", lastmod: "2026-10-01" },
   ]);
 });
 
@@ -56,7 +59,7 @@ it("dates properties by their latest linked meeting, and streets by their newest
 it("gives the index each section's newest real date, never a future one, and none for failing sections", async () => {
   const index = await sitemapIndexEntries(client, "2026-10-27");
   const lastmod = (section: string) => index.find((s) => s.path === `/sitemaps/${section}.xml`)?.lastmod;
-  expect(lastmod("matters")).toBe("2026-09-08");
+  expect(lastmod("matters")).toBe("2026-10-01");
   expect(lastmod("properties")).toBe("2025-01-20");
   // The newest meeting is scheduled (no lastmod); the past one's date, not its backfilled updated_at.
   expect(lastmod("meetings")).toBe("2025-06-02");

@@ -18,8 +18,9 @@ import { Link, data, redirect } from "react-router";
 import { ReportIssueButton } from "../components/report-issue";
 import { SubscribeButton } from "../components/subscribe-button";
 import { firstSentence, ogImageUrl } from "../lib/og";
-import { fitTitle, pageMeta } from "../lib/page-meta";
-import { breadcrumbList, jsonLd } from "../lib/structured-data";
+import { fitTitle, metaDescription, pageMeta } from "../lib/page-meta";
+import { breadcrumbList, jsonLd, topicArticle } from "../lib/structured-data";
+import { topicUpdatedLine } from "../lib/topic-dates";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (data && "removed" in data) return [{ title: `${data.removed.title} | ${SITE_NAME}` }, { name: "robots", content: "noindex" }];
@@ -36,7 +37,10 @@ export const meta: Route.MetaFunction = ({ data }) => {
       imageWidth: lead?.url ? lead.width : undefined,
       imageHeight: lead?.url ? lead.height : undefined,
     }),
-    jsonLd(breadcrumbList([["Decisions", "/matters"], [name, matterPath(m)]])),
+    jsonLd(
+      topicArticle(m, name, matterPath(m), metaDescription(description)),
+      breadcrumbList([["Decisions", "/matters"], [name, matterPath(m)]]),
+    ),
   ];
 };
 import {
@@ -591,6 +595,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       : "";
 
   const photoAndMap = !!images.lead && (matter.locations?.length ?? 0) > 0;
+  const updatedLine = topicUpdatedLine(matter);
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -653,9 +658,12 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             </div>
           )}
 
-          {matter.identifier && (
-            // File and bylaw numbers, for anyone looking up the City's own records.
-            <p className="mt-3 text-xs text-zinc-500">Reference: {matter.identifier}</p>
+          {(matter.identifier || updatedLine) && (
+            // File and bylaw numbers, for anyone looking up the City's own records; and when the page last
+            // changed, if that was well after its latest meeting (otherwise the meeting date says it).
+            <p className="mt-3 text-xs text-zinc-500">
+              {[matter.identifier && `Reference: ${matter.identifier}`, updatedLine].filter(Boolean).join(" · ")}
+            </p>
           )}
 
           {images.lead && (

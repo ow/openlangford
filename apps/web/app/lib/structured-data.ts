@@ -1,6 +1,7 @@
 import { zonedMidnightIso } from "./civic-time";
 import { SITE_ORIGIN } from "./og";
 import { SITE_NAME } from "./site-name";
+import { topicModified } from "./topic-dates";
 
 /**
  * schema.org JSON-LD for search engines, as a React Router meta descriptor. <Meta> renders it as
@@ -130,4 +131,31 @@ export function bylawLegislation(b: { title: string; bylaw_number?: string | nul
 
 export function councilPerson(p: { name: string; image_url?: string | null }, jobTitle: string, path: string, description?: string): Thing {
   return compact({ "@type": "Person", name: p.name, jobTitle, image: p.image_url ? abs(p.image_url) : null, url: abs(path), description, worksFor: CITY_OF_LANGFORD });
+}
+
+/**
+ * A topic page as an Article. datePublished is when council first took it up; dateModified is the later
+ * of its last visible change (matters.content_updated_at, kept by database triggers) and its latest
+ * meeting (lib/topic-dates.ts topicModified). Never matters.updated_at, which every backfill touches.
+ */
+export function topicArticle(
+  m: { first_seen?: string | null; last_seen?: string | null; content_updated_at?: string | null },
+  name: string,
+  path: string,
+  description?: string | null,
+): Thing {
+  const published = m.first_seen || m.last_seen || null;
+  return compact({
+    "@type": "Article",
+    "@id": `${abs(path)}#topic`,
+    headline: name.length > 110 ? `${name.slice(0, 109).trimEnd()}…` : name,
+    description,
+    url: abs(path),
+    mainEntityOfPage: abs(path),
+    inLanguage: "en-CA",
+    datePublished: published ? published.slice(0, 10) : null,
+    dateModified: topicModified(m),
+    publisher: SITE_ORGANIZATION,
+    about: CITY_OF_LANGFORD,
+  });
 }

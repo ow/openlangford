@@ -276,6 +276,8 @@ export interface Matter {
   status: string;
   first_seen?: string;
   last_seen?: string;
+  /** When something a reader sees on the page last changed (database triggers); never updated_at. */
+  content_updated_at?: string | null;
   bylaw_id?: number;
   bylaw?: Bylaw;
   meta?: any;

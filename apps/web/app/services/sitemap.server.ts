@@ -131,15 +131,18 @@ async function buildSitemapEntries(
       const matters = await pageAll<any>((from, to) =>
         supabase
           .from("matters")
-          .select("id, slug, first_seen, last_seen")
+          .select("id, slug, first_seen, last_seen, content_updated_at")
           .eq("municipality_id", municipality.id)
           .is("merged_into", null)
           .is("meta->>hidden", null)
           .order("id")
           .range(from, to),
       );
-      // updated_at is touched by bulk backfills; last_seen is the latest meeting that took the matter up.
-      return matters.map((m) => ({ path: matterPath(m), lastmod: latestDate(m.last_seen || m.first_seen), changefreq: "weekly" as const, priority: 0.7 }));
+      // updated_at is touched by bulk backfills; last_seen is the latest meeting that took the matter up, and
+      // content_updated_at the last change a reader would see between meetings (a rewritten summary, a moved item).
+      return matters.map((m) => ({
+        path: matterPath(m), lastmod: latestDate(m.content_updated_at, m.last_seen, m.first_seen), changefreq: "weekly" as const, priority: 0.7,
+      }));
     }
 
     case "bylaws": {

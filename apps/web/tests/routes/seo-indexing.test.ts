@@ -72,7 +72,12 @@ describe("titles and descriptions", () => {
     expect(value(meta, "twitter:description")).toBe(value(meta, "description"));
     expect(value(meta, "twitter:image")).toMatch(/^https:/);
     expect(value(meta, "description").length).toBeLessThanOrEqual(155);
-    expect(types(meta)).toEqual(["BreadcrumbList"]);
+    expect(types(meta)).toEqual(["Article", "BreadcrumbList"]);
+  });
+  it("dates matter pages by their first meeting and their last visible change", () => {
+    const matter = { id: 1, slug: "caribou", title: "Caribou Drive rezoning", status: "Active", first_seen: "2024-01-08", last_seen: "2025-03-03", content_updated_at: "2026-10-02T05:30:00+00:00", updated_at: "2026-11-05T10:00:00+00:00" };
+    const [article] = ld(matterMeta({ data: { matter } } as any) as any[])["@graph"];
+    expect(article).toMatchObject({ "@type": "Article", headline: "Caribou Drive rezoning", url: "https://openlangford.ca/matters/caribou", datePublished: "2024-01-08", dateModified: "2026-10-02T05:30:00+00:00" });
   });
   it("describes bylaws as Langford legislation", () => {
     const meta = bylawMeta({ data: { bylaw: { id: 3, slug: "bylaw-300", title: "Zoning Bylaw", bylaw_number: "300", year: 1999, status: "Active" } } } as any) as any[];
