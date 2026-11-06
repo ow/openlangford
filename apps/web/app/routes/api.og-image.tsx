@@ -2,14 +2,15 @@ import type { AppLoadContext } from "react-router";
 import { OG_VERSION } from "../lib/og";
 import { ogCardInput } from "../services/og/card";
 import { renderOgPng } from "../services/og/render.server";
+import { PUBLIC_DAY, PUBLIC_IMMUTABLE, PUBLIC_SHORT } from "../lib/cache-policy";
 
 // Share images (og:image) for pages without their own. Each distinct URL renders once: the PNG is
 // kept in the colo cache (Cache API) and in KV (PUBLIC_CACHE) so other colos reuse it. URLs from
 // ogImageUrl carry OG_VERSION and all card text, so a change gives a new URL; those are immutable.
 
-const IMMUTABLE = "public, max-age=31536000, immutable";
+const IMMUTABLE = PUBLIC_IMMUTABLE;
 /** Unversioned (pre-v2) URLs still render, but may change when the design does. */
-const LEGACY = "public, max-age=86400";
+const LEGACY = PUBLIC_DAY;
 const KV_TTL_SECONDS = 60 * 60 * 24 * 180;
 
 type Env = Partial<Pick<Cloudflare.Env, "PUBLIC_CACHE" | "API_RATE_LIMITER">> & { ASSETS?: Fetcher };
@@ -80,7 +81,7 @@ export async function loader({ request, context }: { request: Request; context?:
     // Never an empty 200: send the static brand card, briefly cached so a fix shows quickly.
     return new Response(null, {
       status: 302,
-      headers: { Location: new URL("/og-image.png", url.origin).toString(), "Cache-Control": "public, max-age=300" },
+      headers: { Location: new URL("/og-image.png", url.origin).toString(), "Cache-Control": PUBLIC_SHORT },
     });
   }
   if (edge) waitUntil(edge.put(edgeKey, png(body, IMMUTABLE)));

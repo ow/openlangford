@@ -11,8 +11,8 @@ This is demand-filled caching, not a build-time export of the whole website.
   metadata lookup remain separate. See [the dated audit](egress-audit-2026-10-21.md).
 
 - Home summaries and incoming council: municipality, civic day and relevant metadata in the key.
-- Matters list and participant/coverage aggregates: municipality in the key. `computed_cache`
-  database rows are no longer read or written for these computations.
+- Matters list and participant/coverage aggregates: municipality in the key. The old
+  `computed_cache` table is dropped.
 - Annual meeting lists/stats and history date bounds: municipality and selected year where relevant.
 - Council list: public people and compact attendance totals per term. Raw attendance notes/history
   stay in Postgres for this council summary. The SQL aggregation matches the existing evidence calculation for present, absent, unknown,

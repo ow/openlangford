@@ -2,6 +2,7 @@ import type { Route } from "./+types/api.meeting-text";
 import { parseMeetingTextRequest } from "../lib/meeting-text-request";
 import { historicalPublicDate } from "../lib/public-content-cache";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { PRIVATE } from "../lib/cache-policy";
 
 /**
  * Text deferred from the meeting page payload:
@@ -46,5 +47,5 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
   }
 
-  return Response.json({ texts }, Object.keys(texts).length ? { headers: { "X-Public-Content-Policy": historical ? "historical" : "recent" } } : { headers: { "Cache-Control": "private, no-store" } });
+  return Response.json({ texts }, Object.keys(texts).length ? { headers: { "X-Public-Content-Policy": historical ? "historical" : "recent" } } : { headers: { "Cache-Control": PRIVATE } });
 }

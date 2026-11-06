@@ -10,7 +10,11 @@ import { guessSourceKind, type VideoProvider, type VideoSource } from "./types";
  */
 
 const PLAYER_PATH = "/players/isistandaloneplayer.aspx";
+// The one sanctioned per-isolate memo (see docs/caching.md): an ISI recording is a plain, non-expiring mp4 whose
+// URL is a pure function of the stored video_url, so there is nothing for the content stamp to invalidate and
+// nothing in the database or shared tiers to keep in step. Bounded, and cleared by invalidate() below.
 const CACHE_TTL = 3600 * 1000;
+const CACHE_MAX = 200;
 const cache = new Map<string, { source: VideoSource; at: number }>();
 
 function extractHtmlAttr(html: string, attr: string): string | null {
@@ -49,7 +53,10 @@ export const escribeIsiProvider: VideoProvider = {
     const hit = cache.get(videoUrl);
     if (hit && Date.now() - hit.at < CACHE_TTL) return hit.source;
     const source = await fetchIsiSource(videoUrl);
-    if (source) cache.set(videoUrl, { source, at: Date.now() });
+    if (source) {
+      if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value!);
+      cache.set(videoUrl, { source, at: Date.now() });
+    }
     return source;
   },
   async invalidate(meetingId, videoUrl) {

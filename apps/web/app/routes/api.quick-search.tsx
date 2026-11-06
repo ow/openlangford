@@ -1,5 +1,6 @@
 import type { Route } from "./+types/api.quick-search";
 import { quickSearch } from "../services/quick-search.server";
+import { PUBLIC_API } from "../lib/cache-policy";
 
 /** GET /api/quick-search?q=… → { matches: QuickMatch[] } (no AI; for typeahead). */
 export async function loader({ request }: Route.LoaderArgs) {
@@ -8,7 +9,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     const matches = await quickSearch(q);
     return Response.json(
       { matches },
-      { headers: { "Cache-Control": "public, max-age=60" } },
+      { headers: { "Cache-Control": PUBLIC_API } },
     );
   } catch (error) {
     console.error("quick search failed:", error);

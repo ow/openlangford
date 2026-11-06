@@ -47,39 +47,20 @@ export interface VimeoVideoData {
   direct_audio_url?: string;
 }
 
-// Simple in-memory cache to prevent reloading video on every action
-interface CacheEntry {
-  data: any;
-  timestamp: number;
-}
-const urlCache = new Map<string, CacheEntry>();
-const CACHE_TTL = 3600 * 1000; // 1 hour
+// One cache tier for a stream: the meeting's row (meetings.meta). It is shared by every isolate and the
+// pipeline, and /api/report-video-failure clears it atomically (invalidate_meeting_vimeo_cache), which a
+// per-isolate Map or the edge caches could not follow. Vimeo links expire, so a row older than this is refetched.
 const DB_CACHE_TTL = 3 * 3600 * 1000; // 3 hours (Vimeo links expire)
 
 /**
- * Clears the in-memory cache for a given video URL.
- * Called when a video failure is reported to ensure fresh URLs are fetched.
- */
-export function clearVimeoCache(videoUrl: string): void {
-  urlCache.delete(`data:${videoUrl}`);
-  urlCache.delete(`thumb:${videoUrl}`);
-}
-
-/**
- * Fetches the thumbnail for a Vimeo video, using DB cache if available.
+ * Fetches the thumbnail for a Vimeo video, using the meeting row if available.
  */
 export async function getVimeoThumbnail(
   videoUrl: string,
   meetingId?: number | string,
 ): Promise<string | null> {
   const supabaseAdmin = getSupabaseAdminClient();
-  // 1. Check In-Memory Cache
-  const memCached = urlCache.get(`thumb:${videoUrl}`);
-  if (memCached && Date.now() - memCached.timestamp < CACHE_TTL) {
-    return memCached.data;
-  }
-
-  // 2. Check Database Cache
+  // 1. Check the meeting row
   if (meetingId) {
     try {
       const { data: meeting } = await supabaseAdmin
@@ -90,10 +71,6 @@ export async function getVimeoThumbnail(
 
       if (meeting?.meta && (meeting.meta as any).vimeo_thumbnail_url) {
         const thumb = (meeting.meta as any).vimeo_thumbnail_url;
-        urlCache.set(`thumb:${videoUrl}`, {
-          data: thumb,
-          timestamp: Date.now(),
-        });
         return thumb;
       }
     } catch (e) {
@@ -101,7 +78,7 @@ export async function getVimeoThumbnail(
     }
   }
 
-  // 3. Fetch from Vimeo oembed
+  // 2. Fetch from Vimeo oembed
   try {
     const response = await fetch(
       `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`,
@@ -111,12 +88,7 @@ export async function getVimeoThumbnail(
     const thumbnailUrl = data.thumbnail_url || null;
 
     if (thumbnailUrl) {
-      urlCache.set(`thumb:${videoUrl}`, {
-        data: thumbnailUrl,
-        timestamp: Date.now(),
-      });
-
-      // Save to DB Cache if meetingId is provided
+      // Save to the meeting row if meetingId is provided
       if (meetingId) {
         try {
           const { data: currentMeeting } = await supabaseAdmin
@@ -163,51 +135,7 @@ export async function getVimeoVideoData(
       `[Vimeo] getVimeoVideoData called for: ${videoUrl}, meetingId: ${meetingId}`,
     );
 
-    // 1. Check In-Memory Cache (but skip if we need to verify DB invalidation)
-    const cached = urlCache.get(`data:${videoUrl}`);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      // Still need to check if cache was invalidated in DB
-      if (meetingId) {
-        try {
-          const { data: meeting } = await supabaseAdmin
-            .from("meetings")
-            .select("meta")
-            .eq("id", meetingId)
-            .single();
-
-          const meta = meeting?.meta as any;
-          if (meta?.vimeo_cache_invalidated_at) {
-            const invalidatedAt = new Date(
-              meta.vimeo_cache_invalidated_at,
-            ).getTime();
-            if (invalidatedAt > cached.timestamp) {
-              console.log(
-                `[Vimeo] In-memory cache invalidated by DB flag, fetching fresh`,
-              );
-              urlCache.delete(`data:${videoUrl}`);
-              // Fall through to fetch fresh URL
-            } else {
-              console.log(`[Vimeo] Returning from in-memory cache`);
-              return cached.data;
-            }
-          } else {
-            console.log(`[Vimeo] Returning from in-memory cache`);
-            return cached.data;
-          }
-        } catch (e) {
-          // If DB check fails, still use cache
-          console.log(
-            `[Vimeo] Returning from in-memory cache (DB check failed)`,
-          );
-          return cached.data;
-        }
-      } else {
-        console.log(`[Vimeo] Returning from in-memory cache`);
-        return cached.data;
-      }
-    }
-
-    // 2. Check Database Cache
+    // 1. Check the meeting row (honours the manual invalidation flag)
     console.log(`[Vimeo] Checking DB cache...`);
     let staleData: VimeoVideoData | null = null;
 
@@ -269,10 +197,6 @@ export async function getVimeoVideoData(
               direct_url: meta.vimeo_direct_url,
               direct_audio_url: meta.vimeo_direct_audio_url,
             };
-            urlCache.set(`data:${videoUrl}`, {
-              data: result,
-              timestamp: Date.now(),
-            });
             return result;
           }
         }
@@ -303,12 +227,6 @@ export async function getVimeoVideoData(
           direct_url: fallback.video,
           direct_audio_url: fallback.audio,
         };
-
-        // Cache the result
-        urlCache.set(`data:${videoUrl}`, {
-          data: result,
-          timestamp: Date.now(),
-        });
 
         // Save to DB Cache
         if (meetingId) {
@@ -421,11 +339,6 @@ export async function getVimeoVideoData(
             direct_audio_url: fallback.audio,
           };
 
-          urlCache.set(`data:${videoUrl}`, {
-            data: fallbackResult,
-            timestamp: Date.now(),
-          });
-
           // Save to DB Cache
           if (meetingId) {
             try {
@@ -465,8 +378,6 @@ export async function getVimeoVideoData(
         ...data,
         direct_url: directUrl || undefined,
       };
-
-      urlCache.set(`data:${videoUrl}`, { data: result, timestamp: Date.now() });
 
       // Save to DB Cache
       if (meetingId && result.direct_url) {
@@ -792,9 +703,6 @@ export const vimeoProvider: VideoProvider = {
     if (error) throw error;
     const meeting = (rows as { video_url: string | null }[] | null)?.[0];
     if (!meeting) return false;
-    // Clear this isolate's in-memory cache too.
-    const url = meeting.video_url ?? videoUrl;
-    if (url) clearVimeoCache(url);
     return true;
   },
 };

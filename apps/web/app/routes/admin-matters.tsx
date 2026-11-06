@@ -197,10 +197,6 @@ export async function action({ request }: Route.ActionArgs) {
     return { error: "Unknown action." };
   }
 
-  if (intent === "merge") {
-    // The matters list is served from computed_cache; drop it so the merge shows up now.
-    await supabase.from("computed_cache").delete().eq("key", "matters-list");
-  }
   const { error } = await supabase
     .from("matter_merge_proposals")
     .update({

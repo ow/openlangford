@@ -1,4 +1,5 @@
 import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { NO_STORE } from "../lib/cache-policy";
 
 export interface SearchBudget {
   available: boolean;
@@ -45,6 +46,6 @@ export function getSearchBudgetForDisplay(configuredLimit: unknown, now = Date.n
 /** SSE keeps EventSource clients from silently treating a quota response as a network error. */
 export function searchBudgetExceeded(budget: SearchBudget): Response {
   return new Response(`data: ${JSON.stringify({ type: "budget_exhausted", resetsAt: budget.resetsAt })}\n\ndata: {"type":"done"}\n\n`, {
-    headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-store" },
+    headers: { "Content-Type": "text/event-stream", "Cache-Control": NO_STORE },
   });
 }

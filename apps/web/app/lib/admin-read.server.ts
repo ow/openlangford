@@ -1,11 +1,12 @@
 import { data } from "react-router";
 import { requireRole, type StaffRole } from "./auth.server";
+import { PRIVATE } from "./cache-policy";
 
 type StaffUser = Awaited<ReturnType<typeof requireRole>>;
 
 export function privateAdminHeaders() {
   return new Headers({
-    "Cache-Control": "private, no-store",
+    "Cache-Control": PRIVATE,
     Vary: "Cookie",
     "X-Robots-Tag": "noindex, nofollow",
   });

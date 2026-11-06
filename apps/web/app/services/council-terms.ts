@@ -1,37 +1,41 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { CouncilTerm } from "../lib/types";
 import { civicToday, councilTermLabel } from "../lib/council-terms";
+import { publicData } from "./public-data-cache.server";
 
-const PUBLIC_CACHE_TTL_MS = 60_000;
-const termsCache = new Map<number, { data: CouncilTerm[]; expires: number }>();
-const governanceCache = new Map<number, { data: string; day: string; expires: number }>();
+// Public roster data, identical for every visitor: shared through publicData (content stamp + TTL).
+const SHARED = { shareWithSignedIn: true };
+const UNVERIFIED = "Council term dates have not been verified. Do not guess who currently serves.";
 
 export async function getCouncilTerms(supabase: SupabaseClient, municipalityId: number): Promise<CouncilTerm[]> {
-  const cached = termsCache.get(municipalityId);
-  if (cached && cached.expires > Date.now()) return cached.data;
+  const { terms } = await publicData(`council-terms:${municipalityId}`, () => loadCouncilTerms(supabase, municipalityId),
+    (value) => value.ok, undefined, SHARED);
+  return terms;
+}
 
+async function loadCouncilTerms(supabase: SupabaseClient, municipalityId: number): Promise<{ terms: CouncilTerm[]; ok: boolean }> {
   const { data, error } = await supabase.from("council_terms")
     .select("id,municipality_id,election_id,name,start_date,end_date")
     .eq("municipality_id", municipalityId)
     .order("start_date", { ascending: false });
   if (error) {
     // A staged code deployment can precede the additive migration. Do not invent terms.
-    if (error.code === "PGRST205" || error.code === "42P01") return [];
+    if (error.code === "PGRST205" || error.code === "42P01") return { terms: [], ok: false };
     throw error;
   }
-  const terms = data || [];
-  termsCache.set(municipalityId, { data: terms, expires: Date.now() + PUBLIC_CACHE_TTL_MS });
-  return terms;
+  return { terms: data || [], ok: true };
 }
 
 /** Small, dated roster context for questions about who serves, not policy evidence. */
 export async function getCouncilGovernanceContext(supabase: SupabaseClient, municipalityId: number): Promise<string> {
   const today = civicToday();
-  const cached = governanceCache.get(municipalityId);
-  if (cached && cached.day === today && cached.expires > Date.now()) return cached.data;
+  return publicData(`council-governance:${municipalityId}:${today}`, () => loadGovernanceContext(supabase, municipalityId, today),
+    (value) => value !== UNVERIFIED, undefined, SHARED);
+}
 
+async function loadGovernanceContext(supabase: SupabaseClient, municipalityId: number, today: string): Promise<string> {
   const terms = await getCouncilTerms(supabase, municipalityId);
-  if (!terms.length) return "Council term dates have not been verified. Do not guess who currently serves.";
+  if (!terms.length) return UNVERIFIED;
   const { data, error } = await supabase.from("memberships")
     .select("role,start_date,end_date,council_term_id,person:people(name),organization:organizations!inner(municipality_id,classification)")
     .eq("organization.municipality_id", municipalityId)
@@ -45,6 +49,5 @@ export async function getCouncilGovernanceContext(supabase: SupabaseClient, muni
       return `${person?.name || "Unknown person"}: ${row.role}, served/scheduled ${row.start_date || "start unknown"} through ${row.end_date || "end unknown"}.`;
     }).join("\n");
   }).join("\n");
-  governanceCache.set(municipalityId, { data: context, day: today, expires: Date.now() + PUBLIC_CACHE_TTL_MS });
   return context;
 }

@@ -3,6 +3,7 @@ import { getStaffRole } from "../lib/auth.server";
 import { createSupabaseServerClient, getSupabaseAdminClient } from "../lib/supabase.server";
 import { getPageReview, setInternalNote } from "./page-reviews.server";
 import { matterForPath, setTopicHidden, topicHidden } from "./page-links.server";
+import { PRIVATE } from "../lib/cache-policy";
 
 /** "Hide page" from the review bar: the page is "not found" for the public; staff still see it, to unhide it.
  * Topics keep their own flag (matters.meta.hidden = "staff"); other pages are listed in hidden_pages. */
@@ -64,7 +65,7 @@ export async function setPageHidden(supabase: SupabaseClient, path: string, hidd
 export async function notFoundIfHidden(request: Request, table: HiddenTable, id: number | string) {
   if (!(await isRecordHidden(getSupabaseAdminClient(), table, id))) return;
   if (await viewerIsStaff(request)) return;
-  throw new Response("Not Found", { status: 404, headers: { "X-Robots-Tag": "noindex", "Cache-Control": "private, no-store" } });
+  throw new Response("Not Found", { status: 404, headers: { "X-Robots-Tag": "noindex", "Cache-Control": PRIVATE } });
 }
 
 /** A failed lookup counts as not hidden: it shows the page rather than taking a public one down. */

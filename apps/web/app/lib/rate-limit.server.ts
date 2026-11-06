@@ -1,4 +1,5 @@
 // Per-IP limiter for anonymous endpoints. Combines the Cloudflare binding
+import { NO_STORE } from "./cache-policy";
 // (shared across isolates, when configured) with a per-isolate in-memory
 // window so the limit still applies locally and in tests.
 const WINDOW_MS = 60_000;
@@ -45,6 +46,6 @@ export async function isRateLimited(
 export function tooManyRequests() {
   return new Response("Too many requests. Please try again in a minute.", {
     status: 429,
-    headers: { "Retry-After": "60", "Cache-Control": "no-store" },
+    headers: { "Retry-After": "60", "Cache-Control": NO_STORE },
   });
 }

@@ -4,41 +4,14 @@ import { getAttendanceInfo } from "../lib/attendance";
 import { getSupabasePublicClient } from "../lib/supabase.server";
 
 interface PublicNotice { title: string; link: string; date: string }
-const noticesCache = new Map<string, { items: PublicNotice[]; expires: number }>();
-const PUBLIC_DATA_CACHE_TTL_MS = 60_000;
-const publicAboutCache = new Map<string, { data: Awaited<ReturnType<typeof getAboutStats>>; expires: number }>();
-
 function assertQuerySucceeded(response: { error?: unknown }) {
   if (response.error) throw response.error;
-}
-
-function cachePublicValue<T>(cache: Map<string, { data: T; expires: number }>, key: string, data: T): T {
-  if (cache.size >= 100) {
-    const now = Date.now();
-    for (const [cachedKey, entry] of cache) {
-      if (entry.expires <= now) cache.delete(cachedKey);
-    }
-    if (cache.size >= 100) cache.delete(cache.keys().next().value!);
-  }
-  cache.set(key, { data, expires: Date.now() + PUBLIC_DATA_CACHE_TTL_MS });
-  return data;
-}
-
-function getCachedPublicValue<T>(cache: Map<string, { data: T; expires: number }>, key: string): T | undefined {
-  const entry = cache.get(key);
-  if (!entry) return undefined;
-  if (entry.expires > Date.now()) return entry.data;
-  cache.delete(key);
-  return undefined;
 }
 
 /** The municipality's RSS notices: an external fetch (up to 3s), shared at the edge for half an hour. */
 export async function getPublicNotices(rssUrl?: string): Promise<PublicNotice[]> {
   if (!rssUrl) return [];
-  const cached = noticesCache.get(rssUrl);
-  if (cached && cached.expires > Date.now()) return cached.items;
   const result = await publicData(`notices:${rssUrl}`, () => fetchPublicNotices(rssUrl), (value) => value.ok, 1800, { shareWithSignedIn: true });
-  if (result.ok) noticesCache.set(rssUrl, { items: result.items, expires: Date.now() + 5 * 60_000 });
   return result.items;
 }
 
@@ -124,10 +97,7 @@ export async function getAboutStats(supabase: SupabaseClient, requireComplete = 
 
 /** Cache complete About stats briefly using the anonymous public client. */
 export async function getPublicAboutStats() {
-  const cached = getCachedPublicValue(publicAboutCache, "all-municipalities");
-  if (cached) return cached;
-  const data = await getAboutStats(getSupabasePublicClient(), true);
-  return cachePublicValue(publicAboutCache, "all-municipalities", data);
+  return publicData("about-stats:all-municipalities", () => getAboutStats(getSupabasePublicClient(), true), () => true, undefined, { shareWithSignedIn: true });
 }
 
 /**

@@ -1,6 +1,7 @@
 /// <reference types="@cloudflare/workers-types" />
 import { AsyncLocalStorage } from "node:async_hooks";
 import { anonymousPublicRequest, publicReadRequest } from "../lib/public-cache-admission.server";
+import { PRIVATE, publicMaxAge } from "../lib/cache-policy";
 
 /**
  * Bump when the shape of any cached value changes. Data entries are keyed by this and the
@@ -37,7 +38,7 @@ export async function withPublicDataCache(scope: Omit<Scope, "states">, render: 
     if (!context.states.size) return response;
     const delivered = new Response(response.body, response);
     delivered.headers.set("X-Public-Data-Cache", [...context.states].sort().join(","));
-    delivered.headers.set("Cache-Control", "private, no-store");
+    delivered.headers.set("Cache-Control", PRIVATE);
     return delivered;
   });
 }
@@ -94,7 +95,7 @@ export async function publicData<T>(key: string, compute: () => Promise<T>, cach
 
   const putCache = (entry: Entry<T>) => cache.put(request, Response.json(entry, {
     // X-Fresh-For is informational (freshness is checked from the entry itself).
-    headers: { "Cache-Control": `public, max-age=${Math.max(1, Math.ceil(staleLimit - (Date.now() - entry.storedAt) / 1000))}`, "X-Fresh-For": String(ttlSeconds) },
+    headers: { "Cache-Control": publicMaxAge(staleLimit - (Date.now() - entry.storedAt) / 1000), "X-Fresh-For": String(ttlSeconds) },
   })).catch(() => {});
   const readKv = async (): Promise<Entry<T> | null> => {
     if (!kv) return null;

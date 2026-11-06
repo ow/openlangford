@@ -21,6 +21,7 @@ import { applyLogRetention, applyPrivacyRetention, purgeExpiredQuestions } from 
 import { recordServerMetrics } from "./server-metrics";
 import { assessNewReports } from "../app/services/data-reports.server";
 import { runPrecheckQueue } from "../app/services/page-precheck.server";
+import { NO_STORE } from "../app/lib/cache-policy";
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -46,7 +47,7 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, url: UR
     if (env.API_RATE_LIMITER && !(await env.API_RATE_LIMITER.limit({ key: `search:${ip}` })).success) {
       return new Response("Too many searches. Please try again in a minute.", {
         status: 429,
-        headers: { "Retry-After": "60", "Cache-Control": "no-store" },
+        headers: { "Retry-After": "60", "Cache-Control": NO_STORE },
       });
     }
   }
