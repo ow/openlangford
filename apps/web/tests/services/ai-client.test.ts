@@ -65,13 +65,13 @@ describe("resolveAiConfig", () => {
     expect(cfg.stages.extraction.model).toBe("extract-model");
   });
 
-  it("picks each check's model: verify, summary and note checks follow REVIEW_AI_MODEL, the related-topics check AI_MODEL, each overridable", () => {
+  it("picks each check's model: every check follows REVIEW_AI_MODEL by default, each overridable", () => {
     const base = { AI_MODEL: "fast", REVIEW_AI_MODEL: "strong" };
     const cfg = resolveAiConfig(base);
     expect(cfg.stages.verify.model).toBe("strong");
     expect(cfg.stages.summary_check.model).toBe("strong");
     expect(cfg.stages.note_check.model).toBe("strong");
-    expect(cfg.stages.related_check.model).toBe("fast");
+    expect(cfg.stages.related_check.model).toBe("strong");
     const over = resolveAiConfig({ ...base, NOTE_CHECK_AI_MODEL: "n", RELATED_CHECK_AI_MODEL: "r", VERIFY_AI_MODEL: "v" });
     expect([over.stages.note_check.model, over.stages.related_check.model, over.stages.verify.model]).toEqual(["n", "r", "v"]);
   });
