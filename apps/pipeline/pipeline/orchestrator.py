@@ -545,6 +545,89 @@ class Archiver:
         from pipeline.notifier import send_update_notification
         send_update_notification(report, processed_count=processed, test=test)
 
+    def run_upcoming_agendas(self, days_back=None, days_ahead=None, dry_run=False, skip_embed=False):
+        """Agenda watch: ingest posted agendas of meetings from today on, before they happen.
+
+        Agenda only: no minutes, audio, diarization or video. Idempotent: a meeting whose stored agenda link
+        and items are current is skipped without any download or model call. See pipeline/upcoming_agendas.py.
+        Returns the decisions; with ``dry_run`` nothing is downloaded or written.
+        """
+        from pipeline import upcoming_agendas as ua
+
+        if not hasattr(self.scraper, "discover_calendar_meetings"):
+            raise ValueError(f"{type(self.scraper).__name__} has no calendar of upcoming meetings")
+        days_back = ua.LOOKBACK_DAYS if days_back is None else days_back
+        days_ahead = ua.LOOKAHEAD_DAYS if days_ahead is None else days_ahead
+        today = ua.civic_today(self.municipality.source_config.get("timezone") or ua.DEFAULT_TIMEZONE)
+
+        from datetime import timedelta
+
+        meetings = self.scraper.discover_calendar_meetings(today - timedelta(days=days_back),
+                                                           today + timedelta(days=days_ahead))
+        self._pin_known_archive_paths(meetings)
+        plan = self.source_sync_plan = self.plan_source_sync(meetings)
+
+        supabase = self._get_admin_supabase()
+        if supabase is None:
+            raise RuntimeError("SUPABASE_URL/KEY not set; cannot tell which agendas are already held")
+        archive_paths = {}
+        for meeting in meetings:
+            root = plan[meeting.source_id]["archive_root"]
+            archive_paths[meeting.source_id] = os.path.relpath(root, BASE_DIR) if os.path.isabs(root) else root
+        held = ua.load_held(supabase, self.municipality.id, meetings, archive_paths)
+
+        base_url = getattr(self.scraper, "base_url", "")
+        decisions = []
+        for meeting in meetings:
+            entry = plan[meeting.source_id]
+            url = ua.agenda_link(meeting, base_url)
+            decisions.append(ua.decide(
+                meeting, today=today, held=held.get(meeting.source_id) or ua.Held(), plan_entry=entry,
+                local_hashes=ua.local_agenda(entry["archive_root"], url), base_url=base_url,
+            ))
+
+        print(f"\n  Agenda watch {today} ({len(meetings)} meeting(s) on the calendar"
+              f"{', dry run: nothing is downloaded or written' if dry_run else ''}):")
+        for decision in decisions:
+            print(ua.describe(decision))
+        if dry_run:
+            return decisions
+
+        ingested = []
+        for decision in decisions:
+            if decision.action not in ua.INGEST_ACTIONS:
+                continue
+            meeting, root = decision.meeting, decision.archive_root
+            print(f"\n  [agenda] {meeting.date} {meeting.title}: {decision.reason}")
+            try:
+                if decision.action == "revised":
+                    for path in ua.set_aside_superseded_agenda(root, decision.agenda_url):
+                        print(f"  [agenda] superseded copy set aside: {os.path.basename(path)}")
+                self.download_source_documents(ua.agenda_only(meeting), root)
+                if not ua.local_agenda(root, decision.agenda_url):
+                    raise RuntimeError(f"agenda not downloaded from {decision.agenda_url}")
+                # Records the folder on the eSCRIBE source row the calendar sync linked to its meeting, so the
+                # ingester's find_scheduled_meeting updates that meeting rather than inserting another.
+                self._record_source_meetings([meeting], status="documents_downloaded")
+                result = self._ingest_meetings(target_folder=root, force_update=decision.action == "revised")
+                if result:
+                    ingested.append(result["meeting_id"])
+                    print(f"  [agenda] meeting {result['meeting_id']}: {len(result.get('items') or [])} agenda item(s)")
+            except Exception as e:
+                print(f"  [!] Agenda for {meeting.date} {meeting.title} failed: {e}")
+
+        if ingested and not skip_embed:
+            # Only the tables an agenda ingest writes; no email retry (alerts are not this job's business).
+            from pipeline.ai.usage import usage_context
+            from pipeline.stages import embed_tables
+
+            print("\n  [agenda] Embedding new rows...")
+            with usage_context(job="embeddings"):
+                embed_tables(tables=ua.EMBED_TABLES)
+        print(f"\n  Agenda watch done: {len(ingested)} meeting(s) ingested "
+              f"({', '.join(str(i) for i in ingested) or 'none'})")
+        return decisions
+
     def _sync_documents(self, limit=None, dry_run=False):
         """Sync meeting documents from the configured source into archive layout.
 
