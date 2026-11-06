@@ -40,6 +40,7 @@ export const municipality = createMiddleware<ApiEnv>(async (c, next) => {
     );
   }
 
-  c.set("municipality", data);
+  // TODO(#58): generated `meta` is Json; the context type narrows it to an object.
+  c.set("municipality", data as typeof data & { meta?: Record<string, unknown> | null });
   await next();
 });

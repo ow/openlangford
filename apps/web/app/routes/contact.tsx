@@ -62,7 +62,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const notification = notifyContactMessage({
     apiKey: cloudflare?.env?.RESEND_API_KEY,
     recipients: contactNotificationRecipients(getConfiguredAdminEmails(), cloudflare?.env?.CONTACT_ALSO_NOTIFY),
-    message: { id: saved.id, created_at: saved.created_at, name: name || null, email, message },
+    message: { id: saved.id, created_at: saved.created_at as string /* TODO(#58): nullable column, DB default now() */, name: name || null, email, message },
     supabase,
   }).catch(() => {
     console.error("[Contact] Notification email failed");

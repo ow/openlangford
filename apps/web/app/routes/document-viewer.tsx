@@ -77,12 +77,12 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       .select(
         "id, document_id, agenda_item_id, title, document_type, page_start, page_end, summary, key_facts, created_at",
       )
-      .eq("id", docId)
+      .eq("id", Number(docId))
       .single(),
     supabase
       .from("meetings")
       .select("id, slug, title, meeting_date")
-      .eq("id", meetingId)
+      .eq("id", resolved.id)
       .single(),
   ]);
 
@@ -99,7 +99,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
         .select(
           "id, document_id, agenda_item_id, extracted_document_id, section_title, section_text, section_order, page_start, page_end, token_count",
         )
-        .eq("extracted_document_id", docId)
+        .eq("extracted_document_id", Number(docId))
         .order("section_order", { ascending: true }),
       supabase
         .from("documents")
@@ -118,7 +118,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
         .select(
           "id, extracted_document_id, document_section_id, r2_key, page, description, image_type, width, height, format, file_size",
         )
-        .eq("extracted_document_id", docId)
+        .eq("extracted_document_id", Number(docId))
         .order("page", { ascending: true })
         .order("id", { ascending: true }),
       supabase

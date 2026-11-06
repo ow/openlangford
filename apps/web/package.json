@@ -7,6 +7,7 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
+    "db:types": "supabase gen types typescript --db-url \"$DATABASE_URL\" --schema public > app/lib/database.types.ts",
     "preview": "pnpm run build && vite preview",
     "predeploy": "vitest run",
     "deploy": "pnpm run build && wrangler deploy",

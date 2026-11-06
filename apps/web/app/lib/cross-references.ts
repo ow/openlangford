@@ -19,7 +19,7 @@ export interface BylawRecord {
   id: number;
   slug?: string | null;
   title: string;
-  bylaw_number: string;
+  bylaw_number: string | null;
 }
 
 /**
@@ -42,7 +42,7 @@ export function detectCrossReferences(
   // Build lookup map: bylaw_number -> BylawRecord
   const bylawMap = new Map<string, BylawRecord>();
   for (const b of bylaws) {
-    bylawMap.set(b.bylaw_number, b);
+    if (b.bylaw_number) bylawMap.set(b.bylaw_number, b);
   }
 
   // Track cross-references by bylaw number for deduplication

@@ -47,7 +47,7 @@ export async function loadLetterQueue(supabase: Supabase) {
   if (error) throw error;
 
   const meetingIds = (meetings || []).map((m) => m.id);
-  const extractedIds = (meetings || []).flatMap((m) => Object.keys(m.meta?.written_unplaced || {}).map(Number));
+  const extractedIds = (meetings || []).flatMap((m) => Object.keys((m.meta as Record<string, any> | null)?.written_unplaced || {}).map(Number));
   const [{ data: items, error: itemsError }, sections] = await Promise.all([
     meetingIds.length
       ? supabase
@@ -76,7 +76,7 @@ export async function loadLetterQueue(supabase: Supabase) {
   const candidateItemIds = [
     ...new Set(
       (meetings || []).flatMap((m) =>
-        Object.values((m.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap((doc) =>
+        Object.values(((m.meta as Record<string, any> | null)?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap((doc) =>
           doc.letters.flatMap((l) => l.candidates.map((c) => c.item_id)),
         ),
       ),
@@ -137,7 +137,7 @@ export async function loadLetterQueue(supabase: Supabase) {
             specificTerms([it.title, it.plain_english_summary, ...(propertiesByItem.get(it.id) || []), ...(docsByItem.get(it.id) || []), ...(summariesByItem.get(it.id) || []), ...(motionsByItem.get(it.id) || [])].filter(Boolean).join(" ")),
           ]),
         );
-        const entries = Object.entries((meeting.meta?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap(
+        const entries = Object.entries(((meeting.meta as Record<string, any> | null)?.written_unplaced || {}) as Record<string, UnplacedDocument>).flatMap(
           ([extractedId, doc]) =>
             doc.letters.map((held) => {
               const { key, candidates, general, ...letter } = held;
@@ -206,9 +206,9 @@ async function guardedUpdate(
   for (let attempt = 0; attempt < 6; attempt++) {
     const { data, error } = await supabase.from(table).select("id, meta").eq("id", id).single();
     if (error) throw error;
-    const next = mutate(data.meta || {});
+    const next = mutate((data.meta as Record<string, any> | null) || {});
     if (!next) return null;
-    const rev = Number(data.meta?.written_rev || 0);
+    const rev = Number((data.meta as Record<string, any> | null)?.written_rev || 0);
     let query = supabase.from(table).update({ meta: { ...next, written_rev: rev + 1 } }).eq("id", id);
     query = rev ? query.eq("meta->>written_rev", String(rev)) : query.is("meta->>written_rev", null);
     const { data: rows, error: updateError } = await query.select("id");

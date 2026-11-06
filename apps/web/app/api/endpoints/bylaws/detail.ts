@@ -44,7 +44,7 @@ export class GetBylaw extends OpenAPIRoute {
     const { data: bylaw, error } = await supabase
       .from("bylaws")
       .select(
-        "id, slug, title, bylaw_number, status, category, year, description, plain_english_summary",
+        "id, slug, title, bylaw_number, status, category, year, plain_english_summary",
       )
       .eq("slug", slug)
       .eq("municipality_id", muni.id)

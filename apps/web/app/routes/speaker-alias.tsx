@@ -69,7 +69,7 @@ type Person = {
   id: number;
   name: string;
   image_url: string | null;
-  is_councillor: boolean;
+  is_councillor: boolean | null;
 };
 
 type SpeakerAlias = {
@@ -181,7 +181,7 @@ export async function loader({ request }: { request: Request }) {
     const { data: meetingMeta } = await serverClient
       .from("meetings")
       .select("meta")
-      .eq("id", meetingId)
+      .eq("id", Number(meetingId))
       .single();
 
     speakerCentroids = (meetingMeta?.meta as any)?.speaker_centroids || {};
@@ -219,14 +219,16 @@ export async function action({ request }: { request: Request }) {
 
   const formData = await request.formData();
   const intent = formData.get("intent");
-  const meetingId = formData.get("meetingId");
+  // TODO(#58): form values are strings; the generated types expect numbers (PostgREST coerces).
+  const meetingId = formData.get("meetingId") as unknown as number;
 
   if (!meetingId) return { error: "No meeting ID" };
 
   if (intent === "assign_alias") {
     // Map a Speaker Label to a Person globally for this meeting
     const speakerLabel = formData.get("speakerLabel") as string;
-    let personId = formData.get("personId");
+    // TODO(#58): form string (or null until a new person is created below); typed number for the later calls.
+    let personId = formData.get("personId") as unknown as number;
     const newPersonName = formData.get("newPersonName") as string;
 
     if (!speakerLabel) return { error: "Missing label" };
@@ -236,7 +238,8 @@ export async function action({ request }: { request: Request }) {
     if (newPersonName) {
       const { data: newPerson, error: createError } = await supabaseAdmin
         .from("people")
-        .insert({ name: newPersonName })
+        // TODO(#58): people.slug is NOT NULL in the generated types but filled by the trg_person_slug trigger.
+        .insert({ name: newPersonName } as any)
         .select()
         .single();
 
@@ -368,7 +371,8 @@ export async function action({ request }: { request: Request }) {
     // We try to use an existing label for this person if one exists (e.g. Speaker_07).
     // If not, we fall back to using their name as the label.
     const segmentIds = (formData.get("segmentIds") as string).split(",");
-    let personId = formData.get("personId");
+    // TODO(#58): form string (or null until a new person is created below); typed number for the later calls.
+    let personId = formData.get("personId") as unknown as number;
     const newPersonName = formData.get("newPersonName") as string;
 
     if (!segmentIds.length) return { error: "Missing segments" };
@@ -378,7 +382,8 @@ export async function action({ request }: { request: Request }) {
     if (newPersonName) {
       const { data: newPerson, error: createError } = await supabaseAdmin
         .from("people")
-        .insert({ name: newPersonName })
+        // TODO(#58): people.slug is NOT NULL in the generated types but filled by the trg_person_slug trigger.
+        .insert({ name: newPersonName } as any)
         .select()
         .single();
 
@@ -408,7 +413,7 @@ export async function action({ request }: { request: Request }) {
         .maybeSingle();
 
       if (existingSegment) {
-        targetLabel = existingSegment.speaker_name;
+        targetLabel = existingSegment.speaker_name ?? undefined;
       }
     }
 
@@ -442,11 +447,11 @@ export async function action({ request }: { request: Request }) {
         person_id: personId,
         speaker_name: targetLabel,
       })
-      .in("id", segmentIds);
+      .in("id", segmentIds as unknown as number[]) // TODO(#58): string ids from the form;
 
     if (error) throw error;
   } else if (intent === "split_segment") {
-    const segmentId = formData.get("segmentId");
+    const segmentId = formData.get("segmentId") as unknown as number;
     const text1 = formData.get("text1") as string;
     const text2 = formData.get("text2") as string;
     const splitTime = parseFloat(formData.get("splitTime") as string);

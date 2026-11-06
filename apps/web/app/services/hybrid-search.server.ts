@@ -163,8 +163,9 @@ async function hybridSearchDocumentSections(
       full_text_weight: 1.0,
       semantic_weight: 1.0,
       rrf_k: 50,
-      date_from: dateFrom || null,
-      date_to: dateTo || null,
+      // TODO(#58): generated RPC args are `string | undefined`; null is sent today.
+      date_from: (dateFrom || null) as string | undefined,
+      date_to: (dateTo || null) as string | undefined,
     },
   );
 
@@ -574,7 +575,7 @@ export async function getSearchResultCache(
 
   if (error || !data) return null;
   // Older cached answers predate slug fields on sources.
-  await attachSourceSlugs(supabase, data.sources || []);
+  await attachSourceSlugs(supabase, (data.sources as any) || []); // TODO(#58): sources is Json
   return data as CachedResult;
 }
 
@@ -622,7 +623,7 @@ export async function findCachedAnswer(query: string): Promise<CachedResult | nu
     .limit(1)
     .maybeSingle();
   if (error || !data || !data.answer) return null;
-  await attachSourceSlugs(supabase, data.sources || []);
+  await attachSourceSlugs(supabase, (data.sources as any) || []); // TODO(#58): sources is Json
   return data as CachedResult;
 }
 

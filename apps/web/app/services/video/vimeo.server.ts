@@ -66,7 +66,7 @@ export async function getVimeoThumbnail(
       const { data: meeting } = await supabaseAdmin
         .from("meetings")
         .select("meta")
-        .eq("id", meetingId)
+        .eq("id", Number(meetingId))
         .single();
 
       if (meeting?.meta && (meeting.meta as any).vimeo_thumbnail_url) {
@@ -94,7 +94,7 @@ export async function getVimeoThumbnail(
           const { data: currentMeeting } = await supabaseAdmin
             .from("meetings")
             .select("meta")
-            .eq("id", meetingId)
+            .eq("id", Number(meetingId))
             .single();
 
           const currentMeta = (currentMeeting?.meta as any) || {};
@@ -106,7 +106,7 @@ export async function getVimeoThumbnail(
           await supabaseAdmin
             .from("meetings")
             .update({ meta: newMeta })
-            .eq("id", meetingId);
+            .eq("id", Number(meetingId));
         } catch (e) {
           console.warn("[Vimeo] Error saving thumbnail to DB cache:", e);
         }
@@ -144,7 +144,7 @@ export async function getVimeoVideoData(
         const { data: meeting } = await supabaseAdmin
           .from("meetings")
           .select("meta")
-          .eq("id", meetingId)
+          .eq("id", Number(meetingId))
           .single();
 
         console.log(
@@ -234,7 +234,7 @@ export async function getVimeoVideoData(
             const { data: currentMeeting } = await supabaseAdmin
               .from("meetings")
               .select("meta")
-              .eq("id", meetingId)
+              .eq("id", Number(meetingId))
               .single();
 
             const currentMeta = (currentMeeting?.meta as any) || {};
@@ -248,7 +248,7 @@ export async function getVimeoVideoData(
             await supabaseAdmin
               .from("meetings")
               .update({ meta: newMeta })
-              .eq("id", meetingId);
+              .eq("id", Number(meetingId));
           } catch (e) {
             console.warn("[Vimeo] Error saving fallback URL to DB:", e);
           }
@@ -345,7 +345,7 @@ export async function getVimeoVideoData(
               const { data: currentMeeting } = await supabaseAdmin
                 .from("meetings")
                 .select("meta")
-                .eq("id", meetingId)
+                .eq("id", Number(meetingId))
                 .single();
 
               const currentMeta = (currentMeeting?.meta as any) || {};
@@ -359,7 +359,7 @@ export async function getVimeoVideoData(
               await supabaseAdmin
                 .from("meetings")
                 .update({ meta: newMeta })
-                .eq("id", meetingId);
+                .eq("id", Number(meetingId));
             } catch (e) {
               console.warn("[Vimeo] Error saving fallback URL to DB:", e);
             }
@@ -385,7 +385,7 @@ export async function getVimeoVideoData(
           const { data: currentMeeting } = await supabaseAdmin
             .from("meetings")
             .select("meta")
-            .eq("id", meetingId)
+            .eq("id", Number(meetingId))
             .single();
 
           const currentMeta = (currentMeeting?.meta as any) || {};
@@ -398,7 +398,7 @@ export async function getVimeoVideoData(
           await supabaseAdmin
             .from("meetings")
             .update({ meta: newMeta })
-            .eq("id", meetingId);
+            .eq("id", Number(meetingId));
         } catch (e) {
           console.warn("[Vimeo] Error saving direct URL to DB:", e);
         }

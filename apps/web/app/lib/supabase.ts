@@ -1,5 +1,9 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./database.types";
+
+/** Supabase client typed with the generated schema (see database.types.ts). */
+export type TypedSupabaseClient = SupabaseClient<Database>;
 
 // This file is intended for the browser.
 // The server build fails if `createBrowserClient` is called in the global scope
@@ -14,12 +18,12 @@ const isBrowser = typeof window !== "undefined";
  * Server-side logic must use `createSupabaseServerClient` or `getSupabaseAdminClient`
  * from `app/lib/supabase.server.ts`.
  */
-const supabase: SupabaseClient = isBrowser
-  ? createBrowserClient(
+const supabase: TypedSupabaseClient = isBrowser
+  ? createBrowserClient<Database>(
       import.meta.env.VITE_SUPABASE_URL!,
       import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     )
-  : ({} as SupabaseClient); // Provide a dummy object for the server build to prevent type errors.
+  : ({} as TypedSupabaseClient); // Provide a dummy object for the server build to prevent type errors.
 
 // This check will only run in the browser, preventing server-side errors
 // if the env vars are somehow not available during the server build.

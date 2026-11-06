@@ -111,7 +111,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     // 6. Update Database
     console.log(`[Intelligence API] Updating database...`);
     const newMeta = {
-      ...(item.meta || {}),
+      ...((item.meta as Record<string, any> | null) || {}),
       intelligence: intelData,
     };
 

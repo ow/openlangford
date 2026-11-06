@@ -190,7 +190,8 @@ export async function action({ request }: Route.ActionArgs) {
       p_canonical: plan.canonical.id,
       p_aliases: plan.aliases.map((a) => a.id),
       p_reason: "admin-review",
-      p_by: user.email ?? null,
+      // TODO(#58): generated arg type is `string | undefined`; null is sent today.
+      p_by: (user.email ?? null) as string | undefined,
     });
     if (mergeError) return { error: mergeError.message };
   } else if (intent !== "reject") {

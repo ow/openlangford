@@ -14,7 +14,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   const { data: bylaw, error } = await supabase
     .from("bylaws")
     .select("title, file_path, source_url")
-    .eq("id", id)
+    .eq("id", Number(id))
     .single();
 
   if (error || !bylaw) {

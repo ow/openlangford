@@ -43,12 +43,12 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     supabase
       .from("meetings")
       .select("id, slug, title, meeting_date, type")
-      .eq("id", meetingId)
+      .eq("id", resolved.id)
       .single(),
     supabase
       .from("documents")
       .select("id, title, category, source_url, page_count")
-      .eq("meeting_id", meetingId)
+      .eq("meeting_id", resolved.id)
       .order("title"),
     getExtractedDocumentsForMeeting(supabase, meetingId),
   ]);
