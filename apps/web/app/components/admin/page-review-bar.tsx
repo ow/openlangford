@@ -395,7 +395,8 @@ export function PageReviewBar() {
                           ))}
                         </div>
                       </div>
-                      {flag.fixed && <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-700"><Check className="h-3.5 w-3.5" />Fixed</p>}
+                      {flag.fixed && <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-700"><Check className="h-3.5 w-3.5" />Fixed{flag.recheck?.holds ? (flag.recheck.checked ? " · checked against the records" : " · checked") : ""}</p>}
+                      {!flag.fixed && flag.recheck && !flag.recheck.holds && <p className="mt-1.5 text-xs font-medium text-amber-700">The agent&apos;s fix didn&apos;t hold when checked: {flag.recheck.reason}</p>}
                       {!flag.fixed && flag.verdict !== "disagree" && (editing === index ? (
                         <form className="mt-2" onSubmit={(e) => { e.preventDefault(); submit("flag_note", { index: String(index), note }); }}>
                           <textarea autoFocus rows={2} value={note} onChange={(e) => setNote(e.target.value)}

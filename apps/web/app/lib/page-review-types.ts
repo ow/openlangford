@@ -14,6 +14,8 @@ export type PageFlag = {
   fix?: string | null;
   /** For a statement checked against the records: the research behind the flag, so the fix agent needn't redo it. `reason` stays the display text. */
   research?: FlagResearch;
+  /** The fix agent's check of its own fix, in the same request: whether the new text holds against the records. */
+  recheck?: { holds: boolean; at: string; /** True when the new text was read against the records; false for a removal or move, which shows on the page. */ checked: boolean; reason?: string };
 };
 
 /** A flag still needs attention until it's rated 👎 (fine) or rated 👍 and fixed. Reviewed waits for none. */

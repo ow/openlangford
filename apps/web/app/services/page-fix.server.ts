@@ -5,9 +5,10 @@ import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, type PageFlag } from "../lib/page-review-types";
 import { readPage } from "./page-check.server";
 import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
-import { fetchAll, itemRecords, topicItemIds } from "./page-verify.server";
+import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { research } from "./record-research.server";
 import { researchLine } from "../lib/flag-research";
+import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
 import { rewriteSummaries } from "./topic-summaries.server";
@@ -699,15 +700,70 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       }
       left.push(`Couldn't hand the re-filing of ${refiles.length === 1 ? "an item" : "items"} to the pipeline worker, so ${refiles.length === 1 ? "it stays" : "they stay"} where ${refiles.length === 1 ? "it is" : "they are"}.`);
     }
+    // The fix is checked in the same request: only what it wrote (the new summary and status, rewritten lines, and the
+    // statements behind each fixed flag), in one call, and a fix that doesn't hold is reopened. Never the whole page.
+    const newlyFixed = updated.map((f, i) => (f.fixed && !flags[i].fixed ? i : -1)).filter((i) => i >= 0);
+    let finalFlags = updated;
+    let checkedNote = "";
+    let recheckFailed = false;
+    if (newlyFixed.length && timeLeft() > 10_000) {
+      try {
+        const summaryScope = !!rewrote.length || summaryNotes.length > 0;
+        const [{ data: fresh }, own2] = await Promise.all([
+          supabase.from("matters").select("plain_english_summary, meta").eq("id", matterId).single(),
+          topicItemIds(supabase, matterId),
+        ]);
+        const meta = ((fresh?.meta || {}) as Record<string, any>);
+        const covered = (await itemRecords(supabase, [...new Set([...own2, ...ids])]));
+        const claims: Claim[] = [];
+        const summaryIds: string[] = [];
+        if (summaryScope && covered.covered.size > 0) {
+          for (const [i, t] of sentences(fresh?.plain_english_summary || "").entries()) { claims.push({ id: `summary-${i}`, key: null, text: `Summary: ${t}` }); summaryIds.push(`summary-${i}`); }
+          if (meta.status_line) { claims.push({ id: "status", key: null, text: `Where it stands: ${meta.status_line}` }); summaryIds.push("status"); }
+        }
+        for (const id of Object.keys(rewrites)) {
+          const text = meta.timeline_headlines?.[id];
+          if (text && covered.covered.has(Number(id))) claims.push({ id: `line-${id}`, key: `agenda-${id}`, text: `Timeline line for item ${id}: ${text}` });
+        }
+        for (const key of Object.keys(lines)) {
+          const v = meta.entry_lines?.[key];
+          const text = [v?.heading, v?.line].filter(Boolean).join(" | ");
+          if (text) claims.push({ id: `entry-${key}`, key, text: `Entry ${key}: ${text}` });
+        }
+        const scopes = new Map<number, string[]>();
+        for (const i of newlyFixed) {
+          const key = flags[i].key;
+          const claimIds = !key ? summaryIds : [`line-${key.replace(/^agenda-/, "")}`, `entry-${key}`].filter((c) => claims.some((x) => x.id === c));
+          if (claimIds.length) scopes.set(i, claimIds);
+        }
+        const records = [covered.text, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+          evidenceText, researchText].filter(Boolean).join("\n\n");
+        const verdicts: RecheckVerdicts = scopes.size ? await recheckClaims(claims.filter((c) => [...scopes.values()].flat().includes(c.id)), records, budget) : new Map();
+        const outcome = applyRecheck(updated, newlyFixed, scopes, verdicts, new Date().toISOString());
+        finalFlags = outcome.flags;
+        const reread = newlyFixed.filter((i) => scopes.has(i)).length;
+        const failures = outcome.failed.map((x) => `${flagLabel(flags[x.index])} on ${flags[x.index].key ?? "the page"}: ${x.reason}`);
+        checkedNote = recheckSummary(outcome.held, outcome.total, reread, failures);
+        for (const failure of failures) left.push(`The fix doesn't hold: ${failure}`);
+        recheckFailed = failures.length > 0;
+      } catch (error) {
+        console.error("[page-fix] re-check failed:", error instanceof Error ? error.message : error);
+        checkedNote = "Not re-checked: the check itself failed. Press Check to look again.";
+      }
+    } else if (newlyFixed.length) {
+      checkedNote = "Not re-checked: the fix used up its time. Press Check to look again.";
+    }
     const note = [
       done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : answered.length ? "" : result.data.actions.length
         ? "Changed nothing." : "Changed nothing: the agent didn't say what to do. Try rewording the issue as an instruction.",
       answered.length ? `Left as is:\n${answered.map((d) => `• ${d}`).join("\n")}` : "",
       waiting.length ? `Needs a record that isn't on this page:\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
+      checkedNote,
     ].filter(Boolean).join("\n\n");
     // Only waiting on records: nothing for a person to do now, so the page isn't sent back as needing work.
-    await finish(done.length || ((waiting.length || answered.length) && !left.length) ? "fixed" : "needs_work", note, updated);
+    // A fix the re-check found not holding sends the page back as needing work (its flag is open again).
+    await finish(!recheckFailed && (done.length || ((waiting.length || answered.length) && !left.length)) ? "fixed" : "needs_work", note, finalFlags);
   } catch (error) {
     console.error("[page-fix]", error instanceof Error ? error.message : error);
     await finish("needs_work", budget.aborted
