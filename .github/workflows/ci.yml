@@ -1,0 +1,129 @@
+name: CI
+
+# Quality gates for pull requests and for main. These are status checks only:
+# Cloudflare still builds and deploys every push to main on its own, and nothing here
+# blocks or delays that. Required-check protection is configured on the branch (docs/ci.md).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Docs-only, research/** and .planning/** changes skip the web and pipeline jobs.
+  # This is done here (jobs skipped with `if`) rather than with workflow-level `paths-ignore`,
+  # because a workflow that never starts leaves a *required* check stuck on "Expected",
+  # while a skipped job counts as passing.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      migrations: ${{ steps.filter.outputs.migrations }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: filter
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT" = "pull_request" ]; then base="$BASE_SHA"; else base="$BEFORE_SHA"; fi
+          if [ -z "$base" ] || [ "${base//0/}" = "" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            echo "No usable base commit; running everything."
+            echo "code=true" >> "$GITHUB_OUTPUT"; echo "migrations=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          files="$(git diff --name-only "$base"...HEAD || git diff --name-only "$base" HEAD)"
+          echo "$files"
+          # Anything outside these paths counts as code.
+          code="$(echo "$files" | grep -vE '^(docs/|research/|\.planning/|apps/[^/]+/\.planning/)|\.md$' | grep -c . || true)"
+          mig="$(echo "$files" | grep -c '^supabase/migrations/' || true)"
+          echo "code=$([ "$code" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "migrations=$([ "$mig" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+  web:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      # pnpm version comes from the root package.json "packageManager" field.
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # Two Postgres-backed suites skip unless LANGFORD_TEST_PG_CONTAINER names a running
+      # container (they docker exec psql into it). A throwaway one is cheap, so run them.
+      - name: Start throwaway Postgres
+        working-directory: .
+        run: |
+          docker run -d --name langford-pg -e POSTGRES_PASSWORD=postgres supabase/postgres:17.6.1.054
+          for _ in $(seq 1 60); do
+            docker exec langford-pg pg_isready -U postgres && break
+            sleep 2
+          done
+      - name: Test
+        env:
+          LANGFORD_TEST_PG_CONTAINER: langford-pg
+        run: npx vitest run
+
+  pipeline:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/pipeline
+    steps:
+      - uses: actions/checkout@v4
+      # Some tests check original PDFs and skip when pdftotext is absent.
+      - name: Install poppler
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/pipeline/uv.lock
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: apps/pipeline/.python-version
+      - run: uv sync --frozen
+      # pytest.ini adds --cov; coverage is not needed here.
+      - name: Test
+        run: uv run pytest -q --no-cov -p no:cacheprovider
+
+  migrations-check:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.migrations == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Lint only. The existing migration set does not apply cleanly from an empty database
+      # (e.g. 20260217003829_fix_rpc_search_path.sql alters a function created outside
+      # supabase/migrations), so a throwaway-Postgres apply step is left out until the
+      # baseline is fixed.
+      - name: Lint new migrations
+        run: .github/scripts/lint-migrations.sh "${{ github.event.pull_request.base.sha }}"
