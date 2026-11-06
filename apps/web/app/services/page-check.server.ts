@@ -125,18 +125,24 @@ const RelatedSchema = z.object({
   })),
 });
 
-/** Topics listed under Related topics, judged from the records of both topics (not their model-written summaries):
- * flags one about a different place or project, or one that is this same project and should be merged. */
-export async function checkRelatedTopics(supabase: SupabaseClient, matterId: number, entries: PageEntry[], sameSiteIds: Set<number> = new Set()): Promise<PageFlag[]> {
-  const related = entries.filter((e) => /^related-\d+$/.test(e.key)).slice(0, 8);
-  if (!related.length) return [];
+export type TopicVerdict = z.infer<typeof RelatedSchema>["topics"][number];
+
+/** Other topics judged against this one from both topics' records (never their model-written summaries): belongs (a
+ * separate topic about the same place or project), same_project (the very same project, so one topic) or different.
+ * Each `others` key is "related-<id>". Shared by the page check (the Related topics cards) and the fix agent (a topic
+ * holding an entry the agent was asked to file here: merged when it's the same project). Only verdicts for the keys
+ * given are returned. */
+export async function judgeTopics(supabase: SupabaseClient, matterId: number,
+  others: { key: string; text: string; sameSite?: boolean }[],
+  options: { shown?: string; signal?: AbortSignal } = {}): Promise<TopicVerdict[]> {
+  if (!others.length) return [];
   const own = (await itemRecords(supabase, await topicItemIds(supabase, matterId))).text;
-  const theirs = await Promise.all(related.map(async (e) =>
+  const theirs = await Promise.all(others.map(async (e) =>
     (await itemRecords(supabase, await topicItemIds(supabase, Number(e.key.slice(8)))).catch(() => ({ text: "" }))).text));
   const result = await getAiClient().json({
     stage: "related_check",
-    prompt: `A topic page on Open Langford, a site that follows Langford City council, lists other topics under "Related
-topics: Other topics about the same place or project." Decide for each listed topic, from the council's records of both
+    prompt: `A topic page on Open Langford, a site that follows Langford City council, ${options.shown ?? `lists other topics under "Related
+topics: Other topics about the same place or project."`} Decide for each listed topic, from the council's records of both
 topics, whether it belongs there. Judge from the records, not the titles. A topic marked as another application for the
 same site (an earlier or later rezoning, permit or subdivision of the same land) belongs, though it's a different
 application: it's same_project only when the records show the very same application (the same file or bylaw number).
@@ -144,12 +150,23 @@ application: it's same_project only when the records show the very same applicat
 THIS TOPIC'S RECORDS:
 ${own.slice(0, 20000) || "(none)"}
 
-${related.map((e, i) => `[${e.key}]${sameSiteIds.has(Number(e.key.slice(8))) ? " [another application for the same site]" : ""} as listed: ${e.text}\nIts records:\n${theirs[i].slice(0, 12000) || "(none)"}`).join("\n\n")}`,
+${others.map((e, i) => `[${e.key}]${e.sameSite ? " [another application for the same site]" : ""} as listed: ${e.text}\nIts records:\n${theirs[i].slice(0, 30000) || "(none)"}`).join("\n\n")}`,
     schema: RelatedSchema,
     schemaName: "related_topics_check",
+    signal: options.signal,
   });
+  const keys = new Set(others.map((e) => e.key));
+  return result.data.topics.filter((t) => keys.has(t.key));
+}
+
+/** Topics listed under Related topics, judged from the records of both topics (not their model-written summaries):
+ * flags one about a different place or project, or one that is this same project and should be merged. */
+export async function checkRelatedTopics(supabase: SupabaseClient, matterId: number, entries: PageEntry[], sameSiteIds: Set<number> = new Set()): Promise<PageFlag[]> {
+  const related = entries.filter((e) => /^related-\d+$/.test(e.key)).slice(0, 8);
+  if (!related.length) return [];
+  const verdicts = await judgeTopics(supabase, matterId, related.map((e) => ({ ...e, sameSite: sameSiteIds.has(Number(e.key.slice(8))) })));
   const byKey = new Map(related.map((e) => [e.key, e.text]));
-  return result.data.topics.filter((t) => byKey.has(t.key) && t.verdict !== "belongs").map((t) => ({
+  return verdicts.filter((t) => t.verdict !== "belongs").map((t) => ({
     key: t.key,
     problem: t.verdict === "different" ? "different_story" as const : "duplicate" as const,
     reason: t.reason,

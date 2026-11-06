@@ -164,21 +164,30 @@ async function nextStep(prompt: string, signal?: AbortSignal): Promise<z.infer<t
 export type ResearchFinding = { verdict: "supported" | "contradicted" | "not_found"; quote: string | null; ref: string | null;
   explanation: string; steps: number };
 
+/** What a research session is for: the opening task and when to finish. The page check checks one statement; the fix
+ * agent answers a question about a flagged entry (what Council decided, how a record relates to the topic). */
+export type ResearchGoal = { task: string; finish: string };
+export const CHECK_STATEMENT: ResearchGoal = {
+  task: "check one statement",
+  finish: "Finish when you know whether the record supports the statement.",
+};
+
 /**
  * Research one question in the City's records: each turn the review model runs any number of searches and reads at
  * once (in parallel), until it can say whether the record supports a statement, and where. `context` is what the
  * caller already knows. Bounded by `maxTurns` and by the size of what it has read (RESEARCH_BUDGET), never by cutting
  * a record.
  */
-export async function research(supabase: SupabaseClient, question: string, context: string, maxTurns = 10, signal?: AbortSignal): Promise<ResearchFinding> {
+export async function research(supabase: SupabaseClient, question: string, context: string, maxTurns = 10, signal?: AbortSignal,
+  goal: ResearchGoal = CHECK_STATEMENT): Promise<ResearchFinding> {
   const log: string[] = [];
   let used = 0;
   for (let turn = 1; turn <= maxTurns + 1; turn++) {
     const last = turn > maxTurns || used > RESEARCH_BUDGET;
-    const prompt = `You research Langford City council's own records to check one statement. Search with specific words (an
+    const prompt = `You research Langford City council's own records to ${goal.task}. Search with specific words (an
 address, a bylaw or file number, a name, a figure) and read the records that look relevant in full; run several
 searches and reads at once when that helps. A report section belongs to an agenda item (read item:<id> for everything
-filed on it, with its motions and video transcript). Finish when you know whether the record supports the statement.
+filed on it, with its motions and video transcript). ${goal.finish}
 Only the City's records count: motions, reports, minutes, transcripts of the meeting video, annual reports. Agenda item
 summaries are model-written notes: they can point you somewhere but don't count as support. Quote the record's own
 words exactly in your finding.
