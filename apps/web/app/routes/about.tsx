@@ -1,8 +1,5 @@
 import type { Route } from "./+types/about";
 import { useLoaderData } from "react-router";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
 import { Link } from "react-router";
 import {
   Mail,
@@ -17,6 +14,7 @@ import {
 } from "lucide-react";
 import { getPublicAboutStats } from "../services/site";
 import aboutContent from "../content/about.md?raw";
+import { renderMarkdown } from "../components/markdown-content";
 import { ogImageUrl, ogUrl } from "../lib/og";
 
 export const meta: Route.MetaFunction = () => {
@@ -41,7 +39,8 @@ export async function loader() {
   } catch (error) {
     console.error("Error loading about stats:", error);
   }
-  return { content: aboutContent, stats };
+  // Rendered on the server (raw HTML escaped) so the markdown engine never ships to the browser.
+  return { html: renderMarkdown(aboutContent), stats };
 }
 
 const statItems = [
@@ -53,7 +52,7 @@ const statItems = [
 ] as const;
 
 export default function About() {
-  const { content, stats } = useLoaderData<typeof loader>();
+  const { html, stats } = useLoaderData<typeof loader>();
 
   return (
     <div className="min-h-screen bg-zinc-50 pb-20">
@@ -102,12 +101,7 @@ export default function About() {
             prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline
           "
           >
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-            >
-              {content}
-            </ReactMarkdown>
+            <div dangerouslySetInnerHTML={{ __html: html }} />
           </article>
 
           <div className="mt-12 pt-12 border-t border-zinc-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">

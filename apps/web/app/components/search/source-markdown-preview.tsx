@@ -1,6 +1,5 @@
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { LazyMarkdown } from "../lazy-markdown";
 import { cn } from "../../lib/utils";
 
 interface SourceMarkdownPreviewProps {
@@ -31,7 +30,7 @@ export function SourceMarkdownPreview({
           !expanded && needsTruncation && `line-clamp-${maxLines}`,
         )}
       >
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        <LazyMarkdown>{content}</LazyMarkdown>
       </div>
       {needsTruncation && (
         <button
