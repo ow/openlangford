@@ -1,3 +1,7 @@
+// Hand-written app types. They can run ahead of the real schema. The source of truth for what exists
+// in the database is the generated ./database.types.ts (regenerate with `pnpm db:types`); prefer
+// Database["public"]["Tables"][...]["Row"] for new code. See issue #58.
+
 export interface Municipality {
   id: number;
   slug: string;

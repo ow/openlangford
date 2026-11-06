@@ -219,15 +219,16 @@ export async function action({ request }: { request: Request }) {
 
   const formData = await request.formData();
   const intent = formData.get("intent");
-  const meetingId = Number(formData.get("meetingId"));
+  // TODO(#58): form values are strings; the generated types expect numbers (PostgREST coerces).
+  const meetingId = formData.get("meetingId") as unknown as number;
 
   if (!meetingId) return { error: "No meeting ID" };
 
   if (intent === "assign_alias") {
     // Map a Speaker Label to a Person globally for this meeting
     const speakerLabel = formData.get("speakerLabel") as string;
-    // TODO(#58): may be null until a new person is created below; typed number for the later calls.
-    let personId = (formData.get("personId") ? Number(formData.get("personId")) : null) as number;
+    // TODO(#58): form string (or null until a new person is created below); typed number for the later calls.
+    let personId = formData.get("personId") as unknown as number;
     const newPersonName = formData.get("newPersonName") as string;
 
     if (!speakerLabel) return { error: "Missing label" };
@@ -330,7 +331,7 @@ export async function action({ request }: { request: Request }) {
   } else if (intent === "relabel_segments") {
     // Change the speaker label for specific segments
     // e.g. "Speaker 1" -> "Speaker 2" for selected segments
-    const segmentIds = (formData.get("segmentIds") as string).split(",").map(Number);
+    const segmentIds = (formData.get("segmentIds") as string).split(",");
     const newLabel = formData.get("newLabel") as string;
 
     console.log(
@@ -358,7 +359,7 @@ export async function action({ request }: { request: Request }) {
       .update(updates)
       .in(
         "id",
-        segmentIds,
+        segmentIds.map((id) => parseInt(id, 10)),
       );
 
     if (error) {
@@ -369,9 +370,9 @@ export async function action({ request }: { request: Request }) {
     // Manually assign specific segments to a person.
     // We try to use an existing label for this person if one exists (e.g. Speaker_07).
     // If not, we fall back to using their name as the label.
-    const segmentIds = (formData.get("segmentIds") as string).split(",").map(Number);
-    // TODO(#58): may be null until a new person is created below; typed number for the later calls.
-    let personId = (formData.get("personId") ? Number(formData.get("personId")) : null) as number;
+    const segmentIds = (formData.get("segmentIds") as string).split(",");
+    // TODO(#58): form string (or null until a new person is created below); typed number for the later calls.
+    let personId = formData.get("personId") as unknown as number;
     const newPersonName = formData.get("newPersonName") as string;
 
     if (!segmentIds.length) return { error: "Missing segments" };
@@ -446,11 +447,11 @@ export async function action({ request }: { request: Request }) {
         person_id: personId,
         speaker_name: targetLabel,
       })
-      .in("id", segmentIds);
+      .in("id", segmentIds as unknown as number[]) // TODO(#58): string ids from the form;
 
     if (error) throw error;
   } else if (intent === "split_segment") {
-    const segmentId = Number(formData.get("segmentId"));
+    const segmentId = formData.get("segmentId") as unknown as number;
     const text1 = formData.get("text1") as string;
     const text2 = formData.get("text2") as string;
     const splitTime = parseFloat(formData.get("splitTime") as string);
