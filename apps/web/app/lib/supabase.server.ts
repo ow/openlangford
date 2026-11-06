@@ -4,6 +4,7 @@ import type { TypedSupabaseClient } from './supabase';
 
 export type { TypedSupabaseClient };
 import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr';
+import { collectAuthCookie } from './auth-cookies.server';
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SECRET_KEY;
@@ -50,9 +51,13 @@ export function createSupabaseServerClient(request: Request, responseHeaders = n
         return cookies.map((c) => ({ name: c.name, value: c.value ?? '' }));
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) =>
-          responseHeaders.append('Set-Cookie', serializeCookieHeader(name, value, options))
-        );
+        // A refreshed session's cookies go to the caller's headers and, since most callers drop those, to the
+        // worker's per-request collector, which adds them to the response (lib/auth-cookies.server.ts).
+        cookiesToSet.forEach(({ name, value, options }) => {
+          const cookie = serializeCookieHeader(name, value, options);
+          responseHeaders.append('Set-Cookie', cookie);
+          collectAuthCookie(cookie);
+        });
       },
     },
   });
