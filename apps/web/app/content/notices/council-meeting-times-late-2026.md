@@ -10,9 +10,11 @@ Langford's last two regular council meetings of 2026 move a day later and an hou
 
 ## How it was decided
 
-The change was posted on the City's [meetings page](https://www.langford.ca/meetings/) as an order of the Mayor. It reads:
+The change was posted on the City's [meetings page](https://www.langford.ca/meetings/) as an order of the Mayor. It now reads:
 
-> By Order of the Mayor in accordance with Section 126 of the Community Charter the remainder of the Regular scheduled meetings of Council for 2026 shall now be held as follows: November 24, 2026 at 5:30pm, and December 8, 2026 at 5:30pm.
+> By Order of the Mayor, the remainder of the Regular scheduled meetings of Council for 2026 have been postponed to the dates and times as follows: November 24, 2026 at 5:30pm, and December 8, 2026 at 5:30pm.
+
+The City has reworded it since it was first posted. The first version cited Section 126 of the Community Charter and said the meetings "shall now be held" on those dates. The new one drops the reference to the Charter and calls the change a postponement. The dates and times are the same.
 
 Council did not vote on it. It was not on the agenda of the inaugural meeting on November 2, the only council meeting since the election, and it does not appear in any other published agenda or minutes.
 
