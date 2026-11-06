@@ -46,7 +46,10 @@ for f in "${added[@]}"; do
   if ! date -u -d "${ts:0:4}-${ts:4:2}-${ts:6:2} ${ts:8:2}:${ts:10:2}:${ts:12:2}" >/dev/null 2>&1; then
     err "$f" "Timestamp $ts is not a valid UTC date-time."
   fi
-  if [ -n "$max_existing" ] && ! [[ "$ts" > "$max_existing" ]]; then
+  # A baseline squash reuses the latest applied version on purpose (production already records it).
+  if [[ "$name" =~ _baseline\.sql$ ]] && [ "$ts" = "$max_existing" ]; then
+    echo "$name reuses the latest applied version (baseline squash)."
+  elif [ -n "$max_existing" ] && ! [[ "$ts" > "$max_existing" ]]; then
     err "$f" "Timestamp $ts must be greater than every existing migration (highest on base: $max_existing). supabase db push would skip or reject it."
   fi
   # CONCURRENTLY cannot run inside the transaction supabase db push wraps each file in.
