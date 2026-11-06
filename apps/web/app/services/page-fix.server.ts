@@ -3,11 +3,10 @@ import { z } from "zod";
 import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, keepStaffRatings, type PageFlag } from "../lib/page-review-types";
-import { readPage } from "./page-check.server";
+import { judgeTopics, readPage, type TopicVerdict } from "./page-check.server";
 import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
-import { research } from "./record-research.server";
-import { researchLine } from "../lib/flag-research";
+import { findingText, investigate, investigatedRecords, investigationLine, type Investigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
@@ -31,6 +30,11 @@ import type { StaffRole } from "../lib/auth.server";
  * worker). It then rewrites the summaries of the topics whose timelines changed (services/topic-summaries.server.ts)
  * and checks that each summary instruction was followed, all in the same request.
  * Every rewrite carries the record's words it rests on.
+ *
+ * Before it plans, it investigates: for every agreed flag and the editor's note it searches and reads the City's
+ * records itself (fix-investigation.server.ts), and plans from what it found. When it files here an item that another
+ * topic holds, it compares the two topics' records itself (judgeTopics, the page check's Related topics judgement) and
+ * merges them when they are one project, or keeps the entry as a mention and says why.
  */
 
 const PlanSchema = z.object({
@@ -49,7 +53,9 @@ const PlanSchema = z.object({
   })),
 });
 
-type Candidate = { id: number; title: string; dates: string; related?: boolean; sameSite?: boolean };
+type Candidate = { id: number; title: string; dates: string; related?: boolean; sameSite?: boolean;
+  /** Holds an entry staff accepted for this page (a found entry, or a mention staff kept). */
+  owner?: boolean };
 
 /** Topics an item filed (or linked) here might belong to instead, not this topic: ones with the same permit or bylaw
  * number, ones holding other items at the same address, and full-text matches on its title. */
@@ -123,16 +129,19 @@ async function suggestionOnPage(supabase: SupabaseClient, key: string | null | u
   return !!data;
 }
 
-function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
+export function planPrompt(heading: string, entries: { key: string; text: string }[], flags: PageFlag[], note: string | null,
   candidates: Map<string, Candidate[]>, records: string, lookalikes: Candidate[] = [], suggestions: Suggestion[] = [],
-  internalNote: string | null = null, attachments = "") {
+  internalNote: string | null = null, attachments = "", findings: (string | undefined)[] = [], noteFinding = "") {
   const removable = entries.filter((e) => removableKey(e.key)).map((e) => e.key);
   const movable = [...candidates.entries()].map(([key, list]) =>
     `- [${key}] could move to: ${list.length ? list.map((c) => `${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}`).join("; ") : "no listed topic (move_item with null re-files it)"}`).join("\n");
   return `You fix problems on a page of Open Langford, a site that follows Langford City council. An editor
 reviewed the page "${heading}" and agreed these problems are real:
-${flags.map((f) => `- [${f.key ?? "whole page"}] ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.fix ? `\n  Approved fix (do this): ${f.fix}` : ""}${f.note ? `\n  Editor's instruction for this entry (follow it, over the fix above): ${f.note}` : ""}`).join("\n")}
-${note ? `\nTheir note: ${note}\n` : ""}${internalNote ? `\nStaff's internal note on this page (background to keep in mind, not an instruction): ${internalNote}\n` : ""}
+${flags.map((f, i) => `- [${f.key ?? "whole page"}] ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.fix ? `\n  Approved fix (do this): ${f.fix}` : ""}${f.note ? `\n  Editor's instruction for this entry (follow it, over the fix above): ${f.note}` : ""}${findings[i] ? `\n  What you found in the City's records: ${findings[i]}` : ""}`).join("\n")}
+${note ? `\nTheir note: ${note}\n${noteFinding ? `  What you found in the City's records: ${noteFinding}\n` : ""}` : ""}${internalNote ? `\nStaff's internal note on this page (background to keep in mind, not an instruction): ${internalNote}\n` : ""}
+Before planning you searched and read the City's records for each problem ("What you found" above; the records it
+rests on are among the records below). Act on what you found: it is the record's own words, not a guess.
+
 What you can do:
 - remove_entry: drop a link found for this topic (${removable.join(", ") || "none here"}). A "background-" entry is
   borrowed from a related topic and already lives on its own topic: remove_entry takes just that entry off this page
@@ -148,9 +157,10 @@ ${movable || "(No flagged items to move.)"}
   report and the bylaw readings at one meeting): give keep_key, the entry that stays. It is hidden from the timeline,
   not deleted, and stays part of the topic.
 - file_here: a "mention-" entry that is really one of this topic's own steps (e.g. the bylaw's adoption shown only as
-  "Discussed in another item"). It becomes part of this topic's own history, so the summary can rely on it. Only when the item
-  isn't filed on another topic; if it is, that other topic is probably the same project (merge_topic) or this page
-  holds items that belong there (move_item).
+  "Discussed in another item"). It becomes part of this topic's own history, so the summary can rely on it. If the item
+  is filed on another topic, give file_here all the same: you will then compare both topics' records and merge that
+  topic into this one when it is the same project, or keep the entry as a mention and say why. Use merge_topic
+  directly when the records below already show it (a topic marked "holds an entry staff accepted" has its records below).
 - rewrite_entry: a new line for any entry ("agenda-", "mention-", "background-", "report-", "evidence-"): one plain sentence of at most
   140 characters saying what this step did for this topic, outcome first ("Council gave second and third reading to the
   rezoning for the 165-home Costin Avenue apartments"). Use only facts in the records below; no file numbers, bylaw
@@ -187,14 +197,22 @@ ${movable || "(No flagged items to move.)"}
   supplies what an agreed problem says is missing (e.g. the adoption or decision the status lacks), with its key.
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
-${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}${c.sameSite ? " [another application for the same site]" : ""}`).join("\n")}\n` : ""}
+${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}${c.owner ? " [holds an entry staff accepted for this page; its records are below]" : ""}${c.sameSite ? " [another application for the same site]" : ""}`).join("\n")}\n` : ""}
 Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly; no other action needs a "source". A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
-which record and which date disagree. Work only from the records above, and never wait for more. When they don't
-say something, fix with what they do say: rewrite the line or summary to what they support (or to say plainly what
-they leave out), remove an entry they can't tie to this topic, and leave an entry that is about it as it is.
+which record and which date disagree. Work only from the records below and what you found, and never wait for more.
+When they don't say something, fix with what they do say: rewrite the line or summary to what they support, and leave
+out what they don't.
+- Saying a record is silent: write that the record doesn't say what Council decided (or anything like it) only when
+  that meeting's minutes are in your records (a "MINUTES OR REPORT TEXT FROM THIS MEETING" line, or minutes you read)
+  and say nothing about it. Minutes are where decisions are recorded: a staff report proposes, the minutes say what
+  Council did. Even then, lead with what is known, not with what is missing.
+- Explain before removing: an entry whose title or records name this topic (or the same policy, bylaw, site or
+  project) is explained with rewrite_entry, one line saying how it relates ("In 2012 Council set criteria for waiving
+  hearings; the 2020 policy sets how hearings are run"), not removed. Remove it only when the records (or what you
+  found) show it is about something else, and say what.
 - move_documents: when the documents attached to an entry are about another item at the same meeting (an agenda
   reordered at the meeting can shift every report one item along), give the entry's key, the ids of the documents
   that belong elsewhere and to_item_id, the item at that meeting they are about. The flagged entries' documents and
@@ -203,7 +221,11 @@ ${attachments || "(No flagged entry has documents attached.)"}
 - hide_page: when nothing in the records backs this page at all (no step of its own, nothing showing what it's
   about), hide it from the public. It can be undone, and the editor confirms it like every other change.
 Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what is wrong and
-where, not "a person should look".
+where, not "a person should look". A cannot_fix names the record it needs (which meeting's minutes, which report or
+bylaw, and its date) and what that record would settle.
+Every line a resident reads (rewrite_entry, rewrite_heading, the summary instruction) follows the site's writing
+style: outcome first, everyday words, short sentences, no file, bylaw or policy numbers, no database words
+("matters", "records", "agenda items").
 
 For each agreed problem (and anything the note asks), give at least one action: never leave one unanswered. An
 instruction written as a question ("Is it relevant? If not, remove it") asks you to decide: act on it, or answer it
@@ -313,41 +335,45 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const ids = [...new Set([...own, ...agreed.map((f) => itemId(f.key)).filter(Number.isSafeInteger)])];
     const reportIds = agreed.map((f) => Number(f.key?.match(/^report-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
     const evidenceIds = agreed.map((f) => Number(f.key?.match(/^evidence-(\d+)$/)?.[1] ?? NaN)).filter(Number.isSafeInteger);
-    const [{ text: itemText }, { data: reports }, evidenceText] = await Promise.all([
+    const heading = page.heading || page.title;
+    // The agent investigates before it plans: every agreed flag (and the editor's note) is researched in all of the
+    // City's records, with a question that fits the problem, in parallel while the page's own records load. A flag
+    // the check already researched keeps that finding.
+    const [{ text: itemText }, { data: reports }, evidenceText, investigations] = await Promise.all([
       itemRecords(supabase, ids),
       reportIds.length ? supabase.from("matter_report_mentions").select("id, page, quote").in("id", reportIds) : Promise.resolve({ data: [] }),
       evidenceRecords(supabase, matterId, evidenceIds),
+      investigate(supabase, { path, topic: heading, flags: agreed.map((flag) => ({ flag, index: flags.indexOf(flag) })),
+        note: row?.note ?? null, signal: budget }),
     ]);
-    // Each approved problem of fact is researched in all of the City's records first, so the fix says what the
-    // record says (with its words) rather than only deleting what the page couldn't back from its own filings.
-    const factual = agreed.filter((f) => f.problem === "unsupported" || f.problem === "wrong_detail");
-    // The check that raised a flag already researched it and stored the finding on the flag; only a flag without one
-    // (an editor-added issue) is researched here.
-    const researched = await Promise.all(factual.map((f) => f.research ? Promise.resolve(f.research) : research(supabase,
-      `What does the City's record actually say about this? The page says: "${f.excerpt}". The problem found: ${f.reason}`,
-      `This is the topic page ${path}.${f.note ? ` The editor's note: ${f.note}` : ""}`, 10, budget).catch(() => null)));
-    const researchText = factual.map((f, i) => researchLine(f.excerpt, researched[i])).filter(Boolean).join("\n");
+    const findingFor = (i: Investigation | undefined) => findingText(i?.finding);
+    // For the note: what the agent read for each problem, so the editor can see what each change rests on.
+    const found = investigations.filter((i) => i.finding?.ref);
+    const lookedInto = found.length ? `What the agent found in the City's records:\n${found.map((i) =>
+      `• ${i.key ?? "Whole page"}: ${i.finding!.explanation} (${i.finding!.ref})`).join("\n")}` : "";
+    const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
+      await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
     const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
-    // Entries just added from the search are often filed on a topic of their own that's really this one (a lone
-    // 2019 extension of an agreement this page already has): offer those topics for merging too.
-    const addedItems = added.map((a) => itemId(a.key)).filter(Number.isSafeInteger);
-    const { data: addedOwners } = addedItems.length
-      ? await supabase.from("agenda_items").select("matter_id").in("id", addedItems) : { data: [] };
+    // Topics holding entries staff accepted for this page (found entries just added, mentions kept earlier) are often
+    // a topic of their own that's really this one (a lone 2019 extension of an agreement this page already has, a
+    // 2024 amendment of the same policy): offered for merging with their records, like Related topics.
     const [lookalikes, suggestions] = await Promise.all([
-      relatedOrSameNamed(supabase, matterId, ((addedOwners || []) as any[]).map((i) => i.matter_id).filter(Boolean)),
+      relatedOrSameNamed(supabase, matterId, await acceptedOwners(supabase, matterId, added.map((a) => itemId(a.key)).filter(Number.isSafeInteger))),
       listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])]);
-    // Each topic listed under Related topics is read from its own records (not its model-written summary), so the
-    // agent can judge whether it's the same place or project: keep it, unlink it, or merge it.
-    const relatedRecords = (await Promise.all(lookalikes.filter((c) => c.related).slice(0, 6).map(async (c) => {
+    // Each topic listed under Related topics, or holding an accepted entry, is read from its own records (not its
+    // model-written summary), so the agent can judge whether it's the same place or project: keep, unlink or merge.
+    const relatedRecords = (await Promise.all(lookalikes.filter((c) => c.related || c.owner).slice(0, 8).map(async (c) => {
       const text = (await itemRecords(supabase, await topicItemIds(supabase, c.id)).catch(() => ({ text: "" }))).text;
-      return text ? `RELATED TOPIC ${c.id} "${c.title}": its own records\n${text.slice(0, 12000)}` : "";
+      return text ? `${c.related ? "RELATED TOPIC" : "TOPIC HOLDING AN ACCEPTED ENTRY"} ${c.id} "${c.title}": its own records\n${text.slice(0, 30000)}` : "";
     }))).filter(Boolean).join("\n\n");
     const result = await getAiClient().json({
       stage: "review",
-      prompt: planPrompt(page.heading || page.title, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates,
+      prompt: planPrompt(heading, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates,
         [records, relatedRecords].filter(Boolean).join("\n\n"), lookalikes, suggestions,
-        (row as { internal_note?: string | null } | null)?.internal_note ?? null, attachmentLines.join("\n")),
+        (row as { internal_note?: string | null } | null)?.internal_note ?? null, attachmentLines.join("\n"),
+        agreed.map((f) => findingFor(investigations.find((i) => i.index === flags.indexOf(f)))),
+        findingFor(investigations.find((i) => i.index === null))),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
       signal: budget,
@@ -371,7 +397,9 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const answeredKeys = new Set<string | null>();
     const hidden: Record<string, { keep: number; reason: string; by: string; at: string }> = {};
     let summaryUnfollowed = false;
-    const quoteOf = (step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim();
+    // file_here for an item another topic holds: settled after the plan by comparing the two topics' records.
+    const heldElsewhere: { key: string; owner: number; reason: string }[] = [];
+    const quoteOf =(step: { source: string | null }) => (step.source || "").replace(/\s+/g, " ").trim();
     // A flagged entry that has left the page since (its topic merged in or unlinked, the entry removed or moved) needs
     // nothing more: the flag is done, whatever the plan says for it.
     const gone = agreed.filter((f) => f.key && !f.fixed && !onPage.has(f.key));
@@ -465,8 +493,10 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           done.push(`${step.reason} It stays a mention here: it's part of a bundle of resolutions about other subjects too.`);
         } else if (!item) left.push(`${step.reason} (that item couldn't be found)`);
         else if (lock && "matter_id" in lock && lock.matter_id !== matterId) left.push(`${step.reason} (an editor placed that item ${lock.matter_id ? `on topic ${lock.matter_id}` : "off every topic"}, so it stays there)`);
-        else if (item.matter_id && item.matter_id !== matterId) left.push(`${step.reason} (that item is filed on topic ${item.matter_id}; if that topic is the same project, merge it, otherwise it stays there)`);
-        else {
+        else if (item.matter_id && item.matter_id !== matterId) {
+          // Filed on another topic: the agent compares the two topics' records below and merges them if they're one project.
+          heldElsewhere.push({ key: step.key, owner: item.matter_id, reason: step.reason });
+        } else {
           moves.push({ item_id: itemId(step.key), to_matter_id: matterId, reason: step.reason });
           fixedKeys.add(step.key);
         }
@@ -475,7 +505,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
         const quote = quoteOf(step);
         summaryNotes.push(`${(step.new_text || "").trim().slice(0, 500)}${quote ? ` The record says: “${quote}”` : ""}`);
-        done.push(`${step.reason} Rewrote the summary with this note: "${(step.new_text || "").trim()}"`);
+        done.push(`${step.reason} Rewrote the summary with this note: "${(step.new_text || "").trim()}"${quote ? ` It rests on: “${quote.slice(0, 300)}”` : ""}`);
         continue;
       }
       if ((step.action === "rewrite_entry" || step.action === "rewrite_heading") && step.key && onPage.has(step.key)
@@ -490,7 +520,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           if (!heading && step.key.startsWith("agenda-")) rewrites[step.key.slice(7)] = text;
           else lines[step.key] = { ...lines[step.key], [heading ? "heading" : "line"]: text, source: quoteOf(step) };
           fixedKeys.add(step.key);
-          done.push(`${step.reason} New ${heading ? "heading" : "line"}: "${text}"`);
+          done.push(`${step.reason} New ${heading ? "heading" : "line"}: "${text}" It rests on: “${quoteOf(step).slice(0, 300)}”`);
         }
         continue;
       }
@@ -559,6 +589,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         left.push(`${step.reason}${why}`);
       }
     }
+    await settleHeldElsewhere(supabase, matterId, heldElsewhere, merges, budget, { answered, answeredKeys, left });
     for (const move of mentionMoves) {
       // The link is re-pointed, not dropped: the mention now shows on the topic it's about.
       const { data: moved, error } = await supabase.from("matter_links").update({ matter_id: move.to_matter_id })
@@ -772,6 +803,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       answered.length ? `Left as is:\n${answered.map((d) => `• ${d}`).join("\n")}` : "",
       waiting.length ? `Needs a record that isn't on this page:\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
+      lookedInto,
       checkedNote,
     ].filter(Boolean).join("\n\n");
     // Only waiting on records: nothing for a person to do now, so the page isn't sent back as needing work.
@@ -782,6 +814,62 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     await finish("needs_work", budget.aborted
       ? "The agent ran out of time (about 90 seconds of model work) before it could plan the fix, and changed nothing. Press Fix again, or fix it by hand."
       : "The agent hit an error and changed nothing. Try again, or fix it by hand.");
+  }
+}
+
+/** The page note's lists that settling a file_here adds to. */
+type Outcome = { answered: string[]; answeredKeys: Set<string | null>; left: string[] };
+type Merge = { with_matter_id: number; matter_id?: number; reason: string; key: string | null };
+
+/**
+ * file_here steps for items another topic holds. The agent compares the two topics' records (judgeTopics, the same
+ * judgement the page check makes of Related topics) and, when they are the same project, merges that topic into this
+ * page through the plan's merges; otherwise the entry stays a mention and the flag is answered with the reason. A
+ * judgement that fails or runs out of time changes nothing and says so. (2026-11-06: the agent filed here the 2024
+ * "Public Hearing Policy" item, held on its own one-item topic, and the executor left "if that topic is the same
+ * project, merge it" for a person.)
+ */
+export async function settleHeldElsewhere(supabase: SupabaseClient, matterId: number, held: { key: string; owner: number; reason: string }[],
+  merges: Merge[], signal: AbortSignal | undefined, out: Outcome): Promise<void> {
+  if (!held.length) return;
+  const pending: typeof held = [];
+  for (const h of held) {
+    // The plan already merges that topic in: the entry becomes this topic's own with it.
+    const merging = merges.find((m) => !m.matter_id && m.with_matter_id === h.owner);
+    if (merging) merging.key ??= h.key;
+    else pending.push(h);
+  }
+  if (!pending.length) return;
+  const owners = [...new Set(pending.map((h) => h.owner))];
+  const { data: topics } = await supabase.from("matters").select("id, title, meta").in("id", owners);
+  const titleOf = (id: number) => {
+    const m = ((topics || []) as any[]).find((t) => t.id === id);
+    return String(m?.meta?.display_title || m?.title || `topic ${id}`);
+  };
+  let verdicts: TopicVerdict[] | null = null;
+  try {
+    verdicts = await judgeTopics(supabase, matterId,
+      owners.map((id) => ({ key: `related-${id}`, text: `"${titleOf(id)}", which holds ${pending.filter((h) => h.owner === id).map((h) => h.key).join(", ")} (an entry an editor wants on this page)` })),
+      { shown: "shows entries that are filed on the other topics below. An editor wants them to be part of this page's "
+        + "own history, which is right only if the other topic is this same project. A later review, amendment or "
+        + "replacement of this page's policy, bylaw or agreement is a later step of the same project; a different policy "
+        + "or bylaw that only touches the same subject is not.", signal });
+  } catch (error) {
+    console.error("[page-fix] comparing topics failed:", error instanceof Error ? error.message : error);
+  }
+  for (const h of pending) {
+    const title = titleOf(h.owner);
+    const v = verdicts?.find((t) => t.key === `related-${h.owner}`);
+    if (!v) {
+      out.left.push(`${h.reason} (that item is filed on "${title}"; comparing the two topics' records didn't finish, so nothing was merged. Press Fix again to retry.)`);
+    } else if (v.verdict === "same_project") {
+      const merging = merges.find((m) => !m.matter_id && m.with_matter_id === h.owner);
+      if (merging) merging.key ??= h.key;
+      else merges.push({ with_matter_id: h.owner, key: h.key, reason: `${h.reason} Merged "${title}" into this page: it is the same project. ${v.reason}` });
+    } else {
+      out.answered.push(`${h.reason} It stays a mention here: it is filed on "${title}", a separate topic. ${v.reason}`);
+      out.answeredKeys.add(h.key);
+    }
   }
 }
 
@@ -811,8 +899,22 @@ async function relatedOrSameNamed(supabase: SupabaseClient, matterId: number, al
     ...((named || []) as any[]).map((m) => m.id), ...sameBylaw, ...sameSiteIds, ...alsoIds])].filter((id) => id !== matterId);
   if (!ids.length) return [];
   const relatedIds = new Set((links || []).map((l: any) => (l.matter_id === matterId ? l.related_matter_id : l.matter_id)));
+  const owners = new Set(alsoIds);
   const { data } = await supabase.from("matters").select("id, title, meta, first_seen, last_seen").in("id", ids)
     .is("merged_into", null);
   return (data || []).map((m: any) => ({ id: m.id, title: m.meta?.display_title || m.title,
-    dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to "), related: relatedIds.has(m.id), sameSite: sameSiteIds.has(m.id) }));
+    dates: [m.first_seen, m.last_seen].filter(Boolean).join(" to "), related: relatedIds.has(m.id), sameSite: sameSiteIds.has(m.id),
+    // A bundle topic (a meeting's committee resolutions) holds other subjects too: never a merge candidate for that.
+    owner: owners.has(m.id) && m.meta?.hidden !== "container" }));
+}
+
+/** The topics holding the items staff accepted for this page: entries just added from the search, and mentions
+ * staff accepted earlier (matter_links review "accepted"). At most eight, newest links first. */
+async function acceptedOwners(supabase: SupabaseClient, matterId: number, justAdded: number[]): Promise<number[]> {
+  const { data: links } = await supabase.from("matter_links").select("agenda_item_id").eq("matter_id", matterId)
+    .eq("kind", "mention").eq("hidden", false).eq("review", "accepted").order("id", { ascending: false }).limit(20);
+  const items = [...new Set([...justAdded, ...((links || []) as any[]).map((l) => l.agenda_item_id).filter(Boolean)])];
+  if (!items.length) return [];
+  const { data } = await supabase.from("agenda_items").select("matter_id").in("id", items);
+  return [...new Set(((data || []) as any[]).map((i) => i.matter_id).filter((id) => id && id !== matterId))].slice(0, 8);
 }

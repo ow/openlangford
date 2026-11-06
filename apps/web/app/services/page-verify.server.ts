@@ -68,8 +68,11 @@ export async function topicItemIds(supabase: SupabaseClient, matterId: number): 
 }
 
 /** Records for each item, and which items have any. Older imports often left the minutes and reports unattached
- * to their agenda items; for those, the same meeting's unattached text is searched for the item's subject. Nothing is
- * cut: motions, report text and minutes go in whole. */
+ * to their agenda items: for every item without a motion of its own (even one with its staff report attached), the
+ * same meeting's unattached text is searched for the item's subject, since the minutes are where the decision is.
+ * Nothing is cut: motions, report text and minutes go in whole. (2026-11-06: item 973 had its staff report attached
+ * but no motion, so the minutes saying "That Council approve Council Policy POL-0155-ADMIN … CARRIED" never reached
+ * the fix agent, which wrote that the record doesn't say what Council decided.) */
 export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): Promise<{ text: string; covered: Set<number> }> {
   const covered = new Set<number>();
   if (!itemIds.length) return { text: "", covered };
@@ -83,8 +86,8 @@ export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): 
     each<any>((ids, from, to) => supabase.from("document_sections").select("id, agenda_item_id, section_title, section_text, section_order").in("agenda_item_id", ids)
       .order("section_order").order("id").range(from, to)),
   ]);
-  const has = (id: number) => [motions, docs, sections].some((rows) => rows.some((r) => r.agenda_item_id === id));
-  const bare = items.filter((i) => !has(i.id) && i.meeting_id);
+  const hasMotion = (id: number) => motions.some((r) => r.agenda_item_id === id);
+  const bare = items.filter((i) => !hasMotion(i.id) && i.meeting_id);
   const loose = new Map<number, string[]>();  // meeting → its unattached minutes/report text
   if (bare.length) {
     const meetingDocs = await fetchAll<any>((from, to) => supabase.from("documents").select("id, meeting_id")
@@ -100,6 +103,7 @@ export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): 
     }
   }
   const out: string[] = [];
+  const shown = new Map<string, number>();  // an unattached section already given in full -> the item it was given under
   for (const item of items) {
     const meeting = Array.isArray(item.meetings) ? item.meetings[0] : item.meetings;
     const lines = [`ITEM ${item.id} (${meeting?.meeting_date ?? "date unknown"}): ${String(item.title || "").split("\n")[0]}`];
@@ -118,11 +122,15 @@ export async function itemRecords(supabase: SupabaseClient, itemIds: number[]): 
     const text = sections.filter((s) => s.agenda_item_id === item.id)
       .map((s) => `${s.section_title ? `${s.section_title}: ` : ""}${s.section_text || ""}`).join(" ").replace(/\s+/g, " ");
     if (text) lines.push(`  DOCUMENT TEXT: ${text}`);
-    const pattern = !has(item.id) ? subjectPattern(item.title) : null;
+    const pattern = !hasMotion(item.id) ? subjectPattern(item.title) : null;
     if (pattern) {
-      // Each unattached minutes or report section of the same meeting that names the item's subject, whole.
+      // Each unattached minutes or report section of the same meeting that names the item's subject, whole (once: a
+      // second item at the same meeting points back to it).
       for (const t of (loose.get(item.meeting_id) || []).filter((t) => pattern.test(t))) {
-        lines.push(`  MINUTES OR REPORT TEXT FROM THIS MEETING: ${t.replace(/\s+/g, " ")}`);
+        const flat = t.replace(/\s+/g, " ");
+        const before = shown.get(flat);
+        if (before !== undefined) lines.push(`  MINUTES OR REPORT TEXT FROM THIS MEETING: the same text as given under ITEM ${before}.`);
+        else { shown.set(flat, item.id); lines.push(`  MINUTES OR REPORT TEXT FROM THIS MEETING: ${flat}`); }
       }
     }
     if (lines.length > 1) covered.add(item.id);
@@ -226,7 +234,7 @@ export async function verifyAgainstRecords(supabase: SupabaseClient, path: strin
 }
 
 /** Run `fn` over `items` with at most `limit` running at once, results in order. */
-async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+export async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
   const out: R[] = new Array(items.length);
   let next = 0;
   await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
