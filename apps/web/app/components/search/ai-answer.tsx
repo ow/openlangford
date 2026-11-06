@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import { LazyMarkdown } from "../lazy-markdown";
 import type { Components } from "react-markdown";
 import {
   Loader2,
@@ -233,9 +233,9 @@ export function AiAnswer({
         <div>
           <div className="min-w-0">
             <div className="prose prose-base prose-zinc prose-blue max-w-none prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline">
-              <ReactMarkdown components={markdownComponents}>
+              <LazyMarkdown components={markdownComponents}>
                 {answer}
-              </ReactMarkdown>
+              </LazyMarkdown>
             </div>
             {isResearching && (
               <div className="flex items-center gap-2 text-sm text-zinc-400">

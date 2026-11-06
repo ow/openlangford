@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { meetingPath } from "../../lib/paths";
-import ReactMarkdown from "react-markdown";
 import {
   PlayCircle,
   Calendar,

@@ -71,6 +71,23 @@ export default defineConfig(({ mode }) => {
       // Cloudflare's build machine ran out of file handles (EMFILE, 2026-11-04). A smaller cap barely slows the build.
       rollupOptions: { maxParallelFileOps: 100 },
     },
+    environments: {
+      // Browser bundle only: the Worker bundle gains nothing from splitting.
+      client: {
+        build: {
+          rollupOptions: {
+            output: {
+              // Without this every lucide icon and every Radix primitive becomes its own tiny chunk, and each page
+              // preloads dozens of them. One chunk per library (both tree-shake, so only what is used ships).
+              manualChunks(id: string) {
+                if (id.includes("/node_modules/lucide-react/")) return "lucide";
+                if (id.includes("/node_modules/@radix-ui/") || id.includes("/node_modules/radix-ui/")) return "radix";
+              },
+            },
+          },
+        },
+      },
+    },
     plugins: [
       // CF_REMOTE_BINDINGS=false runs dev without a Wrangler login (AI calls then fail; pages render).
       cloudflare({ viteEnvironment: { name: "ssr" }, remoteBindings: process.env.CF_REMOTE_BINDINGS !== "false" }),
