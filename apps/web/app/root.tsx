@@ -41,7 +41,6 @@ import { PostHogProvider } from "./components/posthog-provider";
 import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
 import { getStaffRole } from "./lib/auth.server";
 import { ReportIssue, ReportsEnabled } from "./components/report-issue";
-import { REPORTS_STAFF_ONLY } from "./lib/data-reports";
 import { isReviewable } from "./lib/page-review-types";
 
 // Staff-only tools: loaded on demand so the editing dialogs don't ship to every visitor.
@@ -221,7 +220,7 @@ function NavigationProgress() {
 export default function App() {
   const root = useRouteLoaderData<typeof loader>("root");
   const { pathname } = useLocation();
-  const reports = isReviewable(pathname) && (!REPORTS_STAFF_ONLY || !!root?.isAdmin);
+  const reports = isReviewable(pathname);
   const notice = bannerNotice(civicToday());
   return (
     <ReportsEnabled.Provider value={reports}>

@@ -1,9 +1,5 @@
 /** Readers' data-issue reports: the categories they choose from, and validation of what they send. */
 
-/** While staff try reporting out, only moderators and admins see "Report an issue" and can send one. Set to false to
- * open it to every signed-in reader. */
-export const REPORTS_STAFF_ONLY = true;
-
 export const REPORT_CATEGORIES = [
   { value: "wrong_fact", label: "Something's wrong (a fact, date, number or name)" },
   { value: "wrong_topic", label: "It belongs to a different topic or meeting" },
