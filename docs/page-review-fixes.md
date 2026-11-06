@@ -22,6 +22,14 @@ carries out fixes for the flags staff agreed with. This page explains where each
      text directly and checks once more. The code is in `app/services/topic-summaries.server.ts`
      (`rewriteSummaries`).
 
+   - **Checking the fix:** one call on the `review` stage re-reads only what the fix wrote (the new summary and status,
+     rewritten lines, and the statements behind each fixed flag) against the records and the research the fix used.
+     A fix that doesn't hold is reopened and the note says so; each flag keeps `recheck {holds, checked, reason}`
+     (`lib/page-recheck.ts`). The note ends with "Checked: 3 of 3 fixes hold." The bar's Check button still runs the
+     full page check.
+   - **A time limit:** all model calls in one fix share a 90 s deadline (`FIX_BUDGET_MS`). Past it the agent stops
+     and the note says what is left. Review and writing calls time out after 30 s and retry once.
+
 4. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
 
 A fix finishes in one pass: the request returns when the page is done.
@@ -35,6 +43,9 @@ or create a new topic.
 That step uses the ingest matcher: `topic_regroup.refile`, then `topic_tidy._Filer`, then `MatterMatcher` and
 `MeetingIngester.get_or_create_matter`. That code is about 1,200 lines and is shared with ingest, so it was not
 ported.
+
+Jobs a person is waiting on (find missing, re-file, link participants) are queued at priority 10; the worker claims
+the highest priority first (`claim_next_pipeline_job`), so they jump bulk batches.
 
 When a plan includes a re-file:
 - everything else is done first, in the request;
