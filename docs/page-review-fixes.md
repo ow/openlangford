@@ -16,12 +16,12 @@ carries out fixes for the flags staff agreed with. This page explains where each
      `merge_matters()` database function. The code is in `app/services/topic-moves.server.ts`.
    - **Status:** refreshing the status of the topics at each affected meeting, using the same rules as the
      pipeline's `matter_lifecycle.py`.
-   - **The summary rewrite:** rewriting the summary of every topic whose timeline changed. The writer drafts the
-     text, checks it against the records, and rewrites once if the check finds problems. The code is in
-     `app/services/topic-summaries.server.ts`.
-   - **Checking staff instructions:** each summary instruction staff approved is checked against the new text. If
-     it wasn't followed, the topic is rewritten once more with what was missed, and then edited directly as a
-     last resort.
+   - **The summary rewrite:** rewriting the summary of every topic whose timeline changed. One write (staff's
+     instructions are already in the topic's editor notes, so the writer follows them), then one check that judges
+     the facts and each instruction together. If it finds anything, there is no second rewrite: the agent edits the
+     text directly and checks once more. The code is in `app/services/topic-summaries.server.ts`
+     (`rewriteSummaries`).
+
 4. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
 
 A fix finishes in one pass: the request returns when the page is done.
@@ -78,4 +78,4 @@ Before this change, the site handed every fix that changed anything to the Mac's
 | Fix | Steps until the page is done |
 |---|---|
 | Before | The site's part, then about 6 s in the queue, then a 19 s worker run on average (114 s at most), then the bar polling. You then came back for a second pass. |
-| Now | The site's part, then the rewrite in the same request. On one real topic, the rewrite took 7.7 s: two writing calls and one check. |
+| Now | The site's part, then the rewrite in the same request. On one real topic, the rewrite took 7.7 s: two writing calls and one check (before the summary ladder was flattened; see below). |

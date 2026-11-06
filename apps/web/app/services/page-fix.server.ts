@@ -10,7 +10,7 @@ import { research } from "./record-research.server";
 import { researchLine } from "../lib/flag-research";
 import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
-import { checkSummaryNotes, directEdit, refreshTopicSummaries } from "./topic-summaries.server";
+import { rewriteSummaries } from "./topic-summaries.server";
 import { mergeFlat, moveItem, refreshMeetingLifecycles } from "./topic-moves.server";
 import type { StaffRole } from "../lib/auth.server";
 
@@ -643,38 +643,22 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       }
       // Topics merged away during this fix are rewritten as the topic they were merged into.
       const { data: current } = await supabase.from("matters").select("id, merged_into").in("id", [...touched]);
-      rewrote = await refreshTopicSummaries(supabase, ((current || []) as any[]).map((m) => m.merged_into || m.id));
+      const pageTopic = ((current || []) as any[]).find((m) => m.id === matterId);
+      const report = await rewriteSummaries(supabase, ((current || []) as any[]).map((m) => m.merged_into || m.id),
+        { notes: summaryNotes.map((note) => ({ matter_id: pageTopic?.merged_into || matterId, note })) });
+      rewrote = report.written;
       if (rewrote.length && (moves.length > refiles.length || merges.length)) {
         done.push(`Rewrote the summary of ${rewrote.length} ${rewrote.length === 1 ? "topic" : "topics"} whose timeline changed.`);
       }
-      // Each approved summary instruction is checked against the new text; one more rewrite told what it missed, then
-      // the agent edits the text itself, checked the same way.
-      let unfollowed = await checkSummaryNotes(supabase, summaryNotes.map((note) => ({ matter_id: matterId, note })));
-      if (unfollowed.length) {
-        const retry = [...new Set(unfollowed.map((u) => u.matter_id))];
-        for (const id of retry) {
-          const asks = unfollowed.filter((u) => u.matter_id === id && u.missing).map((u) => `The last rewrite missed this: ${u.missing}`);
-          if (!asks.length) continue;
-          const { data: m } = await supabase.from("matters").select("meta").eq("id", id).single();
-          await supabase.from("matters").update({ meta: { ...(m?.meta || {}), editor_notes: [...((m?.meta as any)?.editor_notes || []), ...asks] } }).eq("id", id);
-        }
-        await refreshTopicSummaries(supabase, retry);
-        unfollowed = await checkSummaryNotes(supabase, unfollowed.map((u) => ({ matter_id: u.matter_id, note: u.note })));
-      }
-      if (unfollowed.length) {
-        for (const id of [...new Set(unfollowed.map((u) => u.matter_id))]) {
-          if (await directEdit(supabase, id, unfollowed.filter((u) => u.matter_id === id).map((u) => u.note))) {
-            done.push("Edited the summary directly, since the summary writer didn't follow the instruction.");
-          }
-        }
-        unfollowed = await checkSummaryNotes(supabase, unfollowed.map((u) => ({ matter_id: u.matter_id, note: u.note })));
-      }
-      for (const u of unfollowed) {
+      // One check judged the facts and each approved instruction together; what it found was edited directly (no second
+      // rewrite) and checked once more.
+      if (report.edited.length) done.push("Edited the summary directly, since the first draft didn't follow the instructions or the records.");
+      for (const u of report.unfollowed) {
         left.push(`The summary was rewritten but doesn't yet say what was asked: "${u.note.slice(0, 300)}"${u.missing ? ` Still missing: ${u.missing}` : ""}`);
         const said = u.note.split(" The record says:")[0].slice(0, 80);
         for (let i = done.length - 1; i >= 0; i--) if (done[i].includes(said)) done.splice(i, 1);
       }
-      summaryUnfollowed = unfollowed.length > 0;
+      summaryUnfollowed = report.unfollowed.length > 0;
     }
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it; a whole-page issue is
     // resolved by a summary rewrite that follows its instruction.
