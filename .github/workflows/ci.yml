@@ -103,11 +103,12 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-          cache-dependency-glob: apps/pipeline/uv.lock
+          cache-dependency-glob: apps/pipeline/pyproject.toml
       - uses: actions/setup-python@v5
         with:
           python-version-file: apps/pipeline/.python-version
-      - run: uv sync --frozen
+      # uv.lock is gitignored in this repo, so sync resolves from pyproject.toml.
+      - run: uv sync
       # pytest.ini adds --cov; coverage is not needed here.
       - name: Test
         run: uv run pytest -q --no-cov -p no:cacheprovider
