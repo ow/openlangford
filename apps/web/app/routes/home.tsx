@@ -10,6 +10,7 @@ import { publicData } from "../services/public-data-cache.server";
 import { civicToday } from "../lib/council-terms";
 import { getSupabasePublicClient } from "../lib/supabase.server";
 import { timed } from "../lib/server-timing.server";
+import type { SqlEnv } from "../db/index.server";
 import { getMunicipality } from "../services/municipality";
 import type { Municipality } from "../lib/types";
 import { IncomingCouncilSection } from "../components/home/incoming-council-section";
@@ -39,7 +40,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   ];
 };
 
-export async function loader({ request }: { request: Request }) {
+export async function loader({ request, context }: { request: Request; context?: { cloudflare?: { env: SqlEnv; ctx: ExecutionContext } } }) {
   try {
     // Session-free apart from the onboarding flash cookie: a request carrying it is never
     // served from or stored in the shared caches (it fails cache admission).
@@ -54,7 +55,7 @@ export async function loader({ request }: { request: Request }) {
     // and React Router 7 child loaders cannot access parent loader data on the server.
     const municipality = await timed("home-municipality", getMunicipality(getSupabasePublicClient()));
     const [data, publicNotices, incomingCouncil] = await Promise.all([
-      timed("home-data", getPublicHomeData(municipality.id, municipality.meta)),
+      timed("home-data", getPublicHomeData(municipality.id, municipality.meta, context?.cloudflare)),
       timed("home-notices", getPublicNotices(municipality.rss_url)),
       timed("home-incoming", publicData(`incoming-council:${municipality.id}:${civicToday()}`, () => getIncomingCouncil(getSupabasePublicClient(), municipality.id),
         () => true, undefined, { shareWithSignedIn: true }).catch((error) => {

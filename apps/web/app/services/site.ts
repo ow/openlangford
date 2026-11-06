@@ -2,6 +2,12 @@ import { publicData } from "./public-data-cache.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAttendanceInfo } from "../lib/attendance";
 import { getSupabasePublicClient } from "../lib/supabase.server";
+import { withDb, type SqlEnv } from "../db/index.server";
+import { recentMotionsSql } from "./site-sql.server";
+
+/** The Worker env and context, for the typed SQL path; absent in tests and scripts (supabase-js is used then). */
+export type SqlContext = { env: SqlEnv; ctx?: { waitUntil(promise: Promise<unknown>): void } };
+
 
 interface PublicNotice { title: string; link: string; date: string }
 const noticesCache = new Map<string, { items: PublicNotice[]; expires: number }>();
@@ -136,7 +142,16 @@ export async function getPublicAboutStats() {
  * rather than for all of them before the sort.
  * NOTE: Do NOT use motions.yes_votes/no_votes (always 0) — use nested votes(vote).
  */
-async function recentMotions(supabase: SupabaseClient, municipalityId: number) {
+export async function recentMotions(supabase: SupabaseClient, municipalityId: number, sqlContext?: SqlContext) {
+  // One SQL query when the DATABASE_URL secret (or Hyperdrive) is configured; otherwise, or if it fails, PostgREST.
+  if (sqlContext && (sqlContext.env.HYPERDRIVE || sqlContext.env.DATABASE_URL)) {
+    try {
+      const data = await withDb(sqlContext.env, sqlContext.ctx, (db) => recentMotionsSql(db, municipalityId));
+      return { data: data as any[], error: null };
+    } catch (error) {
+      console.error("recent motions over SQL failed; falling back to PostgREST:", error instanceof Error ? error.message : "failed");
+    }
+  }
   const latest = await supabase
     .from("motions")
     .select("id, meetings!inner(meeting_date)")
@@ -162,7 +177,7 @@ async function recentMotions(supabase: SupabaseClient, municipalityId: number) {
   return { data: (full.data || []).sort((a: any, b: any) => order.get(a.id)! - order.get(b.id)!), error: null };
 }
 
-async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, municipalityId = 1) {
+async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, municipalityId = 1, sqlContext?: SqlContext) {
   let complete = true;
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Vancouver",
@@ -223,7 +238,7 @@ async function loadHomeData(supabase: SupabaseClient, municipalityMeta?: any, mu
         .limit(6),
 
       // 4. Recent non-procedural motions with vote data (15)
-      recentMotions(supabase, municipalityId),
+      recentMotions(supabase, municipalityId, sqlContext),
     ]);
 
     for (const response of [recentMeetingRes, upcomingMeetingRes, activeMattersRes, recentMotionsRes]) {
@@ -483,10 +498,11 @@ export async function getHomeData(supabase: SupabaseClient, municipalityMeta?: a
 export async function getPublicHomeData(
   municipalityId: number,
   municipalityMeta: unknown,
+  sqlContext?: SqlContext,
 ) {
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
   const key = `${municipalityId}:${today}:${JSON.stringify(municipalityMeta ?? null)}`;
-  const result = await publicData(`home:${key}`, () => loadHomeData(getSupabasePublicClient(), municipalityMeta, municipalityId), (value) => value.complete,
+  const result = await publicData(`home:${key}`, () => loadHomeData(getSupabasePublicClient(), municipalityMeta, municipalityId, sqlContext), (value) => value.complete,
     undefined, { shareWithSignedIn: true });
   return result.data;
 }

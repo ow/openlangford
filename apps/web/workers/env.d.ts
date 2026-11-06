@@ -15,6 +15,8 @@ declare namespace Cloudflare {
 		CF_VERSION_METADATA: { id: string; tag: string; timestamp: string };
 		AI_GATEWAY_ID: "langford-open-a-i";
 		AI_SEARCH_DAILY_LIMIT: "1000";
+		DATABASE_URL?: string; // runtime-only secret (wrangler secret put DATABASE_URL): the Supavisor pooler URL for the typed SQL path; never inlined by Vite
+		HYPERDRIVE?: Hyperdrive; // optional: replaces DATABASE_URL when a Hyperdrive config is bound
 		ADMIN_EMAILS: string; // secret: wrangler secret put ADMIN_EMAILS
 		CONTACT_ALSO_NOTIFY?: string; // comma-separated; contact notifications only, never an admin login
 		ENABLE_SIGNUPS: "true";
