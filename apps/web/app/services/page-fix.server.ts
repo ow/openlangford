@@ -44,8 +44,8 @@ const PlanSchema = z.object({
     document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
-    source: z.string().nullable().describe("rewrite_summary / rewrite_entry / rewrite_heading: the record's own words that support the change, quoted exactly from the records above. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null otherwise."),
-    reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
+    source: z.string().nullable().describe("Only where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly and as briefly as the claim allows. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
   })),
 });
 
@@ -180,7 +180,7 @@ ${movable || "(No flagged items to move.)"}
   being a different application: the link is how readers find the earlier or later one. Unlink it only when its
   records show it isn't the same land at all.
 - no_change: when the editor asks a question ("is this relevant?", "should this be here?") and the answer is that the
-  page is right as it is. Answer it in "reason": one or two plain sentences saying why, from the records (e.g. "The
+  page is right as it is. Answer it in "reason": one plain sentence saying why, from the records (e.g. "The
   2018 item renewed the same five-year access agreement Council granted in 2013, so it belongs here"). Use it too when
   an agreed problem turns out not to be one. Give the key of the entry it's about, or null for the whole page.
 - accept_suggestion: add one of the entries the search found for this page (listed below, not yet on it) when it
@@ -188,7 +188,7 @@ ${movable || "(No flagged items to move.)"}
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
 ${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}${c.sameSite ? " [another application for the same site]" : ""}`).join("\n")}\n` : ""}
-Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly. A
+Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly; no other action needs a "source". A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
