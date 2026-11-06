@@ -27,7 +27,7 @@ export type AiStage =
   | "summary_check"
   /** Whether a summary follows a staff instruction, checked alone (topic-summaries.server.ts). Strong model by default. */
   | "note_check"
-  /** Whether a Related topics card belongs (page-check.server.ts). Fast model. */
+  /** Whether a Related topics card belongs (page-check.server.ts). Strong model by default. */
   | "related_check";
 
 export type AiProviderName = "openai";
@@ -55,9 +55,10 @@ const STAGE_ENV_PREFIX: Record<AiStage, string> = {
 };
 
 /** Stages whose model falls back to the review stage's (REVIEW_AI_MODEL) before the site's AI_MODEL. related_check
- * defaults to the fast AI_MODEL. Each is overridable by its own env var (NOTE_CHECK_AI_MODEL, RELATED_CHECK_AI_MODEL, ...).
- * note_check stays on the strong model: replayed on 40 real instructions, the fast model disagreed on 25% (scripts/replay-checks.ts). */
-const FOLLOWS_REVIEW: AiStage[] = ["verify", "summary_check", "note_check"];
+ * Each is overridable by its own env var (NOTE_CHECK_AI_MODEL, RELATED_CHECK_AI_MODEL, ...). All default to the strong
+ * model: replayed on real pages (scripts/replay-checks.ts) the fast model disagreed on 25% of 40 instructions and was no
+ * faster on either check (latency is a fixed cost plus output length, which these short answers don't change). */
+const FOLLOWS_REVIEW: AiStage[] = ["verify", "summary_check", "note_check", "related_check"];
 
 /** Per-attempt timeouts. Streams use this as the total budget for the stream. */
 export const STAGE_TIMEOUT_MS: Record<AiStage, number> = {
