@@ -61,7 +61,7 @@ export async function setNameVariants(supabase: SupabaseClient, id: string, vari
 export async function requestParticipantLinks(supabase: SupabaseClient, userId: string) {
   const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
   const { error } = await supabase.from("pipeline_jobs").insert({
-    municipality_id: municipality?.id ?? 1, job_type: "link_participants", args: {}, requested_by: userId, max_attempts: 1,
+    municipality_id: municipality?.id ?? 1, job_type: "link_participants", args: {}, requested_by: userId, max_attempts: 1, priority: 10,
   });
   if (error) throw error;
 }

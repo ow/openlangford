@@ -97,12 +97,17 @@ async function relatedOwner(supabase: SupabaseClient, matterId: number, itemId: 
   return (mentions || []).map((m) => m.matter_id).find((id) => related.has(id)) ?? null;
 }
 
-/** Ask the pipeline to search again for this topic; suggestions arrive when the worker has run it. */
-export async function requestFindMissing(supabase: SupabaseClient, matterId: number, userId: string) {
+/** Priority of a job a person is waiting on. The worker claims the highest priority first (claim_next_pipeline_job orders
+ * by priority DESC, then requested_at), so these jump batches queued in bulk, which stay at the default 0. */
+export const INTERACTIVE_JOB_PRIORITY = 10;
+
+/** Ask the pipeline to search again for this topic; suggestions arrive when the worker has run it. A person is waiting, so
+ * it jumps the queue; pass `priority: 0` for a bulk request. */
+export async function requestFindMissing(supabase: SupabaseClient, matterId: number, userId: string, priority = INTERACTIVE_JOB_PRIORITY) {
   const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
   const { error } = await supabase.from("pipeline_jobs").insert({
     municipality_id: municipality?.id ?? 1, job_type: "find_matter_links", args: { matter_id: matterId },
-    requested_by: userId, max_attempts: 1,
+    requested_by: userId, max_attempts: 1, priority,
   });
   if (error) throw new Error("Could not start the search.");
 }

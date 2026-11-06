@@ -4,7 +4,7 @@ import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, type PageFlag } from "../lib/page-review-types";
 import { readPage } from "./page-check.server";
-import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
+import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { research } from "./record-research.server";
 import { researchLine } from "../lib/flag-research";
@@ -683,7 +683,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       // page with this run's report (done, left, waiting) and its own.
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
       const { error } = await supabase.from("pipeline_jobs").insert({
-        municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1,
+        municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1, priority: INTERACTIVE_JOB_PRIORITY,
         args: { path, moves: refiles, merges: [], refresh: [], done, left, waiting, summary_notes: [],
           requested_by: requester.id, role: requester.staffRole },
       });
