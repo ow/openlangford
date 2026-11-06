@@ -30,6 +30,8 @@ export default [
   route("ask", "routes/ask.tsx"),
   route("about", "routes/about.tsx"),
   route("updates", "routes/updates.tsx"),
+  route("notices", "routes/notices.tsx"),
+  route("notices/:slug", "routes/notice.tsx"),
   route("contact", "routes/contact.tsx"),
   route("alignment", "routes/alignment.tsx"),
   route("compare", "routes/compare.tsx"),

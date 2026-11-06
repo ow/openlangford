@@ -1,4 +1,6 @@
 import { THEME_SCRIPT } from "./lib/theme";
+import { bannerNotice } from "./lib/notices";
+import { civicToday } from "./lib/council-terms";
 import { getSearchBudgetForDisplay } from "./services/search-budget.server";
 import { SITE_NAME } from "./lib/site-name";
 import { SITE_ORIGIN } from "./lib/og";
@@ -7,6 +9,7 @@ import { DEFAULT_MUNICIPALITY } from "./lib/site-config";
 import {
   isRouteErrorResponse,
   Links,
+  Link,
   Meta,
   Outlet,
   redirect,
@@ -216,16 +219,18 @@ export default function App() {
   const root = useRouteLoaderData<typeof loader>("root");
   const { pathname } = useLocation();
   const reports = isReviewable(pathname) && (!REPORTS_STAFF_ONLY || !!root?.isAdmin);
+  const notice = bannerNotice(civicToday());
   return (
     <ReportsEnabled.Provider value={reports}>
     <div className="min-h-screen flex flex-col">
       <NavigationProgress />
-      <div className="bg-amber-50 border-b border-amber-200 text-center text-xs text-amber-800 py-1.5 px-4">
-        <span className="inline-flex items-center gap-1.5">
-          This site is in beta — data may be incomplete and features are still being added.
-        </span>
-      </div>
       <Navbar />
+      {/* A current notice (a change to when Council meets, a chance to have a say) on the home and meetings pages. */}
+      {(pathname === "/" || pathname === "/meetings") && notice && (
+        <Link to={`/notices/${notice.slug}`} className="block border-b border-brand-100 bg-brand-50 px-4 py-2 text-center text-sm text-brand-800 hover:bg-brand-100">
+          <span className="font-semibold">Notice:</span> {notice.title}<span aria-hidden="true"> →</span>
+        </Link>
+      )}
       <main className="flex-1 flex flex-col">
         {root?.isAdmin && isReviewable(pathname) && <InternalNoteBanner />}
         <Outlet />
