@@ -1,3 +1,4 @@
+import type { Json } from "~/lib/database.types";
 import { useState } from "react";
 import { Form, Link, useNavigation } from "react-router";
 import type { Route } from "./+types/admin-names";
@@ -132,11 +133,11 @@ export async function action({ request }: Route.ActionArgs) {
   const { data: items, error: itemsError } = await supabase.from("agenda_items").select("id, meta").in("id", itemIds);
   if (itemsError) return { error: itemsError.message };
   for (const item of items || []) {
-    const { participation, changed } = applyNameDecision(item.meta?.participation as Participation, key, shown);
+    const { participation, changed } = applyNameDecision((item.meta as Record<string, any> | null)?.participation as Participation, key, shown);
     if (!changed) continue;
     const { error: metaError } = await supabase
       .from("agenda_items")
-      .update({ meta: { ...(item.meta || {}), participation } })
+      .update({ meta: { ...((item.meta as Record<string, any> | null) || {}), participation } as Json })
       .eq("id", item.id);
     if (metaError) return { error: metaError.message };
   }

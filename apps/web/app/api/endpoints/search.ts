@@ -203,7 +203,7 @@ interface RawResult {
 async function searchMotions(
   supabase: ReturnType<typeof getSupabaseAdminClient>,
   q: string,
-  municipalityId: string,
+  municipalityId: number,
   limit: number,
 ): Promise<RawResult[]> {
   const { data, error } = await supabase
@@ -239,7 +239,7 @@ async function searchMotions(
 async function searchMatters(
   supabase: ReturnType<typeof getSupabaseAdminClient>,
   q: string,
-  municipalityId: string,
+  municipalityId: number,
   limit: number,
 ): Promise<RawResult[]> {
   const { data, error } = await supabase
@@ -268,7 +268,7 @@ async function searchMatters(
 async function searchAgendaItems(
   supabase: ReturnType<typeof getSupabaseAdminClient>,
   q: string,
-  municipalityId: string,
+  municipalityId: number,
   limit: number,
 ): Promise<RawResult[]> {
   const { data, error } = await supabase
@@ -304,7 +304,7 @@ async function searchAgendaItems(
 async function searchKeyStatements(
   supabase: ReturnType<typeof getSupabaseAdminClient>,
   q: string,
-  municipalityId: string,
+  municipalityId: number,
   limit: number,
 ): Promise<RawResult[]> {
   // key_statements link to meetings via meeting_id (direct FK)
@@ -342,7 +342,7 @@ async function searchKeyStatements(
 async function searchDocumentSections(
   supabase: ReturnType<typeof getSupabaseAdminClient>,
   q: string,
-  municipalityId: string,
+  municipalityId: number,
   limit: number,
 ): Promise<RawResult[]> {
   // document_sections -> extracted_documents -> meetings

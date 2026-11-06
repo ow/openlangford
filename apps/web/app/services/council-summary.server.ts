@@ -124,7 +124,7 @@ export function getCouncilTermStats(municipalityId: number) {
           .filter((m: any) => typeof m?.month === "string" && /^\d{4}-\d{2}$/.test(m.month) && Number.isSafeInteger(m.meetings))
           .map((m: any) => ({ month: m.month, meetings: m.meetings })),
         ...publicInput(row),
-        bylawAdoptionDates: row.bylaw_adoption_dates.filter((d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)),
+        bylawAdoptionDates: row.bylaw_adoption_dates.filter((d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) as string[],
         topics: row.topics.filter((t: any) => typeof t?.title === "string" && typeof t?.slug === "string" && Number.isSafeInteger(t?.meetings))
           .map((t: any) => ({ title: t.title, slug: t.slug, meetings: t.meetings })),
       };

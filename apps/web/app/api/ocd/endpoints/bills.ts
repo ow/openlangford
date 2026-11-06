@@ -27,7 +27,7 @@ import {
  */
 async function getCouncilOrgOcdId(
   supabase: any,
-  municipalityId: string,
+  municipalityId: number,
 ): Promise<string> {
   const { data: councilOrg } = await supabase
     .from("organizations")
