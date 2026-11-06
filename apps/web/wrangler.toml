@@ -58,7 +58,7 @@ POSTHOG_PROJECT_ID = "675253"
 # Images (report pictures, meeting posters, share cards) are served from R2. The r2.dev URL below is a
 # rate-limited dev URL with no CDN caching. Once the custom domain exists (docs/images-cdn.md), uncomment
 # DOCUMENT_IMAGE_CDN_BASE_URL; it takes precedence and stored r2.dev URLs are rewritten to it at read time.
-# DOCUMENT_IMAGE_CDN_BASE_URL = "https://images.openlangford.ca/viewroyal-document-images"
+DOCUMENT_IMAGE_CDN_BASE_URL = "https://images.openlangford.ca/viewroyal-document-images"
 DOCUMENT_IMAGE_PUBLIC_BASE_URL = "https://pub-62dc9711e31a49c39b0544c981bf613e.r2.dev/viewroyal-document-images"
 
 [[ratelimits]]

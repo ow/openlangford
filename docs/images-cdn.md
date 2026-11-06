@@ -59,5 +59,4 @@ Then open a meeting page and confirm the hero image and `og:image` meta tag poin
 ## Status (2026-11-06)
 
 `images.openlangford.ca` was attached to the `langford` bucket from this session (`wrangler r2 bucket domain add langford ...`).
-Until `wrangler r2 bucket domain list langford` shows `ownership_status: active` and `ssl_status: active`, leave
-`DOCUMENT_IMAGE_CDN_BASE_URL` commented out in `wrangler.toml`.
+The domain is active (ownership and SSL) and serves the objects; `DOCUMENT_IMAGE_CDN_BASE_URL` is set in `wrangler.toml`.
