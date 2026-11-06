@@ -295,6 +295,21 @@ export async function rateFlag(supabase: SupabaseClient, path: string, index: nu
   return flags;
 }
 
+/** One verdict for every flag still undecided (not rated, not fixed, not an editor's own issue), saved in one write.
+ * "Yes to all" used to send one rating per flag, and Fix could start between them. */
+export async function rateAllFlags(supabase: SupabaseClient, path: string, verdict: FlagVerdict, userId?: string) {
+  const { data, error } = await supabase.from("page_reviews").select("ai_flags, ai_model, ai_guidance_version").eq("path", path).maybeSingle();
+  if (error || !Array.isArray(data?.ai_flags)) throw new Error("No such flag.");
+  const before = data.ai_flags as PageFlag[];
+  const flags = before.map((f) => (f.verdict === null && !f.fixed && f.problem !== "editor_issue" ? { ...f, verdict } : f));
+  const rated = flags.filter((f, i) => f !== before[i]);
+  if (!rated.length) return flags;
+  const saved = await supabase.from("page_reviews").update({ ai_flags: flags }).eq("path", path);
+  if (saved.error) throw new Error("Could not save the rating.");
+  await remember(supabase, path, rated, data, userId);
+  return flags;
+}
+
 /** A random public matter page nobody has reviewed or checked yet. */
 export async function randomUncheckedMatterPath(supabase: SupabaseClient): Promise<string | null> {
   const visible = () => supabase.from("matters").select("slug", { count: "exact" })

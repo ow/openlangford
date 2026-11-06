@@ -5,7 +5,7 @@ import { requireModerator } from "../lib/auth.server";
 import { adminRead, privateAdminHeaders } from "../lib/admin-read.server";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { clearPageReview, getPageReview, reviewPath, setInternalNote, setPageReview } from "../services/page-reviews.server";
-import { addEditorIssue, checkPage, rateFlag, resolveFlags, setFlagNote } from "../services/page-check.server";
+import { addEditorIssue, checkPage, rateAllFlags, rateFlag, resolveFlags, setFlagNote } from "../services/page-check.server";
 import { fixPage } from "../services/page-fix.server";
 import { unresolvedFlags } from "../lib/page-review-types";
 import {
@@ -15,7 +15,7 @@ import { isPageHidden, setPageHidden } from "../services/page-visibility.server"
 import { confirmTopicEdits, imageCandidates, resetTopicField, saveTopicEdit, topicEditState, type TopicEdit } from "../services/topic-edit.server";
 import { EDIT_FIELDS, type EditField } from "../lib/topic-edit";
 
-const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note",
+const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "rate_all", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note",
   "edit_topic", "reset_field", "keep_edits"];
 
 /** On a topic page: suggestions waiting for a decision, and the latest "find missing" search. */
@@ -37,7 +37,8 @@ async function pageState(supabase: SupabaseClient, path: string) {
 }
 
 /** Staff only: a public page's review. GET ?path=/matters/x. POST to mark or clear it; run a reader's check
- * (intent=check) or rate one of its flags (rate: index, verdict=agree|disagree|none); and on a topic page, remove a
+ * (intent=check), rate one of its flags (rate: index, verdict=agree|disagree|none) or every undecided one at once
+ * (rate_all: verdict=agree|disagree); and on a topic page, remove a
  * timeline entry (remove_entry: key), search for missing links (find_missing), or decide a suggestion
  * (accept|reject: table, id). Every POST is recorded in staff_actions by requireModerator. */
 export async function loader({ request }: Route.LoaderArgs) {
@@ -84,6 +85,10 @@ export async function action({ request, context }: Route.ActionArgs) {
       const verdict = String(form.get("verdict") || "");
       if (!Number.isInteger(index) || index < 0 || !["agree", "disagree", "none"].includes(verdict)) return bad("Unknown rating.");
       await rateFlag(supabase, path, index, verdict === "none" ? null : verdict as "agree" | "disagree", user.id);
+    } else if (intent === "rate_all") {
+      const verdict = String(form.get("verdict") || "");
+      if (verdict !== "agree" && verdict !== "disagree") return bad("Unknown rating.");
+      await rateAllFlags(supabase, path, verdict, user.id);
     } else if (intent === "hide_page" || intent === "unhide_page") {
       const note = String(form.get("note") || "").trim();
       if (intent === "hide_page" && !note) return bad("Say why you're hiding this page.");
