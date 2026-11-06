@@ -220,7 +220,14 @@ ${entries.map((e) => `[${e.key}] ${e.text}`).join("\n\n")}`;
 /** Runs the agent for one page. Never throws: a failure is written to the page as "needs work" with a note. Returns
  * "nothing_new" when every flag rated 👍 was already fixed and there's no note or found entry, so the caller can say
  * so rather than show the last run's report as if this run had done it. */
+/** The most model time one fix may use. Past it the agent stops and says what is left, rather than hang the request. */
+export const FIX_BUDGET_MS = 90_000;
+
 export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | "refiling" | void> {
+  const startedAt = Date.now();
+  // Every model call in the fix shares this deadline: when it fires, in-flight calls are cancelled.
+  const budget = AbortSignal.timeout(FIX_BUDGET_MS);
+  const timeLeft = () => FIX_BUDGET_MS - (Date.now() - startedAt);
   const finish = async (status: "fixed" | "needs_work", agent_note: string, flags?: PageFlag[]) => {
     await supabase.from("page_reviews").update({
       status, agent_note, agent_at: new Date().toISOString(), ...(flags ? { ai_flags: flags } : {}),
@@ -312,7 +319,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // (an editor-added issue) is researched here.
     const researched = await Promise.all(factual.map((f) => f.research ? Promise.resolve(f.research) : research(supabase,
       `What does the City's record actually say about this? The page says: "${f.excerpt}". The problem found: ${f.reason}`,
-      `This is the topic page ${path}.${f.note ? ` The editor's note: ${f.note}` : ""}`).catch(() => null)));
+      `This is the topic page ${path}.${f.note ? ` The editor's note: ${f.note}` : ""}`, 10, budget).catch(() => null)));
     const researchText = factual.map((f, i) => researchLine(f.excerpt, researched[i])).filter(Boolean).join("\n");
     const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
@@ -337,6 +344,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         (row as { internal_note?: string | null } | null)?.internal_note ?? null, attachmentLines.join("\n")),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
+      signal: budget,
     });
 
     const onPage = new Set(page.entries.map((e) => e.key));
@@ -645,7 +653,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const { data: current } = await supabase.from("matters").select("id, merged_into").in("id", [...touched]);
       const pageTopic = ((current || []) as any[]).find((m) => m.id === matterId);
       const report = await rewriteSummaries(supabase, ((current || []) as any[]).map((m) => m.merged_into || m.id),
-        { notes: summaryNotes.map((note) => ({ matter_id: pageTopic?.merged_into || matterId, note })) });
+        { notes: summaryNotes.map((note) => ({ matter_id: pageTopic?.merged_into || matterId, note })), signal: budget });
       rewrote = report.written;
       if (rewrote.length && (moves.length > refiles.length || merges.length)) {
         done.push(`Rewrote the summary of ${rewrote.length} ${rewrote.length === 1 ? "topic" : "topics"} whose timeline changed.`);
@@ -659,6 +667,9 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         for (let i = done.length - 1; i >= 0; i--) if (done[i].includes(said)) done.splice(i, 1);
       }
       summaryUnfollowed = report.unfollowed.length > 0;
+      if (budget.aborted && (!rewrote.length || report.unfollowed.length)) {
+        left.push("Ran out of time (about 90 seconds of model work) before the summary rewrite and its check finished. Press Fix again to finish it.");
+      }
     }
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it; a whole-page issue is
     // resolved by a summary rewrite that follows its instruction.
@@ -699,7 +710,9 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     await finish(done.length || ((waiting.length || answered.length) && !left.length) ? "fixed" : "needs_work", note, updated);
   } catch (error) {
     console.error("[page-fix]", error instanceof Error ? error.message : error);
-    await finish("needs_work", "The agent hit an error and changed nothing. Try again, or fix it by hand.");
+    await finish("needs_work", budget.aborted
+      ? "The agent ran out of time (about 90 seconds of model work) before it could plan the fix, and changed nothing. Press Fix again, or fix it by hand."
+      : "The agent hit an error and changed nothing. Try again, or fix it by hand.");
   }
 }
 

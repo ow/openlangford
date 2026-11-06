@@ -66,12 +66,20 @@ export const STAGE_TIMEOUT_MS: Record<AiStage, number> = {
   followups: 20_000,
   rerank: 20_000,
   extraction: 120_000,
-  review: 90_000,
-  writing: 300_000,
-  verify: 90_000,
-  summary_check: 90_000,
+  // Review and writing calls: 30 s per attempt, one retry (STAGE_MAX_ATTEMPTS). Measured over 14 days a review call is
+  // ~3.5 s plus ~12 ms per output token (p95 14 s, longest sensible one ~32 s), while one stalled call ran 94 s on 118
+  // tokens. The statement-by-statement checks write longer answers, so they get 60 s.
+  review: 30_000,
+  writing: 30_000,
+  verify: 60_000,
+  summary_check: 60_000,
   note_check: 20_000,
   related_check: 30_000,
+};
+
+/** Attempts per call (including the first) for stages that shouldn't use the client's default of 3. */
+export const STAGE_MAX_ATTEMPTS: Partial<Record<AiStage, number>> = {
+  review: 2, writing: 2, verify: 2, summary_check: 2, note_check: 2, related_check: 2,
 };
 
 export const EMBEDDING_TIMEOUT_MS = 10_000;
@@ -81,6 +89,8 @@ export interface StageConfig {
   provider: AiProviderName;
   model: string;
   timeoutMs: number;
+  /** Attempts including the first; unset means the client's retry policy. */
+  maxAttempts?: number;
 }
 
 export interface AiConfig {
@@ -151,6 +161,7 @@ export function resolveAiConfig(env: AiEnv): AiConfig {
         pick(env, "OPENAI_MODEL") ||
         DEFAULT_MODEL,
       timeoutMs: STAGE_TIMEOUT_MS[stage],
+      maxAttempts: STAGE_MAX_ATTEMPTS[stage],
     };
   }
 

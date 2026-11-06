@@ -76,6 +76,14 @@ describe("resolveAiConfig", () => {
     expect([over.stages.note_check.model, over.stages.related_check.model, over.stages.verify.model]).toEqual(["n", "r", "v"]);
   });
 
+  it("gives review and writing calls a 30 s attempt and one retry", () => {
+    const cfg = resolveAiConfig({});
+    for (const stage of ["review", "writing"] as const) {
+      expect(cfg.stages[stage].timeoutMs).toBe(30_000);
+      expect(cfg.stages[stage].maxAttempts).toBe(2);
+    }
+  });
+
   it("flags non-openai providers instead of silently using them", () => {
     const cfg = resolveAiConfig({ OPENAI_API_KEY: "k", RERANK_AI_PROVIDER: "gemini" });
     expect(cfg.problems).toHaveLength(1);
@@ -177,6 +185,13 @@ describe("retry and timeout policy", () => {
       attempts: 3,
     });
     expect(generate).toHaveBeenCalledTimes(3);
+  });
+
+  it("makes one retry, not two, on a stage limited to two attempts", async () => {
+    const generate = vi.fn(async () => { throw new AiError("timeout", "slow"); });
+    const { ai } = client(fakeProvider({ generate }).provider, config());
+    await expect(ai.text({ stage: "review", prompt: "p" })).rejects.toMatchObject({ attempts: 2 });
+    expect(generate).toHaveBeenCalledTimes(2);
   });
 
   it("retries a stream that fails before output, but not after", async () => {

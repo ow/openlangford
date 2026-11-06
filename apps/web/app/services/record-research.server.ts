@@ -150,13 +150,13 @@ const StepSchema = z.object({
 });
 
 /** One research turn. A reply that doesn't parse is asked again. */
-async function nextStep(prompt: string): Promise<z.infer<typeof StepSchema>> {
+async function nextStep(prompt: string, signal?: AbortSignal): Promise<z.infer<typeof StepSchema>> {
   for (let attempt = 1; ; attempt++) {
     try {
-      const { data } = await getAiClient().json({ stage: "review", prompt, schema: StepSchema, schemaName: "record_research" });
+      const { data } = await getAiClient().json({ stage: "review", prompt, schema: StepSchema, schemaName: "record_research", signal });
       return data;
     } catch (error) {
-      if (attempt >= 3) throw error;
+      if (attempt >= 3 || signal?.aborted) throw error;
     }
   }
 }
@@ -170,7 +170,7 @@ export type ResearchFinding = { verdict: "supported" | "contradicted" | "not_fou
  * caller already knows. Bounded by `maxTurns` and by the size of what it has read (RESEARCH_BUDGET), never by cutting
  * a record.
  */
-export async function research(supabase: SupabaseClient, question: string, context: string, maxTurns = 10): Promise<ResearchFinding> {
+export async function research(supabase: SupabaseClient, question: string, context: string, maxTurns = 10, signal?: AbortSignal): Promise<ResearchFinding> {
   const log: string[] = [];
   let used = 0;
   for (let turn = 1; turn <= maxTurns + 1; turn++) {
@@ -189,7 +189,7 @@ WHAT IS ALREADY KNOWN:
 ${context}
 
 ${log.length ? `YOUR RESEARCH SO FAR:\n${log.join("\n\n")}` : "You have not searched yet."}`;
-    const data = await nextStep(prompt);
+    const data = await nextStep(prompt, signal);
     if (data.finding || !data.actions.length || last) {
       const f = data.finding ?? { verdict: "not_found" as const, quote: null, ref: null, explanation: data.thought };
       return { ...f, steps: turn };

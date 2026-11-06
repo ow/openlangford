@@ -25,7 +25,9 @@ const INPUT_BUDGET_CHARS = 1_000_000;
 const BATCH_SIZE = 8;
 const SAME_SITE_MAX_LOTS = 4;
 const KEY_SECTION = /purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial/i;
-const TIMEOUT_MS = 300_000;
+/** A write's output grows with the topic's timeline (one headline per step, ~12 ms a token), so its per-attempt timeout
+ * does too: the stage's 30 s, plus half a second a step, never over 90 s. */
+const writeTimeout = (batch: Loaded[]) => Math.min(90_000, 30_000 + 500 * batch.reduce((n, m) => n + m.history.length, 0));
 /** Python's \s, which also matches the separator controls \x1c-\x1f and \x85 (they turn up in OCR'd reports). */
 const SPACE = /[\s\x1c-\x1f\x85]+/g;
 
@@ -231,7 +233,7 @@ const promptFor = (batch: Loaded[]) => shared.prompt_intro + JSON.stringify(batc
 
 async function summarize(batch: Loaded[], signal?: AbortSignal): Promise<Map<number, Written>> {
   const { data } = await getAiClient().json({ stage: "writing", system: shared.system, prompt: promptFor(batch),
-    schema: MatterSummaries, schemaName: "MatterSummaries", timeoutMs: TIMEOUT_MS, signal });
+    schema: MatterSummaries, schemaName: "MatterSummaries", timeoutMs: writeTimeout(batch), signal });
   return new Map(data.matters.filter((m) => m.summary.trim()).map((m) => [m.id, m]));
 }
 
@@ -337,7 +339,7 @@ async function checkAll(batch: Loaded[], updates: Map<number, Update>, notes: Ma
   try {
     const { data } = await getAiClient().json({ stage: "summary_check", system: DEFAULT_SYSTEM,
       prompt: shared.check_prompt + (asked.size ? shared.check_notes_prompt : "") + JSON.stringify(payload),
-      schema: CombinedCheck, schemaName: "SummaryCheck", timeoutMs: TIMEOUT_MS, signal });
+      schema: CombinedCheck, schemaName: "SummaryCheck", signal });
     return { ...readVerdict(data, updates, asked), failed: false };
   } catch (error) {  // unchecked rather than unwritten
     console.error("[topic-summaries] check failed:", error instanceof Error ? error.message : error);
