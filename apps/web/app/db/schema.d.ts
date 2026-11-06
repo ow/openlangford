@@ -771,6 +771,7 @@ export interface Elections {
 export interface EmailEnqueueReceipts {
   attempts: Generated<number>;
   first_attempt_at: Generated<Timestamp>;
+  kind: Generated<string>;
   last_error: string | null;
   meeting_id: Int8;
   next_attempt_at: Generated<Timestamp>;
@@ -1658,6 +1659,10 @@ export interface TranscriptSegments {
 }
 
 export interface UserProfiles {
+  /**
+   * Email before a meeting when its agenda includes something this person follows. Needs email_alerts_enabled and consent too.
+   */
+  agenda_alerts_enabled: Generated<boolean>;
   created_at: Generated<Timestamp>;
   digest_enabled: Generated<boolean>;
   digest_frequency: Generated<DigestFrequency>;

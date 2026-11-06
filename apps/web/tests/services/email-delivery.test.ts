@@ -361,3 +361,64 @@ it("returns a retryable provider response when the database transport throws", a
   expect(response.status).toBe(503);
   expect(await response.text()).not.toContain("private transport details");
 });
+
+// ── Before-meeting agenda previews ──
+const preview = (over: Record<string, unknown> = {}) => ({
+  kind: "agenda_preview",
+  updated: false,
+  every_meeting: false,
+  meeting: { id: 2, slug: "2026-11-24-regular-council", title: "Regular Council", date: "2026-11-24", start_time: "19:00", venue: null, address: null },
+  items: [
+    { id: 21, title: "Application to rezone 953 Walfred Road", summary: "A proposal for 47 homes <b>near</b> the school.", category: "Housing", public_hearing: false, reasons: [{ type: "topic", label: "Housing" }] },
+    { id: 23, title: "Station Avenue homes", summary: null, category: "Land Use", public_hearing: true, reasons: [{ type: "nearby", label: "Station Avenue" }, { type: "keyword", label: "station avenue" }] },
+    { id: 24, title: "Parks budget", summary: "Money for two new parks.", category: "Finance", public_hearing: false, reasons: [{ type: "neighborhood", label: "Westhills" }] },
+  ],
+  item_ids: [21, 23, 24],
+  ...over,
+});
+it("renders an agenda preview: when and where, why each item is there, and how to have a say", () => {
+  const body = providerBody({ ...msg, subject: "Coming up at council: Regular Council, November 24", is_test: false, payload: preview() });
+  expect(body.subject).toBe("Coming up at council: Regular Council, November 24");
+  expect(body.html).toContain("Coming up at council");
+  expect(body.text).toContain("Tuesday, November 24, 2026 at 7 pm");
+  expect(body.text).toContain("Council Chambers, third floor of City Hall, 877 Goldstream Avenue");
+  expect(body.text).toContain("This agenda includes 3 things you follow.");
+  expect(body.html).toContain('href="https://openlangford.ca/meetings/2026-11-24-regular-council#item-21"');
+  expect(body.text).toContain("You follow Housing.");
+  expect(body.text).toContain("It is near Station Avenue, close to your saved place. It matches your saved search “station avenue”.");
+  expect(body.text).toContain("It is in Westhills, a neighbourhood you follow.");
+  // Public hearing: speak or write beforehand; planning items: write to planning; others: the feedback form.
+  expect(body.text).toContain("This is a public hearing. Anyone can speak at the meeting");
+  expect(body.text).toContain("The City's notice for the hearing gives the deadline");
+  expect(body.text).toContain("Write to Council before the meeting at planning@langford.ca");
+  expect(body.text).toContain("https://langford.ca/city-hall/council-committees/mayor-council/#feedback-form");
+  expect(body.html.match(/Have your say/g)).toHaveLength(3);
+  // Escaped, with the per-type off switch and the all-alerts unsubscribe.
+  expect(body.html).not.toContain("<b>near</b>");
+  expect(body.html).toContain("&lt;b&gt;near&lt;/b&gt;");
+  expect(body.text).toContain("turn off “Before meetings” in your settings: https://openlangford.ca/settings");
+  expect(body.text).toContain(`Unsubscribe from all council alert emails: https://openlangford.ca/email/unsubscribe/${lease}`);
+  expect(body.headers["List-Unsubscribe"]).toBe(`<https://openlangford.ca/email/unsubscribe/${lease}>`);
+  // No database words in what a resident reads.
+  expect(body.text).not.toMatch(/\bmatters?\b|agenda items?|\brecords?\b/i);
+});
+it("says when the agenda changed, handles every-meeting subscribers, and refuses an empty preview", () => {
+  const updated = providerBody({ ...msg, payload: preview({ updated: true, items: [{ id: 30, title: "Library hours", summary: null, category: "Community Services", public_hearing: false, reasons: [] }] }) });
+  expect(updated.text).toContain("The agenda has changed since our last email.");
+  expect(updated.text).toContain("Here is what is on the agenda.");
+  expect(updated.text).toContain("You asked for every council meeting.");
+  expect(updated.text).toContain("TEST EMAIL");
+  expect(providerBody({ ...msg, payload: preview({ meeting: { ...preview().meeting, start_time: "17:30", venue: "Langford Fire Hall" } }) }).text).toContain(
+    "at 5:30 pm\nLangford Fire Hall",
+  );
+  expect(() => providerBody({ ...msg, payload: preview({ items: [] }) })).toThrow("Invalid queued payload");
+});
+it("queues agenda previews through the agenda mode only", async () => {
+  const handler = createAlertHandler({ ...env, ALERT_DELIVERY_MODE: "live" }, rpc, send);
+  rpc.mockResolvedValue({ data: 2, error: null });
+  expect(await (await handler(request({ action: "enqueue", meeting_id: 7, mode: "agenda" }))).json()).toEqual({ queued: 2 });
+  expect(rpc).toHaveBeenCalledWith("enqueue_agenda_alert_emails", { p_meeting: 7, p_start_date: "2026-10-25", p_test_recipient: null });
+  await handler(request({ action: "enqueue", meeting_id: 7, mode: "digest" }));
+  expect(rpc).toHaveBeenLastCalledWith("enqueue_meeting_emails", { p_meeting: 7, p_start_date: "2026-10-25", p_test_recipient: null });
+  expect(send).not.toHaveBeenCalled();
+});

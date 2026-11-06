@@ -489,20 +489,20 @@ isOneToOne: false
                   ]
                 },"email_enqueue_receipts": {
                   Row: {
-                    "attempts": number,"first_attempt_at": string,"last_error": string | null,"meeting_id": number,"next_attempt_at": string,"state": string,"updated_at": string
+                    "attempts": number,"first_attempt_at": string,"kind": string,"last_error": string | null,"meeting_id": number,"next_attempt_at": string,"state": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "attempts"?: number,"first_attempt_at"?: string,"last_error"?: string | null,"meeting_id": number,"next_attempt_at"?: string,"state": string,"updated_at"?: string
+                    "attempts"?: number,"first_attempt_at"?: string,"kind"?: string,"last_error"?: string | null,"meeting_id": number,"next_attempt_at"?: string,"state": string,"updated_at"?: string
                   }
                   Update: {
-                    "attempts"?: number,"first_attempt_at"?: string,"last_error"?: string | null,"meeting_id"?: number,"next_attempt_at"?: string,"state"?: string,"updated_at"?: string
+                    "attempts"?: number,"first_attempt_at"?: string,"kind"?: string,"last_error"?: string | null,"meeting_id"?: number,"next_attempt_at"?: string,"state"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
       foreignKeyName: "email_enqueue_receipts_meeting_id_fkey"
       columns: ["meeting_id"]
-isOneToOne: true
+isOneToOne: false
       referencedRelation: "meetings"
       referencedColumns: ["id"]
     }
@@ -1511,14 +1511,14 @@ isOneToOne: false
                   ]
                 },"user_profiles": {
                   Row: {
-                    "created_at": string,"digest_enabled": boolean,"digest_frequency": Database["public"]['Enums']["digest_frequency"],"display_name": string | null,"email_alerts_consent_at": string | null,"email_alerts_consent_version": string | null,"email_alerts_enabled": boolean,"email_verified": boolean,"id": string,"location_label": string | null,"location_lat": number | null,"location_lng": number | null,"meta": NonNullable<Json>,"neighborhood": string | null,"notification_email": string | null,"onboarding_completed": boolean,"updated_at": string
+                    "agenda_alerts_enabled": boolean,"created_at": string,"digest_enabled": boolean,"digest_frequency": Database["public"]['Enums']["digest_frequency"],"display_name": string | null,"email_alerts_consent_at": string | null,"email_alerts_consent_version": string | null,"email_alerts_enabled": boolean,"email_verified": boolean,"id": string,"location_label": string | null,"location_lat": number | null,"location_lng": number | null,"meta": NonNullable<Json>,"neighborhood": string | null,"notification_email": string | null,"onboarding_completed": boolean,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"digest_enabled"?: boolean,"digest_frequency"?: Database["public"]['Enums']["digest_frequency"],"display_name"?: string | null,"email_alerts_consent_at"?: string | null,"email_alerts_consent_version"?: string | null,"email_alerts_enabled"?: boolean,"email_verified"?: boolean,"id": string,"location_label"?: string | null,"location_lat"?: number | null,"location_lng"?: number | null,"meta"?: NonNullable<Json>,"neighborhood"?: string | null,"notification_email"?: string | null,"onboarding_completed"?: boolean,"updated_at"?: string
+                    "agenda_alerts_enabled"?: boolean,"created_at"?: string,"digest_enabled"?: boolean,"digest_frequency"?: Database["public"]['Enums']["digest_frequency"],"display_name"?: string | null,"email_alerts_consent_at"?: string | null,"email_alerts_consent_version"?: string | null,"email_alerts_enabled"?: boolean,"email_verified"?: boolean,"id": string,"location_label"?: string | null,"location_lat"?: number | null,"location_lng"?: number | null,"meta"?: NonNullable<Json>,"neighborhood"?: string | null,"notification_email"?: string | null,"onboarding_completed"?: boolean,"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"digest_enabled"?: boolean,"digest_frequency"?: Database["public"]['Enums']["digest_frequency"],"display_name"?: string | null,"email_alerts_consent_at"?: string | null,"email_alerts_consent_version"?: string | null,"email_alerts_enabled"?: boolean,"email_verified"?: boolean,"id"?: string,"location_label"?: string | null,"location_lat"?: number | null,"location_lng"?: number | null,"meta"?: NonNullable<Json>,"neighborhood"?: string | null,"notification_email"?: string | null,"onboarding_completed"?: boolean,"updated_at"?: string
+                    "agenda_alerts_enabled"?: boolean,"created_at"?: string,"digest_enabled"?: boolean,"digest_frequency"?: Database["public"]['Enums']["digest_frequency"],"display_name"?: string | null,"email_alerts_consent_at"?: string | null,"email_alerts_consent_version"?: string | null,"email_alerts_enabled"?: boolean,"email_verified"?: boolean,"id"?: string,"location_label"?: string | null,"location_lat"?: number | null,"location_lng"?: number | null,"meta"?: NonNullable<Json>,"neighborhood"?: string | null,"notification_email"?: string | null,"onboarding_completed"?: boolean,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -1651,6 +1651,11 @@ isOneToOne: false
               "by_model": Json,"calls": number,"failures": number,"input_tokens": number,"output_tokens": number,"p50_latency_ms": number,"p95_latency_ms": number,"source": string,"stage": string
             }[]
                            },
+"alert_subscription_matches":
+{ Args: { "p_meeting": number }; Returns: {
+              "agenda_item_id": number,"match_label": string,"match_type": string,"subscription_id": number,"user_id": string
+            }[]
+                           },
 "anonymize_email_messages":
 { Args: { "p_ids": (string)[] }; Returns: number
                            },
@@ -1668,6 +1673,9 @@ isOneToOne: false
                            },
 "apply_transcript_identity_evidence":
 { Args: { "p_evidence": Json,"p_expected": Json,"p_input_canonical_json": string,"p_input_sha256": string,"p_person_id": number,"p_segment_id": number,"p_source_run": Json,"p_speaker_name": string,"p_validator_sha256": string,"p_validator_version": string }; Returns: Json
+                           },
+"build_agenda_preview":
+{ Args: { "p_meeting": number,"p_user": string }; Returns: Json
                            },
 "build_meeting_digest":
 { Args: { "target_meeting_id": number }; Returns: Json
@@ -1764,6 +1772,9 @@ isOneToOne: false
                            },
 "email_distance_m":
 { Args: { "lat1": number,"lng1": number,"location": Json }; Returns: number
+                           },
+"enqueue_agenda_alert_emails":
+{ Args: { "p_meeting": number,"p_start_date": string,"p_test_recipient"?: string }; Returns: number
                            },
 "enqueue_meeting_emails":
 { Args: { "p_meeting": number,"p_start_date": string,"p_test_recipient"?: string }; Returns: number

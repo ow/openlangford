@@ -1,11 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   MAX_ENQUEUE_CALLS_PER_RUN,
+  agendaWindow,
   candidateWindow,
   classifyResponse,
+  enqueueAgendaAlerts,
   enqueueEnabled,
   enqueueMeetingEmails,
+  isAgendaCandidate,
   isCandidate,
+  type AgendaCandidate,
   type CandidateMeeting,
   type Receipt,
 } from "../../workers/email-enqueue";
@@ -34,24 +38,30 @@ function meeting(id: number, over: Partial<CandidateMeeting> = {}): CandidateMee
 
 /** Minimal chainable fake of the Supabase client. */
 function fakeDb(opts: {
-  meetings?: CandidateMeeting[];
+  meetings?: Array<CandidateMeeting | AgendaCandidate>;
   receipts?: Receipt[] | "missing";
   meetingsError?: boolean;
 }) {
   const saved: Receipt[] = [];
   const filters: Array<[string, ...unknown[]]> = [];
+  const receiptFilters: Array<[string, ...unknown[]]> = [];
+  const conflicts: unknown[] = [];
   const db = {
     saved,
     filters,
+    receiptFilters,
+    conflicts,
     from(table: string) {
       const chain: any = {};
       for (const m of ["select", "eq", "in", "or", "gte", "lte", "order", "limit"])
         chain[m] = (...args: unknown[]) => {
           if (table === "meetings") filters.push([m, ...args]);
+          else receiptFilters.push([m, ...args]);
           return chain;
         };
-      chain.upsert = async (row: Receipt) => {
+      chain.upsert = async (row: Receipt, options: unknown) => {
         saved.push(row);
+        conflicts.push(options);
         return { error: null };
       };
       chain.then = (resolve: (v: unknown) => void) => {
@@ -224,5 +234,97 @@ describe("per-run bound and missing receipts table", () => {
     expect(result.receipts).toBe(false);
     expect(fetcher).toHaveBeenCalledTimes(2);
     expect(db.saved).toEqual([]);
+  });
+});
+
+describe("before-meeting agenda previews", () => {
+  const upcoming = (id: number, over: Partial<AgendaCandidate> = {}): AgendaCandidate => ({
+    id,
+    meeting_date: "2026-11-17",
+    status: "Planned",
+    has_agenda: true,
+    updated_at: "2026-11-09T12:00:00Z",
+    municipalities: { slug: "langford" },
+    ...over,
+  });
+
+  it("looks from tomorrow to two weeks ahead, never before the start date", () => {
+    expect(agendaWindow("2026-11-01", NOW)).toEqual({ from: "2026-11-11", to: "2026-11-24" });
+    expect(agendaWindow("2026-11-20", NOW)).toEqual({ from: "2026-11-20", to: "2026-11-24" });
+    expect(agendaWindow("2026-12-01", NOW)).toBeNull();
+  });
+
+  it("accepts only settled, upcoming, uncancelled meetings with an agenda", () => {
+    const w = { from: "2026-11-11", to: "2026-11-24" };
+    expect(isAgendaCandidate(upcoming(1), w, NOW)).toBe(true);
+    expect(isAgendaCandidate(upcoming(1, { status: null }), w, NOW)).toBe(true);
+    expect(isAgendaCandidate(upcoming(1, { status: "Cancelled" }), w, NOW)).toBe(false);
+    expect(isAgendaCandidate(upcoming(1, { status: "cancelled" }), w, NOW)).toBe(false);
+    expect(isAgendaCandidate(upcoming(1, { has_agenda: false }), w, NOW)).toBe(false);
+    expect(isAgendaCandidate(upcoming(1, { meeting_date: "2026-11-10" }), w, NOW)).toBe(false);
+    expect(isAgendaCandidate(upcoming(1, { meeting_date: "2026-11-25" }), w, NOW)).toBe(false);
+    expect(isAgendaCandidate(upcoming(1, { municipalities: { slug: "view-royal" } }), w, NOW)).toBe(false);
+    expect(isAgendaCandidate(upcoming(1, { updated_at: "2026-11-10T17:45:00Z" }), w, NOW)).toBe(false);
+  });
+
+  it("asks the Edge function in agenda mode and keeps its own receipts", async () => {
+    const db = fakeDb({ meetings: [upcoming(1), upcoming(2, { status: "Cancelled" }), meeting(3)] });
+    const fetcher = vi.fn().mockResolvedValue(json({ queued: 2 }));
+    const result = await enqueueAgendaAlerts(ENV, db, fetcher, () => NOW);
+    expect(db.filters).toEqual(
+      expect.arrayContaining([
+        ["eq", "municipalities.slug", "langford"],
+        ["eq", "has_agenda", true],
+        ["gte", "meeting_date", "2026-11-11"],
+        ["lte", "meeting_date", "2026-11-24"],
+        ["lte", "updated_at", "2026-11-10T17:30:00.000Z"],
+      ]),
+    );
+    expect(result.candidates).toBe(1);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(fetcher.mock.calls[0][1].body).toBe('{"action":"enqueue","meeting_id":1,"mode":"agenda"}');
+    expect(db.receiptFilters).toContainEqual(["eq", "kind", "agenda"]);
+    expect(db.saved[0]).toMatchObject({ meeting_id: 1, kind: "agenda", state: "done" });
+    expect(db.conflicts[0]).toEqual({ onConflict: "meeting_id,kind" });
+  });
+
+  it("asks again once the meeting changed after its last receipt, and not otherwise", async () => {
+    const done = (id: number, at: string): Receipt => ({
+      meeting_id: id, kind: "agenda", state: "done", attempts: 1, first_attempt_at: at, next_attempt_at: at, last_error: null, updated_at: at,
+    });
+    const db = fakeDb({
+      meetings: [upcoming(1, { updated_at: "2026-11-10T09:00:00Z" }), upcoming(2, { updated_at: "2026-11-10T09:00:00Z" })],
+      receipts: [done(1, "2026-11-10T08:00:00Z"), done(2, "2026-11-10T10:00:00Z")],
+    });
+    const fetcher = vi.fn().mockResolvedValue(json({ queued: 1 }));
+    await enqueueAgendaAlerts(ENV, db, fetcher, () => NOW);
+    expect(fetcher.mock.calls.map(([, i]) => JSON.parse(i.body as string).meeting_id)).toEqual([1]);
+    expect(db.saved[0]).toMatchObject({ meeting_id: 1, state: "done", attempts: 1 });
+  });
+
+  it("is off with the same gates as the digests, and digests keep their own receipts and request body", async () => {
+    const db = { from: vi.fn() };
+    const fetcher = vi.fn();
+    expect((await enqueueAgendaAlerts({ ...ENV, EMAIL_ALERT_DISPATCH_ENABLED: "false" }, db, fetcher, () => NOW)).ran).toBe(false);
+    expect(db.from).not.toHaveBeenCalled();
+    const digests = fakeDb({ meetings: [meeting(1)] });
+    await enqueueMeetingEmails(ENV, digests, vi.fn().mockResolvedValue(json({ queued: 0 })), () => NOW);
+    expect(digests.receiptFilters).toContainEqual(["eq", "kind", "digest"]);
+    expect(digests.saved[0]).toMatchObject({ kind: "digest" });
+  });
+
+  it("treats receipts without the kind column (migration not yet applied) as absent", async () => {
+    const db = fakeDb({ meetings: [upcoming(1)] });
+    const from = db.from.bind(db);
+    (db as any).from = (table: string) => {
+      const chain = from(table);
+      if (table !== "meetings")
+        chain.then = (resolve: (v: unknown) => void) => resolve({ data: null, error: { code: "42703", message: "column does not exist" } });
+      return chain;
+    };
+    const fetcher = vi.fn().mockResolvedValue(json({ queued: 0 }));
+    const result = await enqueueAgendaAlerts(ENV, db, fetcher, () => NOW);
+    expect(result.receipts).toBe(false);
+    expect(fetcher).toHaveBeenCalledTimes(1);
   });
 });

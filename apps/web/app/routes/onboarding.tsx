@@ -81,6 +81,8 @@ export async function action({ request }: Route.ActionArgs) {
   const proximityRadius = Number(formData.get("proximity_radius") || 1000);
   const alertsAvailable = emailAlertsAvailable();
   const digestEnabled = alertsAvailable && formData.get("digest_enabled") === "true";
+  // Before-meeting agenda emails default on; they only go out while email alerts are on.
+  const agendaAlertsEnabled = formData.get("agenda_alerts_enabled") !== "false";
 
   try {
     // 1. Subscribe to selected topic categories
@@ -127,7 +129,12 @@ export async function action({ request }: Route.ActionArgs) {
     await upsertUserProfile(supabase, user.id, {
       ...profileUpdate,
       // Disabled form controls are omitted. Do not erase an existing opt-in/frequency.
-      ...(alertsAvailable ? { digest_enabled: digestEnabled, ...(digestEnabled ? { digest_frequency: "each_meeting" as const } : {}) } : {}),
+      ...(alertsAvailable
+        ? {
+            digest_enabled: digestEnabled,
+            ...(digestEnabled ? { digest_frequency: "each_meeting" as const, agenda_alerts_enabled: agendaAlertsEnabled } : {}),
+          }
+        : {}),
       onboarding_completed: !alertsAvailable,
     });
 
@@ -412,11 +419,15 @@ function LocationStep({
 function DigestStep({
   digestEnabled,
   setDigestEnabled,
+  agendaAlertsEnabled,
+  setAgendaAlertsEnabled,
   alertsAvailable,
 }: {
   alertsAvailable: boolean;
   digestEnabled: boolean;
   setDigestEnabled: (e: boolean) => void;
+  agendaAlertsEnabled: boolean;
+  setAgendaAlertsEnabled: (e: boolean) => void;
 }) {
   return (
     <div className="space-y-6">
@@ -426,7 +437,7 @@ function DigestStep({
         </h2>
         <p className="text-sm text-zinc-500">
           {alertsAvailable
-            ? "A short email after each council meeting, so you can keep up without watching hours of video."
+            ? "A short email after each council meeting, so you can keep up without watching hours of video, and a heads-up before a meeting that touches what you follow."
             : "Email digests are not available yet. You can finish setup without turning them on."}
         </p>
       </div>
@@ -470,6 +481,30 @@ function DigestStep({
           </div>
         </div>
       </button>
+
+      <label
+        className={cn(
+          "flex items-start gap-3 rounded-xl border border-zinc-200 p-4",
+          alertsAvailable && digestEnabled ? "cursor-pointer" : "opacity-60",
+        )}
+      >
+        <input
+          type="checkbox"
+          checked={agendaAlertsEnabled}
+          disabled={!alertsAvailable || !digestEnabled}
+          onChange={(event) => setAgendaAlertsEnabled(event.target.checked)}
+          className="mt-0.5 h-4 w-4 rounded border-zinc-300 accent-brand-600"
+        />
+        <span className="space-y-0.5">
+          <span className="block font-semibold text-zinc-900">Before meetings</span>
+          <span className="block text-sm text-zinc-600 leading-relaxed">
+            Email me when a meeting agenda includes something I follow, before the meeting, so I can write to council or speak while it still matters.
+          </span>
+          {alertsAvailable && !digestEnabled && (
+            <span className="block text-xs text-zinc-500">Turn on email above to get these.</span>
+          )}
+        </span>
+      </label>
     </div>
   );
 }
@@ -487,6 +522,7 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
   const [placeChoice, setPlaceChoice] = useState<PlaceChoice>({ place: null, lookup: "", radius: 1000, cleared: false });
   const [neighborhood, setNeighborhood] = useState("");
   const [digestEnabled, setDigestEnabled] = useState(profile?.digest_enabled ?? false);
+  const [agendaAlertsEnabled, setAgendaAlertsEnabled] = useState(profile?.agenda_alerts_enabled ?? true);
 
   function handleSubmit() {
     const form = new FormData();
@@ -512,6 +548,7 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
 
     // Digest
     form.set("digest_enabled", digestEnabled ? "true" : "false");
+    form.set("agenda_alerts_enabled", agendaAlertsEnabled ? "true" : "false");
 
     submit(form, { method: "post" });
   }
@@ -563,6 +600,8 @@ export default function Onboarding({ loaderData, actionData }: Route.ComponentPr
             <DigestStep
               digestEnabled={digestEnabled}
               setDigestEnabled={setDigestEnabled}
+              agendaAlertsEnabled={agendaAlertsEnabled}
+              setAgendaAlertsEnabled={setAgendaAlertsEnabled}
               alertsAvailable={alertsAvailable}
             />
           )}

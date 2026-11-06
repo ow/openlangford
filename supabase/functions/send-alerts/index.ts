@@ -1,4 +1,4 @@
-/** Server-key-only per-meeting queue/dispatch. Default mode is off. No pre-meeting/weekly sends. */
+/** Server-key-only per-meeting queue/dispatch: post-meeting digests and before-meeting agenda previews (mode "agenda"). Default mode is off. No weekly sends. */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.90.1";
 import { createAlertHandler } from "../_shared/alerts.ts";
 const client = createClient(

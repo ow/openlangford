@@ -33,6 +33,102 @@ export function escapeHtml(value: unknown): string {
       ]!,
   );
 }
+// Participation wording for before-meeting emails, from the City's own pages and notices (checked 2026-11-06):
+//   https://langford.ca/meetings/ ("Meetings take place in Langford Council Chambers on the third floor of City Hall,
+//     877 Goldstream Avenue"; participants can join via Zoom; public hearing letters become part of the public record)
+//   https://langford.ca/wp-content/uploads/2023/02/Z22-0023-PH-Notice-20230306.pdf (public hearing: email
+//     planning@langford.ca with name and civic address; by noon the Tuesday before to be in the agenda, by 3 pm on
+//     the day to be circulated to Council; speak by phone, Zoom or in person; submissions are published)
+//   https://langford.ca/wp-content/uploads/2026/02/Notice-of-Sustainable-Development-Advisory-Committee-116-1064-Gala-Court-TUP26-0002.pdf
+//     (other items: write to planning@langford.ca with first initial, last name and city; circulated to Council
+//     before the meeting; speak during the "Public Participation" section, by phone, Zoom or in person)
+//   https://langford.ca/city-hall/council-committees/mayor-council/#feedback-form (writing to Council on anything else)
+export const CITY_HALL = "Council Chambers, third floor of City Hall, 877 Goldstream Avenue";
+export const MEETINGS_URL = "https://langford.ca/meetings/";
+export const COUNCIL_FEEDBACK_URL = "https://langford.ca/city-hall/council-committees/mayor-council/#feedback-form";
+export const PLANNING_EMAIL = "planning@langford.ca";
+const PLANNING_CATEGORIES = /land use|housing|planning|development|zoning|public hearing/i;
+
+/** The "Have your say" lines for one agenda item. */
+export function haveYourSay(item: { public_hearing?: boolean; category?: string | null }) {
+  if (item.public_hearing)
+    return [
+      "This is a public hearing. Anyone can speak at the meeting, in person at City Hall or by phone or Zoom.",
+      `You can also write beforehand to ${PLANNING_EMAIL} with your name and address. The City's notice for the hearing gives the deadline; letters sent the day before are usually in time.`,
+      "Letters are published with your name and address.",
+    ];
+  const write = PLANNING_CATEGORIES.test(item.category ?? "")
+    ? `Write to Council before the meeting at ${PLANNING_EMAIL}, with your first initial, last name and the city you live in. The City shares letters with Council before the meeting.`
+    : `Write to Council before the meeting with the City's feedback form: ${COUNCIL_FEEDBACK_URL}`;
+  return [write, "You can also speak during the public participation part of the meeting, in person, by phone or on Zoom."];
+}
+
+const REASON_TEXT: Record<string, ((label: string) => string) | undefined> = {
+  topic: (l) => `You follow ${l}.`,
+  matter: (l) => `You follow ${l}.`,
+  keyword: (l) => `It matches your saved search “${l}”.`,
+  neighborhood: (l) => `It is in ${l}, a neighbourhood you follow.`,
+  nearby: (l) => (l ? `It is near ${l}, close to your saved place.` : "It is close to your saved place."),
+};
+/** One line saying why this item is in the email. */
+export function whyLine(reasons: Array<{ type?: string; label?: string | null }> | undefined) {
+  const lines = (Array.isArray(reasons) ? reasons : [])
+    .map((r) => {
+      const label = String(r?.label ?? "").trim();
+      const say = REASON_TEXT[String(r?.type)];
+      return say && (label || r?.type === "nearby") ? say(label) : null;
+    })
+    .filter((x): x is string => !!x);
+  return lines.length ? [...new Set(lines)].join(" ") : "You asked for every council meeting.";
+}
+
+/** "Monday, November 24, 2026 at 7 pm" from the stored date and 24-hour start time. */
+export function meetingWhen(date: unknown, startTime: unknown) {
+  const day = /^\d{4}-\d{2}-\d{2}$/.test(String(date))
+    ? new Date(`${date}T12:00:00Z`).toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })
+    : String(date ?? "");
+  const match = /^(\d{1,2}):(\d{2})/.exec(String(startTime ?? ""));
+  if (!match) return day;
+  const hour = Number(match[1]);
+  const minutes = match[2] === "00" ? "" : `:${match[2]}`;
+  return `${day} at ${hour % 12 || 12}${minutes} ${hour < 12 ? "am" : "pm"}`;
+}
+
+function agendaPreviewBody(message: Message, meeting: any, unsubscribe: string) {
+  const meetingUrl = `${SITE_URL}/meetings/${encodeURIComponent(meeting.slug || String(meeting.id))}`;
+  const items = (Array.isArray(message.payload.items) ? message.payload.items : [])
+    .filter((i: any) => i && typeof i.title === "string" && Number.isSafeInteger(i.id))
+    .slice(0, 20);
+  if (!items.length) throw Error("Invalid queued payload");
+  const when = meetingWhen(meeting.date, meeting.start_time);
+  const where = [meeting.venue, meeting.address].filter((x: unknown) => typeof x === "string" && x.trim()).join(", ") || CITY_HALL;
+  const matched = items.filter((i: any) => Array.isArray(i.reasons) && i.reasons.length).length;
+  const intro = [
+    message.payload.updated ? "The agenda has changed since our last email. Here is the updated list." : null,
+    matched === 0
+      ? "Here is what is on the agenda."
+      : matched === 1
+        ? "This agenda includes something you follow."
+        : `This agenda includes ${matched} things you follow.`,
+  ].filter(Boolean).join(" ");
+  const itemUrl = (i: any) => `${meetingUrl}#item-${i.id}`;
+  const settings = `${SITE_URL}/settings`;
+  const why = "You get this because you follow topics or places on Open Langford.";
+  const onlyThese = "To stop only these before-meeting emails, turn off “Before meetings” in your settings";
+  const text = `${message.is_test ? "TEST EMAIL\n\n" : ""}Open Langford\nComing up at council\n${meeting.title}\n${when}\n${where}\n\n${intro}\n\n${items
+    .map((i: any) => `${i.title}\n${whyLine(i.reasons)}\n${i.summary ? `${String(i.summary).slice(0, 600)}\n` : ""}Have your say: ${haveYourSay(i).join(" ")}\n${itemUrl(i)}`)
+    .join("\n\n")}\n\nThe agenda and Zoom details: ${MEETINGS_URL}\nSee the meeting on Open Langford: ${meetingUrl}\n\n${why} ${onlyThese}: ${settings}\nUnsubscribe from all council alert emails: ${unsubscribe}`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(message.subject)}</title></head><body style="font-family:system-ui,sans-serif;color:#18181b;max-width:600px;margin:auto;padding:24px;line-height:1.6"><p style="color:#175c57;font-weight:700">Open Langford${message.is_test ? " · Test email" : ""}</p><h1 style="font-size:24px;margin-bottom:4px">Coming up at council</h1><p style="margin-top:0"><strong>${escapeHtml(meeting.title)}</strong><br>${escapeHtml(when)}<br>${escapeHtml(where)}</p><p>${escapeHtml(intro)}</p>${items
+    .map(
+      (i: any) =>
+        `<div style="border-top:1px solid #e4e4e7;padding-top:12px;margin-top:16px"><h2 style="font-size:18px;margin:0 0 4px"><a href="${itemUrl(i)}" style="color:#18181b">${escapeHtml(i.title)}</a></h2><p style="margin:0 0 8px;color:#52525b;font-size:14px">${escapeHtml(whyLine(i.reasons))}</p>${i.summary ? `<p style="margin:0 0 8px">${escapeHtml(String(i.summary).slice(0, 600))}</p>` : ""}<div style="background:#f0f7f6;border-radius:8px;padding:10px 12px"><p style="margin:0 0 4px;font-weight:700">Have your say</p>${haveYourSay(i)
+          .map((line) => `<p style="margin:0 0 4px">${escapeHtml(line)}</p>`)
+          .join("")}</div></div>`,
+    )
+    .join("")}<p style="margin-top:20px"><a href="${MEETINGS_URL}">The agenda and Zoom details on langford.ca</a> · <a href="${meetingUrl}">See the meeting on Open Langford</a></p><hr><p style="font-size:13px">${escapeHtml(why)} ${escapeHtml(onlyThese)}: <a href="${settings}">Settings</a> · <a href="${unsubscribe}">Unsubscribe from all council alert emails</a></p><p style="font-size:12px">Open Langford is an independent civic information project, not the City of Langford.</p></body></html>`;
+  return { text, html };
+}
+
 export function providerBody(message: Message) {
   const meeting = message.payload?.meeting;
   if (
@@ -44,17 +140,22 @@ export function providerBody(message: Message) {
     throw Error("Invalid queued payload");
   const url = `${SITE_URL}/meetings/${encodeURIComponent(meeting.slug || String(meeting.id))}`;
   const unsubscribe = `${SITE_URL}/email/unsubscribe/${message.unsubscribe_token}`;
+  if (message.payload.kind === "agenda_preview")
+    return envelope(message, unsubscribe, agendaPreviewBody(message, meeting, unsubscribe));
   const decisions = Array.isArray(message.payload.decisions)
     ? message.payload.decisions.slice(0, 12)
     : [];
   const text = `${message.is_test ? "TEST EMAIL\n\n" : ""}Open Langford\n${meeting.title}\n${meeting.date}\n\n${String(meeting.summary ?? "").slice(0, 5000)}\n\n${decisions.map((d: any) => `${d.title ?? "Council decision"}: ${d.summary ?? ""} (${d.result ?? "Result not recorded"})`).join("\n\n")}\n\nRead the meeting: ${url}\n\nYou opted into per-meeting council updates. Manage preferences: ${SITE_URL}/settings\nUnsubscribe from all council alert emails: ${unsubscribe}`;
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(message.subject)}</title></head><body style="font-family:system-ui,sans-serif;color:#18181b;max-width:600px;margin:auto;padding:24px;line-height:1.6"><p style="color:#175c57;font-weight:700">Open Langford${message.is_test ? " · Test email" : ""}</p><h1 style="font-size:24px">${escapeHtml(meeting.title)}</h1><p>${escapeHtml(meeting.date)}</p><p style="white-space:pre-line">${escapeHtml(String(meeting.summary ?? "").slice(0, 5000))}</p>${decisions.map((d: any) => `<h2 style="font-size:18px">${escapeHtml(d.title || "Council decision")}</h2><p>${escapeHtml(d.summary)}</p><p><strong>${escapeHtml(d.result || "Result not recorded")}</strong></p>`).join("")}<p><a href="${url}">Read the meeting and source records</a></p><hr><p style="font-size:13px">You opted into per-meeting council updates. <a href="${SITE_URL}/settings">Manage preferences</a> · <a href="${unsubscribe}">Unsubscribe from all council alert emails</a></p><p style="font-size:12px">Open Langford is an independent civic information project, not the City of Langford.</p></body></html>`;
+  return envelope(message, unsubscribe, { text, html });
+}
+function envelope(message: Message, unsubscribe: string, body: { text: string; html: string }) {
   return {
     from: FROM_EMAIL,
     to: [message.recipient],
     subject: message.subject,
-    text,
-    html,
+    text: body.text,
+    html: body.html,
     headers: {
       "List-Unsubscribe": `<${unsubscribe}>`,
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
@@ -300,7 +401,7 @@ export function createAlertHandler(
         !["enqueue", "test"].includes(body.action) ||
         !Number.isSafeInteger(body.meeting_id) ||
         body.meeting_id <= 0 ||
-        (body.mode && body.mode !== "digest")
+        (body.mode && body.mode !== "digest" && body.mode !== "agenda")
       )
         return reply({ error: "Invalid per-meeting request" }, 400);
       if ((body.action === "test") !== (config.mode === "test"))
@@ -308,7 +409,8 @@ export function createAlertHandler(
           skipped: true,
           reason: "Delivery mode prevents this enqueue",
         });
-      const queued = await call(rpc, "enqueue_meeting_emails", {
+      // "agenda": before-meeting previews of an upcoming agenda; otherwise the post-meeting digest.
+      const queued = await call(rpc, body.mode === "agenda" ? "enqueue_agenda_alert_emails" : "enqueue_meeting_emails", {
         p_meeting: body.meeting_id,
         p_start_date: config.date,
         p_test_recipient: config.recipient,

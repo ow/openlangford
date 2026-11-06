@@ -111,6 +111,7 @@ export async function action({ request }: Route.ActionArgs) {
       ...(emailAlertsAvailable() ? {
         ...(formData.get("digest_frequency") === "each_meeting" ? { digest_frequency: "each_meeting" as const } : {}),
         digest_enabled,
+        agenda_alerts_enabled: formData.get("agenda_alerts_enabled") === "on",
       } : {}),
     });
 
@@ -554,7 +555,29 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
                   <input type="checkbox" name="email_alerts_enabled" disabled={!alertsAvailable} defaultChecked={profile?.email_alerts_enabled ?? false} />
                   <span>Email me per-meeting council updates for my saved interests. I can unsubscribe at any time.</span>
                 </label>
-                <p className={HINT}>Alerts use your confirmed sign-in email. A different saved notification address is not eligible. Weekly and pre-meeting emails are not available.</p>
+                <p className={HINT}>Alerts use your confirmed sign-in email. A different saved notification address is not eligible. Weekly emails are not available.</p>
+                <h3 className="text-sm font-semibold text-zinc-900">
+                  Before meetings
+                </h3>
+                <label className="flex cursor-pointer items-start gap-3">
+                  <input
+                    type="checkbox"
+                    name="agenda_alerts_enabled"
+                    disabled={!alertsAvailable}
+                    defaultChecked={profile?.agenda_alerts_enabled ?? true}
+                    className="mt-0.5 h-4 w-4 rounded border-zinc-300 accent-brand-600"
+                  />
+                  <span className="space-y-0.5">
+                    <span className="block text-sm text-zinc-800">
+                      Email me when a meeting agenda includes something I follow, before the meeting
+                    </span>
+                    <span className={cn(HINT, "block")}>
+                      {alertsAvailable
+                        ? "So you can write to council or speak at the meeting while it still matters. Only sent when email updates above are on."
+                        : "Your saved choice is kept, but email delivery is not active."}
+                    </span>
+                  </span>
+                </label>
                 <h3 className="text-sm font-semibold text-zinc-900">
                   Meeting digest
                 </h3>

@@ -38,6 +38,7 @@ export async function upsertUserProfile(
       | "notification_email"
       | "digest_frequency"
       | "digest_enabled"
+      | "agenda_alerts_enabled"
       | "onboarding_completed"
     >
   >,
