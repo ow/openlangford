@@ -23,6 +23,7 @@ import { PublicNoticesSection } from "../components/home/public-notices-section"
 import { ogImageUrl } from "../lib/og";
 import { pageMeta } from "../lib/page-meta";
 import { websiteGraph } from "../lib/structured-data";
+import { PRIVATE } from "../lib/cache-policy";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const municipality = (data as any)?.municipality as Municipality | undefined;
@@ -47,7 +48,7 @@ export async function loader({ request }: { request: Request }) {
     const onboardingComplete = await onboardingNotice.parse(request.headers.get("Cookie")) === "complete";
     if (onboardingComplete) {
       headers.append("Set-Cookie", await onboardingNotice.serialize("", { maxAge: 0 }));
-      headers.set("Cache-Control", "private, no-store");
+      headers.set("Cache-Control", PRIVATE);
     }
     // getMunicipality call is intentionally duplicated from root loader.
     // The home loader needs rss_url at server time for getPublicNotices(),

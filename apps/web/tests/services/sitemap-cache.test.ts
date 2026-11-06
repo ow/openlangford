@@ -46,11 +46,12 @@ it("reuses the complete public catalog across crawls, separates sections, and re
   expect(warm.headers.get("X-Public-Data-Cache")).toBe("HIT");
   expect(await (await read("bylaws")).json()).toMatchObject([{ path: "/bylaws/public-bylaw" }]);
   corrected = true; vi.advanceTimersByTime(3599_000);
-  expect((await read()).headers.get("X-Public-Data-Cache")).toBe("HIT");
+  // The sitemap is fresh; the municipality row it reads (5 minute TTL) is served stale while it refreshes.
+  expect((await read()).headers.get("X-Public-Data-Cache")).toBe("HIT,STALE");
   vi.advanceTimersByTime(1001);
   // Expired: served once more while the corrected list is built in the background.
   const stale = await read();
-  expect(stale.headers.get("X-Public-Data-Cache")).toBe("STALE"); expect((await stale.json() as any[]).at(-1).lastmod).toBe("2020-01-02");
+  expect(stale.headers.get("X-Public-Data-Cache")).toContain("STALE"); expect((await stale.json() as any[]).at(-1).lastmod).toBe("2020-01-02");
   expect((await (await read()).json() as any[]).at(-1).lastmod).toBe("2026-10-22");
   expect((await read("documents", undefined, "correction-version")).headers.get("X-Public-Data-Cache")).toBe("MISS");
 });

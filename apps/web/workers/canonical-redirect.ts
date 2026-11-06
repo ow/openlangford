@@ -1,3 +1,5 @@
+import { PUBLIC_DAY } from "../app/lib/cache-policy";
+
 /**
  * One URL per page for search engines and shared links: www.openlangford.ca → openlangford.ca and
  * "/meetings/" → "/meetings" (same query), as permanent redirects. GET/HEAD only, so a form post
@@ -14,5 +16,5 @@ export function canonicalRedirect(request: Request, url: URL): Response | null {
     target.protocol = "https:";
   }
   if (slash) target.pathname = url.pathname.replace(/\/+$/, "") || "/";
-  return new Response(null, { status: 301, headers: { Location: target.toString(), "Cache-Control": "public, max-age=86400" } });
+  return new Response(null, { status: 301, headers: { Location: target.toString(), "Cache-Control": PUBLIC_DAY } });
 }

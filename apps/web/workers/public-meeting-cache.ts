@@ -5,6 +5,7 @@ import { parseMeetingTextRequest } from "../app/lib/meeting-text-request";
 
 import { historicalPublicDate, HISTORICAL_PUBLIC_TTL, RECENT_PUBLIC_TTL } from "../app/lib/public-content-cache";
 import { MAX_STALE_SECONDS, stampIsCurrent } from "../app/services/public-data-cache.server";
+import { PRIVATE, publicMaxAge } from "../app/lib/cache-policy";
 
 // Entries are keyed by deployment and URL, and carry the database's last-change stamp
 // (workers/content-version.ts). An entry is fresh while its stamp is current and it is
@@ -112,7 +113,7 @@ function delivery(response: Response, state: "HIT" | "MISS" | "STALE") {
   const delivered = new Response(response.body, response);
   // Cache only inside this guarded Worker path. Browsers/downstream proxies
   // must re-enter the session guard on every request, including after login.
-  delivered.headers.set("Cache-Control", "private, no-store");
+  delivered.headers.set("Cache-Control", PRIVATE);
   delivered.headers.set("X-Public-Meeting-Cache", state);
   for (const name of INTERNAL_HEADERS) delivered.headers.delete(name);
   return delivered;
@@ -129,7 +130,7 @@ export async function publicMeetingCache(
   const cached = config.deploy && config.stamp ? cacheKey(request, config) : null;
   if (!cached) {
     const response = await render(request);
-    if (new URL(request.url).pathname === "/api/meeting-text") response.headers.set("Cache-Control", "private, no-store");
+    if (new URL(request.url).pathname === "/api/meeting-text") response.headers.set("Cache-Control", PRIVATE);
     return response;
   }
   const { key, ttl } = cached;
@@ -147,7 +148,7 @@ export async function publicMeetingCache(
     const stored = new Response(response.clone().body, response);
     // Verified historical meeting text gets 24h; everything else the route's TTL.
     const freshFor = path === "/api/meeting-text" && response.headers.get("X-Public-Content-Policy") === "historical" ? HISTORICAL_PUBLIC_TTL : ttl;
-    stored.headers.set("Cache-Control", `public, max-age=${Math.max(freshFor, MAX_STALE_SECONDS)}`);
+    stored.headers.set("Cache-Control", publicMaxAge(Math.max(freshFor, MAX_STALE_SECONDS)));
     stored.headers.set("X-Content-Stamp", stamp);
     stored.headers.set("X-Stored-At", String(Date.now()));
     stored.headers.set("X-Fresh-For", String(freshFor));

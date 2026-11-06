@@ -46,7 +46,7 @@ FULL = [
     "councillor_highlights", "documents", "extracted_documents", "document_images",
     "matter_links", "matter_merges", "matter_merge_proposals", "matter_report_mentions",
     "public_reports", "public_report_pages", "meeting_speaker_aliases", "meeting_events",
-    "computed_cache", "public_content_version",
+    "public_content_version",
     # Read by the public /updates page (staff identities and notes blanked below).
     "pipeline_jobs", "page_reviews",
 ]

@@ -1,5 +1,6 @@
 import type { Route } from "./+types/api.bylaws.$id.download";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { PUBLIC_SIGNED_LINK } from "../lib/cache-policy";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { id } = params;
@@ -42,7 +43,7 @@ export async function loader({ params }: Route.LoaderArgs) {
       status: 302,
       headers: {
         Location: storageData.signedUrl,
-        "Cache-Control": "public, max-age=3500",
+        "Cache-Control": PUBLIC_SIGNED_LINK,
       },
     });
   }

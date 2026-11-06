@@ -4,6 +4,7 @@ import { normalizeVideoProviderId, selectVideoProvider, type VideoProviderId } f
 import { escribeIsiProvider } from "./escribe-isi.server";
 import type { ResolveContext, VideoProvider, VideoSource } from "./types";
 import { vimeoProvider } from "./vimeo.server";
+import { publicData } from "../public-data-cache.server";
 
 export type { VideoProvider, VideoSource, ResolveContext } from "./types";
 export * from "./catalog";
@@ -20,8 +21,6 @@ export interface VideoSourceSetting {
   config: Record<string, unknown> | null;
 }
 
-const settingCache = new Map<string, { setting: VideoSourceSetting; expires: number }>();
-
 /**
  * The municipality's video setting, `source_config.video_source` (shared with
  * the pipeline). Unset or unreadable gives `{ id: null, config: null }`.
@@ -30,9 +29,16 @@ export async function getVideoSourceSetting(
   supabase: SupabaseClient | null | undefined,
   slug: string = DEFAULT_MUNICIPALITY.slug,
 ): Promise<VideoSourceSetting> {
-  const cached = settingCache.get(slug);
-  if (cached && cached.expires > Date.now()) return cached.setting;
-  let setting: VideoSourceSetting;
+  // Provider settings are public configuration, identical for every visitor. Failures are not stored.
+  const { setting } = await publicData(`video-setting:${slug}`, () => loadVideoSourceSetting(supabase, slug),
+    (value) => value.ok, undefined, { shareWithSignedIn: true });
+  return setting;
+}
+
+async function loadVideoSourceSetting(
+  supabase: SupabaseClient | null | undefined,
+  slug: string,
+): Promise<{ setting: VideoSourceSetting; ok: boolean }> {
   try {
     const { data } = await supabase!
       .from("municipalities")
@@ -41,12 +47,10 @@ export async function getVideoSourceSetting(
       .maybeSingle();
     const raw = (data as { video_source?: unknown } | null)?.video_source;
     const config = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : null;
-    setting = { id: normalizeVideoProviderId(config?.type), config };
+    return { setting: { id: normalizeVideoProviderId(config?.type), config }, ok: true };
   } catch {
-    return { id: null, config: null }; // don't cache failures
+    return { setting: { id: null, config: null }, ok: false };
   }
-  settingCache.set(slug, { setting, expires: Date.now() + 60_000 });
-  return setting;
 }
 
 export async function getConfiguredVideoProviderId(

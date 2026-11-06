@@ -1,9 +1,10 @@
 import { Form, useActionData, data as routeData } from "react-router";
 import type { Route } from "./+types/email-unsubscribe";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
+import { PRIVATE } from "../lib/cache-policy";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const headers = () => ({
-  "Cache-Control": "private, no-store",
+  "Cache-Control": PRIVATE,
   "Referrer-Policy": "no-referrer",
   "X-Robots-Tag": "noindex, nofollow",
 });

@@ -6,10 +6,10 @@ import { recordDate } from "../lib/page-meta";
 import { displaySummary } from "../lib/meeting-summary";
 import { findMeetingBySlugHistory } from "../lib/slug-params.server";
 import { isRecordHidden } from "./page-visibility.server";
+import { NO_STORE, PUBLIC_SHORT } from "../lib/cache-policy";
 
 // Deliberately smaller than an export API: one meeting overview or extracted
 // document per request, no transcript pagination, auth, private fields or AI.
-const CACHE = "public, max-age=300, s-maxage=300";
 const MAX_DOCUMENTS = 200;
 const MAX_SECTIONS = 500;
 const text = (value: unknown) => String(value ?? "").replace(/\r/g, "");
@@ -24,7 +24,7 @@ function link(label: string, value: unknown): string {
 function response(body: string, path: string, status = 200) {
   return new Response(body, { status, headers: {
     "Content-Type": "text/markdown; charset=utf-8",
-    "Cache-Control": status === 200 ? CACHE : "no-store",
+    "Cache-Control": status === 200 ? PUBLIC_SHORT : NO_STORE,
     "X-Robots-Tag": "noindex, follow",
     "X-Content-Type-Options": "nosniff",
     ...(status === 200 ? { Link: `<${SITE_ORIGIN}${path}>; rel="canonical"` } : {}),
@@ -61,7 +61,7 @@ export async function publicMarkdown(request: Request, meetingParam?: string, do
     const mdPath = path + (docId ? "/content.md" : "/summary.md");
     if (new URL(request.url).pathname !== mdPath) {
       return new Response(null, { status: 301, headers: {
-        Location: `${SITE_ORIGIN}${mdPath}`, "Cache-Control": CACHE, "X-Robots-Tag": "noindex, follow",
+        Location: `${SITE_ORIGIN}${mdPath}`, "Cache-Control": PUBLIC_SHORT, "X-Robots-Tag": "noindex, follow",
       } });
     }
     const date = recordDate(meeting.meeting_date);

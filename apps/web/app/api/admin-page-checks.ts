@@ -9,6 +9,7 @@ import { getSupabaseAdminClient } from "~/lib/supabase.server";
 import { checkPage, randomUncheckedMatterPath, rateFlag } from "~/services/page-check.server";
 import { getPageReview, listPageReviews, reviewPath } from "~/services/page-reviews.server";
 import { logStaffAction, requestDetail } from "~/services/staff.server";
+import { PRIVATE } from "../lib/cache-policy";
 
 /**
  * Page checks for agents (and scripts), with a moderator's or admin's API key from /settings/api-keys. Not in the public
@@ -32,7 +33,7 @@ const adminOnly = createMiddleware<ApiEnv>(async (c, next) => {
   await next();
 });
 
-const noStore = { "Cache-Control": "private, no-store" };
+const noStore = { "Cache-Control": PRIVATE };
 const pathOf = (value: unknown) => {
   const path = reviewPath(typeof value === "string" ? value : null);
   if (!path) throw new ApiError(400, "INVALID_PATH", "Pass a site path such as /matters/some-topic.");

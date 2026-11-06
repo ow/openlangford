@@ -16,6 +16,7 @@ import { getMunicipality } from "../services/municipality";
 import { captureServerEvent } from "../lib/analytics.server";
 import { z } from "zod";
 import { createUsageCollector, getAiClient } from "../services/ai/index.server";
+import { NO_CACHE } from "../lib/cache-policy";
 
 const FollowupsSchema = z.object({ questions: z.array(z.string()) });
 
@@ -179,7 +180,7 @@ export async function loader({ request, context: loaderContext }: Route.LoaderAr
         { type: "done" },
       ];
       return new Response(events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join(""), {
-        headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
+        headers: { "Content-Type": "text/event-stream", "Cache-Control": NO_CACHE },
       });
     }
   }
@@ -330,7 +331,7 @@ export async function loader({ request, context: loaderContext }: Route.LoaderAr
   return new Response(stream, {
     headers: {
       "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
+      "Cache-Control": NO_CACHE,
       Connection: "keep-alive",
     },
   });
