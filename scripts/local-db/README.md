@@ -21,7 +21,7 @@ main checkout: its `.env` files only lend the OpenAI key (see below).
 | Script | What it does |
 | --- | --- |
 | `start.sh` | Starts the stack (`supabase start --workdir scripts/local-db`); on a brand-new database also builds the schema, loads the data and creates the admin. Otherwise applies any new migrations. |
-| `apply-migrations.sh` | Applies `sql/bootstrap.sql`, `fixups/` and every `supabase/migrations` file in order, skipping ones already recorded in `supabase_migrations.schema_migrations`. Run it after pulling new migrations. |
+| `apply-migrations.sh` | Applies every `supabase/migrations` file in order, skipping ones already recorded in `supabase_migrations.schema_migrations`. Run it after pulling new migrations. |
 | `seed.sh [--export --env-file F] [--months N\|all]` | Optionally re-exports public data from production (read-only), then loads it. Transcripts and document text cover the last N months (default 12, about 140 MB); `all` copies every meeting (about 250 MB), which the page checks and fix agent need for older topics. |
 | `load-seed.sh` | Loads `data/` into the local database and checks every foreign key. |
 | `reset.sh` | Rebuilds the local database from scratch (`supabase db reset`, then the above). |
@@ -63,32 +63,19 @@ points `SUPABASE_URL`, the keys and `DATABASE_URL` at the local stack and blanks
 (R2 picture uploads, the Discord webhook, the email outbox), so a local run can't reach production.
 Bylaw PDF downloads need Storage, which the local stack leaves out.
 
-## Schema: bootstrap + migrations, with local-only fixups
+## Schema: migrations only
 
-Production predates the migration folder: some of its history happened by hand, and `sql/bootstrap.sql`
-has since been updated past several early migrations. Applied in order on an empty database, a few files
-fail. Nothing in `sql/` or `supabase/migrations` is changed; instead `apply-migrations.sh` runs small
-local-only files from `fixups/` just before the migration each one unblocks (each file says why):
+`supabase/migrations/` is the single schema source. Its first file, `<version>_baseline.sql`, is a dump of
+production's public schema and builds everything on an empty database; later files change it. Migrations
+from before the baseline are kept in `supabase/migrations_archive/` (see its README); the local database
+never applies them.
 
-- `pre/…meeting_type_order` — create `meeting_type` in production's value order before bootstrap.
-- `…rpc_stubs` — placeholders for three subscription functions production had before migrations began.
-- `…bootstrap_overlap_*` — drop objects bootstrap already has (document tables, `key_statements.text_search`,
-  `search_results_cache`, `subscriptions_unique_target`) so the migrations create them as on production.
-- `…councillor_highlights`, `…updated_at_shim`, `…drop_old_find_meeting_subscribers` — objects the
-  key-votes and email-alert migrations assume.
-- `post/parity.sql` — runs after every apply: removes the placeholders and restores what production has
-  but the migrations don't (partial slug indexes, `document_images.document_section_id`, two FKs).
-  `apply-migrations.sh` also applies the hand-run `sql/add_canonical_motion_identity.sql` and
-  `sql/add_source_bound_key_statement_rpc.sql`.
+`apply-migrations.sh` applies the files with `psql` (as `postgres`), loads pgvector first in each session, and
+doesn't wrap files that use `CREATE INDEX CONCURRENTLY` or their own `BEGIN/COMMIT` in a transaction. The
+result matches production's public schema (`check-parity.sh`), apart from migrations not yet merged.
 
-The runner applies files with `psql` (as `postgres`) with `check_function_bodies=off`, loads pgvector
-first in each session, and doesn't wrap files that use `CREATE INDEX CONCURRENTLY` or their own
-`BEGIN/COMMIT` in a transaction. The result matches production's public schema
-(`check-parity.sh`), apart from migrations not yet merged.
-
-The fixups are production-safe: they live outside `supabase/migrations`, so `supabase db push` never
-sees them, and this folder is a separate CLI workdir (`project_id = "langford-local"`) whose own
-`supabase/migrations` folder is empty.
+This folder is a separate CLI workdir (`project_id = "langford-local"`) whose own `supabase/migrations`
+folder is empty, so `supabase db push` for production never sees anything here.
 
 A migration you are still editing is recorded once applied; after changing it, run `reset.sh`.
 

@@ -16,7 +16,8 @@ apps/pipeline/         # Python ETL pipeline
   tests/               #   Python tests (pytest)
   scripts/             #   One-off maintenance/analysis scripts (gitignored)
   main.py              #   Pipeline entry point
-sql/                   # Database bootstrap (bootstrap.sql)
+supabase/migrations/    # Database schema: baseline + later migrations (the only schema source)
+sql/                   # Hand-run SQL, corrections and SQL tests
 ```
 
 ## Commands
@@ -93,7 +94,7 @@ The `vite.config.ts` `define` block inlines all env vars at build time since `pr
 
 - `agenda_items.neighborhood` exists in the live database (verified October 18, 2026); its values may be null.
 - Always verify columns exist in the actual database before adding them to `.select()` strings — TypeScript types in `app/lib/types.ts` can be aspirational/ahead of the schema.
-- Schema is bootstrapped from `sql/bootstrap.sql`. Uses pgvector extension for embeddings.
+- `supabase/migrations/` is the only schema source (`sql/bootstrap.sql` is gone). Its first file, `20261107000000_baseline.sql`, is a dump of production's public schema as of 2026-11-05 and stands in for the 113 earlier migrations, which live in `supabase/migrations_archive/` (history only: never edit or re-apply them; a few SQL tests replay individual files from there). The one-time production history repair is in `supabase/BASELINE-RUNBOOK.md`. A fresh database is `scripts/local-db/apply-migrations.sh`, nothing else. Uses pgvector (installed in `public`) for embeddings.
 
 ## Known Issues
 

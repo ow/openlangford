@@ -110,7 +110,7 @@ function hasExcludedMembership(
 
 /**
  * One identified speaker's transcript time on one agenda item (or none) of
- * one meeting, from public_participant_appearances (supabase/migrations/20261104100000_*).
+ * one meeting, from public_participant_appearances (supabase/migrations_archive/20261104100000_*).
  */
 export interface IdentifiedAppearance {
   person_id: number;

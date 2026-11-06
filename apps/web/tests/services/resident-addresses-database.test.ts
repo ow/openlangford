@@ -2,7 +2,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, it } from "vitest";
 
-const migration = (name: string) => readFileSync(new URL(`../../../../supabase/migrations/${name}`, import.meta.url), "utf8");
+const migration = (name: string) => readFileSync(new URL(`../../../../supabase/migrations_archive/${name}`, import.meta.url), "utf8");
 
 let db: PGlite;
 const rows = async <T = any>(sql: string, params: unknown[] = []) => (await db.query<T>(sql, params)).rows;

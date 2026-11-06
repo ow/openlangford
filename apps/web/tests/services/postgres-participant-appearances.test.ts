@@ -53,7 +53,7 @@ describe.skipIf(!container)("public_participant_appearances against Postgres", (
       ${items.map(i => `INSERT INTO agenda_items VALUES(${i.id},'${i.title}',${i.category ? `'${i.category}'` : "NULL"});`).join("")}
       ${segments.map(([id, person, meeting, item, start, end]) =>
         `INSERT INTO transcript_segments VALUES(${id},${person ?? "NULL"},${meeting},${item ?? "NULL"},${start},${end},'words');`).join("")}`);
-    const migration = readFileSync(new URL("../../../../supabase/migrations/20261104100000_public_participant_appearances.sql", import.meta.url), "utf8");
+    const migration = readFileSync(new URL("../../../../supabase/migrations_archive/20261104100000_public_participant_appearances.sql", import.meta.url), "utf8");
     sql(migration); sql(migration); // Re-applying the definition is safe.
   }, 30_000);
 

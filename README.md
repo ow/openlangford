@@ -27,8 +27,8 @@ apps/
   web/                    # React Router 7 web application (Cloudflare Workers)
   pipeline/               # Python ETL pipeline
   vimeo-proxy/            # Cloudflare Worker for Vimeo URL extraction
-sql/
-  bootstrap.sql           # Complete database schema (Supabase/PostgreSQL + pgvector)
+supabase/
+  migrations/             # Database schema: baseline + later migrations (Supabase/PostgreSQL + pgvector)
 ```
 
 **Data flow:** CivicWeb (PDFs/HTML) + Vimeo (video/audio) --> Python pipeline (5 phases) --> Supabase --> React Router web app
@@ -136,11 +136,13 @@ VIMEO_TOKEN=your-vimeo-api-token
 
 ### Database Setup
 
-Apply the schema in your Supabase SQL Editor:
+Apply the migrations in `supabase/migrations/` to a Supabase project (the first file builds the whole schema):
 
-```sql
--- Run the contents of sql/bootstrap.sql
+```bash
+npx supabase db push --db-url "$DATABASE_URL"
 ```
+
+For a local throwaway database, use `scripts/local-db/` (see its README).
 
 ### Web App
 
@@ -354,7 +356,7 @@ All model calls go through one client per app, so models, retries, timeouts, hou
 1. Add your municipality to the `municipalities` table in Supabase
 2. Create a scraper class extending `BaseScraper` (or use an existing one if your source matches CivicWeb/Legistar/static HTML)
 3. Register the scraper in `pipeline/scrapers/__init__.py`
-4. Apply `sql/bootstrap.sql` to a fresh Supabase project
+4. Apply `supabase/migrations/` to a fresh Supabase project (`npx supabase db push`)
 5. Run the pipeline: `uv run python main.py --municipality your-slug --download-audio`
 6. Deploy the web app with your Supabase credentials
 

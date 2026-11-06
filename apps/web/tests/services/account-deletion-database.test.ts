@@ -3,7 +3,7 @@ import { vector } from "@electric-sql/pglite/vector";
 import { readFileSync } from "node:fs";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-const migration = (name: string) => readFileSync(new URL(`../../../../supabase/migrations/${name}`, import.meta.url), "utf8");
+const migration = (name: string) => readFileSync(new URL(`../../../../supabase/migrations_archive/${name}`, import.meta.url), "utf8");
 const fixture = (name: string) => readFileSync(new URL(`../fixtures/${name}`, import.meta.url), "utf8");
 
 const reader = "11111111-1111-4111-8111-111111111111";
