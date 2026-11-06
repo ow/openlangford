@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from postgres_case import PostgresCase
 
-MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261020161233_47_15_calendar_sync.sql'
+MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations_archive/20261020161233_47_15_calendar_sync.sql'
 
 
 class CalendarSync(PostgresCase):

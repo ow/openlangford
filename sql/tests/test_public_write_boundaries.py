@@ -3,7 +3,7 @@ from pathlib import Path
 from postgres_case import PostgresCase
 
 ROOT = Path(__file__).resolve().parents[2]
-MIGRATIONS = ROOT / 'supabase/migrations'
+MIGRATIONS = ROOT / 'supabase/migrations_archive'
 MIGRATION = MIGRATIONS / '20261022053745_47_19_public_write_boundaries.sql'
 A = '00000000-0000-0000-0000-000000000001'
 B = '00000000-0000-0000-0000-000000000002'

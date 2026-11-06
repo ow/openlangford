@@ -3,8 +3,8 @@
 #
 # This directory is a separate Supabase CLI workdir (`--workdir scripts/local-db`) with its own project_id,
 # so the local stack never reads the repo's supabase/ config. Its migrations folder is empty on purpose:
-# scripts/local-db/apply-migrations.sh applies sql/bootstrap.sql, the local-only fixups and the repo's
-# supabase/migrations to the local database. See scripts/local-db/README.md.
+# scripts/local-db/apply-migrations.sh applies the repo's supabase/migrations
+# to the local database. See scripts/local-db/README.md.
 project_id = "langford-local"
 
 [api]

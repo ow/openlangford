@@ -2,7 +2,7 @@
 LOCAL_DB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$LOCAL_DB_DIR/../.." && pwd)"
 SUPABASE_CLI_VERSION="${SUPABASE_CLI_VERSION:-3.0.0}"
-DB_CONTAINER="supabase_db_langford-local"
+DB_CONTAINER="${DB_CONTAINER:-supabase_db_langford-local}"
 
 supa() { npx --yes "supabase@$SUPABASE_CLI_VERSION" --workdir "$LOCAL_DB_DIR" "$@"; }
 

@@ -2,7 +2,7 @@
 from pathlib import Path
 from postgres_case import PostgresCase
 
-MIGRATIONS = Path(__file__).resolve().parents[2] / 'supabase/migrations'
+MIGRATIONS = Path(__file__).resolve().parents[2] / 'supabase/migrations_archive'
 FIX = MIGRATIONS / '20261030190000_private_ai_questions.sql'
 
 
