@@ -1,4 +1,8 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from './database.types';
+import type { TypedSupabaseClient } from './supabase';
+
+export type { TypedSupabaseClient };
 import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr';
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
@@ -10,23 +14,23 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 // 1. Admin Client (Bypasses RLS) - LAZILY INITIALIZED
-let _supabaseAdmin: SupabaseClient | null = null;
+let _supabaseAdmin: TypedSupabaseClient | null = null;
 export function getSupabaseAdminClient() {
   if (!_supabaseAdmin) {
-    _supabaseAdmin = createClient(supabaseUrl || "", supabaseKey || "");
+    _supabaseAdmin = createClient<Database>(supabaseUrl || "", supabaseKey || "");
   }
   return _supabaseAdmin;
 }
 
 // 2. Public Server Client (anonymous key only, no request cookies or user session).
 // Use this for cacheable public read models so cached results cannot include auth-scoped data.
-let _supabasePublic: SupabaseClient | null = null;
+let _supabasePublic: TypedSupabaseClient | null = null;
 export function getSupabasePublicClient() {
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error("Missing Supabase URL or Anon Key");
   }
   if (!_supabasePublic) {
-    _supabasePublic = createClient(supabaseUrl, supabaseAnonKey, {
+    _supabasePublic = createClient<Database>(supabaseUrl, supabaseAnonKey, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     });
   }
@@ -39,7 +43,7 @@ export function createSupabaseServerClient(request: Request, responseHeaders = n
     throw new Error("Missing Supabase URL or Anon Key");
   }
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+  const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
         const cookies = parseCookieHeader(request.headers.get('Cookie') ?? '');
