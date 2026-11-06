@@ -3,8 +3,8 @@ title: Council meetings move back to 5:30 pm
 date: 2026-11-05
 summary: By an order of the Mayor, the last two council meetings of 2026 start at 5:30 pm on Tuesdays instead of 7:00 pm on Mondays.
 banner_until: 2026-12-08
-change: Monday, November 23 · 7:00 pm => Tuesday, November 24 · 5:30 pm
-change: Monday, December 7 · 7:00 pm => Tuesday, December 8 · 5:30 pm
+change: Monday, November 23 · 7:00 pm => Tuesday, November 24 · 5:30 pm | Regular Council meeting | /meetings/2026-11-24-special-council
+change: Monday, December 7 · 7:00 pm => Tuesday, December 8 · 5:30 pm | Regular Council meeting
 ---
 
 Langford's last two regular council meetings of 2026 move a day later and an hour and a half earlier: to **5:30 pm on Tuesdays**, instead of **7:00 pm on Mondays**.

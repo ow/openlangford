@@ -7,7 +7,8 @@
  *   date: 2026-11-05
  *   summary: One sentence for the list and the banner.
  *   banner_until: 2026-12-09   (optional: a line on the home and meetings pages through this day)
- *   change: Mon, Nov 23 · 7:00 pm => Tue, Nov 24 · 5:30 pm   (optional, one line each: a was/now card at the top)
+ *   change: Mon, Nov 23 · 7:00 pm => Tue, Nov 24 · 5:30 pm | Regular Council | /meetings/2026-11-24-special-council
+ *     (optional, one line each: a was/now card at the top; the meeting's name and page link are optional)
  *   ---
  *
  * The file name (without .md) is the page's address: /notices/<name>.
@@ -15,8 +16,9 @@
 export type Notice = {
   slug: string; title: string; date: string; summary: string; bannerUntil: string | null; body: string;
   /** Each change at a glance (a meeting moved, say): what it was and what it is now. */
-  changes: { was: string; now: string }[];
+  changes: Change[];
 };
+export type Change = { was: string; now: string; meeting: string | null; href: string | null };
 
 const files = import.meta.glob("../content/notices/*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
@@ -24,14 +26,15 @@ function parse(path: string, raw: string): Notice | null {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) return null;
   const head: Record<string, string> = {};
-  const changes: { was: string; now: string }[] = [];
+  const changes: Change[] = [];
   for (const line of match[1].split("\n")) {
     const at = line.indexOf(":");
     if (at <= 0) continue;
     const key = line.slice(0, at).trim(), value = line.slice(at + 1).trim();
     if (key === "change" && value.includes("=>")) {
-      const [was, now] = value.split("=>").map((s) => s.trim());
-      if (was && now) changes.push({ was, now });
+      const [times, meeting, href] = value.split("|").map((s) => s.trim());
+      const [was, now] = times.split("=>").map((s) => s.trim());
+      if (was && now) changes.push({ was, now, meeting: meeting || null, href: href?.startsWith("/") ? href : null });
     } else head[key] = value;
   }
   if (!head.title || !/^\d{4}-\d{2}-\d{2}$/.test(head.date || "")) return null;

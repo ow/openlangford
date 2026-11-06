@@ -27,18 +27,25 @@ export default function Notice({ loaderData }: Route.ComponentProps) {
         <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-zinc-900 md:text-4xl">{notice.title}</h1>
         {notice.changes.length > 0 && (
           // Each change at a glance, before the details.
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 space-y-5">
             {notice.changes.map((c) => (
-              <div key={c.was} className="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
-                <div className="rounded-2xl border border-zinc-200 bg-surface px-5 py-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Was</p>
-                  <p className="mt-1 text-lg font-semibold text-zinc-500 line-through decoration-zinc-300">{c.was}</p>
-                </div>
-                <ArrowRight className="mx-auto hidden h-6 w-6 text-zinc-400 sm:block" aria-hidden="true" />
-                <ArrowDown className="mx-auto h-5 w-5 text-zinc-400 sm:hidden" aria-hidden="true" />
-                <div className="rounded-2xl border border-brand-200 bg-brand-50 px-5 py-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">Now</p>
-                  <p className="mt-1 text-lg font-semibold text-zinc-900">{c.now}</p>
+              <div key={c.was}>
+                {c.meeting && (
+                  <p className="mb-1.5 text-sm font-semibold text-zinc-700">
+                    {c.href ? <Link to={c.href} className="hover:text-brand-700 hover:underline">{c.meeting} →</Link> : c.meeting}
+                  </p>
+                )}
+                <div className="grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
+                  <div className="rounded-2xl border border-zinc-200 bg-surface px-5 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Was</p>
+                    <p className="mt-1 text-lg font-semibold text-zinc-500 line-through decoration-zinc-300">{c.was}</p>
+                  </div>
+                  <ArrowRight className="mx-auto hidden h-6 w-6 text-zinc-400 sm:block" aria-hidden="true" />
+                  <ArrowDown className="mx-auto h-5 w-5 text-zinc-400 sm:hidden" aria-hidden="true" />
+                  <div className="rounded-2xl border border-brand-200 bg-brand-50 px-5 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">Now</p>
+                    <p className="mt-1 text-lg font-semibold text-zinc-900">{c.now}</p>
+                  </div>
                 </div>
               </div>
             ))}
