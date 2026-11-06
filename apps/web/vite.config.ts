@@ -145,6 +145,9 @@ export default defineConfig(({ mode }) => {
       "process.env.DOCUMENT_IMAGE_PUBLIC_BASE_URL": JSON.stringify(
         env.DOCUMENT_IMAGE_PUBLIC_BASE_URL || "",
       ),
+      "process.env.DOCUMENT_IMAGE_CDN_BASE_URL": JSON.stringify(
+        env.DOCUMENT_IMAGE_CDN_BASE_URL || "",
+      ),
       "process.env.R2_PUBLIC_URL": JSON.stringify(env.R2_PUBLIC_URL || ""),
     },
   };

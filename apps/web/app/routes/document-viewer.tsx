@@ -1,4 +1,5 @@
 import { fitTitle, markdownAlternate, pageMeta, recordDate } from "../lib/page-meta";
+import { imageUrlForKey } from "../lib/image-url";
 import { SITE_NAME } from "../lib/site-name";
 import { documentPath, meetingDocumentsPath, meetingPath } from "../lib/paths";
 import { resolveSlugParam } from "../lib/slug-params.server";
@@ -58,17 +59,6 @@ export const meta: Route.MetaFunction = ({ data }) => {
     ...(meeting ? [markdownAlternate(documentPath(meeting, ed.id, "/content.md"))] : []),
   ];
 };
-
-const DOCUMENT_IMAGE_PUBLIC_BASE_URL = (
-  process.env.DOCUMENT_IMAGE_PUBLIC_BASE_URL ||
-  process.env.R2_PUBLIC_URL ||
-  ""
-).replace(/\/+$/, "");
-
-function documentImageUrl(r2Key: string): string | null {
-  if (!DOCUMENT_IMAGE_PUBLIC_BASE_URL) return null;
-  return `${DOCUMENT_IMAGE_PUBLIC_BASE_URL}/${r2Key.replace(/^\/+/, "")}`;
-}
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const { docId } = params;
@@ -267,7 +257,7 @@ export default function DocumentViewer({ loaderData }: Route.ComponentProps) {
 
       const img = images[imgIdx++];
       const alt = desc.replace(/"/g, "&quot;");
-      const src = documentImageUrl(img.r2_key);
+      const src = imageUrlForKey(img.r2_key);
       if (!src) {
         return (
           `<figure class="my-4 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 p-3">` +
@@ -553,7 +543,7 @@ function DocumentContent({
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {galleryImages.map((img) => {
-              const src = documentImageUrl(img.r2_key);
+              const src = imageUrlForKey(img.r2_key);
               if (!src) {
                 return (
                   <div

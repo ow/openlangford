@@ -2,6 +2,7 @@ import { CalendarProvenance } from "../components/calendar-provenance";
 import { labelSpeakerRoles } from "../services/speaker-roles.server";
 import { pageMeta, recordDate, markdownAlternate, metaDescription } from "../lib/page-meta";
 import { ogImageUrl } from "../lib/og";
+import { rewriteImageUrl } from "../lib/image-url";
 import { withLinkedPeople } from "../lib/written";
 import { breadcrumbList, jsonLd, meetingEvent, meetingVideo } from "../lib/structured-data";
 import { SITE_NAME } from "../lib/site-name";
@@ -46,13 +47,13 @@ export const meta: Route.MetaFunction = ({ data }) => {
   const description = meetingDescription(m);
   return [
     // Rendered share card (frame + highlights) when the pipeline has made one; else the generated card.
-    ...pageMeta(`${m.title} — ${date}`, description, meetingPath(m, ""), "article", { image: m.meta?.share_card?.url }),
+    ...pageMeta(`${m.title} — ${date}`, description, meetingPath(m, ""), "article", { image: rewriteImageUrl(m.meta?.share_card?.url) }),
     markdownAlternate(meetingPath(m, "/summary.md")),
     jsonLd(
       meetingEvent({ ...m, title: `${m.title} — ${date}` }, meetingPath(m), metaDescription(description)),
       ...[meetingVideo(m, meetingPath(m), {
         description: metaDescription(description),
-        thumbnailUrl: m.meta?.poster?.url || ogImageUrl(`${m.title}`, { subtitle: date, type: "meeting" }),
+        thumbnailUrl: rewriteImageUrl(m.meta?.poster?.url) || ogImageUrl(`${m.title}`, { subtitle: date, type: "meeting" }),
         // Many recordings have no stored length; the transcript's last timestamp is close.
         durationSeconds: m.video_duration_seconds || (data?.transcript?.length ? data.transcript[data.transcript.length - 1].end_time : null),
       })].filter((thing): thing is NonNullable<typeof thing> => thing !== null),
@@ -648,7 +649,7 @@ function MeetingDetailContent({ loaderData }: any) {
                 directVideoUrl={directVideoUrl}
                 directAudioUrl={directAudioUrl}
                 meeting={meeting}
-                posterUrl={meeting.meta?.poster?.url}
+                posterUrl={rewriteImageUrl(meeting.meta?.poster?.url)}
                 posterLabel={{
                   title: meeting.title,
                   date: recordDate(meeting.meeting_date),
