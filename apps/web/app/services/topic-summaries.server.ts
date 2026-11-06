@@ -25,7 +25,9 @@ const INPUT_BUDGET_CHARS = 1_000_000;
 const BATCH_SIZE = 8;
 const SAME_SITE_MAX_LOTS = 4;
 const KEY_SECTION = /purpose|executive summary|proposal|comment|recommendation|summary|background|discussion|financial/i;
-const TIMEOUT_MS = 300_000;
+/** A write's output grows with the topic's timeline (one headline per step, ~12 ms a token), so its per-attempt timeout
+ * does too: the stage's 30 s, plus half a second a step, never over 90 s. */
+const writeTimeout = (batch: Loaded[]) => Math.min(90_000, 30_000 + 500 * batch.reduce((n, m) => n + m.history.length, 0));
 /** Python's \s, which also matches the separator controls \x1c-\x1f and \x85 (they turn up in OCR'd reports). */
 const SPACE = /[\s\x1c-\x1f\x85]+/g;
 
@@ -229,18 +231,18 @@ export async function loadTopicContext(supabase: SupabaseClient, matterIds: numb
 const visibleFields = (m: Loaded) => Object.fromEntries(Object.entries(m).filter(([k]) => !k.startsWith("_")));
 const promptFor = (batch: Loaded[]) => shared.prompt_intro + JSON.stringify(batch.map(visibleFields));
 
-async function summarize(batch: Loaded[]): Promise<Map<number, Written>> {
+async function summarize(batch: Loaded[], signal?: AbortSignal): Promise<Map<number, Written>> {
   const { data } = await getAiClient().json({ stage: "writing", system: shared.system, prompt: promptFor(batch),
-    schema: MatterSummaries, schemaName: "MatterSummaries", timeoutMs: TIMEOUT_MS });
+    schema: MatterSummaries, schemaName: "MatterSummaries", timeoutMs: writeTimeout(batch), signal });
   return new Map(data.matters.filter((m) => m.summary.trim()).map((m) => [m.id, m]));
 }
 
 /** The updates for a batch: decisions from owned proceedings, descriptions with linked context. */
-async function generate(batch: Loaded[]): Promise<Map<number, Update>> {
+async function generate(batch: Loaded[], signal?: AbortSignal): Promise<Map<number, Update>> {
   const context = batch.filter((m) => m._has_mentions);
   const [decisions, descriptions] = await Promise.all([
-    summarize(batch.map((m) => ({ ...m, mentions: [] }))),
-    context.length ? summarize(context) : Promise.resolve(new Map<number, Written>()),
+    summarize(batch.map((m) => ({ ...m, mentions: [] })), signal),
+    context.length ? summarize(context, signal) : Promise.resolve(new Map<number, Written>()),
   ]);
   const out = new Map<number, Update>();
   for (const matter of batch) {
@@ -279,11 +281,24 @@ async function generate(batch: Loaded[]): Promise<Map<number, Update>> {
   return out;
 }
 
-/** Problems per topic in the written text, judged against the topic's own inputs. */
-async function check(batch: Loaded[], updates: Map<number, Update>): Promise<Map<number, Problem[]>> {
-  const payload = batch.filter((m) => updates.has(m.id)).map((m) => {
+const CombinedCheck = z.object({
+  problems: SummaryCheck.shape.problems,
+  notes: z.array(z.object({
+    matter: z.number().int().describe(FIELDS.problem_matter),
+    n: z.number().int().describe(FIELDS.note_n),
+    followed: z.boolean().describe(FIELDS.note_followed),
+    missing: z.string().describe(FIELDS.note_missing),
+  })),
+});
+export type Unfollowed = { note: string; matter_id: number; missing: string };
+type Verdict = { problems: Map<number, Problem[]>; unfollowed: Unfollowed[]; failed: boolean };
+
+/** The payload the check reads: each topic's inputs and written text, and the editor's instructions to judge. */
+export function checkPayload(batch: Loaded[], updates: Map<number, Update>, notes: Map<number, string[]> = new Map()) {
+  return batch.filter((m) => updates.has(m.id)).map((m) => {
     const u = updates.get(m.id)!;
     const staff = u.meta.staff_headlines || {};
+    const instructions = notes.get(m.id) || [];
     return {
       id: m.id,
       records: Object.fromEntries(Object.entries(m).filter(([k]) => !k.startsWith("_") && k !== "fix_these")),
@@ -293,51 +308,44 @@ async function check(batch: Loaded[], updates: Map<number, Update>): Promise<Map
         // Lines staff approved stand as written, so only the writer's own are checked.
         timeline_headlines: Object.fromEntries(Object.entries(u.meta.timeline_headlines || {}).filter(([k]) => !(k in staff))),
       },
+      ...(instructions.length ? { editor_instructions: instructions.map((text, n) => ({ n, text })) } : {}),
     };
   });
-  const found = new Map<number, Problem[]>();
-  if (!payload.length) return found;
-  const { data } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, prompt: shared.check_prompt + JSON.stringify(payload),
-    schema: SummaryCheck, schemaName: "SummaryCheck", timeoutMs: TIMEOUT_MS });
-  for (const { matter, ...problem } of data.problems) {
-    if (updates.has(matter)) found.set(matter, [...(found.get(matter) || []), problem]);
-  }
-  return found;
 }
 
-/** Check the written text against the records; a topic with problems is rewritten once, told what they were, and
- * keeps whichever version has fewer. The outcome is stamped in meta.summary_check. */
-async function checked(batch: Loaded[], updates: Map<number, Update>): Promise<Map<number, Update>> {
-  let problems: Map<number, Problem[]>;
+/** Reads the combined check's answer: the topics' fact problems, and each instruction it says isn't followed. An
+ * instruction the check didn't answer counts as not followed (it can't be claimed). */
+export function readVerdict(data: z.infer<typeof CombinedCheck>, updates: Map<number, Update>, notes: Map<number, string[]>): Omit<Verdict, "failed"> {
+  const problems = new Map<number, Problem[]>();
+  for (const { matter, ...problem } of data.problems) {
+    if (updates.has(matter)) problems.set(matter, [...(problems.get(matter) || []), problem]);
+  }
+  const unfollowed: Unfollowed[] = [];
+  for (const [matter, list] of notes) {
+    list.forEach((note, n) => {
+      const answer = data.notes.find((x) => x.matter === matter && x.n === n);
+      if (!answer || !answer.followed) unfollowed.push({ note, matter_id: matter, missing: answer?.missing || "" });
+    });
+  }
+  return { problems, unfollowed };
+}
+
+/** One structured call judging the written text against the records (facts) and each editor instruction (followed or
+ * not). When it can't run, the text stands unchecked and every instruction is reported as not confirmed. */
+async function checkAll(batch: Loaded[], updates: Map<number, Update>, notes: Map<number, string[]>, signal?: AbortSignal): Promise<Verdict> {
+  const payload = checkPayload(batch, updates, notes);
+  const asked = new Map([...notes].filter(([m]) => updates.has(m)));
+  if (!payload.length) return { problems: new Map(), unfollowed: [], failed: false };
   try {
-    problems = await check(batch, updates);
+    const { data } = await getAiClient().json({ stage: "summary_check", system: DEFAULT_SYSTEM,
+      prompt: shared.check_prompt + (asked.size ? shared.check_notes_prompt : "") + JSON.stringify(payload),
+      schema: CombinedCheck, schemaName: "SummaryCheck", signal });
+    return { ...readVerdict(data, updates, asked), failed: false };
   } catch (error) {  // unchecked rather than unwritten
     console.error("[topic-summaries] check failed:", error instanceof Error ? error.message : error);
-    return updates;
+    return { problems: new Map(), failed: true,
+      unfollowed: [...asked].flatMap(([matter_id, list]) => list.map((note) => ({ note, matter_id, missing: "" }))) };
   }
-  const retry = batch.filter((m) => problems.get(m.id)?.length).map((m) => ({ ...m, fix_these: problems.get(m.id)! }));
-  let second = new Map<number, Update>();
-  let secondProblems = new Map<number, Problem[]>();
-  if (retry.length) {
-    try {
-      second = await generate(retry);
-      secondProblems = await check(retry, second);
-    } catch (error) {
-      console.error("[topic-summaries] rewrite after check failed:", error instanceof Error ? error.message : error);
-    }
-  }
-  const at = new Date().toISOString();
-  const out = new Map<number, Update>();
-  for (const [mid, first] of updates) {
-    const firstProblems = problems.get(mid) || [];
-    const better = second.has(mid) && (secondProblems.get(mid) || []).length < firstProblems.length;
-    const update = better ? second.get(mid)! : first;
-    const left = better ? secondProblems.get(mid) || [] : firstProblems;
-    update.meta.summary_check = { at, problems: left.length, first_problems: firstProblems.length, rewritten: better,
-      ...(left.length ? { unresolved: left } : {}) };
-    out.set(mid, update);
-  }
-  return out;
 }
 
 /** An update to a topic's title, summary or status line, with any field staff edited by hand kept as they left it
@@ -365,12 +373,36 @@ export async function keepTextEdits(supabase: SupabaseClient, matterId: number, 
   return out;
 }
 
-/** Rewrite and check the summaries of these topics, and save them. Returns the ids written. With `dryRun`, nothing is
- * saved and each update goes to `onUpdate` instead. */
-export async function refreshTopicSummaries(supabase: SupabaseClient, matterIds: Iterable<number>,
-  opts: { dryRun?: boolean; onUpdate?: (matterId: number, update: Update) => void } = {}): Promise<number[]> {
+export type SummaryReport = {
+  /** Topics whose rewritten text was saved. */
+  written: number[];
+  /** Topics whose text was edited directly after the check found problems. */
+  edited: number[];
+  /** Instructions the final text still doesn't follow. */
+  unfollowed: Unfollowed[];
+  /** Fact problems the final text still has, per topic. */
+  problems: Map<number, Problem[]>;
+};
+
+/** What a direct edit is told to fix: the instructions it wasn't followed on, and each statement the records contradict
+ * or don't contain, with what they say. */
+export function editInstructions(unfollowed: string[], problems: Problem[]): string[] {
+  return [...unfollowed, ...problems.map((p) => p.verdict === "contradicted"
+    ? `Correct this, the records contradict it: "${p.statement}".${p.record_says ? ` The record says: “${p.record_says}”` : ""}`
+    : `Remove or correct this, the records don't contain it: "${p.statement}".${p.record_says ? ` The record says: “${p.record_says}”` : ""}`)];
+}
+
+/**
+ * Write the summaries of these topics, check them, and save them. One write (the editor's notes are already in the
+ * topic's editor_notes, so the writer follows them), one check judging facts and the `notes` instructions together,
+ * and when it finds anything, no second rewrite: the text is edited directly (directEdit) and checked once more. With
+ * `dryRun` nothing is saved or edited and each update goes to `onUpdate`.
+ */
+export async function rewriteSummaries(supabase: SupabaseClient, matterIds: Iterable<number>,
+  opts: { notes?: { matter_id: number; note: string }[]; signal?: AbortSignal; dryRun?: boolean; onUpdate?: (matterId: number, update: Update) => void } = {}): Promise<SummaryReport> {
   const ids = [...new Set([...matterIds].map(Number))].sort((a, b) => a - b);
-  if (!ids.length) return [];
+  const report: SummaryReport = { written: [], edited: [], unfollowed: [], problems: new Map() };
+  if (!ids.length) return report;
   const loaded = await loadTopicContext(supabase, ids);
   // A topic too large for one request is left as it was, never cut to fit.
   const size = (m: Loaded) => promptFor([m]).length;
@@ -388,27 +420,71 @@ export async function refreshTopicSummaries(supabase: SupabaseClient, matterIds:
       used += size(m);
     }
   }
-  const written: number[] = [];
+  const notesByMatter = new Map<number, string[]>();
+  for (const { matter_id, note } of opts.notes || []) notesByMatter.set(matter_id, [...(notesByMatter.get(matter_id) || []), note]);
+  const handled = new Set<number>();
   await Promise.all(batches.map(async (batch) => {
-    let updates: Map<number, Update>;
     try {
-      updates = await checked(batch, await generate(batch));
+      const updates = await generate(batch, opts.signal);
+      const notes = new Map(batch.filter((m) => notesByMatter.has(m.id)).map((m) => [m.id, notesByMatter.get(m.id)!]));
+      const first = await checkAll(batch, updates, notes, opts.signal);
+      const at = new Date().toISOString();
+      const stamp = (u: Update, problems: Problem[], firstCount: number, edited: boolean) => {
+        u.meta.summary_check = { at, problems: problems.length, first_problems: firstCount, rewritten: false, ...(edited ? { edited: true } : {}),
+          ...(problems.length ? { unresolved: problems } : {}) };
+      };
+      for (const [mid, update] of updates) {
+        stamp(update, first.problems.get(mid) || [], (first.problems.get(mid) || []).length, false);
+        if (opts.dryRun) { opts.onUpdate?.(mid, update); report.written.push(mid); handled.add(mid); continue; }
+        const { error } = await supabase.from("matters").update(await keepTextEdits(supabase, mid, update)).eq("id", mid);
+        if (error) console.error(`[topic-summaries] saving topic ${mid} failed:`, error.message);
+        else { report.written.push(mid); handled.add(mid); }
+      }
+      // Anything the check found goes straight to a direct edit of the saved text, then one more check.
+      const failing = [...updates.keys()].filter((mid) => handled.has(mid)
+        && ((first.problems.get(mid) || []).length || first.unfollowed.some((u) => u.matter_id === mid)));
+      const edits = new Map<number, Update>();
+      if (!opts.dryRun && !opts.signal?.aborted) {
+        await Promise.all(failing.map(async (mid) => {
+          const mine = first.unfollowed.filter((u) => u.matter_id === mid);
+          const edit = await directEdit(supabase, mid, editInstructions(mine.map((u) => u.note), first.problems.get(mid) || []),
+            { lock: mine.length > 0, signal: opts.signal });
+          if (!edit) return;
+          report.edited.push(mid);
+          const u = updates.get(mid)!;
+          edits.set(mid, { ...u, plain_english_summary: edit.summary || u.plain_english_summary,
+            meta: { ...u.meta, status_line: edit.status_line || u.meta.status_line } });
+        }));
+      }
+      const final = edits.size ? await checkAll(batch, edits, new Map([...notes].filter(([m]) => edits.has(m))), opts.signal) : null;
+      for (const mid of updates.keys()) {
+        const settled = final && edits.has(mid);
+        const problems = settled ? final.problems.get(mid) || [] : first.problems.get(mid) || [];
+        report.problems.set(mid, problems);
+        report.unfollowed.push(...(settled ? final.unfollowed.filter((u) => u.matter_id === mid) : first.unfollowed.filter((u) => u.matter_id === mid)));
+        if (settled && !final.failed) {
+          const u = edits.get(mid)!;
+          stamp(u, problems, (first.problems.get(mid) || []).length, true);
+          const { data: row } = await supabase.from("matters").select("meta").eq("id", mid).single();
+          await supabase.from("matters").update({ meta: { ...(row?.meta || {}), summary_check: u.meta.summary_check } }).eq("id", mid);
+        }
+      }
     } catch (error) {
       console.error(`[topic-summaries] topics ${batch.map((m) => m.id).join(", ")}:`, error instanceof Error ? error.message : error);
-      return;
-    }
-    for (const [mid, update] of updates) {
-      if (opts.dryRun) {
-        opts.onUpdate?.(mid, update);
-        written.push(mid);
-        continue;
-      }
-      const { error } = await supabase.from("matters").update(await keepTextEdits(supabase, mid, update)).eq("id", mid);
-      if (error) console.error(`[topic-summaries] saving topic ${mid} failed:`, error.message);
-      else written.push(mid);
     }
   }));
-  return written.sort((a, b) => a - b);
+  // An instruction for a topic that wasn't written can't be claimed either.
+  for (const [matter_id, list] of notesByMatter) {
+    if (!handled.has(matter_id)) report.unfollowed.push(...list.map((note) => ({ note, matter_id, missing: "" })));
+  }
+  report.written.sort((a, b) => a - b);
+  return report;
+}
+
+/** Rewrite and check the summaries of these topics, and save them. Returns the ids written. */
+export async function refreshTopicSummaries(supabase: SupabaseClient, matterIds: Iterable<number>,
+  opts: { dryRun?: boolean; onUpdate?: (matterId: number, update: Update) => void; signal?: AbortSignal } = {}): Promise<number[]> {
+  return (await rewriteSummaries(supabase, matterIds, opts)).written;
 }
 
 const NoteCheck = z.object({
@@ -428,7 +504,7 @@ export async function checkSummaryNotes(supabase: SupabaseClient, notes: { matte
     }
     const text = `Summary: ${matter?.plain_english_summary || ""}\nWhere it stands: ${matter?.meta?.status_line || ""}`;
     try {
-      const { data } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, schema: NoteCheck, schemaName: "_NoteCheck",
+      const { data } = await getAiClient().json({ stage: "note_check", system: DEFAULT_SYSTEM, schema: NoteCheck, schemaName: "_NoteCheck",
         prompt: `An editor asked for this change to a topic page's summary on a site that follows a city council:\n\n${entry.note}\n\n`
           + `The page now reads:\n${text}\n\nThe page's dates (when it was discussed) and its timeline are drawn from its records `
           + `and shown separately, so judge only what the summary and status should say. Judge substance, not wording: it follows `
@@ -447,29 +523,33 @@ const DirectEdit = z.object({
   status_line: z.string().describe(FIELDS.direct_status_line),
 });
 
-/** Last step when the summary writer won't follow an approved instruction: edit the current summary and status line
- * directly, using only the instruction and the record's words it quotes. Kept as meta.staff_text, which later rewrites
- * keep until the topic gains a step of its own. True when saved. */
-export async function directEdit(supabase: SupabaseClient, matterId: number, notes: string[]): Promise<boolean> {
+/** Applies instructions to the current summary and status line directly, using only the instructions and the record's
+ * words they quote. With `lock` (the default) the result is kept as meta.staff_text, which later rewrites keep until
+ * the topic gains a step of its own; without it, it is a plain correction. Returns the saved text, or null. */
+export async function directEdit(supabase: SupabaseClient, matterId: number, notes: string[],
+  opts: { lock?: boolean; signal?: AbortSignal } = {}): Promise<{ summary: string; status_line: string } | null> {
+  const lock = opts.lock ?? true;
   const { data: m } = await supabase.from("matters").select("plain_english_summary, meta").eq("id", matterId).single();
   const meta: Meta = m?.meta || {};
   let edit: z.infer<typeof DirectEdit>;
   try {
-    ({ data: edit } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, schema: DirectEdit, schemaName: "_DirectEdit",
+    ({ data: edit } = await getAiClient().json({ stage: "review", system: DEFAULT_SYSTEM, schema: DirectEdit, schemaName: "_DirectEdit", signal: opts.signal,
       prompt: "Apply these approved instructions to a topic page on a site that follows a city council. Change only what they ask; "
         + "keep everything else, and use only facts the instructions or their quoted records give.\n\nInstructions:\n"
         + notes.map((n) => `- ${n}`).join("\n")
         + `\n\nCurrent summary: ${m?.plain_english_summary || ""}\nCurrent where it stands: ${meta.status_line || ""}` }));
   } catch (error) {
     console.error("[topic-summaries] direct edit failed:", error instanceof Error ? error.message : error);
-    return false;
+    return null;
   }
-  const owned = await fetchAll<{ id: number }>((from, to) => supabase.from("agenda_items").select("id").eq("matter_id", matterId).order("id").range(from, to));
+  const summary = edit.summary.trim() || (m?.plain_english_summary ?? "");
+  const status_line = edit.status_line.trim() || (meta.status_line ?? "");
+  const owned = lock ? await fetchAll<{ id: number }>((from, to) => supabase.from("agenda_items").select("id").eq("matter_id", matterId).order("id").range(from, to)) : [];
   const staffText = { summary: edit.summary.trim(), status_line: edit.status_line.trim(), items: owned.map((r) => r.id).sort((a, b) => a - b),
     notes, at: new Date().toISOString() };
   const { error } = await supabase.from("matters").update(await keepTextEdits(supabase, matterId, {
-    plain_english_summary: staffText.summary || m?.plain_english_summary,
-    meta: { ...meta, status_line: staffText.status_line || meta.status_line, staff_text: staffText },
+    plain_english_summary: summary,
+    meta: { ...meta, status_line, ...(lock ? { staff_text: staffText } : {}) },
   })).eq("id", matterId);
-  return !error;
+  return error ? null : { summary, status_line };
 }

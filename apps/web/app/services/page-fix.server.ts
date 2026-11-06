@@ -4,12 +4,14 @@ import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, type PageFlag } from "../lib/page-review-types";
 import { readPage } from "./page-check.server";
-import { decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
-import { fetchAll, itemRecords, topicItemIds } from "./page-verify.server";
+import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
+import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { research } from "./record-research.server";
+import { researchLine } from "../lib/flag-research";
+import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
-import { checkSummaryNotes, directEdit, refreshTopicSummaries } from "./topic-summaries.server";
+import { rewriteSummaries } from "./topic-summaries.server";
 import { mergeFlat, moveItem, refreshMeetingLifecycles } from "./topic-moves.server";
 import type { StaffRole } from "../lib/auth.server";
 
@@ -42,8 +44,8 @@ const PlanSchema = z.object({
     document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
-    source: z.string().nullable().describe("rewrite_summary / rewrite_entry / rewrite_heading: the record's own words that support the change, quoted exactly from the records above. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null otherwise."),
-    reason: z.string().describe("One plain sentence a resident would understand: what you're doing and why, or why it can't be done."),
+    source: z.string().nullable().describe("Only where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly and as briefly as the claim allows. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
   })),
 });
 
@@ -178,7 +180,7 @@ ${movable || "(No flagged items to move.)"}
   being a different application: the link is how readers find the earlier or later one. Unlink it only when its
   records show it isn't the same land at all.
 - no_change: when the editor asks a question ("is this relevant?", "should this be here?") and the answer is that the
-  page is right as it is. Answer it in "reason": one or two plain sentences saying why, from the records (e.g. "The
+  page is right as it is. Answer it in "reason": one plain sentence saying why, from the records (e.g. "The
   2018 item renewed the same five-year access agreement Council granted in 2013, so it belongs here"). Use it too when
   an agreed problem turns out not to be one. Give the key of the entry it's about, or null for the whole page.
 - accept_suggestion: add one of the entries the search found for this page (listed below, not yet on it) when it
@@ -186,7 +188,7 @@ ${movable || "(No flagged items to move.)"}
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
 ${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}${c.sameSite ? " [another application for the same site]" : ""}`).join("\n")}\n` : ""}
-Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly. A
+Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly; no other action needs a "source". A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
@@ -219,7 +221,14 @@ ${entries.map((e) => `[${e.key}] ${e.text}`).join("\n\n")}`;
 /** Runs the agent for one page. Never throws: a failure is written to the page as "needs work" with a note. Returns
  * "nothing_new" when every flag rated 👍 was already fixed and there's no note or found entry, so the caller can say
  * so rather than show the last run's report as if this run had done it. */
+/** The most model time one fix may use. Past it the agent stops and says what is left, rather than hang the request. */
+export const FIX_BUDGET_MS = 90_000;
+
 export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | "refiling" | void> {
+  const startedAt = Date.now();
+  // Every model call in the fix shares this deadline: when it fires, in-flight calls are cancelled.
+  const budget = AbortSignal.timeout(FIX_BUDGET_MS);
+  const timeLeft = () => FIX_BUDGET_MS - (Date.now() - startedAt);
   const finish = async (status: "fixed" | "needs_work", agent_note: string, flags?: PageFlag[]) => {
     await supabase.from("page_reviews").update({
       status, agent_note, agent_at: new Date().toISOString(), ...(flags ? { ai_flags: flags } : {}),
@@ -307,13 +316,12 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // Each approved problem of fact is researched in all of the City's records first, so the fix says what the
     // record says (with its words) rather than only deleting what the page couldn't back from its own filings.
     const factual = agreed.filter((f) => f.problem === "unsupported" || f.problem === "wrong_detail");
-    const researched = await Promise.all(factual.map((f) => research(supabase,
+    // The check that raised a flag already researched it and stored the finding on the flag; only a flag without one
+    // (an editor-added issue) is researched here.
+    const researched = await Promise.all(factual.map((f) => f.research ? Promise.resolve(f.research) : research(supabase,
       `What does the City's record actually say about this? The page says: "${f.excerpt}". The problem found: ${f.reason}`,
-      `This is the topic page ${path}.${f.note ? ` The editor's note: ${f.note}` : ""}`).catch(() => null)));
-    const researchText = factual.map((f, i) => {
-      const r = researched[i];
-      return r ? `RESEARCH on "${f.excerpt}": ${r.verdict}. ${r.explanation}${r.quote ? ` The record says: “${r.quote}”${r.ref ? ` (${r.ref})` : ""}` : ""}` : "";
-    }).filter(Boolean).join("\n");
+      `This is the topic page ${path}.${f.note ? ` The editor's note: ${f.note}` : ""}`, 10, budget).catch(() => null)));
+    const researchText = factual.map((f, i) => researchLine(f.excerpt, researched[i])).filter(Boolean).join("\n");
     const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
     // Entries just added from the search are often filed on a topic of their own that's really this one (a lone
@@ -337,6 +345,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         (row as { internal_note?: string | null } | null)?.internal_note ?? null, attachmentLines.join("\n")),
       schema: PlanSchema,
       schemaName: "page_fix_plan",
+      signal: budget,
     });
 
     const onPage = new Set(page.entries.map((e) => e.key));
@@ -643,38 +652,25 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       }
       // Topics merged away during this fix are rewritten as the topic they were merged into.
       const { data: current } = await supabase.from("matters").select("id, merged_into").in("id", [...touched]);
-      rewrote = await refreshTopicSummaries(supabase, ((current || []) as any[]).map((m) => m.merged_into || m.id));
+      const pageTopic = ((current || []) as any[]).find((m) => m.id === matterId);
+      const report = await rewriteSummaries(supabase, ((current || []) as any[]).map((m) => m.merged_into || m.id),
+        { notes: summaryNotes.map((note) => ({ matter_id: pageTopic?.merged_into || matterId, note })), signal: budget });
+      rewrote = report.written;
       if (rewrote.length && (moves.length > refiles.length || merges.length)) {
         done.push(`Rewrote the summary of ${rewrote.length} ${rewrote.length === 1 ? "topic" : "topics"} whose timeline changed.`);
       }
-      // Each approved summary instruction is checked against the new text; one more rewrite told what it missed, then
-      // the agent edits the text itself, checked the same way.
-      let unfollowed = await checkSummaryNotes(supabase, summaryNotes.map((note) => ({ matter_id: matterId, note })));
-      if (unfollowed.length) {
-        const retry = [...new Set(unfollowed.map((u) => u.matter_id))];
-        for (const id of retry) {
-          const asks = unfollowed.filter((u) => u.matter_id === id && u.missing).map((u) => `The last rewrite missed this: ${u.missing}`);
-          if (!asks.length) continue;
-          const { data: m } = await supabase.from("matters").select("meta").eq("id", id).single();
-          await supabase.from("matters").update({ meta: { ...(m?.meta || {}), editor_notes: [...((m?.meta as any)?.editor_notes || []), ...asks] } }).eq("id", id);
-        }
-        await refreshTopicSummaries(supabase, retry);
-        unfollowed = await checkSummaryNotes(supabase, unfollowed.map((u) => ({ matter_id: u.matter_id, note: u.note })));
-      }
-      if (unfollowed.length) {
-        for (const id of [...new Set(unfollowed.map((u) => u.matter_id))]) {
-          if (await directEdit(supabase, id, unfollowed.filter((u) => u.matter_id === id).map((u) => u.note))) {
-            done.push("Edited the summary directly, since the summary writer didn't follow the instruction.");
-          }
-        }
-        unfollowed = await checkSummaryNotes(supabase, unfollowed.map((u) => ({ matter_id: u.matter_id, note: u.note })));
-      }
-      for (const u of unfollowed) {
+      // One check judged the facts and each approved instruction together; what it found was edited directly (no second
+      // rewrite) and checked once more.
+      if (report.edited.length) done.push("Edited the summary directly, since the first draft didn't follow the instructions or the records.");
+      for (const u of report.unfollowed) {
         left.push(`The summary was rewritten but doesn't yet say what was asked: "${u.note.slice(0, 300)}"${u.missing ? ` Still missing: ${u.missing}` : ""}`);
         const said = u.note.split(" The record says:")[0].slice(0, 80);
         for (let i = done.length - 1; i >= 0; i--) if (done[i].includes(said)) done.splice(i, 1);
       }
-      summaryUnfollowed = unfollowed.length > 0;
+      summaryUnfollowed = report.unfollowed.length > 0;
+      if (budget.aborted && (!rewrote.length || report.unfollowed.length)) {
+        left.push("Ran out of time (about 90 seconds of model work) before the summary rewrite and its check finished. Press Fix again to finish it.");
+      }
     }
     // Any agreed flag on an entry that's now gone is resolved, whichever step removed it; a whole-page issue is
     // resolved by a summary rewrite that follows its instruction.
@@ -687,7 +683,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       // page with this run's report (done, left, waiting) and its own.
       const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
       const { error } = await supabase.from("pipeline_jobs").insert({
-        municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1,
+        municipality_id: municipality?.id ?? 1, job_type: "fix_page", requested_by: requester.id, max_attempts: 1, priority: INTERACTIVE_JOB_PRIORITY,
         args: { path, moves: refiles, merges: [], refresh: [], done, left, waiting, summary_notes: [],
           requested_by: requester.id, role: requester.staffRole },
       });
@@ -704,18 +700,75 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       }
       left.push(`Couldn't hand the re-filing of ${refiles.length === 1 ? "an item" : "items"} to the pipeline worker, so ${refiles.length === 1 ? "it stays" : "they stay"} where ${refiles.length === 1 ? "it is" : "they are"}.`);
     }
+    // The fix is checked in the same request: only what it wrote (the new summary and status, rewritten lines, and the
+    // statements behind each fixed flag), in one call, and a fix that doesn't hold is reopened. Never the whole page.
+    const newlyFixed = updated.map((f, i) => (f.fixed && !flags[i].fixed ? i : -1)).filter((i) => i >= 0);
+    let finalFlags = updated;
+    let checkedNote = "";
+    let recheckFailed = false;
+    if (newlyFixed.length && timeLeft() > 10_000) {
+      try {
+        const summaryScope = !!rewrote.length || summaryNotes.length > 0;
+        const [{ data: fresh }, own2] = await Promise.all([
+          supabase.from("matters").select("plain_english_summary, meta").eq("id", matterId).single(),
+          topicItemIds(supabase, matterId),
+        ]);
+        const meta = ((fresh?.meta || {}) as Record<string, any>);
+        const covered = (await itemRecords(supabase, [...new Set([...own2, ...ids])]));
+        const claims: Claim[] = [];
+        const summaryIds: string[] = [];
+        if (summaryScope && covered.covered.size > 0) {
+          for (const [i, t] of sentences(fresh?.plain_english_summary || "").entries()) { claims.push({ id: `summary-${i}`, key: null, text: `Summary: ${t}` }); summaryIds.push(`summary-${i}`); }
+          if (meta.status_line) { claims.push({ id: "status", key: null, text: `Where it stands: ${meta.status_line}` }); summaryIds.push("status"); }
+        }
+        for (const id of Object.keys(rewrites)) {
+          const text = meta.timeline_headlines?.[id];
+          if (text && covered.covered.has(Number(id))) claims.push({ id: `line-${id}`, key: `agenda-${id}`, text: `Timeline line for item ${id}: ${text}` });
+        }
+        for (const key of Object.keys(lines)) {
+          const v = meta.entry_lines?.[key];
+          const text = [v?.heading, v?.line].filter(Boolean).join(" | ");
+          if (text) claims.push({ id: `entry-${key}`, key, text: `Entry ${key}: ${text}` });
+        }
+        const scopes = new Map<number, string[]>();
+        for (const i of newlyFixed) {
+          const key = flags[i].key;
+          const claimIds = !key ? summaryIds : [`line-${key.replace(/^agenda-/, "")}`, `entry-${key}`].filter((c) => claims.some((x) => x.id === c));
+          if (claimIds.length) scopes.set(i, claimIds);
+        }
+        const records = [covered.text, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+          evidenceText, researchText].filter(Boolean).join("\n\n");
+        const verdicts: RecheckVerdicts = scopes.size ? await recheckClaims(claims.filter((c) => [...scopes.values()].flat().includes(c.id)), records, budget) : new Map();
+        const outcome = applyRecheck(updated, newlyFixed, scopes, verdicts, new Date().toISOString());
+        finalFlags = outcome.flags;
+        const reread = newlyFixed.filter((i) => scopes.has(i)).length;
+        const failures = outcome.failed.map((x) => `${flagLabel(flags[x.index])} on ${flags[x.index].key ?? "the page"}: ${x.reason}`);
+        checkedNote = recheckSummary(outcome.held, outcome.total, reread, failures);
+        for (const failure of failures) left.push(`The fix doesn't hold: ${failure}`);
+        recheckFailed = failures.length > 0;
+      } catch (error) {
+        console.error("[page-fix] re-check failed:", error instanceof Error ? error.message : error);
+        checkedNote = "Not re-checked: the check itself failed. Press Check to look again.";
+      }
+    } else if (newlyFixed.length) {
+      checkedNote = "Not re-checked: the fix used up its time. Press Check to look again.";
+    }
     const note = [
       done.length ? `Changed:\n${done.map((d) => `• ${d}`).join("\n")}` : answered.length ? "" : result.data.actions.length
         ? "Changed nothing." : "Changed nothing: the agent didn't say what to do. Try rewording the issue as an instruction.",
       answered.length ? `Left as is:\n${answered.map((d) => `• ${d}`).join("\n")}` : "",
       waiting.length ? `Needs a record that isn't on this page:\n${waiting.map((d) => `• ${d}`).join("\n")}` : "",
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
+      checkedNote,
     ].filter(Boolean).join("\n\n");
     // Only waiting on records: nothing for a person to do now, so the page isn't sent back as needing work.
-    await finish(done.length || ((waiting.length || answered.length) && !left.length) ? "fixed" : "needs_work", note, updated);
+    // A fix the re-check found not holding sends the page back as needing work (its flag is open again).
+    await finish(!recheckFailed && (done.length || ((waiting.length || answered.length) && !left.length)) ? "fixed" : "needs_work", note, finalFlags);
   } catch (error) {
     console.error("[page-fix]", error instanceof Error ? error.message : error);
-    await finish("needs_work", "The agent hit an error and changed nothing. Try again, or fix it by hand.");
+    await finish("needs_work", budget.aborted
+      ? "The agent ran out of time (about 90 seconds of model work) before it could plan the fix, and changed nothing. Press Fix again, or fix it by hand."
+      : "The agent hit an error and changed nothing. Try again, or fix it by hand.");
   }
 }
 

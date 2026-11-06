@@ -13,7 +13,7 @@ import { research } from "./record-research.server";
  * (or contradicts them) becomes an "unsupported" flag that quotes what the record does say.
  */
 
-type Claim = { id: string; key: string | null; text: string };
+export type Claim = { id: string; key: string | null; text: string };
 /** Records are never cut to fit: a model that sees only part of a report flags true figures as unconfirmed. A page whose
  * records would overflow the review model's context fails openly instead (about 3 million characters, far beyond any
  * real page). */
@@ -171,11 +171,9 @@ export async function claimsAndRecords(supabase: SupabaseClient, path: string): 
   return null;
 }
 
-/** Flags for the page's statements that its records don't back. Empty when the page has no checkable statements. */
-export async function verifyAgainstRecords(supabase: SupabaseClient, path: string): Promise<PageFlag[]> {
-  const input = await claimsAndRecords(supabase, path);
-  if (!input || !input.claims.length || !input.records) return [];
-  const prompt = `You check a page of Open Langford (a site that follows Langford City council) against the council's own
+/** The prompt that compares a page's statements with the records behind them. */
+export function verifyPrompt(claims: Claim[], records: string) {
+  return `You check a page of Open Langford (a site that follows Langford City council) against the council's own
 records. For each numbered statement the page makes, say whether the records support it:
 Lines marked NOTES were written by a model from a report and may be wrong: they can tell you what a report covers, but
 a statement only a NOTES line backs is not_in_record ("only in a model-written summary of the report").
@@ -191,11 +189,18 @@ adopted is in force): call it supported. Check what is specific to this item: it
 purpose and outcome. Quote the record's words in "source" whenever you can.
 
 STATEMENTS
-${input.claims.map((c) => `[${c.id}] ${c.text}`).join("\n")}
+${claims.map((c) => `[${c.id}] ${c.text}`).join("\n")}
 
 RECORDS
-${input.records}`;
-  const result = await getAiClient().json({ stage: "review", prompt, schema: VerifySchema, schemaName: "page_verify" });
+${records}`;
+}
+
+/** Flags for the page's statements that its records don't back. Empty when the page has no checkable statements. */
+export async function verifyAgainstRecords(supabase: SupabaseClient, path: string): Promise<PageFlag[]> {
+  const input = await claimsAndRecords(supabase, path);
+  if (!input || !input.claims.length || !input.records) return [];
+  const prompt = verifyPrompt(input.claims, input.records);
+  const result = await getAiClient().json({ stage: "verify", prompt, schema: VerifySchema, schemaName: "page_verify" });
   const byId = new Map(input.claims.map((c) => [c.id, c]));
   const doubted = result.data.verdicts.filter((v) => (v.verdict === "not_in_record" || v.verdict === "contradicted") && byId.has(v.id));
   // Before anything is flagged, the reviewer researches it in all of the City's records: a figure missing from the
@@ -215,6 +220,7 @@ ${input.records}`;
       reason: `${contradicted ? "Contradicted by the record" : "Not in the record"}: ${found ? found.explanation : v.reason}` +
         `${said ? ` The record says: “${said}”` : ""}${found ? " (searched all of the City's records)" : ""}`,
       excerpt: claim.text,
+      ...(found ? { research: { verdict: found.verdict, explanation: found.explanation, quote: found.quote, ref: found.ref } } : {}),
     }];
   });
 }
@@ -227,4 +233,14 @@ async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promis
     while (next < items.length) { const i = next++; out[i] = await fn(items[i]); }
   }));
   return out;
+}
+
+/**
+ * The fix agent's re-check: whether these statements (the ones a fix just wrote) hold against the records, in one call on
+ * the review stage and without the research loop. Returns the verdict and a plain reason per statement id.
+ */
+export async function recheckClaims(claims: Claim[], records: string, signal?: AbortSignal): Promise<Map<string, { verdict: string; reason: string }>> {
+  if (!claims.length || !records) return new Map();
+  const { data } = await getAiClient().json({ stage: "review", prompt: verifyPrompt(claims, records), schema: VerifySchema, schemaName: "page_recheck", signal });
+  return new Map(data.verdicts.map((v) => [v.id, { verdict: v.verdict, reason: v.reason }]));
 }

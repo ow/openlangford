@@ -114,12 +114,14 @@ export function createAiClient(options: CreateAiClientOptions): AiClient {
    * refuse to retry once output has been sent downstream.
    */
   async function withPolicy<T>(
-    ctx: { stage: AiStage | "embedding"; model: string; timeoutMs: number; signal?: AbortSignal },
+    ctx: { stage: AiStage | "embedding"; model: string; timeoutMs: number; signal?: AbortSignal; maxAttempts?: number },
     attempt: (signal: AbortSignal) => Promise<T>,
     canRetry: () => boolean = () => true,
   ): Promise<{ value: T; attempts: number }> {
     let lastError: AiError | undefined;
-    for (let n = 1; n <= policy.maxAttempts; n++) {
+    // A stage can ask for fewer attempts (config STAGE_MAX_ATTEMPTS); a retry policy given to the client wins.
+    const maxAttempts = options.retry ? policy.maxAttempts : ctx.maxAttempts ?? policy.maxAttempts;
+    for (let n = 1; n <= maxAttempts; n++) {
       const deadline = deadlineSignal(ctx.timeoutMs, ctx.signal);
       try {
         const value = await attempt(deadline.signal);
@@ -130,7 +132,7 @@ export function createAiClient(options: CreateAiClientOptions): AiClient {
           err = new AiError("timeout", `${ctx.stage} call timed out after ${ctx.timeoutMs}ms`, { cause: raw });
         }
         lastError = err.withContext({ stage: ctx.stage, model: ctx.model, attempts: n });
-        const retry = lastError.retryable && n < policy.maxAttempts && canRetry() && !ctx.signal?.aborted;
+        const retry = lastError.retryable && n < maxAttempts && canRetry() && !ctx.signal?.aborted;
         if (!retry) throw lastError;
         const delay = backoffDelay(n, policy, lastError);
         console.warn(`[ai] ${ctx.stage} attempt ${n} failed (${lastError.message}); retrying in ${Math.round(delay)}ms`);
@@ -151,7 +153,7 @@ export function createAiClient(options: CreateAiClientOptions): AiClient {
       assertConfigured(opts.stage, model);
       const system = withHouseRules(opts.system);
       const { value, attempts: used } = await withPolicy(
-        { stage: opts.stage, model, timeoutMs: opts.timeoutMs ?? stage.timeoutMs, signal: opts.signal },
+        { stage: opts.stage, model, timeoutMs: opts.timeoutMs ?? stage.timeoutMs, signal: opts.signal, maxAttempts: stage.maxAttempts },
         (signal) => {
           attempts++;
           return provider.generate({ model, system, prompt: opts.prompt, signal, jsonSchema });

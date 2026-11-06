@@ -20,7 +20,15 @@ export type AiStage =
   | "review"
   /** Public text: a topic's summary, rewritten after a staff fix (services/topic-summaries.server.ts), as the pipeline's
    * "writing" stage writes it. */
-  | "writing";
+  | "writing"
+  /** The page check's comparison of a page's statements with the records (page-verify.server.ts). Strong model. */
+  | "verify"
+  /** The summary check after a rewrite: facts and staff instructions in one call (topic-summaries.server.ts). Strong model. */
+  | "summary_check"
+  /** Whether a summary follows a staff instruction, checked alone (topic-summaries.server.ts). Strong model by default. */
+  | "note_check"
+  /** Whether a Related topics card belongs (page-check.server.ts). Strong model by default. */
+  | "related_check";
 
 export type AiProviderName = "openai";
 
@@ -40,7 +48,17 @@ const STAGE_ENV_PREFIX: Record<AiStage, string> = {
   extraction: "EXTRACTION",
   review: "REVIEW",
   writing: "WRITING",
+  verify: "VERIFY",
+  summary_check: "SUMMARY_CHECK",
+  note_check: "NOTE_CHECK",
+  related_check: "RELATED_CHECK",
 };
+
+/** Stages whose model falls back to the review stage's (REVIEW_AI_MODEL) before the site's AI_MODEL. related_check
+ * Each is overridable by its own env var (NOTE_CHECK_AI_MODEL, RELATED_CHECK_AI_MODEL, ...). All default to the strong
+ * model: replayed on real pages (scripts/replay-checks.ts) the fast model disagreed on 25% of 40 instructions and was no
+ * faster on either check (latency is a fixed cost plus output length, which these short answers don't change). */
+const FOLLOWS_REVIEW: AiStage[] = ["verify", "summary_check", "note_check", "related_check"];
 
 /** Per-attempt timeouts. Streams use this as the total budget for the stream. */
 export const STAGE_TIMEOUT_MS: Record<AiStage, number> = {
@@ -49,8 +67,20 @@ export const STAGE_TIMEOUT_MS: Record<AiStage, number> = {
   followups: 20_000,
   rerank: 20_000,
   extraction: 120_000,
-  review: 90_000,
-  writing: 300_000,
+  // Review and writing calls: 30 s per attempt, one retry (STAGE_MAX_ATTEMPTS). Measured over 14 days a review call is
+  // ~3.5 s plus ~12 ms per output token (p95 14 s, longest sensible one ~32 s), while one stalled call ran 94 s on 118
+  // tokens. The statement-by-statement checks write longer answers, so they get 60 s.
+  review: 30_000,
+  writing: 30_000,
+  verify: 60_000,
+  summary_check: 60_000,
+  note_check: 20_000,
+  related_check: 30_000,
+};
+
+/** Attempts per call (including the first) for stages that shouldn't use the client's default of 3. */
+export const STAGE_MAX_ATTEMPTS: Partial<Record<AiStage, number>> = {
+  review: 2, writing: 2, verify: 2, summary_check: 2, note_check: 2, related_check: 2,
 };
 
 export const EMBEDDING_TIMEOUT_MS = 10_000;
@@ -60,6 +90,8 @@ export interface StageConfig {
   provider: AiProviderName;
   model: string;
   timeoutMs: number;
+  /** Attempts including the first; unset means the client's retry policy. */
+  maxAttempts?: number;
 }
 
 export interface AiConfig {
@@ -88,6 +120,14 @@ export function readAiEnv(): AiEnv {
     REVIEW_AI_MODEL: process.env.REVIEW_AI_MODEL,
     WRITING_AI_PROVIDER: process.env.WRITING_AI_PROVIDER,
     WRITING_AI_MODEL: process.env.WRITING_AI_MODEL,
+    VERIFY_AI_PROVIDER: process.env.VERIFY_AI_PROVIDER,
+    VERIFY_AI_MODEL: process.env.VERIFY_AI_MODEL,
+    SUMMARY_CHECK_AI_PROVIDER: process.env.SUMMARY_CHECK_AI_PROVIDER,
+    SUMMARY_CHECK_AI_MODEL: process.env.SUMMARY_CHECK_AI_MODEL,
+    NOTE_CHECK_AI_PROVIDER: process.env.NOTE_CHECK_AI_PROVIDER,
+    NOTE_CHECK_AI_MODEL: process.env.NOTE_CHECK_AI_MODEL,
+    RELATED_CHECK_AI_PROVIDER: process.env.RELATED_CHECK_AI_PROVIDER,
+    RELATED_CHECK_AI_MODEL: process.env.RELATED_CHECK_AI_MODEL,
     EMBEDDING_MODEL: process.env.EMBEDDING_MODEL,
     EMBEDDING_DIMENSIONS: process.env.EMBEDDING_DIMENSIONS,
   };
@@ -117,10 +157,12 @@ export function resolveAiConfig(env: AiEnv): AiConfig {
       provider: "openai",
       model:
         pick(env, `${prefix}_AI_MODEL`) ||
+        (FOLLOWS_REVIEW.includes(stage) ? pick(env, "REVIEW_AI_MODEL") : undefined) ||
         pick(env, "AI_MODEL") ||
         pick(env, "OPENAI_MODEL") ||
         DEFAULT_MODEL,
       timeoutMs: STAGE_TIMEOUT_MS[stage],
+      maxAttempts: STAGE_MAX_ATTEMPTS[stage],
     };
   }
 
