@@ -1,3 +1,4 @@
+import { shapeListMeeting } from "../lib/meeting-list";
 import { writtenLetters } from "../lib/written";
 import { PUBLIC_MEETING_FILTER } from "~/lib/public-meetings";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -110,7 +111,7 @@ export async function getMeetings(
   let query = supabase
     .from("meetings")
     .select(
-      "id, slug, calendar_source_id, calendar:meta->calendar, highlights:meta->highlights, organization_id, title, meeting_date, type, status, video_url, minutes_url, agenda_url, video_duration_seconds, summary, has_agenda, has_minutes, has_transcript, created_at, updated_at, organization:organizations(*), agenda_item_count:agenda_items(count)",
+      "id, slug, calendar_source_id, calendar:meta->calendar, highlights:meta->highlights, organization_id, title, meeting_date, type, status, video_url, minutes_url, agenda_url, video_duration_seconds, summary, has_agenda, has_minutes, has_transcript, organization:organizations(id, name), agenda_item_count:agenda_items(count)",
     )
     .eq("municipality_id", municipality.id);
 
@@ -153,7 +154,7 @@ export async function getMeetings(
     throw new Error(error.message);
   }
 
-  const meetings = (data || []) as unknown as Meeting[];
+  const meetings = ((data || []) as unknown as Meeting[]).map(shapeListMeeting);
 
   // Motion counts, topics and residents' letters for exactly these meetings, in parallel.
   // (The get_meetings_with_stats RPC aggregated every meeting's motions and agenda items on

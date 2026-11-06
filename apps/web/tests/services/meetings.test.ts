@@ -47,7 +47,7 @@ describe("getMeetings", () => {
 
     expect(supabase.from).toHaveBeenCalledWith("meetings");
     expect(builder.select).toHaveBeenCalledWith(
-      expect.stringContaining("organization:organizations(*)"),
+      expect.stringContaining("organization:organizations(id, name)"),
     );
   });
 
@@ -215,7 +215,6 @@ describe("getMeetings", () => {
       "has_agenda",
       "has_minutes",
       "has_transcript",
-      "created_at",
     ];
 
     for (const col of expectedColumns) {

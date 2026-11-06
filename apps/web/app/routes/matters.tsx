@@ -4,7 +4,8 @@ import { timed } from "../lib/server-timing.server";
 import { matterPath } from "../lib/paths";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
 import type { Route } from "./+types/matters";
-import { getMatters } from "../services/matters";
+import { getMatters, getMatterIndex, type MatterIndexRow } from "../services/matters";
+import { pageOf, orderLike, MATTERS_PAGE_SIZE } from "../lib/matter-index";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { DEGRADED_HEADERS, forwardCacheControl } from "../lib/degraded-response";
 import { Link, data as routeData, redirect, useFetcher, useRouteLoaderData, useSearchParams, type ShouldRevalidateFunctionArgs } from "react-router";
@@ -50,7 +51,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   ];
 };
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = MATTERS_PAGE_SIZE;
 const PROCEDURAL_TITLES = new Set(["call to order", "approval of agenda", "adjournment", "question period", "termination"]);
 const mattersPagePath = (page: number) => (page > 1 ? `/matters?page=${page}` : "/matters");
 
@@ -77,32 +78,43 @@ export async function loader({ request }: Route.LoaderArgs) {
   const rawPage = url.searchParams.get("page");
   const requested = rawPage === null ? 1 : Number(rawPage);
   if (!Number.isInteger(requested) || requested < 1) throw redirect("/matters", 301);
-  let all: Matter[];
+  let index: MatterIndexRow[];
+  let rows: Matter[] = [];
   let failed = false;
   try {
     const supabase = getSupabaseAdminClient();
     const municipality = await getMunicipality(supabase);
-    // Building the list joins every matter's agenda items (~4s); it only changes on ingest.
-    all = ((await timed("matters-list", cachedCompute(`matters-list:${municipality.id}`, () => getMatters(supabase, municipality), HOURLY_SHARED))) as Matter[])
+    // Counts, categories and page links come from a narrow index (no agenda-item join; it only changes on ingest).
+    index = (await timed("matters-index", cachedCompute(`matters-index:${municipality.id}`, () => getMatterIndex(supabase, municipality), HOURLY_SHARED)))
       .filter((m) => !PROCEDURAL_TITLES.has(m.title.toLowerCase()));
+    const pageCount = Math.max(1, Math.ceil(index.length / PAGE_SIZE));
+    if (index.length && requested > pageCount) throw new Response("Not Found", { status: 404 });
+    const page = Math.min(requested, pageCount);
+    // Full rows (summaries, pins, letters) only for the page being shown, or for everything when filtering needs it.
+    rows = complete
+      ? ((await timed("matters-list", cachedCompute(`matters-list:${municipality.id}`, () => getMatters(supabase, municipality), HOURLY_SHARED))) as Matter[])
+        .filter((m) => !PROCEDURAL_TITLES.has(m.title.toLowerCase()))
+      : ((await timed("matters-page", cachedCompute(`matters-page:${municipality.id}:${page}`,
+          () => getMatters(supabase, municipality, pageOf(index, page).map((m) => m.id)), HOURLY_SHARED))) as Matter[]);
   } catch (error) {
+    if (error instanceof Response) throw error;
     console.error("Error fetching matters:", error);
-    all = [];
+    index = [];
+    rows = [];
     failed = true;
   }
-  const pageCount = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
-  if (all.length && requested > pageCount) throw new Response("Not Found", { status: 404 });
+  const pageCount = Math.max(1, Math.ceil(index.length / PAGE_SIZE));
   const page = Math.min(requested, pageCount);
-  const shown = complete ? all : all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const shown = complete ? rows : orderLike(rows, pageOf(index, page));
   const result = {
     // Lead picture picked from the staff reports, as a thumbnail in the list.
     matters: shown.map((m: any) => ({ ...m, image_url: documentImageUrl(m.lead_image_key), lead_image_key: undefined })) as Matter[],
     complete,
     page,
     pageCount,
-    total: all.length,
-    counts: statusCounts(all),
-    categories: ["All", ...Array.from(new Set(all.map((m) => m.category || "General"))).sort()],
+    total: index.length,
+    counts: statusCounts(index),
+    categories: ["All", ...Array.from(new Set(index.map((m) => m.category || "General"))).sort()],
   };
   return failed ? routeData(result, { headers: DEGRADED_HEADERS }) : result;
 }

@@ -1,3 +1,4 @@
+import { timed } from "../lib/server-timing.server";
 import { SITE_NAME } from "../lib/site-name";
 import { labelSpeakerRoles } from "../services/speaker-roles.server";
 import { collapseListedReadings, foldSameMeetingSteps } from "../lib/timeline-story";
@@ -5,7 +6,7 @@ import { getStaffRole } from "../lib/auth.server";
 import type { Route } from "./+types/matter-detail";
 import {
   getMatterById,
-  getDocumentsForAgendaItems,
+  getDocumentsForMatter,
   getMatterEvidence,
   getMatterStory,
   type ReportMention,
@@ -341,8 +342,23 @@ function buildFriendlyEvidence(evidence: any, matter: any) {
 export async function loader({ params, request }: Route.LoaderArgs) {
   try {
     const supabase = getSupabaseAdminClient();
-    const resolved = await resolveSlugParam(supabase, "matters", params.id, request, (m) => matterPath(m), "Matter Not Found", { redirectLegacy: false });
-    const matter = await getMatterById(supabase, String(resolved.id));
+    const resolved = await timed("matter-resolve", resolveSlugParam(supabase, "matters", params.id, request, (m) => matterPath(m), "Matter Not Found", { redirectLegacy: false }));
+    // The side queries only need the matter id, so they start together with the matter itself. They are
+    // only awaited after the hidden / redirect checks below, so nothing they fetch is returned for a
+    // hidden topic. A merged topic loads under its target id; that rare case refetches (see below).
+    const fetchSides = (id: number) => timed("matter-sides", Promise.all([
+      getMatterEvidence(supabase, id),
+      getMatterStory(supabase, id),
+      getPropertiesForMatter(supabase, id),
+      sameSiteTopics(supabase, id),
+    ]));
+    let sidesFor = Number(resolved.id);
+    let sidesPromise = fetchSides(sidesFor);
+    // Documents of all the matter's agenda items: also keyed on the matter id, so also started now.
+    const fetchDocuments = (id: number) => { const p = timed("matter-documents", getDocumentsForMatter(supabase, id)); p.catch(() => {}); return p; };
+    let documentsPromise = fetchDocuments(sidesFor);
+    sidesPromise.catch(() => {}); // surfaced when awaited; never an unhandled rejection if we bail out early
+    const matter = await timed("matter-load", getMatterById(supabase, String(resolved.id)));
     // Removed by staff from the review bar, or tidied away (a section heading, or a topic left with nothing on it):
     // old links get a short note (410 Gone, not indexed) pointing to the
     // meetings where its agenda items still are; staff still see the whole page, to unhide it.
@@ -364,14 +380,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     if (matter.slug && params.id !== matter.slug) return redirect(matterPath(matter) + new URL(request.url).search, 301);
 
     // Fetch documents for all agenda items in this matter (batch query)
-    const agendaItemIds = (matter.agenda_items || []).map((ai) => ai.id);
-    const matterDocuments = await getDocumentsForAgendaItems(supabase, agendaItemIds);
-    const [matterEvidence, story, properties, sameSite] = await Promise.all([
-      getMatterEvidence(supabase, matter.id),
-      getMatterStory(supabase, matter.id),
-      getPropertiesForMatter(supabase, matter.id),
-      sameSiteTopics(supabase, matter.id),
-    ]);
+    if (matter.id !== sidesFor) { sidesFor = matter.id; sidesPromise = fetchSides(sidesFor); documentsPromise = fetchDocuments(sidesFor); }
+    const [matterEvidence, story, properties, sameSite] = await sidesPromise;
 
     // Pipeline-picked pictures from the staff reports (meta.images), resolved to public URLs.
     const pick = (img: any) => {
@@ -395,7 +405,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const lots = properties.map(propertyPin).filter((p): p is NonNullable<typeof p> => p !== null);
     (matter as any).locations = lots.length ? lots : Array.from(pins.values());
 
-    await labelSpeakerRoles(supabase, [matter, story]);
+    const [matterDocuments] = await Promise.all([
+      documentsPromise,
+      timed("matter-roles", labelSpeakerRoles(supabase, [matter, story])),
+    ]);
     return { matter, matterDocuments, matterEvidence, story, images, properties, sameSite };
   } catch (error) {
     throw loaderFailure(error, "Matter Not Found");
