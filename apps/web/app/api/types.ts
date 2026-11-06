@@ -25,7 +25,7 @@ export interface ApiEnv {
     apiKeyId?: string;
     userId?: string;
     municipality?: {
-      id: string;
+      id: number;
       slug: string;
       name: string;
       short_name: string;

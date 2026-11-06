@@ -1,3 +1,4 @@
+import type { Database } from "~/lib/database.types";
 import { PUBLIC_MEETING_FILTER } from "~/lib/public-meetings";
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
@@ -115,7 +116,7 @@ export class ListMeetings extends OpenAPIRoute {
       .or(PUBLIC_MEETING_FILTER);
 
     // Apply filters
-    if (type) query = query.eq("type", type);
+    if (type) query = query.eq("type", type as Database["public"]["Enums"]["meeting_type"]);
     if (date_from) query = query.gte("meeting_date", date_from);
     if (date_to) query = query.lte("meeting_date", date_to);
     if (has_transcript !== undefined)
