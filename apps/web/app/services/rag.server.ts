@@ -1,4 +1,5 @@
 import { searchMotionContext } from "./motion-search.server";
+import { glossaryPromptBlock } from "./ai/glossary-prompt";
 import { formatSpeakerName } from "~/lib/speaker-labels";
 import { SPOKEN_STATEMENT_FILTER, isSpokenStatementCandidate } from "~/lib/key-statement-evidence";
 import { DEFAULT_MUNICIPALITY } from "../lib/site-config";
@@ -924,7 +925,7 @@ function compactArgs(args: Record<string, unknown>): Record<string, unknown> {
 function getOrchestratorSystemPrompt(municipalityName: string = DEFAULT_MUNICIPALITY.name) {
   const todayDate = civicToday();
 
-  return `You are a research agent for the ${municipalityName}, British Columbia. Citizens ask you questions about their municipal council and you gather evidence from council records to answer them.
+  return `You are a research agent for the ${municipalityName}, British Columbia. Residents ask you questions about their municipal council and you gather evidence from council records to answer them.
 
 Today's date is ${todayDate}. Use this for any temporal references like "recent", "this year", "last month", etc.
 
@@ -993,13 +994,14 @@ ${tools.map((t) => `- ${t.description}`).join("\n")}`;
 }
 
 function getFinalSystemPrompt(municipalityName: string = DEFAULT_MUNICIPALITY.name) {
-  return `You are a civic transparency analyst for the ${municipalityName}, British Columbia. You help citizens understand what their municipal council has discussed, decided, and debated.
+  return `You are a civic transparency analyst for the ${municipalityName}, British Columbia. You help residents understand what their municipal council has discussed, decided, and debated.
 
-You will receive a citizen's question and raw evidence gathered from official council records — transcripts, motions, and votes. Your job is to synthesize this into a clear, trustworthy answer.
+You will receive a resident's question and raw evidence gathered from official council records — transcripts, motions, and votes. Your job is to synthesize this into a clear, trustworthy answer.
 
 ## Writing Style
 
-- **Tone:** Neutral, informative, and accessible. Write for a general audience, not policy experts. Avoid jargon.
+- **Tone:** Neutral, informative, and accessible. Write for a Langford resident who has never read a council agenda, not for policy experts. Everyday words; explain a council term in a few words the first time if it can't be avoided.
+- **Council terms:** use the plain words below for procedure. Explain a step ("one step from final approval") instead of naming it ("third reading").
 - **Voice:** Third-person factual reporting. Never editorialize or express opinions.
 - **Length:** 150-400 words. Shorter is better if the evidence is straightforward.
 
@@ -1015,7 +1017,7 @@ You will receive a citizen's question and raw evidence gathered from official co
    - When evidence comes from document sections (staff reports), reference the document: "According to the staff report presented at the March 3 meeting..." Staff reports and official documents are authoritative primary sources.
 
 3. **Cite with numbered references.** Use inline citations like [1], [2] etc. that correspond to the numbered source list provided. Weave them naturally into the prose:
-   - Good: "At the January 15, 2025 council meeting, Councillor Lemon noted that... [1]"
+   - Good: "At the January 15, 2025 council meeting, the mayor noted that... [1]"
    - Good: "Council voted 5-2 to approve the rezoning [3], following public input at the November hearing [1][2]."
    - Bad: "According to Source 3, the councillor said..."
    - Place citations at the end of the sentence or clause they support. Use multiple citations when a claim draws from several sources.
@@ -1024,7 +1026,7 @@ You will receive a citizen's question and raw evidence gathered from official co
 
 5. **Handle insufficient evidence.** If the evidence is thin or doesn't fully answer the question:
    - State clearly what you found and what's missing
-   - Suggest what the citizen could search for (e.g. "You might find more detail by searching for 'Official Community Plan' or looking at Committee of the Whole meetings")
+   - Suggest what the resident could search for (e.g. "You might find more detail by searching for 'Official Community Plan' or looking at Committee of the Whole meetings")
    - Never pad the answer with filler or speculation
 
 ## Formatting
@@ -1032,8 +1034,17 @@ You will receive a citizen's question and raw evidence gathered from official co
 - Use **bold** for key terms, names on first mention, and outcomes
 - Use ### headers only if the answer genuinely covers 2+ distinct subtopics
 - Use bullet points for lists of decisions, votes, or key points
-- Keep paragraphs to 2-3 sentences max`;
+- Keep paragraphs to 2-3 sentences max
+
+${glossaryPromptBlock("resident", RAG_GLOSSARY_TERMS)}`;
 }
+
+/** The glossary terms a resident's answer is likely to touch; the rest would only add tokens. */
+const RAG_GLOSSARY_TERMS = [
+  "committee-of-the-whole", "public-hearing", "closed-meeting", "motion", "carried", "defeated", "opposed", "referred",
+  "tabled", "notice-of-motion", "rescinded", "bylaw", "readings", "first-reading", "second-reading", "third-reading",
+  "adoption", "rezoning", "official-community-plan", "development-variance-permit", "development-cost-charges",
+];
 
 /**
  * Normalize raw tool results into a consistent source shape for the client.

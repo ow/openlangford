@@ -108,7 +108,9 @@ The 5-minute cron (`workers/email-enqueue.ts`) asks the `send-alerts` Edge funct
 
 ## Writing style
 
-All public text (page copy, notes stored in the database, and AI prompts that write summaries, headlines or descriptions) follows `docs/writing-style.md`: plain language for residents, outcomes first, no codes or database words ("matters", "records"), provenance in `meta` not visible text. Read it before writing or changing any of these.
+All public text (page copy, notes stored in the database, and AI prompts that write summaries, headlines or descriptions) follows `docs/writing-style.md`: plain language for residents, outcomes first, no codes or database words ("matters", "records"), provenance in `meta` not visible text. Read it before writing or changing any of these. Its "What we call things" table maps code nouns to site nouns, and "Two registers" says which prompts stay close to the minutes and which write for residents.
+
+Council terms (readings, carried, tabled, in camera…) live in `shared/glossary.json`: the public page `/how-council-works` renders it, the topic timeline's stage lines (`STAGE_LABELS` in `app/lib/glossary.ts`) come from it, and prompts take a block from it (`services/ai/glossary-prompt.ts` `glossaryPromptBlock(register, only)`, `pipeline/ai/glossary.py` `prompt_block(register, only)`; the Q&A answer prompt uses the resident register). Add or change a term there, not in a prompt or component. A pipeline stage that adds the block must bump its version when the glossary's `version` changes.
 
 ## Environment Variables
 

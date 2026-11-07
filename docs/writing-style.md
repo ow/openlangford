@@ -23,6 +23,36 @@ A Langford resident on a phone who has never read a council agenda. They want to
 13. **Write so it stays true.** Avoid "currently", "incoming until", "recently" in stored text; give the date instead.
 14. **Canadian spelling**, sentence case for headings and badges, no trailing period on headlines or badges, numerals for 10 and up and for all money and measurements.
 
+## What we call things
+
+The database and the code use one set of nouns; residents see another. Public text (pages, stored summaries, AI prompts that write for residents) uses the right-hand column. Prompts may use the left-hand column when *describing inputs to the model*, never in what the model writes.
+
+| In the code and database | On the site |
+|---|---|
+| matter | topic (a page: "this topic"), or what it is: "the rezoning", "the project" |
+| agenda item | entry (on a topic's timeline), or "what Council discussed" |
+| motion | decision (once voted), proposal (before) |
+| record | the City's records, the minutes, the meeting video |
+| segment, transcript segment | what someone said at the meeting |
+| key statement | what someone said |
+| attribution, speaker label | who was speaking |
+| person, people | council members, mayor and councillors, speakers |
+| participant | resident who spoke or wrote to Council |
+| organization | Council, the committee (by name) |
+| property | address |
+| staff_stage, stage | where the bylaw stands ("one step from final approval") |
+
+Council procedure terms (readings, carried, tabled, in camera, variance…) are defined once in `shared/glossary.json`, which renders as the public page `/how-council-works`. Each entry carries how the minutes phrase it (`in_the_record`) and the plain words we write instead (`we_write`). Link to `/how-council-works#<id>` rather than re-explaining a term on a page.
+
+## Two registers
+
+Model-written text comes in two layers, and they follow different rules:
+
+- **Record layer** (the ingest refiner's item and motion summaries, motion summaries): stays close to the minutes so later checks can match it against the record. It names the exact bylaw stage ("gave first reading to", "adopted") and keeps "Council" out of the subject. It feeds the resident layer and the fact checks; residents rarely see it on its own. Prompts here take the glossary's `record` register.
+- **Resident layer** (meeting highlights, topic summaries and headlines, property leads, bylaw explanations, Q&A answers, page copy): follows every rule above. It explains the stage instead of naming it, says "passed" not "carried", and never uses a database word. Prompts here take the glossary's `resident` register.
+
+When editing a prompt, decide which layer it is before changing its wording. Moving a record-layer prompt to plain language breaks the checks that read it; copying record-layer wording into a resident-layer prompt breaks the guide.
+
 ## Quick check before shipping text
 
 - Would a neighbour understand it without opening another page?

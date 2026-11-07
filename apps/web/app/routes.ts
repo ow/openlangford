@@ -29,6 +29,7 @@ export default [
   route("search", "routes/search.tsx"),
   route("ask", "routes/ask.tsx"),
   route("about", "routes/about.tsx"),
+  route("how-council-works", "routes/how-council-works.tsx"),
   route("updates", "routes/updates.tsx"),
   route("notices", "routes/notices.tsx"),
   route("notices/:slug", "routes/notice.tsx"),

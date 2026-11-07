@@ -11,20 +11,10 @@ import { ParticipationList, WrittenSubmissions } from "../meeting/participation-
 import { writtenLetters } from "../../lib/written";
 import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
 
-/** The stages a step can be given by hand (agenda_items.meta.staff_stage, set by the fix agent's set_stage when the
- * wording-based guess below is wrong), with the plain-language meaning residents see. */
-export const STAGE_LABELS = {
-  rescinded_adoption: "Council cancelled the bylaw's adoption and its readings.",
-  rescinded_reading: "Council cancelled an earlier reading of the bylaw.",
-  rescinded: "Council cancelled an earlier decision.",
-  adopted: "Final approval.",
-  second_third: "Council approved the content and final wording. Adoption is the last step.",
-  third: "Council approved the final wording. Adoption is the last step.",
-  public_hearing: "Residents could speak or write to council about the proposal.",
-  second: "Council approved the bylaw's content in principle.",
-  first: "Introduced to council. A bylaw needs several readings before it becomes law.",
-} as const;
-export type StageChoice = keyof typeof STAGE_LABELS | "none";
+import { STAGE_LABELS, glossaryHref, stageTermId, type StageKey } from "../../lib/glossary";
+
+export { STAGE_LABELS };
+export type StageChoice = StageKey | "none";
 
 /** Plain-language meaning of a bylaw stage, for residents who don't know what "second reading" means. */
 const STAGES: { test: RegExp; label: string }[] = [
@@ -64,6 +54,20 @@ export function stageExplanation(texts: (string | null | undefined)[], { committ
 }
 
 /** Whether an item's meeting is a committee's rather than Council's. */
+/** A step's plain-language stage line, linking to its entry on /how-council-works. */
+function StageLine({ stage, className = "mt-0.5" }: { stage: string; className?: string }) {
+  const termId = stageTermId(stage);
+  const cls = cn(className, "text-sm text-zinc-600");
+  if (!termId) return <p className={cls}>{stage}</p>;
+  return (
+    <p className={cls}>
+      <Link to={glossaryHref(termId)} className="hover:text-brand-700 hover:underline" title="What this step means">
+        {stage}
+      </Link>
+    </p>
+  );
+}
+
 export function isCommitteeItem(item: any): boolean {
   const meeting = item?.meetings || {};
   return /committee|commission|board/i.test(`${meeting.organizations?.name || ""} ${meeting.type || ""}`);
@@ -197,7 +201,7 @@ export function TimelineStep({
           <h3 className="font-semibold leading-snug text-zinc-900">{title}</h3>
           {decisions[0]?.o.label && outcomeMark(decisions[0].o)}
         </div>
-        {stage && <p className="mt-0.5 text-sm text-zinc-600">{stage}</p>}
+        {stage && <StageLine stage={stage} />}
       </div>
     );
   }
@@ -210,7 +214,7 @@ export function TimelineStep({
         {single && outcomeMark(single)}
       </div>
       {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>}
-      {stage && !item.plain_english_summary && <p className="mt-1.5 text-sm text-zinc-600">{stage}</p>}
+      {stage && !item.plain_english_summary && <StageLine stage={stage} className="mt-1.5" />}
 
       {layoutImage && (
         <figure className="mt-4">

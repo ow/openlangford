@@ -85,6 +85,7 @@ async function buildSitemapEntries(
         { path: "/elections", changefreq: "monthly", priority: 0.6 },
         { path: "/alignment", changefreq: "weekly", priority: 0.5 },
         { path: "/about", changefreq: "monthly", priority: 0.4 },
+        { path: "/how-council-works", changefreq: "monthly", priority: 0.4 },
         { path: "/contact", changefreq: "yearly", priority: 0.2 },
         { path: "/privacy", changefreq: "yearly", priority: 0.1 },
         { path: "/terms", changefreq: "yearly", priority: 0.1 },
