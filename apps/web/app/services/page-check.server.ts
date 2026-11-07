@@ -237,7 +237,11 @@ async function pendingSuggestions(supabase: SupabaseClient, matterId: number | n
 }
 
 /** Check one page and store the result on its page_reviews row (keeping any review status and note). */
-export async function checkPage(supabase: SupabaseClient, origin: string, path: string): Promise<PageCheck> {
+/** The check itself, without saving: what `checkPage` would store. The gold-set runner (scripts/gold-checks.ts)
+ * scores it against staff's ratings without touching the page's review. */
+export async function runCheck(supabase: SupabaseClient, origin: string, path: string): Promise<{
+  page: ReadPage; flags: PageFlag[]; history: PageFlag[]; summary: string; page_issue: string | null; model: string; guidanceVersion: number | null;
+}> {
   const page = readPage(await renderPage(origin, path));
   const kind = reviewKind(path);
   // Two readings at once: against the records behind the page (page-verify), and as a resident (this prompt), which
@@ -318,15 +322,20 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
   flags.push(...agreedStillOpen(priorFlags, flags));
   const dropped = priorFlags.filter(p => decidedFlag(p) && p.problem !== "editor_issue" && !flags.some(f => same(f, p)));
   const history = [...((prior?.ai_rated_history || []) as PageFlag[]), ...dropped].slice(-50);
+  return { page, flags, history, summary: result.data.summary, page_issue: result.data.page_issue, model: result.model, guidanceVersion: guidance.version };
+}
+
+export async function checkPage(supabase: SupabaseClient, origin: string, path: string): Promise<PageCheck> {
+  const { page, flags, history, summary, page_issue, model, guidanceVersion } = await runCheck(supabase, origin, path);
   const checked_at = new Date().toISOString();
   const { error } = await supabase.from("page_reviews").upsert({
     path, kind: reviewKind(path), title: page.heading || page.title || null,
-    ai_flags: flags, ai_rated_history: history, ai_page_issue: null, ai_summary: result.data.summary,
-    ai_guidance_version: guidance.version,
-    ai_entries: page.entries.length, ai_model: result.model, ai_checked_at: checked_at,
+    ai_flags: flags, ai_rated_history: history, ai_page_issue: null, ai_summary: summary,
+    ai_guidance_version: guidanceVersion,
+    ai_entries: page.entries.length, ai_model: model, ai_checked_at: checked_at,
   }, { onConflict: "path" });
   if (error) throw new Error("Could not save the page check.");
-  return { path, flags, page_issue: result.data.page_issue, summary: result.data.summary, model: result.model, checked_at, entries: page.entries.length };
+  return { path, flags, page_issue, summary, model, checked_at, entries: page.entries.length };
 }
 
 /** An admin's verdict on one flag (by its position in the stored list); null clears it. */

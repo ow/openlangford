@@ -148,3 +148,13 @@ plan and investigations, and the re-check a `SIGNED BYLAW bylaw:<id>` line with 
 the certified copy (`services/bylaw-records.server.ts`). Research can search and read `bylaw:<id>` too. The signed bylaw
 outranks a motion's wording in the minutes: the May 2, 2016 minutes say "give Bylaw No. 1628 First Reading" under an
 "(ADOPTION)" heading, and the signed bylaw says adopted that day.
+
+## Scoring the check against staff's decisions
+
+`npx tsx scripts/gold-checks.ts [--days 14] [--limit 20] [--runs 2] [--paths …]` re-runs the check, read-only, on pages
+whose flags staff rated and scores it: recall on agreed flags still open, agreed-and-fixed flags raised again (the fix
+didn't hold, or the check is wrong), rejected flags raised again (false alarms), new flags on unrated entries (rate
+them and they join the set), and with `--runs 2` the run-to-run agreement. `tests/gold/page-checks.json` adds hand
+cases (`expect`: must raise; `reject`: must not raise) for gaps found by hand, each with the lesson and when to retire
+it. Every rating in the review bar grows the set, so the score is the measure of the check over time; run it after a
+change to the check, the records it reads or the prompts.

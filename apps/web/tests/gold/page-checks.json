@@ -1,0 +1,16 @@
+{
+  "_about": "Hand-kept cases for scripts/gold-checks.ts, on top of the ones it derives from staff's ratings in page_reviews. `expect` lists flags the check must raise on the page as it is now (key, optional problem, optional `about` regex over reason+fix); `reject` lists flags it must not raise. Add a case whenever a gap is found by hand, with the date and what it taught.",
+  "cases": [
+    {
+      "path": "/matters/2016-2020-financial-plan-bylaw-and-tax-rates-bylaw",
+      "added": "2026-11-07",
+      "lesson": "The May 2, 2016 minutes say 'give Bylaw No. 1628 First Reading' under an (ADOPTION) heading; the signed bylaw says adopted that day. While the page says the plan only got a first reading or that adoption is not shown, the check must flag the May 2 entry from the signed bylaw. Retire this case once the page says adopted May 2, 2016.",
+      "expect": [
+        {
+          "key": "agenda-1407",
+          "about": "adopt"
+        }
+      ]
+    }
+  ]
+}
