@@ -13,6 +13,11 @@ describe("stageExplanation", () => {
   it("doesn't call a direction to prepare bylaws final", () => {
     expect(stageExplanation(["Staff directed to prepare bylaws subject to conditions", "That Council direct staff to prepare the bylaws for adoption."])).toBeNull();
   });
+  it("doesn't take a condition set before adoption or a hearing for that step", () => {
+    expect(stageExplanation(["Stormwater improvement commitment required before rezoning adoption", "1. Direct the applicant provide, prior to Bylaw Adoption, a Section 219 covenant. 2. Consider first reading of Bylaw No. 1232."])).toMatch(/^Introduced/);
+    expect(stageExplanation(["That the applicant provide, prior to Public Hearing, an arborist report."])).toBeNull();
+    expect(stageExplanation(["Walfred Road rezoning adopted", "That Council adopt Bylaw No. 1232."])).toBe("Final approval.");
+  });
   it("still explains readings", () => {
     expect(stageExplanation(["Bylaw 1613 (Second and Third Reading)"])).toMatch(/content and final wording/);
   });

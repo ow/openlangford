@@ -31,10 +31,14 @@ const ADOPTION = STAGES.find((s) => s.label === "Final approval.")!.test;
 /** Words that make an "adopt" a recommendation or an instruction, not the adoption itself. */
 const NOT_ADOPTING = /\brecommend|\bdirect(s|ed)? staff|\bstaff (were |was )?directed|\bprepare\b|proceed with consideration|\brefer(red)? /i;
 
+/** A condition set for a later step ("prior to Bylaw Adoption", "before the public hearing") names that step without
+ * taking it, so it is left out before the stage is judged. */
+const LATER_STEP = /\b(?:prior to|before|ahead of|in advance of|until)\s+(?:the\s+)?(?:(?:bylaw|rezoning|final|its)\s+)?(?:adoption|adopting|public hearing)\b/gi;
+
 /** A step's plain-language stage. Only Council's own adoption is "final approval": a committee recommending that
  * Council adopt something, or Council directing staff to prepare a bylaw for adoption, is an earlier step. */
 export function stageExplanation(texts: (string | null | undefined)[], { committee = false }: { committee?: boolean } = {}): string | null {
-  const parts = texts.filter(Boolean) as string[];
+  const parts = (texts.filter(Boolean) as string[]).map((t) => t.replace(LATER_STEP, ""));
   const text = parts.join(" ");
   // Judged per text: a headline "Council adopts the policy" is final even beside a motion that also directs staff.
   const adopts = !committee && parts.some((t) => ADOPTION.test(t) && !NOT_ADOPTING.test(t));
@@ -50,6 +54,7 @@ export function isCommitteeItem(item: any): boolean {
 type Vote = { id: number; vote: string; person?: { name?: string | null } | null };
 type Motion = {
   id: number;
+  disposition?: string | null;
   text_content?: string | null;
   plain_english_summary?: string | null;
   result?: string | null;
@@ -70,13 +75,15 @@ function tally(motion: Motion) {
 }
 
 function outcome(motion: Motion) {
-  const passed = /carried|passed|approved|adopted/i.test(motion.result || "");
+  // A carried motion to table or defer leaves the item unsettled: show that, not "Passed".
+  const setAside = /defer|tabled|postpone|refer/i.test(motion.disposition || "") ? displayTitle(motion.disposition!) : null;
+  const passed = !setAside && /carried|passed|approved|adopted/i.test(motion.result || "");
   const failed = /defeated|failed|lost/i.test(motion.result || "");
   const t = tally(motion);
-  const label = passed ? "Passed" : failed ? "Defeated" : motion.result ? displayTitle(motion.result) : null;
+  const label = setAside ?? (passed ? "Passed" : failed ? "Defeated" : motion.result ? displayTitle(motion.result) : null);
   return {
     label,
-    variant: passed ? "success" as const : failed ? "danger" as const : /defer|tabled|postpone|refer/i.test(motion.result || "") ? "warning" as const : "muted" as const,
+    variant: passed ? "success" as const : failed ? "danger" as const : setAside || /defer|tabled|postpone|refer/i.test(motion.result || "") ? "warning" as const : "muted" as const,
     count: t.counted ? `${t.yes}–${t.no}` : null,
     against: t.against,
     // Not unanimous when the video shows a vote against that the minutes don't record.
