@@ -15,6 +15,8 @@ export interface GlossaryTerm {
   stages?: Record<string, string>;
   /** Case-insensitive regex for the word forms pages show; set on the terms residents trip over. */
   match?: string;
+  /** One or two plain sentences for the hover; the full `means` lives on the page. Required with `match`. */
+  short?: string;
 }
 
 export interface GlossaryGroup {

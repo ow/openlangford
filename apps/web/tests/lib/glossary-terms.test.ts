@@ -35,3 +35,14 @@ describe("hintPlan", () => {
     expect(hintPlan(items).get("b")!.size).toBe(0);
   });
 });
+
+describe("hover text", () => {
+  it("gives every hinted term a short hover of at most two sentences", async () => {
+    const { HINT_TERMS } = await import("../../app/lib/glossary");
+    for (const { term } of HINT_TERMS) {
+      expect(term.short, term.id).toBeTruthy();
+      expect((term.short!.match(/[.!?](\s|$)/g) || []).length, term.id).toBeLessThanOrEqual(2);
+      expect(term.short!.length, term.id).toBeLessThanOrEqual(130);
+    }
+  });
+});

@@ -23,7 +23,7 @@ function Hint({ term, children }: { term: GlossaryTerm; children: ReactNode }) {
         </T.Trigger>
         <T.Portal>
           <T.Content side="top" sideOffset={6} className="z-50 max-w-72 rounded-md bg-zinc-900 px-3 py-2 text-xs leading-snug text-white shadow-md">
-            <span className="font-semibold">{term.term}.</span> {term.means}
+            <span className="font-semibold">{term.term}.</span> {term.short ?? term.means}
             <T.Arrow className="fill-zinc-900" />
           </T.Content>
         </T.Portal>
