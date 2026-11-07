@@ -18,6 +18,11 @@ describe("stageExplanation", () => {
     expect(stageExplanation(["That the applicant provide, prior to Public Hearing, an arborist report."])).toBeNull();
     expect(stageExplanation(["Walfred Road rezoning adopted", "That Council adopt Bylaw No. 1232."])).toBe("Final approval.");
   });
+  it("uses a stage set by hand over the guess from the wording", () => {
+    expect(stageExplanation(["Walfred Road rezoning adopted"], { chosen: "first" })).toMatch(/^Introduced/);
+    expect(stageExplanation(["That Council adopt Bylaw No. 1232."], { chosen: "none" })).toBeNull();
+    expect(stageExplanation(["That Council adopt Bylaw No. 1232."], { chosen: "not-a-stage" })).toBe("Final approval.");
+  });
   it("still explains readings", () => {
     expect(stageExplanation(["Bylaw 1613 (Second and Third Reading)"])).toMatch(/content and final wording/);
   });

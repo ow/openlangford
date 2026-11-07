@@ -961,6 +961,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     // Pipeline-written plain-English headline; the agenda wording lives in Details.
                     const headline: string | undefined = matter.meta?.timeline_headlines?.[String(item.id)];
                     const layout = images.layout && images.layout.agenda_item_id === item.id ? images.layout : null;
+                    const chosenStage: string | undefined = (item as any).meta?.staff_stage?.stage;
                     const procedural = isProceduralStep(item, {
                       hasParticipation: Boolean(
                         (item as any).meta?.participation?.speakers?.length ||
@@ -968,6 +969,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                       ),
                       hasImage: Boolean(layout),
                       headline,
+                      stage: chosenStage,
                     });
                     return (
                       <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
@@ -980,6 +982,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                         <TimelineStep
                           item={item}
                           headline={headline}
+                          chosenStage={chosenStage}
                           docs={itemDocs}
                           layoutImage={layout}
                           participation={(item as any).meta?.participation}

@@ -38,6 +38,14 @@ carries out fixes for the flags staff agreed with. This page explains where each
 5. **Everything is carried out in the same request, on the site.** That covers:
    - **Small edits:** removing and unlinking entries, rewriting entry lines and headings, hiding duplicates, moving
      documents and accepting search suggestions.
+   - **Decisions and stages:** `add_motion` adds a decision the minutes record but the entry lacks, often a motion
+     ingest held back because a scanned copy filed its "CARRIED" under the item before
+     (`agenda_items.meta.unverified_motion_proposals`; only the planner sees those, never the page check). The
+     agent's quote must appear word for word in a section of that meeting's minutes or reports, and must itself hold
+     the motion and its outcome (`app/services/motion-add.server.ts`). If the same motion is already under another
+     item of that meeting, it isn't added twice. `set_stage` picks an entry's stage from the fixed list
+     (`STAGE_LABELS` in `components/matter/timeline-step.tsx`) when the guess from its wording is wrong. It is kept on
+     the item (`agenda_items.meta.staff_stage`) so it follows the item when it moves.
    - **Moves and merges:** moving an agenda item to a named topic, and merging duplicate topics through the
      `merge_matters()` database function. The code is in `app/services/topic-moves.server.ts`.
    - **Status:** refreshing the status of the topics at each affected meeting, using the same rules as the

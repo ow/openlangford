@@ -13,6 +13,8 @@ import { logStaffAction } from "./staff.server";
 import { rewriteSummaries } from "./topic-summaries.server";
 import { mergeFlat, moveItem, refreshMeetingLifecycles } from "./topic-moves.server";
 import type { StaffRole } from "../lib/auth.server";
+import { MOTION_RESULTS, addMotion } from "./motion-add.server";
+import { STAGE_LABELS, type StageChoice } from "../components/matter/timeline-step";
 
 /**
  * The fix agent. Marking a page "needs work" starts it on the server: it reads the flags staff agreed with (👍)
@@ -42,7 +44,7 @@ const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "no_change", "cannot_fix"]),
+      "rewrite_summary", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "set_stage", "no_change", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. unlink_related: the related topic's id. Otherwise null."),
@@ -50,7 +52,12 @@ const PlanSchema = z.object({
     document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
-    source: z.string().nullable().describe("Only where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly and as briefly as the claim allows. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly and as briefly as the claim allows. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    motion_text: z.string().nullable().describe("add_motion: the motion's wording exactly as the minutes give it (\"That Council adopt Bylaw No. 1239.\"). Otherwise null."),
+    motion_result: z.enum(MOTION_RESULTS).nullable().describe("add_motion: the outcome the minutes record. Otherwise null."),
+    mover: z.string().nullable().describe("add_motion: who moved it, as the minutes name them, or null."),
+    seconder: z.string().nullable().describe("add_motion: who seconded it, as the minutes name them, or null."),
+    stage: z.enum([...Object.keys(STAGE_LABELS), "none"] as unknown as [StageChoice, ...StageChoice[]]).nullable().describe("set_stage: the step's stage, or none when it is no bylaw stage at all. Otherwise null."),
     reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
   })),
 });
@@ -200,7 +207,7 @@ ${movable || "(No flagged items to move.)"}
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
 ${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}${c.owner ? " [holds an entry staff accepted for this page; its records are below]" : ""}${c.sameSite ? " [another application for the same site]" : ""}`).join("\n")}\n` : ""}
-Every rewrite (entry, heading or summary) puts the records' own words it rests on in "source", quoted exactly; no other action needs a "source". A
+Every rewrite (entry, heading or summary), add_motion and set_stage puts the records' own words it rests on in "source", quoted exactly; no other action needs a "source". A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
@@ -220,6 +227,16 @@ out what they don't.
   that belong elsewhere and to_item_id, the item at that meeting they are about. The flagged entries' documents and
   the other items at their meetings:
 ${attachments || "(No flagged entry has documents attached.)"}
+- add_motion: an entry ("agenda-" or "mention-") whose decision the minutes record but the entry lacks: no MOTION line,
+  or one listed under "PROPOSALS WHOSE OUTCOME WAS NOT FOUND" (ingest couldn't find its outcome, often because a
+  scanned copy put "CARRIED" under the item before). Give motion_text exactly as the minutes word it, motion_result, mover and seconder if named, and in
+  "source" the minutes passage word for word from the motion through its outcome. It is saved only if that passage is
+  in this meeting's minutes or reports and itself says the outcome; never add a motion the minutes don't record.
+- set_stage: an "agenda-" entry whose stage line is wrong. The page guesses a step's stage from its wording, so a
+  condition "prior to adoption" can read as the adoption, or a hearing being scheduled as the hearing itself. Pick
+  the stage the records show: ${Object.entries(STAGE_LABELS).map(([k, v]) => `${k} ("${v}")`).join(", ")}, or none
+  for a step that is no bylaw stage. "adopted" also gives a passed motion the Adopted badge. Quote the record in
+  "source".
 - hide_page: when nothing in the records backs this page at all (no step of its own, nothing showing what it's
   about), hide it from the public. It can be undone, and the editor confirms it like every other change.
 Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what is wrong and
@@ -240,6 +257,17 @@ ${records || "(none)"}
 
 Timeline entries:
 ${entries.map((e) => `[${e.key}] ${e.text}`).join("\n\n")}`;
+}
+
+/** Motions ingest held back because their outcome wasn't found beside them (often a scanned copy filing "CARRIED"
+ * under the item before), for the planner only: the page check never sees them, so it neither reads them as decisions
+ * nor flags every such item for lacking one. */
+async function heldBackMotions(supabase: SupabaseClient, ids: number[]): Promise<string> {
+  if (!ids.length) return "";
+  const { data } = await supabase.from("agenda_items").select("id, held:meta->unverified_motion_proposals").in("id", ids);
+  const lines = ((data || []) as any[]).flatMap((row) => (Array.isArray(row.held) ? row.held : [])
+    .filter((h: any) => h?.motion_text && !h.resolved_motion_id).map((h: any) => `- ITEM ${row.id}: ${String(h.motion_text)}`));
+  return lines.length ? `PROPOSALS WHOSE OUTCOME WAS NOT FOUND (not decisions; add_motion one only when the minutes text above records its outcome):\n${lines.join("\n")}` : "";
 }
 
 /** Runs the agent for one page. Never throws: a failure is written to the page as "needs work" with a note. Returns
@@ -356,7 +384,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       `• ${capital(entryLabel(i.key, flags))}: ${i.finding!.explanation} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
       await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
-    const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+    const heldBack = await heldBackMotions(supabase, ids);
+    const records = [itemText, heldBack, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
     // Topics holding entries staff accepted for this page (found entries just added, mentions kept earlier) are often
     // a topic of their own that's really this one (a lone 2019 extension of an agreement this page already has, a
@@ -399,6 +428,10 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const answered: string[] = [];
     const answeredKeys = new Set<string | null>();
     const hidden: Record<string, { keep: number; reason: string; by: string; at: string }> = {};
+    // Kept on the item (agenda_items.meta.staff_stage), so it follows the item if it is moved or re-filed.
+    const stages: Record<string, { stage: StageChoice; source: string; reason: string; by: string; at: string }> = {};
+    // Motions added from the minutes: their meetings' topic statuses are refreshed and their topics rewritten below.
+    const addedMotions: { key: string; text: string; result: string; quote: string; meetingId: number; matterId: number | null }[] = [];
     let summaryUnfollowed = false;
     // file_here for an item another topic holds: settled after the plan by comparing the two topics' records.
     const heldElsewhere: { key: string; owner: number; reason: string }[] = [];
@@ -527,6 +560,37 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         }
         continue;
       }
+      if (step.action === "add_motion" && step.key && /^(agenda|mention)-\d+$/.test(step.key) && onPage.has(step.key)) {
+        if (!step.motion_text?.trim() || !step.motion_result || !quoteOf(step)) {
+          left.push(`${step.reason} (no minutes passage was given for the motion, so nothing changed)`);
+          continue;
+        }
+        try {
+          const added = await addMotion(supabase, itemId(step.key), { item_key: step.key, motion_text: step.motion_text, result: step.motion_result,
+            mover: step.mover, seconder: step.seconder, quote: quoteOf(step) }, requester);
+          addedMotions.push({ key: step.key, text: step.motion_text.trim(), result: step.motion_result, quote: quoteOf(step),
+            meetingId: added.meetingId, matterId: added.matterId });
+          fixedKeys.add(step.key);
+          done.push(`Added the motion to ${entryLabel(step.key, flags)}: ${step.reason} It rests on: “${quoteOf(step).slice(0, 300)}”`);
+          await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:add_motion",
+            detail: { agenda_item_id: String(itemId(step.key)), motion_id: String(added.motionId), document_id: String(added.documentId ?? ""),
+              reason: step.reason.slice(0, 400) } });
+        } catch (error) {
+          left.push(`${step.reason} (the motion wasn't added: ${error instanceof Error ? error.message : "unknown error"})`);
+        }
+        continue;
+      }
+      if (step.action === "set_stage" && step.key?.startsWith("agenda-") && onPage.has(step.key) && step.stage) {
+        if (!quoteOf(step)) {
+          left.push(`${step.reason} (no record says it, so nothing changed)`);
+          continue;
+        }
+        stages[step.key] = { stage: step.stage, source: quoteOf(step), reason: step.reason.slice(0, 300), by: requester.id, at: new Date().toISOString() };
+        fixedKeys.add(step.key);
+        const label = step.stage === "none" ? "no stage" : STAGE_LABELS[step.stage].replace(/\.$/, "");
+        done.push(`Marked ${entryLabel(step.key, flags)} as “${label}”: ${step.reason} It rests on: “${quoteOf(step).slice(0, 300)}”`);
+        continue;
+      }
       if (step.action === "move_documents" && step.key && onPage.has(step.key) && step.to_item_id && step.document_ids?.length) {
         const at = attachedTo.get(itemId(step.key));
         const ids = step.document_ids.filter((d) => at?.docs.has(d));
@@ -643,6 +707,19 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:hide_duplicate",
         detail: Object.fromEntries(Object.entries(hidden).map(([id, h]) => [`item ${id}`, `kept item ${h.keep}`])) });
     }
+    for (const [key, staffStage] of Object.entries(stages)) {
+      const { data: item } = await supabase.from("agenda_items").select("meta").eq("id", itemId(key)).single();
+      const { error } = await supabase.from("agenda_items").update({ meta: { ...((item?.meta || {}) as Record<string, any>), staff_stage: staffStage } })
+        .eq("id", itemId(key));
+      if (error) {
+        fixedKeys.delete(key);
+        delete stages[key];
+        left.push(`Couldn't save the stage of ${entryLabel(key, flags)}.`);
+      } else {
+        await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:set_stage",
+          detail: { agenda_item_id: String(itemId(key)), stage: staffStage.stage, reason: staffStage.reason } });
+      }
+    }
     if (summaryNotes.length) {
       // Kept on the topic: this rewrite and every later one follow them (topic-summaries.server.ts, pipeline matter_summaries).
       const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
@@ -658,7 +735,10 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     let rewrote: number[] = [];
     if (moves.length || merges.length || done.length) {
       const touched = new Set<number>([matterId]);
-      const meetings = new Set<number>();
+      // A motion added from the minutes can settle a topic's status (an adoption): its meeting is refreshed and its
+      // topic rewritten, like a move.
+      const meetings = new Set<number>(addedMotions.map((m) => m.meetingId));
+      for (const m of addedMotions) if (m.matterId) touched.add(m.matterId);
       for (const move of moves) {
         try {
           const { data: item } = await supabase.from("agenda_items").select("matter_id").eq("id", move.item_id).single();
@@ -777,10 +857,16 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           const text = [v?.heading, v?.line].filter(Boolean).join(" | ");
           if (text) claims.push({ id: `entry-${key}`, key, text: `Entry ${key}: ${text}` });
         }
+        for (const m of addedMotions) {
+          claims.push({ id: `motion-${m.key}`, key: m.key, text: `Decision added to ${m.key}: "${m.text}" (${m.result}). The minutes passage it rests on: "${m.quote}"` });
+        }
+        for (const [key, v] of Object.entries(stages)) {
+          claims.push({ id: `stage-${key}`, key, text: `Stage of ${key}: ${v.stage === "none" ? "no bylaw stage" : STAGE_LABELS[v.stage as keyof typeof STAGE_LABELS]}` });
+        }
         const scopes = new Map<number, string[]>();
         for (const i of newlyFixed) {
           const key = flags[i].key;
-          const claimIds = !key ? summaryIds : [`line-${key.replace(/^agenda-/, "")}`, `entry-${key}`].filter((c) => claims.some((x) => x.id === c));
+          const claimIds = !key ? summaryIds : [`line-${key.replace(/^agenda-/, "")}`, `entry-${key}`, `motion-${key}`, `stage-${key}`].filter((c) => claims.some((x) => x.id === c));
           if (claimIds.length) scopes.set(i, claimIds);
         }
         const records = [covered.text, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),

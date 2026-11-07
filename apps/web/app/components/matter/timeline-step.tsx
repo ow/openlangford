@@ -11,22 +11,37 @@ import { ParticipationList, WrittenSubmissions } from "../meeting/participation-
 import { writtenLetters } from "../../lib/written";
 import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
 
+/** The stages a step can be given by hand (agenda_items.meta.staff_stage, set by the fix agent's set_stage when the
+ * wording-based guess below is wrong), with the plain-language meaning residents see. */
+export const STAGE_LABELS = {
+  rescinded_adoption: "Council cancelled the bylaw's adoption and its readings.",
+  rescinded_reading: "Council cancelled an earlier reading of the bylaw.",
+  rescinded: "Council cancelled an earlier decision.",
+  adopted: "Final approval.",
+  second_third: "Council approved the content and final wording. Adoption is the last step.",
+  third: "Council approved the final wording. Adoption is the last step.",
+  public_hearing: "Residents could speak or write to council about the proposal.",
+  second: "Council approved the bylaw's content in principle.",
+  first: "Introduced to council. A bylaw needs several readings before it becomes law.",
+} as const;
+export type StageChoice = keyof typeof STAGE_LABELS | "none";
+
 /** Plain-language meaning of a bylaw stage, for residents who don't know what "second reading" means. */
 const STAGES: { test: RegExp; label: string }[] = [
   // Rescinding cancels an earlier decision; the record rarely says why, so the label doesn't guess.
   // Rescinding an adoption undoes the bylaw itself, not just a reading.
-  { test: /rescind\w*.{0,60}\badoption\b|\badoption\b.{0,40}rescind/i, label: "Council cancelled the bylaw's adoption and its readings." },
-  { test: /rescind\w*.{0,60}\b(reading|readings)\b|\b(reading|readings)\b.{0,40}rescind/i, label: "Council cancelled an earlier reading of the bylaw." },
-  { test: /rescind/i, label: "Council cancelled an earlier decision." },
-  { test: /\badopt(ed|ion)?\b|final adoption/i, label: "Final approval." },
-  { test: /second (and|&) third reading|second, third|2nd (and|&) 3rd/i, label: "Council approved the content and final wording. Adoption is the last step." },
-  { test: /third reading|3rd reading/i, label: "Council approved the final wording. Adoption is the last step." },
-  { test: /public hearing/i, label: "Residents could speak or write to council about the proposal." },
-  { test: /second reading|2nd reading/i, label: "Council approved the bylaw's content in principle." },
-  { test: /first reading|1st reading/i, label: "Introduced to council. A bylaw needs several readings before it becomes law." },
+  { test: /rescind\w*.{0,60}\badoption\b|\badoption\b.{0,40}rescind/i, label: STAGE_LABELS.rescinded_adoption },
+  { test: /rescind\w*.{0,60}\b(reading|readings)\b|\b(reading|readings)\b.{0,40}rescind/i, label: STAGE_LABELS.rescinded_reading },
+  { test: /rescind/i, label: STAGE_LABELS.rescinded },
+  { test: /\badopt(ed|ion)?\b|final adoption/i, label: STAGE_LABELS.adopted },
+  { test: /second (and|&) third reading|second, third|2nd (and|&) 3rd/i, label: STAGE_LABELS.second_third },
+  { test: /third reading|3rd reading/i, label: STAGE_LABELS.third },
+  { test: /public hearing/i, label: STAGE_LABELS.public_hearing },
+  { test: /second reading|2nd reading/i, label: STAGE_LABELS.second },
+  { test: /first reading|1st reading/i, label: STAGE_LABELS.first },
 ];
 
-const ADOPTION = STAGES.find((s) => s.label === "Final approval.")!.test;
+const ADOPTION = STAGES.find((s) => s.label === STAGE_LABELS.adopted)!.test;
 
 /** Words that make an "adopt" a recommendation or an instruction, not the adoption itself. */
 const NOT_ADOPTING = /\brecommend|\bdirect(s|ed)? staff|\bstaff (were |was )?directed|\bprepare\b|proceed with consideration|\brefer(red)? /i;
@@ -37,12 +52,15 @@ const LATER_STEP = /\b(?:prior to|before|ahead of|in advance of|until)\s+(?:the\
 
 /** A step's plain-language stage. Only Council's own adoption is "final approval": a committee recommending that
  * Council adopt something, or Council directing staff to prepare a bylaw for adoption, is an earlier step. */
-export function stageExplanation(texts: (string | null | undefined)[], { committee = false }: { committee?: boolean } = {}): string | null {
+export function stageExplanation(texts: (string | null | undefined)[], { committee = false, chosen }: { committee?: boolean; chosen?: string | null } = {}): string | null {
+  // A stage chosen by hand for this step wins over the guess from its wording.
+  if (chosen === "none") return null;
+  if (chosen && chosen in STAGE_LABELS) return STAGE_LABELS[chosen as keyof typeof STAGE_LABELS];
   const parts = (texts.filter(Boolean) as string[]).map((t) => t.replace(LATER_STEP, ""));
   const text = parts.join(" ");
   // Judged per text: a headline "Council adopts the policy" is final even beside a motion that also directs staff.
   const adopts = !committee && parts.some((t) => ADOPTION.test(t) && !NOT_ADOPTING.test(t));
-  return STAGES.find((s) => s.label === "Final approval." ? adopts : s.test.test(text))?.label ?? null;
+  return STAGES.find((s) => s.label === STAGE_LABELS.adopted ? adopts : s.test.test(text))?.label ?? null;
 }
 
 /** Whether an item's meeting is a committee's rather than Council's. */
@@ -91,10 +109,10 @@ function outcome(motion: Motion) {
   };
 }
 
-export function isProceduralStep(item: any, extra: { hasParticipation: boolean; hasImage: boolean; headline?: string }) {
+export function isProceduralStep(item: any, extra: { hasParticipation: boolean; hasImage: boolean; headline?: string; stage?: string | null }) {
   const motions: Motion[] = item.motions || [];
   return (
-    Boolean(stageExplanation([extra.headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item) })) &&
+    Boolean(stageExplanation([extra.headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item), chosen: extra.stage })) &&
     !item.debate_summary &&
     !extra.hasParticipation &&
     !extra.hasImage &&
@@ -125,9 +143,12 @@ export function TimelineStep({
   participation,
   written,
   notes,
+  chosenStage,
 }: {
   item: any;
   headline?: string;
+  /** A stage set by hand for this step (agenda_items.meta.staff_stage), over the guess from its wording. */
+  chosenStage?: string | null;
   docs: any[];
   layoutImage?: { url: string; width?: number; height?: number } | null;
   participation?: any;
@@ -137,8 +158,8 @@ export function TimelineStep({
   const motions: Motion[] = item.motions || [];
   const letterCount = writtenLetters(written).length;
   const hasParticipation = Boolean(participation?.speakers?.length || letterCount);
-  const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline });
-  const stage = stageExplanation([headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item) });
+  const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline, stage: chosenStage });
+  const stage = stageExplanation([headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item), chosen: chosenStage });
   const title = headline || displayTitle(item.title);
   const itemHref = meetingPath({ id: item.meeting_id, slug: item.meetings?.slug }, `#item-${item.id}`);
   const meetingLine = (
