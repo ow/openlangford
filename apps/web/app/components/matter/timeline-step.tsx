@@ -48,7 +48,7 @@ const NOT_ADOPTING = /\brecommend|\bdirect(s|ed)? staff|\bstaff (were |was )?dir
 
 /** A condition set for a later step ("prior to Bylaw Adoption", "before the public hearing") names that step without
  * taking it, so it is left out before the stage is judged. */
-const LATER_STEP = /\b(?:prior to|before|ahead of|in advance of|until)\s+(?:the\s+)?(?:(?:bylaw|rezoning|final|its)\s+)?(?:adoption|adopting|public hearing)\b/gi;
+const LATER_STEP = /\b(?:prior to|before|ahead of|in advance of|until)\s+(?:[\w'’-]+\s+){0,4}?(?:adoption|adopting|public hearing)\b/gi;
 
 /** A step's plain-language stage. Only Council's own adoption is "final approval": a committee recommending that
  * Council adopt something, or Council directing staff to prepare a bylaw for adoption, is an earlier step. */
