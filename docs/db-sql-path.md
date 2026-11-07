@@ -31,7 +31,7 @@ The string is read at runtime from the request `env`, never inlined by Vite: `en
    id = "<config id>"
    ```
    `getSql` prefers `env.HYPERDRIVE.connectionString` automatically, and this is what switches the homepage query onto SQL; keep the pool small (the database has `max_connections = 60` and PostgREST holds up to 20). Hyperdrive replaces per-request connection setup (about 300 ms from a laptop) with a warm pooled connection.
-4. Local dev: put `DATABASE_URL=...` in `apps/web/.dev.vars` (gitignored) and run `CF_REMOTE_BINDINGS=false pnpm dev` if you aren't logged in to Cloudflare.
+4. Local dev: `pnpm dev` runs the binding against `DATABASE_URL` from the root `.env` (set `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE` to use another database). Bindings stay local unless `CF_REMOTE_BINDINGS=true`.
 
 ## Types
 

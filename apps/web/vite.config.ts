@@ -54,6 +54,11 @@ export default defineConfig(({ mode }) => {
   // parts of the React Router dev server (loaders, actions).
   // This is crucial for server-side code to access secrets like SUPABASE_SECRET_KEY.
   Object.assign(process.env, env);
+  // The Hyperdrive binding in local dev needs a connection string from the environment, under this exact name:
+  // the database the app already uses (no warm pool locally). scripts/local-db/dev.sh sets its own first.
+  if (env.DATABASE_URL && !process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE) {
+    process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE = env.DATABASE_URL;
+  }
 
   return {
     server: {
@@ -89,8 +94,11 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      // CF_REMOTE_BINDINGS=false runs dev without a Wrangler login (AI calls then fail; pages render).
-      cloudflare({ viteEnvironment: { name: "ssr" }, remoteBindings: process.env.CF_REMOTE_BINDINGS !== "false" }),
+      // Bindings run locally (Hyperdrive against DATABASE_URL, KV in memory; the AI binding is always remote, through
+      // the Wrangler login). CF_REMOTE_BINDINGS=true proxies them to the account instead: that opens a remote preview
+      // session, which this account currently refuses ("Invalid Workers Preview configuration") and which expires
+      // under a long-running server, leaving every request hanging.
+      cloudflare({ viteEnvironment: { name: "ssr" }, remoteBindings: process.env.CF_REMOTE_BINDINGS === "true" }),
       tailwindcss(),
       reactRouter(),
       tsconfigPaths(),
