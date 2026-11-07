@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useFetcher, useLocation, useNavigate, useRevalidator } from "react-router";
+import { useLocation, useNavigate, useRevalidator } from "react-router";
+import { useJsonFetcher } from "../../lib/use-json-fetcher";
 import { INTERNAL_NOTE_CHANGED, OPEN_INTERNAL_NOTE } from "./internal-note-banner";
 import { TopicEditDialog } from "./topic-edit-dialog";
 import { Tip } from "../ui/tooltip";
@@ -63,8 +64,10 @@ function readWhat(review: PageReview) {
  * the way a resident would and flag problems. Rate each flag; ratings calibrate later checks. See /admin/reviews. */
 export function PageReviewBar() {
   const { pathname } = useLocation();
-  const load = useFetcher<Loaded>();
-  const save = useFetcher<Saved>();
+  // Plain fetches, not router fetchers: a failed request (a 90 s fix cut off when iOS Safari backgrounds the tab, an
+  // expired session, a gateway error) shows in the bar instead of replacing the page with the error boundary.
+  const load = useJsonFetcher<Loaded>();
+  const save = useJsonFetcher<Saved>();
   const [editing, setEditing] = useState<number | null>(null);
   const [blocked, setBlocked] = useState(false);  // pressed Reviewed with flags still open
   const [open, setOpen] = useState(false);
@@ -174,6 +177,9 @@ export function PageReviewBar() {
   }, [agentMode]);
   // When the agent finishes while you're on the page, reload the page's own content so its edits show (outlined).
   const revalidator = useRevalidator();
+  // A router fetcher used to reload the page's data after every save; the plain fetch has to ask for it, so an
+  // accepted entry, a hidden page or a rewritten summary shows without a manual reload.
+  useEffect(() => { if (save.state === "idle" && save.data?.ok) revalidator.revalidate(); }, [save.state, save.data]);  // eslint-disable-line react-hooks/exhaustive-deps
   const lastStatus = useRef<string | null | undefined>(undefined);
   useEffect(() => {
     if (lastStatus.current === "fixing" && review?.status && review.status !== "fixing") { revalidator.revalidate(); setOpen(true); }

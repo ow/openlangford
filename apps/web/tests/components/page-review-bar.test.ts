@@ -27,25 +27,22 @@ const byText = (text: string) => [...host.querySelectorAll<HTMLButtonElement>("b
 it("doesn't carry a 👍 over to a different flag when Check again replaces the list", async () => {
   // The stored state the bar reads; ratings are saved straight to it, and Check again replaces the flags.
   let stored = review([flag("mention-1", "First old flag"), flag("mention-2", "Second old flag")], "2026-11-03T21:00:00Z");
-  vi.stubGlobal("fetch", vi.fn(async (_url: string, init: RequestInit) => {
+  // The bar talks to /api/page-review with plain fetches (lib/use-json-fetcher): GET loads the page's review, POST
+  // saves a rating or runs a check.
+  vi.stubGlobal("fetch", vi.fn(async (_url: string, init?: RequestInit) => {
+    if (!init || init.method !== "POST") return Response.json({ path: PATH, review: stored, links: null });
     const body = init.body as FormData;
-    const flags = [...stored.ai_flags!];
-    flags[Number(body.get("index"))] = { ...flags[Number(body.get("index"))], verdict: body.get("verdict") as "agree" };
-    stored = { ...stored, ai_flags: flags };
-    return new Response("{}", { status: 200 });
+    if (body.get("intent") === "rate") {
+      const flags = [...stored.ai_flags!];
+      flags[Number(body.get("index"))] = { ...flags[Number(body.get("index"))], verdict: body.get("verdict") as "agree" };
+      stored = { ...stored, ai_flags: flags };
+      return new Response("{}", { status: 200 });
+    }
+    // Check again: the new check flags other entries; nothing on them has been rated.
+    stored = review([flag("mention-7", "New flag"), flag("mention-8", "Another new flag"), flag("mention-9", "Third")], "2026-11-03T21:05:00Z");
+    return Response.json({ ok: true, review: stored, links: null, message: null });
   }));
-  const router = createMemoryRouter([
-    { path: "/matters/:slug", element: h(PageReviewBar) },
-    {
-      path: "/api/page-review",
-      loader: () => ({ path: PATH, review: stored, links: null }),
-      action: () => {
-        // The new check flags other entries; nothing on them has been rated.
-        stored = review([flag("mention-7", "New flag"), flag("mention-8", "Another new flag"), flag("mention-9", "Third")], "2026-11-03T21:05:00Z");
-        return { ok: true, review: stored, links: null, message: null };
-      },
-    },
-  ], { initialEntries: [PATH] });
+  const router = createMemoryRouter([{ path: "/matters/:slug", element: h(PageReviewBar) }], { initialEntries: [PATH] });
   await act(async () => root.render(h(RouterProvider, { router })));
   await settle();
 
@@ -61,4 +58,21 @@ it("doesn't carry a 👍 over to a different flag when Check again replaces the 
   expect(buttons("Yes, fix it").map((b) => b.getAttribute("aria-pressed"))).toEqual(["false", "false", "false"]);
   expect(byText("Fix 1")).toBeUndefined();
   expect(byText("Needs work")).toBeTruthy();
+});
+
+it("shows a failed save in the bar instead of throwing to the page's error boundary", async () => {
+  const stored = review([flag("mention-1", "First old flag")], "2026-11-03T21:00:00Z");
+  vi.stubGlobal("fetch", vi.fn(async (_url: string, init?: RequestInit) => {
+    if (!init || init.method !== "POST") return Response.json({ path: PATH, review: stored, links: null });
+    if ((init.body as FormData).get("intent") === "rate") return new Response("{}", { status: 200 });
+    throw new TypeError("Load failed");  // what iOS Safari says when it cancels a request
+  }));
+  const router = createMemoryRouter([{ path: "/matters/:slug", element: h(PageReviewBar) }], { initialEntries: [PATH] });
+  await act(async () => root.render(h(RouterProvider, { router })));
+  await settle();
+  await act(async () => byText("Check again")!.click());
+  await settle();
+  expect(host.textContent).toContain("Couldn't reach the server");
+  expect(host.textContent).toContain("First old flag");  // the bar is still there
+  expect(host.textContent).not.toContain("This page didn't load");
 });
