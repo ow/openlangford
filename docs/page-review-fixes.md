@@ -17,7 +17,7 @@ carries out fixes for the flags staff agreed with. This page explains where each
 
    The investigations run at the same time, each capped at 4 turns, all within 40 s and the fix's deadline. A flag
    the page check already researched keeps that finding. Each finding (the record's words and its ref) goes into the
-   plan beside its flag. The note lists them under "What the agent found in the City's records".
+   plan beside its flag. The note lists them under "Evidence behind the changes, from the City's records": each bullet is the record a change above rests on, named by the entry's date, not work left undone.
 3. **The agent plans the fix.** It reads the page's records and its findings and plans actions from a fixed menu,
    using one AI call on the `review` stage. The records include:
    - each item's motions, reports and minutes. An item without a motion of its own also gets its meeting's

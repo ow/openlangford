@@ -87,3 +87,15 @@ export const DRAFT_AFTER = 5, RECONSIDER_AFTER = 3;
 
 /** The most pages one "Pre-check" queues. */
 export const PRECHECK_MAX = 50;
+
+/**
+ * How the agent's note names an entry: by the date the page shows for it ("the June 21, 2010 entry"), read from
+ * its flag's excerpt, since entry keys are database words. "this page" for a whole-page flag.
+ */
+export function entryLabel(key: string | null | undefined, flags: Pick<PageFlag, "key" | "excerpt">[]): string {
+  if (!key) return "this page";
+  const excerpt = flags.find((f) => f.key === key)?.excerpt ?? "";
+  const date = excerpt.match(/^\s*([A-Z][a-z]+\.? \d{1,2}, \d{4})/)?.[1];
+  if (date) return `the ${date} entry`;
+  return key.startsWith("related-") ? "the related topic" : "the entry";
+}
