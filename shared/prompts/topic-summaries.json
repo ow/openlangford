@@ -1,6 +1,6 @@
 {
   "_comment": "The topic summary writer's prompts, shared by the pipeline (pipeline/ingestion/matter_summaries.py, staff_fixes.py) and the site's fix agent (apps/web/app/services/topic-summaries.server.ts). Change them here, and bump version so the pipeline's --stale run rewrites older summaries.",
-  "version": "6",
+  "version": "5",
   "topics": [
     "Development",
     "Housing",
