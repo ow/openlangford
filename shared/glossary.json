@@ -261,14 +261,14 @@
         {
           "id": "adoption",
           "term": "Adoption",
-          "means": "The last vote, after which the bylaw is law and there's nothing more for Council to decide. In the minutes, \"adopted\" always means this final step. Although a bylaw that has passed third reading has effectively been agreed, it isn't law until this vote, and sometimes a project changes or stalls in between. Most bylaws have to wait at least a day after third reading; zoning and community plan bylaws are the exception and can be adopted the same night.",
+          "means": "The last vote on a bylaw, the one that makes it law. In the minutes, \"adopted\" always means this final step. Although a bylaw that has passed third reading has effectively been agreed, it isn't law until this vote, and sometimes a project changes or stalls in between. Most bylaws have to wait at least a day after third reading; zoning and community plan bylaws are the exception and can be adopted the same night.",
           "in_the_record": "\"(ADOPTION)\", \"That Bylaw No. 2284 be adopted\".",
           "we_write": "We say \"made final\" or \"final approval\". On this site a bylaw is shown as adopted only after this vote: a topic gets its \"Adopted\" badge here, and a bylaw past third reading is \"one step from final approval\" until then. Each vote is counted on its own in a councillor's record, so voting for the readings and then for adoption shows as two votes. We don't call a plain resolution \"adopted\"; that's \"passed\".",
           "stages": {
             "adopted": "Final approval."
           },
           "match": "\\badopt(?:ed|ion|s)?\\b",
-          "short": "The final vote that makes a bylaw law. Nothing is left for Council to decide after this."
+          "short": "The final vote on a bylaw. Once it passes, the bylaw is law."
         }
       ]
     },
