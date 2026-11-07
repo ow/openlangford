@@ -95,6 +95,18 @@ const CheckSchema = z.object({
   })),
 });
 
+/** Two readings of one page as one: the first reading's summary, every distinct flag (one per entry and problem), and
+ * the first page-wide issue either raised. */
+export function combineReadings(readings: z.infer<typeof CheckSchema>[]): z.infer<typeof CheckSchema> {
+  const flags: z.infer<typeof CheckSchema>["flags"] = [];
+  for (const reading of readings) {
+    for (const flag of reading.flags) {
+      if (!flags.some((f) => f.key === flag.key && f.problem === flag.problem)) flags.push(flag);
+    }
+  }
+  return { summary: readings[0].summary, page_issue: readings.find((r) => r.page_issue)?.page_issue ?? null, flags };
+}
+
 type Example = { problem: FlagProblem; reason: string; entry_text: string; verdict: FlagVerdict; note?: string | null };
 type Rule = { problem: string; text: string };
 
@@ -243,16 +255,23 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
     approvedGuidance(supabase, kind),
     kind === "matters" ? pendingSuggestions(supabase, matterId) : Promise.resolve([] as Suggestion[]),
   ]);
-  const [result, unsupported, relatedFlags] = await Promise.all([
-    getAiClient().json({
-      stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
-      prompt: checkPrompt(reading, examples, guidance.rules, kind, suggestions, sameSite.map((m) => m.title)),
-      schema: CheckSchema,
-      schemaName: "page_check",
-    }),
+  const prompt = checkPrompt(reading, examples, guidance.rules, kind, suggestions, sameSite.map((m) => m.title));
+  // Two readings, flags combined: one reading missed a real problem about one time in three (2026-11-07), because
+  // borderline problems come and go between runs. A reading that fails doesn't sink the check while the other stands.
+  const read = () => getAiClient().json({
+    stage: "review",  // REVIEW_AI_MODEL, else the site's AI_MODEL
+    prompt,
+    schema: CheckSchema,
+    schemaName: "page_check",
+  });
+  const [readings, unsupported, relatedFlags] = await Promise.all([
+    Promise.allSettled([read(), read()]),
     verifying,
     relating,
   ]);
+  const done = readings.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
+  if (!done.length) throw (readings[0] as PromiseRejectedResult).reason;
+  const result = { ...done[0], data: combineReadings(done.map((r) => r.data)) };
   const byKey = new Map(page.entries.map(e => [e.key, e.text]));
   // What staff already decided on this page: a re-raised flag (same entry, same problem) keeps its rating;
   // rated flags the new check drops are kept as history, still teaching later checks.

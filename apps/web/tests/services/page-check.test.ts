@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkPrompt, readPage } from "../../app/services/page-check.server";
+import { checkPrompt, combineReadings, readPage } from "../../app/services/page-check.server";
 
 const html = `<html><head><title>Flight Cannabis | Open Langford</title>
 <meta name="description" content="A store&#x27;s permit, renewed twice."></head><body><main>
@@ -76,5 +76,19 @@ describe("unresolvedFlags", () => {
     expect(unresolvedFlags([flag("agree")])).toHaveLength(1);
     expect(unresolvedFlags([flag("agree", true), flag("disagree")])).toHaveLength(0);
     expect(unresolvedFlags(null)).toHaveLength(0);
+  });
+});
+
+describe("combineReadings", () => {
+  const flag = (key: string | null, problem: any, reason = "r") => ({ key, problem, reason, fix: "f" });
+  it("keeps every distinct flag from both readings, once", () => {
+    const combined = combineReadings([
+      { summary: "first", page_issue: null, flags: [flag("agenda-1", "duplicate"), flag("mention-2", "unclear_why")] },
+      { summary: "second", page_issue: "lumps two subjects", flags: [flag("agenda-1", "duplicate", "again"), flag("agenda-3", "generic_text")] },
+    ]);
+    expect(combined.summary).toBe("first");
+    expect(combined.page_issue).toBe("lumps two subjects");
+    expect(combined.flags.map((f) => `${f.key}:${f.problem}`)).toEqual(["agenda-1:duplicate", "mention-2:unclear_why", "agenda-3:generic_text"]);
+    expect(combined.flags[0].reason).toBe("r");
   });
 });
