@@ -150,6 +150,9 @@ export function PageReviewBar() {
   // Ratings still on their way to the server: Fix waits for them, or the agent would start with the old ratings
   // (2026-11-06: "Yes to all" had saved one of four when Fix was pressed).
   const [savingRatings, setSavingRatings] = useState(0);
+  // The All row while it saves: which button was pressed and how far along (found entries go one request each, so
+  // a dozen of them take a while and the row says so instead of looking dead).
+  const [deciding, setDeciding] = useState<{ verdict: "agree" | "disagree"; done: number; total: number } | null>(null);
   const tracked = <T,>(p: Promise<T>) => { setSavingRatings((n) => n + 1); return p.finally(() => setSavingRatings((n) => n - 1)); };
   useEffect(() => setRatings({}), [pathname]);
   const slot = (index: number) => `${review?.ai_checked_at ?? ""}#${index}`;
@@ -228,6 +231,7 @@ export function PageReviewBar() {
     // Shown at once and saved in one request (rate_all), after any single rating still on its way; a failed save puts
     // the stored ratings back.
     const slots = undecidedFlags.map(({ i }) => slot(i));
+    setDeciding({ verdict, done: 0, total: (slots.length ? 1 : 0) + undecidedFound.length });
     setRatings((r) => ({ ...r, ...Object.fromEntries(slots.map((s) => [s, verdict])) }));
     if (slots.length) {
       const body = new FormData();
@@ -237,15 +241,18 @@ export function PageReviewBar() {
         .catch(() => setRatings((r) => { const next = { ...r }; for (const s of slots) delete next[s]; return next; })));
       ratingQueue.current = next;
       await next;
+      setDeciding((d) => d && { ...d, done: d.done + 1 });
     }
     for (const x of undecidedFound) {
       const body = new FormData();
       Object.entries({ intent: verdict === "agree" ? "accept" : "reject", path: pathname, title: document.title, table: x.table, id: String(x.id), agree: "1" })
         .forEach(([k, v]) => body.set(k, v));
       await fetch("/api/page-review", { method: "POST", body, headers: { Accept: "application/json" } }).catch(() => null);
+      setDeciding((d) => d && { ...d, done: d.done + 1 });
     }
-    load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
-  })());
+    await load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
+    setDeciding(null);
+  })().finally(() => setDeciding(null)));
   const button = "whitespace-nowrap rounded-full px-2.5 py-1 font-medium";
   const markReviewed = () => {
     if (open_ > 0) { setBlocked(true); setOpen(true); return; }
@@ -364,16 +371,24 @@ export function PageReviewBar() {
                 <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-amber-900">Whole page: {plainKeys(review.ai_page_issue)}</p>
               )}
               {undecidedFlags.length + undecidedFound.length >= 2 && (
-                <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-zinc-50 px-2.5 py-1.5 text-xs text-zinc-600">
-                  <span>All {undecidedFlags.length + undecidedFound.length} undecided</span>
+                <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-zinc-50 px-2.5 py-1.5 text-xs text-zinc-600" aria-live="polite">
+                  <span>
+                    {deciding
+                      ? `Saving ${Math.min(deciding.done + 1, deciding.total)} of ${deciding.total}…`
+                      : `All ${undecidedFlags.length + undecidedFound.length} undecided`}
+                  </span>
                   <div className="flex shrink-0 gap-0.5">
                     <Tip label="Yes to all: fix every flag, add every found entry (on Fix)">
-                      <button type="button" disabled={busy} onClick={() => decideAll("agree")} aria-label="Yes to all"
-                        className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-200"><ThumbsUp className="h-3.5 w-3.5" /></button>
+                      <button type="button" disabled={busy || !!deciding} onClick={() => decideAll("agree")} aria-label="Yes to all" aria-busy={deciding?.verdict === "agree"}
+                        className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-200 disabled:opacity-60">
+                        {deciding?.verdict === "agree" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ThumbsUp className="h-3.5 w-3.5" />}
+                      </button>
                     </Tip>
                     <Tip label="No to all: leave every flag, reject every found entry">
-                      <button type="button" disabled={busy} onClick={() => decideAll("disagree")} aria-label="No to all"
-                        className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-200"><ThumbsDown className="h-3.5 w-3.5" /></button>
+                      <button type="button" disabled={busy || !!deciding} onClick={() => decideAll("disagree")} aria-label="No to all" aria-busy={deciding?.verdict === "disagree"}
+                        className="rounded-full p-1.5 text-zinc-500 hover:bg-zinc-200 disabled:opacity-60">
+                        {deciding?.verdict === "disagree" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ThumbsDown className="h-3.5 w-3.5" />}
+                      </button>
                     </Tip>
                   </div>
                 </div>
