@@ -2,6 +2,8 @@ Open Langford is an independent project by a group of Langford residents. Its go
 
 We made this site as a fork of Kyle Peatt's [View Royal AI](https://viewroyal.ai/about) project, we found it hard to keep up with council meetings, procedures, and what was really going on. We wanted a tool that made it easier to understand council decisions, elected officials' track records, and helped everyone look up city information using natural language.
 
+> **New to council meetings?** [How council works](/how-council-works) explains readings, motions, carried, in camera and the other words in the minutes, in plain language.
+
 ## How it works
 
 - **Automated scraping:** Regularly checks the Langford website for new agendas, minutes, and bylaws.
