@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getAiClient } from "./ai/index.server";
 import { fetchAll } from "./page-verify.server";
 import { completeVoteCounts } from "../lib/vote-coverage";
+import { bylawRecordLine, readBylaw, searchBylaws } from "./bylaw-records.server";
 
 /**
  * The City's records as a library the review model can research, not just the text pre-loaded beside a page. A
@@ -32,7 +33,7 @@ const meetingOf = (row: any) => (Array.isArray(row?.meetings) ? row.meetings[0] 
 /** Full-text search across the City's records; previews only, `readRecord` returns the whole thing. */
 export async function searchRecords(supabase: SupabaseClient, query: string): Promise<RecordHit[]> {
   const ts = { type: "websearch" as const, config: "english" };
-  const [sections, motions, items, segments, pages] = await Promise.all([
+  const [sections, motions, items, segments, pages, bylaws] = await Promise.all([
     supabase.from("document_sections").select("id, agenda_item_id, section_title, section_text, documents(title, meetings(meeting_date))")
       .textSearch("text_search", query, ts).limit(PER_KIND),
     supabase.from("motions").select("id, text_content, result, meetings(meeting_date)").textSearch("text_search", query, ts).limit(PER_KIND),
@@ -40,8 +41,13 @@ export async function searchRecords(supabase: SupabaseClient, query: string): Pr
     supabase.from("transcript_segments").select("meeting_id, start_time, speaker_name, text_content, meetings(meeting_date)")
       .textSearch("text_search", query, ts).limit(PER_KIND),
     supabase.from("public_report_pages").select("report_id, page, content, public_reports(year, title)").textSearch("text_search", query, ts).limit(PER_KIND),
+    searchBylaws(supabase, query).catch(() => []),
   ]);
   const hits: RecordHit[] = [];
+  for (const b of bylaws) {
+    hits.push({ ref: `bylaw:${b.id}`, kind: "signed bylaw (its certified reading and adoption dates)", date: null,
+      title: `Bylaw No. ${b.bylaw_number || "?"}: ${b.title || "untitled"}`, preview: bylawRecordLine(b) });
+  }
   for (const s of (sections.data || []) as any[]) {
     const doc = Array.isArray(s.documents) ? s.documents[0] : s.documents;
     hits.push({ ref: `section:${s.id}`, kind: "report or minutes section", date: meetingOf(doc).meeting_date ?? null,
@@ -118,6 +124,9 @@ export async function readRecord(supabase: SupabaseClient, ref: string): Promise
     return `${item ? `Discussion of agenda item ${item.id}: ${item.title}` : `Meeting ${id}, around ${Math.round(at)}s`}\n` +
       `(speaker names are a machine's guess)\n${await transcriptText(supabase, id, start, end)}`;
   }
+  if (kind === "bylaw" && Number.isSafeInteger(id)) {
+    return (await readBylaw(supabase, id)) ?? `No record ${ref}.`;
+  }
   if (kind === "report" && Number.isSafeInteger(id)) {
     const { data } = await supabase.from("public_report_pages").select("content, public_reports(year, title)")
       .eq("report_id", id).eq("page", Number(b)).maybeSingle();
@@ -188,9 +197,11 @@ export async function research(supabase: SupabaseClient, question: string, conte
 address, a bylaw or file number, a name, a figure) and read the records that look relevant in full; run several
 searches and reads at once when that helps. A report section belongs to an agenda item (read item:<id> for everything
 filed on it, with its motions and video transcript). ${goal.finish}
-Only the City's records count: motions, reports, minutes, transcripts of the meeting video, annual reports. Agenda item
-summaries are model-written notes: they can point you somewhere but don't count as support. Quote the record's own
-words exactly in your finding.
+Only the City's records count: motions, reports, minutes, transcripts of the meeting video, annual reports, and signed
+bylaws (bylaw:<id>), whose printed reading and adoption dates are the certified record of a bylaw's progress and
+outrank a motion's wording in the minutes. For a question about whether a bylaw was read or adopted, search its
+number and read the signed bylaw. Agenda item summaries are model-written notes: they can point you somewhere but
+don't count as support. Quote the record's own words exactly in your finding.
 ${last ? "\nYou have used your searches and reads: give your finding now with what you found.\n" : ""}
 QUESTION: ${question}
 

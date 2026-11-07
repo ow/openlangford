@@ -140,3 +140,11 @@ The fix before this change made 5 calls, about 26 s and $0.02: the plan, two wri
 the re-check. A typical two-flag fix now takes about 40 to 50 s and costs about $0.07. A four-flag fix investigates
 in about the same time, since the flags run in parallel and stop at 40 s. It costs about $0.10 to $0.12. Both fit
 within the 90 s deadline.
+
+## Signed bylaws as a record
+
+A topic tied to a bylaw (its `bylaw_id`, or a bylaw number in its title or identifier) gives the check, the fix agent's
+plan and investigations, and the re-check a `SIGNED BYLAW bylaw:<id>` line with the reading and adoption dates printed on
+the certified copy (`services/bylaw-records.server.ts`). Research can search and read `bylaw:<id>` too. The signed bylaw
+outranks a motion's wording in the minutes: the May 2, 2016 minutes say "give Bylaw No. 1628 First Reading" under an
+"(ADOPTION)" heading, and the signed bylaw says adopted that day.

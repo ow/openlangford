@@ -82,6 +82,8 @@ export function investigationLine(i: Investigation): string {
 export async function investigate(supabase: SupabaseClient, input: {
   path: string; topic: string; flags: { flag: PageFlag; index: number }[]; note: string | null; signal: AbortSignal;
   maxTurns?: number; timeoutMs?: number;
+  /** Records every investigation starts with (the topic's signed bylaws). */
+  records?: string;
 }): Promise<Investigation[]> {
   const signal = AbortSignal.any([input.signal, AbortSignal.timeout(input.timeoutMs ?? INVESTIGATION_MS)]);
   const jobs: Investigation[] = input.flags.map(({ flag, index }) => ({
@@ -99,6 +101,7 @@ export async function investigate(supabase: SupabaseClient, input: {
     const own = Number.isSafeInteger(item) ? (await itemRecords(supabase, [item]).catch(() => ({ text: "" }))).text : "";
     const context = [`This is the topic page ${input.path} ("${input.topic}").`,
       flag?.fix ? `The fix staff approved: ${flag.fix}` : "", flag?.note ? `The editor's note on this entry: ${flag.note}` : "",
+      input.records ? `THE TOPIC'S SIGNED BYLAWS:\n${input.records}` : "",
       own ? `THE ENTRY'S OWN RECORDS (item:${item}):\n${own}` : ""].filter(Boolean).join("\n");
     try {
       const found = await research(supabase, job.question, context, input.maxTurns ?? INVESTIGATION_TURNS, signal, ANSWER);

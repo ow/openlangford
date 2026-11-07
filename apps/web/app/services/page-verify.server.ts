@@ -4,6 +4,7 @@ import { getAiClient } from "./ai/index.server";
 import { completeVoteCounts } from "../lib/vote-coverage";
 import type { PageFlag } from "../lib/page-review-types";
 import { research } from "./record-research.server";
+import { bylawRecords } from "./bylaw-records.server";
 
 /**
  * The page check's second reading: the page's own statements against the records behind them. A topic page's
@@ -157,11 +158,11 @@ export async function claimsAndRecords(supabase: SupabaseClient, path: string): 
       ...Object.entries((meta.timeline_headlines || {}) as Record<string, string>)
         .filter(([id]) => ids.includes(Number(id))).map(([id, t]) => ({ id: `line-${id}`, key: `agenda-${id}`, text: `Timeline line for item ${id}: ${t}` })),
     ];
-    const records = await itemRecords(supabase, ids);
+    const [records, bylaws] = await Promise.all([itemRecords(supabase, ids), bylawRecords(supabase, m.id)]);
     // Only statements there's something to check against: a line about an item with no records is left alone,
     // and the summary and status only when at least one item has records.
     const checkable = claims.filter((c) => c.id.startsWith("line-") ? records.covered.has(Number(c.id.slice(5))) : records.covered.size > 0);
-    return { claims: checkable, records: records.text };
+    return { claims: checkable, records: [records.text, bylaws].filter(Boolean).join("\n\n") };
   }
   if (meeting) {
     const { data: mt } = await supabase.from("meetings").select("id, meta").eq("slug", meeting).maybeSingle();
@@ -195,6 +196,10 @@ Judge facts, not style. What follows from what something is, or from how a city 
 (development cost charges pay for growth's roads and parks; a public hearing is where residents speak; a bylaw
 adopted is in force): call it supported. Check what is specific to this item: its numbers, dates, places, steps,
 purpose and outcome. Quote the record's words in "source" whenever you can.
+A SIGNED BYLAW line is the certified bylaw's own record of its readings and adoption: it outranks a motion's wording
+in the minutes (a "first reading" motion on the day the signed bylaw says it was adopted means it was adopted), so a
+statement that the bylaw was adopted on that date is supported, and one that it only got a first reading is
+contradicted.
 
 STATEMENTS
 ${claims.map((c) => `[${c.id}] ${c.text}`).join("\n")}
