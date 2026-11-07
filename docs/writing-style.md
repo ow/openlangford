@@ -11,7 +11,7 @@ A Langford resident on a phone who has never read a council agenda. They want to
 1. **Say what happened, not what was on the agenda.** "Council approved 47 homes on Latoria Road", not "Consider bringing Bylaw 2278 forward".
 2. **Most important first.** Lead with the outcome and who it affects. Dates, counts, sources and caveats go last, if at all.
 3. **Everyday words.** Write "garbage" not "solid waste", "passed" not "adopted", "rules" not "regulations". If a term can't be avoided, explain it in a few words the first time.
-4. **Explain process instead of naming it.** "Moved the 2026 budget one step from final approval", not "gave first, second and third reading". "Made final", not "adopted at fourth reading". "Set aside for now", not "tabled" (in Canada "tabled" also means "presented", so readers can take it either way).
+4. **Explain process instead of naming it.** "Moved the 2026 budget one step from final approval", not "gave first, second and third reading". "Made final", not "adopted at fourth reading".
 5. **No internal codes.** No bylaw, file, permit or policy numbers (Z15-0004, POL-0031-FIN, LGA s.146(2)(b)) in running text. A detail page may show them as labelled metadata.
 6. **No database words.** Never "matters", "records", "agenda items", "segments" or "attribution" in public copy. Say "council decisions", "projects", "mentioned in council meetings".
 7. **Counts in plain terms, last.** "Mentioned in council meetings 41 times since 2009", not "2 matters since 2021". Any date range must match what the page shows next to it.
