@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useRouteLoaderData, Link } from "react-router";
+import { useRouteLoaderData, Link, useLocation } from "react-router";
 import { Bell, BellOff, Loader2 } from "lucide-react";
 import { cn } from "../lib/utils";
 import type { SubscriptionType } from "../lib/types";
@@ -39,6 +39,8 @@ export function SubscribeButton({
   const [checked, setChecked] = useState(false);
 
   // Check subscription status on mount
+  // The router's path, not window.location: the server has no window, and both must render the same link.
+  const { pathname } = useLocation();
   useEffect(() => {
     if (!user) return;
 
@@ -63,7 +65,7 @@ export function SubscribeButton({
     if (!signupsEnabled) return null;
     return (
       <Link
-        to={`/signup?redirectTo=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "/")}`}
+        to={`/signup?redirectTo=${encodeURIComponent(pathname)}`}
         className={cn(
           "inline-flex items-center gap-1.5 transition-colors",
           quiet ? cn(QUIET, "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900")
