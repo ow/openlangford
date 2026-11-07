@@ -143,8 +143,8 @@
         {
           "id": "tabled",
           "term": "Tabled",
-          "means": "In Langford's older minutes, to \"table\" an item meant to put it off. In much of Canada it means the opposite, to present something. The word reads both ways, so this site avoids it. Recent minutes say \"postpone\" or \"refer\" instead.",
-          "in_the_record": "\"THAT the item be tabled\" in older minutes; \"postpone\" in recent ones. Residents speaking at hearings still say \"table\".",
+          "means": "In Langford's minutes, to \"table\" an item means to put it off, often to a named later meeting. It's rare, a few times a year at most, but it still happens. In much of Canada \"tabled\" means the opposite, to present something, so the word reads both ways and this site avoids it.",
+          "in_the_record": "\"THAT Council table this item to the Special Council Meeting on May 9, 2024\", \"THAT the main motion be tabled\". About a dozen motions since 2009, the latest in 2026. Residents speaking at hearings say \"table\" too.",
           "we_write": "We say \"postponed to May 9\", or \"set aside\" when no date was given, and \"presented\" for something brought before Council. Never \"tabled\".",
           "match": "\\btabled\\b|\\btable (?:the|this|it)\\b"
         },
@@ -213,7 +213,7 @@
         {
           "id": "readings",
           "term": "Readings",
-          "means": "Council votes on a bylaw several times, and each vote is called a reading. BC bylaws need three readings and then adoption. Langford usually gives all three readings at one meeting and adopts the bylaw at a later one.",
+          "means": "Council votes on a bylaw several times, and each vote is called a reading. BC bylaws need three readings and then adoption. Langford usually gives all three readings at one meeting. Provincial law then requires at least a day before adoption, so most bylaws are adopted at a later meeting.",
           "in_the_record": "Agenda labels: \"(FIRST, SECOND AND THIRD READINGS)\", \"(SECOND AND THIRD READINGS)\", \"(FIRST READING)\", \"(ADOPTION)\".",
           "we_write": "We explain the step instead of naming it: \"introduced\", \"one step from final approval\", \"made final\".",
           "match": "\\b(?:first|second|third|1st|2nd|3rd)(?:,? (?:second|third|and third|& third|2nd|3rd))* readings?\\b|\\b(?:three|all) readings\\b|\\breadings\\b"
@@ -239,7 +239,7 @@
         {
           "id": "third-reading",
           "term": "Third reading",
-          "means": "Council approves the final wording. Only adoption is left, usually at a later meeting. Most of the debate has happened by this point, so a bylaw that passes third reading almost always goes on to be adopted.",
+          "means": "Council approves the final wording. Only adoption is left, usually at a later meeting (the same night for zoning and community plan bylaws). Most of the debate has happened by this point, so a bylaw that passes third reading almost always goes on to be adopted.",
           "we_write": "We say \"one step from final approval\". We don't add \"a later vote is still needed\", because the phrase already says that.",
           "stages": {
             "third": "Council approved the final wording. Adoption is the last step.",
@@ -249,7 +249,7 @@
         {
           "id": "adoption",
           "term": "Adoption",
-          "means": "The last vote, after which the bylaw is law and there's nothing more for Council to decide. In the minutes, \"adopted\" always means this final step. Although a bylaw that has passed third reading has effectively been agreed, it isn't law until this vote, and sometimes a project changes or stalls in between.",
+          "means": "The last vote, after which the bylaw is law and there's nothing more for Council to decide. In the minutes, \"adopted\" always means this final step. Although a bylaw that has passed third reading has effectively been agreed, it isn't law until this vote, and sometimes a project changes or stalls in between. Most bylaws have to wait at least a day after third reading; zoning and community plan bylaws are the exception and can be adopted the same night.",
           "in_the_record": "\"(ADOPTION)\", \"That Bylaw No. 2284 be adopted\".",
           "we_write": "We say \"made final\" or \"final approval\". On this site a bylaw is shown as adopted only after this vote: a topic gets its \"Adopted\" badge here, and a bylaw past third reading is \"one step from final approval\" until then. Each vote is counted on its own in a councillor's record, so voting for the readings and then for adoption shows as two votes. We don't call a plain resolution \"adopted\"; that's \"passed\".",
           "stages": {
