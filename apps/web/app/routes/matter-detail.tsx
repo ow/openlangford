@@ -526,13 +526,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
   ) as any[], matter.meta?.timeline_headlines || {});
   const timelineSteps = foldSameMeetingSteps(timelineEntries, matter.meta?.timeline_headlines || {});
   // Each council term is marked inline once on the page: the status line first, then the first decision that uses it.
+  // Page order: the status line, then each step's summary and its decisions, newest first.
   const termPlan = hintPlan<string>([
     { key: "status", text: matter.meta?.status_line },
-    ...timelineSteps.flatMap((e: any) => ((e.item?.motions || []) as any[]).map((m) => ({ key: `motion-${m.id}`, text: m.plain_english_summary || m.text_content }))),
+    ...timelineSteps.flatMap((e: any) => [
+      { key: `item-${e.item?.id}`, text: e.item?.plain_english_summary },
+      ...((e.item?.motions || []) as any[]).map((m) => ({ key: `motion-${m.id}`, text: m.plain_english_summary || m.text_content })),
+    ]),
   ]);
-  const timelineTermHints = new Map<number, ReadonlySet<string>>(
-    timelineSteps.flatMap((e: any) => ((e.item?.motions || []) as any[]).map((m) => [m.id, termPlan.get(`motion-${m.id}`)!] as const)),
-  );
 
   // People who both spoke and wrote in about this matter get a note on each side.
   const aboutMatter = `${matterTitle(matter)} ${matter.plain_english_summary || ""}`;
@@ -998,7 +999,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                           participation={(item as any).meta?.participation}
                           written={(item as any).meta?.written_participation}
                           notes={notes}
-                          termHints={timelineTermHints}
+                          termHints={termPlan}
                         />
                       </li>
                     );

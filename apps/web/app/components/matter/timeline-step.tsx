@@ -141,8 +141,9 @@ export function TimelineStep({
 }: {
   item: any;
   headline?: string;
-  /** Per motion id, the glossary terms this step may mark inline (from hintPlan over the whole timeline). */
-  termHints?: Map<number, ReadonlySet<string>>;
+  /** The glossary terms this step may mark inline, keyed "item-<id>" for its summary and "motion-<id>" per decision
+   * (from hintPlan over the whole timeline, so the page marks each term once). */
+  termHints?: Map<string, ReadonlySet<string>>;
   /** A stage set by hand for this step (agenda_items.meta.staff_stage), over the guess from its wording. */
   chosenStage?: string | null;
   docs: any[];
@@ -203,7 +204,7 @@ export function TimelineStep({
         <h3 className="text-lg font-semibold leading-snug text-zinc-900">{title}</h3>
         {single && outcomeMark(single)}
       </div>
-      {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>}
+      {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600"><TermText text={item.plain_english_summary} only={termHints?.get(`item-${item.id}`)} /></p>}
       {stage && !item.plain_english_summary && <p className="mt-1.5 text-sm text-zinc-600">{stage}</p>}
 
       {layoutImage && (
@@ -246,7 +247,7 @@ export function TimelineStep({
             <div key={m.id} className="text-sm">
               <p className="text-zinc-800">
                 {!single && o.label && <>{outcomeMark(o)}{" "}</>}
-                <span className="font-medium">Decision:</span> <TermText text={m.plain_english_summary || displayTitle(m.text_content || "")} only={termHints?.get(m.id)} />
+                <span className="font-medium">Decision:</span> <TermText text={m.plain_english_summary || displayTitle(m.text_content || "")} only={termHints?.get(`motion-${m.id}`)} />
               </p>
               {((o.label && o.against.length > 0) || isTranscribedMotion(m)) && (
                 <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs text-zinc-500">
