@@ -580,6 +580,8 @@ export function PageReviewBar() {
         <div className={cn(
           // The admin-only treatment (components/ui/admin-only.tsx): a dashed amber frame.
           "flex max-w-full items-center gap-0.5 rounded-full border border-dashed border-amber-400 bg-amber-50 py-1 pl-3 pr-1 text-sm shadow-lg",
+          // On a phone the controls can be wider than the screen: they scroll sideways instead of spilling off it.
+          "overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0",
           busy && !checking && "opacity-60",
         )}>
           {hidden && (
