@@ -24,7 +24,7 @@ sql/                   # Hand-run SQL, corrections and SQL tests
 
 ### Web App (`apps/web/`)
 ```bash
-pnpm dev              # Vite dev server (localhost:5173)
+pnpm dev              # Vite dev server (localhost:5173); refuses to start while one is running for this checkout (use it, or kill the pid it prints)
 pnpm build            # Build for Cloudflare Workers
 pnpm deploy           # Manual build + wrangler deploy: emergencies only, with the owner's OK (see Deploying)
 pnpm typecheck        # React Router typegen + tsc

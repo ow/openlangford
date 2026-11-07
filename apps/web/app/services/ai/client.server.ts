@@ -405,7 +405,10 @@ export function getAiClient(): AiClient {
     const persist = getPersistUsageHook();
     defaultClient = createAiClient({
       config,
-      provider: createOpenAIProvider(config.gatewayId
+      // In production every call goes through the AI Gateway binding (its spend limit, no fallback). The dev
+      // server can't run that binding (it needs a remote preview session), so dev calls OpenAI directly with the
+      // key from the env file when there is one.
+      provider: createOpenAIProvider(config.gatewayId && !(import.meta.env.DEV && config.apiKey)
         ? { apiKey: "gateway-managed", fetch: gatewayFetch }
         : { apiKey: config.apiKey }),
       // Console log plus a fire-and-forget row in ai_usage (see usage-sink.server.ts).
