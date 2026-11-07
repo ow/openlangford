@@ -94,7 +94,9 @@ function tally(motion: Motion) {
 
 function outcome(motion: Motion) {
   // A carried motion to table or defer leaves the item unsettled: show that, not "Passed".
-  const setAside = /defer|tabled|postpone|refer/i.test(motion.disposition || "") ? displayTitle(motion.disposition!) : null;
+  // Minutes say "table" for putting an item off; readers take "tabled" to mean presented (docs/writing-style.md).
+  const setAside = /defer|tabled|postpone/i.test(motion.disposition || "") ? "Postponed"
+    : /refer/i.test(motion.disposition || "") ? displayTitle(motion.disposition!) : null;
   const passed = !setAside && /carried|passed|approved|adopted/i.test(motion.result || "");
   const failed = /defeated|failed|lost/i.test(motion.result || "");
   const t = tally(motion);

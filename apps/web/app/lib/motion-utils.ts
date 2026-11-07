@@ -58,7 +58,8 @@ export const OUTCOME_STYLES: Record<MotionOutcome, string> = {
 export const OUTCOME_LABELS: Record<MotionOutcome, string> = {
   passed: "Passed",
   failed: "Failed",
-  tabled: "Tabled",
+  // Minutes say "table" for putting an item off; readers take "tabled" to mean presented (docs/writing-style.md).
+  tabled: "Postponed",
   withdrawn: "Withdrawn",
 };
 
