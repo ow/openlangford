@@ -632,9 +632,11 @@ export function PageReviewBar() {
           {(!review?.status || review.status === "needs_work" || agreed > 0) && !fixing && (
             <button type="button" disabled={busy || savingRatings > 0}
               onClick={() => (agreed > 0 || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
-              title={savingRatings > 0 ? "Saving your ratings…" : agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent` : "Describe what needs work"}
+              title={savingRatings > 0 ? "Saving your ratings…" : agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent`
+                : review?.note ? "Send the note to the agent again" : "Describe what needs work"}
               className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-200/70")}>
-              {spinner("needs_work")}{agreed ? `Fix ${agreed}` : "Needs work"}</button>
+              {/* On a page already marked "Needs work" (the status beside it), this says what it does instead of repeating it. */}
+              {spinner("needs_work")}{agreed ? `Fix ${agreed}` : review?.status !== "needs_work" ? "Needs work" : review.note ? "Fix again" : "Add issue"}</button>
           )}
           <Tip label={[
               open_ ? `${open_} open ${open_ === 1 ? "flag" : "flags"}` : "",
