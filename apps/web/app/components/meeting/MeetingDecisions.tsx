@@ -1,5 +1,6 @@
 import { VideoDissentNote } from "../video-dissent-note";
 import { TermText } from "../term";
+import { hintPlan } from "../../lib/glossary";
 import { isInferredChoice, voteTally } from "../../lib/vote-coverage";
 import { useMemo, useState } from "react";
 import { CheckCircle2, ChevronDown, MinusCircle, PlayCircle, XCircle } from "lucide-react";
@@ -33,7 +34,7 @@ function OutcomeIcon({ result }: { result?: string }) {
   return <MinusCircle className="h-5 w-5 shrink-0 text-zinc-400" aria-label={result || "No result"} />;
 }
 
-function DecisionRow({ decision, onWatch }: { decision: Decision; onWatch?: (s: number) => void }) {
+function DecisionRow({ decision, onWatch, terms }: { decision: Decision; onWatch?: (s: number) => void; terms?: ReadonlySet<string> }) {
   const { motion, item } = decision;
   const outcome = normalizeMotionResult(motion.result);
   const votes = motion.votes || [];
@@ -61,7 +62,7 @@ function DecisionRow({ decision, onWatch }: { decision: Decision; onWatch?: (s: 
             !expanded && "line-clamp-3",
           )}
         >
-          <TermText text={text} />
+          <TermText text={text} only={terms} />
         </p>
         {text.length > 280 && (
           <button
@@ -122,7 +123,7 @@ function DecisionRow({ decision, onWatch }: { decision: Decision; onWatch?: (s: 
 export function MeetingDecisions({ agendaItems, onWatch }: MeetingDecisionsProps) {
   const [showProcedural, setShowProcedural] = useState(false);
 
-  const { substantive, procedural } = useMemo(() => {
+  const { substantive, procedural, terms } = useMemo(() => {
     const all: Decision[] = agendaItems
       .flatMap((item) =>
         (item.motions || []).map((motion) => ({
@@ -135,9 +136,14 @@ export function MeetingDecisions({ agendaItems, onWatch }: MeetingDecisionsProps
       // Chronological: by meeting time when known, otherwise agenda order.
       .sort((a, b) => (a.t != null && b.t != null && a.t !== b.t ? a.t - b.t : a.i - b.i))
       .map(({ d }) => d);
+    const substantive = all.filter((d) => !d.procedural);
+    const procedural = all.filter((d) => d.procedural);
+    // Each council term is marked once on the page, on the first decision that uses it.
+    const terms = hintPlan([...substantive, ...procedural].map((d) => ({ key: d.motion.id, text: d.motion.plain_english_summary || d.motion.text_content })));
     return {
-      substantive: all.filter((d) => !d.procedural),
-      procedural: all.filter((d) => d.procedural),
+      substantive,
+      procedural,
+      terms,
     };
   }, [agendaItems]);
 
@@ -159,7 +165,7 @@ export function MeetingDecisions({ agendaItems, onWatch }: MeetingDecisionsProps
       {substantive.length > 0 ? (
         <ul className="divide-y divide-zinc-100">
           {substantive.map((d) => (
-            <DecisionRow key={d.motion.id} decision={d} onWatch={onWatch} />
+            <DecisionRow key={d.motion.id} decision={d} onWatch={onWatch} terms={terms.get(d.motion.id)} />
           ))}
         </ul>
       ) : (
@@ -179,7 +185,7 @@ export function MeetingDecisions({ agendaItems, onWatch }: MeetingDecisionsProps
           {showProcedural && (
             <ul className="divide-y divide-zinc-100 border-t border-zinc-100 bg-zinc-50/50">
               {procedural.map((d) => (
-                <DecisionRow key={d.motion.id} decision={d} onWatch={onWatch} />
+                <DecisionRow key={d.motion.id} decision={d} onWatch={onWatch} terms={terms.get(d.motion.id)} />
               ))}
             </ul>
           )}

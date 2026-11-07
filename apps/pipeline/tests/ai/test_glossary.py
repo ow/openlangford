@@ -18,11 +18,11 @@ def test_resident_register_uses_we_write():
     assert "/how-council-works" in block
     assert "- Tabled:" in block
     assert "one step from final approval" in block
-    assert "CARRIED UNANIMOUSLY" not in block
+    assert "Motion CARRIED" not in block
 
 
 def test_record_register_limited_to_requested_terms():
     block = glossary.prompt_block("record", only=["carried", "tabled"])
-    assert "CARRIED UNANIMOUSLY" in block
+    assert "Motion CARRIED" in block
     assert "- Tabled:" in block
     assert "- Rezoning:" not in block

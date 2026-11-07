@@ -17,11 +17,11 @@ describe("glossary", () => {
     expect(block).toContain("/how-council-works");
     expect(block).toContain("- Tabled:");
     expect(block).toContain("one step from final approval");
-    expect(block).not.toContain("CARRIED UNANIMOUSLY");
+    expect(block).not.toContain("Motion CARRIED");
   });
   it("writes the record register from in_the_record, limited to the terms asked for", () => {
     const block = glossaryPromptBlock("record", ["carried", "tabled"]);
-    expect(block).toContain("CARRIED UNANIMOUSLY");
+    expect(block).toContain("Motion CARRIED");
     expect(block).toContain("- Tabled:");
     expect(block).not.toContain("- Rezoning:");
   });

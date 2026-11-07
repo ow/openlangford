@@ -93,3 +93,18 @@ export function splitTerms(text: string, skip: ReadonlySet<string> = new Set()):
   if (pos < text.length) out.push({ text: text.slice(pos) });
   return out;
 }
+
+const NO_TERMS: ReadonlySet<string> = new Set();
+
+/** Which hinted terms each text in a list should mark, so a page marks each term once: the first text (in
+ * order) that contains a term gets it. Pure, so server and client agree. Keyed by the caller's ids. */
+export function hintPlan<K>(items: { key: K; text: string | null | undefined }[]): Map<K, ReadonlySet<string>> {
+  const taken = new Set<string>();
+  const plan = new Map<K, ReadonlySet<string>>();
+  for (const { key, text } of items) {
+    const mine = new Set<string>();
+    if (text) for (const seg of splitTerms(text, taken)) if (seg.term) { mine.add(seg.term.id); taken.add(seg.term.id); }
+    plan.set(key, mine.size ? mine : NO_TERMS);
+  }
+  return plan;
+}

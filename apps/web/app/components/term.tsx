@@ -1,22 +1,14 @@
-import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { Link, useLocation } from "react-router";
+import type { ReactNode } from "react";
+import { Link } from "react-router";
 import { Tooltip as T } from "radix-ui";
-import { glossaryHref, glossaryTerm, splitTerms, type GlossaryTerm } from "../lib/glossary";
+import { HINT_TERMS, glossaryHref, glossaryTerm, splitTerms, type GlossaryTerm } from "../lib/glossary";
 
 /**
- * Inline council-term hints. The first time a hinted term (shared/glossary.json `match`) appears on a page it
- * gets a dashed underline, its definition on hover or focus, and a link to /how-council-works#<id>. Later
- * occurrences stay plain. "First on the page" is tracked in render order through a per-page set, so SSR and
- * hydration mark the same occurrence.
+ * Inline council-term hints: a dashed underline, the definition on hover or focus, and a link to
+ * /how-council-works#<id>. Pure: what gets marked depends only on props, so server and client render the same.
+ * A list that shows many texts computes `hintPlan` (lib/glossary.ts) once and passes each text its share, so the
+ * page marks each term once.
  */
-const Seen = createContext<Set<string> | null>(null);
-
-export function TermHintsProvider({ children }: { children: ReactNode }) {
-  const { pathname } = useLocation();
-  const seen = useMemo(() => new Set<string>(), [pathname]);
-  return <Seen.Provider value={seen}>{children}</Seen.Provider>;
-}
-
 function Hint({ term, children }: { term: GlossaryTerm; children: ReactNode }) {
   return (
     <T.Provider delayDuration={200}>
@@ -40,28 +32,24 @@ function Hint({ term, children }: { term: GlossaryTerm; children: ReactNode }) {
   );
 }
 
-/** Mark a known term in hand-written copy: <Term id="carried">carried</Term>. Plain text after the page's first use. */
+/** Mark a known term in hand-written copy: <Term id="carried">carried</Term>. */
 export function Term({ id, children }: { id: string; children: ReactNode }) {
-  const seen = useContext(Seen);
   const term = glossaryTerm(id);
-  if (!term || !seen || seen.has(id)) return <>{children}</>;
-  seen.add(id);
-  return <Hint term={term}>{children}</Hint>;
+  return term ? <Hint term={term}>{children}</Hint> : <>{children}</>;
 }
 
-/** Text from the records or a model (a motion, a status line): hinted terms in it get the treatment. */
-export function TermText({ text }: { text: string | null | undefined }) {
-  const seen = useContext(Seen);
+const ALL_TERMS: ReadonlySet<string> = new Set(HINT_TERMS.map((h) => h.term.id));
+
+/** Text from the records or a model (a motion, a status line). Marks the first occurrence of each hinted term
+ * in it, or only the terms in `only` when the page planned them (an empty set means none). */
+export function TermText({ text, only }: { text: string | null | undefined; only?: ReadonlySet<string> }) {
   if (!text) return null;
-  if (!seen) return <>{text}</>;
-  const segments = splitTerms(text, seen);
+  const allowed = only ?? ALL_TERMS;
+  if (allowed.size === 0) return <>{text}</>;
+  const skip = new Set(HINT_TERMS.map((h) => h.term.id).filter((id) => !allowed.has(id)));
   return (
     <>
-      {segments.map((s, i) => {
-        if (!s.term) return s.text;
-        seen.add(s.term.id);
-        return <Hint key={i} term={s.term}>{s.text}</Hint>;
-      })}
+      {splitTerms(text, skip).map((s, i) => (s.term ? <Hint key={i} term={s.term}>{s.text}</Hint> : s.text))}
     </>
   );
 }

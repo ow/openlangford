@@ -9,6 +9,8 @@ import { displayTitle, lastName } from "../lib/display-text";
 import { cn } from "../lib/utils";
 
 interface MotionCardProps {
+  /** The glossary terms this card may mark inline (from hintPlan over the list); all when unset. */
+  terms?: ReadonlySet<string>;
   motion: Motion;
   /** Optional context line (e.g. "8.1 · Rezoning application"). */
   context?: string;
@@ -29,7 +31,7 @@ function OutcomeIcon({ result }: { result?: string }) {
  * One motion as a compact list row (render inside a `divide-y` list).
  * Mirrors the decision rows on the meeting page.
  */
-export function MotionCard({ motion, context, onWatchVideo, className }: MotionCardProps) {
+export function MotionCard({ motion, context, onWatchVideo, className, terms }: MotionCardProps) {
   const outcome = normalizeMotionResult(motion.result);
   const votes = motion.votes || [];
   const opposed = votes
@@ -51,11 +53,11 @@ export function MotionCard({ motion, context, onWatchVideo, className }: MotionC
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[15px] font-medium leading-snug text-zinc-900">
-          <TermText text={motion.plain_english_summary || motion.text_content} />
+          <TermText text={motion.plain_english_summary || motion.text_content} only={terms} />
         </p>
         {hasSummary && motion.text_content && (
           <p className="mt-1.5 border-l-2 border-zinc-200 pl-3 text-sm leading-relaxed text-zinc-600">
-            <TermText text={motion.text_content} />
+            {motion.text_content}
           </p>
         )}
         {context && <p className="mt-1.5 text-xs text-zinc-500">{context}</p>}

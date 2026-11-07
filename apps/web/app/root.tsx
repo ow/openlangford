@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import { TermHintsProvider } from "./components/term";
 import { THEME_SCRIPT } from "./lib/theme";
 import { bannerNotice } from "./lib/notices";
 import { civicToday } from "./lib/council-terms";
@@ -225,7 +224,6 @@ export default function App() {
   const notice = bannerNotice(civicToday());
   return (
     <ReportsEnabled.Provider value={reports}>
-    <TermHintsProvider>
     <div className="min-h-screen flex flex-col">
       <NavigationProgress />
       <Navbar />
@@ -243,7 +241,6 @@ export default function App() {
       {root?.isAdmin && isReviewable(pathname) && <Suspense fallback={null}><PageReviewBar /></Suspense>}
       {reports && <ReportIssue />}
     </div>
-    </TermHintsProvider>
     </ReportsEnabled.Provider>
   );
 }

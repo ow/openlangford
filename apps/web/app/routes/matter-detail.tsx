@@ -1,5 +1,6 @@
 import { timed } from "../lib/server-timing.server";
 import { TermText } from "../components/term";
+import { hintPlan } from "../lib/glossary";
 import { SITE_NAME } from "../lib/site-name";
 import { labelSpeakerRoles } from "../services/speaker-roles.server";
 import { collapseListedReadings, foldSameMeetingSteps } from "../lib/timeline-story";
@@ -524,6 +525,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime(),
   ) as any[], matter.meta?.timeline_headlines || {});
   const timelineSteps = foldSameMeetingSteps(timelineEntries, matter.meta?.timeline_headlines || {});
+  // Each council term is marked inline once on the page: the status line first, then the first decision that uses it.
+  const termPlan = hintPlan<string>([
+    { key: "status", text: matter.meta?.status_line },
+    ...timelineSteps.flatMap((e: any) => ((e.item?.motions || []) as any[]).map((m) => ({ key: `motion-${m.id}`, text: m.plain_english_summary || m.text_content }))),
+  ]);
+  const timelineTermHints = new Map<number, ReadonlySet<string>>(
+    timelineSteps.flatMap((e: any) => ((e.item?.motions || []) as any[]).map((m) => [m.id, termPlan.get(`motion-${m.id}`)!] as const)),
+  );
 
   // People who both spoke and wrote in about this matter get a note on each side.
   const aboutMatter = `${matterTitle(matter)} ${matter.plain_english_summary || ""}`;
@@ -630,7 +639,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               {/* The label on its own line, in the border's colour, so a long status wraps cleanly under itself. */}
               <p className="text-xs font-semibold text-brand-700">Status</p>
               <p className="mt-0.5 text-sm leading-relaxed text-zinc-700">
-                <TermText text={matter.meta?.status_line || `First discussed ${formatDate(firstSeen!, { month: "short", year: "numeric" })}`} />
+                <TermText text={matter.meta?.status_line || `First discussed ${formatDate(firstSeen!, { month: "short", year: "numeric" })}`} only={termPlan.get("status")} />
               </p>
             </div>
           )}
@@ -989,6 +998,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                           participation={(item as any).meta?.participation}
                           written={(item as any).meta?.written_participation}
                           notes={notes}
+                          termHints={timelineTermHints}
                         />
                       </li>
                     );

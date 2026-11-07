@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { hintPlan } from "../lib/glossary";
 import type { AgendaItem, Motion } from "../lib/types";
 import { normalizeMotionResult } from "../lib/motion-utils";
 import { displayTitle } from "../lib/display-text";
@@ -53,6 +54,8 @@ export function MotionsList({ agendaItems, onWatchVideo }: MotionsListProps) {
       return matchesSearch && matchesFilter;
     });
   }, [allMotions, searchQuery, filter]);
+  // Each council term is marked once in the list, on the first motion that uses it.
+  const termPlan = hintPlan(filteredMotions.map((m) => ({ key: m.id, text: m.plain_english_summary || m.text_content })));
 
   if (allMotions.length === 0) {
     return (
@@ -103,6 +106,7 @@ export function MotionsList({ agendaItems, onWatchVideo }: MotionsListProps) {
               <MotionCard
                 key={motion.id}
                 motion={motion}
+                terms={termPlan.get(motion.id)}
                 context={motion.context}
                 onWatchVideo={onWatchVideo}
               />
