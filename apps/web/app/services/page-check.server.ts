@@ -97,6 +97,12 @@ const CheckSchema = z.object({
 
 /** Two readings of one page as one: the first reading's summary, every distinct flag (one per entry and problem), and
  * the first page-wide issue either raised. */
+/** Flags staff agreed with that aren't fixed and that a new check didn't raise again: they stay on the page. */
+export function agreedStillOpen(prior: PageFlag[], fresh: PageFlag[]): PageFlag[] {
+  const same = (a: PageFlag, b: PageFlag) => a.key === b.key && a.problem === b.problem && (a.problem !== "unsupported" || a.excerpt === b.excerpt);
+  return prior.filter((p) => p.verdict === "agree" && !p.fixed && p.problem !== "editor_issue" && !fresh.some((f) => same(f, p)));
+}
+
 export function combineReadings(readings: z.infer<typeof CheckSchema>[]): z.infer<typeof CheckSchema> {
   const flags: z.infer<typeof CheckSchema>["flags"] = [];
   for (const reading of readings) {
@@ -306,6 +312,10 @@ export async function checkPage(supabase: SupabaseClient, origin: string, path: 
     // Staff's own issues aren't the check's to drop.
     ...priorFlags.filter(p => p.problem === "editor_issue" && !p.fixed),
   ];
+  // Nor is a problem staff agreed with that isn't fixed yet (often one the fix agent's own re-check reopened): a check
+  // that happens not to raise it again doesn't make it go away, and dropping it left the page "needs work" with
+  // nothing for the agent to fix (2026-11-07, the Walfred Road page).
+  flags.push(...agreedStillOpen(priorFlags, flags));
   const dropped = priorFlags.filter(p => decidedFlag(p) && p.problem !== "editor_issue" && !flags.some(f => same(f, p)));
   const history = [...((prior?.ai_rated_history || []) as PageFlag[]), ...dropped].slice(-50);
   const checked_at = new Date().toISOString();

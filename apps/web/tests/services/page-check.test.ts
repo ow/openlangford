@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkPrompt, combineReadings, readPage } from "../../app/services/page-check.server";
+import { agreedStillOpen, checkPrompt, combineReadings, readPage } from "../../app/services/page-check.server";
 
 const html = `<html><head><title>Flight Cannabis | Open Langford</title>
 <meta name="description" content="A store&#x27;s permit, renewed twice."></head><body><main>
@@ -66,7 +66,7 @@ describe("removableKey", () => {
   });
 });
 
-import { unresolvedFlags } from "../../app/lib/page-review-types";
+import { unresolvedFlags, type PageFlag } from "../../app/lib/page-review-types";
 
 describe("unresolvedFlags", () => {
   it("keeps a page open until every flag is rated fine, or agreed and fixed", () => {
@@ -90,5 +90,19 @@ describe("combineReadings", () => {
     expect(combined.page_issue).toBe("lumps two subjects");
     expect(combined.flags.map((f) => `${f.key}:${f.problem}`)).toEqual(["agenda-1:duplicate", "mention-2:unclear_why", "agenda-3:generic_text"]);
     expect(combined.flags[0].reason).toBe("r");
+  });
+});
+
+describe("agreedStillOpen", () => {
+  const flag = (over: Partial<PageFlag>): PageFlag => ({ key: "agenda-10608", problem: "unsupported", reason: "r", excerpt: "e", verdict: null, ...over });
+  it("keeps an agreed, unfixed flag a new check didn't raise again", () => {
+    // The fix agent's re-check reopened it; the next check happened not to raise it.
+    const reopened = flag({ verdict: "agree", fixed: false });
+    expect(agreedStillOpen([reopened], [])).toEqual([reopened]);
+  });
+  it("drops fixed, unrated, disagreed and re-raised flags, and leaves staff's own issues to their own rule", () => {
+    expect(agreedStillOpen([flag({ verdict: "agree", fixed: true }), flag({}), flag({ verdict: "disagree" }),
+      flag({ verdict: "agree", problem: "editor_issue" })], [])).toEqual([]);
+    expect(agreedStillOpen([flag({ verdict: "agree" })], [flag({})])).toEqual([]);
   });
 });
