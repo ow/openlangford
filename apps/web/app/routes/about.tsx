@@ -96,7 +96,7 @@ export default function About() {
             prose-p:text-zinc-600 prose-p:leading-relaxed
             prose-li:text-zinc-600
             prose-strong:text-zinc-900 prose-strong:font-bold
-            prose-blockquote:border-brand-500 prose-blockquote:bg-brand-50/50 prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:not-italic
+            prose-blockquote:border-brand-500 prose-blockquote:bg-brand-50/50 prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:font-normal [&_blockquote_p::before]:content-none [&_blockquote_p::after]:content-none
             prose-hr:border-zinc-100
             prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline
           "
