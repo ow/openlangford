@@ -243,20 +243,6 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"computed_cache": {
-                  Row: {
-                    "computed_at": string,"key": string,"payload": NonNullable<Json>
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "computed_at"?: string,"key": string,"payload": NonNullable<Json>
-                  }
-                  Update: {
-                    "computed_at"?: string,"key"?: string,"payload"?: NonNullable<Json>
-                  }
-                  Relationships: [
-                    
-                  ]
                 },"contact_messages": {
                   Row: {
                     "client_ip": string | null,"created_at": string | null,"email": string,"handled_at": string | null,"handled_by": string | null,"id": string,"message": string,"name": string | null,"notified_at": string | null
@@ -1682,6 +1668,9 @@ isOneToOne: false
                            },
 "bulk_classify_topics_by_category":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"bump_matter_content_for_items":
+{ Args: { "item_ids": (number)[] }; Returns: undefined
                            },
 "bylaw_slug_base":
 { Args: { "bylaw_number": string,"title": string }; Returns: string

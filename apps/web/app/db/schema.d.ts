@@ -605,12 +605,6 @@ export interface ChannelPosts {
   updated_at: Generated<Timestamp>;
 }
 
-export interface ComputedCache {
-  computed_at: Generated<Timestamp>;
-  key: string;
-  payload: Json;
-}
-
 export interface ContactMessages {
   client_ip: string | null;
   created_at: Generated<Timestamp | null>;
@@ -1017,6 +1011,9 @@ export interface MatterReportMentions {
 export interface Matters {
   bylaw_id: Int8 | null;
   category: string | null;
+  /**
+   * When something a reader sees on the topic page last changed (maintained by triggers; see stamp_matter_content). Use this, not updated_at, for freshness.
+   */
   content_updated_at: Generated<Timestamp | null>;
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -1798,7 +1795,6 @@ export interface DB {
   calendar_sync_state: CalendarSyncState;
   candidacies: Candidacies;
   channel_posts: ChannelPosts;
-  computed_cache: ComputedCache;
   contact_messages: ContactMessages;
   council_terms: CouncilTerms;
   councillor_highlights: CouncillorHighlights;
