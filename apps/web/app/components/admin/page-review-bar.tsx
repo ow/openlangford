@@ -123,7 +123,9 @@ export function PageReviewBar() {
     if (!r || autoOpened.current === pathname) return;
     autoOpened.current = pathname;
     if (r.review?.status === "fixed") setFixedRun(true);
-    if (unresolvedFlags(r.review?.ai_flags).length || r.links?.suggestions?.length || r.review?.status === "fixed") setOpen(true);
+    // A page checked but not yet reviewed opens too: with nothing found, the panel says all that's left is Reviewed.
+    if (unresolvedFlags(r.review?.ai_flags).length || r.links?.suggestions?.length || r.review?.status === "fixed"
+      || (r.review?.ai_checked_at && !r.review.status)) setOpen(true);
   }, [load.data, pathname]);
 
   const loaded = load.data?.path === pathname ? load.data : null;
@@ -275,6 +277,14 @@ export function PageReviewBar() {
                 <p className="mb-3 rounded-lg bg-amber-50 px-2.5 py-2 text-sm text-amber-900">
                   Rate or fix the {open_} open {open_ === 1 ? "flag" : "flags"} below first, then mark the page Reviewed.
                 </p>
+              )}
+              {/* Checked, nothing found, not reviewed yet: say so plainly, with the one step left. */}
+              {review?.ai_checked_at && !review.status && !open_ && !suggestions.length && !searching && (
+                <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-emerald-50 px-2.5 py-2 text-sm text-emerald-900">
+                  <span className="flex items-center gap-1.5"><Check className="h-4 w-4 shrink-0" />The check found nothing to fix. If the page reads right, mark it reviewed.</span>
+                  <button type="button" disabled={busy} onClick={markReviewed}
+                    className="shrink-0 rounded-md bg-emerald-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-60">{spinner("reviewed")}Reviewed</button>
+                </div>
               )}
               {!!edited?.photos && (
                 <div className="mb-3 flex items-center justify-between gap-2 rounded-lg bg-zinc-100 px-2.5 py-2 text-xs text-zinc-700">
@@ -633,8 +643,9 @@ export function PageReviewBar() {
             <button type="button" disabled={busy}
               onClick={() => (review?.ai_checked_at || suggestions.length ? setOpen(!open) : submit("check"))}
               className={cn(button, "flex items-center gap-1 text-brand-700 hover:bg-brand-100")}>
-              {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {checking ? "AI checking…" : "Check"}
+              {/* Checked with nothing open reads "Checked", so a clean page doesn't look unchecked. */}
+              {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : review?.ai_checked_at && !open_ && !suggestions.length ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+              {checking ? "AI checking…" : review?.ai_checked_at && !open_ && !suggestions.length ? "Checked" : "Check"}
               {/* One count, like an unread count: open flags plus entries the search found that need a decision. */}
               {!checking && open_ + suggestions.length > 0 && (
                 <span className="rounded-full bg-red-600 px-1.5 text-xs font-semibold text-white">{open_ + suggestions.length}</span>
