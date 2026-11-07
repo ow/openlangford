@@ -6,6 +6,7 @@ import { FLAG_PROBLEM_LABELS, entryLabel, keepStaffRatings, type PageFlag } from
 import { judgeTopics, readPage, type TopicVerdict } from "./page-check.server";
 import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
+import { bylawRecords } from "./bylaw-records.server";
 import { findingText, investigate, investigatedRecords, investigationLine, type Investigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
@@ -369,12 +370,13 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // The agent investigates before it plans: every agreed flag (and the editor's note) is researched in all of the
     // City's records, with a question that fits the problem, in parallel while the page's own records load. A flag
     // the check already researched keeps that finding.
+    const bylawText = await bylawRecords(supabase, matterId);
     const [{ text: itemText }, { data: reports }, evidenceText, investigations] = await Promise.all([
       itemRecords(supabase, ids),
       reportIds.length ? supabase.from("matter_report_mentions").select("id, page, quote").in("id", reportIds) : Promise.resolve({ data: [] }),
       evidenceRecords(supabase, matterId, evidenceIds),
       investigate(supabase, { path, topic: heading, flags: agreed.map((flag) => ({ flag, index: flags.indexOf(flag) })),
-        note: row?.note ?? null, signal: budget }),
+        note: row?.note ?? null, signal: budget, records: bylawText }),
     ]);
     const findingFor = (i: Investigation | undefined) => findingText(i?.finding);
     // For the note: what the agent read for each problem, so the editor can see what each change rests on. It is
@@ -385,7 +387,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
       await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
     const heldBack = await heldBackMotions(supabase, ids);
-    const records = [itemText, heldBack, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+    const records = [itemText, bylawText, heldBack, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
     // Topics holding entries staff accepted for this page (found entries just added, mentions kept earlier) are often
     // a topic of their own that's really this one (a lone 2019 extension of an agreement this page already has, a
@@ -869,7 +871,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           const claimIds = !key ? summaryIds : [`line-${key.replace(/^agenda-/, "")}`, `entry-${key}`, `motion-${key}`, `stage-${key}`].filter((c) => claims.some((x) => x.id === c));
           if (claimIds.length) scopes.set(i, claimIds);
         }
-        const records = [covered.text, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+        const records = [covered.text, bylawText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
           evidenceText, researchText].filter(Boolean).join("\n\n");
         const verdicts: RecheckVerdicts = scopes.size ? await recheckClaims(claims.filter((c) => [...scopes.values()].flat().includes(c.id)), records, budget) : new Map();
         const outcome = applyRecheck(updated, newlyFixed, scopes, verdicts, new Date().toISOString());
