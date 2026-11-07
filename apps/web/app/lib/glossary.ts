@@ -64,13 +64,6 @@ for (const key of STAGE_KEYS) {
 /** Plain-language line residents see for each stage, keyed by stage. */
 export const STAGE_LABELS = Object.fromEntries(STAGE_KEYS.map((k) => [k, stageLines.get(k)!.label])) as Record<StageKey, string>;
 
-/** The glossary term a stage line belongs to, so the line can link to its entry. */
-export function stageTermId(label: string | null | undefined): string | null {
-  if (!label) return null;
-  for (const { label: l, termId } of stageLines.values()) if (l === label) return termId;
-  return null;
-}
-
 /** Terms that get an inline hint (dashed underline, hover definition, link) where they appear in page text. */
 export const HINT_TERMS: { term: GlossaryTerm; re: RegExp }[] = GLOSSARY_TERMS.filter((t) => t.match).map((t) => ({
   term: t,

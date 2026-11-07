@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { glossaryPromptBlock } from "../../app/services/ai/glossary-prompt";
-import { GLOSSARY_TERMS, STAGE_LABELS, stageTermId } from "../../app/lib/glossary";
+import { GLOSSARY_TERMS, STAGE_LABELS } from "../../app/lib/glossary";
 
 describe("glossary", () => {
   it("has unique ids and a meaning for every term", () => {
@@ -11,8 +11,6 @@ describe("glossary", () => {
   it("keeps the timeline's stage lines", () => {
     expect(STAGE_LABELS.adopted).toBe("Final approval.");
     expect(STAGE_LABELS.first).toMatch(/^Introduced/);
-    expect(stageTermId(STAGE_LABELS.second_third)).toBe("third-reading");
-    expect(stageTermId("not a stage line")).toBeNull();
   });
   it("writes the resident register from we_write", () => {
     const block = glossaryPromptBlock("resident");

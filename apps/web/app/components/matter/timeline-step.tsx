@@ -12,7 +12,7 @@ import { ParticipationList, WrittenSubmissions } from "../meeting/participation-
 import { writtenLetters } from "../../lib/written";
 import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
 
-import { STAGE_LABELS, glossaryHref, stageTermId, type StageKey } from "../../lib/glossary";
+import { STAGE_LABELS, type StageKey } from "../../lib/glossary";
 
 export { STAGE_LABELS };
 export type StageChoice = StageKey | "none";
@@ -55,20 +55,6 @@ export function stageExplanation(texts: (string | null | undefined)[], { committ
 }
 
 /** Whether an item's meeting is a committee's rather than Council's. */
-/** A step's plain-language stage line, linking to its entry on /how-council-works. */
-function StageLine({ stage, className = "mt-0.5" }: { stage: string; className?: string }) {
-  const termId = stageTermId(stage);
-  const cls = cn(className, "text-sm text-zinc-600");
-  if (!termId) return <p className={cls}>{stage}</p>;
-  return (
-    <p className={cls}>
-      <Link to={glossaryHref(termId)} className="hover:text-brand-700 hover:underline" title="What this step means">
-        {stage}
-      </Link>
-    </p>
-  );
-}
-
 export function isCommitteeItem(item: any): boolean {
   const meeting = item?.meetings || {};
   return /committee|commission|board/i.test(`${meeting.organizations?.name || ""} ${meeting.type || ""}`);
@@ -202,7 +188,7 @@ export function TimelineStep({
           <h3 className="font-semibold leading-snug text-zinc-900">{title}</h3>
           {decisions[0]?.o.label && outcomeMark(decisions[0].o)}
         </div>
-        {stage && <StageLine stage={stage} />}
+        {stage && <p className="mt-0.5 text-sm text-zinc-600">{stage}</p>}
       </div>
     );
   }
@@ -215,7 +201,7 @@ export function TimelineStep({
         {single && outcomeMark(single)}
       </div>
       {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>}
-      {stage && !item.plain_english_summary && <StageLine stage={stage} className="mt-1.5" />}
+      {stage && !item.plain_english_summary && <p className="mt-1.5 text-sm text-zinc-600">{stage}</p>}
 
       {layoutImage && (
         <figure className="mt-4">

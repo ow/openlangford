@@ -19,7 +19,7 @@ export function Footer() {
             © {new Date().getFullYear()} {name}
           </p>
           <p className="mt-1 text-xs">
-            Independent, not affiliated with the {cityName}. AI summaries can contain mistakes; check the{" "}
+            Independent, not affiliated with the {cityName}. AI can make mistakes. Check the{" "}
             <a href={DEFAULT_MUNICIPALITY.meetingPortalUrl} className="underline underline-offset-2 hover:text-zinc-900" target="_blank" rel="noopener noreferrer">
               official record
             </a>.
@@ -27,7 +27,6 @@ export function Footer() {
         </div>
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2" aria-label="Footer">
           <Link to="/about" className="hover:text-zinc-900">About</Link>
-          <Link to="/how-council-works" className="hover:text-zinc-900">How council works</Link>
           <Link to="/updates" className="hover:text-zinc-900">Updates</Link>
           <Link to="/contact" className="hover:text-zinc-900">Contact</Link>
           <Link to="/privacy" className="hover:text-zinc-900">Privacy</Link>
