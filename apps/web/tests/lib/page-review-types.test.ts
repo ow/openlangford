@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { keepStaffRatings, type PageFlag } from "../../app/lib/page-review-types";
+import { entryLabel, keepStaffRatings, type PageFlag } from "../../app/lib/page-review-types";
 
 const flag = (verdict: PageFlag["verdict"], extra: Partial<PageFlag> = {}): PageFlag =>
   ({ key: "agenda-1", problem: "generic_text", reason: "r", excerpt: "e", verdict, ...extra });
@@ -23,5 +23,19 @@ describe("keepStaffRatings", () => {
 
   it("takes the agent's list when there was none", () => {
     expect(keepStaffRatings(null, [flag("agree")])).toEqual([]);
+  });
+});
+
+describe("entryLabel", () => {
+  const flags = [flag(null, { key: "mention-9481", excerpt: "June 21, 2010 · Discussed in another item · Bylaw NO. 1290" }),
+    flag(null, { key: "agenda-7", excerpt: "no date here" })];
+  it("names an entry by the date the page shows", () => {
+    expect(entryLabel("mention-9481", flags)).toBe("the June 21, 2010 entry");
+  });
+  it("falls back when the excerpt has no date or the flag is for the whole page", () => {
+    expect(entryLabel("agenda-7", flags)).toBe("the entry");
+    expect(entryLabel("agenda-99", flags)).toBe("the entry");
+    expect(entryLabel("related-3", flags)).toBe("the related topic");
+    expect(entryLabel(null, flags)).toBe("this page");
   });
 });

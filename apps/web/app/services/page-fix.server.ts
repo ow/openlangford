@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
-import { FLAG_PROBLEM_LABELS, keepStaffRatings, type PageFlag } from "../lib/page-review-types";
+import { FLAG_PROBLEM_LABELS, entryLabel, keepStaffRatings, type PageFlag } from "../lib/page-review-types";
 import { judgeTopics, readPage, type TopicVerdict } from "./page-check.server";
 import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
@@ -36,6 +36,8 @@ import type { StaffRole } from "../lib/auth.server";
  * topic holds, it compares the two topics' records itself (judgeTopics, the page check's Related topics judgement) and
  * merges them when they are one project, or keeps the entry as a mention and says why.
  */
+
+const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const PlanSchema = z.object({
   actions: z.array(z.object({
@@ -347,10 +349,11 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         note: row?.note ?? null, signal: budget }),
     ]);
     const findingFor = (i: Investigation | undefined) => findingText(i?.finding);
-    // For the note: what the agent read for each problem, so the editor can see what each change rests on.
+    // For the note: what the agent read for each problem, so the editor can see what each change rests on. It is
+    // evidence, not a to-do list, and names entries the way the page does.
     const found = investigations.filter((i) => i.finding?.ref);
-    const lookedInto = found.length ? `What the agent found in the City's records:\n${found.map((i) =>
-      `• ${i.key ?? "Whole page"}: ${i.finding!.explanation} (${i.finding!.ref})`).join("\n")}` : "";
+    const lookedInto = found.length ? `Evidence behind the changes, from the City's records:\n${found.map((i) =>
+      `• ${capital(entryLabel(i.key, flags))}: ${i.finding!.explanation} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
       await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
     const records = [itemText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
@@ -432,7 +435,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           .or(`and(matter_id.eq.${matterId},related_matter_id.eq.${step.to_matter_id}),and(matter_id.eq.${step.to_matter_id},related_matter_id.eq.${matterId})`);
         if (error) left.push(`${step.reason} (unlinking it didn't work)`);
         else {
-          done.push(step.reason);
+          done.push(`Unlinked the related topic: ${step.reason}`);
           answeredKeys.add(null);
           fixedKeys.add(`related-${step.to_matter_id}`);
           await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:unlink_related",
@@ -457,7 +460,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         else {
           try {
             await decideSuggestion(supabase, matterId, found.table, found.id, true, requester.id);
-            done.push(step.reason);
+            done.push(`Added the suggested entry: ${step.reason}`);
           } catch {
             left.push(`${step.reason} (adding it didn't work)`);
           }
@@ -477,7 +480,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         } else {
           hidden[String(itemId(step.key))] = { keep: itemId(step.keep_key), reason: step.reason.slice(0, 300), by: requester.id, at: new Date().toISOString() };
           fixedKeys.add(step.key);
-          done.push(step.reason);
+          done.push(`Hid ${entryLabel(step.key, flags)} as a duplicate: ${step.reason}`);
         }
         continue;
       }
@@ -532,7 +535,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           const { error: sectionError } = await supabase.from("document_sections").update({ agenda_item_id: step.to_item_id }).in("extracted_document_id", ids);
           const { error } = sectionError ? { error: sectionError } : await supabase.from("extracted_documents").update({ agenda_item_id: step.to_item_id }).in("id", ids);
           if (!error) {
-            done.push(step.reason);
+            done.push(`Moved the documents to the right item: ${step.reason}`);
             fixedKeys.add(step.key);
             continue;
           }
@@ -559,7 +562,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
             await removeEntry(supabase, matterId, step.key!, requester.id);
             fixedKeys.add(step.key!);
             removed.add(step.key!);
-            done.push(step.reason);
+            done.push(`Took ${entryLabel(step.key, flags)} off this page: ${step.reason}`);
           } catch (error) {
             left.push(`${step.reason} (it didn't work: ${error instanceof Error ? error.message : "unknown error"})`);
           }
@@ -573,7 +576,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           removed.add(step.key);
           // A line or heading rewritten earlier in this plan would be saved for an entry that's gone.
           delete lines[step.key];
-          done.push(step.reason);
+          done.push(`Removed ${entryLabel(step.key, flags)}: ${step.reason}`);
           await logStaffAction(supabase, {
             userId: requester.id, role: requester.staffRole, path, action: "agent:remove_entry",
             detail: { key: step.key, reason: step.reason.slice(0, 400) },
@@ -599,14 +602,14 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         try {
           await removeEntry(supabase, matterId, `mention-${move.item_id}`, requester.id);
           fixedKeys.add(`mention-${move.item_id}`);
-          done.push(move.reason);
+          done.push(`Took ${entryLabel(`mention-${move.item_id}`, flags)} off this page: ${move.reason}`);
         } catch {
           left.push(`${move.reason} (it didn't work: the link couldn't be moved or removed)`);
         }
         continue;
       }
       fixedKeys.add(`mention-${move.item_id}`);
-      done.push(move.reason);
+      done.push(`Moved ${entryLabel(`mention-${move.item_id}`, flags)} to the topic it's about: ${move.reason}`);
       await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:move_mention",
         detail: { agenda_item_id: String(move.item_id), from: String(matterId), to: String(move.to_matter_id), reason: move.reason.slice(0, 400) } });
     }
