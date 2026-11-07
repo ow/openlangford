@@ -1,4 +1,4 @@
-import { GLOSSARY_PATH, GLOSSARY_TERMS, GLOSSARY_VERSION, type GlossaryTerm } from "../../lib/glossary";
+import { GLOSSARY, GLOSSARY_PATH, GLOSSARY_TERMS, GLOSSARY_VERSION, type GlossaryTerm } from "../../lib/glossary";
 
 /** Which side of a term a prompt needs: how the minutes phrase it (for stages that read records) or the plain
  * words this site writes (for stages that write for residents). */
@@ -22,4 +22,12 @@ export function glossaryPromptBlock(register: GlossaryRegister, only?: string[])
       ? "How Langford's council records phrase things (glossary v" + GLOSSARY_VERSION + "):"
       : `Council terms and the plain words this site uses for them (the site explains them at ${GLOSSARY_PATH}; glossary v${GLOSSARY_VERSION}). Use the plain words, not the term:`;
   return [heading, ...lines].join("\n");
+}
+
+/** Term ids by group (meetings, decisions, bylaws, land, money, people), with ids added or removed. Mirrors
+ * pipeline/ai/glossary.py `ids`. */
+export function glossaryIds(groups?: string[], plus: string[] = [], minus: string[] = []): string[] {
+  const out = GLOSSARY.groups.filter((g) => !groups || groups.includes(g.id)).flatMap((g) => g.terms.map((t) => t.id));
+  for (const id of plus) if (!out.includes(id)) out.push(id);
+  return out.filter((id) => !minus.includes(id));
 }

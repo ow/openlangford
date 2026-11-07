@@ -32,6 +32,7 @@ from urllib.parse import unquote, urlparse
 from pydantic import BaseModel, Field
 
 from pipeline import ai, utils
+from pipeline.ai import glossary
 from pipeline.bylaw_numbers import (
     STREET_WORDS,
     adoption_year_from_text,
@@ -56,6 +57,8 @@ SYSTEM = (
     "No legal advice, no speculation, no filler."
 )
 
+
+SYSTEM = SYSTEM + "\n\n" + glossary.prompt_block("resident", only=glossary.ids(["bylaws", "land", "money"]))
 
 class BylawSummary(BaseModel):
     summary: str = Field(
@@ -341,7 +344,7 @@ def build_record(
     }
 
 
-SUMMARY_VERSION = "v2"
+SUMMARY_VERSION = "v3"  # v3: glossary block (resident register)
 
 
 def summary_meta(s: BylawSummary) -> dict:

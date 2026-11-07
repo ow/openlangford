@@ -11,6 +11,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from pipeline import ai
+from pipeline.ai import glossary
 from pipeline.ingestion.ingester import MeetingIngester
 from pipeline.paths import BASE_DIR
 from pipeline.ingestion.summary_format import normalize_meeting_summary
@@ -20,6 +21,8 @@ SUMMARY_SYSTEM = """You write concise municipal meeting summaries for residents.
 Focus on what changed, what was decided, what was controversial, and what follow-up was directed.
 Do not include attendance roll calls, procedural housekeeping, or filler conclusions."""
 
+
+SUMMARY_SYSTEM = SUMMARY_SYSTEM + "\n\n" + glossary.prompt_block("record", only=glossary.ids(["decisions", "bylaws"], plus=["closed-meeting", "consent-agenda", "committee-of-the-whole", "rise-and-report"]))
 
 def _absolute_archive_path(archive_path: str) -> str:
     if os.path.isabs(archive_path):

@@ -35,6 +35,13 @@ def version() -> int:
     return int(load()["version"])
 
 
+def ids(groups: list[str] | None = None, plus: list[str] | None = None, minus: list[str] | None = None) -> list[str]:
+    """Term ids by group (meetings, decisions, bylaws, land, money, people), with ids added or removed."""
+    out = [t["id"] for g in load()["groups"] if groups is None or g["id"] in groups for t in g["terms"]]
+    out += [i for i in (plus or []) if i not in out]
+    return [i for i in out if i not in set(minus or [])]
+
+
 def stage_labels() -> dict[str, str]:
     """Timeline stage key -> the line residents see (the web app's STAGE_LABELS)."""
     return {k: v for t in terms() for k, v in (t.get("stages") or {}).items()}

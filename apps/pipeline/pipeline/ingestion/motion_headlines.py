@@ -14,9 +14,10 @@ from pydantic import BaseModel
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ai import glossary
 from pipeline.ingestion.record_sources import RECORD_RULE
 
-HEADLINE_VERSION = "2"  # 2: Terra, record vs notes
+HEADLINE_VERSION = "3"  # 3: glossary block (resident register); 2: Terra, record vs notes
 
 SYSTEM = """You write headlines for council decisions in a small Canadian city, for residents skimming a front page.
 Each headline is 3 to 8 words, sentence case, no trailing period.
@@ -26,12 +27,14 @@ Prefer concrete nouns: the street, the facility, the dollar amount, who is affec
 Avoid ending on a filler verb like "adopted" or "approved" when a more specific one fits.
 Write like a newspaper: "Garbage pickup capped at $280", "Developers to pay toward new parks", "Clinic cleared for Happy Valley Road".
 When the motion failed, say so: "Bid to extend patio hours rejected".
-When it is a bylaw step short of adoption, say which: "Walfred Road rezoning passes second reading".
+When it is a bylaw step short of adoption, say so in the site's words: "Walfred Road rezoning one step from final approval".
 No bylaw or permit numbers, policy codes, quotation marks, "Council" as the subject, or the city name.
 Never invent details that are not in the inputs.
 """ + RECORD_RULE + """ Here the record is each motion's wording, its result and its agenda item title; the decision
 summary is a note."""
 
+
+SYSTEM = SYSTEM + "\n\n" + glossary.prompt_block("resident", only=glossary.ids(["bylaws", "land"], plus=["carried", "defeated", "tabled", "referred", "rescinded", "withdrawn", "closed-meeting", "notice-of-motion"]))
 
 class MotionHeadline(BaseModel):
     id: int

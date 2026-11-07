@@ -33,9 +33,10 @@ from pydantic import BaseModel
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ai import glossary
 from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, meeting_transcript
 
-HIGHLIGHTS_VERSION = "3"  # 3: record vs notes, fact check against the record
+HIGHLIGHTS_VERSION = "4"  # 4: glossary block (shared/glossary.json, resident register); 3: record vs notes, fact check
 DESCRIPTION_MAX = 155
 # Meetings that never happened (or haven't yet) get no highlights.
 SKIP_STATUSES = ("Planned", "Cancelled")
@@ -109,6 +110,8 @@ Description:
 - The two or three most significant outcomes, e.g. "Council approved a new 911 dispatch deal and fines for noise and construction."
 - Same style rules: no codes, jargon or database words."""
 
+
+SYSTEM = SYSTEM + "\n\n" + glossary.prompt_block("resident", only=glossary.ids(["meetings", "decisions", "bylaws", "land", "money"]))
 
 class Link(BaseModel):
     text: str

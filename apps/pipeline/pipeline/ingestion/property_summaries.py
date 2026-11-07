@@ -34,9 +34,10 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 
 from pipeline import ai
+from pipeline.ai import glossary
 from pipeline.postgrest import in_chunks
 
-PROPERTY_SUMMARY_VERSION = "2"
+PROPERTY_SUMMARY_VERSION = "3"  # 3: glossary block (resident register)
 MIN_RECORDS = 2
 MIN_ADDRESSES = 2  # a street page with two or more addresses gets a summary even with no records of its own
 NARRATIVE_MAX = 220  # the model's part; the closing count follows
@@ -77,6 +78,8 @@ For a lot (kind "lot"): say what has been proposed or decided there. Example: "A
 For a street (kind "street"): cover both the road itself (roadworks, closures, traffic, grants; newest first) and the developments at addresses on it. Name the projects at the addresses in "most_considered" (the ones Council considered most often) first; add one other, larger project only if it fits. Example: "In 2024 Council backed grant applications for walking and cycling upgrades on Latoria Road. Earlier: a 47-lot subdivision at 935 and the 501-home McCormick Meadows plan at 940." Refer to an address on the street by its number alone ("a 47-lot subdivision at 935"), since the street is the page.
 Never mention people's names, applicants, companies, or residents' personal details. Never start with "This address", "This street" or the address itself."""
 
+
+SYSTEM = SYSTEM + "\n\n" + glossary.prompt_block("resident", only=glossary.ids(["bylaws", "land"], plus=["carried", "defeated", "tabled", "referred", "public-hearing", "closed-meeting"]))
 
 class PropertySummary(BaseModel):
     summary: str

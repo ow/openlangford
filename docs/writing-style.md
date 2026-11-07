@@ -51,7 +51,14 @@ Model-written text comes in two layers, and they follow different rules:
 - **Record layer** (the ingest refiner's item and motion summaries, motion summaries): stays close to the minutes so later checks can match it against the record. It names the exact bylaw stage ("gave first reading to", "adopted") and keeps "Council" out of the subject. It feeds the resident layer and the fact checks; residents rarely see it on its own. Prompts here take the glossary's `record` register.
 - **Resident layer** (meeting highlights, topic summaries and headlines, property leads, bylaw explanations, Q&A answers, page copy): follows every rule above. It explains the stage instead of naming it, says "passed" not "carried", and never uses a database word. Prompts here take the glossary's `resident` register.
 
-When editing a prompt, decide which layer it is before changing its wording. Moving a record-layer prompt to plain language breaks the checks that read it; copying record-layer wording into a resident-layer prompt breaks the guide.
+Each prompt appends the matching block from `shared/glossary.json` (`pipeline/ai/glossary.py` `prompt_block(register, only=ids(groups…))`, `services/ai/glossary-prompt.ts` on the web), limited to the groups it needs:
+
+| Register | Prompts |
+|---|---|
+| record | `ai_refiner.py` (meeting ingest), `motion_summaries.py`, `summary.py` (meeting summary regeneration) |
+| resident | `meeting_highlights.py`, `matter_summaries.py` and its web port `topic-summaries.server.ts` (the block is named in `shared/prompts/topic-summaries.json`), `property_summaries.py`, `motion_headlines.py`, `langford_bylaws.py`, the Q&A answer in `rag.server.ts` |
+
+When editing a prompt, decide which layer it is before changing its wording. Moving a record-layer prompt to plain language breaks the checks that read it; copying record-layer wording into a resident-layer prompt breaks the guide. When a glossary `we_write` line changes, bump `shared/glossary.json` `version` and the version of each resident-register stage, then run them with `--stale`.
 
 ## Quick check before shipping text
 

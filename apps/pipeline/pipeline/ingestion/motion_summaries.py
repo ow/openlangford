@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ai import glossary
 from pipeline.ingestion.record_sources import RECORD_RULE
 
 SYSTEM = """You rewrite council motion summaries for residents of a small Canadian city.
@@ -27,6 +28,8 @@ Never invent details that are not in the inputs.
 """ + RECORD_RULE + """ Here the record is each motion's wording, its result and its agenda item title; the agenda
 item summary and the current summary are notes."""
 
+
+SYSTEM = SYSTEM + "\n\n" + glossary.prompt_block("record", only=glossary.ids(["decisions", "bylaws"], plus=["closed-meeting", "consent-agenda", "committee-of-the-whole", "development-variance-permit", "temporary-use-permit", "notice-of-intent"]))
 
 class MotionSummary(BaseModel):
     id: int

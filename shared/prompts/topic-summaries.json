@@ -1,6 +1,6 @@
 {
-  "_comment": "The topic summary writer's prompts, shared by the pipeline (pipeline/ingestion/matter_summaries.py, staff_fixes.py) and the site's fix agent (apps/web/app/services/topic-summaries.server.ts). Change them here, and bump version so the pipeline's --stale run rewrites older summaries.",
-  "version": "5",
+  "_comment": "The topic summary writer's prompts, shared by the pipeline (pipeline/ingestion/matter_summaries.py, staff_fixes.py) and the site's fix agent (apps/web/app/services/topic-summaries.server.ts). Change them here, and bump version so the pipeline's --stale run rewrites older summaries. `glossary` names the shared/glossary.json block both writers append to `system`.",
+  "version": "6",
   "topics": [
     "Development",
     "Housing",
@@ -36,5 +36,16 @@
     "note_followed": "True when the summary or status says what the instruction asks (or leaves out what it says to leave out).",
     "note_missing": "When not followed, what the summary still needs, in one plain sentence; empty otherwise.",
     "note_n": "The instruction's number n, as given"
+  },
+  "glossary": {
+    "register": "resident",
+    "groups": [
+      "meetings",
+      "decisions",
+      "bylaws",
+      "land",
+      "money"
+    ],
+    "_comment": "Appended to `system` by both writers from shared/glossary.json."
   }
 }

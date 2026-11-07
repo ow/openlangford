@@ -25,6 +25,7 @@ from pydantic import BaseModel, Field
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ai import glossary
 from pipeline.ingestion.manual_edits import keep_text_edits
 from pipeline.ingestion.record_sources import item_transcripts
 from pipeline.postgrest import in_chunks, paginate
@@ -37,7 +38,7 @@ SHARED = json.loads((Path(__file__).resolve().parents[4] / "shared" / "prompts" 
 SUMMARY_VERSION = SHARED["version"]
 TOPICS = SHARED["topics"]
 STATUSES = SHARED["statuses"]
-SYSTEM = SHARED["system"]
+SYSTEM = SHARED["system"] + "\n\n" + glossary.prompt_block(SHARED["glossary"]["register"], only=glossary.ids(SHARED["glossary"]["groups"]))
 
 Topic = Literal[tuple(TOPICS)]  # type: ignore[valid-type]
 Status = Literal[tuple(STATUSES)]  # type: ignore[valid-type]

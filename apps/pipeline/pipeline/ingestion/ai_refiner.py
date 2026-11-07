@@ -3,6 +3,7 @@ from typing import List, Optional, Literal
 from pydantic import BaseModel, Field, field_validator
 
 from pipeline import ai
+from pipeline.ai import glossary
 from pipeline.ingestion.summary_format import normalize_meeting_summary
 
 # --- Schemas ---
@@ -242,6 +243,8 @@ You are a City Council Data Analyst. Your goal is to create a perfect, relationa
 - Every `Speaker_XX` label MUST have a corresponding entry in `speaker_aliases`.
 """
 
+
+SYSTEM_INSTRUCTION = SYSTEM_INSTRUCTION + "\n\n" + glossary.prompt_block("record", only=glossary.ids(["meetings", "decisions", "bylaws"], plus=["development-variance-permit", "temporary-use-permit", "notice-of-intent"]))
 
 def build_refinement_prompt(
     agenda_text,

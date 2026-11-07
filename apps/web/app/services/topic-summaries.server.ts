@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { glossaryIds, glossaryPromptBlock, type GlossaryRegister } from "./ai/glossary-prompt";
 import { z } from "zod";
 import shared from "../../../../shared/prompts/topic-summaries.json";
 import { getAiClient } from "./ai/index.server";
@@ -15,6 +16,8 @@ import { fetchAll } from "./page-verify.server";
  */
 
 const SUMMARY_VERSION: string = shared.version;
+/** The same system prompt as the pipeline's matter_summaries.py: the shared text plus the glossary block it names. */
+const WRITER_SYSTEM = `${shared.system}\n\n${glossaryPromptBlock(shared.glossary.register as GlossaryRegister, glossaryIds(shared.glossary.groups))}`;
 const TOPICS = shared.topics as [string, ...string[]];
 const STATUSES = shared.statuses as [string, ...string[]];
 const FIELDS = shared.fields;
@@ -232,7 +235,7 @@ const visibleFields = (m: Loaded) => Object.fromEntries(Object.entries(m).filter
 const promptFor = (batch: Loaded[]) => shared.prompt_intro + JSON.stringify(batch.map(visibleFields));
 
 async function summarize(batch: Loaded[], signal?: AbortSignal): Promise<Map<number, Written>> {
-  const { data } = await getAiClient().json({ stage: "writing", system: shared.system, prompt: promptFor(batch),
+  const { data } = await getAiClient().json({ stage: "writing", system: WRITER_SYSTEM, prompt: promptFor(batch),
     schema: MatterSummaries, schemaName: "MatterSummaries", timeoutMs: writeTimeout(batch), signal });
   return new Map(data.matters.filter((m) => m.summary.trim()).map((m) => [m.id, m]));
 }
