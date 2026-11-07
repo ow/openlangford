@@ -83,3 +83,12 @@ describe("the plan prompt", () => {
     expect(prompt).toContain("give file_here all the same");
   });
 });
+
+describe("planPrompt: a fix that didn't hold", () => {
+  it("tells the agent why its earlier fix failed the re-check", () => {
+    const flags: PageFlag[] = [{ key: "agenda-10608", problem: "unsupported", reason: "Contradicted by the record", excerpt: "x", verdict: "agree",
+      fixed: false, recheck: { holds: false, checked: true, at: "2026-11-07T18:29:56Z", reason: "The motion required the report after final grading was determined." } }];
+    const prompt = planPrompt("Walfred Road", [{ key: "agenda-10608", text: "x" }], flags, null, new Map(), "");
+    expect(prompt).toContain("An earlier fix didn't hold when checked against the records: The motion required the report after final grading was determined.");
+  });
+});
