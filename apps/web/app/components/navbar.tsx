@@ -76,10 +76,14 @@ function NavDropdown({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen} modal={false}>
       <DropdownMenuTrigger asChild>
+        {/* Open on click, not Radix's pointerdown: Safari doesn't focus a button on click, so with the default
+            handling the menu opened on pointerdown and closed on the focus change that followed. */}
         <button
           type="button"
+          onPointerDown={(e) => e.preventDefault()}
+          onClick={() => setIsOpen((open) => !open)}
           className={cn(
             "px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2 group",
             isActive || isOpen
@@ -99,6 +103,7 @@ function NavDropdown({
       <DropdownMenuContent
         align="end"
         sideOffset={8}
+        onFocusOutside={(e) => e.preventDefault()}
         className="w-56 bg-surface rounded-xl shadow-xl border-zinc-200 overflow-hidden p-1"
       >
         {items.map((item) => (
