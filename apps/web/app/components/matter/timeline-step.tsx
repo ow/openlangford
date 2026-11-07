@@ -14,6 +14,8 @@ import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
 /** Plain-language meaning of a bylaw stage, for residents who don't know what "second reading" means. */
 const STAGES: { test: RegExp; label: string }[] = [
   // Rescinding cancels an earlier decision; the record rarely says why, so the label doesn't guess.
+  // Rescinding an adoption undoes the bylaw itself, not just a reading.
+  { test: /rescind\w*.{0,60}\badoption\b|\badoption\b.{0,40}rescind/i, label: "Council cancelled the bylaw's adoption and its readings." },
   { test: /rescind\w*.{0,60}\b(reading|readings)\b|\b(reading|readings)\b.{0,40}rescind/i, label: "Council cancelled an earlier reading of the bylaw." },
   { test: /rescind/i, label: "Council cancelled an earlier decision." },
   { test: /\badopt(ed|ion)?\b|final adoption/i, label: "Final approval." },

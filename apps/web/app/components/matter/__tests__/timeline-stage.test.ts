@@ -19,6 +19,7 @@ describe("stageExplanation", () => {
   it("says a rescinding cancels a decision, without guessing why", () => {
     expect(stageExplanation(["That Council rescind its direction to prepare a permit bylaw and direct staff to seek a licensed operator."])).toBe("Council cancelled an earlier decision.");
     expect(stageExplanation(["That Council rescind third reading of Bylaw 2105."])).toBe("Council cancelled an earlier reading of the bylaw.");
+    expect(stageExplanation(["That Council rescind Adoption, Third, Second and First Reading of Bylaw No. 1332."])).toBe("Council cancelled the bylaw's adoption and its readings.");
   });
   it("tells committee meetings from Council's", () => {
     expect(isCommitteeItem({ meetings: { organizations: { name: "Community Advisory Committee" } } })).toBe(true);
