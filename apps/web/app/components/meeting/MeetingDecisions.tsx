@@ -1,4 +1,5 @@
 import { VideoDissentNote } from "../video-dissent-note";
+import { TermText } from "../term";
 import { isInferredChoice, voteTally } from "../../lib/vote-coverage";
 import { useMemo, useState } from "react";
 import { CheckCircle2, ChevronDown, MinusCircle, PlayCircle, XCircle } from "lucide-react";
@@ -60,7 +61,7 @@ function DecisionRow({ decision, onWatch }: { decision: Decision; onWatch?: (s: 
             !expanded && "line-clamp-3",
           )}
         >
-          {text}
+          <TermText text={text} />
         </p>
         {text.length > 280 && (
           <button

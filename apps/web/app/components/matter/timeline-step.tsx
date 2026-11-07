@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { TermText } from "../term";
 import { completeVoteCounts, videoDissent } from "../../lib/vote-coverage";
 import { VideoDissentNote } from "../video-dissent-note";
 import { Link } from "react-router";
@@ -256,7 +257,7 @@ export function TimelineStep({
             <div key={m.id} className="text-sm">
               <p className="text-zinc-800">
                 {!single && o.label && <>{outcomeMark(o)}{" "}</>}
-                <span className="font-medium">Decision:</span> {m.plain_english_summary || displayTitle(m.text_content || "")}
+                <span className="font-medium">Decision:</span> <TermText text={m.plain_english_summary || displayTitle(m.text_content || "")} />
               </p>
               {((o.label && o.against.length > 0) || isTranscribedMotion(m)) && (
                 <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs text-zinc-500">

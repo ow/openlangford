@@ -1,4 +1,5 @@
 import { VideoDissentNote } from "./video-dissent-note";
+import { TermText } from "./term";
 import { isInferredChoice, voteTally } from "../lib/vote-coverage";
 import { CheckCircle2, MinusCircle, XCircle } from "lucide-react";
 import type { Motion } from "../lib/types";
@@ -50,11 +51,11 @@ export function MotionCard({ motion, context, onWatchVideo, className }: MotionC
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[15px] font-medium leading-snug text-zinc-900">
-          {motion.plain_english_summary || motion.text_content}
+          <TermText text={motion.plain_english_summary || motion.text_content} />
         </p>
         {hasSummary && motion.text_content && (
           <p className="mt-1.5 border-l-2 border-zinc-200 pl-3 text-sm leading-relaxed text-zinc-600">
-            {motion.text_content}
+            <TermText text={motion.text_content} />
           </p>
         )}
         {context && <p className="mt-1.5 text-xs text-zinc-500">{context}</p>}

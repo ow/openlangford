@@ -13,6 +13,8 @@ export interface GlossaryTerm {
   we_write?: string;
   /** Timeline stage key → the one-line explanation shown under a topic's step. */
   stages?: Record<string, string>;
+  /** Case-insensitive regex for the word forms pages show; set on the terms residents trip over. */
+  match?: string;
 }
 
 export interface GlossaryGroup {
@@ -67,4 +69,34 @@ export function stageTermId(label: string | null | undefined): string | null {
   if (!label) return null;
   for (const { label: l, termId } of stageLines.values()) if (l === label) return termId;
   return null;
+}
+
+/** Terms that get an inline hint (dashed underline, hover definition, link) where they appear in page text. */
+export const HINT_TERMS: { term: GlossaryTerm; re: RegExp }[] = GLOSSARY_TERMS.filter((t) => t.match).map((t) => ({
+  term: t,
+  re: new RegExp(t.match!, "i"),
+}));
+
+export type TermSegment = { text: string; term?: GlossaryTerm };
+
+/** Split `text` into plain runs and the first occurrence of each hinted term (ids in `skip` are left plain).
+ * Each term is matched at most once per call; callers track what a page has already shown. */
+export function splitTerms(text: string, skip: ReadonlySet<string> = new Set()): TermSegment[] {
+  const hits: { start: number; end: number; term: GlossaryTerm }[] = [];
+  for (const { term, re } of HINT_TERMS) {
+    if (skip.has(term.id)) continue;
+    const m = re.exec(text);
+    if (m && m[0]) hits.push({ start: m.index, end: m.index + m[0].length, term });
+  }
+  hits.sort((a, b) => a.start - b.start || b.end - a.end);
+  const out: TermSegment[] = [];
+  let pos = 0;
+  for (const h of hits) {
+    if (h.start < pos) continue; // overlaps an earlier hit
+    if (h.start > pos) out.push({ text: text.slice(pos, h.start) });
+    out.push({ text: text.slice(h.start, h.end), term: h.term });
+    pos = h.end;
+  }
+  if (pos < text.length) out.push({ text: text.slice(pos) });
+  return out;
 }

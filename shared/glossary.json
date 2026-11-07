@@ -1,5 +1,5 @@
 {
-  "_comment": "Council terms in one place: the public page /how-council-works renders it, the web app's timeline stage lines come from each term's `stages`, and the AI clients turn `in_the_record` (how Langford's minutes phrase it) and `we_write` (the plain words this site uses) into prompt blocks (apps/web/app/services/ai/glossary-prompt.ts, pipeline/ai/glossary.py). Public text follows docs/writing-style.md. Bump version when a `we_write` or `stages` line changes so stages that write summaries can be rerun with --stale.",
+  "_comment": "Council terms in one place: the public page /how-council-works renders it, the web app's timeline stage lines come from each term's `stages`, and the AI clients turn `in_the_record` (how Langford's minutes phrase it) and `we_write` (the plain words this site uses) into prompt blocks (apps/web/app/services/ai/glossary-prompt.ts, pipeline/ai/glossary.py). Public text follows docs/writing-style.md. Bump version when a `we_write` or `stages` line changes so stages that write summaries can be rerun with --stale. A term's `match` is a case-insensitive regex for the word forms pages show; the first match on a page gets a dashed underline, a hover definition and a link (components/term.tsx).",
   "version": 1,
   "groups": [
     {
@@ -23,7 +23,8 @@
           "term": "Committee of the Whole",
           "means": "All of Council sitting as a committee to talk things through less formally. It can only recommend. Council decides at a later meeting.",
           "in_the_record": "\"Committee of the Whole\", \"COTW\". Its motions read \"That the Committee recommend that Council…\".",
-          "we_write": "\"The committee recommended…\", never \"approved\". A committee's vote is not the decision."
+          "we_write": "\"The committee recommended…\", never \"approved\". A committee's vote is not the decision.",
+          "match": "\\bcommittee of the whole\\b|\\bCOTW\\b"
         },
         {
           "id": "committee",
@@ -40,20 +41,23 @@
           "we_write": "\"Residents could speak or write to Council about…\". Say how many spoke and what they said, when the record has it.",
           "stages": {
             "public_hearing": "Residents could speak or write to council about the proposal."
-          }
+          },
+          "match": "\\bpublic hearings?\\b"
         },
         {
           "id": "closed-meeting",
           "term": "Closed meeting (in camera)",
           "means": "Part of a meeting the public can't attend. Provincial law lists the only allowed reasons, such as buying or selling land, legal advice, labour talks or personnel. Council must say which reason applies, and decisions made in a closed meeting are reported later.",
           "in_the_record": "\"That the meeting be closed to the public under section 90(1)(e) of the Community Charter…\", \"in camera\", \"Rise and report\".",
-          "we_write": "\"Closed meeting\". Give the reason in plain words (\"about buying land\"), not the section number."
+          "we_write": "\"Closed meeting\". Give the reason in plain words (\"about buying land\"), not the section number.",
+          "match": "\\bin[- ]camera\\b|\\bclosed (?:meeting|session|to the public)\\b"
         },
         {
           "id": "consent-agenda",
           "term": "Consent agenda",
           "means": "Routine items bundled into one vote with no discussion. Any member can pull an item out to discuss it on its own.",
-          "we_write": "Leave consent-agenda housekeeping out of summaries unless an item was pulled and debated."
+          "we_write": "Leave consent-agenda housekeeping out of summaries unless an item was pulled and debated.",
+          "match": "\\bconsent agenda\\b"
         },
         {
           "id": "delegation",
@@ -86,21 +90,24 @@
           "id": "resolution",
           "term": "Resolution",
           "means": "A decision Council makes with a single vote, without a bylaw. Most decisions, such as contracts, grants and directions to staff, are resolutions.",
-          "we_write": "\"Council decided\", \"approved\", \"asked staff to\"."
+          "we_write": "\"Council decided\", \"approved\", \"asked staff to\".",
+          "match": "\\bresolutions?\\b"
         },
         {
           "id": "carried",
           "term": "Carried",
           "means": "The motion passed. \"Carried unanimously\" means everyone present voted yes.",
           "in_the_record": "\"CARRIED\", \"CARRIED UNANIMOUSLY\".",
-          "we_write": "\"Passed\" or \"approved\", with the count when the vote was split: \"passed 6–1\"."
+          "we_write": "\"Passed\" or \"approved\", with the count when the vote was split: \"passed 6–1\".",
+          "match": "\\bcarried(?: unanimously)?\\b"
         },
         {
           "id": "defeated",
           "term": "Defeated",
           "means": "The motion failed.",
           "in_the_record": "\"DEFEATED\".",
-          "we_write": "\"Rejected\", \"voted down\"."
+          "we_write": "\"Rejected\", \"voted down\".",
+          "match": "\\bdefeated\\b"
         },
         {
           "id": "opposed",
@@ -120,20 +127,23 @@
           "term": "Referred",
           "means": "Sent to staff or a committee for more work before Council decides.",
           "in_the_record": "\"That the matter be referred to staff…\".",
-          "we_write": "\"Sent back to staff\", \"asked staff to report back\"."
+          "we_write": "\"Sent back to staff\", \"asked staff to report back\".",
+          "match": "\\breferred\\b|\\brefer(?:ral)? (?:to|back)\\b"
         },
         {
           "id": "tabled",
           "term": "Tabled",
           "means": "In Langford's minutes, to \"table\" an item is to put it off. In much of Canada \"tabled\" means the opposite, presented. The word reads both ways, so this site avoids it.",
           "in_the_record": "\"That the item be tabled\", \"TABLED\".",
-          "we_write": "\"Postponed to May 9\", or \"set aside\" when no date is given. \"Presented\" for an item brought before Council. Never \"tabled\"."
+          "we_write": "\"Postponed to May 9\", or \"set aside\" when no date is given. \"Presented\" for an item brought before Council. Never \"tabled\".",
+          "match": "\\btabled\\b|\\btable (?:the|this|it)\\b"
         },
         {
           "id": "notice-of-motion",
           "term": "Notice of motion",
           "means": "A member announces a motion they will bring to a future meeting. Nothing is decided yet.",
-          "we_write": "\"Gave notice that they will propose…\". Never count it as a decision."
+          "we_write": "\"Gave notice that they will propose…\". Never count it as a decision.",
+          "match": "\\bnotices? of motion\\b"
         },
         {
           "id": "rescinded",
@@ -145,7 +155,8 @@
             "rescinded": "Council cancelled an earlier decision.",
             "rescinded_reading": "Council cancelled an earlier reading of the bylaw.",
             "rescinded_adoption": "Council cancelled the bylaw's adoption and its readings."
-          }
+          },
+          "match": "\\brescind(?:ed|s)?\\b"
         },
         {
           "id": "withdrawn",
@@ -186,7 +197,8 @@
           "term": "Readings",
           "means": "Council votes on a bylaw several times. Each vote is a reading. BC bylaws need three readings and then adoption. Readings are often combined in one meeting.",
           "in_the_record": "\"(First Reading)\", \"(Second and Third Readings)\", \"READ A FIRST TIME\".",
-          "we_write": "Explain the step instead of naming it: \"introduced\", \"one step from final approval\", \"made final\"."
+          "we_write": "Explain the step instead of naming it: \"introduced\", \"one step from final approval\", \"made final\".",
+          "match": "\\b(?:first|second|third|1st|2nd|3rd)(?:,? (?:second|third|and third|& third|2nd|3rd))* readings?\\b|\\b(?:three|all) readings\\b|\\breadings\\b"
         },
         {
           "id": "first-reading",
@@ -224,7 +236,8 @@
           "we_write": "\"Made final\", \"final approval\". Never \"adopted\" for an earlier reading, and never \"adopted\" for a plain resolution: that is \"passed\".",
           "stages": {
             "adopted": "Final approval."
-          }
+          },
+          "match": "\\badopt(?:ed|ion|s)?\\b"
         }
       ]
     },
@@ -245,7 +258,8 @@
           "term": "Official Community Plan",
           "means": "Langford's long-term plan for where homes, shops and parks go. A project that doesn't fit needs a plan amendment, which is itself a bylaw.",
           "in_the_record": "\"OCP\", \"Official Community Plan Amendment\".",
-          "we_write": "\"Community plan\". Spell it out; never \"OCP\"."
+          "we_write": "\"Community plan\". Spell it out; never \"OCP\".",
+          "match": "\\bofficial community plan\\b|\\bOCP\\b"
         },
         {
           "id": "development-permit",
@@ -259,34 +273,39 @@
           "term": "Development variance permit",
           "means": "Permission to break one specific zoning rule, such as a setback or height, for one property. Neighbours get notice and Council decides.",
           "in_the_record": "\"DVP\", \"Development Variance Permit\".",
-          "we_write": "\"Variance\", \"allowed a taller building than the rules permit\". Never \"DVP\"."
+          "we_write": "\"Variance\", \"allowed a taller building than the rules permit\". Never \"DVP\".",
+          "match": "\\bdevelopment variance permits?\\b|\\bvariances?\\b|\\bDVPs?\\b"
         },
         {
           "id": "temporary-use-permit",
           "term": "Temporary use permit",
           "means": "Permission to use a property for something zoning doesn't allow, for up to three years.",
           "in_the_record": "\"TUP\", \"Temporary Use Permit\".",
-          "we_write": "\"Temporary permit\". Never \"TUP\"."
+          "we_write": "\"Temporary permit\". Never \"TUP\".",
+          "match": "\\btemporary use permits?\\b|\\bTUPs?\\b"
         },
         {
           "id": "housing-agreement",
           "term": "Housing agreement",
           "means": "A contract between the City and a developer setting rents or who can live in certain homes, usually in exchange for a rezoning.",
-          "we_write": "\"A deal to keep rents at…\", with the numbers."
+          "we_write": "\"A deal to keep rents at…\", with the numbers.",
+          "match": "\\bhousing agreements?\\b"
         },
         {
           "id": "covenant",
           "term": "Covenant",
           "means": "A promise registered on a property's title that binds future owners, such as to keep a tree or build a path.",
           "in_the_record": "\"Section 219 covenant\".",
-          "we_write": "\"A condition on the land\". Keep \"section 219\" out."
+          "we_write": "\"A condition on the land\". Keep \"section 219\" out.",
+          "match": "\\b(?:section )?219 covenants?\\b|\\bcovenants?\\b"
         },
         {
           "id": "development-cost-charges",
           "term": "Development cost charges",
           "means": "Fees developers pay toward the roads, parks, water and sewer that growth needs.",
           "in_the_record": "\"DCC\", \"Development Cost Charge Bylaw\".",
-          "we_write": "\"Developer fees for parks and roads\". Never \"DCC\"."
+          "we_write": "\"Developer fees for parks and roads\". Never \"DCC\".",
+          "match": "\\bdevelopment cost charges?\\b|\\bDCCs?\\b"
         },
         {
           "id": "amenity-contribution",

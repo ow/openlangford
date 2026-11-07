@@ -1,4 +1,5 @@
 import { timed } from "../lib/server-timing.server";
+import { TermText } from "../components/term";
 import { SITE_NAME } from "../lib/site-name";
 import { labelSpeakerRoles } from "../services/speaker-roles.server";
 import { collapseListedReadings, foldSameMeetingSteps } from "../lib/timeline-story";
@@ -629,7 +630,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               {/* The label on its own line, in the border's colour, so a long status wraps cleanly under itself. */}
               <p className="text-xs font-semibold text-brand-700">Status</p>
               <p className="mt-0.5 text-sm leading-relaxed text-zinc-700">
-                {matter.meta?.status_line || `First discussed ${formatDate(firstSeen!, { month: "short", year: "numeric" })}`}
+                <TermText text={matter.meta?.status_line || `First discussed ${formatDate(firstSeen!, { month: "short", year: "numeric" })}`} />
               </p>
             </div>
           )}
