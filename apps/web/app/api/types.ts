@@ -24,6 +24,8 @@ export interface ApiEnv {
     requestId: string;
     apiKeyId?: string;
     userId?: string;
+    /** Set on the admin page-checks routes: the API key account's staff role. */
+    staffRole?: import("../lib/auth.server").StaffRole;
     municipality?: {
       id: number;
       slug: string;

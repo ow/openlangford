@@ -98,6 +98,7 @@ Every model call goes through one client per app; never call a provider SDK dire
 
 ### Page review fixes
 The review bar's fix agent (`services/page-fix.server.ts`) carries out every fix in its own request, including moves, merges and the summary rewrite (`services/topic-summaries.server.ts`, a port of the pipeline's `matter_summaries.py`). Only re-filing an item through the ingest matcher goes to the quick worker as a `fix_page` job. Both summary writers read `shared/prompts/topic-summaries.json`: change prompts there. See `docs/page-review-fixes.md`.
+Agents drive the same review loop through `/api/v1/admin/page-checks` (`app/api/admin-page-checks.ts`) with a staff account's API key: check, rate (one flag or all), fix, and mark reviewed.
 
 ### Email alerts
 The 5-minute cron (`workers/email-enqueue.ts`) asks the `send-alerts` Edge function (deployed by hand, not CI) to queue post-meeting digests and, with `mode: "agenda"`, before-meeting agenda previews; both match subscribers through the SQL `alert_subscription_matches`. See `docs/agenda-alerts.md`.
