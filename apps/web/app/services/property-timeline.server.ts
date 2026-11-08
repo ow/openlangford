@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TimelineEntry } from "../components/property/property-timeline";
 import { closedReasons, type ClosedSessionMeta } from "../lib/closed-sessions";
 import { displayTitle, matterTitle } from "../lib/display-text";
-import { sourceLabel, tidyQuote } from "../lib/sources";
+import { sourceByline, tidyQuote } from "../lib/sources";
 import { meetingPath } from "../lib/paths";
 import { getMatterReportMentions } from "./matters";
 import { sourcesFor, sourcesForMatters } from "./sources.server";
@@ -34,7 +34,7 @@ function outcomeOf(motions: { result?: string | null }[] | null | undefined): Ti
 const TELLING = /\b(sale|sell|sold|dispos\w*|purchas\w*|acquir\w*|bought|owed|debt|borrow\w*|recommend\w*|should|open\w*|close\w*)\b|\$|\d{1,3}(?:,\d{3})+/gi;
 
 /** The words around the address in a record, on one line, scored by what they tell. Exported for tests. */
-export function addressExcerpt(text: string, civic: string, before = 40, after = 300): { text: string; score: number } {
+export function addressExcerpt(text: string, civic: string, before = 80, after = 560): { text: string; score: number } {
   // Picture markers the extractor leaves in the text ("[Image 1: site plan…]") are not words anyone said.
   const flat = text.replace(/\[Image[^\]]*\]/gi, " ").replace(/[#|*]/g, " ").replace(/\s+/g, " ").trim();
   const at = flat.toLowerCase().indexOf(`${civic} `.toLowerCase());
@@ -134,7 +134,7 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
   for (const s of [...ownSources, ...[...topicSources.values()].flat()]) {
     if (seen.has(s.id)) continue;
     seen.add(s.id);
-    entries.push({ key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceLabel(s), headline: s.headline, detail: s.quote ? tidyQuote(s.quote) : null, href: s.url, external: !!s.url,
+    entries.push({ key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceByline(s), dateLabel: s.date_label || null, headline: s.headline, detail: s.quote ? tidyQuote(s.quote, 700) : null, href: s.url, external: !!s.url,
       archiveHref: s.archive_url && s.archive_url !== s.url ? s.archive_url : null, linkTitle: s.title });
   }
   // A closed meeting about land on a night this address was before Council: the record shows a door closing.

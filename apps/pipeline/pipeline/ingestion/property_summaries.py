@@ -38,7 +38,7 @@ from pipeline import ai
 from pipeline.ai import glossary
 from pipeline.postgrest import in_chunks
 
-PROPERTY_SUMMARY_VERSION = "6"  # 6: a plain line per other entry that names the address (meta.entry_lines)
+PROPERTY_SUMMARY_VERSION = "7"  # 7: entry lines use only the verb the record supports
 MIN_RECORDS = 2
 MIN_ADDRESSES = 2  # a street page with two or more addresses gets a summary even with no records of its own
 NARRATIVE_MAX = 220  # the model's part; the closing count follows
@@ -79,7 +79,7 @@ An entry may carry "names_this_address": the words of the record (a report, a bu
 
 "said_elsewhere" lists dated statements from outside Council's record that staff added, each saying who said it. One whose "who" is the City of Langford is the City's own publication: state its facts, attributed to the City ("the City announced…"). Any other is a news report: use its facts only with the publisher named, in the same sentence as each fact that rests on it ("Victoria News reported the City paid about $2.2M"); a fact from a second report needs its own publisher named too. These often hold what the minutes don't (a purchase made in a closed meeting), so they may lead; never present one as Council's own decision.
 
-Besides the opening lines, write "entry_lines": for each entry under "other_mentions" that carries "names_this_address", one plain line (at most 120 characters) saying what that record says about this address, so a reader needn't parse a budget table or a cheque register: "The City paid its lawyers $1.27 million for the land, May 2019", "Budget sets aside $825,000 of developer money for the site in 2023", "A resident asked whether the property should be sold". Keep the amount and the date the record gives; no cheque, file or account numbers; no "the record shows". Skip entries without names_this_address.
+Besides the opening lines, write "entry_lines": for each entry under "other_mentions" that carries "names_this_address", one plain line (at most 120 characters) saying what that record says about this address, so a reader needn't parse a budget table or a cheque register: "The City paid its lawyers $1.27 million for the land, May 2019", "Budget sets aside $825,000 of developer money for the site in 2023", "A resident asked whether the property should be sold". Keep the amount and the date the record gives; no cheque, file or account numbers; no "the record shows". Use only the verb the record supports: a register, table or budget schedule "lists", "records", "shows" or "sets aside" an amount; never "approved", "decided" or "agreed" unless the record says Council did, and never say what a payment was for unless the record does. Skip entries without names_this_address.
 
 For a lot (kind "lot"): say what has been proposed or decided there. Example: "A subdivision of up to 47 homes, approved in 2015 after changes to the official community plan and zoning."
 For a street (kind "street"): cover both the road itself (roadworks, closures, traffic, grants; newest first) and the developments at addresses on it. Name the projects at the addresses in "most_considered" (the ones Council considered most often) first; add one other, larger project only if it fits. Example: "In 2024 Council backed grant applications for walking and cycling upgrades on Latoria Road. Earlier: a 47-lot subdivision at 935 and the 501-home McCormick Meadows plan at 940." Refer to an address on the street by its number alone ("a 47-lot subdivision at 935"), since the street is the page.

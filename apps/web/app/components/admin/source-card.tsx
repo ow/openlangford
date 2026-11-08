@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { ExternalLink, Loader2, Newspaper, Trash2 } from "lucide-react";
 import { useJsonFetcher } from "../../lib/use-json-fetcher";
-import { sourceLabel, type Source, type SourceOrigin } from "../../lib/sources";
+import { sourceByline, type Source, type SourceOrigin } from "../../lib/sources";
 import { cn } from "../../lib/utils";
 
 type Draft = {
   headline: string; happened_on: string | null; published_on: string | null; publisher: string; title: string; quote: string;
-  origin: SourceOrigin; caution: string | null; pageTitle: string; fetched: boolean;
+  origin: SourceOrigin; date_label: string | null; caution: string | null; pageTitle: string; fetched: boolean;
 };
 type Reply = { ok?: true; draft?: Draft; message?: string | null; error?: string };
 
@@ -60,7 +60,7 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
           {sources.map((s) => (
             <li key={s.id} className="flex items-start justify-between gap-2 px-2.5 py-2">
               <div className="min-w-0">
-                <p className="text-xs text-zinc-500"><span className="tabular-nums">{s.happened_on}</span> · {sourceLabel(s)}</p>
+                <p className="text-xs text-zinc-500"><span className="tabular-nums">{s.date_label || s.happened_on}</span> · {sourceByline(s)}</p>
                 <p className="text-zinc-900">{s.headline}</p>
                 {s.url && <a href={s.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-brand-700 hover:underline">{s.title}<ExternalLink className="h-3 w-3" /></a>}
               </div>
@@ -101,7 +101,7 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
           e.preventDefault();
           send("add_source", {
             url: url.trim(), headline: draft.headline, happened_on: draft.happened_on || "", published_on: draft.published_on || "", publisher: draft.publisher,
-            origin: draft.origin, source_title: draft.title, quote: draft.quote, note,
+            origin: draft.origin, source_title: draft.title, quote: draft.quote, note, date_label: draft.date_label || "",
           });
         }}>
           {!draft.fetched && <p className="rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs text-amber-900">The page couldn't be read, so the draft rests on what you typed. Check it before adding.</p>}
@@ -113,6 +113,8 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
           <div className="grid grid-cols-2 gap-2">
             <label className={label}><span className={labelText}>When it happened</span>
               <input required type="date" value={draft.happened_on || ""} onChange={(e) => setDraft({ ...draft, happened_on: e.target.value })} className={field} /></label>
+            <label className={cn(label, "col-span-2")}><span className={labelText}>Show the date as <span className="font-normal text-zinc-500">(optional; for an approximate date, such as "Spring 2019". The date above still orders it)</span></span>
+              <input value={draft.date_label || ""} onChange={(e) => setDraft({ ...draft, date_label: e.target.value })} className={field} placeholder="Spring 2019" /></label>
             <label className={label}><span className={labelText}>Published</span>
               <input type="date" value={draft.published_on || ""} onChange={(e) => setDraft({ ...draft, published_on: e.target.value })} className={field} /></label>
             <label className={label}><span className={labelText}>Who said it</span>
@@ -128,7 +130,7 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
             <input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={field} /></label>
           <label className={label}><span className={labelText}>Note for staff <span className="font-normal text-zinc-500">(optional; not shown to residents)</span></span>
             <input value={note} onChange={(e) => setNote(e.target.value)} className={field} /></label>
-          <p className="text-xs text-zinc-500">Shown as: <span className="tabular-nums">{draft.happened_on || "date"}</span> · {sourceLabel({ origin: draft.origin, publisher: draft.publisher || "…" })}</p>
+          <p className="text-xs text-zinc-500">Shown as: <span className="tabular-nums">{draft.date_label || draft.happened_on || "date"}</span> · {sourceByline({ origin: draft.origin, publisher: draft.publisher || "…", published_on: draft.published_on, happened_on: draft.happened_on || "" })}</p>
           <div className="flex gap-2">
             <button type="submit" disabled={busy || !draft.headline.trim() || !draft.happened_on} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-50">
               {intent === "add_source" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}Add to the timeline

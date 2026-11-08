@@ -42,7 +42,7 @@ describe("addressExcerpt", () => {
     const table = addressExcerpt("| PD02 - 3680 TCH | 825,000 |\n| PD03 - JLBP Clubhouse | 3,000,000 |", "3680");
     expect(table.text.startsWith("PD02 - 3680 TCH 825,000")).toBe(true);
     expect(table.score).toBeGreaterThan(0);
-    const long = addressExcerpt("x".repeat(400) + " 3680 Trans Canada Highway: explore the sale of the parcel " + "y".repeat(400), "3680");
+    const long = addressExcerpt("x".repeat(400) + " 3680 Trans Canada Highway: explore the sale of the parcel " + "y".repeat(900), "3680");
     expect(long.text.startsWith("…") && long.text.endsWith("…") && long.text.includes("explore the sale")).toBe(true);
     expect(addressExcerpt("Facilities include 3680 Trans Canada Highway property and the bike park.", "3680").score).toBe(0);
   });

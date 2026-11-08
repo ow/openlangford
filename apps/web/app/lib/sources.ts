@@ -4,6 +4,8 @@
  * docs/page-review-fixes.md ("Sources").
  */
 
+import { formatDate } from "./utils";
+
 export type SourceOrigin = "city" | "press" | "other";
 
 export type Source = {
@@ -19,6 +21,8 @@ export type Source = {
   note?: string | null;
   /** A Wayback Machine copy of the link, requested when the source was added; shown as "archived copy". */
   archive_url?: string | null;
+  /** How to show the date when the source gives only a season or a month ("Spring 2019"); happened_on still orders it. */
+  date_label?: string | null;
 };
 
 /** The archived copy's address from a Wayback save: the final URL after redirects, or the content-location header
@@ -37,6 +41,13 @@ export function waybackArchiveUrl(original: string, finalUrl: string | null, con
 export function sourceLabel(s: Pick<Source, "origin" | "publisher">): string {
   if (s.origin === "city") return /release|news/i.test(s.publisher) ? "City news release" : "City publication";
   return `Reported by ${s.publisher}`;
+}
+
+/** "Reported by Victoria News on Nov 2, 2019": who said it, and when they said it, when that is not the day it happened. */
+export function sourceByline(s: Pick<Source, "origin" | "publisher" | "published_on" | "happened_on">): string {
+  const base = sourceLabel(s);
+  if (!s.published_on || s.published_on === s.happened_on) return base;
+  return `${base} on ${formatDate(s.published_on, { year: "numeric", month: "short", day: "numeric" })}`;
 }
 
 /** Publishers the records cite often, by host; anything else is labelled by its host name. */

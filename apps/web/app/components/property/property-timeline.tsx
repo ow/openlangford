@@ -23,6 +23,8 @@ export type TimelineEntry = {
    * "Closed meeting". Meeting rows are labelled from ``meeting`` and ``outcome``. */
   label: string;
   headline: string;
+  /** Shown instead of the day when the date is approximate ("Spring 2019"); ``date`` still orders the row. */
+  dateLabel?: string | null;
   /** Under a written headline: the entry's own title ("Monthly Accounts Payable - January to August 2019"). */
   subline?: string | null;
   detail?: string | null;
@@ -137,7 +139,7 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
     <li id={`timeline-${e.key}`} className="relative scroll-mt-24 pl-10" {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
       <Disc group={g} />
       <div className={FADED}>
-      <p className="text-xs text-zinc-500"><span className="tabular-nums">{shortDate(e.date)}</span> · {e.label}</p>
+      <p className="text-xs text-zinc-500"><span className="tabular-nums">{e.dateLabel || shortDate(e.date)}</span> · {e.label}</p>
       <p className="mt-0.5 font-medium leading-snug text-zinc-800"><TermText text={e.headline} /></p>
       {e.kind === "closed" ? (e.detail && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>) : <Detail entry={e} />}
       {e.external && e.href && (
@@ -219,7 +221,8 @@ function Detail({ entry: e }: { entry: TimelineEntry }) {
       </details>
     );
   }
+  // A quote is the evidence, so it gets room (about six lines); a summary is only a pointer, so it stays short.
   return e.quoted || e.kind === "source" || e.kind === "report"
-    ? <blockquote className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">“{e.detail}”</blockquote>
+    ? <blockquote className="mt-1 line-clamp-6 text-sm leading-relaxed text-zinc-600">“{e.detail}”</blockquote>
     : <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>;
 }

@@ -139,6 +139,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         await addSource(supabase, {
           origin, publisher: str("publisher"), title: str("source_title"), url: str("url") || null, published_on: str("published_on") || null,
           happened_on: str("happened_on"), headline: str("headline"), quote: str("quote") || null, note: str("note") || null,
+          date_label: str("date_label") || null,
         }, target, user.id, (work) => { work.catch(() => {}); cf?.waitUntil?.(work); });
         message = "Added to the timeline.";
       } else {

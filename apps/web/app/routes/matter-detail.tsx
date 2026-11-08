@@ -61,7 +61,7 @@ import { ParticipationList, speakersAbout } from "../components/meeting/particip
 import { crossNotes, writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { sourcesFor } from "../services/sources.server";
-import { sourceLabel, tidyQuote, type Source } from "../lib/sources";
+import { sourceByline, tidyQuote, type Source } from "../lib/sources";
 
 /** The small pill the meeting page uses for its document and vote buttons. */
 const SOURCE_PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
@@ -898,12 +898,12 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                           <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
                           <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
                             <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-                              <span className="tabular-nums">{formatDate(source.happened_on)}</span>
+                              <span className="tabular-nums">{source.date_label || formatDate(source.happened_on)}</span>
                               <span className="text-zinc-300">·</span>
-                              <span className="inline-flex items-center gap-1"><Newspaper className="h-3.5 w-3.5" aria-hidden="true" />{sourceLabel(source)}</span>
+                              <span className="inline-flex items-center gap-1"><Newspaper className="h-3.5 w-3.5" aria-hidden="true" />{sourceByline(source)}</span>
                             </div>
                             <p className="text-sm font-medium text-zinc-800"><TermText text={source.headline} /></p>
-                            {source.quote && <blockquote className="mt-1 text-sm leading-relaxed text-zinc-600">“{tidyQuote(source.quote)}”</blockquote>}
+                            {source.quote && <blockquote className="mt-1 text-sm leading-relaxed text-zinc-600">“{tidyQuote(source.quote, 700)}”</blockquote>}
                             {source.url && (
                               <p className="mt-2 flex flex-wrap items-center gap-1.5">
                                 <a href={source.url} target="_blank" rel="noopener noreferrer" className={SOURCE_PILL}>

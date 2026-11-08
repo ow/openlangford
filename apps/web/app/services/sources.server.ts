@@ -17,7 +17,7 @@ const MUNICIPALITY = 1;
 
 export type SourceTarget = { matterId?: number | null; propertyId?: number | null };
 
-const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden, archive_url";
+const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden, archive_url, date_label:meta->>date_label";
 
 /** The sources linked to a topic or an address, oldest first. */
 export async function sourcesFor(supabase: SupabaseClient, target: SourceTarget): Promise<Source[]> {
@@ -85,6 +85,7 @@ export const DraftSchema = z.object({
   title: z.string().describe("The page or article's own title."),
   quote: z.string().describe("The source's own words that back the headline, at most 300 characters, verbatim."),
   origin: z.enum(["city", "press", "other"]).describe("city when the publisher is the City of Langford itself; press for news; other for another body or document."),
+  date_label: z.string().nullable().describe("When the source gives only a season or a month for the event (\"spring 2019\", \"June 2019\"), those words, capitalised, to show instead of a day; otherwise null."),
   caution: z.string().nullable().describe("One sentence for staff when something should be checked (the address is misprinted, the figure is an estimate, the page is an opinion piece); else null."),
 });
 export type SourceDraft = z.infer<typeof DraftSchema>;
@@ -94,7 +95,7 @@ You get the page's text (and sometimes a quote and a note from staff) and write 
 Rules:
 - The headline says what happened to the thing this page is about, in plain words: "City buys the 22-acre waterfront lot for about $2.2M", "Council told to explore selling the Finlayson Arm land". Past tense or headline present; no "according to", no publisher name (the page labels who said it).
 - Keep the concrete facts the source gives: the dollar amount, the size, the date. Round money the way the source does.
-- Dates: happened_on is when the event happened; a report published in November about a purchase in spring gives happened_on in spring if the text says so, else the published date.
+- Dates: when the event's date is only approximate, give happened_on your best day inside it and put the words the source uses in date_label ("Spring 2019"); happened_on is when the event happened; a report published in November about a purchase in spring gives happened_on in spring if the text says so, else the published date.
 - The quote is verbatim from the text and backs the headline; prefer the sentence with the number in it. Staff's quote, when given, wins unless it is not in the text.
 - Never invent. If the page does not say what staff's note claims, write the headline from what the page does say and put the gap in caution.
 - No bylaw, file or permit numbers. Canadian spelling.
@@ -133,7 +134,7 @@ export async function draftSource(url: string, given: { quote?: string; date?: s
 
 export type NewSource = {
   origin: SourceOrigin; publisher: string; title: string; url: string | null; published_on: string | null; happened_on: string;
-  headline: string; quote: string | null; note: string | null;
+  headline: string; quote: string | null; note: string | null; date_label?: string | null;
 };
 
 const UA = { "user-agent": "Mozilla/5.0 (compatible; OpenLangford/1.0; +https://openlangford.ca)" };
@@ -193,6 +194,7 @@ export async function addSource(supabase: SupabaseClient, input: NewSource, targ
       municipality_id: MUNICIPALITY, origin: input.origin, publisher: input.publisher.trim() || "Unknown", title: input.title.trim() || input.url || input.headline,
       url: input.url, published_on: input.published_on || null, happened_on: input.happened_on, headline: input.headline.trim(),
       quote: input.quote?.trim() || null, note: input.note?.trim() || null, added_by: userId,
+      meta: input.date_label?.trim() ? { date_label: input.date_label.trim() } : {},
       content_text: text, content_fetched_at: text ? now : null, archive_url: archive, archived_at: archive ? now : null,
     }).select(FIELDS).single();
     if (error) throw new Error(`Could not add the source: ${error.message}`);
