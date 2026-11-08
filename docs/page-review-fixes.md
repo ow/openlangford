@@ -86,7 +86,13 @@ carries out fixes for the flags staff agreed with. This page explains where each
 
 6. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
 
-A fix finishes in one pass: the request returns when the page is done.
+A fix finishes in one pass: the request returns when the page is done. While it runs, the page's status is `fixing`
+and the agent note says what the agent is doing ("Searching the City's records for 2 problems…", "Planning the
+fix…", "Making 3 changes…", "Rewriting the summary…", "Checking that the fixes hold…"); the bar polls every 3 s and
+shows it. The plan's `source` quotes behind rewrites and stages are capped at 250 characters (an add_motion's
+passage is not: it must run from the motion through its outcome), because a review-model call costs about 1.7 s
+plus 12 ms per output token and 0.07 ms per input token (`ai_usage`, 7 days to 2026-11-08): the plan's time is in
+what it writes, and the quotes were most of it.
 
 ## The one step left to the pipeline
 
