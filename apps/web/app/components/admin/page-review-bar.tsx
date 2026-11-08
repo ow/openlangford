@@ -11,7 +11,10 @@ import { cn } from "../../lib/utils";
 type Suggestion = {
   table: string; id: number; kind: "mention" | "related" | "report"; date: string | null; title: string; quote: string | null;
   href: string | null; reason: string | null; score: number | null; foundIn: "item" | "document" | "spoken" | "report" | "topic" | "similar" | null; agreed?: boolean;
+  topic?: { id: number; slug: string; title: string } | null;
 };
+/** Below this, the linking model's own estimate says the entry probably isn't this topic's: shown folded away. */
+const UNLIKELY = 0.1;
 const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic", similar: "Similar in meaning (doesn't name this topic)" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
 type Links = { suggestions: Suggestion[]; findJob: FindJob | null; edited?: { locked: string[]; newEntries: number; photos?: number } } | null;
@@ -83,6 +86,7 @@ export function PageReviewBar() {
   const [hiding, setHiding] = useState(false);  // the "Hide page" card is open
   const [hideNote, setHideNote] = useState("");
   const [editOpen, setEditOpen] = useState(false);
+  const [showUnlikely, setShowUnlikely] = useState(false);  // found entries the model itself rates under 10%
 
   useEffect(() => {
     setEditing(null);
@@ -162,7 +166,10 @@ export function PageReviewBar() {
   const flags = (review?.ai_flags || []).map((f, i) => (slot(i) in ratings ? { ...f, verdict: ratings[slot(i)] } : f));
   const open_ = unresolvedFlags(flags).length;
   // What Fix will do: flags rated 👍 and not fixed yet, plus found entries rated 👍 (added by the agent on Fix).
-  const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed).length + suggestions.filter((x) => x.agreed).length;
+  const agreedFlags = flags.filter((f) => f.verdict === "agree" && !f.fixed).length;
+  const agreedFound = suggestions.filter((x) => x.agreed).length;
+  const agreed = agreedFlags + agreedFound;
+  const agreedWhat = agreedFound ? ` (${agreedFlags} ${agreedFlags === 1 ? "flag" : "flags"}, ${agreedFound} found ${agreedFound === 1 ? "entry" : "entries"})` : "";
   useHighlights(flags, open, review?.status === "fixed" || (stayed && review?.status === "reviewed"));
   // Fix keeps its request open until the agent is done, so a pending Fix counts as the agent working.
   // The save request can outlive the page it was sent from (Fix waits for the agent, and you may move on): only a
@@ -483,15 +490,15 @@ export function PageReviewBar() {
               {links && (
                 <div className="mb-3">
                   <p className="text-xs text-zinc-500">
-                    {searching ? <span className="inline-flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" />Searching meetings and reports for entries missing from this page…</span>
-                      : suggestions.length ? null
+                    {searching ? <span className="inline-flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" />Searching meetings and reports for entries missing from this page… what it finds appears here, so the counts can grow.</span>
+                      : suggestions.length ? (links.findJob?.status === "succeeded" ? <>The search found {suggestions.length} {suggestions.length === 1 ? "entry" : "entries"} to decide · {reviewTime(links.findJob.finished_at)}</> : null)
                       : links.findJob?.status === "succeeded" ? <>No missing entries found · {reviewTime(links.findJob.finished_at)}</>
                       : links.findJob?.status === "failed" ? "The search for missing entries didn't finish. Check again to retry."
                       : null}
                   </p>
                   {suggestions.length > 0 && (
                     <ol className="mt-2 space-y-2">
-                      {suggestions.map((s) => {
+                      {suggestions.filter((s) => showUnlikely || s.score == null || s.score >= UNLIKELY).map((s) => {
                         // The one being decided shows it at once: the pressed button spins and the card fades.
                         const deciding = (pending === "accept" || pending === "reject") && save.formData?.get("table") === s.table
                           && save.formData?.get("id") === String(s.id) ? pending : null;
@@ -505,6 +512,12 @@ export function PageReviewBar() {
                             {s.score != null && <span className="ml-1 font-normal normal-case tracking-normal text-zinc-500" title="How likely the linking model thinks it belongs">· {Math.round(s.score * 100)}% likely</span>}
                           </span>
                           {s.href ? <a href={s.href} target="_blank" rel="noreferrer" className="block text-zinc-900 hover:underline">{s.title}</a> : <p className="text-zinc-900">{s.title}</p>}
+                          {s.topic && (
+                            <p className="mt-0.5 text-xs text-amber-800">
+                              Already a step of another topic: <a href={`/matters/${s.topic.slug}`} target="_blank" rel="noreferrer" className="font-medium underline">{s.topic.title}</a>.
+                              {" "}👍 adds it here as a mention only; its steps stay on that topic.
+                            </p>
+                          )}
                           {s.reason && <p className="mt-0.5 text-zinc-700">{s.reason}</p>}
                           {s.quote && (
                             <p className="mt-0.5 line-clamp-3 text-xs text-zinc-500">
@@ -513,7 +526,7 @@ export function PageReviewBar() {
                           )}
                           </div>
                           <div className="flex shrink-0 gap-0.5">
-                            <Tip label={s.agreed ? "Agreed: Fix adds it. Click to take it back" : "Yes, add it (on Fix)"}>
+                            <Tip label={s.agreed ? "Agreed: Fix adds it. Click to take it back" : s.topic ? "Yes, add it here as a mention (on Fix)" : "Yes, add it (on Fix)"}>
                               <button type="button" disabled={busy} aria-pressed={s.agreed}
                                 onClick={() => submit("accept", { table: s.table, id: String(s.id), agree: s.agreed ? "0" : "1" })}
                                 aria-label="Yes, add it to the page"
@@ -533,6 +546,11 @@ export function PageReviewBar() {
                         );
                       })}
                     </ol>
+                  )}
+                  {suggestions.some((s) => s.score != null && s.score < UNLIKELY) && (
+                    <button type="button" onClick={() => setShowUnlikely((v) => !v)} className="mt-2 text-xs font-medium text-zinc-500 hover:text-zinc-800">
+                      {showUnlikely ? "Hide" : "Show"} {suggestions.filter((s) => s.score != null && s.score < UNLIKELY).length} unlikely {suggestions.filter((s) => s.score != null && s.score < UNLIKELY).length === 1 ? "match" : "matches"} (the linking model puts them under 10%)
+                    </button>
                   )}
               {flags.length > 0 && (
                 <p className="mb-3 text-xs text-zinc-500">
@@ -621,6 +639,10 @@ export function PageReviewBar() {
               <EyeOff className="h-3.5 w-3.5" />Hidden
             </button>
           )}
+          {searching && !fixing && (
+            <button type="button" onClick={() => setOpen(true)} title="The search for entries missing from this page is still running; what it finds appears in the panel, so its counts can grow."
+              className="flex items-center gap-1 whitespace-nowrap pr-1 text-xs text-zinc-500"><Loader2 className="h-3.5 w-3.5 animate-spin" />Searching</button>
+          )}
           {fixing ? (
             <button type="button" onClick={() => setOpen(true)} className="flex items-center gap-1.5 whitespace-nowrap pr-1 text-brand-700"><Loader2 className="h-4 w-4 animate-spin" />Agent fixing…</button>
           ) : review?.status === "fixed" ? (
@@ -653,7 +675,7 @@ export function PageReviewBar() {
           {(!review?.status || review.status === "needs_work" || agreed > 0) && !fixing && (
             <button type="button" disabled={busy || savingRatings > 0}
               onClick={() => (agreed > 0 || review?.note ? submit("needs_work") : (setOpen(true), setNote(""), setEditing(-1)))}
-              title={savingRatings > 0 ? "Saving your ratings…" : agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent`
+              title={savingRatings > 0 ? "Saving your ratings…" : agreed ? `Send the ${agreed} agreed ${agreed === 1 ? "fix" : "fixes"} to the agent${agreedWhat}${searching ? ". A search for missing entries is still running; what it finds arrives here" : ""}`
                 : review?.note ? "Send the note to the agent again" : "Describe what needs work"}
               className={cn(button, agreed ? "bg-amber-600 text-white hover:bg-amber-700" : "text-amber-700 hover:bg-amber-200/70")}>
               {/* On a page already marked "Needs work" (the status beside it), this says what it does instead of repeating it. */}

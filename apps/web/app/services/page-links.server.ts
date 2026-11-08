@@ -14,6 +14,9 @@ export type Suggestion = {
   date: string | null;
   title: string;
   quote: string | null;
+  /** For a meeting item: the topic it is already a step of, when that is another topic (so the editor sees it is
+   * not a missing step of this one but a mention of a different story). */
+  topic?: { id: number; slug: string; title: string } | null;
   href: string | null;
   /** The reviewer model's reason, and where the topic's name was found. */
   reason: string | null;
@@ -125,7 +128,7 @@ export async function latestFindJob(supabase: SupabaseClient, matterId: number):
 /** Suggestions waiting for a decision on this topic. */
 export async function listSuggestions(supabase: SupabaseClient, matterId: number): Promise<Suggestion[]> {
   const [mentions, related, pages] = await Promise.all([
-    supabase.from("matter_links").select("id, agenda_item_id, review, quote, confidence, suggest_reason, found_in, agenda_items(title, meetings(slug, meeting_date))")
+    supabase.from("matter_links").select("id, agenda_item_id, review, quote, confidence, suggest_reason, found_in, agenda_items(title, matter_id, matters(id, slug, title, meta), meetings(slug, meeting_date))")
       .eq("matter_id", matterId).eq("kind", "mention").not("suggested_at", "is", null).eq("hidden", true).or("review.is.null,review.eq.accepted").limit(50),
     supabase.from("matter_links").select("id, matter_id, related_matter_id, suggest_reason, review")
       .eq("kind", "related_matter").not("suggested_at", "is", null).eq("hidden", true).or("review.is.null,review.eq.accepted")
@@ -142,10 +145,12 @@ export async function listSuggestions(supabase: SupabaseClient, matterId: number
     ...(mentions.data || []).map((l: any) => {
       const item = one(l.agenda_items) as any;
       const meeting = one(item?.meetings) as any;
+      const owner = one(item?.matters) as any;
       return { table: "matter_links" as const, id: l.id, kind: "mention" as const, date: meeting?.meeting_date ?? null,
         title: item?.title?.split("\n")[0] || "Agenda item", quote: l.quote, href: meeting?.slug ? `/meetings/${meeting.slug}` : null,
         reason: l.suggest_reason ?? null, score: l.confidence ?? null, foundIn: l.found_in ?? null,
-        agreed: l.review === "accepted", itemId: l.agenda_item_id ?? null };
+        agreed: l.review === "accepted", itemId: l.agenda_item_id ?? null,
+        topic: owner && owner.id !== matterId && !owner.meta?.hidden ? { id: owner.id, slug: owner.slug, title: owner.meta?.display_title || owner.title } : null };
     }),
     ...(related.data || []).map((l: any) => {
       const other = (others || []).find((m: any) => m.id === (l.matter_id === matterId ? l.related_matter_id : l.matter_id));
