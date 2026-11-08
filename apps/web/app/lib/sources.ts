@@ -65,9 +65,13 @@ export function sourceLabel(s: Pick<Source, "origin" | "publisher"> & { url?: st
 }
 
 /** "Reported by Victoria News on Nov 2, 2019": who said it, and when they said it, when that is not the day it happened. */
-export function sourceByline(s: Pick<Source, "origin" | "publisher" | "published_on" | "happened_on"> & { url?: string | null }): string {
+export function sourceByline(s: Pick<Source, "origin" | "publisher" | "published_on" | "happened_on" | "date_label"> & { url?: string | null }): string {
   const base = sourceLabel(s);
   if (!s.published_on || s.published_on === s.happened_on) return base;
+  // The row already shows a date. A second one earns its place when the first is approximate ("Spring 2019") or the
+  // source came out well after the event; a report the next day is the same date to a reader.
+  const gapDays = Math.abs(Date.parse(s.published_on) - Date.parse(s.happened_on)) / 86_400_000;
+  if (!s.date_label && !(gapDays >= 14)) return base;
   return `${base} on ${formatDate(s.published_on, { year: "numeric", month: "short", day: "numeric" })}`;
 }
 

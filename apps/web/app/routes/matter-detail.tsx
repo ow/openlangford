@@ -886,7 +886,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                             {override?.line ? (
                               <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
                             ) : (
-                              <blockquote className="border-l-2 border-brand-200 pl-3 text-[0.95rem] italic leading-relaxed text-zinc-700">“{cleanQuote(report.quote)}”</blockquote>
+                              <blockquote className="border-l-2 border-brand-200 pl-3 text-sm italic leading-relaxed text-zinc-700">“{cleanQuote(report.quote)}”</blockquote>
                             )}
                           </div>
                         </li>
@@ -904,7 +904,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               <span className="inline-flex items-center gap-1"><Newspaper className="h-3.5 w-3.5" aria-hidden="true" />{sourceByline(source)}</span>
                             </div>
                             <p className="text-sm font-medium text-zinc-800"><TermText text={source.headline} /></p>
-                            {source.quote && <blockquote className="mt-2 border-l-2 border-brand-200 pl-3 text-[0.95rem] italic leading-relaxed text-zinc-700">“{tidyQuote(source.quote, 700)}”</blockquote>}
+                            {source.quote && <blockquote className="mt-2 border-l-2 border-brand-200 pl-3 text-sm italic leading-relaxed text-zinc-700">“{tidyQuote(source.quote, 700)}”</blockquote>}
                             {youtubeId(source.url) && <VideoEmbed id={youtubeId(source.url)!} title={source.title} className="mt-2" />}
                             {source.url && (
                               <p className="mt-2 flex flex-wrap items-center gap-1.5">

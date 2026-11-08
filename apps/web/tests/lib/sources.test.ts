@@ -50,6 +50,10 @@ describe("sourceByline", () => {
     const { sourceByline } = await import("../../app/lib/sources");
     expect(sourceByline({ origin: "press", publisher: "Victoria News", published_on: "2019-11-02", happened_on: "2019-05-07" })).toBe("Reported by Victoria News on Nov 2, 2019");
     expect(sourceByline({ origin: "press", publisher: "CHEK News", published_on: "2026-07-22", happened_on: "2026-07-22" })).toBe("Reported by CHEK News");
+    // Reported the next day: the same date to a reader, so only one is shown.
+    expect(sourceByline({ origin: "press", publisher: "Island Social Trends", published_on: "2019-08-14", happened_on: "2019-08-13" })).toBe("Reported by Island Social Trends");
+    // An approximate date earns the second one, even a day later.
+    expect(sourceByline({ origin: "press", publisher: "Victoria News", published_on: "2019-11-02", happened_on: "2019-11-01", date_label: "Fall 2019" })).toBe("Reported by Victoria News on Nov 2, 2019");
     expect(sourceByline({ origin: "city", publisher: "City of Langford", published_on: null, happened_on: "2020-03-02" })).toBe("City publication");
   });
 });

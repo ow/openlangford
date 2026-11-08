@@ -95,3 +95,22 @@ describe("spoken address patterns", () => {
     expect(addressPatterns("3680", "Trans-Canada Highway")).not.toContain("%3680%Trans%Canada%");
   });
 });
+
+
+describe("addressExcerpt boundaries", () => {
+  it("starts where the sentence holding the address starts, never mid-word, and ends at a sentence", async () => {
+    const { addressExcerpt } = await import("../../app/services/property-timeline.server");
+    const text = "Council received the report. Direct staff to work with residents to assess and install the following security measures, if appropriate, at 3680 Trans-Canada Highway: a security gate at the top of the private residential driveway, an area for cars to turn around prior to entering a residential driveway, and fencing along areas with easy pedestrian access to other properties. " + "Other business followed and nothing else was said about it. ".repeat(20);
+    const out = addressExcerpt(text, "3680").text;
+    expect(out.startsWith("…Direct staff to work with residents")).toBe(true);
+    expect(out).toContain("and fencing along areas with easy pedestrian access to other properties.");
+    expect(out.endsWith("…")).toBe(true);
+    expect(out).not.toMatch(/^…[a-z]{1,5}\s/); // no cut-off first word
+  });
+  it("cuts at a word when a long run has no sentence to snap to", async () => {
+    const { addressExcerpt } = await import("../../app/services/property-timeline.server");
+    const out = addressExcerpt("alpha ".repeat(120) + "3680 Trans Canada Highway " + "beta ".repeat(300), "3680").text;
+    expect(out.startsWith("…alpha ")).toBe(true);
+    expect(out.endsWith("beta…")).toBe(true);
+  });
+});

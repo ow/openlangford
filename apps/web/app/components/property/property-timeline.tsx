@@ -4,6 +4,7 @@ import { ExternalLink, FileText, Table2 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { TermText } from "../term";
 import { VideoEmbed } from "../video-embed";
+import { PullQuote } from "../pull-quote";
 import { cn, formatDate } from "../../lib/utils";
 
 /**
@@ -57,9 +58,6 @@ export type TimelineEntry = {
 
 /** The small pill the meeting page uses for its document and vote buttons. */
 const PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
-
-/** A quote set as a pull quote: italic, a thin brand-tinted rule, a touch darker than body text. Not loud. */
-export const PULL = "border-l-2 border-brand-200 pl-3 italic text-zinc-700";
 
 const shortDate = (d: string) => formatDate(d, { year: "numeric", month: "short", day: "numeric" });
 
@@ -160,7 +158,7 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
       <div className={FADED}>
       <p className="text-xs text-zinc-500"><span className="tabular-nums">{e.dateLabel || shortDate(e.date)}</span> · {e.label}</p>
       {e.kind === "report"
-        ? <blockquote className={cn("mt-1.5 text-[0.95rem] leading-relaxed", PULL)}>“{e.headline}”</blockquote>
+        ? <PullQuote className="mt-1.5">“{e.headline}”</PullQuote>
         : <p className="mt-0.5 font-medium leading-snug text-zinc-800"><TermText text={e.headline} /></p>}
       {e.kind === "closed" ? (e.detail && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>) : <Detail entry={e} />}
       {e.video && <VideoEmbed id={e.video.id} title={e.video.title} className="mt-2" />}
@@ -262,6 +260,6 @@ function Detail({ entry: e }: { entry: TimelineEntry }) {
   }
   // A quote is the evidence, so it gets room (about six lines); a summary is only a pointer, so it stays short.
   return e.quoted || e.kind === "source" || e.kind === "report"
-    ? <blockquote className={cn("mt-2 line-clamp-6 text-[0.95rem] leading-relaxed", PULL)}>“{e.detail}”</blockquote>
+    ? <PullQuote className="mt-2">“{e.detail}”</PullQuote>
     : <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>;
 }

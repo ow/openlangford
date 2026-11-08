@@ -135,7 +135,7 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
             <input type="checkbox" checked={small} onChange={(e) => setSmall(e.target.checked)} />
             Show as a small line <span className="text-zinc-500">(for thin context, like a notice or an advisory)</span>
           </label>
-          <p className="text-xs text-zinc-500">Shown as: <span className="tabular-nums">{draft.date_label || draft.happened_on || "date"}</span> · {sourceByline({ origin: draft.origin, publisher: draft.publisher || "…", published_on: draft.published_on, happened_on: draft.happened_on || "", url })}</p>
+          <p className="text-xs text-zinc-500">Shown as: <span className="tabular-nums">{draft.date_label || draft.happened_on || "date"}</span> · {sourceByline({ origin: draft.origin, publisher: draft.publisher || "…", published_on: draft.published_on, happened_on: draft.happened_on || "", date_label: draft.date_label, url })}</p>
           <div className="flex gap-2">
             <button type="submit" disabled={busy || !draft.headline.trim() || !draft.happened_on} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-50">
               {intent === "add_source" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}Add to the timeline

@@ -34,12 +34,28 @@ function outcomeOf(motions: { result?: string | null }[] | null | undefined): Ti
 const TELLING = /\b(sale|sell|sold|dispos\w*|purchas\w*|acquir\w*|bought|owed|debt|borrow\w*|recommend\w*|should|open\w*|close\w*)\b|\$|\d{1,3}(?:,\d{3})+/gi;
 
 /** The words around the address in a record, on one line, scored by what they tell. Exported for tests. */
-export function addressExcerpt(text: string, civic: string, before = 80, after = 560): { text: string; score: number } {
+export function addressExcerpt(text: string, civic: string, before = 260, after = 700): { text: string; score: number } {
   // Picture markers the extractor leaves in the text ("[Image 1: site plan…]") are not words anyone said.
   const flat = text.replace(/\[Image[^\]]*\]/gi, " ").replace(/[#|*]/g, " ").replace(/\s+/g, " ").trim();
-  const at = flat.toLowerCase().indexOf(`${civic} `.toLowerCase());
-  const start = Math.max(0, (at < 0 ? 0 : at) - before);
-  const end = Math.min(flat.length, (at < 0 ? 0 : at) + after);
+  const found = flat.toLowerCase().indexOf(`${civic} `.toLowerCase());
+  const at = found < 0 ? 0 : found;
+  // Start where the sentence holding the address starts, when that is near; otherwise at a word, never mid-word.
+  let start = 0;
+  if (at > 0) {
+    const lo = Math.max(0, at - before);
+    const head = flat.slice(lo, at);
+    const boundary = [...head.matchAll(/[.!?]\s+(?=["“(A-Z0-9])/g)].pop();
+    if (boundary) start = lo + boundary.index! + boundary[0].length;
+    else if (lo > 0) { const sp = head.indexOf(" "); start = sp >= 0 ? lo + sp + 1 : lo; }
+  }
+  // End at the end of a sentence a few hundred characters on; otherwise at a word.
+  let end = Math.min(flat.length, at + after);
+  if (end < flat.length) {
+    const tail = flat.slice(Math.min(end, at + 300), end);
+    const stop = [...tail.matchAll(/[.!?](?=\s|$)/g)].pop();
+    if (stop) end = Math.min(end, at + 300) + stop.index! + 1;
+    else { const sp = flat.lastIndexOf(" ", end); if (sp > at) end = sp; }
+  }
   const window = flat.slice(start, end).trim();
   return { text: (start > 0 ? "…" : "") + window + (end < flat.length ? "…" : ""), score: (window.match(TELLING) || []).length };
 }
