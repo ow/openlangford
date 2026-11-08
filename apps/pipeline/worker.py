@@ -669,6 +669,19 @@ def run_job(supabase, job: dict):
 
         return suggest_links(int(args["matter_id"]))
 
+    if job_type == "property_lead":
+        # Check pressed on an address page whose lead is missing or older than its links: write it now.
+        from pipeline.ingestion.property_summaries import eligible, load_properties, summarize_properties
+
+        wanted = int(args["property_id"])
+        props = [p for p in load_properties(supabase) if p["id"] == wanted]
+        if not props:
+            return {"property_id": wanted, "written": False, "reason": "no such property"}
+        if not eligible(props[0]):
+            return {"property_id": wanted, "written": False, "reason": "not eligible"}
+        done = summarize_properties(supabase, props)
+        return {"property_id": wanted, "written": wanted in done}
+
     if job_type == "link_participants":
         # Staff changed a person's name spellings on the people page: link every speaker and letter writer again.
         from pipeline.stages import StageContext, run_participation_person_links

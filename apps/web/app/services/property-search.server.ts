@@ -159,3 +159,27 @@ export async function decidePropertySuggestion(supabase: SupabaseClient, propert
   const { error } = await supabase.from("properties").update({ meta }).eq("id", propertyId);
   if (error) throw new Error("Could not save that decision.");
 }
+
+/** Check on an address page: ask the pipeline's quick worker to write the lot's lead when there is none, or when a
+ * link was added after it was written (a source or an accepted entry). One request at a time per lot. */
+export async function requestPropertyLead(supabase: SupabaseClient, propertyId: number, userId: string): Promise<boolean> {
+  const { data: property } = await supabase.from("properties").select("meta").eq("id", propertyId).single();
+  const meta = (property?.meta || {}) as Record<string, any>;
+  if (meta.summary_locked) return false;
+  const written: string | null = meta.summary_updated_at ?? null;
+  if (written) {
+    const [{ data: link }, { data: source }] = await Promise.all([
+      supabase.from("property_links").select("created_at").eq("property_id", propertyId).eq("hidden", false).gt("created_at", written).limit(1),
+      supabase.from("source_links").select("created_at").eq("property_id", propertyId).eq("hidden", false).gt("created_at", written).limit(1),
+    ]);
+    if (!link?.length && !source?.length) return false;
+  }
+  const { data: running } = await supabase.from("pipeline_jobs").select("id").eq("job_type", "property_lead")
+    .eq("args->>property_id", String(propertyId)).in("status", ["queued", "running"]).limit(1);
+  if (running?.length) return false;
+  const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
+  const { error } = await supabase.from("pipeline_jobs").insert({
+    municipality_id: municipality?.id ?? 1, job_type: "property_lead", args: { property_id: propertyId }, requested_by: userId, max_attempts: 1, priority: 10,
+  });
+  return !error;
+}

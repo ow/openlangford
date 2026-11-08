@@ -1,5 +1,5 @@
 import { data } from "react-router";
-import { decidePropertySuggestion, findPropertyMissing, listPropertySuggestions } from "../services/property-search.server";
+import { decidePropertySuggestion, findPropertyMissing, listPropertySuggestions, requestPropertyLead } from "../services/property-search.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Route } from "./+types/api.page-review";
 import { requireModerator } from "../lib/auth.server";
@@ -93,7 +93,8 @@ export async function action({ request, context }: Route.ActionArgs) {
     if (intent === "check") {
       // On a property page, the same press searches the records for the address (plain text matching, no model).
       const propertyId = await propertyForPath(supabase, path);
-      if (propertyId) await findPropertyMissing(supabase, propertyId, user.id);
+      // ...and asks the pipeline for the lot's lead when it has none, or links were added since it was written.
+      if (propertyId) await Promise.all([findPropertyMissing(supabase, propertyId, user.id), requestPropertyLead(supabase, propertyId, user.id)]);
       // On a topic page, the same press also searches for entries missing from it (the pipeline's quick worker),
       // started first so it runs while the page is being checked rather than after.
       const matterId = await matterForPath(supabase, path);

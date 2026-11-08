@@ -97,6 +97,9 @@ carries out fixes for the flags staff agreed with. This page explains where each
    entry whose discussion window holds it; plain text matching, no model) and lists what
    isn't linked yet under "Possibly missing"; a 👍 links it to the address at once (a `property_links` row with
    source `admin`, which the properties stage keeps), a 👎 keeps it off. Decisions live in `properties.meta.suggestions`.
+   The same press asks the pipeline's quick worker for the lot's lead (`property_lead` job) when it has none, or when a
+   link or source was added after it was written; the lead and the plain line per entry (`meta.entry_lines`) arrive when
+   the worker has run.
 
 7. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
 
