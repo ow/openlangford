@@ -100,7 +100,9 @@ export function PropertyTimeline({ entries, newestFirst = true, renderAdmin }: {
     <div className="space-y-10">
       {[...years.entries()].map(([year, rows]) => (
         <section key={year} aria-label={year} className="relative">
-          <h3 className="mb-4 text-2xl font-semibold tabular-nums tracking-tight text-zinc-300">{year}</h3>
+          <h3 className="mb-4 flex items-center gap-3 text-lg font-semibold tabular-nums tracking-tight text-zinc-500">
+            {year}<span aria-hidden="true" className="h-px flex-1 bg-zinc-200" />
+          </h3>
           <ol className="relative space-y-5 before:absolute before:bottom-2 before:left-[11px] before:top-2 before:w-px before:bg-zinc-200">
             {rows.map((g) => <GroupRow key={g.key} group={g} renderAdmin={renderAdmin} />)}
           </ol>
@@ -152,16 +154,25 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
 function MeetingRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entry: TimelineEntry) => ReactNode }) {
   const m = g.meeting!;
   const image = g.entries.find((e) => e.image)?.image;
-  const head = (
+  const decisions = g.entries.filter((e) => e.outcome).length;
+  const head = g.decided ? (
+    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-zinc-100 bg-zinc-50/70 px-5 py-2.5 text-xs">
+      <p className="text-zinc-600">
+        <span className="font-semibold tabular-nums text-zinc-800">{shortDate(g.date)}</span>
+        {m.title && <> · <Link to={m.href} className="hover:text-brand-700 hover:underline">{m.title}</Link></>}
+      </p>
+      <p className="text-zinc-500">{decisions === 1 ? "1 decision" : `${decisions} decisions`}</p>
+    </div>
+  ) : (
     <p className="text-xs text-zinc-500">
       <span className="tabular-nums">{shortDate(g.date)}</span>
       {m.title && <> · <Link to={m.href} className="hover:text-brand-700 hover:underline">{m.title}</Link></>}
     </p>
   );
   const rows = (
-    <ul className={cn("mt-1.5", g.decided ? "divide-y divide-zinc-100" : "space-y-3")}>
+    <ul className={cn(g.decided ? "divide-y divide-zinc-100 px-5" : "mt-1.5 space-y-3")}>
       {g.entries.map((e) => (
-        <li key={e.key} id={`timeline-${e.key}`} className={cn("scroll-mt-24", g.decided && "py-2 first:pt-0 last:pb-0")} {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
+        <li key={e.key} id={`timeline-${e.key}`} className={cn("scroll-mt-24", g.decided && "py-3")} {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
           {e.kind === "closed" ? (
             <p className="flex items-start gap-1.5 text-xs text-zinc-500"><Lock className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" /><span>{e.headline}. {e.detail}</span></p>
           ) : (
@@ -187,13 +198,14 @@ function MeetingRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (en
     <li id={`timeline-${g.key}`} className="relative scroll-mt-24 pl-10">
       <Disc group={g} />
       {g.decided ? (
-        <div className="rounded-2xl border border-zinc-200 bg-surface px-5 py-4 shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
+          {head}
           {image ? (
-            <div className="flex gap-4">
-              <div className="min-w-0 flex-1">{head}{rows}</div>
-              <img src={image.url} alt={image.alt} loading="lazy" className="hidden h-24 w-32 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
+            <div className="flex gap-4 pr-5">
+              <div className="min-w-0 flex-1">{rows}</div>
+              <img src={image.url} alt={image.alt} loading="lazy" className="mt-3 hidden h-24 w-32 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
             </div>
-          ) : <>{head}{rows}</>}
+          ) : rows}
         </div>
       ) : <>{head}{rows}</>}
     </li>

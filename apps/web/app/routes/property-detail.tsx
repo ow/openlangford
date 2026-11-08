@@ -18,7 +18,7 @@ import { SITE_NAME } from "../lib/site-name";
 import { firstSentence, ogImageUrl } from "../lib/og";
 import { metaDescription, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd, propertyPlace } from "../lib/structured-data";
-import { formatDate } from "../lib/utils";
+import { cn, formatDate } from "../lib/utils";
 import { notFoundIfHidden } from "../services/page-visibility.server";
 import { documentImageUrl } from "../lib/document-images.server";
 import { propertyTimeline } from "../services/property-timeline.server";
@@ -185,16 +185,21 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                 icon={Landmark}
                 description={isStreet ? "Road work, closures and other decisions about the street itself." : "Each rezoning, permit or project here has its own page."}
               />
-              <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
+              <ol className={cn(isStreet ? "divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm" : "grid gap-4 sm:grid-cols-2")}>
                 {matters.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
                   const image = images?.[m.id];
+                  const summary = m.plain_english_summary ? (firstSentence(m.plain_english_summary) || m.plain_english_summary).replace(/([^.!?])$/, "$1.") : null;
                   // Keyed for the review bar (matter-<id>): the check flags an entry by this key and the bar outlines it.
                   return (
-                    <li key={m.id} id={`timeline-matter-${m.id}`} data-review-entry={`matter-${m.id}`}>
-                      <div>
-                      <Link to={matterPath(m)} className="group flex gap-4 px-5 py-4 hover:bg-zinc-50">
-                        <div className="min-w-0 flex-1">
+                    <li key={m.id} id={`timeline-matter-${m.id}`} data-review-entry={`matter-${m.id}`}
+                      className={cn(!isStreet && "overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm transition-shadow hover:shadow-md")}>
+                      <div className="flex h-full flex-col">
+                      <Link to={matterPath(m)} className={cn("group flex flex-1 gap-4 hover:bg-zinc-50", isStreet ? "px-5 py-4" : "flex-col p-0")}>
+                        {image && !isStreet && (
+                          <img src={image} alt="" loading="lazy" className="h-32 w-full object-cover" />
+                        )}
+                        <div className={cn("min-w-0 flex-1", !isStreet && "px-5 pb-4 pt-4")}>
                           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums text-zinc-500">
                             <span>
                               {shortDate(m.first_seen)}
@@ -205,19 +210,15 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                           </p>
                           <p className="mt-0.5 font-semibold leading-snug text-zinc-900 group-hover:text-brand-700">{matterTitle(m)}</p>
                           {/* What it is, then where it stands: the topic's own summary and status line. */}
-                          {m.plain_english_summary && (
-                            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{(firstSentence(m.plain_english_summary) || m.plain_english_summary).replace(/([^.!?])$/, "$1.")}</p>
-                          )}
-                          {m.meta?.status_line && (
-                            <p className="mt-1 text-xs text-zinc-500">{m.meta.status_line}</p>
-                          )}
+                          {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{summary}</p>}
+                          {m.meta?.status_line && <p className="mt-1 text-xs text-zinc-500">{m.meta.status_line}</p>}
                         </div>
-                        {image && (
+                        {image && isStreet && (
                           <img src={image} alt="" loading="lazy" className="hidden h-20 w-28 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
                         )}
                       </Link>
                       {isAdmin && (
-                        <div className="-mt-2 px-5 pb-3">
+                        <div className={cn("px-5 pb-3", isStreet && "-mt-2")}>
                           <Unlink field="matter_id" id={m.id} isStreet={isStreet} />
                         </div>
                       )}
