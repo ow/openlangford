@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run a pipeline command (apps/pipeline, `uv run python ...`) against the LOCAL Supabase stack, e.g.
 #   scripts/local-db/pipeline.sh main.py --stage matter-summaries --target 310 --dry-run
-#   scripts/local-db/pipeline.sh worker.py --job-types fix_page,find_matter_links --poll-interval 3
+#   scripts/local-db/pipeline.sh worker.py --job-types fix_page,find_matter_links,property_lead --poll-interval 3
 # The pipeline's load_dotenv() never overrides a variable already set, so everything that could reach production
 # is set here first: the database settings point at the local stack, and the settings that write somewhere else
 # (R2 picture uploads, Discord, the email outbox) are blanked. The OpenAI key and model settings still come from

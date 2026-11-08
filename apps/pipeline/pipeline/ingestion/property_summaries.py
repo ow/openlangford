@@ -9,7 +9,8 @@ by the model, so it always matches the page header.
 
 A lot is summarized when it has at least ``MIN_RECORDS`` visible records (a
 distinct matter, or an agenda item outside any matter, linked through a
-non-hidden ``property_links`` row). A street page also lists its addresses and
+non-hidden ``property_links`` row), or one meaningful record: a topic, or an
+entry that is not a resident giving their address in public input. A street page also lists its addresses and
 charts their activity, so a street's summary covers the road itself and the
 busiest developments on it, over the same span the page shows; a street is
 summarized when it has ``MIN_RECORDS`` records of its own or ``MIN_ADDRESSES``
@@ -31,13 +32,13 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from pipeline import ai
 from pipeline.ai import glossary
 from pipeline.postgrest import in_chunks
 
-PROPERTY_SUMMARY_VERSION = "4"  # 4: each entry carries the line of the record that names the address
+PROPERTY_SUMMARY_VERSION = "10"  # 10: the total spent goes in the lead; spoken lines match with filler words
 MIN_RECORDS = 2
 MIN_ADDRESSES = 2  # a street page with two or more addresses gets a summary even with no records of its own
 NARRATIVE_MAX = 220  # the model's part; the closing count follows
@@ -76,6 +77,12 @@ Rules from the site's writing guide:
 
 An entry may carry "names_this_address": the words of the record (a report, a budget table, a decision, something said at the meeting) that name this address. That line is why the entry is on the page, and often the only place its substance is: a purchase, a dollar amount, a recommendation to sell, a question asked. Use those facts; the entry's own summary may not repeat them. When those lines give the story a later turn (the City bought the land, spent on it, still owes for it, was asked whether to sell it, was told to explore a sale), lead with the latest turn and then say how it began.
 
+"said_elsewhere" lists dated statements from outside Council's record that staff added, each saying who said it. One whose "who" is the City of Langford is the City's own publication: state its facts, attributed to the City ("the City announced…"). Any other is a news report: use its facts only with the publisher named, in the same sentence as each fact that rests on it ("Victoria News reported the City paid about $2.2M"); a fact from a second report needs its own publisher named too. These often hold what the minutes don't (a purchase made in a closed meeting), so they may lead; never present one as Council's own decision.
+
+When a source gives the total the City has spent on the land (a freedom-of-information response, a report), the lead states that total with who said it: it is the figure residents ask about. When the inputs show how the City came to hold the land (it bought or acquired it, in a news report, a staff report or a budget line), the lead must say so, with the year and the price if given, attributed as the rules above require: the purchase is where the story starts, and a lead about a sale or a permit that leaves it out reads as if the land appeared from nowhere.
+
+Besides the opening lines, write "entry_lines": for each entry under "other_mentions" that carries "names_this_address", one plain line (at most 120 characters) saying what that record says about this address, so a reader needn't parse a budget table or a cheque register: "The City paid its lawyers $1.27 million for the land, May 2019", "Budget sets aside $825,000 of developer money for the site in 2023", "A resident asked whether the property should be sold". Keep the amount and the date the record gives; no cheque, file or account numbers; no "the record shows". When an entry's lines include a recommendation, a finding, a decision or an amount, the entry line states that, never only that something was discussed or consulted on ("The consultant recommended the City sell the site because it does not serve parks priorities", not "a presenter said the community was consulted"). Use only the verb the record supports: a register, table or budget schedule "lists", "records", "shows" or "sets aside" an amount; never "approved", "decided" or "agreed" unless the record says Council did, and never say what a payment was for unless the record does. Skip entries without names_this_address.
+
 For a lot (kind "lot"): say what has been proposed or decided there. Example: "A subdivision of up to 47 homes, approved in 2015 after changes to the official community plan and zoning."
 For a street (kind "street"): cover both the road itself (roadworks, closures, traffic, grants; newest first) and the developments at addresses on it. Name the projects at the addresses in "most_considered" (the ones Council considered most often) first; add one other, larger project only if it fits. Example: "In 2024 Council backed grant applications for walking and cycling upgrades on Latoria Road. Earlier: a 47-lot subdivision at 935 and the 501-home McCormick Meadows plan at 940." Refer to an address on the street by its number alone ("a 47-lot subdivision at 935"), since the street is the page.
 Never mention people's names, applicants, companies, or residents' personal details. Never start with "This address", "This street" or the address itself."""
@@ -83,8 +90,14 @@ Never mention people's names, applicants, companies, or residents' personal deta
 
 SYSTEM = SYSTEM + "\n\n" + glossary.prompt_block("resident", only=glossary.ids(["bylaws", "land"], plus=["carried", "defeated", "tabled", "referred", "public-hearing", "closed-meeting"]))
 
+class EntryLine(BaseModel):
+    item: int = Field(description="The entry's id, as given in other_mentions.")
+    line: str = Field(description="One line, at most 120 characters, saying what this record says about the address: the amount, the step, the question. Plain words; no file or cheque numbers.")
+
+
 class PropertySummary(BaseModel):
     summary: str
+    entry_lines: list[EntryLine] = Field(default_factory=list, description="One line for each entry under other_mentions that carries names_this_address; none for the rest.")
 
 
 def _year(value) -> int | None:
@@ -169,6 +182,15 @@ def load_properties(supabase, this_year: int | None = None) -> list[dict]:
     by_property: dict[int, list[dict]] = {}
     for link in links:
         by_property.setdefault(link["property_id"], []).append(link)
+    # Sources from outside the record change a lead too (they are part of its inputs hash).
+    source_links = _pages(lambda: supabase.table("source_links").select("property_id, matter_id, source_id").eq("hidden", False).order("id"))
+    sources_by_property: dict[int, set[str]] = {}
+    sources_by_matter: dict[int, set[str]] = {}
+    for sl in source_links:
+        if sl.get("property_id"):
+            sources_by_property.setdefault(sl["property_id"], set()).add(f"s{sl['source_id']}")
+        elif sl.get("matter_id"):
+            sources_by_matter.setdefault(sl["matter_id"], set()).add(f"s{sl['source_id']}")
 
     def mentions_of(ls: list[dict], *, own_matters_only_visible: bool = True) -> set[str]:
         out = set()
@@ -185,7 +207,12 @@ def load_properties(supabase, this_year: int | None = None) -> list[dict]:
         # Links to a hidden or merged matter drop out of the page entirely.
         shown = [l for l in ls if not l.get("matter_id") or l["matter_id"] in visible]
         keys = record_keys(ls, visible)
-        out.append({**p, "street": p.get("street") or "", "meta": p.get("meta") or {}, "records": keys,
+        source_keys = set(sources_by_property.get(p["id"], set()))
+        for k in keys:
+            if k[0] == "m":
+                source_keys |= sources_by_matter.get(int(k[1:]), set())
+        out.append({**p, "street": p.get("street") or "", "meta": p.get("meta") or {}, "records": keys, "source_keys": sorted(source_keys),
+                    "meaningful": meaningful(shown, visible),
                     "links": shown, "resident_only": p.get("civic_number") != "" and (bool(p.get("hidden")) or resident_only(shown)),
                     "mentions": mentions_of(shown), "lots": []})
     lots_by_street: dict[str, list[dict]] = {}
@@ -231,8 +258,8 @@ def _span(p: dict, spans: dict, by_property: dict, visible: set[int]) -> tuple[i
 
 
 def scope_keys(p: dict) -> list[str]:
-    """The records a summary is built from: its own, and for a street every listed lot's."""
-    keys = list(p["records"])
+    """The records a summary is built from: its own (and its sources), and for a street every listed lot's."""
+    keys = list(p["records"]) + list(p.get("source_keys") or [])
     for lot in p.get("lots") or []:
         if not lot.get("resident_only"):
             keys += [f"{lot['id']}:{k}" for k in lot["records"]]
@@ -243,12 +270,26 @@ def summary_lots(p: dict) -> list[dict]:
     return [lot for lot in p.get("lots") or [] if not lot.get("resident_only")]
 
 
+def meaningful(links: list[dict], visible_matters: set[int] | None = None) -> bool:
+    """A lot has something worth a lead when a topic is filed at it, or a meeting entry that is not just a resident
+    giving their address while speaking or writing to Council."""
+    for link in links:
+        if link.get("hidden"):
+            continue
+        if link.get("matter_id") and (visible_matters is None or link["matter_id"] in visible_matters):
+            return True
+        if link.get("agenda_item_id") and not is_public_input(link.get("agenda_items")):
+            return True
+    return False
+
+
 def eligible(p: dict) -> bool:
     if p.get("resident_only"):
         return False
     if p.get("civic_number") == "":
         return len(p["records"]) >= MIN_RECORDS or len(summary_lots(p)) >= MIN_ADDRESSES
-    return len(p["records"]) >= MIN_RECORDS
+    # One meaningful record is enough for a lot: a single rezoning is the whole story of most addresses.
+    return len(p["records"]) >= MIN_RECORDS or p.get("meaningful", False)
 
 
 def current_hash(p: dict) -> str:
@@ -288,10 +329,46 @@ def load_inputs(supabase, props: list[dict]) -> dict[int, dict]:
     items = {i["id"]: i for i in in_chunks(lambda chunk: supabase.table("agenda_items").select(
         "id, title, plain_english_summary, meeting_id, discussion_start_time, discussion_end_time, meetings(meeting_date)"
     ).in_("id", chunk), item_ids)}
+    sources = load_sources(supabase, [p for p in props if p.get("civic_number")], matter_ids)
     out = {}
     for p in props:
         lines = address_lines(supabase, p, items) if p.get("civic_number") else {}
-        out[p["id"]] = build_input(p, matters, items, lines)
+        out[p["id"]] = build_input(p, matters, items, lines, sources.get(p["id"], []))
+    return out
+
+
+def load_sources(supabase, lots: list[dict], matter_ids: list[int]) -> dict[int, list[dict]]:
+    """Property id -> sources from outside the record (sources table): those linked to the lot, and those linked to
+    its topics. Each is a dated line saying who said it; the prompt says how they may be used."""
+    if not lots:
+        return {}
+    lot_ids = [p["id"] for p in lots]
+    fields = "property_id, matter_id, sources!inner(id, origin, publisher, title, happened_on, headline, quote, hidden)"
+    rows = in_chunks(lambda chunk: supabase.table("source_links").select(fields).in_("property_id", chunk).eq("hidden", False).eq("sources.hidden", False), lot_ids)
+    if matter_ids:
+        rows += in_chunks(lambda chunk: supabase.table("source_links").select(fields).in_("matter_id", chunk).eq("hidden", False).eq("sources.hidden", False), matter_ids)
+    by_matter: dict[int, list[dict]] = {}
+    by_lot: dict[int, list[dict]] = {}
+    for row in rows:
+        src = row.get("sources") or {}
+        if isinstance(src, list):
+            src = src[0] if src else {}
+        if not src:
+            continue
+        line = {"id": src["id"], "date": src.get("happened_on"), "who": "the City of Langford (its own publication)" if src.get("origin") == "city" else src.get("publisher"),
+                "origin": src.get("origin"), "says": src.get("headline"), "quote": (src.get("quote") or "")[:300]}
+        if row.get("property_id"):
+            by_lot.setdefault(row["property_id"], []).append(line)
+        elif row.get("matter_id"):
+            by_matter.setdefault(row["matter_id"], []).append(line)
+    out: dict[int, list[dict]] = {}
+    for p in lots:
+        mine = list(by_lot.get(p["id"], []))
+        for k in p["records"]:
+            if k[0] == "m":
+                mine += by_matter.get(int(k[1:]), [])
+        seen = set()
+        out[p["id"]] = sorted([x for x in mine if x["id"] not in seen and not seen.add(x["id"])], key=lambda x: x["date"] or "")
     return out
 
 
@@ -303,7 +380,7 @@ TYPE_FORMS = {
 }
 
 
-def address_patterns(civic: str, street: str) -> list[str]:
+def address_patterns(civic: str, street: str, spoken: bool = False) -> list[str]:
     """ILIKE patterns for an address as the records write it ("3680 Trans-Canada Highway", "3680 Trans Canada Hwy",
     "3680 Trans Canada"), the same as the site's property search (services/property-search.server.ts)."""
     words = [w for w in re.split(r"[\s-]+", (street or "").strip()) if w]
@@ -318,7 +395,10 @@ def address_patterns(civic: str, street: str) -> list[str]:
         heads.append(name)
         if len(words) >= 3:  # budget tables write a long name by its initials: "3680 TCH"
             heads.append("".join(w[0] for w in words))
-    return list(dict.fromkeys(f"%{civic} {h}%" for h in heads))
+    out = [f"%{civic} {h}%" for h in heads]
+    if spoken:  # said aloud: "3680 uh Trans Canada Highway"; one short sentence, so the loose pattern is safe
+        out.append(f"%{civic}%{name}%")
+    return list(dict.fromkeys(out))
 
 
 TELLING = re.compile(r"\b(sale|sell|sold|dispos\w*|purchas\w*|acquir\w*|bought|owed|debt|borrow\w*|recommend\w*|should)\b|\$|\d{1,3}(?:,\d{3})+", re.I)
@@ -361,8 +441,9 @@ def address_lines(supabase, p: dict, items: dict[int, dict]) -> dict[int, str]:
         timed = [items[i] for i in item_ids if items[i].get("discussion_start_time") is not None and items[i].get("discussion_end_time") is not None]
         meeting_ids = sorted({i["meeting_id"] for i in timed if i.get("meeting_id")})
         if meeting_ids:
+            spoken_ors = ",".join(f'text_content.ilike."{x}"' for x in address_patterns(p.get("civic_number") or "", p.get("street") or "", spoken=True))
             for seg in in_chunks(lambda chunk: supabase.table("transcript_segments").select("meeting_id, start_time, text_content")
-                                 .in_("meeting_id", chunk).or_(ors("text_content")).limit(40), meeting_ids):
+                                 .in_("meeting_id", chunk).or_(spoken_ors).limit(40), meeting_ids):
                 t = seg.get("start_time")
                 if t is None:
                     continue
@@ -404,6 +485,7 @@ def _records(p: dict, matters: dict[int, dict], items: dict[int, dict], max_matt
         **({"names_this_address": " ".join(by_matter[m["id"]])} if by_matter.get(m["id"]) else {}),
     } for m in ms[:max_matters]]
     item_rows = [{
+        "id": i["id"],
         "title": i.get("title") or "",
         "year": _year((i.get("meetings") or {}).get("meeting_date")),
         "summary": (i.get("plain_english_summary") or "")[:min(summary_chars, 300)],
@@ -412,7 +494,7 @@ def _records(p: dict, matters: dict[int, dict], items: dict[int, dict], max_matt
     return matter_rows, item_rows, latest
 
 
-def build_input(p: dict, matters: dict[int, dict], items: dict[int, dict], lines: dict[int, str] | None = None) -> dict:
+def build_input(p: dict, matters: dict[int, dict], items: dict[int, dict], lines: dict[int, str] | None = None, sources: list[dict] | None = None) -> dict:
     own_matters, own_items, _ = _records(p, matters, items, MAX_MATTERS, MAX_ITEMS, 500, lines)
     if p.get("civic_number") != "":
         return {
@@ -420,6 +502,7 @@ def build_input(p: dict, matters: dict[int, dict], items: dict[int, dict], lines
             "kind": "lot",
             "council_decisions_and_projects": own_matters,
             "other_mentions": own_items,
+            **({"said_elsewhere": [{k: v for k, v in x.items() if k != "id"} for x in sources]} if sources else {}),
         }
     lots = []
     for lot in summary_lots(p):
@@ -475,7 +558,14 @@ def _sizes_given(data: dict) -> bool:
 
 
 def summarize(data: dict, closing: str = "") -> str:
+    return summarize_with_lines(data, closing)[0]
+
+
+def summarize_with_lines(data: dict, closing: str = "") -> tuple[str, dict[str, str]]:
+    """The lead, and a plain line per other entry that names the address (keyed by item id, as strings)."""
     result = ai.json(prompt(data), stage=STAGE, schema=PropertySummary, system=SYSTEM)
+    wanted = {str(r["id"]) for r in data.get("other_mentions") or [] if r.get("names_this_address")}
+    lines = {str(e.item): e.line.strip().rstrip(".") for e in result.entry_lines if str(e.item) in wanted and e.line.strip()}
     text = result.summary
     # Up to two more tries for a lead that drops the size of the project ("a subdivision" for "a
     # 47-lot subdivision") or uses database words ("matter", "record") or hedges about the records.
@@ -496,7 +586,7 @@ def summarize(data: dict, closing: str = "") -> str:
         except Exception as e:  # the last draft is still usable
             print(f"  [!] Property summary retry failed, keeping the last draft: {e}", flush=True)
             break
-    return compose(text, closing)
+    return compose(text, closing), lines
 
 
 def summarize_properties(supabase, props: list[dict], *, write: bool = True, workers: int = 4) -> dict[int, str]:
@@ -510,7 +600,7 @@ def summarize_properties(supabase, props: list[dict], *, write: bool = True, wor
 
     def one(p):
         try:
-            return p["id"], summarize(inputs[p["id"]], p.get("closing", ""))
+            return p["id"], summarize_with_lines(inputs[p["id"]], p.get("closing", ""))
         except Exception as e:  # one property failing shouldn't stop the rest
             print(f"  [!] Property summary for {p['address']} ({p['id']}) failed: {e}", flush=True)
             return p["id"], None
@@ -520,14 +610,15 @@ def summarize_properties(supabase, props: list[dict], *, write: bool = True, wor
     done: dict[int, str] = {}
     now = datetime.now(timezone.utc).isoformat()
     for p in props:
-        summary = results.get(p["id"])
-        if not summary:
+        got = results.get(p["id"])
+        if not got or not got[0]:
             continue
+        summary, lines = got
         done[p["id"]] = summary
         if write:
             # Re-read meta right before writing so keys other stages wrote meanwhile survive.
             fresh = (supabase.table("properties").select("meta").eq("id", p["id"]).execute().data or [{}])[0].get("meta")
-            meta = {**(fresh if fresh is not None else (p.get("meta") or {})), "summary": summary,
+            meta = {**(fresh if fresh is not None else (p.get("meta") or {})), "summary": summary, "entry_lines": lines,
                     "summary_version": PROPERTY_SUMMARY_VERSION, "summary_inputs": current_hash(p), "summary_updated_at": now}
             supabase.table("properties").update({"meta": meta}).eq("id", p["id"]).execute()
     return done

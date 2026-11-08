@@ -7,6 +7,7 @@ import { judgeTopics, readPage, type TopicVerdict } from "./page-check.server";
 import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { bylawRecords } from "./bylaw-records.server";
+import { sourceRecordLines, sourcesFor } from "./sources.server";
 import { findingText, investigate, investigatedRecords, investigationLine, needsInvestigation, type Investigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
@@ -187,6 +188,9 @@ ${movable || "(No flagged items to move.)"}
   rezoning for the 165-home Costin Avenue apartments"). Use only facts in the records below; no file numbers, bylaw
   numbers or jargon unless the record gives nothing else.
 - rewrite_heading: a new heading for a "mention-", "background-", "report-" or "evidence-" entry whose heading is wrong or misleading.
+- SOURCE lines are from outside Council's record (the City's own publication, or a news report; the line says who). They
+  back only text that carries that attribution ("Victoria News reported…", "the City said in a news release…"); never
+  restate one as Council's own decision.
 - "evidence-" entries are supporting records: a page of a report, budget or presentation that names this topic. Their
   text is in the records below (the passages that name the topic). When the record says something about this topic,
   rewrite_entry with what it says; when it only lists the topic in passing (a venue in a list, a facility among many),
@@ -415,7 +419,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const toResearch = agreed.filter((f) => !f.research && needsInvestigation(f)).length + (row?.note?.trim() ? 1 : 0);
     progress(toResearch ? `Reading the page's records and searching the City's records for ${toResearch === 1 ? "1 problem" : `${toResearch} problems`}…`
       : "Reading the page's records…");
-    const bylawText = await bylawRecords(supabase, matterId);
+    const [bylawText, sourceText] = await Promise.all([bylawRecords(supabase, matterId), sourcesFor(supabase, { matterId }).then(sourceRecordLines)]);
     const [{ text: itemText }, { data: reports }, evidenceText, investigations] = await Promise.all([
       itemRecords(supabase, ids),
       reportIds.length ? supabase.from("matter_report_mentions").select("id, page, quote").in("id", reportIds) : Promise.resolve({ data: [] }),
@@ -432,7 +436,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
       await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
     const [heldBack, unfiled] = await Promise.all([heldBackMotions(supabase, ids), containerMotions(supabase, ids)]);
-    const records = [itemText, bylawText, heldBack, unfiled, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+    const records = [itemText, bylawText, sourceText, heldBack, unfiled, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
     // Topics holding entries staff accepted for this page (found entries just added, mentions kept earlier) are often
     // a topic of their own that's really this one (a lone 2019 extension of an agreement this page already has, a
@@ -939,7 +943,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           const claimIds = !key ? summaryIds : [`line-${key.replace(/^agenda-/, "")}`, `entry-${key}`, `motion-${key}`, `stage-${key}`].filter((c) => claims.some((x) => x.id === c));
           if (claimIds.length) scopes.set(i, claimIds);
         }
-        const records = [covered.text, bylawText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+        const records = [covered.text, bylawText, sourceText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
           evidenceText, researchText].filter(Boolean).join("\n\n");
         const verdicts: RecheckVerdicts = scopes.size ? await recheckClaims(claims.filter((c) => [...scopes.values()].flat().includes(c.id)), records, budget) : new Map();
         const outcome = applyRecheck(updated, newlyFixed, scopes, verdicts, new Date().toISOString());

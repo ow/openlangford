@@ -3,8 +3,10 @@ import { useLocation, useNavigate, useRevalidator } from "react-router";
 import { useJsonFetcher } from "../../lib/use-json-fetcher";
 import { INTERNAL_NOTE_CHANGED, OPEN_INTERNAL_NOTE } from "./internal-note-banner";
 import { TopicEditDialog } from "./topic-edit-dialog";
+import { SourceCard } from "./source-card";
+import type { Source } from "../../lib/sources";
 import { Tip } from "../ui/tooltip";
-import { ArrowRight, Check, Eye, EyeOff, Flag, Loader2, Pencil, RefreshCw, Sparkles, StickyNote, ThumbsDown, ThumbsUp, Undo2, Wrench, X } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, Flag, Loader2, Newspaper, Pencil, RefreshCw, Sparkles, StickyNote, ThumbsDown, ThumbsUp, Undo2, Wrench, X } from "lucide-react";
 import { FLAG_PROBLEM_LABELS, reviewTime, unresolvedFlags, type PageFlag, type PageReview } from "../../lib/page-review-types";
 import { cn } from "../../lib/utils";
 
@@ -17,7 +19,7 @@ type Suggestion = {
 const UNLIKELY = 0.1;
 const FOUND_IN = { item: "In the item's text", document: "In a document attached to the item", spoken: "Said at the meeting", report: "In the annual report", topic: "Shares a name with this topic", similar: "Similar in meaning (doesn't name this topic)" };
 type FindJob = { status: string; requested_at: string; finished_at: string | null; suggested: number | null };
-type Links = { suggestions: Suggestion[]; findJob: FindJob | null; edited?: { locked: string[]; newEntries: number; photos?: number } } | null;
+type Links = { suggestions: Suggestion[]; findJob: FindJob | null; edited?: { locked: string[]; newEntries: number; photos?: number }; sources?: Source[] } | null;
 type Loaded = { path: string | null; review: PageReview | null; links: Links; hidden?: boolean };
 type Saved = { ok?: true; review?: PageReview | null; links?: Links; hidden?: boolean; message?: string | null; error?: string };
 
@@ -86,6 +88,7 @@ export function PageReviewBar() {
   const [hiding, setHiding] = useState(false);  // the "Hide page" card is open
   const [hideNote, setHideNote] = useState("");
   const [editOpen, setEditOpen] = useState(false);
+  const [sourcing, setSourcing] = useState(false);  // the "Sources" card is open
   const [showUnlikely, setShowUnlikely] = useState(false);  // found entries the model itself rates under 10%
 
   useEffect(() => {
@@ -99,6 +102,7 @@ export function PageReviewBar() {
     setHiding(false);
     setHideNote("");
     setEditOpen(false);
+    setSourcing(false);
     load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -588,6 +592,10 @@ export function PageReviewBar() {
             </>
         </div>
       )}
+      {sourcing && links && (
+        <SourceCard path={pathname} sources={links.sources || []} onClose={() => setSourcing(false)}
+          onChanged={() => { load.load(`/api/page-review?path=${encodeURIComponent(pathname)}`); revalidator.revalidate(); }} />
+      )}
       {hiding && (
         <div className="w-full rounded-2xl border border-dashed border-red-300 bg-surface p-4 text-sm shadow-lg sm:w-[26rem]">
           {hidden ? (
@@ -699,7 +707,7 @@ export function PageReviewBar() {
           </Tip>
           {/* Words for the decisions above; icons for the tools around them, with Next last. */}
           <span aria-hidden="true" className="mx-1 h-4 w-px bg-amber-300" />
-          {links && (
+          {links && edited && (
             <Tip label={edited?.newEntries ? `Edit the title, summary or photo. ${edited.newEntries} new ${edited.newEntries === 1 ? "entry" : "entries"} since the last edit: check it still holds`
               : edited?.photos ? `No feature photo yet: ${edited.photos} report ${edited.photos === 1 ? "picture" : "pictures"} to choose from`
               : edited?.locked.length ? "Edit the title, summary or photo (some are edited by hand)" : "Edit the title, summary or photo"}>
@@ -707,6 +715,14 @@ export function PageReviewBar() {
                 className={cn("relative rounded-full p-1.5 hover:bg-amber-100", edited?.locked.length ? "text-brand-700" : "text-zinc-500")}>
                 <Pencil className="h-4 w-4" />
                 {!!(edited?.newEntries || edited?.photos) && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-red-600" aria-hidden="true" />}
+              </button>
+            </Tip>
+          )}
+          {links && (
+            <Tip label={links.sources?.length ? `Sources outside the meeting record on this page: ${links.sources.length}. Add or remove one` : "Add a source from outside the meeting record (a City release, a news report)"}>
+              <button type="button" onClick={() => setSourcing(!sourcing)} aria-label="Sources outside the meeting record"
+                className={cn("rounded-full p-1.5 hover:bg-amber-100", sourcing || links.sources?.length ? "text-brand-700" : "text-zinc-500")}>
+                <Newspaper className="h-4 w-4" />
               </button>
             </Tip>
           )}

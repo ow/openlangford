@@ -4,6 +4,7 @@ import { embedQuery, getAiClient } from "./ai/index.server";
 import { fetchAll } from "./page-verify.server";
 import { completeVoteCounts } from "../lib/vote-coverage";
 import { bylawRecordLine, readBylaw, searchBylaws } from "./bylaw-records.server";
+import { readSource, searchSources } from "./sources.server";
 
 /**
  * The City's records as a library the review model can research, not just the text pre-loaded beside a page. A
@@ -36,7 +37,7 @@ const meetingOf = (row: any) => (Array.isArray(row?.meetings) ? row.meetings[0] 
 /** Full-text search across the City's records; previews only, `readRecord` returns the whole thing. */
 export async function searchRecords(supabase: SupabaseClient, query: string): Promise<RecordHit[]> {
   const ts = { type: "websearch" as const, config: "english" };
-  const [sections, motions, items, segments, pages, bylaws] = await Promise.all([
+  const [sections, motions, items, segments, pages, bylaws, sources] = await Promise.all([
     supabase.from("document_sections").select("id, agenda_item_id, section_title, section_text, documents(title, meetings(meeting_date))")
       .textSearch("text_search", query, ts).limit(PER_KIND),
     supabase.from("motions").select("id, text_content, result, meetings(meeting_date)").textSearch("text_search", query, ts).limit(PER_KIND),
@@ -45,8 +46,13 @@ export async function searchRecords(supabase: SupabaseClient, query: string): Pr
       .textSearch("text_search", query, ts).limit(PER_KIND),
     supabase.from("public_report_pages").select("report_id, page, content, public_reports(year, title)").textSearch("text_search", query, ts).limit(PER_KIND),
     searchBylaws(supabase, query).catch(() => []),
+    searchSources(supabase, query).catch(() => []),
   ]);
   const hits: RecordHit[] = [];
+  for (const s of sources) {
+    hits.push({ ref: `source:${s.id}`, kind: s.origin === "city" ? "City publication outside the meeting record" : `news report (${s.publisher}), outside the meeting record`,
+      date: s.happened_on, title: s.headline, preview: s.preview });
+  }
   for (const b of bylaws) {
     hits.push({ ref: `bylaw:${b.id}`, kind: "signed bylaw (its certified reading and adoption dates)", date: null,
       title: `Bylaw No. ${b.bylaw_number || "?"}: ${b.title || "untitled"}`, preview: bylawRecordLine(b) });
@@ -129,6 +135,9 @@ export async function readRecord(supabase: SupabaseClient, ref: string): Promise
   }
   if (kind === "bylaw" && Number.isSafeInteger(id)) {
     return (await readBylaw(supabase, id)) ?? `No record ${ref}.`;
+  }
+  if (kind === "source" && Number.isSafeInteger(id)) {
+    return (await readSource(supabase, id)) ?? `No record ${ref}.`;
   }
   if (kind === "report" && Number.isSafeInteger(id)) {
     const { data } = await supabase.from("public_report_pages").select("content, public_reports(year, title)")
@@ -229,7 +238,7 @@ export async function prefetch(supabase: SupabaseClient, question: string, conte
     byMeaning.length ? `SEARCH BY MEANING (the question itself):\n${byMeaning.map(line).join("\n")}` : "",
   ].filter(Boolean);
   // What to read: the best hit of each search and the top finds by meaning, sections, motions and bylaws only.
-  const readable = (h: RecordHit) => /^(section|motion|bylaw):/.test(h.ref);
+  const readable = (h: RecordHit) => /^(section|motion|bylaw|source):/.test(h.ref);
   const wanted: string[] = [];
   const want = (h: RecordHit | undefined) => { if (h && readable(h) && !wanted.includes(h.ref)) wanted.push(h.ref); };
   for (const h of byMeaning.slice(0, 4)) want(h);
@@ -272,7 +281,8 @@ filed on it, with its motions and video transcript). ${goal.finish}
 Only the City's records count: motions, reports, minutes, transcripts of the meeting video, annual reports, and signed
 bylaws (bylaw:<id>), whose printed reading and adoption dates are the certified record of a bylaw's progress and
 outrank a motion's wording in the minutes. For a question about whether a bylaw was read or adopted, search its
-number and read the signed bylaw. Agenda item summaries are model-written notes: they can point you somewhere but
+number and read the signed bylaw. Sources (source:<id>) are from outside Council's record: a City publication, or a
+news report, with the page's text; what one says is evidence only with its attribution ("Victoria News reported…"). Agenda item summaries are model-written notes: they can point you somewhere but
 don't count as support. Quote the record's own words exactly in your finding.
 ${pre ? "Turn 0 was run for you: searches from the question's own words, and the records they found. When they don't answer the question outright, search further yourself.\n" : ""}${last ? "\nYou have used your searches and reads: give your finding now with what you found.\n" : ""}
 QUESTION: ${question}

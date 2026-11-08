@@ -1425,6 +1425,15 @@ export interface ServerMetrics {
   swap_total_bytes: Int8 | null;
 }
 
+export interface SourceLinks {
+  created_at: Generated<Timestamp>;
+  hidden: Generated<boolean>;
+  id: Generated<Int8>;
+  matter_id: Int8 | null;
+  property_id: Int8 | null;
+  source_id: Int8;
+}
+
 export interface SourceMeetings {
   archive_path: string | null;
   created_at: Generated<Timestamp>;
@@ -1444,6 +1453,29 @@ export interface SourceMeetings {
   title: string;
   updated_at: Generated<Timestamp>;
   video_url: string | null;
+}
+
+export interface Sources {
+  added_by: string | null;
+  archive_url: string | null;
+  archived_at: Timestamp | null;
+  content_fetched_at: Timestamp | null;
+  content_text: string | null;
+  created_at: Generated<Timestamp>;
+  happened_on: Timestamp;
+  headline: string;
+  hidden: Generated<boolean>;
+  id: Generated<Int8>;
+  meta: Generated<Json>;
+  municipality_id: Int8;
+  note: string | null;
+  origin: string;
+  published_on: Timestamp | null;
+  publisher: string;
+  quote: string | null;
+  title: string;
+  updated_at: Generated<Timestamp>;
+  url: string | null;
 }
 
 export interface StaffActions {
@@ -1850,7 +1882,9 @@ export interface DB {
   search_daily_usage: SearchDailyUsage;
   search_results_cache: SearchResultsCache;
   server_metrics: ServerMetrics;
+  source_links: SourceLinks;
   source_meetings: SourceMeetings;
+  sources: Sources;
   staff_actions: StaffActions;
   "storage.bucket_lifecycle_states": StorageBucketLifecycleStates;
   "storage.buckets": StorageBuckets;

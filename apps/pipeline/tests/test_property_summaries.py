@@ -22,3 +22,8 @@ def test_excerpt_windows_on_the_address_and_scores_what_it_tells():
     long = "x" * 500 + " 3680 Trans Canada Highway: explore the sale of the parcel " + "y" * 500
     window, score = excerpt(long, "3680")
     assert window.startswith("…") and window.endswith("…") and "explore the sale" in window and score >= 1
+
+
+def test_spoken_patterns_allow_filler_words_after_the_number():
+    assert "%3680%Trans%Canada%" in address_patterns("3680", "Trans-Canada Highway", spoken=True)
+    assert "%3680%Trans%Canada%" not in address_patterns("3680", "Trans-Canada Highway")

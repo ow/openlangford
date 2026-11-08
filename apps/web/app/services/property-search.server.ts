@@ -18,8 +18,8 @@ const TYPE_FORMS: Record<string, string[]> = {
 
 /** ILIKE patterns for an address as the records write it: "3680 Trans-Canada Highway", "3680 Trans Canada Hwy",
  * "3680 TRANS-CANADA HWY". The street's words may be joined by a space or a hyphen; the type may be abbreviated
- * or missing. Exported for tests. */
-export function addressPatterns(civic: string, street: string): string[] {
+ * or missing. ``spoken`` adds a pattern that allows filler words after the number. Exported for tests. */
+export function addressPatterns(civic: string, street: string, { spoken = false }: { spoken?: boolean } = {}): string[] {
   const words = street.trim().split(/[\s-]+/).filter(Boolean);
   if (!civic || !words.length) return [];
   const last = words[words.length - 1].toLowerCase();
@@ -31,7 +31,11 @@ export function addressPatterns(civic: string, street: string): string[] {
   // initials, as budget tables write it ("3680 TCH").
   if (forms) heads.push(name);
   if (forms && words.length >= 3) heads.push(words.map((w) => w[0]).join(""));
-  return [...new Set(heads.map((h) => `%${civic} ${h}%`))];
+  const out = heads.map((h) => `%${civic} ${h}%`);
+  // Said aloud, people drop words between the number and the street ("3680 uh Trans Canada Highway"). A spoken line is
+  // one short sentence, so the looser pattern is safe there; in a long report it would match a page number.
+  if (spoken) out.push(`%${civic}%${name}%`);
+  return [...new Set(out)];
 }
 
 type Found = { kind: "item" | "topic"; id: number; title: string; date: string | null; href: string | null; foundIn: "item" | "spoken" | "document" | "topic"; reason: string; quote?: string | null };
@@ -75,7 +79,9 @@ export async function findPropertyMissing(supabase: SupabaseClient, propertyId: 
   const patterns = addressPatterns(property.civic_number, property.street);
   if (!patterns.length) return 0;
   // Quoted, so the pattern's spaces survive PostgREST's filter parsing.
-  const or = (col: string) => patterns.map((p) => `${col}.ilike."${p.replace(/[,"]/g, "")}"`).join(",");
+  const orOf = (list: string[]) => (col: string) => list.map((p) => `${col}.ilike."${p.replace(/[,"]/g, "")}"`).join(",");
+  const or = orOf(patterns);
+  const orSpoken = orOf(addressPatterns(property.civic_number, property.street, { spoken: true }));
   const { data: linked } = await supabase.from("property_links").select("agenda_item_id, matter_id").eq("property_id", propertyId);
   const linkedItems = new Set(((linked || []) as any[]).map((l) => l.agenda_item_id).filter(Boolean));
   const linkedTopics = new Set(((linked || []) as any[]).map((l) => l.matter_id).filter(Boolean));
@@ -84,7 +90,7 @@ export async function findPropertyMissing(supabase: SupabaseClient, propertyId: 
     supabase.from("motions").select("agenda_item_id, agenda_items(id, title, matter_id, meetings(slug, meeting_date))").or(or("text_content")).limit(CAP),
     supabase.from("document_sections").select("agenda_item_id, agenda_items(id, title, matter_id, meetings(slug, meeting_date))").not("agenda_item_id", "is", null).or(or("section_text")).limit(CAP * 3),
     supabase.from("matters").select("id, slug, title, first_seen, merged_into, meta").or(or("title")).limit(CAP),
-    supabase.from("transcript_segments").select("meeting_id, start_time, text_content").or(or("text_content")).order("start_time").limit(CAP * 2),
+    supabase.from("transcript_segments").select("meeting_id, start_time, text_content").or(orSpoken("text_content")).order("start_time").limit(CAP * 2),
   ]);
   // Spoken lines carry no entry; tie each to the entry on screen at that moment.
   const spokenMeetings = [...new Set(((spoken.data || []) as any[]).map((s) => s.meeting_id as number))];
@@ -158,4 +164,28 @@ export async function decidePropertySuggestion(supabase: SupabaseClient, propert
   meta.suggestions = all.map((s) => (s.kind === kind && s.id === id ? { ...s, status: accept ? "accepted" : "rejected", decided_by: userId, decided_at: at } : s));
   const { error } = await supabase.from("properties").update({ meta }).eq("id", propertyId);
   if (error) throw new Error("Could not save that decision.");
+}
+
+/** Check on an address page: ask the pipeline's quick worker to write the lot's lead when there is none, or when a
+ * link was added after it was written (a source or an accepted entry). One request at a time per lot. */
+export async function requestPropertyLead(supabase: SupabaseClient, propertyId: number, userId: string): Promise<boolean> {
+  const { data: property } = await supabase.from("properties").select("meta").eq("id", propertyId).single();
+  const meta = (property?.meta || {}) as Record<string, any>;
+  if (meta.summary_locked) return false;
+  const written: string | null = meta.summary_updated_at ?? null;
+  if (written) {
+    const [{ data: link }, { data: source }] = await Promise.all([
+      supabase.from("property_links").select("created_at").eq("property_id", propertyId).eq("hidden", false).gt("created_at", written).limit(1),
+      supabase.from("source_links").select("created_at").eq("property_id", propertyId).eq("hidden", false).gt("created_at", written).limit(1),
+    ]);
+    if (!link?.length && !source?.length) return false;
+  }
+  const { data: running } = await supabase.from("pipeline_jobs").select("id").eq("job_type", "property_lead")
+    .eq("args->>property_id", String(propertyId)).in("status", ["queued", "running"]).limit(1);
+  if (running?.length) return false;
+  const { data: municipality } = await supabase.from("municipalities").select("id").order("id").limit(1).maybeSingle();
+  const { error } = await supabase.from("pipeline_jobs").insert({
+    municipality_id: municipality?.id ?? 1, job_type: "property_lead", args: { property_id: propertyId }, requested_by: userId, max_attempts: 1, priority: 10,
+  });
+  return !error;
 }

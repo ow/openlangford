@@ -11,4 +11,4 @@ source "$PROJECT_ROOT/.env"
 set +a
 
 cd "$PIPELINE_DIR"
-exec "$PIPELINE_DIR/.venv/bin/python" -u worker.py --job-types fix_page,find_matter_links,link_participants --poll-interval 3 --max-idle-interval 10
+exec "$PIPELINE_DIR/.venv/bin/python" -u worker.py --job-types fix_page,find_matter_links,link_participants,property_lead --poll-interval 3 --max-idle-interval 10

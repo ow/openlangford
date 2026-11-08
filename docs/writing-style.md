@@ -21,7 +21,8 @@ A Langford resident on a phone who has never read a council agenda. They want to
 11. **People.** Use names as written in the records. Never infer gender: no he/she unless the source states pronouns. Dissent only when it matters to the story, in plain words ("passed 6–1").
 12. **Provenance belongs in metadata.** Sources, verification dates, form numbers and "checked on" notes go in `meta` or a linked source, never in visible description text. Visible text says what a resident needs: "These are the official results, confirmed by the City on October 21, 2026."
 13. **Write so it stays true.** Avoid "currently", "incoming until", "recently" in stored text; give the date instead.
-14. **Canadian spelling**, sentence case for headings and badges, no trailing period on headlines or badges, numerals for 10 and up and for all money and measurements.
+14. **Say who said it when it isn't Council.** A fact from outside the meeting record carries its source in the sentence: "Victoria News reported the City paid about $2.2M", "the City said in a news release". The City's own publications are the City speaking; a news report is someone else's account. Never present either as a Council decision.
+15. **Canadian spelling**, sentence case for headings and badges, no trailing period on headlines or badges, numerals for 10 and up and for all money and measurements.
 
 ## What we call things
 
@@ -41,6 +42,7 @@ The database and the code use one set of nouns; residents see another. Public te
 | organization | Council, the committee (by name) |
 | property | address |
 | staff_stage, stage | where the bylaw stands ("one step from final approval") |
+| source (sources table) | what the City announced ("the City said in a news release"), or who reported it ("Victoria News reported") |
 
 Council procedure terms (readings, carried, tabled, in camera, variance…) are defined once in `shared/glossary.json`, which renders as the public page `/how-council-works`. Each entry carries how the minutes phrase it (`in_the_record`) and the plain words we write instead (`we_write`). Link to `/how-council-works#<id>` rather than re-explaining a term on a page.
 

@@ -50,6 +50,7 @@ import {
   Clock,
   Info,
   MapPin,
+  ExternalLink, Newspaper,
 } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { SectionHeading } from "../components/ui/section-heading";
@@ -59,6 +60,12 @@ import { bylawLead, bylawStatus } from "../lib/bylaw-summary";
 import { ParticipationList, speakersAbout } from "../components/meeting/participation-list";
 import { crossNotes, writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
+import { sourcesFor } from "../services/sources.server";
+import { sourceByline, tidyQuote, youtubeId, type Source } from "../lib/sources";
+import { VideoEmbed } from "../components/video-embed";
+
+/** The small pill the meeting page uses for its document and vote buttons. */
+const SOURCE_PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
 import { matterStatusVariant, quietSince } from "../lib/matter-status";
@@ -357,6 +364,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       getMatterStory(supabase, id),
       getPropertiesForMatter(supabase, id),
       sameSiteTopics(supabase, id),
+      sourcesFor(supabase, { matterId: id }),
     ]));
     let sidesFor = Number(resolved.id);
     let sidesPromise = fetchSides(sidesFor);
@@ -387,7 +395,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
     // Fetch documents for all agenda items in this matter (batch query)
     if (matter.id !== sidesFor) { sidesFor = matter.id; sidesPromise = fetchSides(sidesFor); documentsPromise = fetchDocuments(sidesFor); }
-    const [matterEvidence, story, properties, sameSite] = await sidesPromise;
+    const [matterEvidence, story, properties, sameSite, sources] = await sidesPromise;
 
     // Pipeline-picked pictures from the staff reports (meta.images), resolved to public URLs.
     const pick = (img: any) => {
@@ -415,7 +423,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       documentsPromise,
       timed("matter-roles", labelSpeakerRoles(supabase, [matter, story])),
     ]);
-    return { matter, matterDocuments, matterEvidence, story, images, properties, sameSite };
+    return { matter, matterDocuments, matterEvidence, story, images, properties, sameSite, sources };
   } catch (error) {
     throw loaderFailure(error, "Matter Not Found");
   }
@@ -423,7 +431,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function MatterDetail({ loaderData }: Route.ComponentProps) {
   if ("removed" in loaderData) return <RemovedTopic {...loaderData.removed} />;
-  const { matter, matterDocuments, matterEvidence, story, images, properties = [], sameSite = [] } = loaderData;
+  const { matter, matterDocuments, matterEvidence, story, images, properties = [], sameSite = [], sources = [] } = loaderData;
 
   // Sort agenda items by meeting date
   const timeline = [...(matter.agenda_items || [])].sort(
@@ -521,6 +529,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
       .map((item: any) => ({ kind: "mention" as const, key: `background-${item.id}`, date: item.meetings?.meeting_date, item, relatedMatter: item.relatedMatter })),
     // An annual report covers its year, so it sits at the year's end.
     ...(story.reports || []).map((report: ReportMention) => ({ kind: "report" as const, key: `report-${report.id}`, date: `${report.year}-12-31`, report })),
+    // A source from outside the record (a City release, a news report), on the day it says the thing happened.
+    ...(sources as Source[]).map((source) => ({ kind: "source" as const, key: `source-${source.id}`, date: source.happened_on, source })),
   ].sort(
     (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime(),
   ) as any[], matter.meta?.timeline_headlines || {});
@@ -844,7 +854,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
             <SectionHeading
               title="Timeline"
               icon={Clock}
-              description="Every time this came up at council or in the City's annual reports, newest first."
+              description="Every time this came up at council, in the City's reports, or in what was said elsewhere, newest first. Each line says who said it."
             />
 
             {timelineEntries.length === 0 ? (
@@ -877,6 +887,34 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
                             ) : (
                               <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(report.quote)}”</blockquote>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    }
+                    if (entry.kind === "source") {
+                      const source: Source = entry.source;
+                      return (
+                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
+                          <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
+                          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
+                            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
+                              <span className="tabular-nums">{source.date_label || formatDate(source.happened_on)}</span>
+                              <span className="text-zinc-300">·</span>
+                              <span className="inline-flex items-center gap-1"><Newspaper className="h-3.5 w-3.5" aria-hidden="true" />{sourceByline(source)}</span>
+                            </div>
+                            <p className="text-sm font-medium text-zinc-800"><TermText text={source.headline} /></p>
+                            {source.quote && <blockquote className="mt-1 text-sm leading-relaxed text-zinc-600">“{tidyQuote(source.quote, 700)}”</blockquote>}
+                            {youtubeId(source.url) && <VideoEmbed id={youtubeId(source.url)!} title={source.title} className="mt-2" />}
+                            {source.url && (
+                              <p className="mt-2 flex flex-wrap items-center gap-1.5">
+                                <a href={source.url} target="_blank" rel="noopener noreferrer" title={source.title} className={`${SOURCE_PILL} max-w-full whitespace-nowrap`}>
+                                  <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{youtubeId(source.url) ? "Watch on YouTube" : source.publisher}</span>
+                                </a>
+                                {source.archive_url && source.archive_url !== source.url && (
+                                  <a href={source.archive_url} target="_blank" rel="noopener noreferrer" className={SOURCE_PILL}>Archived copy</a>
+                                )}
+                              </p>
                             )}
                           </div>
                         </li>

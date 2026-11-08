@@ -97,6 +97,9 @@ carries out fixes for the flags staff agreed with. This page explains where each
    entry whose discussion window holds it; plain text matching, no model) and lists what
    isn't linked yet under "Possibly missing"; a 👍 links it to the address at once (a `property_links` row with
    source `admin`, which the properties stage keeps), a 👎 keeps it off. Decisions live in `properties.meta.suggestions`.
+   The same press asks the pipeline's quick worker for the lot's lead (`property_lead` job) when it has none, or when a
+   link or source was added after it was written; the lead and the plain line per entry (`meta.entry_lines`) arrive when
+   the worker has run.
 
 7. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
 
@@ -224,6 +227,42 @@ plan and investigations, and the re-check a `SIGNED BYLAW bylaw:<id>` line with 
 the certified copy (`services/bylaw-records.server.ts`). Research can search and read `bylaw:<id>` too. The signed bylaw
 outranks a motion's wording in the minutes: the May 2, 2016 minutes say "give Bylaw No. 1628 First Reading" under an
 "(ADOPTION)" heading, and the signed bylaw says adopted that day.
+
+## Sources outside the record
+
+Land purchases, settlements and hires happen in closed meetings (Community Charter s.90), and Langford rarely reports
+them out, so the open record often shows only the aftermath: 3680 Trans-Canada Highway appears as a permit, a budget
+line and a plan recommending a sale, never as "the City bought it". A **source** (`sources`, linked to topics and
+addresses through `source_links`) is a dated statement from somewhere else: a City news release or notice (origin
+`city`), a news report (`press`), another document (`other`). It carries who said it, the words it says (`quote`), a
+one-line headline in the resident register, the date it happened and a link.
+
+Staff add one from the review bar's newspaper button on a topic or address page (`components/admin/source-card.tsx`):
+paste the link (and, if they like, the words and the date), the draft reads the page and proposes the line
+(`services/sources.server.ts` `draftSource`, the writing model), staff change what they want and add it. The same link
+added to a second page reuses the row. Removing one hides its link to that page.
+
+Where it shows and how it is weighed:
+
+- **Timelines.** A topic's timeline and a lot's chronology (`components/property/property-timeline.tsx`) show it as a
+  dashed card dated the day it happened, labelled "City news release" or "Reported by Victoria News" (`lib/sources.ts`
+  `sourceLabel`), with the quote and the link.
+- **Writers.** The topic summary (both runtimes) and the property lead get `sources` as their own block: a City
+  publication may be stated attributed to the City; a press report only with the publisher named ("Victoria News
+  reported the City paid about $2.2M"); never as Council's own decision. The record register never sees them.
+- **Checks.** The fact check, the fix agent's plan and the re-check get `SOURCE` lines, which support only a statement
+  carrying that attribution; the same fact stated as Council's own doing is `not_in_record`.
+
+Links rot (the 2019 Victoria News story on the purchase is gone from vicnews.com; only the Wayback Machine has it), so
+adding a source keeps two more things. The page's readable text goes on the row (`content_text`, capped at 60k
+characters, never shown to residents): research can search it and read it as `source:<id>`, like a signed bylaw. And
+the Wayback Machine is asked for a public copy (`archive_url`): an existing snapshot is taken at once through the
+availability API; otherwise a save is requested after the response (it can take a minute), and a row still without a
+copy asks again each time the bar loads it. The timeline shows "Archived copy" beside the live link. A link that is
+already a Wayback address is its own copy.
+
+`public_reports` stays what it was: the City's own page-indexed documents (annual reports), read by the pipeline. The
+split is by who said it and how it was read, not by format.
 
 ## Scoring the check against staff's decisions
 

@@ -1,7 +1,7 @@
 import { Link, useFetcher, useRouteLoaderData } from "react-router";
 import { requireModerator } from "../lib/auth.server";
 import { AdminOnly } from "../components/ui/admin-only";
-import { FileText, Landmark, MapPin } from "lucide-react";
+import { Clock, FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { unavailable } from "../lib/loader-errors";
@@ -18,16 +18,18 @@ import { SITE_NAME } from "../lib/site-name";
 import { firstSentence, ogImageUrl } from "../lib/og";
 import { metaDescription, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd, propertyPlace } from "../lib/structured-data";
-import { formatDate } from "../lib/utils";
+import { cn, formatDate } from "../lib/utils";
 import { notFoundIfHidden } from "../services/page-visibility.server";
 import { documentImageUrl } from "../lib/document-images.server";
+import { propertyTimeline } from "../services/property-timeline.server";
+import { PropertyTimeline, type TimelineEntry } from "../components/property/property-timeline";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.property) return [{ title: `Property | ${SITE_NAME}` }];
   const { property, matters, isStreet } = data;
   // The page's lead is its search description too: the pipeline's property-summaries stage
   // writes it (what happened there, then how often it came up); the title carries "Langford".
-  const summary: string | undefined = (property as any).meta?.summary || undefined;
+  const summary: string | undefined = (property as any).meta?.summary || topicsLead(matters) || undefined;
   const description = summary
     ? summary
     : isStreet
@@ -68,7 +70,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const url = documentImageUrl(m.meta?.images?.lead?.r2_key ?? m.meta?.images?.layout?.r2_key);
     if (url) images[m.id] = url;
   }
-  return { ...result, images };
+  // One chronology for a lot: topic steps, other entries, annual reports, outside sources and closed meetings.
+  const timeline: TimelineEntry[] = result.isStreet ? [] : await propertyTimeline(getSupabaseAdminClient(), result.property as any, result.matters, result.items, documentImageUrl);
+  return { ...result, images, timeline };
 }
 
 /** Admins remove a wrong link (the address parser misread a title). The pipeline keeps it hidden. */
@@ -104,11 +108,25 @@ function Unlink({ field, id, isStreet }: { field: "matter_id" | "agenda_item_id"
 
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
+/** A lead built from the topics at the address when the pipeline has not written one: the newest topic's first
+ * sentence, its status line, and for a second topic its first sentence too. Exported for tests. */
+export function topicsLead(matters: any[]): string {
+  const parts: string[] = [];
+  for (const m of matters.slice(0, 2)) {
+    const first = firstSentence(m.plain_english_summary || "") || "";
+    if (first) parts.push(first.replace(/([^.!?])$/, "$1."));
+    if (parts.length === 1 && m.meta?.status_line) parts.push(String(m.meta.status_line).replace(/([^.!?])$/, "$1."));
+  }
+  return parts.join(" ");
+}
+
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
-  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, images } = loaderData;
+  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, images, timeline } = loaderData;
   const isAdmin = !!(useRouteLoaderData("root") as { isAdmin?: boolean } | undefined)?.isAdmin;
   const geo = property.geo as { lat: number; lng: number } | null;
-  const summary: string | undefined = (property as any).meta?.summary || undefined;
+  // The pipeline's lead, or, until it has written one, what the records themselves say: the newest topic's first
+  // sentence and where it stands, never a line about the page.
+  const summary: string | undefined = (property as any).meta?.summary || topicsLead(matters) || undefined;
   const dates = [...matters.flatMap((m: any) => [m.first_seen, m.last_seen]), ...items.map((i: any) => i.meetings?.meeting_date)]
     .filter(Boolean)
     .sort();
@@ -165,22 +183,33 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             </section>
           )}
 
+          {!isStreet && timeline.length > 0 && (
+            <section>
+              <SectionHeading title="Timeline" icon={Clock}
+                description="Everything the records hold about this address, in order: Council's steps, what else named it, the City's reports, and what was said elsewhere. Each line says who said it." />
+              <PropertyTimeline entries={timeline}
+                renderAdmin={(e) => (isAdmin && e.kind === "mention" ? <Unlink field="agenda_item_id" id={Number(e.key.slice(5))} isStreet={false} /> : null)} />
+            </section>
+          )}
+
           {matters.length > 0 && (
             <section>
               <SectionHeading
-                title={isStreet ? "About the street" : "Council decisions and projects"}
+                title={isStreet ? "About the street" : "Topics at this address"}
                 icon={Landmark}
-                description={isStreet ? "Road work, closures and other decisions about the street itself." : "Rezonings, permits and other decisions for this address, newest first."}
+                description={isStreet ? "Road work, closures and other decisions about the street itself." : "Each rezoning, permit or project here has its own page."}
               />
-              <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
+              <ol className={cn(isStreet ? "divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm" : "grid gap-4", !isStreet && matters.length > 1 && "sm:grid-cols-2")}>
                 {matters.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
                   const image = images?.[m.id];
+                  const summary = m.plain_english_summary ? (firstSentence(m.plain_english_summary) || m.plain_english_summary).replace(/([^.!?])$/, "$1.") : null;
                   // Keyed for the review bar (matter-<id>): the check flags an entry by this key and the bar outlines it.
                   return (
-                    <li key={m.id} id={`timeline-matter-${m.id}`} data-review-entry={`matter-${m.id}`}>
-                      <div>
-                      <Link to={matterPath(m)} className="group flex gap-4 px-5 py-4 hover:bg-zinc-50">
+                    <li key={m.id} id={`timeline-matter-${m.id}`} data-review-entry={`matter-${m.id}`}
+                      className={cn(!isStreet && "overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm transition-shadow hover:shadow-md")}>
+                      <div className="flex h-full flex-col">
+                      <Link to={matterPath(m)} className="group flex flex-1 gap-4 px-5 py-4 hover:bg-zinc-50">
                         <div className="min-w-0 flex-1">
                           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums text-zinc-500">
                             <span>
@@ -192,15 +221,11 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                           </p>
                           <p className="mt-0.5 font-semibold leading-snug text-zinc-900 group-hover:text-brand-700">{matterTitle(m)}</p>
                           {/* What it is, then where it stands: the topic's own summary and status line. */}
-                          {m.plain_english_summary && (
-                            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{(firstSentence(m.plain_english_summary) || m.plain_english_summary).replace(/([^.!?])$/, "$1.")}</p>
-                          )}
-                          {m.meta?.status_line && (
-                            <p className="mt-1 text-xs text-zinc-500">{m.meta.status_line}</p>
-                          )}
+                          {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{summary}</p>}
+                          {m.meta?.status_line && <p className="mt-1 text-xs text-zinc-500">{m.meta.status_line}</p>}
                         </div>
                         {image && (
-                          <img src={image} alt="" loading="lazy" className="hidden h-20 w-28 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
+                          <img src={image} alt="" loading="lazy" className="hidden h-24 w-32 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
                         )}
                       </Link>
                       {isAdmin && (
@@ -216,7 +241,8 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             </section>
           )}
 
-          {items.length > 0 && (
+
+          {isStreet && items.length > 0 && (
             <section>
               <SectionHeading title="Other mentions" icon={FileText} description="Other times this address came up in council meetings." />
               <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">

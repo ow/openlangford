@@ -1339,6 +1339,38 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"source_links": {
+                  Row: {
+                    "created_at": string,"hidden": boolean,"id": number,"matter_id": number | null,"property_id": number | null,"source_id": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"hidden"?: boolean,"id"?: number,"matter_id"?: number | null,"property_id"?: number | null,"source_id": number
+                  }
+                  Update: {
+                    "created_at"?: string,"hidden"?: boolean,"id"?: number,"matter_id"?: number | null,"property_id"?: number | null,"source_id"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "source_links_matter_id_fkey"
+      columns: ["matter_id"]
+isOneToOne: false
+      referencedRelation: "matters"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "source_links_property_id_fkey"
+      columns: ["property_id"]
+isOneToOne: false
+      referencedRelation: "properties"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "source_links_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"source_meetings": {
                   Row: {
                     "archive_path": string | null,"created_at": string,"discovered_at": string,"id": number,"ingested_meeting_id": number | null,"last_error": string | null,"last_seen_at": string,"meeting_date": string,"meeting_type": string | null,"municipality_id": number,"raw": NonNullable<Json>,"source_id": string,"source_type": string,"source_url": string | null,"status": string,"title": string,"updated_at": string,"video_url": string | null
@@ -1359,6 +1391,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     },{
       foreignKeyName: "source_meetings_municipality_id_fkey"
+      columns: ["municipality_id"]
+isOneToOne: false
+      referencedRelation: "municipalities"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"sources": {
+                  Row: {
+                    "added_by": string | null,"archive_url": string | null,"archived_at": string | null,"content_fetched_at": string | null,"content_text": string | null,"created_at": string,"happened_on": string,"headline": string,"hidden": boolean,"id": number,"meta": NonNullable<Json>,"municipality_id": number,"note": string | null,"origin": string,"published_on": string | null,"publisher": string,"quote": string | null,"title": string,"updated_at": string,"url": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "added_by"?: string | null,"archive_url"?: string | null,"archived_at"?: string | null,"content_fetched_at"?: string | null,"content_text"?: string | null,"created_at"?: string,"happened_on": string,"headline": string,"hidden"?: boolean,"id"?: number,"meta"?: NonNullable<Json>,"municipality_id": number,"note"?: string | null,"origin": string,"published_on"?: string | null,"publisher": string,"quote"?: string | null,"title": string,"updated_at"?: string,"url"?: string | null
+                  }
+                  Update: {
+                    "added_by"?: string | null,"archive_url"?: string | null,"archived_at"?: string | null,"content_fetched_at"?: string | null,"content_text"?: string | null,"created_at"?: string,"happened_on"?: string,"headline"?: string,"hidden"?: boolean,"id"?: number,"meta"?: NonNullable<Json>,"municipality_id"?: number,"note"?: string | null,"origin"?: string,"published_on"?: string | null,"publisher"?: string,"quote"?: string | null,"title"?: string,"updated_at"?: string,"url"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "sources_municipality_id_fkey"
       columns: ["municipality_id"]
 isOneToOne: false
       referencedRelation: "municipalities"
