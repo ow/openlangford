@@ -186,7 +186,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           {!isStreet && timeline.length > 0 && (
             <section>
               <SectionHeading title="Timeline" icon={Clock}
-                description="Everything the records hold about this address, in order: Council's steps, what else named it, the City's reports, and what was said elsewhere. Each line says who said it." />
+                description="Everything we know about this address; council's steps, city reports, and curated news stories when relevant." />
               <PropertyTimeline entries={timeline}
                 renderAdmin={(e) => (isAdmin && e.kind === "mention" ? <Unlink field="agenda_item_id" id={Number(e.key.slice(5))} isStreet={false} /> : null)} />
             </section>
