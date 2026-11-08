@@ -38,7 +38,7 @@ from pipeline import ai
 from pipeline.ai import glossary
 from pipeline.postgrest import in_chunks
 
-PROPERTY_SUMMARY_VERSION = "9"  # 9: an entry line states the finding, decision or amount, not that it was discussed
+PROPERTY_SUMMARY_VERSION = "10"  # 10: the total spent goes in the lead; spoken lines match with filler words
 MIN_RECORDS = 2
 MIN_ADDRESSES = 2  # a street page with two or more addresses gets a summary even with no records of its own
 NARRATIVE_MAX = 220  # the model's part; the closing count follows
@@ -79,7 +79,7 @@ An entry may carry "names_this_address": the words of the record (a report, a bu
 
 "said_elsewhere" lists dated statements from outside Council's record that staff added, each saying who said it. One whose "who" is the City of Langford is the City's own publication: state its facts, attributed to the City ("the City announced…"). Any other is a news report: use its facts only with the publisher named, in the same sentence as each fact that rests on it ("Victoria News reported the City paid about $2.2M"); a fact from a second report needs its own publisher named too. These often hold what the minutes don't (a purchase made in a closed meeting), so they may lead; never present one as Council's own decision.
 
-When the inputs show how the City came to hold the land (it bought or acquired it, in a news report, a staff report or a budget line), the lead must say so, with the year and the price if given, attributed as the rules above require: the purchase is where the story starts, and a lead about a sale or a permit that leaves it out reads as if the land appeared from nowhere.
+When a source gives the total the City has spent on the land (a freedom-of-information response, a report), the lead states that total with who said it: it is the figure residents ask about. When the inputs show how the City came to hold the land (it bought or acquired it, in a news report, a staff report or a budget line), the lead must say so, with the year and the price if given, attributed as the rules above require: the purchase is where the story starts, and a lead about a sale or a permit that leaves it out reads as if the land appeared from nowhere.
 
 Besides the opening lines, write "entry_lines": for each entry under "other_mentions" that carries "names_this_address", one plain line (at most 120 characters) saying what that record says about this address, so a reader needn't parse a budget table or a cheque register: "The City paid its lawyers $1.27 million for the land, May 2019", "Budget sets aside $825,000 of developer money for the site in 2023", "A resident asked whether the property should be sold". Keep the amount and the date the record gives; no cheque, file or account numbers; no "the record shows". When an entry's lines include a recommendation, a finding, a decision or an amount, the entry line states that, never only that something was discussed or consulted on ("The consultant recommended the City sell the site because it does not serve parks priorities", not "a presenter said the community was consulted"). Use only the verb the record supports: a register, table or budget schedule "lists", "records", "shows" or "sets aside" an amount; never "approved", "decided" or "agreed" unless the record says Council did, and never say what a payment was for unless the record does. Skip entries without names_this_address.
 
@@ -380,7 +380,7 @@ TYPE_FORMS = {
 }
 
 
-def address_patterns(civic: str, street: str) -> list[str]:
+def address_patterns(civic: str, street: str, spoken: bool = False) -> list[str]:
     """ILIKE patterns for an address as the records write it ("3680 Trans-Canada Highway", "3680 Trans Canada Hwy",
     "3680 Trans Canada"), the same as the site's property search (services/property-search.server.ts)."""
     words = [w for w in re.split(r"[\s-]+", (street or "").strip()) if w]
@@ -395,7 +395,10 @@ def address_patterns(civic: str, street: str) -> list[str]:
         heads.append(name)
         if len(words) >= 3:  # budget tables write a long name by its initials: "3680 TCH"
             heads.append("".join(w[0] for w in words))
-    return list(dict.fromkeys(f"%{civic} {h}%" for h in heads))
+    out = [f"%{civic} {h}%" for h in heads]
+    if spoken:  # said aloud: "3680 uh Trans Canada Highway"; one short sentence, so the loose pattern is safe
+        out.append(f"%{civic}%{name}%")
+    return list(dict.fromkeys(out))
 
 
 TELLING = re.compile(r"\b(sale|sell|sold|dispos\w*|purchas\w*|acquir\w*|bought|owed|debt|borrow\w*|recommend\w*|should)\b|\$|\d{1,3}(?:,\d{3})+", re.I)
@@ -438,8 +441,9 @@ def address_lines(supabase, p: dict, items: dict[int, dict]) -> dict[int, str]:
         timed = [items[i] for i in item_ids if items[i].get("discussion_start_time") is not None and items[i].get("discussion_end_time") is not None]
         meeting_ids = sorted({i["meeting_id"] for i in timed if i.get("meeting_id")})
         if meeting_ids:
+            spoken_ors = ",".join(f'text_content.ilike."{x}"' for x in address_patterns(p.get("civic_number") or "", p.get("street") or "", spoken=True))
             for seg in in_chunks(lambda chunk: supabase.table("transcript_segments").select("meeting_id, start_time, text_content")
-                                 .in_("meeting_id", chunk).or_(ors("text_content")).limit(40), meeting_ids):
+                                 .in_("meeting_id", chunk).or_(spoken_ors).limit(40), meeting_ids):
                 t = seg.get("start_time")
                 if t is None:
                     continue

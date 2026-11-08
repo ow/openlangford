@@ -51,13 +51,15 @@ async function addressLines(supabase: SupabaseClient, property: { civic_number: 
   const patterns = addressPatterns(property.civic_number, property.street);
   const ids = items.map((i) => i.id);
   if (!patterns.length || !ids.length) return out;
-  const or = (col: string) => patterns.map((p) => `${col}.ilike."${p.replace(/[,"]/g, "")}"`).join(",");
+  const orOf = (list: string[]) => (col: string) => list.map((p) => `${col}.ilike."${p.replace(/[,"]/g, "")}"`).join(",");
+  const or = orOf(patterns);
+  const orSpoken = orOf(addressPatterns(property.civic_number, property.street, { spoken: true }));
   const timed = items.filter((i) => i.meeting_id && i.discussion_start_time != null && i.discussion_end_time != null) as any[];
   const meetingIds = [...new Set(timed.map((i) => i.meeting_id as number))];
   const [sections, motions, spoken] = await Promise.all([
     supabase.from("document_sections").select("agenda_item_id, section_text").in("agenda_item_id", ids).or(or("section_text")).limit(80),
     supabase.from("motions").select("agenda_item_id, text_content").in("agenda_item_id", ids).or(or("text_content")).limit(30),
-    meetingIds.length ? supabase.from("transcript_segments").select("meeting_id, start_time, text_content").in("meeting_id", meetingIds).or(or("text_content")).limit(40) : Promise.resolve({ data: [] as any[] }),
+    meetingIds.length ? supabase.from("transcript_segments").select("meeting_id, start_time, text_content").in("meeting_id", meetingIds).or(orSpoken("text_content")).limit(40) : Promise.resolve({ data: [] as any[] }),
   ]);
   const found = new Map<number, { text: string; score: number }[]>();
   const add = (id: number | null, text: string) => { if (id) (found.get(id) || found.set(id, []).get(id)!).push(addressExcerpt(text, property.civic_number)); };

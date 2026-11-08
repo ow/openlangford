@@ -88,3 +88,10 @@ describe("compact timeline rows", () => {
     expect(g[1].entries[0].compact).toBe(true);
   });
 });
+
+describe("spoken address patterns", () => {
+  it("allow filler words after the number, but only when asked", () => {
+    expect(addressPatterns("3680", "Trans-Canada Highway", { spoken: true })).toContain("%3680%Trans%Canada%");
+    expect(addressPatterns("3680", "Trans-Canada Highway")).not.toContain("%3680%Trans%Canada%");
+  });
+});
