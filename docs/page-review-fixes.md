@@ -99,6 +99,9 @@ carries out fixes for the flags staff agreed with. This page explains where each
    never touches. Its records list each topic's steps (`step-<id>`, with the line the page shows now) and the page's
    sources (`source-<id>`), so a flag on either can be answered. Every change needs the record's exact words in
    `source`, and is logged as `agent:edit_source` / `agent:rewrite_property_entry`.
+   A topic's own text is rewritten with `rewrite_summary` (key `matter-<id>`): the instruction joins the topic's
+   `editor_notes` and goes through the same `rewriteSummaries` write, check and direct edit the topic agent uses, so
+   an instruction the result doesn't follow is reported as needing a person.
 
    Pressing Check on a property page also searches the records for the address (`services/property-search.server.ts`:
    item titles, motions, attached reports and minutes, topic titles, and lines spoken at meetings, each tied to the

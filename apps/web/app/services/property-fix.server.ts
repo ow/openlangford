@@ -7,6 +7,7 @@ import { findingText, investigate, investigatedRecords, investigationLine, needs
 import { applyRecheck, recheckSummary, flagLabel } from "../lib/page-recheck";
 import { logStaffAction } from "./staff.server";
 import { quoteInRecords } from "./meeting-fix.server";
+import { rewriteSummaries } from "./topic-summaries.server";
 import { sourcesFor, sourcesForMatters, sourceRecordLines, updateSource } from "./sources.server";
 import type { Source } from "../lib/sources";
 import type { StaffRole } from "../lib/auth.server";
@@ -16,7 +17,7 @@ import type { StaffRole } from "../lib/auth.server";
  * own text is its lead (properties.meta.summary, written by the pipeline's property-summaries stage); the rest is
  * the topics and meeting items the pipeline linked to the address, each shown from its own record. So the menu is
  * small: unlink an entry that's about a different address (or only names this one in passing), rewrite the lead,
- * correct a source (its headline, quote, note or date label), rewrite one entry's line, or say the page is right or
+ * correct a source (its headline, quote, note or date label), rewrite one entry's line, have a topic's summary rewritten, or say the page is right or
  * that a person is needed. A lead the agent writes is locked
  * (meta.summary_locked), so the pipeline keeps it rather than writing its own over it. Same flow as the topic and
  * meeting agents: investigate, plan, act, re-check.
@@ -27,7 +28,7 @@ export const PROPERTY_FIX_BUDGET_MS = 90_000;
 const LEAD_MAX = 400;
 
 const Action = z.object({
-  action: z.enum(["unlink_entry", "rewrite_lead", "edit_source", "rewrite_entry", "no_change", "cannot_fix"]),
+  action: z.enum(["unlink_entry", "rewrite_lead", "edit_source", "rewrite_entry", "rewrite_summary", "no_change", "cannot_fix"]),
   key: z.string().nullable().describe("The key of the flag this answers (matter-<id>, item-<id> or source-<id>), or null for the whole page or the note. unlink_entry: the entry to take off (matter-<id> or item-<id>)."),
   entry_key: z.string().nullable().describe("rewrite_entry: the row whose line changes, as RECORDS keys it: step-<id> (a step of a topic) or item-<id> (a meeting item linked to this address). Otherwise null."),
   source_id: z.number().nullable().describe("edit_source: the id after \"source-\" in the source's key. Otherwise null."),
@@ -35,8 +36,8 @@ const Action = z.object({
   new_quote: z.string().nullable().describe("edit_source: a corrected quote, the source text's own words exactly. null to leave it."),
   new_note: z.string().nullable().describe("edit_source: a corrected staff note (shown to staff, not readers), e.g. the figures that differ between reports. null to leave it."),
   new_date_label: z.string().nullable().describe("edit_source: how the date shows when only a season or month is known (\"Spring 2019\"). null to leave it."),
-  new_text: z.string().nullable().describe("rewrite_entry: the row's new line, one plain sentence (under 140 characters) saying what happened at this address. rewrite_lead: the page's new lead, one or two plain sentences (under 320 characters), outcome first: what happened at this address and whether it affects the reader. The closing \"Mentioned in council meetings…\" line is kept for you. Otherwise null."),
-  source: z.string().nullable().describe("rewrite_lead, rewrite_entry, edit_source: the record's (or the source text's) own words the change rests on, quoted exactly, at most 250 characters. Otherwise null."),
+  new_text: z.string().nullable().describe("rewrite_summary: the instruction for the topic's summary writer, one or two sentences saying what the text must say or stop saying (it is followed on every later rewrite too). rewrite_entry: the row's new line, one plain sentence (under 140 characters) saying what happened at this address. rewrite_lead: the page's new lead, one or two plain sentences (under 320 characters), outcome first: what happened at this address and whether it affects the reader. The closing \"Mentioned in council meetings…\" line is kept for you. Otherwise null."),
+  source: z.string().nullable().describe("rewrite_lead, rewrite_entry, edit_source, rewrite_summary: the record's (or the source text's) own words the change rests on, quoted exactly, at most 250 characters. Otherwise null."),
   reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
 });
 const PlanSchema = z.object({ actions: z.array(Action) });
@@ -110,6 +111,10 @@ Actions, one entry in "actions" per flag (and per note):
   record shows happened at this address; when the record is silent on the detail, say so ("Staff updated the
   committee on four capital projects, including this waterfront property; the minutes don't say what was covered."),
   never fill the gap. Quote the record it rests on in "source".
+- rewrite_summary: a topic's own text (its summary or "where it stands", shown under the topic and used by the page's
+  lead) is wrong or misleading for this address. key is the flag (matter-<id>); put the instruction for the summary
+  writer in new_text, and the record's words behind it in "source". The topic is then rewritten from its timeline and
+  checked against the records.
 - no_change: the flag is not a problem (say why in a sentence a resident would understand).
 - cannot_fix: a judgement these actions can't make; say exactly what a person needs to decide.
 Work only from the records below. Never invent an outcome, a number or a date.
@@ -215,6 +220,7 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
     const at = new Date().toISOString();
     const agreedKeys = new Set(agreed.map((f) => f.key));
     const pageLevel = agreedKeys.has(null) || !!row?.note?.trim();
+    const summaryNotes: { matter_id: number; note: string; key: string | null }[] = [];
     for (const step of result.data.actions) {
       const key = step.key && agreedKeys.has(step.key) ? step.key : null;
       if (step.action === "no_change") { answered.push(step.reason); if (key) fixedKeys.add(key); else if (agreedKeys.has(null)) pageFixed = true; continue; }
@@ -248,6 +254,18 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
         if (key) fixedKeys.add(key); else pageFixed = true;
         done.push(`Corrected ${entryLabel(`source-${src.id}`, flags)}${edit.headline ? `, now headed "${edit.headline}"` : ""}: ${step.reason}`);
         await log("agent:edit_source", { source_id: String(src.id), ...Object.fromEntries(Object.entries(edit).map(([k, v]) => [k, String(v).slice(0, 300)])), reason: step.reason.slice(0, 300) });
+        continue;
+      }
+      if (step.action === "rewrite_summary") {
+        const mm = step.key?.match(/^matter-(\d+)$/);
+        const matterId = mm ? Number(mm[1]) : null;
+        if (!matterId || !topics.some((t) => t.id === matterId)) { left.push(`${step.reason} (no such topic on this page)`); continue; }
+        if (!key && !pageLevel) { left.push(`${step.reason} (that topic isn't flagged on this page, so nothing changed)`); continue; }
+        const instruction = squash(step.new_text || "").slice(0, 500);
+        if (instruction.length < 15) { left.push(`${step.reason} (the agent didn't say what the summary should say)`); continue; }
+        const quote = squash(step.source || "");
+        if (quote && !quoteInRecords(quote, records)) { left.push(`${step.reason} (its quote isn't the record's exact words, so the summary stays; press Fix again)`); continue; }
+        summaryNotes.push({ matter_id: matterId, key, note: `${instruction}${quote ? ` The record says: “${quote.slice(0, 250)}”` : ""}` });
         continue;
       }
       if (step.action === "rewrite_entry") {
@@ -290,6 +308,33 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
         claims.push({ id: "lead", key: null, text: `Page lead: ${text}` });
         done.push(`The lead now reads: "${text}"`);
         await log("agent:rewrite_property_lead", { property_id: String(property.id), text: text.slice(0, 400), reason: step.reason.slice(0, 300) });
+      }
+    }
+    if (summaryNotes.length) {
+      if (timeLeft() < 20_000) left.push("Ran out of time before the summary rewrite could start. Press Fix again to finish it.");
+      else {
+        progress("Rewriting the topic's summary and checking it against the records…");
+        // Kept on the topic so this rewrite and every later one follow the instruction, as the topic agent does.
+        for (const matterId of new Set(summaryNotes.map((n) => n.matter_id))) {
+          const { data: row } = await supabase.from("matters").select("meta").eq("id", matterId).single();
+          const meta = (row?.meta || {}) as Record<string, any>;
+          await supabase.from("matters").update({ meta: { ...meta, editor_notes: [...(meta.editor_notes || []), ...summaryNotes.filter((n) => n.matter_id === matterId).map((n) => n.note)].slice(-10) } }).eq("id", matterId);
+        }
+        const report = await rewriteSummaries(supabase, summaryNotes.map((n) => n.matter_id), { notes: summaryNotes.map(({ matter_id, note }) => ({ matter_id, note })), signal: budget });
+        const unfollowed = new Set(report.unfollowed.map((u) => u.note));
+        for (const n of summaryNotes) {
+          const reason = result.data.actions.find((a) => a.action === "rewrite_summary" && a.key === n.key)?.reason ?? "";
+          if (unfollowed.has(n.note) || !report.written.includes(n.matter_id)) {
+            const missing = report.unfollowed.find((u) => u.note === n.note)?.missing;
+            left.push(`The summary was rewritten but doesn't yet say what was asked: "${n.note.split(" The record says:")[0].slice(0, 300)}"${missing ? ` Still missing: ${missing}` : ""}`);
+            continue;
+          }
+          if (n.key) fixedKeys.add(n.key); else pageFixed = true;
+          done.push(`Rewrote the summary of ${entryLabel(`matter-${n.matter_id}`, flags)}${reason ? `: ${reason}` : ""}`);
+          await log("agent:rewrite_summary", { matter_id: String(n.matter_id), note: n.note.slice(0, 400) });
+        }
+        if (report.edited.length) done.push("Edited the summary directly, since the first draft didn't follow the instruction or the records.");
+        if (budget.aborted) left.push("Ran out of time (about 90 seconds of model work) before the summary check finished. Press Fix again to finish it.");
       }
     }
     const newlyFixed = flags.map((f, i) => (agreed.includes(f) && ((f.key && fixedKeys.has(f.key)) || (!f.key && pageFixed)) ? i : -1)).filter((i) => i >= 0);

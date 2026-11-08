@@ -50,7 +50,7 @@ describe("what the planner can see and do beyond unlinking", () => {
   });
   it("offers the new actions and tells the planner when an entry counts as passing", () => {
     const prompt = propertyPlanPrompt(property as any, [], null, "", [], null);
-    for (const a of ["edit_source", "rewrite_entry", "one of them"]) expect(prompt).toContain(a);
+    for (const a of ["edit_source", "rewrite_entry", "rewrite_summary", "one of them"]) expect(prompt).toContain(a);
   });
 });
 
