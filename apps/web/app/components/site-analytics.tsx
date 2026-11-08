@@ -1,3 +1,5 @@
+// Named site-analytics, not google-analytics: ad blockers (AdGuard for Safari) block any URL with that name, which on the
+// dev server is this module itself, so the client bundle never loaded and nothing on localhost hydrated in Safari (2026-11-08).
 import { useEffect } from "react";
 import { useLocation } from "react-router";
 import { isPrivatePath, scrubUrl } from "../lib/analytics-privacy";
