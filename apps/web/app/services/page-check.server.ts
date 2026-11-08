@@ -97,10 +97,20 @@ const CheckSchema = z.object({
 
 /** Two readings of one page as one: the first reading's summary, every distinct flag (one per entry and problem), and
  * the first page-wide issue either raised. */
-/** Flags staff agreed with that aren't fixed and that a new check didn't raise again: they stay on the page. */
-export function agreedStillOpen(prior: PageFlag[], fresh: PageFlag[]): PageFlag[] {
-  const same = (a: PageFlag, b: PageFlag) => a.key === b.key && a.problem === b.problem && (a.problem !== "unsupported" || a.excerpt === b.excerpt);
-  return prior.filter((p) => p.verdict === "agree" && !p.fixed && p.problem !== "editor_issue" && !fresh.some((f) => same(f, p)));
+/** Flags staff agreed with that aren't fixed and that a new check didn't raise again. While the entry reads as it did
+ * when staff agreed, the flag stays open on the page. When the entry's text has changed since (a hand edit, a fix to
+ * the page itself) and the check no longer finds the problem, the flag is resolved: fixed, with a re-check line saying
+ * so (2026-11-08: six flags on a meeting page outlived the template bug they described). `entryText` gives an entry's
+ * text as the page shows it now; a page-level flag has no entry and stays open. */
+export function agreedStillOpen(prior: PageFlag[], fresh: PageFlag[], entryText: (key: string) => string | undefined = () => undefined): PageFlag[] {
+  const same = (a: PageFlag, b: PageFlag) => a.key === b.key && a.problem === b.problem && a.excerpt === b.excerpt;
+  return prior.filter((p) => p.verdict === "agree" && !p.fixed && p.problem !== "editor_issue" && !fresh.some((f) => same(f, p)))
+    .map((p) => {
+      const now = p.key ? entryText(p.key) : undefined;
+      if (!p.key || now === undefined || now === p.excerpt) return p;
+      return { ...p, fixed: true, recheck: { holds: true, checked: false, at: new Date().toISOString(),
+        reason: "The entry changed since staff agreed, and the check no longer finds this problem." } };
+    });
 }
 
 export function combineReadings(readings: z.infer<typeof CheckSchema>[]): z.infer<typeof CheckSchema> {
@@ -288,9 +298,11 @@ export async function runCheck(supabase: SupabaseClient, origin: string, path: s
   const { data: prior } = await supabase.from("page_reviews").select("ai_flags, ai_rated_history").eq("path", path).maybeSingle();
   const priorFlags = ((prior?.ai_flags || []) as PageFlag[]);
   const decidedFlag = (f: PageFlag) => f.verdict !== null || !!f.note;
-  // The same flag: same entry and problem (and, for statements checked against the records, the same statement).
+  // The same flag: same entry, same problem, and the entry reading as it did. An entry that changed since staff rated
+  // a flag on it may have a new problem of the same kind: that is a new flag, not one they agreed with (2026-11-08: a
+  // "wrong detail" about a label inherited its 👍 onto a "wrong detail" about a video time after the label was fixed).
   const same = (a: PageFlag, b: { key: string | null; problem: string; excerpt?: string }) =>
-    a.key === b.key && a.problem === b.problem && (a.problem !== "unsupported" || a.excerpt === b.excerpt);
+    a.key === b.key && a.problem === b.problem && a.excerpt === b.excerpt;
   const flags: PageFlag[] = [
     ...result.data.flags
       .filter(f => f.key === null || byKey.has(f.key))
@@ -319,7 +331,7 @@ export async function runCheck(supabase: SupabaseClient, origin: string, path: s
   // Nor is a problem staff agreed with that isn't fixed yet (often one the fix agent's own re-check reopened): a check
   // that happens not to raise it again doesn't make it go away, and dropping it left the page "needs work" with
   // nothing for the agent to fix (2026-11-07, the Walfred Road page).
-  flags.push(...agreedStillOpen(priorFlags, flags));
+  flags.push(...agreedStillOpen(priorFlags, flags, (key) => byKey.get(key)));
   const dropped = priorFlags.filter(p => decidedFlag(p) && p.problem !== "editor_issue" && !flags.some(f => same(f, p)));
   const history = [...((prior?.ai_rated_history || []) as PageFlag[]), ...dropped].slice(-50);
   return { page, flags, history, summary: result.data.summary, page_issue: result.data.page_issue, model: result.model, guidanceVersion: guidance.version };
