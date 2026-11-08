@@ -104,9 +104,7 @@ export function PropertyTimeline({ entries, newestFirst = true, renderAdmin }: {
     <div className="space-y-10">
       {[...years.entries()].map(([year, rows], i, all) => (
         <section key={year} aria-label={year} className="relative">
-          <h3 className="mb-4 flex items-center gap-3 text-lg font-semibold tabular-nums tracking-tight text-zinc-500">
-            {year}<span aria-hidden="true" className="h-px flex-1 bg-zinc-200" />
-          </h3>
+          <h3 className="mb-4 text-lg font-semibold tabular-nums tracking-tight text-zinc-500">{year}</h3>
           {/* On wide screens the rail hangs in the left margin (negative margin equal to the row indent), so the cards
               share the page's left edge with every other card; on a phone it indents instead. The rail runs on past
               the last card and fades out, rather than stopping dead. */}
