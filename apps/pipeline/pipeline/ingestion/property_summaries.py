@@ -9,7 +9,8 @@ by the model, so it always matches the page header.
 
 A lot is summarized when it has at least ``MIN_RECORDS`` visible records (a
 distinct matter, or an agenda item outside any matter, linked through a
-non-hidden ``property_links`` row). A street page also lists its addresses and
+non-hidden ``property_links`` row), or one meaningful record: a topic, or an
+entry that is not a resident giving their address in public input. A street page also lists its addresses and
 charts their activity, so a street's summary covers the road itself and the
 busiest developments on it, over the same span the page shows; a street is
 summarized when it has ``MIN_RECORDS`` records of its own or ``MIN_ADDRESSES``
@@ -209,6 +210,7 @@ def load_properties(supabase, this_year: int | None = None) -> list[dict]:
             if k[0] == "m":
                 source_keys |= sources_by_matter.get(int(k[1:]), set())
         out.append({**p, "street": p.get("street") or "", "meta": p.get("meta") or {}, "records": keys, "source_keys": sorted(source_keys),
+                    "meaningful": meaningful(shown, visible),
                     "links": shown, "resident_only": p.get("civic_number") != "" and (bool(p.get("hidden")) or resident_only(shown)),
                     "mentions": mentions_of(shown), "lots": []})
     lots_by_street: dict[str, list[dict]] = {}
@@ -266,12 +268,26 @@ def summary_lots(p: dict) -> list[dict]:
     return [lot for lot in p.get("lots") or [] if not lot.get("resident_only")]
 
 
+def meaningful(links: list[dict], visible_matters: set[int] | None = None) -> bool:
+    """A lot has something worth a lead when a topic is filed at it, or a meeting entry that is not just a resident
+    giving their address while speaking or writing to Council."""
+    for link in links:
+        if link.get("hidden"):
+            continue
+        if link.get("matter_id") and (visible_matters is None or link["matter_id"] in visible_matters):
+            return True
+        if link.get("agenda_item_id") and not is_public_input(link.get("agenda_items")):
+            return True
+    return False
+
+
 def eligible(p: dict) -> bool:
     if p.get("resident_only"):
         return False
     if p.get("civic_number") == "":
         return len(p["records"]) >= MIN_RECORDS or len(summary_lots(p)) >= MIN_ADDRESSES
-    return len(p["records"]) >= MIN_RECORDS
+    # One meaningful record is enough for a lot: a single rezoning is the whole story of most addresses.
+    return len(p["records"]) >= MIN_RECORDS or p.get("meaningful", False)
 
 
 def current_hash(p: dict) -> str:
