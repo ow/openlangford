@@ -18,7 +18,10 @@ import { bylawRecordLine, readBylaw, searchBylaws } from "./bylaw-records.server
 export type RecordHit = { ref: string; kind: string; date: string | null; title: string; preview: string };
 
 const PER_KIND = 8;
-const RESEARCH_BUDGET = 1_500_000;  // characters of observations in one research session
+const RESEARCH_BUDGET = 400_000;  // characters of observations in one research session (about 100,000 tokens)
+/** With less than this left before the caller's deadline, the next turn must give its finding: a turn carrying a
+ * full session's reading takes up to about 13 s (ai_usage, 2026-11-08), and a turn the deadline cancels is wasted. */
+const FINISH_MARGIN_MS = 15_000;
 
 const quoteOf = (text: string, query: string) => {
   // A short preview around the first query word found, so the model can choose what to read.
@@ -184,15 +187,16 @@ export const CHECK_STATEMENT: ResearchGoal = {
 /**
  * Research one question in the City's records: each turn the review model runs any number of searches and reads at
  * once (in parallel), until it can say whether the record supports a statement, and where. `context` is what the
- * caller already knows. Bounded by `maxTurns` and by the size of what it has read (RESEARCH_BUDGET), never by cutting
- * a record.
+ * caller already knows. Bounded by `maxTurns`, by the size of what it has read (RESEARCH_BUDGET) and, when the caller
+ * gives a `deadline` (epoch ms), by the time left: with FINISH_MARGIN_MS to go it gives its finding from what it has
+ * read. Never bounded by cutting a record.
  */
 export async function research(supabase: SupabaseClient, question: string, context: string, maxTurns = 10, signal?: AbortSignal,
-  goal: ResearchGoal = CHECK_STATEMENT): Promise<ResearchFinding> {
+  goal: ResearchGoal = CHECK_STATEMENT, deadline?: number): Promise<ResearchFinding> {
   const log: string[] = [];
   let used = 0;
   for (let turn = 1; turn <= maxTurns + 1; turn++) {
-    const last = turn > maxTurns || used > RESEARCH_BUDGET;
+    const last = turn > maxTurns || used > RESEARCH_BUDGET || (deadline !== undefined && Date.now() > deadline - FINISH_MARGIN_MS);
     const prompt = `You research Langford City council's own records to ${goal.task}. Search with specific words (an
 address, a bylaw or file number, a name, a figure) and read the records that look relevant in full; run several
 searches and reads at once when that helps. A report section belongs to an agenda item (read item:<id> for everything

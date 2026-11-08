@@ -9,7 +9,7 @@ vi.mock("../../app/services/page-verify.server", () => ({
   mapLimit: async <T, R>(items: T[], _limit: number, fn: (item: T) => Promise<R>) => Promise.all(items.map(fn)),
 }));
 
-const { investigate, investigatedRecords, investigationQuestion, investigationLine, INVESTIGATION_TURNS } =
+const { investigate, investigatedRecords, investigationQuestion, investigationLine, needsInvestigation, INVESTIGATION_TURNS } =
   await import("../../app/services/fix-investigation.server");
 
 const flag = (over: Partial<PageFlag>): PageFlag => ({ key: null, problem: "generic_text", reason: "r", excerpt: "e", verdict: "agree", ...over });
@@ -63,6 +63,25 @@ describe("investigate", () => {
     expect(out[3].question).toContain("Is the 2012 entry relevant?");
     expect(investigationLine(out[0])).toBe("FOUND for [agenda-973] (the fix agent searched the City's records): supported. Council approved the "
       + "policy on Jan 20, 2020. The record says: “That Council approve Council Policy POL-0155-ADMIN, the Public Hearing Policy. CARRIED.” (section:5132)");
+  });
+
+  it("skips flags the plan judges from the records it already holds", async () => {
+    expect(needsInvestigation(flag({ key: "related-2985", problem: "different_story" }))).toBe(false);
+    expect(needsInvestigation(flag({ key: "agenda-5", problem: "duplicate" }))).toBe(false);
+    expect(needsInvestigation(flag({ key: null, problem: "page_issue" }))).toBe(false);
+    expect(needsInvestigation(flag({ key: null, problem: "unsupported" }))).toBe(true);
+    expect(needsInvestigation(flag({ key: "agenda-5", problem: "generic_text" }))).toBe(true);
+    expect(needsInvestigation(flag({ key: "mention-5", problem: "unclear_why" }))).toBe(true);
+
+    research.mockResolvedValue({ verdict: "supported", explanation: "x", quote: null, ref: null, steps: 1 });
+    const out = await investigate({} as any, { path: "/p", topic, note: null, signal: new AbortController().signal,
+      flags: [{ flag: flag({ key: "related-2985", problem: "different_story" }), index: 0 }, { flag: flag({ key: null, problem: "page_issue" }), index: 1 },
+        { flag: flag({ key: "agenda-5", problem: "wrong_detail" }), index: 2 }] });
+    expect(research).toHaveBeenCalledTimes(1);
+    expect(out.map((i) => i.index)).toEqual([2]);
+    // The research session is told the deadline, so it can finish on its own before the fix cuts it off.
+    expect(typeof research.mock.calls[0][6]).toBe("number");
+    expect(research.mock.calls[0][6]).toBeGreaterThan(Date.now());
   });
 
   it("leaves a finding empty when its research fails or runs out of time, and goes on", async () => {
