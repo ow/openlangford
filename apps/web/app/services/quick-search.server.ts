@@ -3,6 +3,7 @@ import { matterPath, meetingPath } from "../lib/paths";
 import { personPath } from "../lib/people-paths";
 import { matterTitle } from "../lib/display-text";
 import { matterQuickScore } from "../lib/matter-rank";
+import { firstSentence } from "../lib/og";
 
 /**
  * Instant "jump to" matches for the search box and ⌘K palette: people,
@@ -121,7 +122,7 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
           .limit(3),
     // Lots ("2750 leigh") and streets ("leigh road"); spelling of the street type varies, so match the start.
     q.length >= 4
-      ? supabase.from("properties").select("id, slug, address, civic_number").eq("hidden", false).ilike("address", `${q.replace(/[%_]/g, "").replace(/\s+(rd|road|ave|avenue|dr|drive|st|street|pl|place|pkwy|parkway|cres|crescent|way|hwy|highway)\.?$/, "")}%`).limit(5)
+      ? supabase.from("properties").select("id, slug, address, civic_number, meta").eq("hidden", false).ilike("address", `${q.replace(/[%_]/g, "").replace(/\s+(rd|road|ave|avenue|dr|drive|st|street|pl|place|pkwy|parkway|cres|crescent|way|hwy|highway)\.?$/, "")}%`).limit(5)
       : Promise.resolve({ data: [] as any[] }),
   ]);
 
@@ -167,22 +168,25 @@ export async function quickSearch(rawQuery: string, limit = 8): Promise<QuickMat
     });
   }
 
-  // The address page (everything at that lot or on that street) outranks individual matters there.
+  // The address page (everything at that lot or on that street) outranks individual matters there. Its snippet is the
+  // first sentence of the page's own summary (the pipeline's property-summaries stage), as on the page.
   for (const p of properties.data || []) {
+    const summary = (p.meta as any)?.summary as string | undefined;
     const exact = p.address.toLowerCase() === q || (properties.data || []).length === 1;
     matches.push({
       type: "property",
       id: p.id,
       title: p.address,
-      subtitle: p.civic_number ? "Everything council considered at this address" : "Street",
+      subtitle: (summary && (firstSentence(summary) || summary)) || (p.civic_number ? "Everything council considered at this address" : "Street"),
       href: `/properties/${p.slug}`,
       score: exact ? 96 : 89,
       exact,
     });
   }
 
-  // A single matter at the searched address is an unambiguous hit.
-  const addressHits = matches.filter((m) => m.subtitle?.endsWith("at this address"));
+  // A single match at the searched address (a matter there, or the lot's own page) is an unambiguous hit.
+  const lots = new Set((properties.data || []).filter((p: any) => p.civic_number).map((p: any) => p.id));
+  const addressHits = matches.filter((m) => m.type === "property" ? lots.has(m.id) : m.subtitle?.endsWith("at this address"));
   if (addressHits.length === 1) addressHits[0].exact = true;
 
   for (const m of matters.data || []) {
