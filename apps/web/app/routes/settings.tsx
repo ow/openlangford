@@ -21,6 +21,7 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { PageHeader } from "../components/ui/page-header";
 import { SectionHeading } from "../components/ui/section-heading";
+import { ThemeChooser } from "../components/theme-toggle";
 import { NativeSelect } from "../components/ui/native-select";
 import { Trash2, Check, X, Loader2 } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -712,6 +713,14 @@ export default function Settings({ loaderData }: Route.ComponentProps) {
                   Location preferences identify decisions affecting your neighbourhood.
                 </li>
               </ul>
+            </div>
+          </section>
+
+          {/* Appearance */}
+          <section>
+            <SectionHeading title="Appearance" description="Light or dark, or whatever your device is set to. Remembered in this browser." />
+            <div className={cn(CARD, "p-5")}>
+              <ThemeChooser />
             </div>
           </section>
 

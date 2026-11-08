@@ -1,29 +1,37 @@
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { applyThemeChoice, readThemeChoice, type ThemeChoice } from "../lib/theme";
+import { cn } from "../lib/utils";
 
-const NEXT: Record<ThemeChoice, ThemeChoice> = { system: "light", light: "dark", dark: "system" };
-const LABEL: Record<ThemeChoice, string> = { system: "Theme: match system", light: "Theme: light", dark: "Theme: dark" };
-const ICON = { system: Monitor, light: Sun, dark: Moon };
+const CHOICES: { value: ThemeChoice; label: string; icon: typeof Sun }[] = [
+  { value: "system", label: "Match my device", icon: Monitor },
+  { value: "light", label: "Light", icon: Sun },
+  { value: "dark", label: "Dark", icon: Moon },
+];
 
-/** Cycles system → light → dark. Renders the system icon on the server, then the stored choice. */
-export function ThemeToggle({ className = "" }: { className?: string }) {
+/** Light, dark, or follow the device, chosen on the settings page. The choice is kept in this browser (lib/theme.ts);
+ * signed-out visitors get their device's setting. Renders "match my device" on the server, then the stored choice. */
+export function ThemeChooser({ className = "" }: { className?: string }) {
   const [choice, setChoice] = useState<ThemeChoice>("system");
   useEffect(() => setChoice(readThemeChoice()), []);
-  const Icon = ICON[choice];
   return (
-    <button
-      type="button"
-      onClick={() => {
-        const next = NEXT[choice];
-        applyThemeChoice(next);
-        setChoice(next);
-      }}
-      className={`rounded-full p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 ${className}`}
-      aria-label={`${LABEL[choice]} (click to change)`}
-      title={LABEL[choice]}
-    >
-      <Icon className="h-4 w-4" />
-    </button>
+    <div role="radiogroup" aria-label="Appearance" className={cn("inline-flex rounded-xl border border-zinc-200 bg-zinc-50 p-1", className)}>
+      {CHOICES.map(({ value, label, icon: Icon }) => (
+        <button
+          key={value}
+          type="button"
+          role="radio"
+          aria-checked={choice === value}
+          onClick={() => { applyThemeChoice(value); setChoice(value); }}
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+            choice === value ? "bg-surface text-zinc-900 shadow-sm" : "text-zinc-600 hover:text-zinc-900",
+          )}
+        >
+          <Icon className="h-4 w-4" aria-hidden="true" />
+          {label}
+        </button>
+      ))}
+    </div>
   );
 }

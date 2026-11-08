@@ -1,4 +1,3 @@
-import { ThemeToggle } from "./theme-toggle";
 import { Link, useLocation, useRouteLoaderData } from "react-router";
 import { useState, useEffect } from "react";
 import {
@@ -14,6 +13,7 @@ import {
   Building2,
   CheckCircle2,
   Landmark,
+  LogIn,
   LogOut,
   Menu,
   X,
@@ -203,7 +203,6 @@ export function Navbar() {
 
           <div className="flex items-center gap-2 md:gap-4">
             <QuickJump />
-            <ThemeToggle className="hidden sm:inline-flex" />
             {/* Desktop User Menu */}
             {user ? (
               <div className="hidden sm:flex items-center gap-4">
@@ -232,16 +231,22 @@ export function Navbar() {
                   <LogOut className="h-4 w-4" />
                 </Link>
               </div>
-            ) : signupsEnabled ? (
-              <Link
-                to="/signup"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-brand-50 text-brand-600 hover:bg-brand-100 transition-colors"
-              >
-                Get Alerts
-              </Link>
-            ) : null}
+            ) : (
+              <div className="hidden sm:flex items-center gap-3">
+                <Link to="/login" className="text-sm font-medium text-zinc-600 transition-colors hover:text-brand-700">
+                  Log in
+                </Link>
+                {signupsEnabled && (
+                  <Link
+                    to="/signup"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-brand-50 text-brand-600 hover:bg-brand-100 transition-colors"
+                  >
+                    Get Alerts
+                  </Link>
+                )}
+              </div>
+            )}
 
-            <ThemeToggle className="sm:hidden" />
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -348,17 +353,25 @@ export function Navbar() {
                   className="text-red-600 hover:bg-red-50 hover:text-red-700"
                 />
               </>
-            ) : signupsEnabled ? (
+            ) : (
               <>
                 <div className="my-2 h-px bg-zinc-100" />
                 <MobileNavLink
-                  name="Get Alerts"
-                  href="/signup"
-                  icon={Bell}
-                  isActive={isLinkActive("/signup")}
+                  name="Log in"
+                  href="/login"
+                  icon={LogIn}
+                  isActive={isLinkActive("/login")}
                 />
+                {signupsEnabled && (
+                  <MobileNavLink
+                    name="Get Alerts"
+                    href="/signup"
+                    icon={Bell}
+                    isActive={isLinkActive("/signup")}
+                  />
+                )}
               </>
-            ) : null}
+            )}
           </div>
         </div>
       )}
