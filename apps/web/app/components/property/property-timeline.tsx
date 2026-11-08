@@ -103,20 +103,22 @@ export function PropertyTimeline({ entries, newestFirst = true, renderAdmin }: {
   const years = new Map<string, Group[]>();
   for (const g of groups) (years.get(g.date.slice(0, 4)) || years.set(g.date.slice(0, 4), []).get(g.date.slice(0, 4))!).push(g);
   return (
-    <div className="space-y-10">
-      {[...years.entries()].map(([year, rows], i, all) => (
-        <section key={year} aria-label={year} className="relative">
-          <h3 className="mb-4 text-lg font-semibold tabular-nums tracking-tight text-zinc-500">{year}</h3>
-          {/* On wide screens the rail hangs in the left margin (negative margin equal to the row indent), so the cards
-              share the page's left edge with every other card; on a phone it indents instead. The rail runs on past
-              the last card and fades out, rather than stopping dead. */}
-          <ol className="relative space-y-5 md:-ml-10">
-            <span aria-hidden="true" className={cn("absolute left-[11px] top-2 w-px", i === all.length - 1 ? "-bottom-12" : "bottom-2")}
-              style={i === all.length - 1 ? { background: "linear-gradient(to bottom, var(--color-zinc-200) calc(100% - 4rem), transparent)" } : { background: "var(--color-zinc-200)" }} />
-            {rows.map((g) => <GroupRow key={g.key} group={g} renderAdmin={renderAdmin} />)}
-          </ol>
-        </section>
-      ))}
+    // One rail runs the whole length, through the year labels, and fades out below the last card instead of stopping.
+    // On wide screens it hangs in the left margin (the rows indent by 2.5rem and the list pulls back by as much), so
+    // the cards share the page's left edge with every other card; on a phone the rows indent instead.
+    <div className="relative">
+      <span aria-hidden="true" className="absolute -bottom-12 left-[11px] top-3 w-px md:-left-[29px]"
+        style={{ background: "linear-gradient(to bottom, var(--color-zinc-200) calc(100% - 5rem), transparent)" }} />
+      <div className="space-y-8">
+        {[...years.entries()].map(([year, rows]) => (
+          <section key={year} aria-label={year} className="relative">
+            <h3 className="mb-4 pl-10 text-lg font-semibold tabular-nums tracking-tight text-zinc-500 md:pl-0">{year}</h3>
+            <ol className="relative space-y-5 md:-ml-10">
+              {rows.map((g) => <GroupRow key={g.key} group={g} renderAdmin={renderAdmin} />)}
+            </ol>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

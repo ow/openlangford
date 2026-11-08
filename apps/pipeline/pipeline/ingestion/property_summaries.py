@@ -38,7 +38,7 @@ from pipeline import ai
 from pipeline.ai import glossary
 from pipeline.postgrest import in_chunks
 
-PROPERTY_SUMMARY_VERSION = "7"  # 7: entry lines use only the verb the record supports
+PROPERTY_SUMMARY_VERSION = "8"  # 8: a lead says how the City came to own the land when the inputs show it
 MIN_RECORDS = 2
 MIN_ADDRESSES = 2  # a street page with two or more addresses gets a summary even with no records of its own
 NARRATIVE_MAX = 220  # the model's part; the closing count follows
@@ -78,6 +78,8 @@ Rules from the site's writing guide:
 An entry may carry "names_this_address": the words of the record (a report, a budget table, a decision, something said at the meeting) that name this address. That line is why the entry is on the page, and often the only place its substance is: a purchase, a dollar amount, a recommendation to sell, a question asked. Use those facts; the entry's own summary may not repeat them. When those lines give the story a later turn (the City bought the land, spent on it, still owes for it, was asked whether to sell it, was told to explore a sale), lead with the latest turn and then say how it began.
 
 "said_elsewhere" lists dated statements from outside Council's record that staff added, each saying who said it. One whose "who" is the City of Langford is the City's own publication: state its facts, attributed to the City ("the City announced…"). Any other is a news report: use its facts only with the publisher named, in the same sentence as each fact that rests on it ("Victoria News reported the City paid about $2.2M"); a fact from a second report needs its own publisher named too. These often hold what the minutes don't (a purchase made in a closed meeting), so they may lead; never present one as Council's own decision.
+
+When the inputs show how the City came to hold the land (it bought or acquired it, in a news report, a staff report or a budget line), the lead must say so, with the year and the price if given, attributed as the rules above require: the purchase is where the story starts, and a lead about a sale or a permit that leaves it out reads as if the land appeared from nowhere.
 
 Besides the opening lines, write "entry_lines": for each entry under "other_mentions" that carries "names_this_address", one plain line (at most 120 characters) saying what that record says about this address, so a reader needn't parse a budget table or a cheque register: "The City paid its lawyers $1.27 million for the land, May 2019", "Budget sets aside $825,000 of developer money for the site in 2023", "A resident asked whether the property should be sold". Keep the amount and the date the record gives; no cheque, file or account numbers; no "the record shows". Use only the verb the record supports: a register, table or budget schedule "lists", "records", "shows" or "sets aside" an amount; never "approved", "decided" or "agreed" unless the record says Council did, and never say what a payment was for unless the record does. Skip entries without names_this_address.
 
