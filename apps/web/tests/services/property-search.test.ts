@@ -65,3 +65,14 @@ describe("property timeline grouping", () => {
     expect(looksTabular("The City recently acquired the property at 3680 Trans-Canada Hwy, one of the few oceanfront properties within the City of Langford. The property is currently zoned RR4.")).toBe(false);
   });
 });
+
+describe("topicsLead", () => {
+  it("builds a lead from the topics when the pipeline has not written one", async () => {
+    const { topicsLead } = await import("../../app/routes/property-detail");
+    expect(topicsLead([
+      { plain_english_summary: "A six-storey building with 76 rental apartments is proposed across three properties. It needs a rezoning.", meta: { status_line: "Rezoning adopted Aug 17, 2026" } },
+      { plain_english_summary: "Truck parking permits for the lot", meta: {} },
+    ])).toBe("A six-storey building with 76 rental apartments is proposed across three properties. Rezoning adopted Aug 17, 2026. Truck parking permits for the lot.");
+    expect(topicsLead([])).toBe("");
+  });
+});

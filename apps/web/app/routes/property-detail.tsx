@@ -29,7 +29,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   const { property, matters, isStreet } = data;
   // The page's lead is its search description too: the pipeline's property-summaries stage
   // writes it (what happened there, then how often it came up); the title carries "Langford".
-  const summary: string | undefined = (property as any).meta?.summary || undefined;
+  const summary: string | undefined = (property as any).meta?.summary || topicsLead(matters) || undefined;
   const description = summary
     ? summary
     : isStreet
@@ -108,11 +108,25 @@ function Unlink({ field, id, isStreet }: { field: "matter_id" | "agenda_item_id"
 
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
+/** A lead built from the topics at the address when the pipeline has not written one: the newest topic's first
+ * sentence, its status line, and for a second topic its first sentence too. Exported for tests. */
+export function topicsLead(matters: any[]): string {
+  const parts: string[] = [];
+  for (const m of matters.slice(0, 2)) {
+    const first = firstSentence(m.plain_english_summary || "") || "";
+    if (first) parts.push(first.replace(/([^.!?])$/, "$1."));
+    if (parts.length === 1 && m.meta?.status_line) parts.push(String(m.meta.status_line).replace(/([^.!?])$/, "$1."));
+  }
+  return parts.join(" ");
+}
+
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
   const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, images, timeline } = loaderData;
   const isAdmin = !!(useRouteLoaderData("root") as { isAdmin?: boolean } | undefined)?.isAdmin;
   const geo = property.geo as { lat: number; lng: number } | null;
-  const summary: string | undefined = (property as any).meta?.summary || undefined;
+  // The pipeline's lead, or, until it has written one, what the records themselves say: the newest topic's first
+  // sentence and where it stands, never a line about the page.
+  const summary: string | undefined = (property as any).meta?.summary || topicsLead(matters) || undefined;
   const dates = [...matters.flatMap((m: any) => [m.first_seen, m.last_seen]), ...items.map((i: any) => i.meetings?.meeting_date)]
     .filter(Boolean)
     .sort();

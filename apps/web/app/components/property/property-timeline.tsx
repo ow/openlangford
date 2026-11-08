@@ -107,7 +107,9 @@ export function PropertyTimeline({ entries, newestFirst = true, renderAdmin }: {
           <h3 className="mb-4 flex items-center gap-3 text-lg font-semibold tabular-nums tracking-tight text-zinc-500">
             {year}<span aria-hidden="true" className="h-px flex-1 bg-zinc-200" />
           </h3>
-          <ol className="relative space-y-5 before:absolute before:bottom-2 before:left-[11px] before:top-2 before:w-px before:bg-zinc-200">
+          {/* On wide screens the rail hangs in the left margin (negative margin equal to the row indent), so the cards
+              share the page's left edge with every other card; on a phone it indents instead. */}
+          <ol className="relative space-y-5 before:absolute before:bottom-2 before:left-[11px] before:top-2 before:w-px before:bg-zinc-200 md:-ml-10">
             {rows.map((g) => <GroupRow key={g.key} group={g} renderAdmin={renderAdmin} />)}
           </ol>
         </section>
