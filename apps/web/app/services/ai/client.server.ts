@@ -222,7 +222,7 @@ export function createAiClient(options: CreateAiClientOptions): AiClient {
       };
       let data: unknown;
       try {
-        data = JSON.parse(value.text);
+        data = parseJsonReply(value.text);
       } catch (cause) {
         const err = new AiError("schema", `${opts.stage}: model returned invalid JSON`, {
           stage: opts.stage,
@@ -433,6 +433,22 @@ export function setAiClientForTesting(client: AiClient | null) {
  * or fail, so search callers can fall back to keyword search; the failure is still
  * logged and reported through the usage hook.
  */
+/**
+ * The JSON object in a structured reply. The model occasionally puts a sentence of plain text before the object
+ * ("I'll check the May 2012 minutes.{...}"; gpt-6.1-terra, record research, 2026-11-08), which strict output mode
+ * doesn't prevent: the object itself is valid, so it is taken from the first brace to the last. Anything else throws.
+ */
+export function parseJsonReply(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start < 0 || end <= start) throw error;
+    return JSON.parse(text.slice(start, end + 1));
+  }
+}
+
 export async function embedQuery(text: string): Promise<number[] | null> {
   const client = getAiClient();
   if (!client.isConfigured()) return null;

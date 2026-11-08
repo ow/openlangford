@@ -41,6 +41,14 @@ import { STAGE_LABELS, type StageChoice } from "../components/matter/timeline-st
  */
 
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+/** One sentence of a reason or finding for the note, cut at a sentence end where it runs long. */
+const brief = (text: string, max: number) => {
+  const t = (text || "").replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max);
+  const end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("; "));
+  return end > max / 2 ? cut.slice(0, end + 1) : `${cut.replace(/\s+\S*$/, "")}…`;
+};
 
 const PlanSchema = z.object({
   actions: z.array(z.object({
@@ -405,8 +413,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // For the note: what the agent read for each problem, so the editor can see what each change rests on. It is
     // evidence, not a to-do list, and names entries the way the page does.
     const found = investigations.filter((i) => i.finding?.ref);
-    const lookedInto = found.length ? `Evidence behind the changes, from the City's records:\n${found.map((i) =>
-      `• ${capital(entryLabel(i.key, flags))}: ${i.finding!.explanation} (${i.finding!.ref})`).join("\n")}` : "";
+    const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
+      `• ${capital(entryLabel(i.key, flags))}: ${brief(i.finding!.explanation, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
       await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
     const [heldBack, unfiled] = await Promise.all([heldBackMotions(supabase, ids), containerMotions(supabase, ids)]);
@@ -551,7 +559,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           ? (await supabase.from("matters").select("meta").eq("id", item.matter_id).maybeSingle()).data : null;
         if (item && !lock && (home?.meta as any)?.hidden === "container") {
           fixedKeys.add(step.key);
-          done.push(`${step.reason} It stays a mention here: it's part of a bundle of resolutions about other subjects too.`);
+          done.push(`Kept ${entryLabel(step.key, flags)} as a mention: it's part of a bundle of resolutions about other subjects too.`);
         } else if (!item) left.push(`${step.reason} (that item couldn't be found)`);
         else if (lock && "matter_id" in lock && lock.matter_id !== matterId) left.push(`${step.reason} (an editor placed that item ${lock.matter_id ? `on topic ${lock.matter_id}` : "off every topic"}, so it stays there)`);
         else if (item.matter_id && item.matter_id !== matterId) {
@@ -566,7 +574,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
         const quote = quoteOf(step);
         summaryNotes.push(`${(step.new_text || "").trim().slice(0, 500)}${quote ? ` The record says: “${quote}”` : ""}`);
-        done.push(`${step.reason} Rewrote the summary with this note: "${(step.new_text || "").trim()}"${quote ? ` It rests on: “${quote.slice(0, 300)}”` : ""}`);
+        done.push(`Rewrote the summary: ${brief(step.reason, 200)}`);
         continue;
       }
       if ((step.action === "rewrite_entry" || step.action === "rewrite_heading") && step.key && onPage.has(step.key)
@@ -581,7 +589,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           if (!heading && step.key.startsWith("agenda-")) rewrites[step.key.slice(7)] = text;
           else lines[step.key] = { ...lines[step.key], [heading ? "heading" : "line"]: text, source: quoteOf(step) };
           fixedKeys.add(step.key);
-          done.push(`${step.reason} New ${heading ? "heading" : "line"}: "${text}" It rests on: “${quoteOf(step).slice(0, 300)}”`);
+          done.push(`${capital(entryLabel(step.key, flags))} now ${heading ? "headed" : "reads"}: "${text}"`);
         }
         continue;
       }
@@ -596,7 +604,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           addedMotions.push({ key: step.key, text: step.motion_text.trim(), result: step.motion_result, quote: quoteOf(step),
             meetingId: added.meetingId, matterId: added.matterId });
           fixedKeys.add(step.key);
-          done.push(`Added the motion to ${entryLabel(step.key, flags)}: ${step.reason} It rests on: “${quoteOf(step).slice(0, 300)}”`);
+          done.push(`Added the motion to ${entryLabel(step.key, flags)}: ${brief(step.reason, 200)}`);
           await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:add_motion",
             detail: { agenda_item_id: String(itemId(step.key)), motion_id: String(added.motionId), document_id: String(added.documentId ?? ""),
               reason: step.reason.slice(0, 400) } });
@@ -615,7 +623,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
           const text = moved.text.replace(/\s+/g, " ").trim();
           addedMotions.push({ key: step.key, text, result: moved.result, quote: text, meetingId: moved.meetingId, matterId: moved.matterId });
           fixedKeys.add(step.key);
-          done.push(`Moved the meeting's recorded decision onto ${entryLabel(step.key, flags)}: ${step.reason} The motion: “${text.slice(0, 300)}”`);
+          done.push(`Moved the meeting's recorded decision onto ${entryLabel(step.key, flags)}: ${brief(step.reason, 200)}`);
           await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:move_motion",
             detail: { agenda_item_id: String(itemId(step.key)), motion_id: String(moved.motionId), from_item_id: String(moved.fromItemId),
               reason: step.reason.slice(0, 400) } });
@@ -632,7 +640,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         stages[step.key] = { stage: step.stage, source: quoteOf(step), reason: step.reason.slice(0, 300), by: requester.id, at: new Date().toISOString() };
         fixedKeys.add(step.key);
         const label = step.stage === "none" ? "no stage" : STAGE_LABELS[step.stage].replace(/\.$/, "");
-        done.push(`Marked ${entryLabel(step.key, flags)} as “${label}”: ${step.reason} It rests on: “${quoteOf(step).slice(0, 300)}”`);
+        done.push(`Marked ${entryLabel(step.key, flags)} as “${label}”: ${brief(step.reason, 200)}`);
         continue;
       }
       if (step.action === "move_documents" && step.key && onPage.has(step.key) && step.to_item_id && step.document_ids?.length) {

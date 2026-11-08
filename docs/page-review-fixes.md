@@ -20,7 +20,19 @@ carries out fixes for the flags staff agreed with. This page explains where each
    off with nothing. A flag the page check already researched keeps that finding. Flags the plan can judge from the
    records it already holds are not researched (`needsInvestigation`): a related topic (the plan reads that topic's
    own records), a duplicate, and a page-level problem such as a cut-off sentence. Each finding (the record's words and its ref) goes into the
-   plan beside its flag. The note lists them under "Evidence behind the changes, from the City's records": each bullet is the record a change above rests on, named by the entry's date, not work left undone.
+   plan beside its flag. The note lists them under "Evidence, from the City's records": each bullet is the record a
+   change above rests on, named by the entry's date, not work left undone.
+
+   Each research session starts with a turn run for it, without the model (`prefetch` in
+   `record-research.server.ts`): searches from the question's own words (a street address, a file number, a bylaw
+   number, the topic's title), a search by meaning over report and minutes sections and motions, and the most
+   promising sections, motions and signed bylaws read in full (at most 6, and 80,000 characters). The model's first
+   call then often answers outright; otherwise it searches on as before. A record already in front of it (read this
+   session, or the entry's own records) isn't fetched again.
+
+   The note's "Changed" bullets say what changed and why in a sentence each: the new text of a rewritten line, the
+   reason for a removal or a summary rewrite. The record quotes the changes rest on are stored with the change
+   (`entry_lines[key].source`, a stage's `source`, a motion's quote), not repeated in the note.
 3. **The agent plans the fix.** It reads the page's records and its findings and plans actions from a fixed menu,
    using one AI call on the `review` stage. The records include:
    - each item's motions, reports and minutes. An item without a motion of its own also gets its meeting's
@@ -156,6 +168,12 @@ was cancelled by the deadline, unanswered. Neither flag needed the records searc
 records already. Hence the skip rule above, the deadline-aware finish, and a reading budget of 400,000 characters
 per session instead of 1.5 million. The summary check and the re-check stay in sequence: the re-check reads the
 summary as the check left it.
+
+The same 10 research questions (agreed flags on 5 topic pages), run read-only before and after the prefetch, on
+`gpt-6.1-terra`: 36 model calls and 14.2 s a question before; 28 calls and 12.7 s after, with the same verdict on
+all 10. The floor is the model: a turn is 3 to 7 s whatever it holds, and most questions still take two. The trace
+also showed the model sometimes putting a sentence of plain text before its JSON object, which the client rejected
+and retried at 4 to 8 s a time; `parseJsonReply` now takes the object from such a reply.
 
 ## Signed bylaws as a record
 
