@@ -58,6 +58,24 @@ describe("what the planner can see and do beyond unlinking", () => {
   });
 });
 
+describe("an editor's instruction reaches the planner", () => {
+  const flag = (over: Record<string, any>) => ({ key: null, problem: "editor_issue", reason: "Make it a timeline.", excerpt: "", verdict: "agree", ...over }) as any;
+  it("passes a flag's own note when it differs from the reason, and tells the planner to follow it over the defaults", () => {
+    const prompt = propertyPlanPrompt(property as any, [flag({ key: "step-7", problem: "generic_text", reason: "Says nothing.", note: "Name the geotechnical work." })], null, "", [null], null);
+    expect(prompt).toContain("Editor's instruction for this (do what it asks, over the defaults below): Name the geotechnical work.");
+  });
+  it("doesn't repeat a note that is already the reason", () => {
+    const prompt = propertyPlanPrompt(property as any, [flag({ note: "Make it a timeline." })], null, "", [null], null);
+    expect(prompt).not.toContain("Editor's instruction for this");
+  });
+  it("makes the lead's length and shape defaults that a note overrides, and asks for what the records can't back", () => {
+    const prompt = propertyPlanPrompt(property as any, [], "Show the purchase, the spending, then the sale plan.", "", [], null);
+    expect(prompt).toContain("Staff's note (an instruction from the editor: do what it asks");
+    expect(prompt).toContain("These are defaults");
+    expect(prompt).toContain("not_supported");
+  });
+});
+
 describe("updateSource", () => {
   function fake(meta: Record<string, any> | null = { date_label: "Spring 2019", compact: true }) {
     const calls: any[] = [];

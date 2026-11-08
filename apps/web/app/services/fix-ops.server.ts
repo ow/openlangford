@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { getAiClient } from "./ai/index.server";
 import { updateSource } from "./sources.server";
 import type { Source } from "../lib/sources";
 
@@ -100,6 +101,35 @@ export async function saveEditorNotes(supabase: SupabaseClient, matterId: number
 /** The note's line for an instruction the rewritten summary doesn't yet follow. */
 export function unfollowedLine(u: { note: string; missing?: string }): string {
   return `The summary was rewritten but doesn't yet say what was asked: "${u.note.split(" The record says:")[0].slice(0, 300)}"${u.missing ? ` Still missing: ${u.missing}` : ""}`;
+}
+
+// ---------- Did the text do what the editor asked? ----------
+
+const FollowedSchema = z.object({ checks: z.array(z.object({
+  followed: z.boolean().describe("Whether the text now does what this instruction asks. A part of the request the records can't support counts as done when the text leaves that part out and states nothing the records don't."),
+  missing: z.string().describe("What the instruction asks for that the text still doesn't do, in one short sentence. Empty when followed."),
+})) });
+
+/** Judge whether a rewritten text does what each instruction (an editor's request, or a problem staff agreed on) asks.
+ * The fact check only asks whether the text is true, so an accurate rewrite that ignores the request passes it:
+ * this is the check that catches that. One verdict per instruction, in order. */
+export async function checkFollowed(instructions: string[], text: string, records: string, signal?: AbortSignal): Promise<{ instruction: string; followed: boolean; missing: string }[]> {
+  if (!instructions.length) return [];
+  const { data } = await getAiClient().json({ stage: "review", signal, schema: FollowedSchema, schemaName: "instruction_check",
+    prompt: `An editor of a site that follows a city council asked for changes to a page's text. Judge, for each instruction below,
+whether the text now does what it asks (its shape and content, not only whether it is true).
+
+Instructions:
+${instructions.map((x, i) => `${i + 1}. ${squash(x)}`).join("\n")}
+
+TEXT:
+${text}
+
+RECORDS (what the site can state):
+${records.slice(0, 30_000)}
+
+Return one check per instruction, in order.` });
+  return instructions.map((instruction, i) => ({ instruction, followed: data.checks[i]?.followed ?? false, missing: data.checks[i]?.missing || "" }));
 }
 
 // ---------- Rewriting a topic step's or entry's line ----------

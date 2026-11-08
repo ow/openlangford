@@ -1,5 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { editSourceOnPage, loadSources, quoteInRecords, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "../../app/services/fix-ops.server";
+import { describe, expect, it, vi } from "vitest";
+import { checkFollowed, editSourceOnPage, loadSources, quoteInRecords, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "../../app/services/fix-ops.server";
+
+let verdicts: { followed: boolean; missing: string }[] = [];
+vi.mock("../../app/services/ai/index.server", () => ({ getAiClient: () => ({ json: async () => ({ data: { checks: verdicts } }) }) }));
 
 /** A small stand-in for the Supabase client: one row per table, every update recorded. */
 function fake(tables: Record<string, any[]>) {
@@ -81,5 +84,22 @@ describe("writeEntryText", () => {
     const { client, updates } = fake({ matters: [{ id: 5, meta: {} }] });
     expect(await writeEntryText(client, 5, {})).toBeNull();
     expect(updates).toEqual([]);
+  });
+});
+
+describe("checkFollowed", () => {
+  it("returns one verdict per instruction, in order, with what is still missing", async () => {
+    verdicts = [{ followed: false, missing: "It isn't in the order things happened." }, { followed: true, missing: "" }];
+    const out = await checkFollowed(["Make it a timeline", "Name the cost"], "The City bought it. It spent $6M.", "records");
+    expect(out).toEqual([
+      { instruction: "Make it a timeline", followed: false, missing: "It isn't in the order things happened." },
+      { instruction: "Name the cost", followed: true, missing: "" },
+    ]);
+  });
+  it("treats an instruction the check didn't answer as not followed, and asks nothing when there are none", async () => {
+    verdicts = [{ followed: true, missing: "" }];
+    const out = await checkFollowed(["one", "two"], "text", "records");
+    expect(out[1]).toMatchObject({ followed: false });
+    expect(await checkFollowed([], "text", "records")).toEqual([]);
   });
 });

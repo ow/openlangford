@@ -8,7 +8,7 @@ import { applyRecheck, recheckSummary, flagLabel } from "../lib/page-recheck";
 import { logStaffAction } from "./staff.server";
 import { rewriteSummaries } from "./topic-summaries.server";
 import { sourcesFor, sourcesForMatters, sourceRecordLines } from "./sources.server";
-import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, editSourceOnPage, loadSources, quoteInRecords, saveEditorNotes, squash, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
+import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, checkFollowed, editSourceOnPage, loadSources, quoteInRecords, saveEditorNotes, squash, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
 import type { Source } from "../lib/sources";
 import { getMatterReportMentions, type ReportMention } from "./matters";
 import type { StaffRole } from "../lib/auth.server";
@@ -26,15 +26,16 @@ import type { StaffRole } from "../lib/auth.server";
 
 export const PROPERTY_FIX_BUDGET_MS = 90_000;
 /** The lead's narrative part, as the pipeline caps it (property_summaries.NARRATIVE_MAX is 320 characters). */
-const LEAD_MAX = 400;
+const LEAD_MAX = 650;
 
 const Action = z.object({
   action: z.enum(["unlink_entry", "rewrite_lead", "edit_source", "rewrite_entry", "rewrite_summary", "no_change", "cannot_fix"]),
   key: z.string().nullable().describe("The key of the flag this answers (matter-<id>, item-<id> or source-<id>), or null for the whole page or the note. unlink_entry: the entry to take off (matter-<id> or item-<id>)."),
   entry_key: z.string().nullable().describe("rewrite_entry: the row whose line changes, as RECORDS keys it: step-<id> (a step of a topic), item-<id> (a meeting item linked to this address) or report-<id> (an annual report row). Otherwise null."),
   ...EDIT_SOURCE_FIELDS,
-  new_text: z.string().nullable().describe("rewrite_summary: the instruction for the topic's summary writer, one or two sentences saying what the text must say or stop saying (it is followed on every later rewrite too). rewrite_entry: the row's new line, one plain sentence (under 140 characters) saying what happened at this address. rewrite_lead: the page's new lead, one or two plain sentences (under 320 characters), outcome first: what happened at this address and whether it affects the reader. The closing \"Mentioned in council meetings…\" line is kept for you. Otherwise null."),
+  new_text: z.string().nullable().describe("rewrite_summary: the instruction for the topic's summary writer, one or two sentences saying what the text must say or stop saying (it is followed on every later rewrite too). rewrite_entry: the row's new line, one plain sentence (under 140 characters) saying what happened at this address. rewrite_lead: the page's new lead. By default one or two plain sentences (under 320 characters), outcome first, saying what happened at this address and whether it affects the reader; when staff asked for another shape (a timeline, more detail), what they asked for, up to 600 characters. The closing \"Mentioned in council meetings…\" line is kept for you. Otherwise null."),
   source: z.string().nullable().describe("rewrite_lead, rewrite_entry, edit_source, rewrite_summary: the record's (or the source text's) own words the change rests on, quoted exactly, at most 250 characters. Otherwise null."),
+  not_supported: z.string().nullable().describe("rewrite_lead: the parts of staff's request the records don't support, so you left them out (say which, in one sentence). null when everything asked is in the lead."),
   reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
 });
 const PlanSchema = z.object({ actions: z.array(Action) });
@@ -79,22 +80,26 @@ export function propertyRecords(property: Property, lead: string | null, topics:
 }
 
 export function propertyPlanPrompt(property: Property, agreed: PageFlag[], note: string | null, records: string, findings: (string | null)[], pageFinding: string | null): string {
-  const flagLines = agreed.map((f, i) => `- ${f.key ?? "(whole page)"} · ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.fix ? ` Suggested: ${f.fix}` : ""}${findings[i] ? `\n  FOUND: ${findings[i]}` : ""}`);
+  const flagLines = agreed.map((f, i) => `- ${f.key ?? "(whole page)"} · ${FLAG_PROBLEM_LABELS[f.problem]}: ${f.reason}${f.fix ? ` Suggested: ${f.fix}` : ""}${f.note && squash(f.note) !== squash(f.reason) ? `\n  Editor's instruction for this (do what it asks, over the defaults below): ${f.note}` : ""}${findings[i] ? `\n  FOUND: ${findings[i]}` : ""}`);
   return `You fix the page for ${property.address} on Open Langford, a site that follows Langford City council. The page
 lists the council business the pipeline linked to this address: topics (rezonings, permits, projects) and meeting
 items, each shown from its own record, under a short lead the pipeline wrote. A reader checked it and flagged
 problems; staff agreed with these:
 ${flagLines.join("\n") || "(none)"}
-${note ? `\nStaff's note: ${note}${pageFinding ? `\n  FOUND: ${pageFinding}` : ""}` : ""}
+${note ? `\nStaff's note (an instruction from the editor: do what it asks, even where it differs from the defaults below): ${note}${pageFinding ? `\n  FOUND: ${pageFinding}` : ""}` : ""}
 
 Actions, one entry in "actions" per flag (and per note):
 - unlink_entry: the entry (matter-<id> or item-<id>) is about a different address, or names this one only in
   passing (one address in a list of many, a street mentioned as a landmark). It comes off this page and stays on its
   own. Say which address it is really about.
-- rewrite_lead: the lead is wrong, vague or missing. Write one or two plain sentences (under 320 characters) for a
-  resident on a phone: what happened at this address and whether it affects them, outcome first, everyday words, the
-  number of homes or lots and dollar amounts when the records give them, no bylaw or file numbers. Quote the record
-  it rests on in "source". The closing count line is kept for you; don't write one.
+- rewrite_lead: the lead is wrong, vague or missing. By default write one or two plain sentences (under 320
+  characters) for a resident on a phone: what happened at this address and whether it affects them, outcome first,
+  everyday words, the number of homes or lots and dollar amounts when the records give them, no bylaw or file
+  numbers. These are defaults: when staff's note or a flag's instruction asks for something else (a timeline in the
+  order things happened, more detail, particular facts), do what it asks instead, in plain sentences, up to 600
+  characters. Use only what the records give. If part of the request isn't in the records (a claim about consultation
+  or plans, say), leave that part out and name it in "not_supported", never state it. Quote the record the lead
+  rests on in "source". The closing count line is kept for you; don't write one.
   An entry counts as passing when the topic's record lists many addresses and this is one of them ("addresses the
   pipeline linked to this topic"), unless the records show something decided or done about this address in particular.
 ${EDIT_SOURCE_PROMPT}
@@ -113,6 +118,24 @@ Work only from the records below. Never invent an outcome, a number or a date.
 
 RECORDS:
 ${records}`;
+}
+
+/** One revision of a lead that didn't do what staff asked: the same lead with what is missing added, from the records only. */
+async function reviseLead(lead: string, unmet: { instruction: string; missing: string }[], records: string, signal?: AbortSignal): Promise<string> {
+  const body = lead.replace(CLOSING, "").trim();
+  const { data } = await getAiClient().json({ stage: "review", signal, schema: z.object({ new_text: z.string() }), schemaName: "property_lead_revision",
+    prompt: `Revise the lead (the short text at the top of a page about an address) so it does what staff asked. Keep what it already does well.
+Use only facts in the records below; leave out any part of the request the records don't support. Plain sentences, up to 600
+characters, no bylaw or file numbers. Don't write a "Mentioned in council meetings" line; it is added for you.
+
+Current lead: ${body}
+
+Not yet done:
+${unmet.map((u) => `- Asked: ${squash(u.instruction)}\n  Missing: ${u.missing || "not done"}`).join("\n")}
+
+RECORDS:
+${records.slice(0, 30_000)}` });
+  return data.new_text;
 }
 
 export async function fixPropertyPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | "refiling" | void> {
@@ -208,9 +231,13 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
     const done: string[] = []; const answered: string[] = []; const left: string[] = [];
     const fixedKeys = new Set<string>(); let pageFixed = false;
     const claims: Claim[] = [];
+    let leadUnmet = false;  // a rewritten lead that still doesn't do what staff asked: the page is not "fixed"
     const at = new Date().toISOString();
     const agreedKeys = new Set(agreed.map((f) => f.key));
     const pageLevel = agreedKeys.has(null) || !!row?.note?.trim();
+    // What staff asked of the page as a whole: the agreed page-level flags (an editor's own wording is the flag's note,
+    // or its reason) and the page note. The new lead is checked against these.
+    const pageAsked = [...new Set([...agreed.filter((f) => !f.key).map((f) => squash(f.note || f.reason || "")), squash(row?.note || "")].filter(Boolean))];
     const summaryNotes: { matter_id: number; note: string; key: string | null }[] = [];
     for (const step of result.data.actions) {
       const key = step.key && agreedKeys.has(step.key) ? step.key : null;
@@ -280,15 +307,45 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
       if (step.action === "rewrite_lead") {
         if (!pageLevel) { left.push(`${step.reason} (no page-level problem was flagged, so the lead stays)`); continue; }
         if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (its quote isn't the record's exact words, so the lead stays; press Fix again)`); continue; }
-        const text = withClosing(lead, step.new_text || "");
+        let text = withClosing(lead, step.new_text || "");
         if (squash(step.new_text || "").length < 20 || text.length > LEAD_MAX + 120) { left.push(`${step.reason} (the new lead wasn't usable, so it stays)`); continue; }
-        const { data: fresh } = await supabase.from("properties").select("meta").eq("id", property.id).single();
-        const current = { ...((fresh?.meta || {}) as Record<string, any>) };
-        const meta = { ...current, summary: text, summary_updated_at: at,
-          summary_locked: { by: requester.id, at, auto: current.summary_locked?.auto ?? current.summary ?? null, source: squash(step.source || "").slice(0, 400), reason: step.reason.slice(0, 300) } };
-        const { error } = await supabase.from("properties").update({ meta }).eq("id", property.id);
-        if (error) { left.push(`${step.reason} (couldn't save the new lead)`); continue; }
-        pageFixed = true;
+        const saveLead = async (value: string): Promise<boolean> => {
+          const { data: fresh } = await supabase.from("properties").select("meta").eq("id", property.id).single();
+          const current = { ...((fresh?.meta || {}) as Record<string, any>) };
+          const meta = { ...current, summary: value, summary_updated_at: at,
+            summary_locked: { by: requester.id, at, auto: current.summary_locked?.auto ?? current.summary ?? null, source: squash(step.source || "").slice(0, 400), reason: step.reason.slice(0, 300) } };
+          return !(await supabase.from("properties").update({ meta }).eq("id", property.id)).error;
+        };
+        if (!(await saveLead(text))) { left.push(`${step.reason} (couldn't save the new lead)`); continue; }
+        // The fact check later asks only whether the lead is true. Whether it does what staff asked is judged here,
+        // with one revision when it doesn't, so an accurate lead that ignores the request is never called fixed.
+        let followed = true;
+        if (pageAsked.length) {
+          try {
+            progress("Checking the new lead against what was asked…");
+            let verdicts = timeLeft() > 15_000 ? await checkFollowed(pageAsked, text, records, budget) : [];
+            let unmet = verdicts.filter((v) => !v.followed);
+            if (!verdicts.length) followed = false;
+            if (unmet.length && timeLeft() > 25_000) {
+              const revised = withClosing(lead, await reviseLead(text, unmet, records, budget));
+              if (squash(revised).length >= 20 && revised.length <= LEAD_MAX + 120 && await saveLead(revised)) {
+                text = revised;
+                verdicts = await checkFollowed(pageAsked, text, records, budget);
+                unmet = verdicts.filter((v) => !v.followed);
+              }
+            }
+            if (unmet.length) {
+              followed = false; leadUnmet = true;
+              for (const v of unmet) left.push(`The lead was rewritten but doesn't yet do what was asked: "${squash(v.instruction).slice(0, 200)}"${v.missing ? ` Still missing: ${v.missing}` : ""}`);
+            } else if (!verdicts.length) { leadUnmet = true; left.push("The lead was rewritten but not checked against what was asked: the agent ran out of time. Press Fix again."); }
+          } catch (error) {
+            console.error("[property-fix] instruction check failed:", error instanceof Error ? error.message : error);
+            followed = false; leadUnmet = true;
+            left.push("The lead was rewritten but not checked against what was asked: the check itself failed. Press Fix again.");
+          }
+        }
+        if (step.not_supported?.trim()) left.push(`Not added, since the records don't say so: ${squash(step.not_supported)}`);
+        if (followed) pageFixed = true;
         claims.push({ id: "lead", key: null, text: `Page lead: ${text}` });
         done.push(`The lead now reads: "${text}"`);
         await log("agent:rewrite_property_lead", { property_id: String(property.id), text: text.slice(0, 400), reason: step.reason.slice(0, 300) });
@@ -343,7 +400,7 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
       left.length ? `Needs a person:\n${left.map((d) => `• ${d}`).join("\n")}` : "",
       lookedInto, checkedNote,
     ].filter(Boolean).join("\n\n");
-    await finish(!recheckFailed && (done.length || (answered.length && !left.length)) ? "fixed" : "needs_work", note, updated);
+    await finish(!recheckFailed && !leadUnmet && (done.length || (answered.length && !left.length)) ? "fixed" : "needs_work", note, updated);
   } catch (error) {
     console.error("[property-fix]", error instanceof Error ? error.message : error);
     await finish("needs_work", budget.aborted
