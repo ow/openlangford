@@ -373,3 +373,14 @@ describe("runQuestionAgent with the AI client", () => {
     }
   });
 });
+
+describe("parseJsonReply", () => {
+  it("takes the object from a reply the model prefixed with a sentence, and rejects anything else", async () => {
+    const { parseJsonReply } = await import("../../app/services/ai/client.server");
+    expect(parseJsonReply('{"a":1}')).toEqual({ a: 1 });
+    expect(parseJsonReply('I’ll check the May 2012 minutes.{"thought":"x","actions":[{"type":"read","query":null,"ref":"item:1"}],"finding":null}'))
+      .toEqual({ thought: "x", actions: [{ type: "read", query: null, ref: "item:1" }], finding: null });
+    expect(() => parseJsonReply("no object here")).toThrow();
+    expect(() => parseJsonReply('{"a":1')).toThrow();
+  });
+});

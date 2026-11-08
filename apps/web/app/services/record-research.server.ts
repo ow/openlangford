@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
-import { getAiClient } from "./ai/index.server";
+import { embedQuery, getAiClient } from "./ai/index.server";
 import { fetchAll } from "./page-verify.server";
 import { completeVoteCounts } from "../lib/vote-coverage";
 import { bylawRecordLine, readBylaw, searchBylaws } from "./bylaw-records.server";
@@ -184,6 +184,69 @@ export const CHECK_STATEMENT: ResearchGoal = {
   finish: "Finish when you know whether the record supports the statement.",
 };
 
+/** Reads the prefetch runs at most, and the most characters it reads: past that the model chooses what to read. */
+const PREFETCH_READS = 6;
+const PREFETCH_CHARS = 80_000;
+const STREET = "(?:Road|Rd|Avenue|Ave|Street|St|Way|Place|Pl|Drive|Dr|Lane|Court|Crescent|Cres|Terrace|Parkway|Trail|Boulevard|Blvd|Highway|Hwy)";
+
+/** The searches a first turn would run, from the question's own words: bylaw and file numbers, street addresses, the
+ * topic's title, and the question by meaning. Exported for tests. */
+export function prefetchQueries(question: string, context: string): string[] {
+  const text = `${question}\n${context.split("\n")[0] ?? ""}`;
+  const addresses = [...text.matchAll(new RegExp(`\\b(\\d{2,5}(?:-\\d{2,5})?\\s+[A-Z][a-z]+(?:\\s+[A-Z][a-z]+)?\\s+${STREET})\\b`, "g"))].map((m) => m[1]);
+  const files = [...text.matchAll(/\b([A-Z]{1,4}\d{2}-\d{3,4}|\d{4}-\d{2}-\d{3,6}(?:-\d+)?)\b/g)].map((m) => m[1]);
+  const bylaws = [...text.matchAll(/\bBylaw\s+No\.?\s*(\d{3,4})\b/gi)].map((m) => m[1]);
+  const title = context.match(/^This is the topic page \S+ \("(.+?)"\)/)?.[1]?.replace(/[^\w\s-]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+  // The most specific words first (an address, a file number), then bylaw numbers, then the topic's title; four at most.
+  const specific = [...new Set([...addresses, ...files, ...bylaws])].slice(0, title ? 3 : 4);
+  return [...specific, ...(title ? [title] : [])];
+}
+
+/** Turn 0 of a research session: the searches from `prefetchQueries`, a search by meaning over report and minutes
+ * sections and motions, and the most promising records read in full (sections, motions and signed bylaws first;
+ * agenda items, which carry transcripts, are left for the model to ask for). Never cuts a record: it stops adding
+ * reads at PREFETCH_CHARS. */
+export async function prefetch(supabase: SupabaseClient, question: string, context: string): Promise<{ log: string; used: number; read: string[] }> {
+  const queries = prefetchQueries(question, context);
+  const [searches, embedding] = await Promise.all([
+    Promise.all(queries.map(async (q) => ({ q, hits: await searchRecords(supabase, q).catch(() => [] as RecordHit[]) }))),
+    embedQuery(question.slice(0, 2000)).catch(() => null),
+  ]);
+  const byMeaning: RecordHit[] = [];
+  if (embedding) {
+    const params = { query_text: question.slice(0, 500), query_embedding: JSON.stringify(embedding), match_count: 6, full_text_weight: 1, semantic_weight: 1, rrf_k: 50 };
+    const [sections, motions] = await Promise.all([
+      supabase.rpc("hybrid_search_document_sections", params).then((r) => (r.data || []) as any[], () => []),
+      supabase.rpc("hybrid_search_motions", params).then((r) => (r.data || []) as any[], () => []),
+    ]);
+    for (const s of sections) byMeaning.push({ ref: `section:${s.id}`, kind: "report or minutes section", date: null,
+      title: `${s.section_title || "Section"}${s.agenda_item_id ? ` (filed under item:${s.agenda_item_id})` : ""}`, preview: String(s.content || "").slice(0, 300) });
+    for (const m of motions) byMeaning.push({ ref: `motion:${m.id}`, kind: "motion", date: null, title: `Motion (${m.result || "no result"})`, preview: String(m.text_content || "").slice(0, 300) });
+  }
+  const line = (h: RecordHit) => `- ${h.ref} [${h.kind}, ${h.date ?? "date unknown"}] ${h.title}: ${h.preview}`;
+  const observations = [
+    ...searches.map(({ q, hits }) => `SEARCH "${q}":\n` + (hits.length ? hits.map(line).join("\n") : "No records matched.")),
+    byMeaning.length ? `SEARCH BY MEANING (the question itself):\n${byMeaning.map(line).join("\n")}` : "",
+  ].filter(Boolean);
+  // What to read: the best hit of each search and the top finds by meaning, sections, motions and bylaws only.
+  const readable = (h: RecordHit) => /^(section|motion|bylaw):/.test(h.ref);
+  const wanted: string[] = [];
+  const want = (h: RecordHit | undefined) => { if (h && readable(h) && !wanted.includes(h.ref)) wanted.push(h.ref); };
+  for (const h of byMeaning.slice(0, 4)) want(h);
+  for (const { hits } of searches) { want(hits.find(readable)); }
+  for (const h of byMeaning.slice(4)) want(h);
+  const texts = await Promise.all(wanted.slice(0, PREFETCH_READS).map(async (ref) => ({ ref, text: await readRecord(supabase, ref).catch(() => "") })));
+  let used = observations.reduce((n, o) => n + o.length, 0);
+  const read: string[] = [];
+  for (const { ref, text } of texts) {
+    if (!text || used + text.length > PREFETCH_CHARS) continue;
+    observations.push(`READ ${ref}:\n${text}`);
+    used += text.length;
+    read.push(ref);
+  }
+  return { log: `Turn 0 (run for you from the question's own words):\n${observations.join("\n\n")}`, used, read };
+}
+
 /**
  * Research one question in the City's records: each turn the review model runs any number of searches and reads at
  * once (in parallel), until it can say whether the record supports a statement, and where. `context` is what the
@@ -194,7 +257,12 @@ export const CHECK_STATEMENT: ResearchGoal = {
 export async function research(supabase: SupabaseClient, question: string, context: string, maxTurns = 10, signal?: AbortSignal,
   goal: ResearchGoal = CHECK_STATEMENT, deadline?: number): Promise<ResearchFinding> {
   const log: string[] = [];
+  const read = new Set<string>();
   let used = 0;
+  // The searches and reads a first turn would ask for are run before it, from the question's own words, so the
+  // model's first call can often answer outright (a turn is about 3 s of model time; these are under 2 s of queries).
+  const pre = await prefetch(supabase, question, context).catch(() => null);
+  if (pre) { log.push(pre.log); used += pre.used; for (const ref of pre.read) read.add(ref); }
   for (let turn = 1; turn <= maxTurns + 1; turn++) {
     const last = turn > maxTurns || used > RESEARCH_BUDGET || (deadline !== undefined && Date.now() > deadline - FINISH_MARGIN_MS);
     const prompt = `You research Langford City council's own records to ${goal.task}. Search with specific words (an
@@ -206,7 +274,7 @@ bylaws (bylaw:<id>), whose printed reading and adoption dates are the certified 
 outrank a motion's wording in the minutes. For a question about whether a bylaw was read or adopted, search its
 number and read the signed bylaw. Agenda item summaries are model-written notes: they can point you somewhere but
 don't count as support. Quote the record's own words exactly in your finding.
-${last ? "\nYou have used your searches and reads: give your finding now with what you found.\n" : ""}
+${pre ? "Turn 0 was run for you: searches from the question's own words, and the records they found. When they don't answer the question outright, search further yourself.\n" : ""}${last ? "\nYou have used your searches and reads: give your finding now with what you found.\n" : ""}
 QUESTION: ${question}
 
 WHAT IS ALREADY KNOWN:
@@ -226,7 +294,13 @@ ${log.length ? `YOUR RESEARCH SO FAR:\n${log.join("\n\n")}` : "You have not sear
             ? hits.map((h) => `- ${h.ref} [${h.kind}, ${h.date ?? "date unknown"}] ${h.title}: ${h.preview}`).join("\n")
             : "No records matched. Try other words (fewer, or a number or address).");
         }
-        if (act.type === "read" && act.ref) return `READ ${act.ref}:\n${await readRecord(supabase, act.ref)}`;
+        if (act.type === "read" && act.ref) {
+          // A record already in front of the model (read this session, or the entry's own records in the context) is
+          // not fetched and sent again: that doubles the prompt for nothing.
+          if (read.has(act.ref) || context.includes(`(${act.ref})`)) return `READ ${act.ref}: already above (see ${context.includes(`(${act.ref})`) ? "THE ENTRY'S OWN RECORDS" : "your research so far"}).`;
+          read.add(act.ref);
+          return `READ ${act.ref}:\n${await readRecord(supabase, act.ref)}`;
+        }
         return "That action needs a query (search) or a ref (read).";
       } catch (error) {
         return `${act.type} failed: ${error instanceof Error ? error.message : String(error)}`;
