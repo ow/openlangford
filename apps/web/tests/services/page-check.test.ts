@@ -97,8 +97,9 @@ describe("agreedStillOpen", () => {
   const flag = (over: Partial<PageFlag>): PageFlag => ({ key: "agenda-10608", problem: "unsupported", reason: "r", excerpt: "e", verdict: null, ...over });
   it("keeps an agreed, unfixed flag a new check didn't raise again", () => {
     // The fix agent's re-check reopened it; the next check happened not to raise it.
-    const reopened = flag({ verdict: "agree", fixed: false });
+    const reopened = flag({ verdict: "agree", fixed: false, recheck: { holds: false, checked: true, at: "t", reason: "r" } });
     expect(agreedStillOpen([reopened], [])).toEqual([reopened]);
+    expect(agreedStillOpen([reopened], [], () => "changed since")).toEqual([reopened]);
   });
   it("drops fixed, unrated, disagreed and re-raised flags, and leaves staff's own issues to their own rule", () => {
     expect(agreedStillOpen([flag({ verdict: "agree", fixed: true }), flag({}), flag({ verdict: "disagree" }),
@@ -112,9 +113,12 @@ describe("agreedStillOpen", () => {
     const [resolved] = agreedStillOpen([agreed], [], () => "Matter: Solid waste collection bylaw");
     expect(resolved.fixed).toBe(true);
     expect(resolved.recheck).toMatchObject({ holds: true, checked: false });
-    // A page-level flag has no entry to compare: it stays open.
+    // A page-level flag has no entry to compare: not raised again, it is resolved.
     const page = flag({ key: null, verdict: "agree" });
-    expect(agreedStillOpen([page], [], () => "anything")).toEqual([page]);
+    expect(agreedStillOpen([page], [], () => "anything")[0]).toMatchObject({ fixed: true, recheck: { holds: true } });
+    // Unless the fix agent's re-check reopened it: then it stays until fixed.
+    const reopenedPage = flag({ key: null, verdict: "agree", recheck: { holds: false, checked: true, at: "t", reason: "r" } });
+    expect(agreedStillOpen([reopenedPage], [], () => "anything")).toEqual([reopenedPage]);
     // Re-raised on the same text: not this function's business (the fresh flag carries the rating).
     expect(agreedStillOpen([agreed], [flag({ excerpt: agreed.excerpt })], () => agreed.excerpt)).toEqual([]);
     // Raised again on a changed entry: a different flag, so the old one is resolved, not duplicated.
