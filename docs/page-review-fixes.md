@@ -225,6 +225,34 @@ the certified copy (`services/bylaw-records.server.ts`). Research can search and
 outranks a motion's wording in the minutes: the May 2, 2016 minutes say "give Bylaw No. 1628 First Reading" under an
 "(ADOPTION)" heading, and the signed bylaw says adopted that day.
 
+## Sources outside the record
+
+Land purchases, settlements and hires happen in closed meetings (Community Charter s.90), and Langford rarely reports
+them out, so the open record often shows only the aftermath: 3680 Trans-Canada Highway appears as a permit, a budget
+line and a plan recommending a sale, never as "the City bought it". A **source** (`sources`, linked to topics and
+addresses through `source_links`) is a dated statement from somewhere else: a City news release or notice (origin
+`city`), a news report (`press`), another document (`other`). It carries who said it, the words it says (`quote`), a
+one-line headline in the resident register, the date it happened and a link.
+
+Staff add one from the review bar's newspaper button on a topic or address page (`components/admin/source-card.tsx`):
+paste the link (and, if they like, the words and the date), the draft reads the page and proposes the line
+(`services/sources.server.ts` `draftSource`, the writing model), staff change what they want and add it. The same link
+added to a second page reuses the row. Removing one hides its link to that page.
+
+Where it shows and how it is weighed:
+
+- **Timelines.** A topic's timeline and a lot's chronology (`components/property/property-timeline.tsx`) show it as a
+  dashed card dated the day it happened, labelled "City news release" or "Reported by Victoria News" (`lib/sources.ts`
+  `sourceLabel`), with the quote and the link.
+- **Writers.** The topic summary (both runtimes) and the property lead get `sources` as their own block: a City
+  publication may be stated attributed to the City; a press report only with the publisher named ("Victoria News
+  reported the City paid about $2.2M"); never as Council's own decision. The record register never sees them.
+- **Checks.** The fact check, the fix agent's plan and the re-check get `SOURCE` lines, which support only a statement
+  carrying that attribution; the same fact stated as Council's own doing is `not_in_record`.
+
+`public_reports` stays what it was: the City's own page-indexed documents (annual reports), read by the pipeline. The
+split is by who said it and how it was read, not by format.
+
 ## Scoring the check against staff's decisions
 
 `npx tsx scripts/gold-checks.ts [--days 14] [--limit 20] [--runs 2] [--paths …]` re-runs the check, read-only, on pages

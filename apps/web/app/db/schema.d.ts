@@ -991,6 +991,34 @@ export interface MatterMerges {
   removed: Generated<Json>;
 }
 
+export interface SourceLinks {
+  created_at: Generated<Timestamp>;
+  hidden: Generated<boolean>;
+  id: Generated<Int8>;
+  matter_id: Int8 | null;
+  property_id: Int8 | null;
+  source_id: Int8;
+}
+
+export interface Sources {
+  added_by: string | null;
+  created_at: Generated<Timestamp>;
+  happened_on: Timestamp;
+  headline: string;
+  hidden: Generated<boolean>;
+  id: Generated<Int8>;
+  meta: Generated<Json>;
+  municipality_id: Int8;
+  note: string | null;
+  origin: string;
+  published_on: Timestamp | null;
+  publisher: string;
+  quote: string | null;
+  title: string;
+  updated_at: Generated<Timestamp>;
+  url: string | null;
+}
+
 export interface MatterReportMentions {
   confidence: number | null;
   created_at: Generated<Timestamp>;
@@ -1820,6 +1848,8 @@ export interface DB {
   matter_merge_proposals: MatterMergeProposals;
   matter_merges: MatterMerges;
   matter_report_mentions: MatterReportMentions;
+  source_links: SourceLinks;
+  sources: Sources;
   matters: Matters;
   meeting_events: MeetingEvents;
   meeting_slug_history: MeetingSlugHistory;

@@ -749,6 +749,58 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"source_links": {
+                  Row: {
+                    "created_at": string,"hidden": boolean,"id": number,"matter_id": number | null,"property_id": number | null,"source_id": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"hidden"?: boolean,"id"?: number,"matter_id"?: number | null,"property_id"?: number | null,"source_id": number
+                  }
+                  Update: {
+                    "created_at"?: string,"hidden"?: boolean,"id"?: number,"matter_id"?: number | null,"property_id"?: number | null,"source_id"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "source_links_matter_id_fkey"
+      columns: ["matter_id"]
+isOneToOne: false
+      referencedRelation: "matters"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "source_links_property_id_fkey"
+      columns: ["property_id"]
+isOneToOne: false
+      referencedRelation: "properties"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "source_links_source_id_fkey"
+      columns: ["source_id"]
+isOneToOne: false
+      referencedRelation: "sources"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"sources": {
+                  Row: {
+                    "added_by": string | null,"created_at": string,"happened_on": string,"headline": string,"hidden": boolean,"id": number,"meta": Json,"municipality_id": number,"note": string | null,"origin": string,"published_on": string | null,"publisher": string,"quote": string | null,"title": string,"updated_at": string,"url": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "added_by"?: string | null,"created_at"?: string,"happened_on": string,"headline": string,"hidden"?: boolean,"id"?: number,"meta"?: Json,"municipality_id": number,"note"?: string | null,"origin": string,"published_on"?: string | null,"publisher": string,"quote"?: string | null,"title": string,"updated_at"?: string,"url"?: string | null
+                  }
+                  Update: {
+                    "added_by"?: string | null,"created_at"?: string,"happened_on"?: string,"headline"?: string,"hidden"?: boolean,"id"?: number,"meta"?: Json,"municipality_id"?: number,"note"?: string | null,"origin"?: string,"published_on"?: string | null,"publisher"?: string,"quote"?: string | null,"title"?: string,"updated_at"?: string,"url"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "sources_municipality_id_fkey"
+      columns: ["municipality_id"]
+isOneToOne: false
+      referencedRelation: "municipalities"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"matter_report_mentions": {
                   Row: {
                     "confidence": number | null,"created_at": string,"hidden": boolean,"id": number,"matter_id": number,"page": number,"quote": string,"report_id": number,"review": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"source": string,"suggest_reason": string | null,"suggested_at": string | null

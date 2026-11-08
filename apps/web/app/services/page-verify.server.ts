@@ -5,6 +5,7 @@ import { completeVoteCounts } from "../lib/vote-coverage";
 import type { PageFlag } from "../lib/page-review-types";
 import { research } from "./record-research.server";
 import { bylawRecords } from "./bylaw-records.server";
+import { sourceRecordLines, sourcesFor } from "./sources.server";
 
 /**
  * The page check's second reading: the page's own statements against the records behind them. A topic page's
@@ -158,11 +159,11 @@ export async function claimsAndRecords(supabase: SupabaseClient, path: string): 
       ...Object.entries((meta.timeline_headlines || {}) as Record<string, string>)
         .filter(([id]) => ids.includes(Number(id))).map(([id, t]) => ({ id: `line-${id}`, key: `agenda-${id}`, text: `Timeline line for item ${id}: ${t}` })),
     ];
-    const [records, bylaws] = await Promise.all([itemRecords(supabase, ids), bylawRecords(supabase, m.id)]);
+    const [records, bylaws, sources] = await Promise.all([itemRecords(supabase, ids), bylawRecords(supabase, m.id), sourcesFor(supabase, { matterId: m.id })]);
     // Only statements there's something to check against: a line about an item with no records is left alone,
     // and the summary and status only when at least one item has records.
     const checkable = claims.filter((c) => c.id.startsWith("line-") ? records.covered.has(Number(c.id.slice(5))) : records.covered.size > 0);
-    return { claims: checkable, records: [records.text, bylaws].filter(Boolean).join("\n\n") };
+    return { claims: checkable, records: [records.text, bylaws, sourceRecordLines(sources)].filter(Boolean).join("\n\n") };
   }
   if (meeting) {
     const { data: mt } = await supabase.from("meetings").select("id, meta").eq("slug", meeting).maybeSingle();
@@ -200,6 +201,10 @@ A SIGNED BYLAW line is the certified bylaw's own record of its readings and adop
 in the minutes (a "first reading" motion on the day the signed bylaw says it was adopted means it was adopted), so a
 statement that the bylaw was adopted on that date is supported, and one that it only got a first reading is
 contradicted.
+A SOURCE line is from outside Council's record: the City's own publication, or someone else's report (it says who).
+It supports only a statement that carries that attribution ("Victoria News reported the City paid about $2.2M";
+"the City said in a news release…"): the same fact stated as Council's own doing, with no attribution, is
+not_in_record. A City publication is the City speaking and may be relied on as its own words.
 
 STATEMENTS
 ${claims.map((c) => `[${c.id}] ${c.text}`).join("\n")}

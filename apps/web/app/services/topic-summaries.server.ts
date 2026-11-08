@@ -166,6 +166,19 @@ export async function loadTopicContext(supabase: SupabaseClient, matterIds: numb
       notes: { summary: item.plain_english_summary || "" }, source: "accepted mention" });
     mentionsByMatter.set(mid, list);
   }
+  // Sources from outside the record (sources table): dated lines saying who said it; the prompt says how to use them.
+  const sourceRows = await inChunks(ids, (chunk, from, to) => supabase.from("source_links")
+    .select("matter_id, sources!inner(origin, publisher, title, happened_on, headline, quote, hidden)")
+    .in("matter_id", chunk).eq("hidden", false).eq("sources.hidden", false).order("id").range(from, to)) as any[];
+  const sourcesByMatter = new Map<number, any[]>();
+  for (const row of sourceRows) {
+    const src = one<any>(row.sources);
+    if (!src) continue;
+    const list = sourcesByMatter.get(row.matter_id) || [];
+    list.push({ date: src.happened_on, who: src.origin === "city" ? "the City of Langford (its own publication)" : src.publisher, origin: src.origin,
+      says: src.headline, quote: src.quote || "", title: src.title });
+    sourcesByMatter.set(row.matter_id, list);
+  }
   const itemIds = items.map((i) => i.id as number);
   const [motions, docs, sections] = itemIds.length ? await Promise.all([
     inChunks(itemIds, (chunk, from, to) => supabase.from("motions").select("id, agenda_item_id, plain_english_summary, text_content, result")
@@ -223,6 +236,7 @@ export async function loadTopicContext(supabase: SupabaseClient, matterIds: numb
     return {
       id: matter.id, title: matter.title, identifier: matter.identifier ?? null, history, mentions,
       ...(site.get(matter.id)?.length ? { same_site: site.get(matter.id) } : {}),
+      ...(sourcesByMatter.get(matter.id)?.length ? { sources: sourcesByMatter.get(matter.id)!.sort((a, b) => String(a.date || "").localeCompare(String(b.date || ""))) } : {}),
       ...(notes.length ? { editor_notes: notes } : {}),
       _has_mentions: mentions.length > 0,
       _owned_item_ids: new Set(history.map((h) => h.item as number)),

@@ -1,7 +1,7 @@
 import { Link, useFetcher, useRouteLoaderData } from "react-router";
 import { requireModerator } from "../lib/auth.server";
 import { AdminOnly } from "../components/ui/admin-only";
-import { FileText, Landmark, MapPin } from "lucide-react";
+import { Clock, FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { unavailable } from "../lib/loader-errors";
@@ -21,6 +21,8 @@ import { breadcrumbList, jsonLd, propertyPlace } from "../lib/structured-data";
 import { formatDate } from "../lib/utils";
 import { notFoundIfHidden } from "../services/page-visibility.server";
 import { documentImageUrl } from "../lib/document-images.server";
+import { propertyTimeline } from "../services/property-timeline.server";
+import { PropertyTimeline, type TimelineEntry } from "../components/property/property-timeline";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.property) return [{ title: `Property | ${SITE_NAME}` }];
@@ -68,7 +70,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const url = documentImageUrl(m.meta?.images?.lead?.r2_key ?? m.meta?.images?.layout?.r2_key);
     if (url) images[m.id] = url;
   }
-  return { ...result, images };
+  // One chronology for a lot: topic steps, other entries, annual reports, outside sources and closed meetings.
+  const timeline: TimelineEntry[] = result.isStreet ? [] : await propertyTimeline(getSupabaseAdminClient(), result.property.id, result.matters, result.items);
+  return { ...result, images, timeline };
 }
 
 /** Admins remove a wrong link (the address parser misread a title). The pipeline keeps it hidden. */
@@ -105,7 +109,7 @@ function Unlink({ field, id, isStreet }: { field: "matter_id" | "agenda_item_id"
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
-  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, images } = loaderData;
+  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, images, timeline } = loaderData;
   const isAdmin = !!(useRouteLoaderData("root") as { isAdmin?: boolean } | undefined)?.isAdmin;
   const geo = property.geo as { lat: number; lng: number } | null;
   const summary: string | undefined = (property as any).meta?.summary || undefined;
@@ -168,9 +172,9 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
           {matters.length > 0 && (
             <section>
               <SectionHeading
-                title={isStreet ? "About the street" : "Council decisions and projects"}
+                title={isStreet ? "About the street" : "Topics at this address"}
                 icon={Landmark}
-                description={isStreet ? "Road work, closures and other decisions about the street itself." : "Rezonings, permits and other decisions for this address, newest first."}
+                description={isStreet ? "Road work, closures and other decisions about the street itself." : "Each rezoning, permit or project here has its own page. The timeline below puts their steps in order."}
               />
               <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {matters.map((m: any) => {
@@ -216,7 +220,16 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             </section>
           )}
 
-          {items.length > 0 && (
+          {!isStreet && timeline.length > 0 && (
+            <section>
+              <SectionHeading title="Timeline" icon={Clock}
+                description="Everything the records hold about this address, in order: Council's steps, what else named it, the City's reports, and what was said elsewhere. Each line says who said it." />
+              <PropertyTimeline entries={timeline}
+                renderAdmin={(e) => (isAdmin && e.kind === "mention" ? <Unlink field="agenda_item_id" id={Number(e.key.slice(5))} isStreet={false} /> : null)} />
+            </section>
+          )}
+
+          {isStreet && items.length > 0 && (
             <section>
               <SectionHeading title="Other mentions" icon={FileText} description="Other times this address came up in council meetings." />
               <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">

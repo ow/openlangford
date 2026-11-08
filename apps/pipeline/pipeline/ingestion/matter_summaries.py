@@ -111,6 +111,22 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                       **({"names_this_matter": link["quote"].strip()} if isinstance(link.get("quote"), str) and link["quote"].strip() else {})},
             "source": "accepted mention",
         })
+    # Sources from outside the record (sources table, added by staff): the City's own publications and news reports,
+    # each a dated line with the source's words. Not record: the prompt says how to use them.
+    source_rows = _in_chunks(lambda ids: supabase.table("source_links")
+                             .select("matter_id, sources!inner(origin, publisher, title, url, published_on, happened_on, headline, quote, hidden)")
+                             .in_("matter_id", ids).eq("hidden", False).eq("sources.hidden", False).order("id"), matter_ids)
+    sources_by_matter: dict[int, list[dict]] = {}
+    for row in source_rows:
+        src = row.get("sources") or {}
+        if isinstance(src, list):
+            src = src[0] if src else {}
+        if not src:
+            continue
+        sources_by_matter.setdefault(row["matter_id"], []).append({
+            "date": src.get("happened_on"), "who": "the City of Langford (its own publication)" if src.get("origin") == "city" else src.get("publisher"),
+            "origin": src.get("origin"), "says": src.get("headline"), "quote": src.get("quote") or "", "title": src.get("title"),
+        })
     item_ids = [i["id"] for i in items]
     motions = _in_chunks(lambda ids: supabase.table("motions").select("id, agenda_item_id, plain_english_summary, text_content, result")
                          .in_("agenda_item_id", ids).order("id"), item_ids) if item_ids else []
@@ -180,6 +196,7 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                 "identifier": matter.get("identifier"),
                 "history": history,
                 "mentions": sorted(mentions_by_matter.get(matter["id"], []), key=lambda row: row["date"] or ""),
+                **({"sources": sorted(sources_by_matter[matter["id"]], key=lambda row: row["date"] or "")} if sources_by_matter.get(matter["id"]) else {}),
                 **({"same_site": same_site[matter["id"]]} if same_site.get(matter["id"]) else {}),
                 **({"editor_notes": notes} if (notes := [n for n in ((matter.get("meta") or {}).get("editor_notes") or [])
                                                           if isinstance(n, str) and n.strip()]) else {}),
