@@ -707,7 +707,7 @@ export function PageReviewBar() {
           </Tip>
           {/* Words for the decisions above; icons for the tools around them, with Next last. */}
           <span aria-hidden="true" className="mx-1 h-4 w-px bg-amber-300" />
-          {links && (
+          {links && edited && (
             <Tip label={edited?.newEntries ? `Edit the title, summary or photo. ${edited.newEntries} new ${edited.newEntries === 1 ? "entry" : "entries"} since the last edit: check it still holds`
               : edited?.photos ? `No feature photo yet: ${edited.photos} report ${edited.photos === 1 ? "picture" : "pictures"} to choose from`
               : edited?.locked.length ? "Edit the title, summary or photo (some are edited by hand)" : "Edit the title, summary or photo"}>
