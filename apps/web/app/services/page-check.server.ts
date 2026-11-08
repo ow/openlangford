@@ -101,15 +101,20 @@ const CheckSchema = z.object({
  * when staff agreed, the flag stays open on the page. When the entry's text has changed since (a hand edit, a fix to
  * the page itself) and the check no longer finds the problem, the flag is resolved: fixed, with a re-check line saying
  * so (2026-11-08: six flags on a meeting page outlived the template bug they described). `entryText` gives an entry's
- * text as the page shows it now; a page-level flag has no entry and stays open. */
+ * text as the page shows it now. A page-level flag has no entry to compare: not raised again, it is resolved too. A
+ * flag the fix agent's re-check reopened stays open until fixed, whatever a later check raises. */
 export function agreedStillOpen(prior: PageFlag[], fresh: PageFlag[], entryText: (key: string) => string | undefined = () => undefined): PageFlag[] {
   const same = (a: PageFlag, b: PageFlag) => a.key === b.key && a.problem === b.problem && a.excerpt === b.excerpt;
   return prior.filter((p) => p.verdict === "agree" && !p.fixed && p.problem !== "editor_issue" && !fresh.some((f) => same(f, p)))
     .map((p) => {
+      // Reopened by the fix agent's own re-check: open until fixed, whatever a later check happens to raise.
+      if (p.recheck && !p.recheck.holds) return p;
       const now = p.key ? entryText(p.key) : undefined;
-      if (!p.key || now === undefined || now === p.excerpt) return p;
+      // A page-level problem has no entry to compare: not raised again means no longer found.
+      if (p.key && (now === undefined || now === p.excerpt)) return p;
       return { ...p, fixed: true, recheck: { holds: true, checked: false, at: new Date().toISOString(),
-        reason: "The entry changed since staff agreed, and the check no longer finds this problem." } };
+        reason: p.key ? "The entry changed since staff agreed, and the check no longer finds this problem."
+          : "The check no longer finds this problem on the page." } };
     });
 }
 

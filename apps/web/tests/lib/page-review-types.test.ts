@@ -45,5 +45,7 @@ describe("entryLabel for meeting items", () => {
     const flags = [{ key: "item-4543", excerpt: "1.1 · 902 Walfred Rd Rezoning · Council proceeded with readings" }, { key: "item-4536", excerpt: "Summary of item 4536: Members of the public spoke" }];
     expect(entryLabel("item-4543", flags)).toBe('the "902 Walfred Rd Rezoning" item');
     expect(entryLabel("item-4536", flags)).toBe("the item");
+    const long = [{ key: "item-6739", excerpt: "2 · Bylaw NO. 2252 — “Langford Zoning Bylaw No. 300, Amendment No. 756 (R2 Text Amendment to Allow a Daycare), Bylaw No. 2252, 2026” (Adoption) · Adopted a zoning change" }];
+    expect(entryLabel("item-6739", long)).toBe('the "Bylaw NO. 2252 — “Langford Zoning Bylaw No. 300, Amendment…" item');
   });
 });
