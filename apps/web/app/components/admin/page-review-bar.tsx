@@ -526,7 +526,7 @@ export function PageReviewBar() {
                           )}
                           </div>
                           <div className="flex shrink-0 gap-0.5">
-                            <Tip label={s.agreed ? "Agreed: Fix adds it. Click to take it back" : s.topic ? "Yes, add it here as a mention (on Fix)" : "Yes, add it (on Fix)"}>
+                            <Tip label={review?.kind === "properties" ? "Yes, link it to this address now" : s.agreed ? "Agreed: Fix adds it. Click to take it back" : s.topic ? "Yes, add it here as a mention (on Fix)" : "Yes, add it (on Fix)"}>
                               <button type="button" disabled={busy} aria-pressed={s.agreed}
                                 onClick={() => submit("accept", { table: s.table, id: String(s.id), agree: s.agreed ? "0" : "1" })}
                                 aria-label="Yes, add it to the page"

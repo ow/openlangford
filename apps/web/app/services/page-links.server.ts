@@ -8,7 +8,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  */
 
 export type Suggestion = {
-  table: "matter_links" | "matter_report_mentions";
+  table: "matter_links" | "matter_report_mentions" | "property_items" | "property_matters";
   id: number;
   kind: "mention" | "related" | "report";
   date: string | null;

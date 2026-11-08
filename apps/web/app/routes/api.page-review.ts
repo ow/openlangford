@@ -1,4 +1,5 @@
 import { data } from "react-router";
+import { decidePropertySuggestion, findPropertyMissing, listPropertySuggestions } from "../services/property-search.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Route } from "./+types/api.page-review";
 import { requireModerator } from "../lib/auth.server";
@@ -18,8 +19,22 @@ import { EDIT_FIELDS, type EditField } from "../lib/topic-edit";
 const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "rate_all", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note",
   "edit_topic", "reset_field", "keep_edits"];
 
+/** The property a /properties/<slug> page is about, or null. */
+async function propertyForPath(supabase: SupabaseClient, path: string): Promise<number | null> {
+  const slug = path.match(/^\/properties\/([^/]+)$/)?.[1];
+  if (!slug) return null;
+  const { data } = await supabase.from("properties").select("id").eq("slug", slug).maybeSingle();
+  return data?.id ?? null;
+}
+
 /** On a topic page: suggestions waiting for a decision, and the latest "find missing" search. */
 async function linkState(supabase: SupabaseClient, path: string) {
+  const propertyId = await propertyForPath(supabase, path);
+  if (propertyId) {
+    // A property page: the records the address search found, waiting for a decision.
+    const { suggestions, searchedAt } = await listPropertySuggestions(supabase, propertyId);
+    return { suggestions, findJob: searchedAt ? { status: "succeeded", requested_at: searchedAt, finished_at: searchedAt, suggested: suggestions.length } : null };
+  }
   const matterId = await matterForPath(supabase, path);
   if (!matterId) return null;
   const [suggestions, findJob, edit] = await Promise.all([
@@ -71,6 +86,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     let message: string | null = null;
 
     if (intent === "check") {
+      // On a property page, the same press searches the records for the address (plain text matching, no model).
+      const propertyId = await propertyForPath(supabase, path);
+      if (propertyId) await findPropertyMissing(supabase, propertyId, user.id);
       // On a topic page, the same press also searches for entries missing from it (the pipeline's quick worker),
       // started first so it runs while the page is being checked rather than after.
       const matterId = await matterForPath(supabase, path);
@@ -94,6 +112,15 @@ export async function action({ request, context }: Route.ActionArgs) {
       if (intent === "hide_page" && !note) return bad("Say why you're hiding this page.");
       await setPageHidden(supabase, path, intent === "hide_page", { note, userId: user.id, title: String(form.get("title") || "") || null });
       message = intent === "hide_page" ? "This page is now hidden from the public: anyone else gets “not found”." : "This page is public again.";
+    } else if (["find_missing", "accept", "reject"].includes(intent) && await propertyForPath(supabase, path)) {
+      const propertyId = (await propertyForPath(supabase, path))!;
+      if (intent === "find_missing") {
+        const n = await findPropertyMissing(supabase, propertyId, user.id);
+        message = n ? `The search found ${n} ${n === 1 ? "entry" : "entries"} that name this address.` : "Nothing new names this address.";
+      } else {
+        // 👍 links it to the address now; 👎 keeps it off for good.
+        await decidePropertySuggestion(supabase, propertyId, String(form.get("table") || ""), Number(form.get("id")), intent === "accept" && form.get("agree") !== "0", user.id);
+      }
     } else if (["remove_entry", "find_missing", "accept", "reject", "edit_topic", "reset_field", "keep_edits"].includes(intent)) {
       const matterId = await matterForPath(supabase, path);
       if (!matterId) return bad("This only works on a topic page.");
