@@ -1,4 +1,5 @@
 import { writtenLetters } from "../lib/written";
+import { matterTitle } from "../lib/display-text";
 import { showsInTimeline } from "../lib/timeline-story";
 import { getPropertyPinsByMatter, type Pin } from "./properties";
 import { parseRelatedAddresses } from "../lib/addresses";
@@ -411,7 +412,7 @@ export type MatterLink = { id: number; slug: string | null; title: string };
 export async function getMatterLinks(supabase: SupabaseClient, matterIds: (number | null | undefined)[]): Promise<Record<number, MatterLink>> {
   const ids = [...new Set(matterIds.filter((id): id is number => !!id))];
   if (!ids.length) return {};
-  const fields = "id, slug, title, hidden:meta->>hidden, canonical:merged_into";
+  const fields = "id, slug, title, display_title:meta->>display_title, hidden:meta->>hidden, canonical:merged_into";
   const { data, error } = await supabase.from("matters").select(fields).in("id", ids);
   if (error) {
     console.error("Error fetching agenda item matters:", error);
@@ -427,7 +428,9 @@ export async function getMatterLinks(supabase: SupabaseClient, matterIds: (numbe
   for (const row of rows) {
     const target = row.canonical ? byId.get(Number(row.canonical)) : row;
     if (!target || target.hidden === "true" || target.hidden === "staff" || target.canonical) continue;
-    links[row.id] = { id: target.id, slug: target.slug, title: target.title };
+    // The topic's short title, as its own page shows it; the raw title carries the agenda's stage words
+    // ("… (FIRST, SECOND AND THIRD READINGS)"), wrong under an item that adopted the bylaw.
+    links[row.id] = { id: target.id, slug: target.slug, title: matterTitle({ title: target.title, meta: { display_title: target.display_title } }) };
   }
   return links;
 }

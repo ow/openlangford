@@ -207,14 +207,17 @@ describe("agenda item matter links", () => {
   it("links items to their canonical, visible matter", async () => {
     const { getMatterLinks } = await import("../../app/services/matters");
     const rows = [
-      { id: 1, slug: "caribou", title: "Caribou rezoning", hidden: null, canonical: null },
-      { id: 2, slug: "caribou-old", title: "Old", hidden: null, canonical: "1" },
-      { id: 3, slug: "secret", title: "Hidden", hidden: "true", canonical: null },
+      { id: 1, slug: "caribou", title: "Caribou rezoning", display_title: null, hidden: null, canonical: null },
+      { id: 2, slug: "caribou-old", title: "Old", display_title: null, hidden: null, canonical: "1" },
+      { id: 3, slug: "secret", title: "Hidden", display_title: null, hidden: "true", canonical: null },
+      // The short title stands in for the raw one, which carries the agenda's stage words.
+      { id: 4, slug: "solid-waste", title: "Solid Waste Collection Bylaw No. 2299, 2026 (FIRST, SECOND AND THIRD READINGS)", display_title: "Solid waste collection bylaw", hidden: null, canonical: null },
     ];
     const db = { from: () => { let ids: number[] = []; const q: any = { select: () => q, in: (_c: string, v: number[]) => { ids = v; return q; }, then: (ok: any) => ok({ data: rows.filter((r) => ids.includes(r.id)), error: null }) }; return q; } } as any;
-    expect(await getMatterLinks(db, [1, 2, 3, null])).toEqual({
+    expect(await getMatterLinks(db, [1, 2, 3, 4, null])).toEqual({
       1: { id: 1, slug: "caribou", title: "Caribou rezoning" },
       2: { id: 1, slug: "caribou", title: "Caribou rezoning" },
+      4: { id: 4, slug: "solid-waste", title: "Solid waste collection bylaw" },
     });
   });
 });
