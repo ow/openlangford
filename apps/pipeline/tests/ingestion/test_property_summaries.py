@@ -30,6 +30,12 @@ class FakeQuery:
         self.filters[column] = set(values)
         return self
 
+    def or_(self, *_a, **_k):  # text matching is not modelled: the address lines come back empty
+        return self
+
+    def limit(self, *_a, **_k):
+        return self
+
     def update(self, payload):
         self.payload = payload
         return self
@@ -92,6 +98,7 @@ def _db(meta_by_property=None):
             prop(4, "300-main-road", "300 Main Road", "300"),
             prop(5, "500-main-road", "500 Main Road", "500"),
         ],
+        source_links=[], document_sections=[], motions=[], transcript_segments=[],
         property_links=[
             # 1: two matters (one via two items) and a loose item -> 3 records
             _link(1, 10, 100), _link(1, 10, 101), _link(1, 11, None), _link(1, None, 102),
@@ -141,7 +148,18 @@ class TestSelection:
         assert props[2]["records"] == ["m12"]
         assert props[3]["records"] == ["i105", "i106"]
         assert props[4]["records"] == ["m15"]
-        assert [i for i, p in props.items() if ps.eligible(p)] == [1, 3]
+        # One meaningful record is enough for a lot (a topic, or an entry that is not public input); a resident's home is never.
+        assert [i for i, p in props.items() if ps.eligible(p)] == [1, 2, 3, 4]
+
+    def test_what_counts_as_a_meaningful_record(self):
+        link = lambda **k: {"matter_id": None, "agenda_item_id": None, "hidden": False, "agenda_items": None, **k}
+        assert not ps.meaningful([])
+        assert not ps.meaningful([link(matter_id=12, hidden=True)])
+        assert ps.meaningful([link(matter_id=12)])
+        assert not ps.meaningful([link(matter_id=12)], visible_matters={99})
+        assert ps.meaningful([link(agenda_item_id=105, agenda_items=ITEMS[105])])
+        assert not ps.meaningful([link(agenda_item_id=107, agenda_items=ITEMS[107])])
+        assert not ps.meaningful([link(agenda_item_id=108, agenda_items=ITEMS[108])])
 
     def test_a_residents_home_known_only_from_public_input_is_never_summarized(self):
         props = _props()
@@ -177,14 +195,15 @@ class TestSelection:
     def test_dry_run_lists_only_eligible_properties_and_calls_no_model(self, fake_ai, capsys):
         db = _db()
         result = stages.run_property_summaries(StageContext(supabase=db, dry_run=True))
-        assert result == {"properties": 2, "clear": 0}
-        assert "properties to summarize: 2: 1, 3" in capsys.readouterr().out
+        assert result == {"properties": 4, "clear": 0}
+        assert "properties to summarize: 4: 1, 2, 3, 4" in capsys.readouterr().out
         assert fake_ai.calls == [] and db.updates == []
 
     def test_target_accepts_several_ids_and_skips_ineligible(self, fake_ai):
         fake_ai.queue("generate", _summary("Council paved and later closed part of the road."))
         db = _db()
-        result = stages.run_property_summaries(StageContext(supabase=db, target="3,2"))
+        # Lot 5 is a resident's home, never summarized.
+        result = stages.run_property_summaries(StageContext(supabase=db, target="3,5"))
         assert result["summarized"] == 1
         assert [u[1] for u in db.updates] == [3]
 
@@ -236,16 +255,21 @@ class TestStale:
     def test_stale_stage_selection(self):
         props = _props()
         db = _db({1: self._current(props[1]), 3: {**self._current(props[3]), "summary_inputs": "old"}})
-        assert stages.stale_property_summaries(StageContext(supabase=db, stale=True)) == [3]
+        # Lots 2 and 4 qualify on one meaningful record and have no lead yet; lot 3's hash is out of date; lot 1 is current.
+        assert stages.stale_property_summaries(StageContext(supabase=db, stale=True)) == [2, 3, 4]
 
     def test_summary_left_over_on_an_ineligible_property_is_cleared(self, fake_ai):
         props = _props()
-        db = _db({1: self._current(props[1]), 3: self._current(props[3]),
+        db = _db({1: self._current(props[1]), 3: self._current(props[3]), 4: self._current(props[4]),
                   2: {**self._current(props[2]), "other": 1}, 5: {"summary": "x", "summary_version": "1"}})
+        # Lot 2's only link is hidden by an admin, so it has nothing left and its leftover lead is cleared.
+        for link in db.rows["property_links"]:
+            if link["property_id"] == 2:
+                link["hidden"] = True
         stages_props = ps.load_properties(db)
-        # The closing line depends on the current year; keep both hashes current.
+        # The closing line depends on the current year; keep the hashes current.
         for p in stages_props:
-            if p["id"] in (1, 3):
+            if p["id"] in (1, 3, 4):
                 db.rows["properties"][[r["id"] for r in db.rows["properties"]].index(p["id"])]["meta"] = self._current(p)
         result = stages.run_property_summaries(StageContext(supabase=db, stale=True))
         assert result == {"properties": 0, "summarized": 0, "cleared": 2}
@@ -285,7 +309,7 @@ class TestWrite:
         assert titles == ["Development permit", "100 Main Road rezoning"]
         assert data["council_decisions_and_projects"][1]["years"] == "2016–2018"
         assert len(data["council_decisions_and_projects"][0]["summary"]) == 500
-        assert data["other_mentions"] == [{"title": "Road dedication along Main Road", "year": 2021,
+        assert data["other_mentions"] == [{"id": 102, "title": "Road dedication along Main Road", "year": 2021,
                                            "summary": "Land for road widening."}]
 
     def test_street_input_covers_the_road_and_its_busiest_addresses(self):
