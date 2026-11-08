@@ -55,7 +55,7 @@ export async function addMotion(supabase: SupabaseClient, itemId: number, p: Mot
   const { data: existing } = await supabase.from("motions").select("id, agenda_item_id, text_content").eq("meeting_id", item.meeting_id);
   const twin = (existing || []).find((m: any) => normalise(m.text_content || "") === normalise(p.motion_text));
   if (twin) throw new Error(twin.agenda_item_id === itemId ? "the item already has that motion"
-    : `that motion is already recorded under item ${twin.agenda_item_id} at the same meeting (motion ${twin.id}); it should be moved, not added twice`);
+    : `that motion is already recorded under item ${twin.agenda_item_id} at the same meeting (motion ${twin.id}); move it with move_motion, don't add it twice`);
   // Every section of the meeting's minutes and reports: those of its documents, and those attached to its items.
   const [{ data: docs }, { data: items }] = await Promise.all([
     supabase.from("documents").select("id").eq("meeting_id", item.meeting_id),
@@ -110,4 +110,56 @@ export async function addMotion(supabase: SupabaseClient, itemId: number, p: Mot
   }
   return { motionId: motion.id as number, meetingId: item.meeting_id as number, matterId: item.matter_id as number | null,
     documentId: (source.extracted_document_id ?? source.document_id) as number | null };
+}
+
+/** Words a title shares with most others, no use for telling items apart. */
+const COMMON = new Set(["application", "amendment", "amend", "bylaw", "council", "report", "staff", "consideration", "agreement",
+  "request", "approval", "approve", "regarding", "district", "development", "official", "recorded", "motions", "langford", "meeting",
+  "proposed", "property", "properties", "zoning", "designation", "allow", "approximately", "number", "within"]);
+
+/** Why a motion filed under no item can't be moved onto this item, or null when it can: the motion has to name what
+ * the item is about. A number in the title (an address, a bylaw, a file) must appear in the motion; failing numbers,
+ * two of the title's distinctive words must. Pure, so it can be tested on its own. */
+export function moveProblem(itemTitle: string, motionText: string): string | null {
+  const title = normalise(itemTitle);
+  const motion = normalise(motionText);
+  if (motion.length < 10) return "the motion's wording is missing";
+  const numbers = [...new Set(title.match(/\b\d{3,}\b/g) || [])];
+  if (numbers.length) {
+    return numbers.some((n) => new RegExp(`\\b${n}\\b`).test(motion)) ? null
+      : `the motion doesn't mention the item's number (${numbers.join(", ")})`;
+  }
+  const words = [...new Set(title.split(/[^a-z]+/).filter((w) => w.length >= 5 && !COMMON.has(w)))];
+  const hits = words.filter((w) => motion.includes(w));
+  if (words.length && hits.length >= Math.min(2, words.length)) return null;
+  return "the motion's wording doesn't name what the item is about";
+}
+
+/**
+ * The fix agent's move_motion: a decision the history catch-up filed under the meeting's "Official recorded motions"
+ * container (it couldn't tell which item the motion decided) moved onto the item it is about. Only motions in that
+ * container move, only within their meeting, and only when the motion names the item (moveProblem).
+ */
+export async function moveMotion(supabase: SupabaseClient, itemId: number, motionId: number, requester: { id: string }, reason: string) {
+  const [{ data: item }, { data: motion }] = await Promise.all([
+    supabase.from("agenda_items").select("id, meeting_id, matter_id, item_order, title").eq("id", itemId).maybeSingle(),
+    supabase.from("motions").select("id, meeting_id, agenda_item_id, text_content, result, meta").eq("id", motionId).maybeSingle(),
+  ]);
+  if (!item?.meeting_id) throw new Error("that item couldn't be found");
+  if (!motion) throw new Error(`motion ${motionId} couldn't be found`);
+  if (motion.meeting_id !== item.meeting_id) throw new Error("that motion is from a different meeting");
+  if (motion.agenda_item_id === itemId) throw new Error("the item already has that motion");
+  const { data: from } = await supabase.from("agenda_items").select("id, title, item_order").eq("id", motion.agenda_item_id).maybeSingle();
+  const container = !!from && (from.item_order === "official-recorded-motions" || /^official recorded motions/i.test(from.title || ""));
+  if (!container) throw new Error(`that motion is filed under another item at the meeting ("${(from?.title || "").slice(0, 80)}"), not the unfiled container; moving it needs a person`);
+  const problem = moveProblem(item.title || "", motion.text_content || "");
+  if (problem) throw new Error(problem);
+  const at = new Date().toISOString();
+  const previous = (motion.meta || {}) as Record<string, any>;
+  const meta = { ...previous, placed_before: previous.placed_by ?? null,
+    placed_by: { method: "fix_agent_move", item_order: item.item_order, from_item_id: from!.id, by: requester.id, at, reason: reason.slice(0, 300) } };
+  const { error } = await supabase.from("motions").update({ agenda_item_id: itemId, meta }).eq("id", motionId);
+  if (error) throw new Error(error.message);
+  return { motionId, meetingId: item.meeting_id as number, matterId: item.matter_id as number | null, fromItemId: from!.id as number,
+    text: String(motion.text_content || ""), result: String(motion.result || "") };
 }

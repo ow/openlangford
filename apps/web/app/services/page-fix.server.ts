@@ -14,7 +14,7 @@ import { logStaffAction } from "./staff.server";
 import { rewriteSummaries } from "./topic-summaries.server";
 import { mergeFlat, moveItem, refreshMeetingLifecycles } from "./topic-moves.server";
 import type { StaffRole } from "../lib/auth.server";
-import { MOTION_RESULTS, addMotion } from "./motion-add.server";
+import { MOTION_RESULTS, addMotion, moveMotion } from "./motion-add.server";
 import { STAGE_LABELS, type StageChoice } from "../components/matter/timeline-step";
 
 /**
@@ -45,7 +45,7 @@ const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "set_stage", "no_change", "cannot_fix"]),
+      "rewrite_summary", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "no_change", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. unlink_related: the related topic's id. Otherwise null."),
@@ -54,6 +54,7 @@ const PlanSchema = z.object({
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
     source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly and as briefly as the claim allows. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    motion_id: z.number().int().nullable().describe("move_motion: the MOTION id from the list of decisions filed under no item. Otherwise null."),
     motion_text: z.string().nullable().describe("add_motion: the motion's wording exactly as the minutes give it (\"That Council adopt Bylaw No. 1239.\"). Otherwise null."),
     motion_result: z.enum(MOTION_RESULTS).nullable().describe("add_motion: the outcome the minutes record. Otherwise null."),
     mover: z.string().nullable().describe("add_motion: who moved it, as the minutes name them, or null."),
@@ -233,6 +234,10 @@ ${attachments || "(No flagged entry has documents attached.)"}
   scanned copy put "CARRIED" under the item before). Give motion_text exactly as the minutes word it, motion_result, mover and seconder if named, and in
   "source" the minutes passage word for word from the motion through its outcome. It is saved only if that passage is
   in this meeting's minutes or reports and itself says the outcome; never add a motion the minutes don't record.
+- move_motion: an entry ("agenda-" or "mention-") whose decision is already recorded at its meeting but filed under
+  no item: listed under "DECISIONS RECORDED AT THESE MEETINGS BUT FILED UNDER NO ITEM". Give the entry's key and the
+  MOTION id. It is moved, never copied, and only when its wording names what the entry is about (the address, bylaw
+  or file number). Prefer this over add_motion whenever the motion is already in that list.
 - set_stage: an "agenda-" entry whose stage line is wrong. The page guesses a step's stage from its wording, so a
   condition "prior to adoption" can read as the adoption, or a hearing being scheduled as the hearing itself. Pick
   the stage the records show: ${Object.entries(STAGE_LABELS).map(([k, v]) => `${k} ("${v}")`).join(", ")}, or none
@@ -269,6 +274,24 @@ async function heldBackMotions(supabase: SupabaseClient, ids: number[]): Promise
   const lines = ((data || []) as any[]).flatMap((row) => (Array.isArray(row.held) ? row.held : [])
     .filter((h: any) => h?.motion_text && !h.resolved_motion_id).map((h: any) => `- ITEM ${row.id}: ${String(h.motion_text)}`));
   return lines.length ? `PROPOSALS WHOSE OUTCOME WAS NOT FOUND (not decisions; add_motion one only when the minutes text above records its outcome):\n${lines.join("\n")}` : "";
+}
+
+/** Decisions the history catch-up recorded at a flagged entry's meeting but couldn't file under an item (its
+ * "Official recorded motions" container), for the planner: it moves one onto the entry it decides. */
+async function containerMotions(supabase: SupabaseClient, ids: number[]): Promise<string> {
+  if (!ids.length) return "";
+  const { data: items } = await supabase.from("agenda_items").select("id, meeting_id").in("id", ids);
+  const meetingIds = [...new Set(((items || []) as any[]).map((i) => i.meeting_id).filter(Boolean))];
+  if (!meetingIds.length) return "";
+  const { data: containers } = await supabase.from("agenda_items").select("id, meeting_id").in("meeting_id", meetingIds)
+    .or("item_order.eq.official-recorded-motions,title.ilike.Official recorded motions%");
+  if (!containers?.length) return "";
+  const { data: motions } = await supabase.from("motions").select("id, agenda_item_id, result, text_content")
+    .in("agenda_item_id", (containers as any[]).map((c) => c.id)).order("id");
+  const meetingOf = new Map((containers as any[]).map((c) => [c.id, c.meeting_id]));
+  const lines = ((motions || []) as any[]).map((m) =>
+    `- MOTION ${m.id} (meeting ${meetingOf.get(m.agenda_item_id)}, ${m.result || "result not recorded"}): ${String(m.text_content || "").replace(/\s+/g, " ").slice(0, 320)}`);
+  return lines.length ? `DECISIONS RECORDED AT THESE MEETINGS BUT FILED UNDER NO ITEM (ingest couldn't tell which item each decides; move_motion one onto the entry it is about, by its MOTION id):\n${lines.join("\n")}` : "";
 }
 
 /** Runs the agent for one page. Never throws: a failure is written to the page as "needs work" with a note. Returns
@@ -386,8 +409,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       `• ${capital(entryLabel(i.key, flags))}: ${i.finding!.explanation} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
       await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
-    const heldBack = await heldBackMotions(supabase, ids);
-    const records = [itemText, bylawText, heldBack, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+    const [heldBack, unfiled] = await Promise.all([heldBackMotions(supabase, ids), containerMotions(supabase, ids)]);
+    const records = [itemText, bylawText, heldBack, unfiled, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
     // Topics holding entries staff accepted for this page (found entries just added, mentions kept earlier) are often
     // a topic of their own that's really this one (a lone 2019 extension of an agreement this page already has, a
@@ -579,6 +602,25 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
               reason: step.reason.slice(0, 400) } });
         } catch (error) {
           left.push(`${step.reason} (the motion wasn't added: ${error instanceof Error ? error.message : "unknown error"})`);
+        }
+        continue;
+      }
+      if (step.action === "move_motion" && step.key && /^(agenda|mention)-\d+$/.test(step.key) && onPage.has(step.key)) {
+        if (!step.motion_id) {
+          left.push(`${step.reason} (no motion was named, so nothing changed)`);
+          continue;
+        }
+        try {
+          const moved = await moveMotion(supabase, itemId(step.key), step.motion_id, requester, step.reason);
+          const text = moved.text.replace(/\s+/g, " ").trim();
+          addedMotions.push({ key: step.key, text, result: moved.result, quote: text, meetingId: moved.meetingId, matterId: moved.matterId });
+          fixedKeys.add(step.key);
+          done.push(`Moved the meeting's recorded decision onto ${entryLabel(step.key, flags)}: ${step.reason} The motion: “${text.slice(0, 300)}”`);
+          await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:move_motion",
+            detail: { agenda_item_id: String(itemId(step.key)), motion_id: String(moved.motionId), from_item_id: String(moved.fromItemId),
+              reason: step.reason.slice(0, 400) } });
+        } catch (error) {
+          left.push(`${step.reason} (the motion wasn't moved: ${error instanceof Error ? error.message : "unknown error"})`);
         }
         continue;
       }

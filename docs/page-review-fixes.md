@@ -43,7 +43,12 @@ carries out fixes for the flags staff agreed with. This page explains where each
      (`agenda_items.meta.unverified_motion_proposals`; only the planner sees those, never the page check). The
      agent's quote must appear word for word in a section of that meeting's minutes or reports, and must itself hold
      the motion and its outcome (`app/services/motion-add.server.ts`). If the same motion is already under another
-     item of that meeting, it isn't added twice. `set_stage` picks an entry's stage from the fixed list
+     item of that meeting, it isn't added twice. `move_motion` moves a decision the history catch-up recorded at the meeting but filed under its
+     "Official recorded motions" container (it couldn't tell which item the motion decided) onto the entry it is
+     about. The planner sees those container motions by id; `moveMotion` (`motion-add.server.ts`) moves only within
+     the meeting, only out of the container, and only when the motion names the item (a number from the title, or two
+     of its distinctive words). It is a move, never a copy; the motion keeps a `placed_by` note saying where it came
+     from. `set_stage` picks an entry's stage from the fixed list
      (`STAGE_LABELS` in `components/matter/timeline-step.tsx`) when the guess from its wording is wrong. It is kept on
      the item (`agenda_items.meta.staff_stage`) so it follows the item when it moves.
    - **Moves and merges:** moving an agenda item to a named topic, and merging duplicate topics through the
