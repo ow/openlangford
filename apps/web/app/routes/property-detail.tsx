@@ -203,18 +203,14 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                 {matters.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
                   const image = images?.[m.id];
-                  const wide = isStreet || matters.length === 1;  // one full-width row: picture at the right
                   const summary = m.plain_english_summary ? (firstSentence(m.plain_english_summary) || m.plain_english_summary).replace(/([^.!?])$/, "$1.") : null;
                   // Keyed for the review bar (matter-<id>): the check flags an entry by this key and the bar outlines it.
                   return (
                     <li key={m.id} id={`timeline-matter-${m.id}`} data-review-entry={`matter-${m.id}`}
                       className={cn(!isStreet && "overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm transition-shadow hover:shadow-md")}>
                       <div className="flex h-full flex-col">
-                      <Link to={matterPath(m)} className={cn("group flex flex-1 gap-4 hover:bg-zinc-50", wide ? "px-5 py-4" : "flex-col p-0")}>
-                        {image && !wide && (
-                          <img src={image} alt="" loading="lazy" className="h-32 w-full object-cover" />
-                        )}
-                        <div className={cn("min-w-0 flex-1", !wide && "px-5 pb-4 pt-4")}>
+                      <Link to={matterPath(m)} className="group flex flex-1 gap-4 px-5 py-4 hover:bg-zinc-50">
+                        <div className="min-w-0 flex-1">
                           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums text-zinc-500">
                             <span>
                               {shortDate(m.first_seen)}
@@ -228,12 +224,12 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                           {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{summary}</p>}
                           {m.meta?.status_line && <p className="mt-1 text-xs text-zinc-500">{m.meta.status_line}</p>}
                         </div>
-                        {image && wide && (
-                          <img src={image} alt="" loading="lazy" className="hidden h-20 w-28 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
+                        {image && (
+                          <img src={image} alt="" loading="lazy" className="hidden h-24 w-32 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
                         )}
                       </Link>
                       {isAdmin && (
-                        <div className={cn("px-5 pb-3", wide && "-mt-2")}>
+                        <div className="-mt-2 px-5 pb-3">
                           <Unlink field="matter_id" id={m.id} isStreet={isStreet} />
                         </div>
                       )}
