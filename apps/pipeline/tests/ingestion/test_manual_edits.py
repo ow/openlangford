@@ -70,3 +70,32 @@ def test_no_photo_chosen_by_hand_stays_no_photo():
     out = keep_image_edit(_Rows(stored), 1, {"images": {"lead": {"r2_key": "model.webp"}}})
     assert "images" not in out
     assert out["manual"]["image"]["auto"] == {"r2_key": "model.webp"}
+
+
+def test_keep_manual_text_keeps_a_hand_written_item_summary_and_stores_the_writers_as_auto():
+    from pipeline.ingestion.manual_edits import keep_manual_text
+
+    stored = {"key_quotes": ["q"], "manual": {"summary": {"by": "u1", "at": "2026-11-08T00:00:00Z", "auto": None}}}
+    update = {"description": "d", "plain_english_summary": "Refined again.", "meta": {**stored, "key_quotes": ["q2"]}}
+    out = keep_manual_text(stored, update, {"summary": "plain_english_summary"})
+    assert "plain_english_summary" not in out
+    assert out["description"] == "d"
+    assert out["meta"]["key_quotes"] == ["q2"]
+    assert out["meta"]["manual"]["summary"] == {"by": "u1", "at": "2026-11-08T00:00:00Z", "auto": "Refined again."}
+    # No lock, or the column not in the update: untouched.
+    assert keep_manual_text({"manual": {}}, update, {"summary": "plain_english_summary"}) is update
+    assert keep_manual_text(stored, {"description": "d"}, {"summary": "plain_english_summary"}) == {"description": "d"}
+
+
+def test_keep_manual_highlights_keeps_a_persons_highlights():
+    from pipeline.ingestion.manual_edits import keep_manual_highlights
+
+    theirs = {"bullets": ["Theirs."], "links": [[]], "description": "D", "version": "3"}
+    new = {"bullets": ["New."], "links": [[]], "description": "N", "version": "4"}
+    meta = {"highlights": theirs, "manual": {"highlights": {"by": "u1", "at": "t", "auto": None}}, "other": 1}
+    out = keep_manual_highlights(meta, new)
+    assert out["highlights"] == theirs and out["other"] == 1
+    assert out["manual"]["highlights"]["auto"] == new
+    # Without a lock the stage's highlights replace the stored ones, and None removes them.
+    assert keep_manual_highlights({"highlights": theirs}, new) == {"highlights": new}
+    assert keep_manual_highlights({"highlights": theirs, "x": 1}, None) == {"x": 1}

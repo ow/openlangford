@@ -33,6 +33,7 @@ from pydantic import BaseModel
 from supabase import Client
 
 from pipeline import ai
+from pipeline.ingestion.manual_edits import keep_manual_highlights
 from pipeline.ai import glossary
 from pipeline.ingestion.record_sources import CHECK_RULE, RECORD_RULE, meeting_transcript
 
@@ -468,18 +469,17 @@ def generate(supabase: Client, meeting_id: int) -> dict | None:
 
 
 def write_highlights(supabase: Client, meeting_id: int, highlights: dict | None, *, attempts: int = 4) -> bool:
-    """Replace only ``meta.highlights`` (None removes it), guarded by ``updated_at`` so concurrent meta writers are never lost."""
+    """Replace only ``meta.highlights`` (None removes it), guarded by ``updated_at`` so concurrent meta writers are never
+    lost. Highlights a person edited by hand (``meta.manual.highlights``) are kept, with this run's stored as ``auto``."""
     for _ in range(attempts):
         rows = supabase.table("meetings").select("meta, updated_at").eq("id", meeting_id).execute().data or []
         if not rows:
             return False
-        meta = dict(rows[0].get("meta") or {})
-        if highlights is None:
-            if "highlights" not in meta:
-                return True
-            meta.pop("highlights")
-        else:
-            meta["highlights"] = highlights
+        stored = dict(rows[0].get("meta") or {})
+        if highlights is None and "highlights" not in stored and "highlights" not in (stored.get("manual") or {}):
+            return True
+        # Highlights a person edited on the meeting page stay; this run's go to manual.highlights.auto.
+        meta = keep_manual_highlights(stored, highlights)
         query = supabase.table("meetings").update({"meta": meta}).eq("id", meeting_id)
         if rows[0].get("updated_at"):
             query = query.eq("updated_at", rows[0]["updated_at"])
