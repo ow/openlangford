@@ -17,7 +17,7 @@ const MUNICIPALITY = 1;
 
 export type SourceTarget = { matterId?: number | null; propertyId?: number | null };
 
-const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden, archive_url, date_label:meta->>date_label, compact:meta->>compact";
+const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden, archive_url, date_label:meta->>date_label, compact:meta->>compact, images:meta->images";
 
 /** The sources linked to a topic or an address, oldest first. */
 export async function sourcesFor(supabase: SupabaseClient, target: SourceTarget): Promise<Source[]> {

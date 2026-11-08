@@ -39,6 +39,8 @@ export type TimelineEntry = {
   linkTitle?: string | null;
   /** The page's full title, shown on hover over the pill. */
   linkHint?: string | null;
+  /** Pictures kept with a source (the City's FOI table and letter): thumbnails that open full size. */
+  images?: { url: string; w: number; h: number; alt: string }[] | null;
   /** A small one-line row on the rail instead of a card (thin context: a notice, an advisory). */
   compact?: boolean;
   /** A YouTube video to embed in the row. */
@@ -55,6 +57,9 @@ export type TimelineEntry = {
 
 /** The small pill the meeting page uses for its document and vote buttons. */
 const PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
+
+/** A quote set as a pull quote: italic, a thin brand-tinted rule, a touch darker than body text. Not loud. */
+export const PULL = "border-l-2 border-brand-200 pl-3 italic text-zinc-700";
 
 const shortDate = (d: string) => formatDate(d, { year: "numeric", month: "short", day: "numeric" });
 
@@ -161,9 +166,24 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
       <Disc group={g} />
       <div className={FADED}>
       <p className="text-xs text-zinc-500"><span className="tabular-nums">{e.dateLabel || shortDate(e.date)}</span> · {e.label}</p>
-      <p className="mt-0.5 font-medium leading-snug text-zinc-800"><TermText text={e.headline} /></p>
+      {e.kind === "report"
+        ? <blockquote className={cn("mt-1.5 text-[0.95rem] leading-relaxed", PULL)}>“{e.headline}”</blockquote>
+        : <p className="mt-0.5 font-medium leading-snug text-zinc-800"><TermText text={e.headline} /></p>}
       {e.kind === "closed" ? (e.detail && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>) : <Detail entry={e} />}
       {e.video && <VideoEmbed id={e.video.id} title={e.video.title} className="mt-2" />}
+      {!!e.images?.length && (
+        <div className="mt-2.5">
+          <div className="flex flex-wrap items-start gap-2.5">
+            {e.images.map((im) => (
+              <a key={im.url} href={im.url} target="_blank" rel="noopener noreferrer" title="Open full size"
+                className="block overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+                <img src={im.url} alt={im.alt} width={im.w} height={im.h} loading="lazy" className="h-44 w-auto max-w-full object-contain" />
+              </a>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">As posted with the City's response. Click to enlarge.</p>
+        </div>
+      )}
       {e.external && e.href && (
         <p className="mt-2 flex flex-wrap items-center gap-1.5">
           <a href={e.href} target="_blank" rel="noopener noreferrer" title={e.linkHint || undefined} className={cn(PILL, "max-w-full whitespace-nowrap")}><ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{e.linkTitle || "Read it"}</span></a>
@@ -245,6 +265,6 @@ function Detail({ entry: e }: { entry: TimelineEntry }) {
   }
   // A quote is the evidence, so it gets room (about six lines); a summary is only a pointer, so it stays short.
   return e.quoted || e.kind === "source" || e.kind === "report"
-    ? <blockquote className="mt-1 line-clamp-6 text-sm leading-relaxed text-zinc-600">“{e.detail}”</blockquote>
+    ? <blockquote className={cn("mt-2 line-clamp-6 text-[0.95rem] leading-relaxed", PULL)}>“{e.detail}”</blockquote>
     : <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>;
 }

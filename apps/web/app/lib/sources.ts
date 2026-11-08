@@ -23,6 +23,8 @@ export type Source = {
   archive_url?: string | null;
   /** How to show the date when the source gives only a season or a month ("Spring 2019"); happened_on still orders it. */
   date_label?: string | null;
+  /** Pictures kept with the source (R2 keys), such as the City's FOI table and letter. meta.images. */
+  images?: { r2_key: string; w: number; h: number; alt: string }[] | null;
   /** Shown as a small one-line row on the timeline (thin context: a notice, an advisory). meta.compact, as text. */
   compact?: string | boolean | null;
 };
