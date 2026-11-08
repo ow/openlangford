@@ -20,6 +20,8 @@ export type TimelineEntry = {
   label: string;
   headline: string;
   detail?: string | null;
+  /** The detail is the record's own words (shown as a quote), not a summary. */
+  quoted?: boolean;
   href?: string | null;
   external?: boolean;
   topic?: { slug: string; title: string } | null;
@@ -66,7 +68,7 @@ function Row({ entry: e, admin }: { entry: TimelineEntry; admin?: ReactNode }) {
         <TermText text={e.headline} />
       </p>
       {e.detail && (
-        outside ? <blockquote className="mt-1 line-clamp-3 text-sm leading-relaxed text-zinc-600">“{e.detail}”</blockquote>
+        outside || e.quoted ? <blockquote className="mt-1 line-clamp-3 text-sm leading-relaxed text-zinc-600">“{e.detail}”</blockquote>
           : <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>
       )}
       {e.topic && (

@@ -105,7 +105,7 @@ export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) 
     looseItemIds.length
       ? supabase
           .from("agenda_items")
-          .select("id, title, plain_english_summary, meeting_id, meetings(id, slug, title, meeting_date)")
+          .select("id, title, plain_english_summary, meeting_id, discussion_start_time, discussion_end_time, meetings(id, slug, title, meeting_date)")
           .in("id", looseItemIds)
       : Promise.resolve({ data: [] as any[], error: null }),
     // Lots on the same street (a street page lists them all; a lot shows its nearest neighbours).
