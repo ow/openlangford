@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getAiClient } from "./ai/client.server";
 import { glossaryIds, glossaryPromptBlock } from "./ai/glossary-prompt";
-import { publisherFor, tidyQuote, type Source, type SourceOrigin } from "../lib/sources";
+import { publisherFor, tidyQuote, waybackArchiveUrl, type Source, type SourceOrigin } from "../lib/sources";
 
 /**
  * Sources outside the meeting record, added by staff from the review bar: a City news release, a public notice, a
@@ -17,7 +17,7 @@ const MUNICIPALITY = 1;
 
 export type SourceTarget = { matterId?: number | null; propertyId?: number | null };
 
-const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden";
+const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden, archive_url";
 
 /** The sources linked to a topic or an address, oldest first. */
 export async function sourcesFor(supabase: SupabaseClient, target: SourceTarget): Promise<Source[]> {
@@ -136,8 +136,44 @@ export type NewSource = {
   headline: string; quote: string | null; note: string | null;
 };
 
-/** Add a source and link it to the page it was added from. The same link added to a second page reuses the row. */
-export async function addSource(supabase: SupabaseClient, input: NewSource, target: SourceTarget, userId: string): Promise<Source> {
+const UA = { "user-agent": "Mozilla/5.0 (compatible; OpenLangford/1.0; +https://openlangford.ca)" };
+
+/** A Wayback Machine copy that already exists for the link (the availability API answers in a second), or null. */
+export async function existingWaybackCopy(url: string, timeoutMs = 6_000): Promise<string | null> {
+  const already = waybackArchiveUrl(url, null, null);
+  if (already) return already;
+  try {
+    const res = await fetch(`https://archive.org/wayback/available?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(timeoutMs), headers: UA });
+    const data: any = res.ok ? await res.json() : null;
+    const closest = data?.archived_snapshots?.closest;
+    return closest?.available && typeof closest.url === "string" ? closest.url.replace(/^http:/, "https:") : null;
+  } catch { return null; }
+}
+
+/** Ask the Wayback Machine to save the link and return the copy's address, or null when it declines or is slow.
+ * Saving can take a minute, so this runs after the response (see addSource's ``later``). */
+export async function archiveWithWayback(url: string, timeoutMs = 90_000): Promise<string | null> {
+  const already = waybackArchiveUrl(url, null, null);
+  if (already) return already;
+  try {
+    const res = await fetch(`https://web.archive.org/save/${url}`, { redirect: "follow", signal: AbortSignal.timeout(timeoutMs), headers: UA });
+    return waybackArchiveUrl(url, res.url, res.headers.get("content-location")) ?? await existingWaybackCopy(url);
+  } catch (e) {
+    console.warn("[sources] wayback save failed:", e instanceof Error ? e.message : String(e));
+    return null;
+  }
+}
+
+/** Fill in a source's archived copy once the Wayback Machine has one. Safe to call again for a row still without one. */
+export async function archiveSource(supabase: SupabaseClient, sourceId: number, url: string): Promise<string | null> {
+  const copy = await archiveWithWayback(url);
+  if (copy) await supabase.from("sources").update({ archive_url: copy, archived_at: new Date().toISOString() }).eq("id", sourceId).is("archive_url", null);
+  return copy;
+}
+
+/** Add a source and link it to the page it was added from. The same link added to a second page reuses the row.
+ * The page's text is kept on the row (never shown; the checks read it) and a Wayback copy is requested. */
+export async function addSource(supabase: SupabaseClient, input: NewSource, target: SourceTarget, userId: string, later: (work: Promise<unknown>) => void = (w) => { w.catch(() => {}); }): Promise<Source> {
   if (!input.headline.trim()) throw new Error("Could not add the source: it needs a headline.");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.happened_on)) throw new Error("Could not add the source: the date must be YYYY-MM-DD.");
   if (!target.matterId && !target.propertyId) throw new Error("Could not add the source: no page to link it to.");
@@ -147,13 +183,22 @@ export async function addSource(supabase: SupabaseClient, input: NewSource, targ
     row = data?.[0] ?? null;
   }
   if (!row) {
+    // The text and any existing archive copy, both best effort: a page that won't read still gets its line.
+    const [page, archive] = input.url
+      ? await Promise.all([fetchPageText(input.url, AbortSignal.timeout(15_000)).catch(() => null), existingWaybackCopy(input.url)])
+      : [null, null];
+    const text = page && page.status >= 200 && page.status < 300 && !page.text.startsWith("(") ? page.text.slice(0, 60_000) : null;
+    const now = new Date().toISOString();
     const { data, error } = await supabase.from("sources").insert({
       municipality_id: MUNICIPALITY, origin: input.origin, publisher: input.publisher.trim() || "Unknown", title: input.title.trim() || input.url || input.headline,
       url: input.url, published_on: input.published_on || null, happened_on: input.happened_on, headline: input.headline.trim(),
       quote: input.quote?.trim() || null, note: input.note?.trim() || null, added_by: userId,
+      content_text: text, content_fetched_at: text ? now : null, archive_url: archive, archived_at: archive ? now : null,
     }).select(FIELDS).single();
     if (error) throw new Error(`Could not add the source: ${error.message}`);
     row = data;
+    // No copy yet: ask the Wayback Machine to make one, after the response (it can take a minute).
+    if (input.url && !archive) later(archiveSource(supabase, row.id, input.url));
   }
   const link = { source_id: row.id, matter_id: target.matterId || null, property_id: target.propertyId || null, hidden: false };
   const { data: existing } = await supabase.from("source_links").select("id").eq("source_id", row.id)
@@ -176,8 +221,38 @@ export async function removeSource(supabase: SupabaseClient, sourceId: number, t
   if (error) throw new Error(`Could not remove the source: ${error.message}`);
 }
 
-/** The sources as lines for the fact check and the fix agent: evidence for their own, attributed, claim only. */
+/** The sources as lines for the fact check and the fix agent: evidence for their own, attributed, claim only. Each
+ * names its ref (source:<id>) so research can read the page's text. */
 export function sourceRecordLines(sources: Source[]): string {
   if (!sources.length) return "";
-  return sources.map((s) => `SOURCE (${s.origin === "city" ? "City publication" : `reported by ${s.publisher}`}, ${s.happened_on}${s.published_on && s.published_on !== s.happened_on ? `, published ${s.published_on}` : ""}): ${s.headline}${s.quote ? ` — “${tidyQuote(s.quote)}”` : ""}`).join("\n");
+  return sources.map((s) => `SOURCE source:${s.id} (${s.origin === "city" ? "City publication" : `reported by ${s.publisher}`}, ${s.happened_on}${s.published_on && s.published_on !== s.happened_on ? `, published ${s.published_on}` : ""}): ${s.headline}${s.quote ? ` — “${tidyQuote(s.quote)}”` : ""}`).join("\n");
+}
+
+export type SourceHit = Source & { preview: string };
+
+/** Sources whose text, headline or quote mentions the query's words, for the research step's search. */
+export async function searchSources(supabase: SupabaseClient, query: string): Promise<SourceHit[]> {
+  const words = query.toLowerCase().split(/[^a-z0-9$.-]+/i).filter((w) => w.length > 3).slice(0, 4);
+  if (!words.length) return [];
+  const filters = words.flatMap((w) => [`headline.ilike.%${w}%`, `quote.ilike.%${w}%`, `content_text.ilike.%${w}%`]);
+  const { data } = await supabase.from("sources").select(`${FIELDS}, content_text`).eq("hidden", false).or(filters.join(",")).limit(6);
+  return ((data || []) as any[]).map((s) => {
+    const text: string = s.content_text || "";
+    const at = words.map((w) => text.toLowerCase().indexOf(w)).filter((i) => i >= 0).sort((a, b) => a - b)[0] ?? -1;
+    const preview = at >= 0 ? "…" + text.slice(Math.max(0, at - 120), at + 200).replace(/\s+/g, " ").trim() + "…" : tidyQuote(s.quote || s.headline);
+    const { content_text: _omit, ...rest } = s;
+    return { ...rest, preview };
+  });
+}
+
+/** A source's page text as a record to read: who said it, when, the approved line, then the page's words. */
+export async function readSource(supabase: SupabaseClient, id: number): Promise<string | null> {
+  const { data } = await supabase.from("sources").select(`${FIELDS}, content_text, content_fetched_at`).eq("id", id).maybeSingle();
+  if (!data) return null;
+  const s = data as any;
+  const who = s.origin === "city" ? "the City of Langford's own publication" : `reported by ${s.publisher}`;
+  return `SOURCE source:${s.id} (${who}; happened ${s.happened_on}${s.published_on ? `, published ${s.published_on}` : ""})\n` +
+    `Staff's approved line: ${s.headline}\n${s.quote ? `Quoted: “${s.quote}”\n` : ""}${s.url ? `Link: ${s.url}\n` : ""}${s.archive_url ? `Archived copy: ${s.archive_url}\n` : ""}` +
+    `This is not Council's record: use it only with its attribution.\n\n` +
+    (s.content_text ? `Page text as read on ${String(s.content_fetched_at || "").slice(0, 10)}:\n${s.content_text}` : "(The page's text was not kept.)");
 }

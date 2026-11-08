@@ -15,7 +15,7 @@ import {
 import { isPageHidden, setPageHidden } from "../services/page-visibility.server";
 import { confirmTopicEdits, imageCandidates, resetTopicField, saveTopicEdit, topicEditState, type TopicEdit } from "../services/topic-edit.server";
 import { EDIT_FIELDS, type EditField } from "../lib/topic-edit";
-import { addSource, draftSource, removeSource, sourcesFor } from "../services/sources.server";
+import { addSource, archiveSource, draftSource, removeSource, sourcesFor } from "../services/sources.server";
 import type { SourceOrigin } from "../lib/sources";
 
 const INTENTS = ["reviewed", "needs_work", "clear", "check", "rate", "rate_all", "flag_note", "add_issue", "handled", "remove_entry", "find_missing", "accept", "reject", "hide_page", "unhide_page", "internal_note",
@@ -58,7 +58,7 @@ async function pageState(supabase: SupabaseClient, path: string) {
  * (rate_all: verdict=agree|disagree); and on a topic page, remove a
  * timeline entry (remove_entry: key), search for missing links (find_missing), or decide a suggestion
  * (accept|reject: table, id). Every POST is recorded in staff_actions by requireModerator. */
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
   return adminRead(request, async () => {
     const path = reviewPath(new URL(request.url).searchParams.get("path"));
     const supabase = getSupabaseAdminClient();
@@ -68,11 +68,14 @@ export async function loader({ request }: Route.LoaderArgs) {
       const matterId = await matterForPath(supabase, path);
       return { path, edit: matterId ? await topicEditState(supabase, matterId, { withImages: true }) : null };
     }
-    return {
-      path,
-      review: path ? await getPageReview(supabase, path) : null,
-      ...(path ? await pageState(supabase, path) : { links: null, hidden: false }),
-    };
+    const state = path ? await pageState(supabase, path) : { links: null, hidden: false };
+    // A source still without an archived copy (the Wayback save timed out when it was added) asks again, after the
+    // response, each time the bar loads it.
+    const cf = (context as { cloudflare?: { ctx?: ExecutionContext } } | undefined)?.cloudflare?.ctx;
+    for (const s of (state.links as any)?.sources || []) {
+      if (s.url && !s.archive_url) { const work = archiveSource(supabase, s.id, s.url); work.catch(() => {}); cf?.waitUntil?.(work); }
+    }
+    return { path, review: path ? await getPageReview(supabase, path) : null, ...state };
   });
 }
 
@@ -130,10 +133,12 @@ export async function action({ request, context }: Route.ActionArgs) {
       }
       if (intent === "add_source") {
         const origin = (["city", "press", "other"].includes(str("origin")) ? str("origin") : "press") as SourceOrigin;
+        // The Wayback save runs after the response, kept alive by the Worker's waitUntil (the request waits otherwise).
+        const cf = (context as { cloudflare?: { ctx?: ExecutionContext } } | undefined)?.cloudflare?.ctx;
         await addSource(supabase, {
           origin, publisher: str("publisher"), title: str("source_title"), url: str("url") || null, published_on: str("published_on") || null,
           happened_on: str("happened_on"), headline: str("headline"), quote: str("quote") || null, note: str("note") || null,
-        }, target, user.id);
+        }, target, user.id, (work) => { work.catch(() => {}); cf?.waitUntil?.(work); });
         message = "Added to the timeline.";
       } else {
         const id = Number(form.get("source_id"));

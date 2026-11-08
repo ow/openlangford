@@ -24,6 +24,8 @@ export type TimelineEntry = {
   quoted?: boolean;
   href?: string | null;
   external?: boolean;
+  /** An archived copy of an outside link (the Wayback Machine), for when the link dies. */
+  archiveHref?: string | null;
   topic?: { slug: string; title: string } | null;
   outcome?: { label: string; variant: "success" | "danger" | "warning" | "muted" } | null;
   /** data-review-entry key, so the review bar can outline the row ("item-12", "matter-5"). */
@@ -86,7 +88,12 @@ function Row({ entry: e, admin }: { entry: TimelineEntry; admin?: ReactNode }) {
           ? <a href={e.href} target="_blank" rel="noopener noreferrer" className={card}>{body}</a>
           : <Link to={e.href} className={card}>{body}</Link>
       ) : <div className={card}>{body}</div>}
-      {admin && <div className="px-5 pt-1">{admin}</div>}
+      {(admin || e.archiveHref) && (
+        <div className="flex flex-wrap items-center gap-x-3 px-5 pt-1 text-xs">
+          {e.archiveHref && <a href={e.archiveHref} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-brand-700 hover:underline">Archived copy</a>}
+          {admin}
+        </div>
+      )}
     </li>
   );
 }

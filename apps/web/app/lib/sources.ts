@@ -17,7 +17,20 @@ export type Source = {
   headline: string;
   quote: string | null;
   note?: string | null;
+  /** A Wayback Machine copy of the link, requested when the source was added; shown as "archived copy". */
+  archive_url?: string | null;
 };
+
+/** The archived copy's address from a Wayback save: the final URL after redirects, or the content-location header
+ * the save endpoint answers with. A link that already points at the Wayback Machine is its own copy. */
+export function waybackArchiveUrl(original: string, finalUrl: string | null, contentLocation: string | null): string | null {
+  const isCopy = (u: string | null) => !!u && /^https?:\/\/web\.archive\.org\/web\/\d{4,14}/.test(u);
+  if (isCopy(original)) return original;
+  if (isCopy(finalUrl) && !/\/save\//.test(finalUrl!)) return finalUrl;
+  if (contentLocation && /^\/web\/\d{4,14}/.test(contentLocation)) return `https://web.archive.org${contentLocation}`;
+  if (isCopy(contentLocation)) return contentLocation;
+  return null;
+}
 
 /** Who said it, as the page labels it: "City news release" for the City's own words, "Reported by Victoria News"
  * for someone else's. */

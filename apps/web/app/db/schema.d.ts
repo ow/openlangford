@@ -1002,6 +1002,10 @@ export interface SourceLinks {
 
 export interface Sources {
   added_by: string | null;
+  archive_url: string | null;
+  archived_at: Timestamp | null;
+  content_fetched_at: Timestamp | null;
+  content_text: string | null;
   created_at: Generated<Timestamp>;
   happened_on: Timestamp;
   headline: string;

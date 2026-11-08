@@ -906,6 +906,9 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                                 {source.title}<ExternalLink className="h-3 w-3" aria-hidden="true" />
                               </a>
                             )}
+                            {source.archive_url && source.archive_url !== source.url && (
+                              <a href={source.archive_url} target="_blank" rel="noopener noreferrer" className="ml-3 mt-1 inline-flex text-xs text-zinc-500 hover:text-brand-700 hover:underline">Archived copy</a>
+                            )}
                           </div>
                         </li>
                       );

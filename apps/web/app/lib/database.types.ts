@@ -783,14 +783,14 @@ isOneToOne: false
                   ]
                 },"sources": {
                   Row: {
-                    "added_by": string | null,"created_at": string,"happened_on": string,"headline": string,"hidden": boolean,"id": number,"meta": Json,"municipality_id": number,"note": string | null,"origin": string,"published_on": string | null,"publisher": string,"quote": string | null,"title": string,"updated_at": string,"url": string | null
+                    "added_by": string | null,"archive_url": string | null,"archived_at": string | null,"content_fetched_at": string | null,"content_text": string | null,"created_at": string,"happened_on": string,"headline": string,"hidden": boolean,"id": number,"meta": Json,"municipality_id": number,"note": string | null,"origin": string,"published_on": string | null,"publisher": string,"quote": string | null,"title": string,"updated_at": string,"url": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "added_by"?: string | null,"created_at"?: string,"happened_on": string,"headline": string,"hidden"?: boolean,"id"?: number,"meta"?: Json,"municipality_id": number,"note"?: string | null,"origin": string,"published_on"?: string | null,"publisher": string,"quote"?: string | null,"title": string,"updated_at"?: string,"url"?: string | null
+                    "added_by"?: string | null,"archive_url"?: string | null,"archived_at"?: string | null,"content_fetched_at"?: string | null,"content_text"?: string | null,"created_at"?: string,"happened_on": string,"headline": string,"hidden"?: boolean,"id"?: number,"meta"?: Json,"municipality_id": number,"note"?: string | null,"origin": string,"published_on"?: string | null,"publisher": string,"quote"?: string | null,"title": string,"updated_at"?: string,"url"?: string | null
                   }
                   Update: {
-                    "added_by"?: string | null,"created_at"?: string,"happened_on"?: string,"headline"?: string,"hidden"?: boolean,"id"?: number,"meta"?: Json,"municipality_id"?: number,"note"?: string | null,"origin"?: string,"published_on"?: string | null,"publisher"?: string,"quote"?: string | null,"title"?: string,"updated_at"?: string,"url"?: string | null
+                    "added_by"?: string | null,"archive_url"?: string | null,"archived_at"?: string | null,"content_fetched_at"?: string | null,"content_text"?: string | null,"created_at"?: string,"happened_on"?: string,"headline"?: string,"hidden"?: boolean,"id"?: number,"meta"?: Json,"municipality_id"?: number,"note"?: string | null,"origin"?: string,"published_on"?: string | null,"publisher"?: string,"quote"?: string | null,"title"?: string,"updated_at"?: string,"url"?: string | null
                   }
                   Relationships: [
                     {

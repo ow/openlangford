@@ -122,7 +122,8 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
   for (const s of [...ownSources, ...[...topicSources.values()].flat()]) {
     if (seen.has(s.id)) continue;
     seen.add(s.id);
-    entries.push({ key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceLabel(s), headline: s.headline, detail: s.quote ? tidyQuote(s.quote) : null, href: s.url, external: !!s.url });
+    entries.push({ key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceLabel(s), headline: s.headline, detail: s.quote ? tidyQuote(s.quote) : null, href: s.url, external: !!s.url,
+      archiveHref: s.archive_url && s.archive_url !== s.url ? s.archive_url : null });
   }
   // A closed meeting about land on a night this address was before Council: the record shows a door closing.
   for (const meeting of meetingsSeen.values()) {

@@ -30,3 +30,17 @@ describe("tidyQuote", () => {
     expect(long).not.toMatch(/\s…$/);
   });
 });
+
+describe("waybackArchiveUrl", () => {
+  it("reads the copy's address from the save's final URL or its content-location, and keeps a Wayback link as its own copy", async () => {
+    const { waybackArchiveUrl } = await import("../../app/lib/sources");
+    const live = "https://www.cheknews.ca/story-1338026/";
+    expect(waybackArchiveUrl(live, "https://web.archive.org/web/20261108120000/https://www.cheknews.ca/story-1338026/", null))
+      .toBe("https://web.archive.org/web/20261108120000/https://www.cheknews.ca/story-1338026/");
+    expect(waybackArchiveUrl(live, "https://web.archive.org/save/https://www.cheknews.ca/story-1338026/", "/web/20261108120000/https://www.cheknews.ca/story-1338026/"))
+      .toBe("https://web.archive.org/web/20261108120000/https://www.cheknews.ca/story-1338026/");
+    expect(waybackArchiveUrl(live, "https://web.archive.org/save/https://www.cheknews.ca/story-1338026/", null)).toBeNull();
+    const copy = "https://web.archive.org/web/20191113225515/https://www.vicnews.com/news/x/";
+    expect(waybackArchiveUrl(copy, null, null)).toBe(copy);
+  });
+});

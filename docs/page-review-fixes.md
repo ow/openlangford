@@ -250,6 +250,14 @@ Where it shows and how it is weighed:
 - **Checks.** The fact check, the fix agent's plan and the re-check get `SOURCE` lines, which support only a statement
   carrying that attribution; the same fact stated as Council's own doing is `not_in_record`.
 
+Links rot (the 2019 Victoria News story on the purchase is gone from vicnews.com; only the Wayback Machine has it), so
+adding a source keeps two more things. The page's readable text goes on the row (`content_text`, capped at 60k
+characters, never shown to residents): research can search it and read it as `source:<id>`, like a signed bylaw. And
+the Wayback Machine is asked for a public copy (`archive_url`): an existing snapshot is taken at once through the
+availability API; otherwise a save is requested after the response (it can take a minute), and a row still without a
+copy asks again each time the bar loads it. The timeline shows "Archived copy" beside the live link. A link that is
+already a Wayback address is its own copy.
+
 `public_reports` stays what it was: the City's own page-indexed documents (annual reports), read by the pipeline. The
 split is by who said it and how it was read, not by format.
 

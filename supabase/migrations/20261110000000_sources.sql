@@ -7,6 +7,9 @@
 -- public_reports stays what it is: the City's own page-indexed documents (annual reports), read by the pipeline.
 -- A source is a link plus a quote, added by hand, and labelled on the page by who said it.
 --
+-- Links rot (the 2019 Victoria News story on the 3680 Trans-Canada purchase is gone from vicnews.com), so adding a
+-- source keeps the page's text privately for the checks and asks the Wayback Machine for a public copy.
+--
 -- Safe on live data: two new tables, no change to existing rows.
 
 CREATE TABLE public.sources (
@@ -21,6 +24,10 @@ CREATE TABLE public.sources (
     headline text NOT NULL,               -- resident register, one line: "City buys the 22-acre waterfront lot for about $2.2M"
     quote text,                           -- the source's own words that back the headline
     note text,                            -- staff's note on why it's here (not shown to residents)
+    content_text text,                    -- the page's readable text at the time it was added, for checks (never shown)
+    content_fetched_at timestamp with time zone,
+    archive_url text,                     -- a Wayback Machine copy, requested when the source is added
+    archived_at timestamp with time zone,
     added_by uuid,
     hidden boolean NOT NULL DEFAULT false,
     meta jsonb NOT NULL DEFAULT '{}'::jsonb,
