@@ -7,7 +7,7 @@ import { judgeTopics, readPage, type TopicVerdict } from "./page-check.server";
 import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { bylawRecords } from "./bylaw-records.server";
-import { findingText, investigate, investigatedRecords, investigationLine, type Investigation } from "./fix-investigation.server";
+import { findingText, investigate, investigatedRecords, investigationLine, needsInvestigation, type Investigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
 import { logStaffAction } from "./staff.server";
@@ -61,7 +61,7 @@ const PlanSchema = z.object({
     document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
-    source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly and as briefly as the claim allows. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly, at most 250 characters: the one sentence or clause that says it, never a whole passage. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
     motion_id: z.number().int().nullable().describe("move_motion: the MOTION id from the list of decisions filed under no item. Otherwise null."),
     motion_text: z.string().nullable().describe("add_motion: the motion's wording exactly as the minutes give it (\"That Council adopt Bylaw No. 1239.\"). Otherwise null."),
     motion_result: z.enum(MOTION_RESULTS).nullable().describe("add_motion: the outcome the minutes record. Otherwise null."),
@@ -318,6 +318,11 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const { data: now } = await supabase.from("page_reviews").select("ai_flags").eq("path", path).maybeSingle();
     return keepStaffRatings(now?.ai_flags as PageFlag[] | null, mine);
   };
+  // What the agent is doing now, shown in the bar while the page is "fixing" (it polls every 3 s). Best effort.
+  const progress = (text: string) => {
+    supabase.from("page_reviews").update({ agent_note: text, agent_at: new Date().toISOString() }).eq("path", path).eq("status", "fixing")
+      .then(({ error }) => { if (error) console.error("[page-fix] progress:", error.message); });
+  };
   const finish = async (status: "fixed" | "needs_work", agent_note: string, flags?: PageFlag[]) => {
     await supabase.from("page_reviews").update({
       status, agent_note, agent_at: new Date().toISOString(), ...(flags ? { ai_flags: await withStaffRatings(flags) } : {}),
@@ -401,6 +406,9 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     // The agent investigates before it plans: every agreed flag (and the editor's note) is researched in all of the
     // City's records, with a question that fits the problem, in parallel while the page's own records load. A flag
     // the check already researched keeps that finding.
+    const toResearch = agreed.filter((f) => !f.research && needsInvestigation(f)).length + (row?.note?.trim() ? 1 : 0);
+    progress(toResearch ? `Reading the page's records and searching the City's records for ${toResearch === 1 ? "1 problem" : `${toResearch} problems`}…`
+      : "Reading the page's records…");
     const bylawText = await bylawRecords(supabase, matterId);
     const [{ text: itemText }, { data: reports }, evidenceText, investigations] = await Promise.all([
       itemRecords(supabase, ids),
@@ -432,6 +440,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const text = (await itemRecords(supabase, await topicItemIds(supabase, c.id)).catch(() => ({ text: "" }))).text;
       return text ? `${c.related ? "RELATED TOPIC" : "TOPIC HOLDING AN ACCEPTED ENTRY"} ${c.id} "${c.title}": its own records\n${text.slice(0, 30000)}` : "";
     }))).filter(Boolean).join("\n\n");
+    progress("Planning the fix…");
     const result = await getAiClient().json({
       stage: "review",
       prompt: planPrompt(heading, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates,
@@ -474,6 +483,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const gone = agreed.filter((f) => f.key && !f.fixed && !onPage.has(f.key));
     for (const f of gone) fixedKeys.add(f.key!);
     if (gone.length) answered.push(`Already off the page since it was flagged: ${gone.map((f) => f.key).join(", ")}.`);
+    progress(`Making ${result.data.actions.length === 1 ? "1 change" : `${result.data.actions.length} changes`}…`);
     for (const step of result.data.actions) {
       if (step.key && !onPage.has(step.key) && fixedKeys.has(step.key)) continue;
       // A flag on a Related topics card names the topic in its key.
@@ -832,6 +842,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       // Topics merged away during this fix are rewritten as the topic they were merged into.
       const { data: current } = await supabase.from("matters").select("id, merged_into").in("id", [...touched]);
       const pageTopic = ((current || []) as any[]).find((m) => m.id === matterId);
+      progress("Rewriting the summary and checking it against the records…");
       const report = await rewriteSummaries(supabase, ((current || []) as any[]).map((m) => m.merged_into || m.id),
         { notes: summaryNotes.map((note) => ({ matter_id: pageTopic?.merged_into || matterId, note })), signal: budget });
       rewrote = report.written;
@@ -886,6 +897,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     let checkedNote = "";
     let recheckFailed = false;
     if (newlyFixed.length && timeLeft() > 10_000) {
+      progress("Checking that the fixes hold…");
       try {
         const summaryScope = !!rewrote.length || summaryNotes.length > 0;
         const [{ data: fresh }, own2] = await Promise.all([
