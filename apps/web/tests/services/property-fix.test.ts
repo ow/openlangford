@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { propertyPlanPrompt, propertyRecords, withClosing } from "../../app/services/property-fix.server";
+import { updateSource } from "../../app/services/sources.server";
 
 const property = { id: 771, slug: "3094-jacklin-road", address: "3094 Jacklin Road", civic_number: "3094", street: "Jacklin Road", meta: {} };
 
@@ -28,5 +29,54 @@ describe("the planner's records and prompt", () => {
     expect(prompt).toContain("matter-506 ·");
     expect(prompt).toContain("unlink_entry");
     expect(prompt).toContain("rewrite_lead");
+  });
+});
+
+describe("what the planner can see and do beyond unlinking", () => {
+  const topic = { id: 1825, title: "Parks committee", status: "Open", first_seen: "2020-09-24", last_seen: "2020-09-24", plain_english_summary: null, meta: {}, addresses: [] };
+  const step = { id: 7428, matter_id: 1825, title: "Capital project update", meeting_date: "2020-09-24", meeting_title: "Parks Committee", line: "Committee discussed the waterfront" };
+  const source = { id: 12, origin: "press", publisher: "CHEK News", title: "t", url: "https://example.com", published_on: "2019-11-02", happened_on: "2019-05-07", headline: "City buys 25 acres", quote: null } as any;
+
+  it("lists each topic's steps with what the page shows now, and the sources by their page key", () => {
+    const records = propertyRecords(property as any, null, [topic], [], [step], [source]);
+    expect(records).toContain("STEP step-7428 (2020-09-24, Parks Committee): Capital project update | the page now shows: Committee discussed the waterfront");
+    expect(records).toContain("source-<id>");
+    expect(records).toContain("SOURCE source:12");
+  });
+  it("omits the step and source blocks when there are none", () => {
+    const records = propertyRecords(property as any, null, [topic], []);
+    expect(records).not.toContain("STEP");
+    expect(records).not.toContain("SOURCE");
+  });
+  it("offers the new actions and tells the planner when an entry counts as passing", () => {
+    const prompt = propertyPlanPrompt(property as any, [], null, "", [], null);
+    for (const a of ["edit_source", "rewrite_entry", "one of them"]) expect(prompt).toContain(a);
+  });
+});
+
+describe("updateSource", () => {
+  function fake(meta: Record<string, any> | null = { date_label: "Spring 2019", compact: true }) {
+    const calls: any[] = [];
+    const client: any = { from: () => ({
+      select: () => ({ eq: () => ({ single: async () => ({ data: { meta }, error: null }) }) }),
+      update: (patch: any) => { calls.push(patch); return { eq: async () => ({ error: null }) }; },
+    }) };
+    return { client, calls };
+  }
+  it("changes only the fields given and keeps the rest of meta", async () => {
+    const { client, calls } = fake();
+    await updateSource(client, 12, { headline: "  City buys land  ", date_label: "Summer 2019" });
+    expect(calls).toEqual([{ headline: "City buys land", meta: { date_label: "Summer 2019", compact: true } }]);
+  });
+  it("clears a note or a date label when given empty, and refuses an empty headline", async () => {
+    const { client, calls } = fake();
+    await updateSource(client, 12, { note: "", date_label: "" });
+    expect(calls).toEqual([{ note: null, meta: { compact: true } }]);
+    await expect(updateSource(client, 12, { headline: "  " })).rejects.toThrow(/headline/);
+  });
+  it("does nothing when nothing changes", async () => {
+    const { client, calls } = fake();
+    await updateSource(client, 12, {});
+    expect(calls).toEqual([]);
   });
 });

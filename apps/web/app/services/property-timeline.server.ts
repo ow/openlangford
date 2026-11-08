@@ -133,7 +133,8 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     });
   }
   // The lead writer's plain line per entry (properties.meta.entry_lines): "The City paid its lawyers $1.27 million…"
-  const entryLines: Record<string, string> = property.meta?.entry_lines || {};
+  // staff_entry_lines are the fix agent's own wording: the lead stage rewrites entry_lines, never these.
+  const entryLines: Record<string, string> = { ...(property.meta?.entry_lines || {}), ...(property.meta?.staff_entry_lines || {}) };
   for (const it of items as any[]) {
     const meeting = it.meetings as Meeting | null;
     if (!meeting?.meeting_date) continue;

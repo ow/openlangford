@@ -250,6 +250,30 @@ export async function removeSource(supabase: SupabaseClient, sourceId: number, t
   if (error) throw new Error(`Could not remove the source: ${error.message}`);
 }
 
+export type SourceEdit = { headline?: string | null; quote?: string | null; note?: string | null; date_label?: string | null };
+
+/** Correct what a source says on the page: its headline, its quoted words, the staff note, or how its date shows.
+ * Only the fields given change; an empty quote, note or date label clears it. The headline can't be cleared. */
+export async function updateSource(supabase: SupabaseClient, sourceId: number, edit: SourceEdit): Promise<void> {
+  const patch: Record<string, any> = {};
+  if (edit.headline != null) {
+    if (!edit.headline.trim()) throw new Error("Could not edit the source: a headline can't be empty.");
+    patch.headline = edit.headline.trim();
+  }
+  if (edit.quote !== undefined) patch.quote = edit.quote?.trim() || null;
+  if (edit.note !== undefined) patch.note = edit.note?.trim() || null;
+  if (edit.date_label !== undefined) {
+    const { data: row, error: readError } = await supabase.from("sources").select("meta").eq("id", sourceId).single();
+    if (readError) throw new Error(`Could not edit the source: ${readError.message}`);
+    const meta = { ...((row?.meta || {}) as Record<string, any>) };
+    if (edit.date_label?.trim()) meta.date_label = edit.date_label.trim(); else delete meta.date_label;
+    patch.meta = meta;
+  }
+  if (!Object.keys(patch).length) return;
+  const { error } = await supabase.from("sources").update(patch).eq("id", sourceId);
+  if (error) throw new Error(`Could not edit the source: ${error.message}`);
+}
+
 /** The sources as lines for the fact check and the fix agent: evidence for their own, attributed, claim only. Each
  * names its ref (source:<id>) so research can read the page's text. */
 export function sourceRecordLines(sources: Source[]): string {

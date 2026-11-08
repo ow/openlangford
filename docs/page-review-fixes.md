@@ -92,6 +92,14 @@ carries out fixes for the flags staff agreed with. This page explains where each
    a lead it writes is locked (`meta.summary_locked`) so the stage keeps it, and the closing "Mentioned in council
    meetings…" count line is kept from the old lead rather than guessed.
 
+   It can also correct a source on the page (`edit_source`: headline, quote, staff note or date label, through
+   `updateSource`; a quote must be the source text's own words) and rewrite one row's line (`rewrite_entry`). A topic's
+   step gets the same `timeline_headlines` / `staff_headlines` pair the topic agent writes; a linked meeting item gets
+   `properties.meta.staff_entry_lines`, which the timeline prefers over the lead stage's `entry_lines` and the stage
+   never touches. Its records list each topic's steps (`step-<id>`, with the line the page shows now) and the page's
+   sources (`source-<id>`), so a flag on either can be answered. Every change needs the record's exact words in
+   `source`, and is logged as `agent:edit_source` / `agent:rewrite_property_entry`.
+
    Pressing Check on a property page also searches the records for the address (`services/property-search.server.ts`:
    item titles, motions, attached reports and minutes, topic titles, and lines spoken at meetings, each tied to the
    entry whose discussion window holds it; plain text matching, no model) and lists what

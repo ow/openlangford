@@ -7,6 +7,8 @@ import { findingText, investigate, investigatedRecords, investigationLine, needs
 import { applyRecheck, recheckSummary, flagLabel } from "../lib/page-recheck";
 import { logStaffAction } from "./staff.server";
 import { quoteInRecords } from "./meeting-fix.server";
+import { sourcesFor, sourcesForMatters, sourceRecordLines, updateSource } from "./sources.server";
+import type { Source } from "../lib/sources";
 import type { StaffRole } from "../lib/auth.server";
 
 /**
@@ -14,7 +16,8 @@ import type { StaffRole } from "../lib/auth.server";
  * own text is its lead (properties.meta.summary, written by the pipeline's property-summaries stage); the rest is
  * the topics and meeting items the pipeline linked to the address, each shown from its own record. So the menu is
  * small: unlink an entry that's about a different address (or only names this one in passing), rewrite the lead,
- * or say the page is right or that a person is needed. A lead the agent writes is locked
+ * correct a source (its headline, quote, note or date label), rewrite one entry's line, or say the page is right or
+ * that a person is needed. A lead the agent writes is locked
  * (meta.summary_locked), so the pipeline keeps it rather than writing its own over it. Same flow as the topic and
  * meeting agents: investigate, plan, act, re-check.
  */
@@ -24,10 +27,16 @@ export const PROPERTY_FIX_BUDGET_MS = 90_000;
 const LEAD_MAX = 400;
 
 const Action = z.object({
-  action: z.enum(["unlink_entry", "rewrite_lead", "no_change", "cannot_fix"]),
-  key: z.string().nullable().describe("unlink_entry: the entry's key (matter-<id> or item-<id>). no_change / cannot_fix: the key of the flag answered, or null for the whole page. rewrite_lead: null."),
-  new_text: z.string().nullable().describe("rewrite_lead: the page's new lead, one or two plain sentences (under 320 characters), outcome first: what happened at this address and whether it affects the reader. The closing \"Mentioned in council meetings…\" line is kept for you. Otherwise null."),
-  source: z.string().nullable().describe("rewrite_lead: the record's own words the new lead rests on, quoted exactly, at most 250 characters. Otherwise null."),
+  action: z.enum(["unlink_entry", "rewrite_lead", "edit_source", "rewrite_entry", "no_change", "cannot_fix"]),
+  key: z.string().nullable().describe("The key of the flag this answers (matter-<id>, item-<id> or source-<id>), or null for the whole page or the note. unlink_entry: the entry to take off (matter-<id> or item-<id>)."),
+  entry_key: z.string().nullable().describe("rewrite_entry: the row whose line changes, as RECORDS keys it: step-<id> (a step of a topic) or item-<id> (a meeting item linked to this address). Otherwise null."),
+  source_id: z.number().nullable().describe("edit_source: the id after \"source-\" in the source's key. Otherwise null."),
+  new_headline: z.string().nullable().describe("edit_source: the source's corrected headline, one plain line that says only what the source says (under 160 characters). null to leave it."),
+  new_quote: z.string().nullable().describe("edit_source: a corrected quote, the source text's own words exactly. null to leave it."),
+  new_note: z.string().nullable().describe("edit_source: a corrected staff note (shown to staff, not readers), e.g. the figures that differ between reports. null to leave it."),
+  new_date_label: z.string().nullable().describe("edit_source: how the date shows when only a season or month is known (\"Spring 2019\"). null to leave it."),
+  new_text: z.string().nullable().describe("rewrite_entry: the row's new line, one plain sentence (under 140 characters) saying what happened at this address. rewrite_lead: the page's new lead, one or two plain sentences (under 320 characters), outcome first: what happened at this address and whether it affects the reader. The closing \"Mentioned in council meetings…\" line is kept for you. Otherwise null."),
+  source: z.string().nullable().describe("rewrite_lead, rewrite_entry, edit_source: the record's (or the source text's) own words the change rests on, quoted exactly, at most 250 characters. Otherwise null."),
   reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
 });
 const PlanSchema = z.object({ actions: z.array(Action) });
@@ -35,6 +44,8 @@ const PlanSchema = z.object({ actions: z.array(Action) });
 type Property = { id: number; slug: string; address: string; civic_number: string | null; street: string | null; meta: Record<string, any> | null };
 type Topic = { id: number; title: string; status: string | null; first_seen: string | null; last_seen: string | null; plain_english_summary: string | null; meta: Record<string, any> | null; addresses: string[] };
 type Item = { id: number; title: string | null; plain_english_summary: string | null; meeting_date: string | null; meeting_title: string | null };
+/** One meeting item filed under a topic: a row of the topic's own timeline, so a row on this page. `line` is what the page shows now. */
+export type Step = { id: number; matter_id: number; title: string | null; meeting_date: string | null; meeting_title: string | null; line: string | null };
 
 const squash = (s: string) => s.replace(/\s+/g, " ").trim();
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -50,7 +61,7 @@ export function withClosing(oldLead: string | null | undefined, text: string): s
 }
 
 /** What the planner reads: the page's lead and each entry from its own record, keyed as the page keys them. */
-export function propertyRecords(property: Property, lead: string | null, topics: Topic[], items: Item[]): string {
+export function propertyRecords(property: Property, lead: string | null, topics: Topic[], items: Item[], steps: Step[] = [], sources: Source[] = []): string {
   const lines = [`ADDRESS: ${property.address}${property.civic_number ? "" : " (a street: the topics below are about the street itself)"}`,
     `LEAD (the page's own text): ${lead ? squash(lead) : "(none yet)"}`];
   for (const t of topics) {
@@ -58,11 +69,15 @@ export function propertyRecords(property: Property, lead: string | null, topics:
     if (t.plain_english_summary) lines.push(`  summary: ${squash(t.plain_english_summary)}`);
     if (t.meta?.status_line) lines.push(`  where it stands: ${squash(t.meta.status_line)}`);
     if (t.addresses.length) lines.push(`  addresses the pipeline linked to this topic: ${t.addresses.slice(0, 12).join("; ")}${t.addresses.length > 12 ? "; …" : ""}`);
+    for (const st of steps.filter((x) => x.matter_id === t.id).slice(0, 30)) {
+      lines.push(`  STEP step-${st.id} (${st.meeting_date ?? "no date"}, ${st.meeting_title ?? "meeting"}): ${squash(st.title || "")}${st.line ? ` | the page now shows: ${squash(st.line)}` : ""}`);
+    }
   }
   for (const i of items) {
     lines.push("", `ITEM item-${i.id} (${i.meeting_date ?? "no date"}, ${i.meeting_title ?? "meeting"}): ${squash(i.title || "")}`);
     if (i.plain_english_summary) lines.push(`  summary: ${squash(i.plain_english_summary)}`);
   }
+  if (sources.length) lines.push("", "Sources from outside the meeting record. The page's key for one is source-<id> (the number after source:). They are not record: a line about what one says must name who said it.", sourceRecordLines(sources));
   return lines.join("\n");
 }
 
@@ -83,6 +98,18 @@ Actions, one entry in "actions" per flag (and per note):
   resident on a phone: what happened at this address and whether it affects them, outcome first, everyday words, the
   number of homes or lots and dollar amounts when the records give them, no bylaw or file numbers. Quote the record
   it rests on in "source". The closing count line is kept for you; don't write one.
+  An entry counts as passing when the topic's record lists many addresses and this is one of them ("addresses the
+  pipeline linked to this topic"), unless the records show something decided or done about this address in particular.
+- edit_source: a SOURCE says less, or something else, than its headline, quote or note claims (an overstated
+  headline, a figure the source doesn't give, a date shown wrongly). key is the flag's source-<id>; give source_id and
+  only the fields that change (new_headline, new_quote, new_note, new_date_label), and put the source's own words
+  that back the change in "source". A headline says what the source says and who said it, never more. If the sources
+  disagree (acreage, a total), say so in new_note or drop the figure from the headline.
+- rewrite_entry: one row's line is repetitive, vague or says more than the record does. entry_key is the row (step-<id>
+  or item-<id> in RECORDS), key is the flag it answers. Write one plain sentence (under 140 characters) of what the
+  record shows happened at this address; when the record is silent on the detail, say so ("Staff updated the
+  committee on four capital projects, including this waterfront property; the minutes don't say what was covered."),
+  never fill the gap. Quote the record it rests on in "source".
 - no_change: the flag is not a problem (say why in a sentence a resident would understand).
 - cannot_fix: a judgement these actions can't make; say exactly what a person needs to decide.
 Work only from the records below. Never invent an outcome, a number or a date.
@@ -142,6 +169,22 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
       if (addr && addr !== property.address) addressesOf.set(l.matter_id, [...new Set([...(addressesOf.get(l.matter_id) || []), addr])]);
     }
     const topics: Topic[] = ((matterRows || []) as any[]).filter((m) => !m.merged_into).map((m) => ({ ...m, addresses: addressesOf.get(m.id) || [] }));
+    // Each topic's own steps (its timeline rows) and the sources on this page, so the agent can see what a flag points at.
+    const topicIds = topics.map((t) => t.id);
+    const [{ data: stepRows }, ownSources, topicSources] = await Promise.all([
+      topicIds.length ? supabase.from("agenda_items").select("id, title, matter_id, meetings(title, meeting_date)").in("matter_id", topicIds).order("id").limit(400) : Promise.resolve({ data: [] as any[] }),
+      sourcesFor(supabase, { propertyId: property.id }),
+      sourcesForMatters(supabase, topicIds),
+    ]);
+    const steps: Step[] = ((stepRows || []) as any[]).filter((r) => !(topics.find((t) => t.id === r.matter_id)?.meta?.hidden_duplicates || {})[String(r.id)]).map((r) => {
+      const mt = Array.isArray(r.meetings) ? r.meetings[0] : r.meetings;
+      const meta = topics.find((t) => t.id === r.matter_id)?.meta;
+      return { id: r.id, matter_id: r.matter_id, title: r.title, meeting_date: mt?.meeting_date ?? null, meeting_title: mt?.title ?? null,
+        line: meta?.staff_headlines?.[String(r.id)] ?? meta?.timeline_headlines?.[String(r.id)] ?? null };
+    });
+    const sources: Source[] = [...new Map([...ownSources, ...[...topicSources.values()].flat()].map((x) => [x.id, x])).values()];
+    const { data: sourceTexts } = sources.length ? await supabase.from("sources").select("id, content_text").in("id", sources.map((x) => x.id)) : { data: [] as any[] };
+    const textOf = new Map<number, string>(((sourceTexts || []) as any[]).map((r) => [r.id, r.content_text || ""]));
     const items: Item[] = ((itemRows || []) as any[]).map((i) => {
       const mt = Array.isArray(i.meetings) ? i.meetings[0] : i.meetings;
       return { id: i.id, title: i.title, plain_english_summary: i.plain_english_summary, meeting_date: mt?.meeting_date ?? null, meeting_title: mt?.title ?? null };
@@ -154,7 +197,7 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${squash(i.finding!.explanation).slice(0, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"), await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
-    const records = [propertyRecords(property as Property, lead, topics, items), researchText].filter(Boolean).join("\n\n");
+    const records = [propertyRecords(property as Property, lead, topics, items, steps, sources), researchText].filter(Boolean).join("\n\n");
 
     progress("Planning the fix…");
     const result = await getAiClient().json({
@@ -188,6 +231,48 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
         if (key) fixedKeys.add(key); else pageFixed = true;
         done.push(`Took ${entryLabel(step.key, flags)} off this page: ${step.reason}`);
         await log("agent:unlink_property_entry", { property_id: String(property.id), [m[1] === "matter" ? "matter_id" : "agenda_item_id"]: String(id), reason: step.reason.slice(0, 300) });
+        continue;
+      }
+      if (step.action === "edit_source") {
+        const src = sources.find((x) => x.id === step.source_id);
+        const flagged = step.key && agreedKeys.has(step.key) && step.key === `source-${step.source_id}`;
+        if (!src) { left.push(`${step.reason} (no such source on this page)`); continue; }
+        if (!flagged && !pageLevel) { left.push(`${step.reason} (that source isn't flagged on this page, so nothing changed)`); continue; }
+        const own = [textOf.get(src.id) || "", src.quote || "", src.headline].join("\n");
+        if (!quoteInRecords(step.source, `${records}\n${own}`)) { left.push(`${step.reason} (its quote isn't the source's exact words, so the source stays; press Fix again)`); continue; }
+        if (step.new_quote && !quoteInRecords(step.new_quote, own)) { left.push(`${step.reason} (the new quote isn't the source's exact words, so the source stays)`); continue; }
+        const edit = { ...(step.new_headline ? { headline: squash(step.new_headline).slice(0, 200) } : {}), ...(step.new_quote ? { quote: step.new_quote } : {}),
+          ...(step.new_note ? { note: squash(step.new_note).slice(0, 600) } : {}), ...(step.new_date_label ? { date_label: squash(step.new_date_label).slice(0, 40) } : {}) };
+        if (!Object.keys(edit).length) { left.push(`${step.reason} (the agent didn't give a new headline, quote, note or date)`); continue; }
+        try { await updateSource(supabase, src.id, edit); } catch { left.push(`${step.reason} (couldn't save the source)`); continue; }
+        if (key) fixedKeys.add(key); else pageFixed = true;
+        done.push(`Corrected ${entryLabel(`source-${src.id}`, flags)}${edit.headline ? `, now headed "${edit.headline}"` : ""}: ${step.reason}`);
+        await log("agent:edit_source", { source_id: String(src.id), ...Object.fromEntries(Object.entries(edit).map(([k, v]) => [k, String(v).slice(0, 300)])), reason: step.reason.slice(0, 300) });
+        continue;
+      }
+      if (step.action === "rewrite_entry") {
+        const em = step.entry_key?.match(/^(step|item)-(\d+)$/);
+        if (!em || !(key || pageLevel)) { left.push(`${step.reason} (that row isn't flagged on this page, so nothing changed)`); continue; }
+        const id = Number(em[2]);
+        const stepRow = em[1] === "step" ? steps.find((x) => x.id === id) : undefined;
+        if (!(em[1] === "step" ? stepRow : items.some((i) => i.id === id))) { left.push(`${step.reason} (no such row on this page)`); continue; }
+        const text = squash(step.new_text || "").replace(/\.$/, "");
+        if (text.length < 15 || text.length > 200) { left.push(`${step.reason} (the new line wasn't usable, so the row stays)`); continue; }
+        if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (its quote isn't the record's exact words, so the row stays; press Fix again)`); continue; }
+        const table = stepRow ? "matters" : "properties";
+        const rowId = stepRow ? stepRow.matter_id : property.id;
+        const { data: fresh } = await supabase.from(table).select("meta").eq("id", rowId).single();
+        const meta = { ...((fresh?.meta || {}) as Record<string, any>) };
+        if (stepRow) {
+          // The same two keys the topic agent writes: the generated line, and the copy a summary rewrite keeps.
+          meta.timeline_headlines = { ...(meta.timeline_headlines || {}), [String(id)]: text };
+          meta.staff_headlines = { ...(meta.staff_headlines || {}), [String(id)]: text };
+        } else meta.staff_entry_lines = { ...(meta.staff_entry_lines || {}), [String(id)]: text };
+        const { error } = await supabase.from(table).update({ meta }).eq("id", rowId);
+        if (error) { left.push(`${step.reason} (couldn't save the new line)`); continue; }
+        if (key) fixedKeys.add(key); else pageFixed = true;
+        done.push(`The ${stepRow ? `${stepRow.meeting_date ?? ""} step` : "row"} now reads "${text}": ${step.reason}`);
+        await log("agent:rewrite_property_entry", { entry: step.entry_key!, text: text.slice(0, 300), reason: step.reason.slice(0, 300) });
         continue;
       }
       if (step.action === "rewrite_lead") {
