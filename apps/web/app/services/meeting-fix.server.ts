@@ -42,10 +42,16 @@ type Highlights = { bullets: string[]; links?: unknown[]; description?: string; 
 const itemOf = (key: string | null | undefined) => Number(key?.match(/^item-(\d+)$/)?.[1] ?? NaN);
 const squash = (s: string) => s.replace(/\s+/g, " ").trim();
 const normal = (s: string) => squash(s).toLowerCase().replace(/[“”]/g, "\"").replace(/[‘’]/g, "'");
-/** Whether a quote is in the records (whitespace and quote marks aside). */
+/** Whether a quote is in the records (whitespace and quote marks aside). Lines a model wrote (NOTES extracted from a
+ * report, the agent's own FOUND findings) don't count: a rewrite must rest on the record's words. */
 export function quoteInRecords(quote: string | null | undefined, records: string): boolean {
   const q = normal(quote || "");
-  return q.length >= 12 && normal(records).includes(q);
+  const record = normal(records.split("\n").filter((line) => !/^\s*(NOTES \(|FOUND for )/.test(line)).join("\n"));
+  if (q.length < 12) return false;
+  if (record.includes(q)) return true;
+  // Several passages quoted together ("…" "…", or joined with an ellipsis): each must be in the record.
+  const pieces = q.split(/"|\s*(?:…|\.\.\.)\s*/).map((x) => x.trim().replace(/^[\s,;]+|[\s,;]+$/g, "")).filter((x) => x.length >= 12);
+  return pieces.length > 0 && pieces.every((x) => record.includes(x));
 }
 
 /** A highlight rewritten: links whose phrase the new text still carries stay, in order; the rest go. Exported for tests. */
@@ -163,7 +169,7 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
         note: row?.note ?? null, signal: budget }),
     ]);
     const findingFor = (i: { finding: Parameters<typeof findingText>[0] } | undefined) => findingText(i?.finding);
-    const found = investigations.filter((i) => i.finding?.ref);
+    const found = investigations.filter((i) => i.finding?.ref && i.finding.verdict !== "not_found");
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${brief(i.finding!.explanation, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"), await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
@@ -197,7 +203,7 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
         const id = itemOf(step.key);
         const item = items.find((i) => i.id === id);
         if (!item || !key) { left.push(`${step.reason} (that entry isn't flagged on this page, so nothing changed)`); continue; }
-        if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (no record says it, so nothing changed)`); continue; }
+        if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (its quote isn't the record's exact words, so nothing changed; press Fix again)`); continue; }
         if (text.length < 20 || text.length > 600) { left.push(`${step.reason} (the new summary wasn't usable, so nothing changed)`); continue; }
         const itemMeta = { ...(item.meta || {}) };
         const manual = { ...(itemMeta.manual || {}) };
@@ -221,7 +227,7 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
           pageFixed = true;
           continue;
         }
-        if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (no record says it, so the highlight stays)`); continue; }
+        if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (its quote isn't the record's exact words, so the highlight stays; press Fix again)`); continue; }
         if (text.length < 15 || text.length > 240) { left.push(`${step.reason} (the new highlight wasn't usable, so it stays)`); continue; }
         newHighlights = editHighlight(newHighlights, step.index, text);
         claims.push({ id: `highlight-${step.index}`, key: null, text: `Meeting highlight: ${text}` });
@@ -232,7 +238,7 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
       if (step.action === "rewrite_description") {
         if (!newHighlights) { left.push(`${step.reason} (this meeting has no highlights, so its description can't be set here)`); continue; }
         if (!agreedKeys.has(null)) { left.push(`${step.reason} (no page-level problem was flagged, so the description stays)`); continue; }
-        if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (no record says it, so the description stays)`); continue; }
+        if (!quoteInRecords(step.source, records)) { left.push(`${step.reason} (its quote isn't the record's exact words, so the description stays; press Fix again)`); continue; }
         if (text.length < 20 || text.length > DESCRIPTION_MAX + 20) { left.push(`${step.reason} (the new description wasn't usable, so it stays)`); continue; }
         newDescription = text;
         claims.push({ id: "description", key: null, text: `Page description: ${text}` });

@@ -33,5 +33,12 @@ describe("quoteInRecords", () => {
     expect(quoteInRecords("Council gave first reading", records)).toBe(false);
     expect(quoteInRecords("Carried", records)).toBe(false);
     expect(quoteInRecords(null, records)).toBe(false);
+    // Two passages quoted together count when each is in the record; not when one isn't.
+    expect(quoteInRecords("“That Council proceed with consideration of First” “Third Readings of Bylaw No. 2162. | RESULT: Carried”", records)).toBe(true);
+    expect(quoteInRecords("“That Council proceed with consideration” … “Fourth Reading of Bylaw No. 2162”", records)).toBe(false);
+    // Model-written lines are not the record.
+    const withNotes = `${records}\n  NOTES (model-extracted from report "Staff report"): the project adds 12 townhouses on the site\nFOUND for [item-1] (the fix agent searched the City's records): supported. Council approved twelve townhouses.`;
+    expect(quoteInRecords("the project adds 12 townhouses on the site", withNotes)).toBe(false);
+    expect(quoteInRecords("Council approved twelve townhouses", withNotes)).toBe(false);
   });
 });

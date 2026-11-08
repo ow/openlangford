@@ -423,7 +423,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const findingFor = (i: Investigation | undefined) => findingText(i?.finding);
     // For the note: what the agent read for each problem, so the editor can see what each change rests on. It is
     // evidence, not a to-do list, and names entries the way the page does.
-    const found = investigations.filter((i) => i.finding?.ref);
+    const found = investigations.filter((i) => i.finding?.ref && i.finding.verdict !== "not_found");
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${brief(i.finding!.explanation, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
