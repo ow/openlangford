@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { ExternalLink, FileText, Lock, Table2 } from "lucide-react";
+import { ExternalLink, FileText, Table2 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { TermText } from "../term";
 import { cn, formatDate } from "../../lib/utils";
@@ -60,6 +60,7 @@ export function looksTabular(text: string): boolean {
 
 /** "Council decided", "Committee discussed": what a meeting row is, in the one vocabulary the page uses. */
 function meetingLabel(e: TimelineEntry): string {
+  if (e.kind === "closed") return "Closed meeting";
   const who = e.meeting?.committee ? "Committee" : "Council";
   return `${who} ${e.outcome ? "decided" : "discussed"}`;
 }
@@ -131,15 +132,13 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
       <Disc group={g} />
       <p className="text-xs text-zinc-500"><span className="tabular-nums">{shortDate(e.date)}</span> · {e.label}</p>
       <p className="mt-0.5 font-medium leading-snug text-zinc-800"><TermText text={e.headline} /></p>
-      {e.kind === "closed" && e.detail && <p className="mt-1 text-sm leading-relaxed text-zinc-500">{e.detail}</p>}
-      {e.kind !== "closed" && <Detail entry={e} />}
+      {e.kind === "closed" ? (e.detail && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>) : <Detail entry={e} />}
       {e.external && e.href && (
         <p className="mt-2 flex flex-wrap items-center gap-1.5">
           <a href={e.href} target="_blank" rel="noopener noreferrer" className={PILL}><ExternalLink className="h-3 w-3" aria-hidden="true" />{e.linkTitle || "Read it"}</a>
           {e.archiveHref && <a href={e.archiveHref} target="_blank" rel="noopener noreferrer" className={PILL}><FileText className="h-3 w-3" aria-hidden="true" />Archived copy</a>}
         </p>
       )}
-      {!e.external && e.href && e.kind === "closed" && <Link to={e.href} className="mt-1 inline-block text-xs text-zinc-500 hover:text-brand-700 hover:underline">The meeting</Link>}
       {renderAdmin?.(e) && <div className="pt-1 text-xs">{renderAdmin(e)}</div>}
     </li>
   );
@@ -168,23 +167,17 @@ function MeetingRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (en
     <ul className={cn(g.decided ? "divide-y divide-zinc-100 px-5" : "mt-1.5 space-y-3")}>
       {g.entries.map((e) => (
         <li key={e.key} id={`timeline-${e.key}`} className={cn("scroll-mt-24", g.decided && "py-3")} {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
-          {e.kind === "closed" ? (
-            <p className="flex items-start gap-1.5 text-xs text-zinc-500"><Lock className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" /><span>{e.headline}. {e.detail}</span></p>
-          ) : (
-            <>
-              <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-zinc-500">
-                <span>{meetingLabel(e)}</span>
-                {e.outcome && <Badge variant={e.outcome.variant}>{e.outcome.label}</Badge>}
-              </p>
-              <p className={cn("mt-0.5 leading-snug text-zinc-900", e.outcome ? "font-semibold" : "font-medium")}>
-                {e.href ? <Link to={e.href} className="hover:text-brand-700"><TermText text={e.headline} /></Link> : <TermText text={e.headline} />}
-              </p>
-              {e.subline && <p className="mt-0.5 text-xs text-zinc-500">In: {e.subline}</p>}
-              <Detail entry={e} />
-              {e.topic && <p className="mt-1 text-xs text-zinc-500">Part of <Link to={`/matters/${e.topic.slug}`} className="font-medium text-zinc-700 hover:text-brand-700 hover:underline">{e.topic.title}</Link></p>}
-              {renderAdmin?.(e) && <div className="pt-1 text-xs">{renderAdmin(e)}</div>}
-            </>
-          )}
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-zinc-500">
+            <span>{meetingLabel(e)}</span>
+            {e.outcome && <Badge variant={e.outcome.variant}>{e.outcome.label}</Badge>}
+          </p>
+          <p className={cn("mt-0.5 leading-snug text-zinc-900", e.outcome ? "font-semibold" : "font-medium")}>
+            {e.href && e.kind !== "closed" ? <Link to={e.href} className="hover:text-brand-700"><TermText text={e.headline} /></Link> : <TermText text={e.headline} />}
+          </p>
+          {e.subline && <p className="mt-0.5 text-xs text-zinc-500">In: {e.subline}</p>}
+          {e.kind === "closed" ? (e.detail && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>) : <Detail entry={e} />}
+          {e.topic && <p className="mt-1 text-xs text-zinc-500">Part of <Link to={`/matters/${e.topic.slug}`} className="font-medium text-zinc-700 hover:text-brand-700 hover:underline">{e.topic.title}</Link></p>}
+          {renderAdmin?.(e) && <div className="pt-1 text-xs">{renderAdmin(e)}</div>}
         </li>
       ))}
     </ul>
