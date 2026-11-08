@@ -76,3 +76,15 @@ describe("topicsLead", () => {
     expect(topicsLead([])).toBe("");
   });
 });
+
+describe("compact timeline rows", () => {
+  it("stay in date order with the others and keep their own key", async () => {
+    const { groupEntries } = await import("../../app/components/property/property-timeline");
+    const g = groupEntries([
+      { key: "source-1", date: "2022-07-04", kind: "source", label: "City publication", headline: "Blasting notice", compact: true },
+      { key: "source-2", date: "2023-04-17", kind: "source", label: "City publication", headline: "FAQ" },
+    ]);
+    expect(g.map((x) => x.key)).toEqual(["source-2", "source-1"]);
+    expect(g[1].entries[0].compact).toBe(true);
+  });
+});

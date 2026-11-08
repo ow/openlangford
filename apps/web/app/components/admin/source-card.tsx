@@ -26,6 +26,7 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
   const [date, setDate] = useState("");
   const [what, setWhat] = useState("");
   const [note, setNote] = useState("");
+  const [small, setSmall] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [removing, setRemoving] = useState<number | null>(null);
   const busy = api.state !== "idle";
@@ -35,7 +36,7 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
   useEffect(() => {
     if (api.state !== "idle" || !api.data) return;
     if (api.data.draft) setDraft(api.data.draft);
-    else if (api.data.ok) { setDraft(null); setUrl(""); setQuote(""); setDate(""); setWhat(""); setNote(""); setRemoving(null); onChanged(); }
+    else if (api.data.ok) { setDraft(null); setUrl(""); setQuote(""); setDate(""); setWhat(""); setNote(""); setSmall(false); setRemoving(null); onChanged(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api.state, api.data]);
 
@@ -101,7 +102,7 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
           e.preventDefault();
           send("add_source", {
             url: url.trim(), headline: draft.headline, happened_on: draft.happened_on || "", published_on: draft.published_on || "", publisher: draft.publisher,
-            origin: draft.origin, source_title: draft.title, quote: draft.quote, note, date_label: draft.date_label || "",
+            origin: draft.origin, source_title: draft.title, quote: draft.quote, note, date_label: draft.date_label || "", compact: small ? "1" : "",
           });
         }}>
           {!draft.fetched && <p className="rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs text-amber-900">The page couldn't be read, so the draft rests on what you typed. Check it before adding.</p>}
@@ -123,14 +124,18 @@ export function SourceCard({ path, sources, onClose, onChanged }: { path: string
               <select value={draft.origin} onChange={(e) => setDraft({ ...draft, origin: e.target.value as SourceOrigin })} className={field}>
                 <option value="city">The City's own publication</option>
                 <option value="press">News report</option>
-                <option value="other">Another body or document</option>
+                <option value="other">Another body, document or video</option>
               </select></label>
           </div>
           <label className={label}><span className={labelText}>Page title</span>
             <input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={field} /></label>
           <label className={label}><span className={labelText}>Note for staff <span className="font-normal text-zinc-500">(optional; not shown to residents)</span></span>
             <input value={note} onChange={(e) => setNote(e.target.value)} className={field} /></label>
-          <p className="text-xs text-zinc-500">Shown as: <span className="tabular-nums">{draft.date_label || draft.happened_on || "date"}</span> · {sourceByline({ origin: draft.origin, publisher: draft.publisher || "…", published_on: draft.published_on, happened_on: draft.happened_on || "" })}</p>
+          <label className="flex items-center gap-2 text-xs text-zinc-700">
+            <input type="checkbox" checked={small} onChange={(e) => setSmall(e.target.checked)} />
+            Show as a small line <span className="text-zinc-500">(for thin context, like a notice or an advisory)</span>
+          </label>
+          <p className="text-xs text-zinc-500">Shown as: <span className="tabular-nums">{draft.date_label || draft.happened_on || "date"}</span> · {sourceByline({ origin: draft.origin, publisher: draft.publisher || "…", published_on: draft.published_on, happened_on: draft.happened_on || "", url })}</p>
           <div className="flex gap-2">
             <button type="submit" disabled={busy || !draft.headline.trim() || !draft.happened_on} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-50">
               {intent === "add_source" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}Add to the timeline

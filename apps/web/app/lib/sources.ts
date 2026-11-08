@@ -23,6 +23,8 @@ export type Source = {
   archive_url?: string | null;
   /** How to show the date when the source gives only a season or a month ("Spring 2019"); happened_on still orders it. */
   date_label?: string | null;
+  /** Shown as a small one-line row on the timeline (thin context: a notice, an advisory). meta.compact, as text. */
+  compact?: string | boolean | null;
 };
 
 /** The archived copy's address from a Wayback save: the final URL after redirects, or the content-location header
@@ -36,15 +38,32 @@ export function waybackArchiveUrl(original: string, finalUrl: string | null, con
   return null;
 }
 
+/** The id of a YouTube video from any of its link shapes (watch, youtu.be, embed, shorts, live), or null. */
+export function youtubeId(url: string | null | undefined): string | null {
+  if (!url) return null;
+  let u: URL;
+  try { u = new URL(url); } catch { return null; }
+  const host = u.hostname.toLowerCase().replace(/^www\.|^m\./, "");
+  let id: string | null = null;
+  if (host === "youtu.be") id = u.pathname.slice(1).split("/")[0];
+  else if (host === "youtube.com" || host === "youtube-nocookie.com") {
+    id = u.searchParams.get("v") || u.pathname.match(/^\/(?:embed|shorts|live|v)\/([^/?]+)/)?.[1] || null;
+  }
+  return id && /^[\w-]{11}$/.test(id) ? id : null;
+}
+
 /** Who said it, as the page labels it: "City news release" for the City's own words, "Reported by Victoria News"
- * for someone else's. */
-export function sourceLabel(s: Pick<Source, "origin" | "publisher">): string {
+ * for someone else's, "YouTube video by <channel>" for a video, "From <body>" for another document. */
+export function sourceLabel(s: Pick<Source, "origin" | "publisher"> & { url?: string | null }): string {
   if (s.origin === "city") return /release|news/i.test(s.publisher) ? "City news release" : "City publication";
+  // YouTube is the source; the channel is who made it.
+  if (youtubeId(s.url)) return s.publisher && !/^youtube$/i.test(s.publisher) ? `YouTube video by ${s.publisher}` : "YouTube video";
+  if (s.origin === "other") return `From ${s.publisher}`;
   return `Reported by ${s.publisher}`;
 }
 
 /** "Reported by Victoria News on Nov 2, 2019": who said it, and when they said it, when that is not the day it happened. */
-export function sourceByline(s: Pick<Source, "origin" | "publisher" | "published_on" | "happened_on">): string {
+export function sourceByline(s: Pick<Source, "origin" | "publisher" | "published_on" | "happened_on"> & { url?: string | null }): string {
   const base = sourceLabel(s);
   if (!s.published_on || s.published_on === s.happened_on) return base;
   return `${base} on ${formatDate(s.published_on, { year: "numeric", month: "short", day: "numeric" })}`;
@@ -58,6 +77,7 @@ const PUBLISHERS: [RegExp, string, SourceOrigin][] = [
   [/goldstreamgazette\.com$/, "Goldstream Gazette", "press"],
   [/timescolonist\.com$/, "Times Colonist", "press"],
   [/cheknews\.ca$/, "CHEK News", "press"],
+  [/(^|\.)youtube\.com$|^youtu\.be$/, "YouTube", "other"],
   [/islandsocialtrends\.ca$/, "Island Social Trends", "press"],
   [/capitaldaily\.ca$/, "Capital Daily", "press"],
   [/cbc\.ca$/, "CBC News", "press"],

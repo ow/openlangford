@@ -53,3 +53,23 @@ describe("sourceByline", () => {
     expect(sourceByline({ origin: "city", publisher: "City of Langford", published_on: null, happened_on: "2020-03-02" })).toBe("City publication");
   });
 });
+
+describe("youtubeId and the video label", () => {
+  it("finds the id in every link shape and refuses anything else", async () => {
+    const { youtubeId, sourceLabel, sourceByline } = await import("../../app/lib/sources");
+    expect(youtubeId("https://www.youtube.com/watch?v=DHWFwIrqX6s")).toBe("DHWFwIrqX6s");
+    expect(youtubeId("https://youtu.be/DHWFwIrqX6s?t=12")).toBe("DHWFwIrqX6s");
+    expect(youtubeId("https://m.youtube.com/watch?v=DHWFwIrqX6s&feature=share")).toBe("DHWFwIrqX6s");
+    expect(youtubeId("https://www.youtube.com/embed/DHWFwIrqX6s")).toBe("DHWFwIrqX6s");
+    expect(youtubeId("https://www.youtube.com/shorts/DHWFwIrqX6s")).toBe("DHWFwIrqX6s");
+    expect(youtubeId("https://www.youtube.com/watch?v=short")).toBeNull();
+    expect(youtubeId("https://example.com/watch?v=DHWFwIrqX6s")).toBeNull();
+    expect(youtubeId("https://www.youtube.com/watch?v=\"><script>x")).toBeNull();
+    expect(youtubeId(null)).toBeNull();
+    expect(sourceLabel({ origin: "other", publisher: "Vancouver Island & BC", url: "https://www.youtube.com/watch?v=DHWFwIrqX6s" })).toBe("YouTube video by Vancouver Island & BC");
+    expect(sourceLabel({ origin: "other", publisher: "YouTube", url: "https://youtu.be/DHWFwIrqX6s" })).toBe("YouTube video");
+    expect(sourceLabel({ origin: "other", publisher: "Province of British Columbia", url: "https://gov.bc.ca/x" })).toBe("From Province of British Columbia");
+    expect(sourceLabel({ origin: "press", publisher: "CHEK News", url: "https://cheknews.ca/x" })).toBe("Reported by CHEK News");
+    expect(sourceByline({ origin: "other", publisher: "Vancouver Island & BC", published_on: "2024-11-24", happened_on: "2024-11-24", url: "https://youtu.be/DHWFwIrqX6s" })).toBe("YouTube video by Vancouver Island & BC");
+  });
+});

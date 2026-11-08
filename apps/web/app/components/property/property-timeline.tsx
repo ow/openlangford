@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { ExternalLink, FileText, Table2 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { TermText } from "../term";
+import { VideoEmbed } from "../video-embed";
 import { cn, formatDate } from "../../lib/utils";
 
 /**
@@ -34,8 +35,14 @@ export type TimelineEntry = {
   external?: boolean;
   /** An archived copy of an outside link (the Wayback Machine), for when the link dies. */
   archiveHref?: string | null;
-  /** The outside page's own title, for the link pill. */
+  /** The label on the link pill ("Victoria News", "Watch on YouTube"); short, since a pill is one line. */
   linkTitle?: string | null;
+  /** The page's full title, shown on hover over the pill. */
+  linkHint?: string | null;
+  /** A small one-line row on the rail instead of a card (thin context: a notice, an advisory). */
+  compact?: boolean;
+  /** A YouTube video to embed in the row. */
+  video?: { id: string; title: string } | null;
   /** A picture from this step's report (the topic's chosen one), shown beside it. */
   image?: { url: string; alt: string } | null;
   topic?: { slug: string; title: string } | null;
@@ -137,6 +144,18 @@ function Disc({ group }: { group: Group }) {
 function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entry: TimelineEntry) => ReactNode }) {
   if (g.kind === "meeting") return <MeetingRow group={g} renderAdmin={renderAdmin} />;
   const e = g.entries[0];
+  if (e.compact) {
+    return (
+      <li id={`timeline-${e.key}`} className="relative scroll-mt-24 pl-10" {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
+        <span aria-hidden="true" className="absolute left-[8px] top-[7px] h-2 w-2 rounded-full border border-zinc-300 bg-surface" />
+        <p className="text-xs leading-relaxed text-zinc-500">
+          <span className="tabular-nums text-zinc-600">{e.dateLabel || shortDate(e.date)}</span> · {e.label} · {e.headline}
+          {e.external && e.href && <> · <a href={e.href} target="_blank" rel="noopener noreferrer" title={e.linkHint || undefined} className="underline decoration-zinc-300 underline-offset-2 hover:text-brand-700">{e.linkTitle || "Source"}</a></>}
+        </p>
+        {renderAdmin?.(e) && <div className="pt-1 text-xs">{renderAdmin(e)}</div>}
+      </li>
+    );
+  }
   return (
     <li id={`timeline-${e.key}`} className="relative scroll-mt-24 pl-10" {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
       <Disc group={g} />
@@ -144,10 +163,11 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
       <p className="text-xs text-zinc-500"><span className="tabular-nums">{e.dateLabel || shortDate(e.date)}</span> · {e.label}</p>
       <p className="mt-0.5 font-medium leading-snug text-zinc-800"><TermText text={e.headline} /></p>
       {e.kind === "closed" ? (e.detail && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>) : <Detail entry={e} />}
+      {e.video && <VideoEmbed id={e.video.id} title={e.video.title} className="mt-2" />}
       {e.external && e.href && (
         <p className="mt-2 flex flex-wrap items-center gap-1.5">
-          <a href={e.href} target="_blank" rel="noopener noreferrer" className={PILL}><ExternalLink className="h-3 w-3" aria-hidden="true" />{e.linkTitle || "Read it"}</a>
-          {e.archiveHref && <a href={e.archiveHref} target="_blank" rel="noopener noreferrer" className={PILL}><FileText className="h-3 w-3" aria-hidden="true" />Archived copy</a>}
+          <a href={e.href} target="_blank" rel="noopener noreferrer" title={e.linkHint || undefined} className={cn(PILL, "max-w-full whitespace-nowrap")}><ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{e.linkTitle || "Read it"}</span></a>
+          {e.archiveHref && <a href={e.archiveHref} target="_blank" rel="noopener noreferrer" className={cn(PILL, "whitespace-nowrap")}><FileText className="h-3 w-3 shrink-0" aria-hidden="true" />Archived copy</a>}
         </p>
       )}
       {renderAdmin?.(e) && <div className="pt-1 text-xs">{renderAdmin(e)}</div>}

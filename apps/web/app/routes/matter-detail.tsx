@@ -61,7 +61,8 @@ import { ParticipationList, speakersAbout } from "../components/meeting/particip
 import { crossNotes, writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { sourcesFor } from "../services/sources.server";
-import { sourceByline, tidyQuote, type Source } from "../lib/sources";
+import { sourceByline, tidyQuote, youtubeId, type Source } from "../lib/sources";
+import { VideoEmbed } from "../components/video-embed";
 
 /** The small pill the meeting page uses for its document and vote buttons. */
 const SOURCE_PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
@@ -904,10 +905,11 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                             </div>
                             <p className="text-sm font-medium text-zinc-800"><TermText text={source.headline} /></p>
                             {source.quote && <blockquote className="mt-1 text-sm leading-relaxed text-zinc-600">“{tidyQuote(source.quote, 700)}”</blockquote>}
+                            {youtubeId(source.url) && <VideoEmbed id={youtubeId(source.url)!} title={source.title} className="mt-2" />}
                             {source.url && (
                               <p className="mt-2 flex flex-wrap items-center gap-1.5">
-                                <a href={source.url} target="_blank" rel="noopener noreferrer" className={SOURCE_PILL}>
-                                  <ExternalLink className="h-3 w-3" aria-hidden="true" />{source.title}
+                                <a href={source.url} target="_blank" rel="noopener noreferrer" title={source.title} className={`${SOURCE_PILL} max-w-full whitespace-nowrap`}>
+                                  <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{youtubeId(source.url) ? "Watch on YouTube" : source.publisher}</span>
                                 </a>
                                 {source.archive_url && source.archive_url !== source.url && (
                                   <a href={source.archive_url} target="_blank" rel="noopener noreferrer" className={SOURCE_PILL}>Archived copy</a>

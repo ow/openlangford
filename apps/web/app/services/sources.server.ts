@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getAiClient } from "./ai/client.server";
 import { glossaryIds, glossaryPromptBlock } from "./ai/glossary-prompt";
-import { publisherFor, tidyQuote, waybackArchiveUrl, type Source, type SourceOrigin } from "../lib/sources";
+import { publisherFor, tidyQuote, waybackArchiveUrl, youtubeId, type Source, type SourceOrigin } from "../lib/sources";
 
 /**
  * Sources outside the meeting record, added by staff from the review bar: a City news release, a public notice, a
@@ -17,7 +17,7 @@ const MUNICIPALITY = 1;
 
 export type SourceTarget = { matterId?: number | null; propertyId?: number | null };
 
-const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden, archive_url, date_label:meta->>date_label";
+const FIELDS = "id, origin, publisher, title, url, published_on, happened_on, headline, quote, note, hidden, archive_url, date_label:meta->>date_label, compact:meta->>compact";
 
 /** The sources linked to a topic or an address, oldest first. */
 export async function sourcesFor(supabase: SupabaseClient, target: SourceTarget): Promise<Source[]> {
@@ -51,6 +51,8 @@ export async function sourcesForMatters(supabase: SupabaseClient, matterIds: num
 /** The page behind a link, as text: its title and the readable part of its body, for the draft. News sites and the
  * City's site are plain HTML; a PDF comes back as a note saying so (staff paste the quote then). */
 export async function fetchPageText(url: string, signal?: AbortSignal): Promise<{ title: string; text: string; status: number }> {
+  const video = youtubeId(url);
+  if (video) return fetchYouTubeText(video, signal);
   const res = await fetch(url, {
     signal, redirect: "follow",
     headers: { "user-agent": "Mozilla/5.0 (compatible; OpenLangford/1.0; +https://openlangford.ca)", accept: "text/html,application/xhtml+xml,*/*;q=0.8" },
@@ -69,6 +71,28 @@ export async function fetchPageText(url: string, signal?: AbortSignal): Promise<
     .replace(/<[^>]+>/g, " ");
   const text = decode(body).replace(/[ \t]+/g, " ").replace(/\s*\n\s*/g, "\n").trim().slice(0, 24_000);
   return { title, text: (published ? `Published: ${published}\n\n` : "") + text, status: res.status };
+}
+
+/** A YouTube video as text: its title and channel (the public embed endpoint), and the upload date and the uploader's
+ * description from the watch page. The footage itself is not read; the draft says so. */
+async function fetchYouTubeText(id: string, signal?: AbortSignal): Promise<{ title: string; text: string; status: number }> {
+  const watch = `https://www.youtube.com/watch?v=${id}`;
+  const headers = { "user-agent": "Mozilla/5.0 (compatible; OpenLangford/1.0; +https://openlangford.ca)", "accept-language": "en-CA,en;q=0.8" };
+  const [oembed, html] = await Promise.all([
+    fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(watch)}&format=json`, { signal, headers }).then((r) => (r.ok ? r.json() : null)).catch(() => null) as Promise<any>,
+    fetch(watch, { signal, headers }).then((r) => (r.ok ? r.text() : "")).catch(() => ""),
+  ]);
+  const uploaded = html.match(/<meta itemprop="uploadDate" content="([^"]+)"/)?.[1] || html.match(/"uploadDate":"([^"]+)"/)?.[1] || "";
+  let description = "";
+  const raw = html.match(/"shortDescription":"((?:[^"\\]|\\.)*)"/)?.[1];
+  if (raw) { try { description = JSON.parse(`"${raw}"`); } catch { /* leave it out */ } }
+  const title = String(oembed?.title || "").trim();
+  const text = [
+    title && `Video: ${title}`, oembed?.author_name && `Channel: ${oembed.author_name}`, uploaded && `Uploaded: ${uploaded.slice(0, 10)}`,
+    description && `Description by the uploader:\n${description.slice(0, 4000)}`,
+    "(The footage itself was not watched; this is the title, channel and the uploader's own description.)",
+  ].filter(Boolean).join("\n");
+  return { title, text: title || description ? text : "", status: title || description ? 200 : 404 };
 }
 
 function decode(s: string): string {
@@ -97,6 +121,7 @@ Rules:
 - Keep the concrete facts the source gives: the dollar amount, the size, the date. Round money the way the source does.
 - Dates: when the event's date is only approximate, give happened_on your best day inside it and put the words the source uses in date_label ("Spring 2019"); happened_on is when the event happened; a report published in November about a purchase in spring gives happened_on in spring if the text says so, else the published date.
 - The quote is verbatim from the text and backs the headline; prefer the sentence with the number in it. Staff's quote, when given, wins unless it is not in the text.
+- For a video the text is only its title, channel and the uploader's own description; the footage was not watched. The headline says what the video shows as the uploader describes it, never more; the publisher is the channel; origin is "other"; happened_on is the upload date unless the description says when it was filmed; quote the uploader's own words; and say in caution that the footage itself was not checked and the claims are the uploader's.
 - Never invent. If the page does not say what staff's note claims, write the headline from what the page does say and put the gap in caution.
 - No bylaw, file or permit numbers. Canadian spelling.
 
@@ -134,7 +159,7 @@ export async function draftSource(url: string, given: { quote?: string; date?: s
 
 export type NewSource = {
   origin: SourceOrigin; publisher: string; title: string; url: string | null; published_on: string | null; happened_on: string;
-  headline: string; quote: string | null; note: string | null; date_label?: string | null;
+  headline: string; quote: string | null; note: string | null; date_label?: string | null; compact?: boolean;
 };
 
 const UA = { "user-agent": "Mozilla/5.0 (compatible; OpenLangford/1.0; +https://openlangford.ca)" };
@@ -143,6 +168,7 @@ const UA = { "user-agent": "Mozilla/5.0 (compatible; OpenLangford/1.0; +https://
 export async function existingWaybackCopy(url: string, timeoutMs = 6_000): Promise<string | null> {
   const already = waybackArchiveUrl(url, null, null);
   if (already) return already;
+  if (youtubeId(url)) return null;
   try {
     const res = await fetch(`https://archive.org/wayback/available?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(timeoutMs), headers: UA });
     const data: any = res.ok ? await res.json() : null;
@@ -156,6 +182,7 @@ export async function existingWaybackCopy(url: string, timeoutMs = 6_000): Promi
 export async function archiveWithWayback(url: string, timeoutMs = 90_000): Promise<string | null> {
   const already = waybackArchiveUrl(url, null, null);
   if (already) return already;
+  if (youtubeId(url)) return null;
   try {
     const res = await fetch(`https://web.archive.org/save/${url}`, { redirect: "follow", signal: AbortSignal.timeout(timeoutMs), headers: UA });
     return waybackArchiveUrl(url, res.url, res.headers.get("content-location")) ?? await existingWaybackCopy(url);
@@ -194,7 +221,7 @@ export async function addSource(supabase: SupabaseClient, input: NewSource, targ
       municipality_id: MUNICIPALITY, origin: input.origin, publisher: input.publisher.trim() || "Unknown", title: input.title.trim() || input.url || input.headline,
       url: input.url, published_on: input.published_on || null, happened_on: input.happened_on, headline: input.headline.trim(),
       quote: input.quote?.trim() || null, note: input.note?.trim() || null, added_by: userId,
-      meta: input.date_label?.trim() ? { date_label: input.date_label.trim() } : {},
+      meta: { ...(input.date_label?.trim() ? { date_label: input.date_label.trim() } : {}), ...(input.compact ? { compact: true } : {}) },
       content_text: text, content_fetched_at: text ? now : null, archive_url: archive, archived_at: archive ? now : null,
     }).select(FIELDS).single();
     if (error) throw new Error(`Could not add the source: ${error.message}`);
