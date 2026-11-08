@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { ExternalLink, FileText, Landmark, Lock, Newspaper, Table2 } from "lucide-react";
+import { ExternalLink, FileText, Lock, Table2 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { TermText } from "../term";
 import { cn, formatDate } from "../../lib/utils";
@@ -112,20 +112,15 @@ export function PropertyTimeline({ entries, newestFirst = true, renderAdmin }: {
   );
 }
 
-/** The rail disc: what kind of thing this is and, for a decision, how it went. */
+/** The rail dot: filled, in the outcome's colour, where something was decided; hollow for everything else. */
 function Disc({ group }: { group: Group }) {
   const outcome = group.entries.find((e) => e.outcome)?.outcome;
-  const Icon = group.kind === "source" ? Newspaper : group.kind === "report" ? FileText : group.kind === "closed" ? Lock : Landmark;
-  const tone = outcome?.variant === "success" ? "border-emerald-600 bg-emerald-600 text-white"
-    : outcome?.variant === "danger" ? "border-red-600 bg-red-600 text-white"
-    : outcome?.variant === "warning" ? "border-amber-500 bg-amber-500 text-white"
-    : group.decided ? "border-brand-600 bg-brand-600 text-white"
-    : "border-zinc-200 bg-surface text-zinc-400";
-  return (
-    <span className={cn("absolute left-0 top-0.5 flex h-6 w-6 items-center justify-center rounded-full border", tone)} aria-hidden="true">
-      <Icon className="h-3 w-3" />
-    </span>
-  );
+  const tone = outcome?.variant === "success" ? "border-emerald-600 bg-emerald-600"
+    : outcome?.variant === "danger" ? "border-red-600 bg-red-600"
+    : outcome?.variant === "warning" ? "border-amber-500 bg-amber-500"
+    : group.decided ? "border-brand-600 bg-brand-600"
+    : "border-zinc-300 bg-surface";
+  return <span className={cn("absolute left-[6px] top-1.5 h-3 w-3 rounded-full border-2", tone)} aria-hidden="true" />;
 }
 
 function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entry: TimelineEntry) => ReactNode }) {
@@ -156,7 +151,7 @@ function MeetingRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (en
   const image = g.entries.find((e) => e.image)?.image;
   const decisions = g.entries.filter((e) => e.outcome).length;
   const head = g.decided ? (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-zinc-100 bg-zinc-50/70 px-5 py-2.5 text-xs">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-zinc-100 px-5 pb-2.5 pt-3.5 text-xs">
       <p className="text-zinc-600">
         <span className="font-semibold tabular-nums text-zinc-800">{shortDate(g.date)}</span>
         {m.title && <> · <Link to={m.href} className="hover:text-brand-700 hover:underline">{m.title}</Link></>}
