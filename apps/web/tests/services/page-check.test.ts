@@ -105,4 +105,19 @@ describe("agreedStillOpen", () => {
       flag({ verdict: "agree", problem: "editor_issue" })], [])).toEqual([]);
     expect(agreedStillOpen([flag({ verdict: "agree" })], [flag({})])).toEqual([]);
   });
+  it("resolves an agreed flag whose entry has changed since, when the check no longer raises it", () => {
+    const agreed = flag({ verdict: "agree", excerpt: "Matter: Solid Waste Bylaw (FIRST, SECOND AND THIRD READINGS)" });
+    const unchanged = agreedStillOpen([agreed], [], () => agreed.excerpt);
+    expect(unchanged).toEqual([agreed]);
+    const [resolved] = agreedStillOpen([agreed], [], () => "Matter: Solid waste collection bylaw");
+    expect(resolved.fixed).toBe(true);
+    expect(resolved.recheck).toMatchObject({ holds: true, checked: false });
+    // A page-level flag has no entry to compare: it stays open.
+    const page = flag({ key: null, verdict: "agree" });
+    expect(agreedStillOpen([page], [], () => "anything")).toEqual([page]);
+    // Re-raised on the same text: not this function's business (the fresh flag carries the rating).
+    expect(agreedStillOpen([agreed], [flag({ excerpt: agreed.excerpt })], () => agreed.excerpt)).toEqual([]);
+    // Raised again on a changed entry: a different flag, so the old one is resolved, not duplicated.
+    expect(agreedStillOpen([agreed], [flag({ excerpt: "new text" })], () => "new text")[0].fixed).toBe(true);
+  });
 });
