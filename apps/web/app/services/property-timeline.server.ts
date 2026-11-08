@@ -19,6 +19,8 @@ type Meeting = { id: number; slug: string | null; title: string | null; meeting_
 
 const LAND = /\bland\b/i;
 
+const meetingRef = (m: Meeting) => ({ id: m.id, title: m.title ?? null, href: meetingPath(m), committee: /committee|commission|board/i.test(`${m.type || ""} ${m.title || ""}`) });
+
 function outcomeOf(motions: { result?: string | null }[] | null | undefined): TimelineEntry["outcome"] {
   const results = (motions || []).map((m) => m.result || "");
   if (!results.length) return null;
@@ -104,8 +106,8 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     const pick = [m.meta?.images?.lead, m.meta?.images?.layout].find((img: any) => img?.agenda_item_id === it.id && img?.r2_key);
     const url = pick ? imageUrl(pick.r2_key) : null;
     entries.push({
-      key: `step-${it.id}`, date: meeting.meeting_date, kind: "step",
-      label: outcome ? "Council decision" : /committee|commission|board/i.test(meeting.type || "") ? "Committee" : "Before Council",
+      key: `step-${it.id}`, date: meeting.meeting_date, kind: "step", label: "",
+      meeting: meetingRef(meeting),
       headline: headline || displayTitle(it.title), detail: lines.get(it.id) || (headline ? null : it.plain_english_summary || null), quoted: lines.has(it.id),
       href: `${meetingPath(meeting)}#item-${it.id}`, topic: { slug: m.slug, title: matterTitle(m) }, outcome,
       image: url ? { url, alt: pick.report_title ? `From ${pick.report_title}` : "" } : null,
@@ -118,7 +120,7 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     if (!meeting?.meeting_date) continue;
     const line = entryLines[String(it.id)];
     entries.push({
-      key: `item-${it.id}`, date: meeting.meeting_date, kind: "mention", label: "Came up at the meeting",
+      key: `item-${it.id}`, date: meeting.meeting_date, kind: "mention", label: "", meeting: meetingRef(meeting),
       headline: line || displayTitle(it.title), subline: line ? displayTitle(it.title) : null,
       detail: lines.get(it.id) || it.plain_english_summary || null, quoted: lines.has(it.id),
       href: `${meetingPath(meeting)}#item-${it.id}`, reviewKey: `item-${it.id}`,
@@ -139,7 +141,7 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     const reasons = closedReasons(meeting.closed_session);
     if (!reasons.some((r) => LAND.test(r))) continue;
     entries.push({
-      key: `closed-${meeting.id}`, date: meeting.meeting_date, kind: "closed", label: "Closed meeting",
+      key: `closed-${meeting.id}`, date: meeting.meeting_date, kind: "closed", label: "Closed meeting", meeting: meetingRef(meeting),
       headline: "Council also met behind closed doors about land that night",
       detail: "The minutes record a closed session about " + reasons.join(", ") + ". What was discussed is not public, so the record cannot say whether it was this address.",
       href: meetingPath(meeting),

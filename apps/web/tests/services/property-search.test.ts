@@ -47,3 +47,21 @@ describe("addressExcerpt", () => {
     expect(addressExcerpt("Facilities include 3680 Trans Canada Highway property and the bike park.", "3680").score).toBe(0);
   });
 });
+
+describe("property timeline grouping", () => {
+  it("folds rows from one meeting into a card when something was decided, and spots tables", async () => {
+    const { groupEntries, looksTabular } = await import("../../app/components/property/property-timeline");
+    const meeting = { id: 7, title: "Special Council", href: "/meetings/x", committee: false };
+    const groups = groupEntries([
+      { key: "step-1", date: "2019-08-19", kind: "step", label: "", headline: "Permit issued", meeting, outcome: { label: "Passed", variant: "success" } },
+      { key: "item-2", date: "2019-08-19", kind: "mention", label: "", headline: "Public Participation", meeting },
+      { key: "closed-7", date: "2019-08-19", kind: "closed", label: "Closed meeting", headline: "Closed doors", meeting },
+      { key: "source-3", date: "2019-11-02", kind: "source", label: "Reported by Victoria News", headline: "City buys land" },
+    ]);
+    expect(groups.map((g) => g.key)).toEqual(["source-3", "meeting-7"]);
+    expect(groups[1].decided).toBe(true);
+    expect(groups[1].entries.map((e) => e.key)).toEqual(["step-1", "item-2", "closed-7"]);
+    expect(looksTabular("DAJ000005776 5/7/2019 DAJ Young Anderson 3680 TCH Yes CMTRX00003073 $1,272,578.89 DAJ000005778 5/9/2019 DAJ Shell PAP Apr 14 Yes CMTRX00003074 $865.23")).toBe(true);
+    expect(looksTabular("The City recently acquired the property at 3680 Trans-Canada Hwy, one of the few oceanfront properties within the City of Langford. The property is currently zoned RR4.")).toBe(false);
+  });
+});
