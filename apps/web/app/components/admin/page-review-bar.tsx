@@ -490,7 +490,7 @@ export function PageReviewBar() {
               {links && (
                 <div className="mb-3">
                   <p className="text-xs text-zinc-500">
-                    {searching ? <span className="inline-flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" />Searching meetings and reports for entries missing from this page… what it finds appears here, so the counts can grow.</span>
+                    {searching ? <span className="inline-flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" />Searching meetings and reports for entries missing…</span>
                       : suggestions.length ? (links.findJob?.status === "succeeded" ? <>The search found {suggestions.length} {suggestions.length === 1 ? "entry" : "entries"} to decide · {reviewTime(links.findJob.finished_at)}</> : null)
                       : links.findJob?.status === "succeeded" ? <>No missing entries found · {reviewTime(links.findJob.finished_at)}</>
                       : links.findJob?.status === "failed" ? "The search for missing entries didn't finish. Check again to retry."
@@ -515,7 +515,7 @@ export function PageReviewBar() {
                           {s.topic && (
                             <p className="mt-0.5 text-xs text-amber-800">
                               Already a step of another topic: <a href={`/matters/${s.topic.slug}`} target="_blank" rel="noreferrer" className="font-medium underline">{s.topic.title}</a>.
-                              {" "}👍 adds it here as a mention only; its steps stay on that topic.
+                              {" "}<ThumbsUp className="inline h-3 w-3 align-[-2px]" aria-hidden="true" /> adds it here as a mention only; its steps stay on that topic.
                             </p>
                           )}
                           {s.reason && <p className="mt-0.5 text-zinc-700">{s.reason}</p>}
