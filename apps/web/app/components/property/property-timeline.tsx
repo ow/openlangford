@@ -75,13 +75,6 @@ export function looksTabular(text: string): boolean {
   return numeric / tokens.length >= 0.3 && sentences <= 1;
 }
 
-/** "Council decided", "Committee discussed": what a meeting row is, in the one vocabulary the page uses. */
-function meetingLabel(e: TimelineEntry): string {
-  if (e.kind === "closed") return "Closed meeting";
-  const who = e.meeting?.committee ? "Committee" : "Council";
-  return `${who} ${e.outcome ? "decided" : "discussed"}`;
-}
-
 export type Group = { key: string; date: string; kind: TimelineEntry["kind"] | "meeting"; entries: TimelineEntry[]; decided: boolean; meeting?: TimelineEntry["meeting"] };
 
 const rank = (e: TimelineEntry) => (e.kind === "closed" ? 2 : e.outcome ? 0 : 1);
@@ -210,19 +203,23 @@ function MeetingRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (en
       <p className="text-zinc-500">{decisions === 1 ? "1 decision" : `${decisions} decisions`}</p>
     </div>
   ) : (
+    // The header carries the verb once: "Sep 24, 2020 · Parks … Committee Discussed".
     <p className="text-xs text-zinc-500">
       <span className="font-semibold tabular-nums text-zinc-700">{shortDate(g.date)}</span>
-      {m.title && <> · <Link to={m.href} className="hover:text-brand-700 hover:underline">{m.title}</Link></>}
+      {m.title && <> · <Link to={m.href} className="hover:text-brand-700 hover:underline">{m.title}</Link></>} Discussed
     </p>
   );
   const rows = (
     <ul className={cn(g.decided ? "divide-y divide-zinc-100 px-5" : "mt-1.5 space-y-3")}>
       {g.entries.map((e) => (
         <li key={e.key} id={`timeline-${e.key}`} className={cn("scroll-mt-24", g.decided && "py-3")} {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
-          <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-zinc-500">
-            <span>{meetingLabel(e)}</span>
-            {e.outcome && <Badge variant={e.outcome.variant}>{e.outcome.label}</Badge>}
-          </p>
+          {/* No verb line when the header already says it. In a decision card a row shows its outcome or "Discussed";
+              a closed-meeting row keeps its own label. */}
+          {(g.decided || e.kind === "closed") && (
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-zinc-500">
+              {e.outcome ? <Badge variant={e.outcome.variant}>{e.outcome.label}</Badge> : <span>{e.kind === "closed" ? "Closed meeting" : "Discussed"}</span>}
+            </p>
+          )}
           <p className={cn("mt-0.5 leading-snug text-zinc-900", e.outcome ? "font-semibold" : "font-medium")}>
             {e.href && e.kind !== "closed" ? <Link to={e.href} className="hover:text-brand-700"><TermText text={e.headline} /></Link> : <TermText text={e.headline} />}
           </p>
