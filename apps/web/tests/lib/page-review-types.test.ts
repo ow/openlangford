@@ -39,3 +39,11 @@ describe("entryLabel", () => {
     expect(entryLabel(null, flags)).toBe("this page");
   });
 });
+
+describe("entryLabel for meeting items", () => {
+  it("names the item by its title, or falls back to the item", () => {
+    const flags = [{ key: "item-4543", excerpt: "1.1 · 902 Walfred Rd Rezoning · Council proceeded with readings" }, { key: "item-4536", excerpt: "Summary of item 4536: Members of the public spoke" }];
+    expect(entryLabel("item-4543", flags)).toBe('the "902 Walfred Rd Rezoning" item');
+    expect(entryLabel("item-4536", flags)).toBe("the item");
+  });
+});

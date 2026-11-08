@@ -10,6 +10,7 @@ import requests as http_requests
 from bs4 import BeautifulSoup
 from supabase import Client
 from pipeline.ingestion.staff_fixes import locked_matter_id, staff_matter
+from pipeline.ingestion.manual_edits import keep_manual_text
 from pipeline.supabase_client import create_client
 
 import pipeline.parser as parser
@@ -2452,6 +2453,8 @@ class MeetingIngester:
                     for identity_key in ("slug", "item_order", "title"):
                         item_data.pop(identity_key, None)
                     item_data["meta"] = {**(old_item.get("meta") or {}), **{key: value for key, value in item_data["meta"].items() if value is not None}}
+                    # A summary a person wrote (the fix agent on the meeting page) stays; the refined one is kept as auto.
+                    item_data = keep_manual_text(old_item.get("meta"), item_data, {"summary": "plain_english_summary"})
                     # Staff moved this item to another topic (or off every topic): re-processing keeps it there.
                     if staff_matter(old_item.get("meta")):
                         item_data["matter_id"] = locked_matter_id(old_item.get("meta"), item_data.get("matter_id"))

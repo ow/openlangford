@@ -37,7 +37,7 @@ export type Investigation = {
   finding: FlagResearch | null;
 };
 
-const itemOf = (key: string | null) => Number(key?.match(/^(?:agenda|mention|background)-(\d+)$/)?.[1] ?? NaN);
+const itemOf = (key: string | null) => Number(key?.match(/^(?:agenda|mention|background|item)-(\d+)$/)?.[1] ?? NaN);
 
 /**
  * Whether a flag needs the records searched before the plan. The plan already holds the topic's own records, the
@@ -69,7 +69,7 @@ export function investigationQuestion(flag: PageFlag, topic: string): string {
       + `the connection is (what this step did, and how it bears on "${topic}"). Call it unrelated only if the record is `
       + `about something else, and say what. ${entry}`;
   }
-  if (/^agenda-/.test(key) || flag.problem === "generic_text" || flag.problem === "duplicate") {
+  if (/^(agenda|item)-/.test(key) || flag.problem === "generic_text" || flag.problem === "duplicate") {
     return `What was proposed at this step of "${topic}", and what did Council decide? Read that meeting's minutes (search `
       + `the item's subject) before saying the record doesn't say. ${entry}`;
   }

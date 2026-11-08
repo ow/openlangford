@@ -97,5 +97,10 @@ export function entryLabel(key: string | null | undefined, flags: Pick<PageFlag,
   const excerpt = flags.find((f) => f.key === key)?.excerpt ?? "";
   const date = excerpt.match(/^\s*([A-Z][a-z]+\.? \d{1,2}, \d{4})/)?.[1];
   if (date) return `the ${date} entry`;
+  if (key.startsWith("item-")) {
+    // A meeting item's excerpt starts "1.1 · 902 Walfred Rd Rezoning · …" (or "Summary of item 4536: …").
+    const title = excerpt.match(/^\s*[\w.()]+ · ([^·]{3,80}?) ·/)?.[1]?.trim();
+    return title ? `the "${title}" item` : "the item";
+  }
   return key.startsWith("related-") ? "the related topic" : "the entry";
 }

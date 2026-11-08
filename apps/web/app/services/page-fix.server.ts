@@ -15,6 +15,7 @@ import { rewriteSummaries } from "./topic-summaries.server";
 import { mergeFlat, moveItem, refreshMeetingLifecycles } from "./topic-moves.server";
 import type { StaffRole } from "../lib/auth.server";
 import { MOTION_RESULTS, addMotion, moveMotion } from "./motion-add.server";
+import { fixMeetingPage } from "./meeting-fix.server";
 import { STAGE_LABELS, type StageChoice } from "../components/matter/timeline-step";
 
 /**
@@ -309,6 +310,8 @@ async function containerMotions(supabase: SupabaseClient, ids: number[]): Promis
 export const FIX_BUDGET_MS = 90_000;
 
 export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | "refiling" | void> {
+  // A meeting page has its own, smaller agent (its text is the highlights and the items' summaries).
+  if (/^\/meetings\/[^/]+$/.test(path)) return fixMeetingPage(supabase, origin, path, requester);
   const startedAt = Date.now();
   // Every model call in the fix shares this deadline: when it fires, in-flight calls are cancelled.
   const budget = AbortSignal.timeout(FIX_BUDGET_MS);
@@ -333,7 +336,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const flags = ((row?.ai_flags || []) as PageFlag[]);
     const agreed = flags.filter((f) => f.verdict === "agree" && !f.fixed);
     const matterId = await matterForPath(supabase, path);
-    if (!matterId) return finish("needs_work", "The agent only fixes topic pages so far. This one needs a person.");
+    if (!matterId) return finish("needs_work", "The agent fixes topic and meeting pages so far. This one needs a person.");
     // Entries the search found that staff rated 👍: added first, so the plan (and the one summary rewrite) sees them.
     const agreedFound = (await listSuggestions(supabase, matterId).catch(() => [] as Suggestion[])).filter((x) => x.agreed);
     if (!agreed.length && !row?.note && !agreedFound.length) {
@@ -420,7 +423,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const findingFor = (i: Investigation | undefined) => findingText(i?.finding);
     // For the note: what the agent read for each problem, so the editor can see what each change rests on. It is
     // evidence, not a to-do list, and names entries the way the page does.
-    const found = investigations.filter((i) => i.finding?.ref);
+    const found = investigations.filter((i) => i.finding?.ref && i.finding.verdict !== "not_found");
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${brief(i.finding!.explanation, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),

@@ -181,6 +181,23 @@ all 10. The floor is the model: a turn is 3 to 7 s whatever it holds, and most q
 also showed the model sometimes putting a sentence of plain text before its JSON object, which the client rejected
 and retried at 4 to 8 s a time; `parseJsonReply` now takes the object from such a reply.
 
+## Meeting pages
+
+The fix agent covers meeting pages too (`services/meeting-fix.server.ts`; `fixPage` hands a `/meetings/<slug>` path
+to it). A meeting page's own text is the highlights (`meetings.meta.highlights`: bullets with item links, and the
+description search results show) and each item's summary (`agenda_items.plain_english_summary`); titles, motions,
+votes and attendance are the record itself and are never edited. So the menu is: rewrite_item_summary,
+rewrite_highlight, remove_highlight, rewrite_description, no_change, cannot_fix (a wrong seconder or vote count, a
+document under the wrong item: a person's job, named exactly). Same flow as a topic page: investigate the agreed
+flags (keys `item-<id>`, or null for the page), plan in one call over the flagged items' records (every linked item's
+for a page-level problem), apply only rewrites whose quote is in those records, re-check each rewrite, write the note.
+
+Text it writes is marked as a person's, the convention topic pages use (`meta.manual`): `agenda_items.meta.manual.summary`
+and `meetings.meta.manual.highlights`, each with `by`, `at` and the writer's own version as `auto`. The pipeline keeps
+them: a re-ingest goes through `keep_manual_text` (`ingester.py`) and the highlights stage through
+`keep_manual_highlights` (`meeting_highlights.write_highlights`), both in `pipeline/ingestion/manual_edits.py`.
+There is no "reset to automatic" for these yet; clearing the `manual` key by hand lets the next run write again.
+
 ## Signed bylaws as a record
 
 A topic tied to a bylaw (its `bylaw_id`, or a bylaw number in its title or identifier) gives the check, the fix agent's
