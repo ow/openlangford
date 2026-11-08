@@ -49,6 +49,9 @@ const PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200
 
 const shortDate = (d: string) => formatDate(d, { year: "numeric", month: "short", day: "numeric" });
 
+/** Everything that was not a decision: a faded card, same shape and padding as a decided meeting's, no shadow. */
+const FADED = "rounded-2xl border border-zinc-200/80 bg-surface/60 px-5 py-3.5";
+
 /** Exported for tests: a quote that is a table or a register, not prose (a cheque list, a budget schedule). */
 export function looksTabular(text: string): boolean {
   const tokens = text.trim().split(/\s+/);
@@ -121,7 +124,7 @@ function Disc({ group }: { group: Group }) {
     : outcome?.variant === "warning" ? "border-amber-500 bg-amber-500"
     : group.decided ? "border-brand-600 bg-brand-600"
     : "border-zinc-300 bg-surface";
-  return <span className={cn("absolute left-[6px] top-1.5 h-3 w-3 rounded-full border-2", tone)} aria-hidden="true" />;
+  return <span className={cn("absolute left-[6px] top-[18px] h-3 w-3 rounded-full border-2", tone)} aria-hidden="true" />;
 }
 
 function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entry: TimelineEntry) => ReactNode }) {
@@ -130,6 +133,7 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
   return (
     <li id={`timeline-${e.key}`} className="relative scroll-mt-24 pl-10" {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
       <Disc group={g} />
+      <div className={FADED}>
       <p className="text-xs text-zinc-500"><span className="tabular-nums">{shortDate(e.date)}</span> · {e.label}</p>
       <p className="mt-0.5 font-medium leading-snug text-zinc-800"><TermText text={e.headline} /></p>
       {e.kind === "closed" ? (e.detail && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>) : <Detail entry={e} />}
@@ -140,6 +144,7 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
         </p>
       )}
       {renderAdmin?.(e) && <div className="pt-1 text-xs">{renderAdmin(e)}</div>}
+      </div>
     </li>
   );
 }
@@ -159,7 +164,7 @@ function MeetingRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (en
     </div>
   ) : (
     <p className="text-xs text-zinc-500">
-      <span className="tabular-nums">{shortDate(g.date)}</span>
+      <span className="font-semibold tabular-nums text-zinc-700">{shortDate(g.date)}</span>
       {m.title && <> · <Link to={m.href} className="hover:text-brand-700 hover:underline">{m.title}</Link></>}
     </p>
   );
@@ -195,7 +200,7 @@ function MeetingRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (en
             </div>
           ) : rows}
         </div>
-      ) : <>{head}{rows}</>}
+      ) : <div className={FADED}>{head}{rows}</div>}
     </li>
   );
 }
