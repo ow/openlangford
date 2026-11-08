@@ -112,6 +112,30 @@ carries out fixes for the flags staff agreed with. This page explains where each
    link or source was added after it was written; the lead and the plain line per entry (`meta.entry_lines`) arrive when
    the worker has run.
 
+**Shared actions.** The three agents each keep their own menu (a page only offers what its records can back), but an
+   action more than one page needs lives once in `services/fix-ops.server.ts`: its plan fields and prompt wording, its
+   checks, its writes. Today that is `edit_source` (`editSourceOnPage`), summary instructions (`summaryInstruction`,
+   `saveEditorNotes`, `unfollowedLine`, run through `rewriteSummaries`), topic entry text (`writeEntryText`) and the
+   quote check (`quoteInRecords`). Add a new shared action there and to each agent's menu; don't copy it into an agent.
+   If a flag says "needs a person" for something another page's agent can do, the fix is to add the shared action to
+   this agent's menu, not to write it again.
+
+   What each page's text is, and what changes it:
+
+   | Text on the page | Topic page | Property page | Meeting page |
+   |---|---|---|---|
+   | Topic summary and "where it stands" | `rewrite_summary` | `rewrite_summary` | not shown |
+   | A topic step's line | `rewrite_entry` | `rewrite_entry` (`step-<id>`) | n/a |
+   | A linked mention's line or heading | `rewrite_entry` / `rewrite_heading` | `rewrite_entry` (`item-<id>`, kept in `staff_entry_lines`) | n/a |
+   | An annual report row | `rewrite_entry` | `rewrite_entry` (`report-<id>`) | n/a |
+   | A source (headline, quote, note, date) | `edit_source` | `edit_source` | not shown |
+   | The page's lead | n/a | `rewrite_lead` | n/a |
+   | An item's summary, highlights, description | n/a | n/a | `rewrite_item_summary`, `rewrite_highlight`, `rewrite_description` |
+   | Take an entry off the page | `remove_entry`, `unlink_related`, `move_item` | `unlink_entry` | n/a |
+
+   Not editable on any page, because the page generates them from the record: the closed-meeting row on a property
+   timeline, motions and votes, and titles. A flag on one of these is answered with `no_change` or `cannot_fix`.
+
 7. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
 
 A fix finishes in one pass: the request returns when the page is done. While it runs, the page's status is `fixing`

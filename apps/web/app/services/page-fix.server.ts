@@ -8,6 +8,7 @@ import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForP
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { bylawRecords } from "./bylaw-records.server";
 import { sourceRecordLines, sourcesFor } from "./sources.server";
+import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, editSourceOnPage, loadSources, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
 import { findingText, investigate, investigatedRecords, investigationLine, needsInvestigation, type Investigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
@@ -43,7 +44,6 @@ import { STAGE_LABELS, type StageChoice } from "../components/matter/timeline-st
  * merges them when they are one project, or keeps the entry as a mention and says why.
  */
 
-const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 /** One sentence of a reason or finding for the note, cut at a sentence end where it runs long. */
 const brief = (text: string, max: number) => {
   const t = (text || "").replace(/\s+/g, " ").trim();
@@ -56,7 +56,7 @@ const brief = (text: string, max: number) => {
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "no_change", "cannot_fix"]),
+      "rewrite_summary", "edit_source", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "no_change", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. unlink_related: the related topic's id. Otherwise null."),
@@ -65,6 +65,7 @@ const PlanSchema = z.object({
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
     source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly, at most 250 characters: the one sentence or clause that says it, never a whole passage. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    ...EDIT_SOURCE_FIELDS,
     motion_id: z.number().int().nullable().describe("move_motion: the MOTION id from the list of decisions filed under no item. Otherwise null."),
     motion_text: z.string().nullable().describe("add_motion: the motion's wording exactly as the minutes give it (\"That Council adopt Bylaw No. 1239.\"). Otherwise null."),
     motion_result: z.enum(MOTION_RESULTS).nullable().describe("add_motion: the outcome the minutes record. Otherwise null."),
@@ -195,6 +196,7 @@ ${movable || "(No flagged items to move.)"}
   text is in the records below (the passages that name the topic). When the record says something about this topic,
   rewrite_entry with what it says; when it only lists the topic in passing (a venue in a list, a facility among many),
   remove_entry.
+${EDIT_SOURCE_PROMPT}
 - rewrite_summary: for the topic's summary or "where it stands", a short instruction for the summary writer in new_text.
   The summary writer treats only items filed on this topic as its history: it will not state a decision (an adoption,
   an approval) that appears here only as a "mention-" entry. When the fix rests on such a decision, first make it part
@@ -419,7 +421,8 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const toResearch = agreed.filter((f) => !f.research && needsInvestigation(f)).length + (row?.note?.trim() ? 1 : 0);
     progress(toResearch ? `Reading the page's records and searching the City's records for ${toResearch === 1 ? "1 problem" : `${toResearch} problems`}…`
       : "Reading the page's records…");
-    const [bylawText, sourceText] = await Promise.all([bylawRecords(supabase, matterId), sourcesFor(supabase, { matterId }).then(sourceRecordLines)]);
+    const [bylawText, { sources, textOf }] = await Promise.all([bylawRecords(supabase, matterId), sourcesFor(supabase, { matterId }).then((list) => loadSources(supabase, list))]);
+    const sourceText = sourceRecordLines(sources);
     const [{ text: itemText }, { data: reports }, evidenceText, investigations] = await Promise.all([
       itemRecords(supabase, ids),
       reportIds.length ? supabase.from("matter_report_mentions").select("id, page, quote").in("id", reportIds) : Promise.resolve({ data: [] }),
@@ -592,9 +595,18 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         continue;
       }
       if (step.action === "rewrite_summary" && (step.new_text || "").trim()) {
-        const quote = quoteOf(step);
-        summaryNotes.push(`${(step.new_text || "").trim().slice(0, 500)}${quote ? ` The record says: “${quote}”` : ""}`);
+        summaryNotes.push(summaryInstruction(step.new_text, step.source)!);
         done.push(`Rewrote the summary: ${brief(step.reason, 200)}`);
+        continue;
+      }
+      if (step.action === "edit_source") {
+        const result = await editSourceOnPage(supabase, step, { sources, textOf, records,
+          flagged: (k) => !!k && onPage.has(k) && agreed.some((f) => f.key === k) });
+        if (!result.ok) { left.push(`${step.reason} (${result.why})`); continue; }
+        fixedKeys.add(`source-${result.source.id}`);
+        done.push(`Corrected ${entryLabel(`source-${result.source.id}`, flags)}${result.edit.headline ? `, now headed "${result.edit.headline}"` : ""}: ${brief(step.reason, 200)}`);
+        await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:edit_source",
+          detail: { source_id: String(result.source.id), ...Object.fromEntries(Object.entries(result.edit).map(([k, v]) => [k, v.slice(0, 300)])), reason: step.reason.slice(0, 300) } });
         continue;
       }
       if ((step.action === "rewrite_entry" || step.action === "rewrite_heading") && step.key && onPage.has(step.key)
@@ -750,16 +762,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         detail: { agenda_item_id: String(move.item_id), from: String(matterId), to: String(move.to_matter_id), reason: move.reason.slice(0, 400) } });
     }
     if (Object.keys(rewrites).length || Object.keys(lines).length) {
-      const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
-      const meta = (matter?.meta || {}) as Record<string, any>;
-      const entryLines = { ...(meta.entry_lines || {}) };
-      for (const [key, value] of Object.entries(lines)) entryLines[key] = { ...(entryLines[key] || {}), ...value };
-      const { error } = await supabase.from("matters").update({ meta: {
-        ...meta,
-        timeline_headlines: { ...(meta.timeline_headlines || {}), ...rewrites },
-        staff_headlines: { ...(meta.staff_headlines || {}), ...rewrites },
-        ...(Object.keys(lines).length ? { entry_lines: entryLines } : {}),
-      } }).eq("id", matterId);
+      const error = await writeEntryText(supabase, matterId, { headlines: rewrites, lines });
       if (error) {
         for (const id of Object.keys(rewrites)) fixedKeys.delete(`agenda-${id}`);
         for (const key of Object.keys(lines)) fixedKeys.delete(key);
@@ -794,10 +797,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     }
     if (summaryNotes.length) {
       // Kept on the topic: this rewrite and every later one follow them (topic-summaries.server.ts, pipeline matter_summaries).
-      const { data: matter } = await supabase.from("matters").select("meta").eq("id", matterId).single();
-      const meta = (matter?.meta || {}) as Record<string, any>;
-      await supabase.from("matters").update({ meta: { ...meta, editor_notes: [...(meta.editor_notes || []), ...summaryNotes].slice(-10) } })
-        .eq("id", matterId);
+      await saveEditorNotes(supabase, matterId, summaryNotes);
       await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:rewrite_summary",
         detail: { notes: summaryNotes.join(" | ").slice(0, 500) } });
     }
@@ -863,7 +863,7 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       // rewrite) and checked once more.
       if (report.edited.length) done.push("Edited the summary directly, since the first draft didn't follow the instructions or the records.");
       for (const u of report.unfollowed) {
-        left.push(`The summary was rewritten but doesn't yet say what was asked: "${u.note.slice(0, 300)}"${u.missing ? ` Still missing: ${u.missing}` : ""}`);
+        left.push(unfollowedLine(u));
         const said = u.note.split(" The record says:")[0].slice(0, 80);
         for (let i = done.length - 1; i >= 0; i--) if (done[i].includes(said)) done.splice(i, 1);
       }

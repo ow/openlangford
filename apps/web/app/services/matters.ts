@@ -385,19 +385,19 @@ export async function getMatterStory(supabase: SupabaseClient, matterId: number,
   return { related, mentions, background, reports };
 }
 
-export type ReportMention = { id: number; year: number; title: string; page: number; quote: string; url: string | null };
+export type ReportMention = { id: number; year: number; title: string; page: number; quote: string; url: string | null; /** The topic whose page this mention is on (the first, when several cite the same page). */ matter_id?: number };
 
 /** Pages of the City's annual reports that describe a matter (pipeline matter_names step), oldest first. */
 export async function getMatterReportMentions(supabase: SupabaseClient, matterId: number | number[], municipalityId = 1): Promise<ReportMention[]> {
   const ids = Array.isArray(matterId) ? matterId : [matterId];
   const { data, error } = await supabase.from("matter_report_mentions")
-    .select("id, page, quote, public_reports!inner(year, title, source_url, municipality_id)")
+    .select("id, matter_id, page, quote, public_reports!inner(year, title, source_url, municipality_id)")
     .in("matter_id", ids).eq("hidden", false).eq("public_reports.municipality_id", municipalityId);
   if (error) { console.error("Error fetching annual report mentions:", error); return []; }
   const seen = new Set<string>();  // several topics passed together can cite the same page
   return (data || []).map((row: any) => {
     const report = Array.isArray(row.public_reports) ? row.public_reports[0] : row.public_reports;
-    return { id: row.id, year: report.year, title: report.title, page: row.page, quote: row.quote,
+    return { id: row.id, matter_id: row.matter_id, year: report.year, title: report.title, page: row.page, quote: row.quote,
              url: report.source_url ? `${report.source_url}#page=${row.page}` : null };
   }).filter((r) => !seen.has(`${r.year}:${r.page}`) && !!seen.add(`${r.year}:${r.page}`))
     .sort((a, b) => a.year - b.year || a.page - b.page);

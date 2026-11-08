@@ -7,6 +7,7 @@ import { findingText, investigate, investigatedRecords, investigationLine, needs
 import { applyRecheck, recheckSummary, flagLabel } from "../lib/page-recheck";
 import { logStaffAction } from "./staff.server";
 import { highlightPoints } from "../lib/meeting-summary";
+import { capital, normal, quoteInRecords, squash } from "./fix-ops.server";
 import type { StaffRole } from "../lib/auth.server";
 
 /**
@@ -41,19 +42,7 @@ type Item = { id: number; item_order: string | null; title: string | null; descr
 type Highlights = { bullets: string[]; links?: unknown[]; description?: string; version?: string; [k: string]: unknown };
 
 const itemOf = (key: string | null | undefined) => Number(key?.match(/^item-(\d+)$/)?.[1] ?? NaN);
-const squash = (s: string) => s.replace(/\s+/g, " ").trim();
-const normal = (s: string) => squash(s).toLowerCase().replace(/[“”]/g, "\"").replace(/[‘’]/g, "'");
-/** Whether a quote is in the records (whitespace and quote marks aside). Lines a model wrote (NOTES extracted from a
- * report, the agent's own FOUND findings) don't count: a rewrite must rest on the record's words. */
-export function quoteInRecords(quote: string | null | undefined, records: string): boolean {
-  const q = normal(quote || "");
-  const record = normal(records.split("\n").filter((line) => !/^\s*(NOTES \(|FOUND for )/.test(line)).join("\n"));
-  if (q.length < 12) return false;
-  if (record.includes(q)) return true;
-  // Several passages quoted together ("…" "…", or joined with an ellipsis): each must be in the record.
-  const pieces = q.split(/"|\s*(?:…|\.\.\.)\s*/).map((x) => x.trim().replace(/^[\s,;]+|[\s,;]+$/g, "")).filter((x) => x.length >= 12);
-  return pieces.length > 0 && pieces.every((x) => record.includes(x));
-}
+export { quoteInRecords };
 
 /** A highlight rewritten: links whose phrase the new text still carries stay, in order; the rest go. Exported for tests. */
 export function editHighlight(highlights: Highlights, index: number, text: string): Highlights {
@@ -414,7 +403,6 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
   }
 }
 
-const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const brief = (text: string, max: number) => {
   const t = squash(text || "");
   if (t.length <= max) return t;

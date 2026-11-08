@@ -79,7 +79,7 @@ it("carries a name-found link's quote and the annual-report pages, hiding hidden
   const story = await getMatterStory(client, 374);
   expect(story.mentions.map(m => [m.id, m.linkSource, m.linkQuote])).toEqual([
     [50, "name_mention", "the quiet sale of the North Langford Recreation Center"], [51, "resolver", null]]);
-  expect(story.reports).toEqual([{ id: 2, year: 2015, title: "Annual Report 2015", page: 24,
+  expect(story.reports).toEqual([{ id: 2, matter_id: 374, year: 2015, title: "Annual Report 2015", page: 24,
     quote: "The City acquired and completed a $500,000 renovation", url: "https://gspr.emc2.build/documents/abc#page=24" }]);
 });
 

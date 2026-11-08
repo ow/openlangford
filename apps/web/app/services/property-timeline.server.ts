@@ -147,7 +147,7 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     });
   }
   for (const r of reports) {
-    entries.push({ key: `report-${r.id}`, date: `${r.year}-12-31`, kind: "report", label: `City annual report ${r.year}`, headline: tidyQuote(r.quote, 160), detail: null, href: r.url, external: true, linkTitle: `Page ${r.page} of the report` });
+    entries.push({ key: `report-${r.id}`, date: `${r.year}-12-31`, kind: "report", label: `City annual report ${r.year}`, headline: byMatter.get((r as any).matter_id)?.meta?.entry_lines?.[`report-${r.id}`]?.line || tidyQuote(r.quote, 160), detail: null, href: r.url, external: true, linkTitle: `Page ${r.page} of the report` });
   }
   const seen = new Set<number>();
   for (const s of [...ownSources, ...[...topicSources.values()].flat()]) {

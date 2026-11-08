@@ -98,6 +98,7 @@ Every model call goes through one client per app; never call a provider SDK dire
 
 ### Page review fixes
 The review bar's fix agent (`services/page-fix.server.ts`) carries out every fix in its own request, including moves, merges and the summary rewrite (`services/topic-summaries.server.ts`, a port of the pipeline's `matter_summaries.py`). Only re-filing an item through the ingest matcher goes to the quick worker as a `fix_page` job. Meeting pages have their own, smaller agent (`services/meeting-fix.server.ts`: highlights and item summaries; its edits are marked `meta.manual` and kept by the pipeline). Both summary writers read `shared/prompts/topic-summaries.json`: change prompts there. See `docs/page-review-fixes.md`.
+Property pages have a third agent (`services/property-fix.server.ts`: the lead, a topic's text, rows, sources, unlinking). Actions more than one agent needs (correct a source, summary instructions, a topic's entry text, the quote check) live in `services/fix-ops.server.ts`: add a shared action there and to each menu, never copy it into one agent. The table of what each page's agent can change is in `docs/page-review-fixes.md`.
 Agents drive the same review loop through `/api/v1/admin/page-checks` (`app/api/admin-page-checks.ts`) with a staff account's API key: check, rate (one flag or all), fix, and mark reviewed.
 
 ### Email alerts

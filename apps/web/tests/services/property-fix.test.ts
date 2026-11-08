@@ -43,6 +43,10 @@ describe("what the planner can see and do beyond unlinking", () => {
     expect(records).toContain("source-<id>");
     expect(records).toContain("SOURCE source:12");
   });
+  it("lists annual report rows by the key the page uses", () => {
+    const records = propertyRecords(property as any, null, [topic], [], [], [], [{ id: 31, matter_id: 1825, year: 2019, title: "t", page: 14, quote: "Purchased 3680 Trans-Canada Highway", url: null }]);
+    expect(records).toContain("REPORT report-31 (2019 annual report, page 14): Purchased 3680 Trans-Canada Highway");
+  });
   it("omits the step and source blocks when there are none", () => {
     const records = propertyRecords(property as any, null, [topic], []);
     expect(records).not.toContain("STEP");
