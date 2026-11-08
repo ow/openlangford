@@ -19,6 +19,8 @@ export type TimelineEntry = {
    * "Reported by Victoria News", "Closed meeting". */
   label: string;
   headline: string;
+  /** Under a written headline: the entry's own title ("Monthly Accounts Payable - January to August 2019"). */
+  subline?: string | null;
   detail?: string | null;
   /** The detail is the record's own words (shown as a quote), not a summary. */
   quoted?: boolean;
@@ -75,6 +77,7 @@ function Row({ entry: e, admin }: { entry: TimelineEntry; admin?: ReactNode }) {
       <p className={cn("mt-0.5 leading-snug text-zinc-900", strong ? "font-semibold" : "font-medium")}>
         <TermText text={e.headline} />
       </p>
+      {e.subline && <p className="mt-0.5 text-xs text-zinc-500">In: {e.subline}</p>}
       {e.detail && (
         outside || e.quoted ? <blockquote className="mt-1 line-clamp-3 text-sm leading-relaxed text-zinc-600">“{e.detail}”</blockquote>
           : <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{e.detail}</p>

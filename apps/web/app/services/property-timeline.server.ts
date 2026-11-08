@@ -68,7 +68,7 @@ async function addressLines(supabase: SupabaseClient, property: { civic_number: 
   return out;
 }
 
-export async function propertyTimeline(supabase: SupabaseClient, property: { id: number; civic_number: string; street: string }, matters: any[], items: any[],
+export async function propertyTimeline(supabase: SupabaseClient, property: { id: number; civic_number: string; street: string; meta?: any }, matters: any[], items: any[],
   imageUrl: (key: string | null | undefined) => string | null = () => null): Promise<TimelineEntry[]> {
   const propertyId = property.id;
   const matterIds = matters.map((m) => m.id as number);
@@ -111,12 +111,16 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
       image: url ? { url, alt: pick.report_title ? `From ${pick.report_title}` : "" } : null,
     });
   }
+  // The lead writer's plain line per entry (properties.meta.entry_lines): "The City paid its lawyers $1.27 million…"
+  const entryLines: Record<string, string> = property.meta?.entry_lines || {};
   for (const it of items as any[]) {
     const meeting = it.meetings as Meeting | null;
     if (!meeting?.meeting_date) continue;
+    const line = entryLines[String(it.id)];
     entries.push({
       key: `item-${it.id}`, date: meeting.meeting_date, kind: "mention", label: "Came up at the meeting",
-      headline: displayTitle(it.title), detail: lines.get(it.id) || it.plain_english_summary || null, quoted: lines.has(it.id),
+      headline: line || displayTitle(it.title), subline: line ? displayTitle(it.title) : null,
+      detail: lines.get(it.id) || it.plain_english_summary || null, quoted: lines.has(it.id),
       href: `${meetingPath(meeting)}#item-${it.id}`, reviewKey: `item-${it.id}`,
     });
   }

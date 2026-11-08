@@ -169,12 +169,21 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             </section>
           )}
 
+          {!isStreet && timeline.length > 0 && (
+            <section>
+              <SectionHeading title="Timeline" icon={Clock}
+                description="Everything the records hold about this address, in order: Council's steps, what else named it, the City's reports, and what was said elsewhere. Each line says who said it." />
+              <PropertyTimeline entries={timeline}
+                renderAdmin={(e) => (isAdmin && e.kind === "mention" ? <Unlink field="agenda_item_id" id={Number(e.key.slice(5))} isStreet={false} /> : null)} />
+            </section>
+          )}
+
           {matters.length > 0 && (
             <section>
               <SectionHeading
                 title={isStreet ? "About the street" : "Topics at this address"}
                 icon={Landmark}
-                description={isStreet ? "Road work, closures and other decisions about the street itself." : "Each rezoning, permit or project here has its own page. The timeline below puts their steps in order."}
+                description={isStreet ? "Road work, closures and other decisions about the street itself." : "Each rezoning, permit or project here has its own page."}
               />
               <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {matters.map((m: any) => {
@@ -220,14 +229,6 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
             </section>
           )}
 
-          {!isStreet && timeline.length > 0 && (
-            <section>
-              <SectionHeading title="Timeline" icon={Clock}
-                description="Everything the records hold about this address, in order: Council's steps, what else named it, the City's reports, and what was said elsewhere. Each line says who said it." />
-              <PropertyTimeline entries={timeline}
-                renderAdmin={(e) => (isAdmin && e.kind === "mention" ? <Unlink field="agenda_item_id" id={Number(e.key.slice(5))} isStreet={false} /> : null)} />
-            </section>
-          )}
 
           {isStreet && items.length > 0 && (
             <section>

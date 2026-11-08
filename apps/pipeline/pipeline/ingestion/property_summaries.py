@@ -31,13 +31,13 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from pipeline import ai
 from pipeline.ai import glossary
 from pipeline.postgrest import in_chunks
 
-PROPERTY_SUMMARY_VERSION = "5"  # 5: sources from outside the record, used with attribution
+PROPERTY_SUMMARY_VERSION = "6"  # 6: a plain line per other entry that names the address (meta.entry_lines)
 MIN_RECORDS = 2
 MIN_ADDRESSES = 2  # a street page with two or more addresses gets a summary even with no records of its own
 NARRATIVE_MAX = 220  # the model's part; the closing count follows
@@ -76,7 +76,9 @@ Rules from the site's writing guide:
 
 An entry may carry "names_this_address": the words of the record (a report, a budget table, a decision, something said at the meeting) that name this address. That line is why the entry is on the page, and often the only place its substance is: a purchase, a dollar amount, a recommendation to sell, a question asked. Use those facts; the entry's own summary may not repeat them. When those lines give the story a later turn (the City bought the land, spent on it, still owes for it, was asked whether to sell it, was told to explore a sale), lead with the latest turn and then say how it began.
 
-"said_elsewhere" lists dated statements from outside Council's record that staff added, each saying who said it. One whose "who" is the City of Langford is the City's own publication: state its facts, attributed to the City ("the City announced…"). Any other is a news report: use its facts only with the publisher named ("Victoria News reported the City paid about $2.2M"). These often hold what the minutes don't (a purchase made in a closed meeting), so they may lead; never present one as Council's own decision.
+"said_elsewhere" lists dated statements from outside Council's record that staff added, each saying who said it. One whose "who" is the City of Langford is the City's own publication: state its facts, attributed to the City ("the City announced…"). Any other is a news report: use its facts only with the publisher named, in the same sentence as each fact that rests on it ("Victoria News reported the City paid about $2.2M"); a fact from a second report needs its own publisher named too. These often hold what the minutes don't (a purchase made in a closed meeting), so they may lead; never present one as Council's own decision.
+
+Besides the opening lines, write "entry_lines": for each entry under "other_mentions" that carries "names_this_address", one plain line (at most 120 characters) saying what that record says about this address, so a reader needn't parse a budget table or a cheque register: "The City paid its lawyers $1.27 million for the land, May 2019", "Budget sets aside $825,000 of developer money for the site in 2023", "A resident asked whether the property should be sold". Keep the amount and the date the record gives; no cheque, file or account numbers; no "the record shows". Skip entries without names_this_address.
 
 For a lot (kind "lot"): say what has been proposed or decided there. Example: "A subdivision of up to 47 homes, approved in 2015 after changes to the official community plan and zoning."
 For a street (kind "street"): cover both the road itself (roadworks, closures, traffic, grants; newest first) and the developments at addresses on it. Name the projects at the addresses in "most_considered" (the ones Council considered most often) first; add one other, larger project only if it fits. Example: "In 2024 Council backed grant applications for walking and cycling upgrades on Latoria Road. Earlier: a 47-lot subdivision at 935 and the 501-home McCormick Meadows plan at 940." Refer to an address on the street by its number alone ("a 47-lot subdivision at 935"), since the street is the page.
@@ -85,8 +87,14 @@ Never mention people's names, applicants, companies, or residents' personal deta
 
 SYSTEM = SYSTEM + "\n\n" + glossary.prompt_block("resident", only=glossary.ids(["bylaws", "land"], plus=["carried", "defeated", "tabled", "referred", "public-hearing", "closed-meeting"]))
 
+class EntryLine(BaseModel):
+    item: int = Field(description="The entry's id, as given in other_mentions.")
+    line: str = Field(description="One line, at most 120 characters, saying what this record says about the address: the amount, the step, the question. Plain words; no file or cheque numbers.")
+
+
 class PropertySummary(BaseModel):
     summary: str
+    entry_lines: list[EntryLine] = Field(default_factory=list, description="One line for each entry under other_mentions that carries names_this_address; none for the rest.")
 
 
 def _year(value) -> int | None:
@@ -455,6 +463,7 @@ def _records(p: dict, matters: dict[int, dict], items: dict[int, dict], max_matt
         **({"names_this_address": " ".join(by_matter[m["id"]])} if by_matter.get(m["id"]) else {}),
     } for m in ms[:max_matters]]
     item_rows = [{
+        "id": i["id"],
         "title": i.get("title") or "",
         "year": _year((i.get("meetings") or {}).get("meeting_date")),
         "summary": (i.get("plain_english_summary") or "")[:min(summary_chars, 300)],
@@ -527,7 +536,14 @@ def _sizes_given(data: dict) -> bool:
 
 
 def summarize(data: dict, closing: str = "") -> str:
+    return summarize_with_lines(data, closing)[0]
+
+
+def summarize_with_lines(data: dict, closing: str = "") -> tuple[str, dict[str, str]]:
+    """The lead, and a plain line per other entry that names the address (keyed by item id, as strings)."""
     result = ai.json(prompt(data), stage=STAGE, schema=PropertySummary, system=SYSTEM)
+    wanted = {str(r["id"]) for r in data.get("other_mentions") or [] if r.get("names_this_address")}
+    lines = {str(e.item): e.line.strip().rstrip(".") for e in result.entry_lines if str(e.item) in wanted and e.line.strip()}
     text = result.summary
     # Up to two more tries for a lead that drops the size of the project ("a subdivision" for "a
     # 47-lot subdivision") or uses database words ("matter", "record") or hedges about the records.
@@ -548,7 +564,7 @@ def summarize(data: dict, closing: str = "") -> str:
         except Exception as e:  # the last draft is still usable
             print(f"  [!] Property summary retry failed, keeping the last draft: {e}", flush=True)
             break
-    return compose(text, closing)
+    return compose(text, closing), lines
 
 
 def summarize_properties(supabase, props: list[dict], *, write: bool = True, workers: int = 4) -> dict[int, str]:
@@ -562,7 +578,7 @@ def summarize_properties(supabase, props: list[dict], *, write: bool = True, wor
 
     def one(p):
         try:
-            return p["id"], summarize(inputs[p["id"]], p.get("closing", ""))
+            return p["id"], summarize_with_lines(inputs[p["id"]], p.get("closing", ""))
         except Exception as e:  # one property failing shouldn't stop the rest
             print(f"  [!] Property summary for {p['address']} ({p['id']}) failed: {e}", flush=True)
             return p["id"], None
@@ -572,14 +588,15 @@ def summarize_properties(supabase, props: list[dict], *, write: bool = True, wor
     done: dict[int, str] = {}
     now = datetime.now(timezone.utc).isoformat()
     for p in props:
-        summary = results.get(p["id"])
-        if not summary:
+        got = results.get(p["id"])
+        if not got or not got[0]:
             continue
+        summary, lines = got
         done[p["id"]] = summary
         if write:
             # Re-read meta right before writing so keys other stages wrote meanwhile survive.
             fresh = (supabase.table("properties").select("meta").eq("id", p["id"]).execute().data or [{}])[0].get("meta")
-            meta = {**(fresh if fresh is not None else (p.get("meta") or {})), "summary": summary,
+            meta = {**(fresh if fresh is not None else (p.get("meta") or {})), "summary": summary, "entry_lines": lines,
                     "summary_version": PROPERTY_SUMMARY_VERSION, "summary_inputs": current_hash(p), "summary_updated_at": now}
             supabase.table("properties").update({"meta": meta}).eq("id", p["id"]).execute()
     return done
