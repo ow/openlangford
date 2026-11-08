@@ -197,16 +197,7 @@ def package_for_prompt(
     total = len(chunks[0])
 
     for page in pages:
-        quality = page.quality
-        image_note = (
-            f" images={','.join(page.image_refs)}" if page.image_refs else " images=none"
-        )
-        text = _truncate_middle(page.text, max_page_chars)
-        page_chunk = (
-            f"\n--- PAGE {page.page_number} "
-            f"[quality={quality.label}; flags={','.join(quality.flags) or 'none'};"
-            f" words={quality.word_count};{image_note}] ---\n{text}"
-        )
+        page_chunk = _page_chunk(page, max_page_chars)
         if total + len(page_chunk) > max_total_chars:
             chunks.append(
                 f"\n--- OMITTED ---\nRemaining pages omitted from prompt after "
@@ -217,6 +208,32 @@ def package_for_prompt(
         total += len(page_chunk)
 
     return "\n".join(chunks)
+
+
+def _page_chunk(page: PdfPage, max_page_chars: int) -> str:
+    """One page as the prompt shows it: a header with its quality and images, then its (middle-truncated) text."""
+    quality = page.quality
+    image_note = f" images={','.join(page.image_refs)}" if page.image_refs else " images=none"
+    text = _truncate_middle(page.text, max_page_chars)
+    return (
+        f"\n--- PAGE {page.page_number} "
+        f"[quality={quality.label}; flags={','.join(quality.flags) or 'none'};"
+        f" words={quality.word_count};{image_note}] ---\n{text}"
+    )
+
+
+def pages_fitting(package: PdfPackage, page_start: int, *, max_page_chars: int = 1800, max_total_chars: int = 70000) -> int:
+    """The last page number that fits in one prompt starting at `page_start` (at least `page_start` itself), by the
+    same arithmetic package_for_prompt uses, so a caller can walk a long package in windows."""
+    total = len("\n".join([f"PDF: {package.file_name}", f"Pages: {package.page_count}", f"Bytes: {package.file_size}"]))
+    last = page_start
+    for page in package.pages_in_range(page_start, package.page_count):
+        size = len(_page_chunk(page, max_page_chars))
+        if total + size > max_total_chars and page.page_number > page_start:
+            break
+        total += size
+        last = page.page_number
+    return last
 
 
 def range_text(package: PdfPackage, page_start: int, page_end: int) -> str:

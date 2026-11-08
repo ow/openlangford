@@ -3,6 +3,7 @@ import pytest
 from pipeline.ingestion.local_pdf_package import (
     build_pdf_package,
     package_for_prompt,
+    pages_fitting,
     range_text,
 )
 from pipeline.ingestion.local_context_extractor import package_needs_pdf_fallback
@@ -74,3 +75,55 @@ def test_local_boundary_prompt_accepts_json_example_braces():
 
     assert '"title": "Document title/heading as it appears"' in prompt
     assert "--- PAGE 1 ---" in prompt
+
+
+def _long_package(tmp_path, pages=12):
+    pdf_path = tmp_path / "long-agenda.pdf"
+    body = "Report text about the application, its background, options and recommendation. " * 6
+    _write_pdf(pdf_path, [f"Page {i} heading\n{body}" for i in range(1, pages + 1)])
+    return build_pdf_package(str(pdf_path))
+
+
+def test_pages_fitting_counts_by_the_prompts_own_arithmetic(tmp_path):
+    package = _long_package(tmp_path)
+    end = pages_fitting(package, 1, max_page_chars=400, max_total_chars=1800)
+    assert 1 <= end < package.page_count
+    # package_for_prompt shows exactly those pages and omits the rest.
+    shown = package_for_prompt(package, page_start=1, page_end=package.page_count, max_page_chars=400, max_total_chars=1800)
+    assert f"--- PAGE {end} " in shown and f"--- PAGE {end + 1} " not in shown
+    assert pages_fitting(package, 1, max_page_chars=400, max_total_chars=10) == 1  # never less than the first page
+
+
+def test_boundary_detection_walks_a_long_package_in_windows(tmp_path, monkeypatch):
+    """A text-dense package that doesn't fit one prompt is covered to its last page, in several model calls, with
+    a document cut at a window's edge seen again whole."""
+    import re
+
+    from pipeline.ingestion.pdf_extractor import DocumentBoundaries
+
+    package = _long_package(tmp_path, pages=12)
+    calls: list[tuple[int, int]] = []
+
+    def fake_json(prompt, *, stage, schema):
+        pages = [int(m) for m in re.findall(r"--- PAGE (\d+) ", prompt)]
+        lo, hi = min(pages), max(pages)
+        calls.append((lo, hi))
+        # Two-page documents from the window's first page; the last one may run to the window's edge.
+        docs = []
+        p = lo
+        while p <= hi:
+            q = min(p + 1, hi)
+            docs.append({"title": f"Doc {p}-{q}", "page_start": p, "page_end": q, "type": "staff_report",
+                         "agenda_item": None, "summary": "s", "key_facts": []})
+            p = q + 1
+        return DocumentBoundaries.model_validate({"documents": docs})
+
+    monkeypatch.setattr(local_context_extractor.ai, "json", fake_json)
+    found = local_context_extractor.detect_boundaries_from_package(package, max_page_chars=400, max_total_chars=1800)
+
+    assert len(calls) > 1
+    assert max(b["page_end"] for b in found) == package.page_count
+    starts = [b["page_start"] for b in found]
+    assert starts == sorted(starts) and len(starts) == len(set(starts))
+    for a, b in zip(found, found[1:]):
+        assert b["page_start"] > a["page_end"]  # no overlaps across windows

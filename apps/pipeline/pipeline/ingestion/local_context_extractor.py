@@ -18,6 +18,7 @@ from pipeline.ingestion.pdf_extractor import (
 from pipeline.ingestion.local_pdf_package import (
     PdfPackage,
     package_for_prompt,
+    pages_fitting,
     range_text,
 )
 
@@ -78,25 +79,74 @@ LOCAL PAGE/IMAGE CONTEXT:
 """
 
 
-def detect_boundaries_from_package(package: PdfPackage) -> list[dict]:
-    """Detect document boundaries from local text/page context."""
+WINDOW_NOTE = """This PDF has {page_count} pages; you are shown pages {page_start}-{page_end} of it. Return only
+documents that start within these pages. If a document clearly runs past page {page_end}, give its true page_end
+when the text shows it; otherwise end it at page {page_end}.
+
+"""
+
+
+def detect_boundaries_from_package(
+    package: PdfPackage,
+    *,
+    max_page_chars: int = 1600,
+    max_total_chars: int = 70000,
+) -> list[dict]:
+    """Detect document boundaries from local text/page context.
+
+    One prompt holds about `max_total_chars` of page text, which a text-dense 600-page agenda package exceeds by
+    page 50 or so; the model then only ever saw the first window and the rest of the package stayed unsectioned
+    (2026-11-07: 23 packages cut off around page 60). So the package is walked in windows: each prompt shows the
+    pages that fit, the next window starts after the last complete document (a document the model ended at the
+    window's edge is looked at again whole), until the last page is covered.
+    """
     if not package.has_usable_text:
         logger.info("Local package has insufficient text for boundary detection")
         return []
 
-    prompt = LOCAL_BOUNDARY_PROMPT.format(
-        package_text=package_for_prompt(
-            package,
-            max_page_chars=1600,
-            max_total_chars=70000,
+    n = package.page_count
+    found_all: list[dict] = []
+    start = 1
+    windows = 0
+    while start <= n:
+        end = pages_fitting(package, start, max_page_chars=max_page_chars, max_total_chars=max_total_chars)
+        windows += 1
+        package_text = package_for_prompt(
+            package, page_start=start, page_end=end, max_page_chars=max_page_chars, max_total_chars=max_total_chars,
         )
-    )
-    try:
-        result = ai.json(prompt, stage="document", schema=DocumentBoundaries)
-    except ai.AIError as exc:
-        logger.warning("Local boundary detection failed (falling back to PDF read): %s", exc)
-        return []
-    return _dedup_overlapping_boundaries(boundaries_from_result(result))
+        if windows > 1 or end < n:
+            package_text = WINDOW_NOTE.format(page_count=n, page_start=start, page_end=end) + package_text
+        prompt = LOCAL_BOUNDARY_PROMPT.format(package_text=package_text)
+        try:
+            result = ai.json(prompt, stage="document", schema=DocumentBoundaries)
+        except ai.AIError as exc:
+            if not found_all:
+                logger.warning("Local boundary detection failed (falling back to PDF read): %s", exc)
+                return []
+            logger.warning("Local boundary detection stopped at page %d of %d: %s", start - 1, n, exc)
+            break
+        found = sorted(
+            (b for b in boundaries_from_result(result) if start <= b["page_start"] <= end),
+            key=lambda b: b["page_start"],
+        )
+        for b in found:
+            b["page_end"] = min(b["page_end"], n)
+        if end >= n:
+            found_all.extend(found)
+            break
+        # A document the model ended at the window's edge may continue past it: see it whole in the next window.
+        if found and found[-1]["page_end"] >= end and found[-1]["page_start"] > start:
+            next_start = found[-1]["page_start"]
+            found = found[:-1]
+        else:
+            next_start = max((b["page_end"] for b in found), default=end) + 1
+        found_all.extend(found)
+        if next_start <= start:
+            next_start = end + 1
+        start = next_start
+    if windows > 1:
+        logger.info("Boundary detection took %d windows for %d pages of %s", windows, n, package.file_name)
+    return _dedup_overlapping_boundaries(found_all)
 
 
 def extract_content_from_package(
