@@ -35,7 +35,8 @@ const TELLING = /\b(sale|sell|sold|dispos\w*|purchas\w*|acquir\w*|bought|owed|de
 
 /** The words around the address in a record, on one line, scored by what they tell. Exported for tests. */
 export function addressExcerpt(text: string, civic: string, before = 40, after = 300): { text: string; score: number } {
-  const flat = text.replace(/[#|*]/g, " ").replace(/\s+/g, " ").trim();
+  // Picture markers the extractor leaves in the text ("[Image 1: site plan…]") are not words anyone said.
+  const flat = text.replace(/\[Image[^\]]*\]/gi, " ").replace(/[#|*]/g, " ").replace(/\s+/g, " ").trim();
   const at = flat.toLowerCase().indexOf(`${civic} `.toLowerCase());
   const start = Math.max(0, (at < 0 ? 0 : at) - before);
   const end = Math.min(flat.length, (at < 0 ? 0 : at) + after);
