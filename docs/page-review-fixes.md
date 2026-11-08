@@ -93,7 +93,8 @@ carries out fixes for the flags staff agreed with. This page explains where each
    meetings…" count line is kept from the old lead rather than guessed.
 
    Pressing Check on a property page also searches the records for the address (`services/property-search.server.ts`:
-   item titles, motions, attached reports and minutes, topic titles; plain text matching, no model) and lists what
+   item titles, motions, attached reports and minutes, topic titles, and lines spoken at meetings, each tied to the
+   entry whose discussion window holds it; plain text matching, no model) and lists what
    isn't linked yet under "Possibly missing"; a 👍 links it to the address at once (a `property_links` row with
    source `admin`, which the properties stage keeps), a 👎 keeps it off. Decisions live in `properties.meta.suggestions`.
 

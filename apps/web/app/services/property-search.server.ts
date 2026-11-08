@@ -3,10 +3,11 @@ import type { Suggestion } from "./page-links.server";
 
 /**
  * "Find missing" for a property page: the records that name the address but aren't linked to it. The pipeline
- * links an address from item titles and extracted addresses; a budget line, a motion or a report that names the
- * lot, and a topic titled with it, can slip past. The search is plain text matching on the City's records (no
- * model), run when staff press Check on the page; what it finds waits in properties.meta.suggestions for a 👍
- * (which links it, source "admin", which the pipeline's properties stage keeps) or a 👎.
+ * links an address from item titles and extracted addresses; a budget line, a motion, a report or a line spoken
+ * at a meeting that names the lot, and a topic titled with it, can slip past. The search is plain text matching
+ * on the City's records (no model), run when staff press Check on the page; what it finds waits in
+ * properties.meta.suggestions for a 👍 (which links it, source "admin", which the pipeline's properties stage
+ * keeps) or a 👎.
  */
 
 const TYPE_FORMS: Record<string, string[]> = {
@@ -31,7 +32,35 @@ export function addressPatterns(civic: string, street: string): string[] {
   return [...new Set(heads.map((h) => `%${civic} ${h}%`))];
 }
 
-type Found = { kind: "item" | "topic"; id: number; title: string; date: string | null; href: string | null; foundIn: "item" | "spoken" | "document" | "topic"; reason: string };
+type Found = { kind: "item" | "topic"; id: number; title: string; date: string | null; href: string | null; foundIn: "item" | "spoken" | "document" | "topic"; reason: string; quote?: string | null };
+
+type Timed = { id: number; meeting_id: number; discussion_start_time: number | null; discussion_end_time: number | null };
+
+/** The entry being discussed when a line was spoken: the one at that meeting whose discussion window holds the
+ * line's start. Meeting videos are cut into lines with a time, and entries carry the window the video shows them
+ * in (about a third of entries have one), so a spoken address can be tied to an entry without a transcript-to-item
+ * link. Exported for tests. */
+export function spokenAtItem<T extends Timed>(segment: { meeting_id: number; start_time: number | null }, items: T[]): T | null {
+  if (segment.start_time == null) return null;
+  const t = segment.start_time;
+  let best: T | null = null;
+  for (const i of items) {
+    if (i.meeting_id !== segment.meeting_id || i.discussion_start_time == null || i.discussion_end_time == null) continue;
+    if (t < i.discussion_start_time || t > i.discussion_end_time) continue;
+    // Nested windows ("REPORTS" holding each report): the narrowest wins.
+    if (!best || i.discussion_end_time - i.discussion_start_time < best.discussion_end_time! - best.discussion_start_time!) best = i;
+  }
+  return best;
+}
+
+/** A spoken line as the bar quotes it: one line, trimmed around the address. */
+function spokenQuote(text: string, civic: string): string {
+  const flat = text.replace(/\s+/g, " ").trim();
+  if (flat.length <= 220) return flat;
+  const at = flat.toLowerCase().indexOf(civic.toLowerCase());
+  const start = Math.max(0, (at < 0 ? 0 : at) - 90);
+  return (start > 0 ? "…" : "") + flat.slice(start, start + 220).trim() + (start + 220 < flat.length ? "…" : "");
+}
 export type PropertySuggestion = Found & { status: "pending" | "accepted" | "rejected"; decided_by?: string; decided_at?: string };
 
 const CAP = 40;
@@ -48,23 +77,34 @@ export async function findPropertyMissing(supabase: SupabaseClient, propertyId: 
   const { data: linked } = await supabase.from("property_links").select("agenda_item_id, matter_id").eq("property_id", propertyId);
   const linkedItems = new Set(((linked || []) as any[]).map((l) => l.agenda_item_id).filter(Boolean));
   const linkedTopics = new Set(((linked || []) as any[]).map((l) => l.matter_id).filter(Boolean));
-  const [titles, motions, sections, topics] = await Promise.all([
+  const [titles, motions, sections, topics, spoken] = await Promise.all([
     supabase.from("agenda_items").select("id, title, matter_id, meetings(slug, meeting_date)").or(or("title")).limit(CAP),
     supabase.from("motions").select("agenda_item_id, agenda_items(id, title, matter_id, meetings(slug, meeting_date))").or(or("text_content")).limit(CAP),
     supabase.from("document_sections").select("agenda_item_id, agenda_items(id, title, matter_id, meetings(slug, meeting_date))").not("agenda_item_id", "is", null).or(or("section_text")).limit(CAP * 3),
     supabase.from("matters").select("id, slug, title, first_seen, merged_into, meta").or(or("title")).limit(CAP),
+    supabase.from("transcript_segments").select("meeting_id, start_time, text_content").or(or("text_content")).order("start_time").limit(CAP * 2),
   ]);
+  // Spoken lines carry no entry; tie each to the entry on screen at that moment.
+  const spokenMeetings = [...new Set(((spoken.data || []) as any[]).map((s) => s.meeting_id as number))];
+  const timed = spokenMeetings.length
+    ? ((await supabase.from("agenda_items").select("id, title, matter_id, meeting_id, discussion_start_time, discussion_end_time, meetings(slug, meeting_date)")
+        .in("meeting_id", spokenMeetings).not("discussion_start_time", "is", null)).data || []) as any[]
+    : [];
   const one = <T,>(v: T | T[] | null | undefined) => (Array.isArray(v) ? v[0] : v) ?? null;
   const found = new Map<string, Found>();
-  const addItem = (item: any, foundIn: Found["foundIn"], reason: string) => {
+  const addItem = (item: any, foundIn: Found["foundIn"], reason: string, quote: string | null = null) => {
     if (!item?.id || linkedItems.has(item.id) || found.has(`item-${item.id}`)) return;
     const meeting = one(item.meetings) as any;
     found.set(`item-${item.id}`, { kind: "item", id: item.id, title: String(item.title || "").split("\n")[0].slice(0, 160), date: meeting?.meeting_date ?? null,
-      href: meeting?.slug ? `/meetings/${meeting.slug}#item-${item.id}` : null, foundIn, reason });
+      href: meeting?.slug ? `/meetings/${meeting.slug}#item-${item.id}` : null, foundIn, reason, quote });
   };
   for (const i of (titles.data || []) as any[]) addItem(i, "item", "The item's title names this address.");
   for (const m of (motions.data || []) as any[]) addItem(one(m.agenda_items), "spoken", "A decision at this item names this address.");
   for (const s of (sections.data || []) as any[]) addItem(one(s.agenda_items), "document", "A report or minutes attached to this item names this address.");
+  for (const line of (spoken.data || []) as any[]) {
+    const item = spokenAtItem(line, timed);
+    if (item) addItem(item, "spoken", "Someone said this address while this item was before the meeting.", spokenQuote(String(line.text_content || ""), property.civic_number));
+  }
   for (const t of (topics.data || []) as any[]) {
     if (t.merged_into || t.meta?.hidden || linkedTopics.has(t.id) || found.has(`topic-${t.id}`)) continue;
     found.set(`topic-${t.id}`, { kind: "topic", id: t.id, title: t.meta?.display_title || t.title, date: t.first_seen ?? null, href: `/matters/${t.slug}`, foundIn: "topic", reason: "The topic's title names this address." });
@@ -90,7 +130,7 @@ export async function listPropertySuggestions(supabase: SupabaseClient, property
     searchedAt: meta.suggestions_searched_at ?? null,
     suggestions: all.filter((s) => s.status === "pending").map((s) => ({
       table: s.kind === "topic" ? "property_matters" : "property_items", id: s.id, kind: s.kind === "topic" ? "related" : "mention",
-      date: s.date, title: s.title, quote: null, href: s.href, reason: s.reason, score: null, foundIn: s.foundIn, agreed: false, itemId: s.kind === "item" ? s.id : null,
+      date: s.date, title: s.title, quote: s.quote ?? null, href: s.href, reason: s.reason, score: null, foundIn: s.foundIn, agreed: false, itemId: s.kind === "item" ? s.id : null,
     })),
   };
 }
