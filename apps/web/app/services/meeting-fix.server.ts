@@ -103,20 +103,25 @@ export function findSegment(segments: Segment[], quote: string | null | undefine
   return hits.sort((a, b) => Math.abs(a.start_time - near) - Math.abs(b.start_time - near))[0] ?? null;
 }
 
-/** Moving an item's start to `at`: the item starts there and the item before it (the one whose window held that
- * moment, or the previous one by start time) ends there. Null when the move would break the order of the items (the
- * new start isn't after the previous item's start and before this item's end). Exported for tests. */
+/** Moving an item's start to `at`: the item starts there; the item before it in time ends there; and any earlier
+ * item whose window starts at or after `at` (the run of items the alignment had placed too late) has its window
+ * cleared, start and end, for the pipeline's alignment to fill again from the transcript (it fills only empty
+ * times). Null when `at` isn't before the item's own end, or isn't after the meeting's first item. Exported for tests. */
 export function moveItemStart(items: { id: number; discussion_start_time: number | null; discussion_end_time: number | null }[], itemId: number, at: number):
-  { id: number; discussion_start_time?: number; discussion_end_time?: number }[] | null {
-  const timed = items.filter((i) => i.discussion_start_time != null).sort((a, b) => a.discussion_start_time! - b.discussion_start_time!);
-  const idx = timed.findIndex((i) => i.id === itemId);
+  { id: number; discussion_start_time?: number | null; discussion_end_time?: number | null }[] | null {
   const item = items.find((i) => i.id === itemId);
   if (!item) return null;
-  const prev = idx > 0 ? timed[idx - 1] : timed.filter((i) => i.id !== itemId && i.discussion_start_time! < at).at(-1) ?? null;
   if (item.discussion_end_time != null && at >= item.discussion_end_time) return null;
-  if (prev && at <= prev.discussion_start_time!) return null;
-  const out: { id: number; discussion_start_time?: number; discussion_end_time?: number }[] = [{ id: itemId, discussion_start_time: at }];
+  const timed = items.filter((i) => i.id !== itemId && i.discussion_start_time != null).sort((a, b) => a.discussion_start_time! - b.discussion_start_time!);
+  const first = timed[0];
+  if (first && first.id !== itemId && at <= first.discussion_start_time!) return null;
+  const position = item.discussion_start_time ?? at;
+  // Items before this one in time whose windows now sit at or after the new start: placed too late, cleared.
+  const tooLate = timed.filter((i) => i.discussion_start_time! < position && i.discussion_start_time! >= at);
+  const prev = timed.filter((i) => i.discussion_start_time! < at).at(-1) ?? null;
+  const out: { id: number; discussion_start_time?: number | null; discussion_end_time?: number | null }[] = [{ id: itemId, discussion_start_time: at }];
   if (prev) out.push({ id: prev.id, discussion_end_time: at });
+  for (const i of tooLate) out.push({ id: i.id, discussion_start_time: null, discussion_end_time: null });
   return out;
 }
 
@@ -152,7 +157,8 @@ What you can do:
   the words spoken at the moment the item begins, copied exactly from one TIMED TRANSCRIPT line (the chair calling
   the item, or the first words about it). The item then starts at that line's time and the item before it ends
   there. An item shown as lasting too long is fixed by setting the start of the item after it (give that item's
-  key). Only when the transcript is given below and the line is clearly that item's start.
+  key). The words may come from the TIMED TRANSCRIPT below or from a transcript passage you read while
+  researching: they are looked up in the whole meeting's transcript. Only when the line is clearly that item's start.
 - no_change: when the editor asks a question and the answer is that the page is right as it is, or an agreed
   problem turns out not to be one. Say why in "reason", from the records. Give the key of the entry, or null.
 - cannot_fix: the problem is in the record itself (a wrong seconder or vote count, a document filed under the wrong
@@ -221,16 +227,24 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
     const nextOf = (id: number) => { const i = byTime.findIndex((x) => x.id === id); return i >= 0 ? byTime[i + 1] ?? null : null; };
     const timeScope = new Set(flaggedIds.flatMap((id) => [id, nextOf(id)?.id].filter((x): x is number => x != null)));
     const flaggedItems = items.filter((i) => timeScope.has(i.id) && i.discussion_start_time != null);
-    const span = flaggedItems.length ? { from: Math.min(...flaggedItems.map((i) => i.discussion_start_time!)) - 600,
-      to: Math.max(...flaggedItems.map((i) => i.discussion_end_time ?? i.discussion_start_time! + 1800)) + 600 } : null;
-    const segments: Segment[] = span ? ((await supabase.from("transcript_segments").select("id, start_time, speaker_name, text_content")
-      .eq("meeting_id", meeting.id).gte("start_time", span.from).lte("start_time", span.to).order("start_time").limit(3000)).data || []) as Segment[] : [];
-    const transcript = span ? timedTranscript(segments, span.from, span.to) : "";
-    const [covered, investigations] = await Promise.all([
+    const [covered, investigations, allSegments] = await Promise.all([
       itemRecords(supabase, recordIds),
       investigate(supabase, { path, topic: `${meeting.title}, ${meeting.meeting_date}`, flags: agreed.map((flag) => ({ flag, index: flags.indexOf(flag) })),
         note: row?.note ?? null, signal: budget }),
+      // The whole meeting's transcript: set_item_start looks its quote up here, wherever the plan read it (its
+      // own timed block, or a passage the investigation read), so a window that is wrong by half an hour is still
+      // fixable (2026-10-05 council: an item linked at 1:00:42 that was discussed at 32:26).
+      flaggedItems.length ? supabase.from("transcript_segments").select("id, start_time, speaker_name, text_content").eq("meeting_id", meeting.id)
+        .order("start_time").limit(6000).then((r) => (r.data || []) as Segment[]) : Promise.resolve([] as Segment[]),
     ]);
+    const segments = allSegments;
+    // The timed block the plan sees: the flagged items' windows, the moments the investigation found
+    // (transcript:<meeting>:<seconds> refs), and ten minutes either side of each.
+    const foundTimes = investigations.flatMap((i) => [...(i.finding?.ref || "").matchAll(/transcript:\d+:([\d.]+)/g)].map((m) => Number(m[1]))).filter(Number.isFinite);
+    const spans = [...flaggedItems.map((i) => ({ from: i.discussion_start_time! - 600, to: (i.discussion_end_time ?? i.discussion_start_time! + 1800) + 600 })),
+      ...foundTimes.map((t) => ({ from: t - 600, to: t + 600 }))].sort((a, b) => a.from - b.from);
+    const merged = spans.reduce<{ from: number; to: number }[]>((out, x) => { const last = out.at(-1); if (last && x.from <= last.to) last.to = Math.max(last.to, x.to); else out.push({ ...x }); return out; }, []);
+    const transcript = merged.map((x) => timedTranscript(segments, x.from, x.to)).filter(Boolean).join("\n\n");
     const findingFor = (i: { finding: Parameters<typeof findingText>[0] } | undefined) => findingText(i?.finding);
     const found = investigations.filter((i) => i.finding?.ref && i.finding.verdict !== "not_found");
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
@@ -287,10 +301,11 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
         const prevId = byTime[byTime.findIndex((x) => x.id === id) - 1]?.id;
         const flagKey = step.key && agreedKeys.has(step.key) ? step.key : prevId != null && agreedKeys.has(`item-${prevId}`) ? `item-${prevId}` : null;
         if (!item || !flagKey) { left.push(`${step.reason} (that entry isn't flagged on this page, so nothing changed)`); continue; }
-        const seg = findSegment(segments, step.source, item.discussion_start_time ?? 0);
+        const near = foundTimes.length ? foundTimes[0] : item.discussion_start_time ?? 0;
+        const seg = findSegment(segments, step.source, near);
         if (!seg) { left.push(`${step.reason} (the words given aren't a line of the transcript, so the time stays; press Fix again)`); continue; }
         const moves = moveItemStart(items, id, seg.start_time);
-        if (!moves) { left.push(`${step.reason} (starting at ${clock(seg.start_time)} would put the item out of order with its neighbours, so the time stays)`); continue; }
+        if (!moves) { left.push(`${step.reason} (starting at ${clock(seg.start_time)} isn't before the item's end or after the meeting's start, so the time stays)`); continue; }
         let failed = false;
         for (const move of moves) {
           const row = items.find((i) => i.id === move.id)!;
@@ -298,18 +313,22 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
           const manual = { ...(rowMeta.manual || {}) };
           for (const col of ["discussion_start_time", "discussion_end_time"] as const) {
             if (move[col] === undefined) continue;
+            // A cleared window isn't a person's value: the alignment stage may fill it, so no manual lock for it.
+            if (move[col] === null) { delete manual[col]; continue; }
             manual[col] = { by: requester.id, at, auto: manual[col]?.auto ?? row[col] ?? null, source: squash(step.source || "").slice(0, 300) };
           }
           const { error } = await supabase.from("agenda_items").update({ ...("discussion_start_time" in move ? { discussion_start_time: move.discussion_start_time } : {}),
             ...("discussion_end_time" in move ? { discussion_end_time: move.discussion_end_time } : {}), meta: { ...rowMeta, manual } }).eq("id", move.id);
           if (error) { failed = true; break; }
-          if (move.discussion_start_time !== undefined) row.discussion_start_time = move.discussion_start_time;
-          if (move.discussion_end_time !== undefined) row.discussion_end_time = move.discussion_end_time;
+          if (move.discussion_start_time !== undefined) row.discussion_start_time = move.discussion_start_time ?? null;
+          if (move.discussion_end_time !== undefined) row.discussion_end_time = move.discussion_end_time ?? null;
         }
         if (failed) { left.push(`${step.reason} (couldn't save the new time)`); continue; }
         fixedKeys.add(flagKey);
+        const cleared = moves.filter((m) => m.discussion_start_time === null).length;
         claims.push({ id: `start-${id}`, key: flagKey, text: `Item ${id}'s discussion starts at ${clock(seg.start_time)}, when this was said: "${squash(seg.text_content || "")}"` });
-        done.push(`${flagKey === step.key ? capital(entryLabel(flagKey, flags)) : `The item after ${entryLabel(flagKey, flags)}`} now starts at ${clock(seg.start_time)}${moves.length > 1 ? ", where the item before it ends" : ""}: ${brief(step.reason, 160)}`);
+        done.push(`${flagKey === step.key ? capital(entryLabel(flagKey, flags)) : `The item after ${entryLabel(flagKey, flags)}`} now starts at ${clock(seg.start_time)}${moves.some((m) => m.discussion_end_time != null && m.id !== id) ? ", where the item before it ends" : ""}`
+          + `${cleared ? `; the video link${cleared === 1 ? "" : "s"} of ${cleared} earlier item${cleared === 1 ? "" : "s"} placed after that moment ${cleared === 1 ? "was" : "were"} cleared for the pipeline to set again` : ""}: ${brief(step.reason, 160)}`);
         await log("agent:set_item_start", { agenda_item_id: String(id), start: String(seg.start_time), reason: step.reason.slice(0, 300) });
         continue;
       }

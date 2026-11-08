@@ -63,9 +63,16 @@ describe("moving an item's start to a transcript moment", () => {
   it("starts the item at that moment and ends the item before it there", () => {
     expect(moveItemStart(items, 6740, 3876)).toEqual([{ id: 6740, discussion_start_time: 3876 }, { id: 6739, discussion_end_time: 3876 }]);
   });
-  it("refuses a start that is after the item's end or before the previous item's start", () => {
+  it("refuses a start that is after the item's end or before the meeting's first item", () => {
     expect(moveItemStart(items, 6740, 5300)).toBeNull();
-    expect(moveItemStart(items, 6740, 3700)).toBeNull();
+    expect(moveItemStart(items, 6740, 3600)).toBeNull();
+  });
+  it("moving a start back past earlier items clears their windows for the alignment stage to fill again", () => {
+    // 6739 and 6740 were placed too late (the real 6741 began before them); 6738 ends where 6741 now starts.
+    expect(moveItemStart(items, 6741, 3700)).toEqual([
+      { id: 6741, discussion_start_time: 3700 }, { id: 6738, discussion_end_time: 3700 },
+      { id: 6739, discussion_start_time: null, discussion_end_time: null }, { id: 6740, discussion_start_time: null, discussion_end_time: null },
+    ]);
   });
   it("writes the transcript with clock times, within the window", () => {
     const text = timedTranscript(segments, 3800, 4000);
