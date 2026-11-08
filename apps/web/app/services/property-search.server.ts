@@ -27,8 +27,10 @@ export function addressPatterns(civic: string, street: string): string[] {
   const name = (forms ? words.slice(0, -1) : words).map((w) => w.replace(/[%_]/g, "")).join("%");
   if (!name) return [];
   const heads = forms ? forms.map((f) => `${name}%${f}`) : [name];
-  // The name alone too ("3680 Trans-Canada" in a budget line), when it has a type to drop.
+  // The name alone too ("3680 Trans-Canada" in a budget line), when it has a type to drop; and a long name by its
+  // initials, as budget tables write it ("3680 TCH").
   if (forms) heads.push(name);
+  if (forms && words.length >= 3) heads.push(words.map((w) => w[0]).join(""));
   return [...new Set(heads.map((h) => `%${civic} ${h}%`))];
 }
 

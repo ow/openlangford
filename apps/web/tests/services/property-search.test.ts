@@ -7,6 +7,8 @@ describe("addressPatterns", () => {
     expect(p).toContain("%3680 Trans%Canada%highway%");
     expect(p).toContain("%3680 Trans%Canada%hwy%");
     expect(p).toContain("%3680 Trans%Canada%");
+    expect(p).toContain("%3680 TCH%");
+    expect(addressPatterns("3094", "Jacklin Road")).not.toContain("%3094 JR%");
   });
   it("keeps a street with no known type whole, and refuses an empty address", () => {
     expect(addressPatterns("12", "Westhills Stadium")).toEqual(["%12 Westhills%Stadium%"]);

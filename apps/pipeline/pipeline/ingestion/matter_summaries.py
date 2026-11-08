@@ -85,7 +85,7 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
                        .select("id, matter_id, meeting_id, title, description, plain_english_summary, debate_summary, "
                                "discussion_start_time, discussion_end_time, meetings(meeting_date, type)")
                        .in_("matter_id", ids).order("id"), matter_ids)
-    links = _in_chunks(lambda ids: supabase.table("matter_links").select("id,matter_id,agenda_item_id").in_("matter_id", ids)
+    links = _in_chunks(lambda ids: supabase.table("matter_links").select("id,matter_id,agenda_item_id,quote").in_("matter_id", ids)
                        .eq("kind", "mention").eq("hidden", False).order("id"), matter_ids)
     mention_ids = sorted({link["agenda_item_id"] for link in links if link.get("agenda_item_id")})
     mention_items = _in_chunks(lambda ids: supabase.table("agenda_items")
@@ -103,9 +103,13 @@ def _load_context(supabase: Client, matter_ids: list[int]) -> list[dict]:
         meeting = item.get("meetings") or {}
         if meeting.get("municipality_id") != matter_by_id[mid]["municipality_id"]:
             continue
+        # The quote is the line of that item's record that names this matter: often the only place a budget
+        # amount, a recommendation or a question about it is written down.
         mentions_by_matter.setdefault(mid, []).append({
             "item": item["id"], "date": meeting.get("meeting_date"), "agenda_item": item["title"],
-            "notes": {"summary": item.get("plain_english_summary") or ""}, "source": "accepted mention",
+            "notes": {"summary": item.get("plain_english_summary") or "",
+                      **({"names_this_matter": link["quote"].strip()} if isinstance(link.get("quote"), str) and link["quote"].strip() else {})},
+            "source": "accepted mention",
         })
     item_ids = [i["id"] for i in items]
     motions = _in_chunks(lambda ids: supabase.table("motions").select("id, agenda_item_id, plain_english_summary, text_content, result")

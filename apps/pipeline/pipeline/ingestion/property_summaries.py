@@ -37,7 +37,7 @@ from pipeline import ai
 from pipeline.ai import glossary
 from pipeline.postgrest import in_chunks
 
-PROPERTY_SUMMARY_VERSION = "3"  # 3: glossary block (resident register)
+PROPERTY_SUMMARY_VERSION = "4"  # 4: each entry carries the line of the record that names the address
 MIN_RECORDS = 2
 MIN_ADDRESSES = 2  # a street page with two or more addresses gets a summary even with no records of its own
 NARRATIVE_MAX = 220  # the model's part; the closing count follows
@@ -73,6 +73,8 @@ Rules from the site's writing guide:
 - "Never invent." If the inputs don't say how something ended, leave the outcome out. Don't open with what is missing.
 - "Write so it stays true." No "currently" or "recently"; give the year instead.
 - Canadian spelling.
+
+An entry may carry "names_this_address": the words of the record (a report, a budget table, a decision, something said at the meeting) that name this address. That line is why the entry is on the page, and often the only place its substance is: a purchase, a dollar amount, a recommendation to sell, a question asked. Use those facts; the entry's own summary may not repeat them. When those lines give the story a later turn (the City bought the land, spent on it, still owes for it, was asked whether to sell it, was told to explore a sale), lead with the latest turn and then say how it began.
 
 For a lot (kind "lot"): say what has been proposed or decided there. Example: "A subdivision of up to 47 homes, approved in 2015 after changes to the official community plan and zoning."
 For a street (kind "street"): cover both the road itself (roadworks, closures, traffic, grants; newest first) and the developments at addresses on it. Name the projects at the addresses in "most_considered" (the ones Council considered most often) first; add one other, larger project only if it fits. Example: "In 2024 Council backed grant applications for walking and cycling upgrades on Latoria Road. Earlier: a 47-lot subdivision at 935 and the 501-home McCormick Meadows plan at 940." Refer to an address on the street by its number alone ("a 47-lot subdivision at 935"), since the street is the page.
@@ -278,14 +280,100 @@ def load_inputs(supabase, props: list[dict]) -> dict[int, dict]:
     """Property id -> the model's input."""
     every = [q for p in props for q in [p, *summary_lots(p)]]
     matter_ids = sorted({int(k[1:]) for p in every for k in p["records"] if k[0] == "m"})
-    item_ids = sorted({int(k[1:]) for p in every for k in p["records"] if k[0] == "i"})
+    item_ids = sorted({int(k[1:]) for p in every for k in p["records"] if k[0] == "i"}
+                      | {l["agenda_item_id"] for p in every for l in p.get("links", []) if l.get("agenda_item_id")})
     matters = {m["id"]: m for m in in_chunks(lambda chunk: supabase.table("matters").select(
         "id, title, category, status, first_seen, last_seen, plain_english_summary, meta"
     ).in_("id", chunk), matter_ids)}
     items = {i["id"]: i for i in in_chunks(lambda chunk: supabase.table("agenda_items").select(
-        "id, title, plain_english_summary, meetings(meeting_date)"
+        "id, title, plain_english_summary, meeting_id, discussion_start_time, discussion_end_time, meetings(meeting_date)"
     ).in_("id", chunk), item_ids)}
-    return {p["id"]: build_input(p, matters, items) for p in props}
+    out = {}
+    for p in props:
+        lines = address_lines(supabase, p, items) if p.get("civic_number") else {}
+        out[p["id"]] = build_input(p, matters, items, lines)
+    return out
+
+
+TYPE_FORMS = {
+    "highway": ["highway", "hwy"], "road": ["road", "rd"], "avenue": ["avenue", "ave"], "drive": ["drive", "dr"],
+    "street": ["street", "st"], "place": ["place", "pl"], "crescent": ["crescent", "cres"], "court": ["court", "crt", "ct"],
+    "parkway": ["parkway", "pkwy"], "boulevard": ["boulevard", "blvd"], "terrace": ["terrace", "terr"], "lane": ["lane", "ln"],
+    "close": ["close", "cl"], "trail": ["trail"], "way": ["way"],
+}
+
+
+def address_patterns(civic: str, street: str) -> list[str]:
+    """ILIKE patterns for an address as the records write it ("3680 Trans-Canada Highway", "3680 Trans Canada Hwy",
+    "3680 Trans Canada"), the same as the site's property search (services/property-search.server.ts)."""
+    words = [w for w in re.split(r"[\s-]+", (street or "").strip()) if w]
+    if not civic or not words:
+        return []
+    forms = TYPE_FORMS.get(words[-1].lower())
+    name = "%".join(w.replace("%", "").replace("_", "") for w in (words[:-1] if forms else words))
+    if not name:
+        return []
+    heads = [f"{name}%{f}" for f in forms] if forms else [name]
+    if forms:
+        heads.append(name)
+        if len(words) >= 3:  # budget tables write a long name by its initials: "3680 TCH"
+            heads.append("".join(w[0] for w in words))
+    return list(dict.fromkeys(f"%{civic} {h}%" for h in heads))
+
+
+TELLING = re.compile(r"\b(sale|sell|sold|dispos\w*|purchas\w*|acquir\w*|bought|owed|debt|borrow\w*|recommend\w*|should)\b|\$|\d{1,3}(?:,\d{3})+", re.I)
+
+
+def excerpt(text: str, civic: str, before: int = 120, after: int = 320) -> tuple[str, int]:
+    """The words around the address in a record, on one line, with a score: how much the window tells (money,
+    a purchase or sale, a recommendation) beyond naming the address."""
+    flat = re.sub(r"\s+", " ", re.sub(r"[#|*]", " ", text or "")).strip()
+    at = flat.lower().find(f"{civic} ".lower())
+    start = max(0, (at if at >= 0 else 0) - before)
+    end = min(len(flat), (at if at >= 0 else 0) + after)
+    window = flat[start:end].strip()
+    return ("…" if start > 0 else "") + window + ("…" if end < len(flat) else ""), len(TELLING.findall(window))
+
+
+def address_lines(supabase, p: dict, items: dict[int, dict]) -> dict[int, str]:
+    """Item id -> the line of its record that names this address: in an attached report or budget table, in a
+    decision, or spoken at the meeting while the item was on screen. The lead writer reads these; an item's own
+    summary rarely repeats a budget line or a recommendation about one lot."""
+    item_ids = sorted({l["agenda_item_id"] for l in p.get("links", []) if l.get("agenda_item_id") in items})
+    patterns = address_patterns(p.get("civic_number") or "", p.get("street") or "")
+    if not item_ids or not patterns:
+        return {}
+    civic = p["civic_number"]
+    ors = lambda col: ",".join(f'{col}.ilike."{x}"' for x in patterns)
+    found: dict[int, list[tuple[str, int]]] = {}
+
+    def add(item_id, text):
+        if item_id in items:
+            found.setdefault(item_id, []).append(excerpt(text, civic))
+
+    try:
+        for sec in in_chunks(lambda chunk: supabase.table("document_sections").select("agenda_item_id, section_text")
+                             .in_("agenda_item_id", chunk).or_(ors("section_text")).limit(60), item_ids):
+            add(sec["agenda_item_id"], sec.get("section_text") or "")
+        for mo in in_chunks(lambda chunk: supabase.table("motions").select("agenda_item_id, text_content")
+                            .in_("agenda_item_id", chunk).or_(ors("text_content")).limit(30), item_ids):
+            add(mo["agenda_item_id"], mo.get("text_content") or "")
+        timed = [items[i] for i in item_ids if items[i].get("discussion_start_time") is not None and items[i].get("discussion_end_time") is not None]
+        meeting_ids = sorted({i["meeting_id"] for i in timed if i.get("meeting_id")})
+        if meeting_ids:
+            for seg in in_chunks(lambda chunk: supabase.table("transcript_segments").select("meeting_id, start_time, text_content")
+                                 .in_("meeting_id", chunk).or_(ors("text_content")).limit(40), meeting_ids):
+                t = seg.get("start_time")
+                if t is None:
+                    continue
+                on_screen = [i for i in timed if i["meeting_id"] == seg["meeting_id"] and i["discussion_start_time"] <= t <= i["discussion_end_time"]]
+                if on_screen:
+                    narrowest = min(on_screen, key=lambda i: i["discussion_end_time"] - i["discussion_start_time"])
+                    add(narrowest["id"], "Said at the meeting: " + (seg.get("text_content") or ""))
+    except Exception as e:  # the lead is still written, from the summaries alone
+        print(f"  [!] Address lines for {p.get('address')} ({p['id']}) failed: {e}", flush=True)
+    # The two most telling windows per item, the lines that say the most first.
+    return {i: " ".join(t for t, _ in sorted(x, key=lambda e: -e[1])[:2]) for i, x in found.items() if x}
 
 
 def _years(first, last) -> str:
@@ -294,7 +382,7 @@ def _years(first, last) -> str:
 
 
 def _records(p: dict, matters: dict[int, dict], items: dict[int, dict], max_matters: int, max_items: int,
-             summary_chars: int) -> tuple[list[dict], list[dict], str]:
+             summary_chars: int, lines: dict[int, str] | None = None) -> tuple[list[dict], list[dict], str]:
     """A property's matters and other agenda items, newest first, plus its latest date."""
     ms = [matters[int(k[1:])] for k in p["records"] if k[0] == "m" and int(k[1:]) in matters]
     its = [items[int(k[1:])] for k in p["records"] if k[0] == "i" and int(k[1:]) in items]
@@ -302,23 +390,30 @@ def _records(p: dict, matters: dict[int, dict], items: dict[int, dict], max_matt
     its.sort(key=lambda i: str((i.get("meetings") or {}).get("meeting_date") or ""), reverse=True)
     latest = max([str(m.get("last_seen") or m.get("first_seen") or "") for m in ms]
                  + [str((i.get("meetings") or {}).get("meeting_date") or "") for i in its] or [""])
+    # A topic's lines come from its entries that name this address (links carrying both ids).
+    by_matter: dict[int, list[str]] = {}
+    for l in p.get("links", []) if lines else []:
+        if l.get("matter_id") and lines.get(l.get("agenda_item_id")) and len(by_matter.setdefault(l["matter_id"], [])) < 2:
+            by_matter[l["matter_id"]].append(lines[l["agenda_item_id"]])
     matter_rows = [{
         "title": (m.get("meta") or {}).get("display_title") or m.get("title") or "",
         "category": m.get("category") or "",
         "status": m.get("status") or "",
         "years": _years(m.get("first_seen"), m.get("last_seen")),
         "summary": (m.get("plain_english_summary") or "")[:summary_chars],
+        **({"names_this_address": " ".join(by_matter[m["id"]])} if by_matter.get(m["id"]) else {}),
     } for m in ms[:max_matters]]
     item_rows = [{
         "title": i.get("title") or "",
         "year": _year((i.get("meetings") or {}).get("meeting_date")),
         "summary": (i.get("plain_english_summary") or "")[:min(summary_chars, 300)],
+        **({"names_this_address": lines[i["id"]]} if lines and lines.get(i["id"]) else {}),
     } for i in its[:max_items] if not is_public_input(i) or i.get("plain_english_summary")]
     return matter_rows, item_rows, latest
 
 
-def build_input(p: dict, matters: dict[int, dict], items: dict[int, dict]) -> dict:
-    own_matters, own_items, _ = _records(p, matters, items, MAX_MATTERS, MAX_ITEMS, 500)
+def build_input(p: dict, matters: dict[int, dict], items: dict[int, dict], lines: dict[int, str] | None = None) -> dict:
+    own_matters, own_items, _ = _records(p, matters, items, MAX_MATTERS, MAX_ITEMS, 500, lines)
     if p.get("civic_number") != "":
         return {
             "address": p["address"],
