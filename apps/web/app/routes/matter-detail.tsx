@@ -62,6 +62,9 @@ import { crossNotes, writtenLetters } from "../lib/written";
 import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { sourcesFor } from "../services/sources.server";
 import { sourceLabel, tidyQuote, type Source } from "../lib/sources";
+
+/** The small pill the meeting page uses for its document and vote buttons. */
+const SOURCE_PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
 import { matterStatusVariant, quietSince } from "../lib/matter-status";
@@ -902,12 +905,14 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                             <p className="text-sm font-medium text-zinc-800"><TermText text={source.headline} /></p>
                             {source.quote && <blockquote className="mt-1 text-sm leading-relaxed text-zinc-600">“{tidyQuote(source.quote)}”</blockquote>}
                             {source.url && (
-                              <a href={source.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs text-brand-700 hover:underline">
-                                {source.title}<ExternalLink className="h-3 w-3" aria-hidden="true" />
-                              </a>
-                            )}
-                            {source.archive_url && source.archive_url !== source.url && (
-                              <a href={source.archive_url} target="_blank" rel="noopener noreferrer" className="ml-3 mt-1 inline-flex text-xs text-zinc-500 hover:text-brand-700 hover:underline">Archived copy</a>
+                              <p className="mt-2 flex flex-wrap items-center gap-1.5">
+                                <a href={source.url} target="_blank" rel="noopener noreferrer" className={SOURCE_PILL}>
+                                  <ExternalLink className="h-3 w-3" aria-hidden="true" />{source.title}
+                                </a>
+                                {source.archive_url && source.archive_url !== source.url && (
+                                  <a href={source.archive_url} target="_blank" rel="noopener noreferrer" className={SOURCE_PILL}>Archived copy</a>
+                                )}
+                              </p>
                             )}
                           </div>
                         </li>

@@ -26,6 +26,10 @@ export type TimelineEntry = {
   external?: boolean;
   /** An archived copy of an outside link (the Wayback Machine), for when the link dies. */
   archiveHref?: string | null;
+  /** The outside page's own title, for the link pill. */
+  linkTitle?: string | null;
+  /** A picture from this step's report (the topic's chosen one), shown beside it. */
+  image?: { url: string; alt: string } | null;
   topic?: { slug: string; title: string } | null;
   outcome?: { label: string; variant: "success" | "danger" | "warning" | "muted" } | null;
   /** data-review-entry key, so the review bar can outline the row ("item-12", "matter-5"). */
@@ -33,6 +37,9 @@ export type TimelineEntry = {
 };
 
 const ICONS = { step: Landmark, mention: MessageSquare, report: FileText, source: Newspaper, closed: Lock } as const;
+
+/** The small pill the meeting page uses for its document and vote buttons. */
+const PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
 
 const shortDate = (d: string) => formatDate(d, { year: "numeric", month: "short", day: "numeric" });
 
@@ -64,7 +71,6 @@ function Row({ entry: e, admin }: { entry: TimelineEntry; admin?: ReactNode }) {
         <span className="tabular-nums">{shortDate(e.date)}</span>
         <span className="inline-flex items-center gap-1"><Icon className="h-3.5 w-3.5" aria-hidden="true" />{e.label}</span>
         {e.outcome && <Badge variant={e.outcome.variant}>{e.outcome.label}</Badge>}
-        {e.external && <ExternalLink className="h-3 w-3" aria-label="Opens another site" />}
       </p>
       <p className={cn("mt-0.5 leading-snug text-zinc-900", strong ? "font-semibold" : "font-medium")}>
         <TermText text={e.headline} />
@@ -78,22 +84,37 @@ function Row({ entry: e, admin }: { entry: TimelineEntry; admin?: ReactNode }) {
       )}
     </>
   );
+  const linksBelow = e.external && e.href;
   const card = cn("block rounded-2xl px-5 py-3.5", outside ? "border border-dashed border-zinc-200 bg-surface/70" : "border border-zinc-200 bg-surface shadow-sm",
-    e.kind === "closed" && "border-dashed bg-zinc-50", e.href && "hover:bg-zinc-50");
+    e.kind === "closed" && "border-dashed bg-zinc-50", e.href && !linksBelow && "hover:bg-zinc-50");
+  const inner = e.image ? (
+    <div className="flex gap-4">
+      <div className="min-w-0 flex-1">{body}</div>
+      <img src={e.image.url} alt={e.image.alt} loading="lazy" className="hidden h-20 w-28 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
+    </div>
+  ) : body;
   return (
     <li id={`timeline-${e.key}`} className="relative scroll-mt-24 pl-7" {...(e.reviewKey ? { "data-review-entry": e.reviewKey } : {})}>
       <span className={cn("absolute left-0 top-4 h-[11px] w-[11px] rounded-full border-2 border-zinc-50", strong ? "bg-brand-600" : "bg-zinc-300")} />
-      {e.href ? (
-        e.external
-          ? <a href={e.href} target="_blank" rel="noopener noreferrer" className={card}>{body}</a>
-          : <Link to={e.href} className={card}>{body}</Link>
-      ) : <div className={card}>{body}</div>}
-      {(admin || e.archiveHref) && (
-        <div className="flex flex-wrap items-center gap-x-3 px-5 pt-1 text-xs">
-          {e.archiveHref && <a href={e.archiveHref} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-brand-700 hover:underline">Archived copy</a>}
-          {admin}
+      {e.href && !linksBelow ? <Link to={e.href} className={card}>{inner}</Link> : (
+        <div className={card}>
+          {inner}
+          {/* An outside page and its archived copy: the same small pills the meeting page uses for its documents. */}
+          {linksBelow && (
+            <p className="mt-2 flex flex-wrap items-center gap-1.5">
+              <a href={e.href!} target="_blank" rel="noopener noreferrer" className={PILL}>
+                <ExternalLink className="h-3 w-3" aria-hidden="true" />{e.linkTitle || "Read it"}
+              </a>
+              {e.archiveHref && (
+                <a href={e.archiveHref} target="_blank" rel="noopener noreferrer" className={PILL}>
+                  <FileText className="h-3 w-3" aria-hidden="true" />Archived copy
+                </a>
+              )}
+            </p>
+          )}
         </div>
       )}
+      {admin && <div className="px-5 pt-1 text-xs">{admin}</div>}
     </li>
   );
 }

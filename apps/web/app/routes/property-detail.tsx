@@ -71,7 +71,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     if (url) images[m.id] = url;
   }
   // One chronology for a lot: topic steps, other entries, annual reports, outside sources and closed meetings.
-  const timeline: TimelineEntry[] = result.isStreet ? [] : await propertyTimeline(getSupabaseAdminClient(), result.property as any, result.matters, result.items);
+  const timeline: TimelineEntry[] = result.isStreet ? [] : await propertyTimeline(getSupabaseAdminClient(), result.property as any, result.matters, result.items, documentImageUrl);
   return { ...result, images, timeline };
 }
 

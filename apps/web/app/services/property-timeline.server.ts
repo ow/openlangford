@@ -68,7 +68,8 @@ async function addressLines(supabase: SupabaseClient, property: { civic_number: 
   return out;
 }
 
-export async function propertyTimeline(supabase: SupabaseClient, property: { id: number; civic_number: string; street: string }, matters: any[], items: any[]): Promise<TimelineEntry[]> {
+export async function propertyTimeline(supabase: SupabaseClient, property: { id: number; civic_number: string; street: string }, matters: any[], items: any[],
+  imageUrl: (key: string | null | undefined) => string | null = () => null): Promise<TimelineEntry[]> {
   const propertyId = property.id;
   const matterIds = matters.map((m) => m.id as number);
   const byMatter = new Map<number, any>(matters.map((m) => [m.id, m]));
@@ -99,11 +100,15 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     meetingsSeen.set(meeting.id, meeting);
     const headline: string | undefined = m.meta?.timeline_headlines?.[String(it.id)];
     const outcome = outcomeOf(it.motions);
+    // The topic's chosen picture, on the step whose report it came from.
+    const pick = [m.meta?.images?.lead, m.meta?.images?.layout].find((img: any) => img?.agenda_item_id === it.id && img?.r2_key);
+    const url = pick ? imageUrl(pick.r2_key) : null;
     entries.push({
       key: `step-${it.id}`, date: meeting.meeting_date, kind: "step",
       label: outcome ? "Council decision" : /committee|commission|board/i.test(meeting.type || "") ? "Committee" : "Before Council",
       headline: headline || displayTitle(it.title), detail: lines.get(it.id) || (headline ? null : it.plain_english_summary || null), quoted: lines.has(it.id),
       href: `${meetingPath(meeting)}#item-${it.id}`, topic: { slug: m.slug, title: matterTitle(m) }, outcome,
+      image: url ? { url, alt: pick.report_title ? `From ${pick.report_title}` : "" } : null,
     });
   }
   for (const it of items as any[]) {
@@ -116,14 +121,14 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     });
   }
   for (const r of reports) {
-    entries.push({ key: `report-${r.id}`, date: `${r.year}-12-31`, kind: "report", label: `City annual report ${r.year}`, headline: tidyQuote(r.quote, 160), detail: null, href: r.url, external: true });
+    entries.push({ key: `report-${r.id}`, date: `${r.year}-12-31`, kind: "report", label: `City annual report ${r.year}`, headline: tidyQuote(r.quote, 160), detail: null, href: r.url, external: true, linkTitle: `Page ${r.page} of the report` });
   }
   const seen = new Set<number>();
   for (const s of [...ownSources, ...[...topicSources.values()].flat()]) {
     if (seen.has(s.id)) continue;
     seen.add(s.id);
     entries.push({ key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceLabel(s), headline: s.headline, detail: s.quote ? tidyQuote(s.quote) : null, href: s.url, external: !!s.url,
-      archiveHref: s.archive_url && s.archive_url !== s.url ? s.archive_url : null });
+      archiveHref: s.archive_url && s.archive_url !== s.url ? s.archive_url : null, linkTitle: s.title });
   }
   // A closed meeting about land on a night this address was before Council: the record shows a door closing.
   for (const meeting of meetingsSeen.values()) {
