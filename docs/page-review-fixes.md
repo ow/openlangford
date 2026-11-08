@@ -84,7 +84,15 @@ carries out fixes for the flags staff agreed with. This page explains where each
    - **A time limit:** all model calls in one fix share a 90 s deadline (`FIX_BUDGET_MS`). Past it the agent stops
      and the note says what is left. Review and writing calls time out after 30 s and retry once.
 
-6. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
+6. **Property pages have their own small agent** (`services/property-fix.server.ts`), like meeting pages. A
+   property page's own text is its lead (`properties.meta.summary`, written by the pipeline's property-summaries
+   stage); the rest is the topics and meeting items the pipeline linked to the address, each keyed on the page
+   (`matter-<id>`, `item-<id>`) so the check can flag one. The agent can unlink an entry that is about a different
+   address (hiding its `property_links` row, which the pipeline keeps hidden) or rewrite the lead from the records;
+   a lead it writes is locked (`meta.summary_locked`) so the stage keeps it, and the closing "Mentioned in council
+   meetings…" count line is kept from the old lead rather than guessed.
+
+7. **The page is left "fixed" or "needs work".** It gets a note of what changed and what needs a person.
 
 A fix finishes in one pass: the request returns when the page is done. While it runs, the page's status is `fixing`
 and the agent note says what the agent is doing ("Searching the City's records for 2 problems…", "Planning the

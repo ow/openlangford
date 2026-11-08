@@ -16,6 +16,7 @@ import { mergeFlat, moveItem, refreshMeetingLifecycles } from "./topic-moves.ser
 import type { StaffRole } from "../lib/auth.server";
 import { MOTION_RESULTS, addMotion, moveMotion } from "./motion-add.server";
 import { fixMeetingPage } from "./meeting-fix.server";
+import { fixPropertyPage } from "./property-fix.server";
 import { STAGE_LABELS, type StageChoice } from "../components/matter/timeline-step";
 
 /**
@@ -312,6 +313,8 @@ export const FIX_BUDGET_MS = 90_000;
 export async function fixPage(supabase: SupabaseClient, origin: string, path: string, requester: { id: string; staffRole: StaffRole }): Promise<"nothing_new" | "refiling" | void> {
   // A meeting page has its own, smaller agent (its text is the highlights and the items' summaries).
   if (/^\/meetings\/[^/]+$/.test(path)) return fixMeetingPage(supabase, origin, path, requester);
+  // A property page too: its lead and the entries linked to the address.
+  if (/^\/properties\/[^/]+$/.test(path)) return fixPropertyPage(supabase, origin, path, requester);
   const startedAt = Date.now();
   // Every model call in the fix shares this deadline: when it fires, in-flight calls are cancelled.
   const budget = AbortSignal.timeout(FIX_BUDGET_MS);

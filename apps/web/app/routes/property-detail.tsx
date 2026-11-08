@@ -20,6 +20,7 @@ import { metaDescription, pageMeta } from "../lib/page-meta";
 import { breadcrumbList, jsonLd, propertyPlace } from "../lib/structured-data";
 import { formatDate } from "../lib/utils";
 import { notFoundIfHidden } from "../services/page-visibility.server";
+import { documentImageUrl } from "../lib/document-images.server";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.property) return [{ title: `Property | ${SITE_NAME}` }];
@@ -61,7 +62,13 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const result = await getPropertyBySlug(getSupabaseAdminClient(), params.slug).catch((error) => { throw unavailable(error); });
   if (!result) throw new Response("Property Not Found", { status: 404 });
   await notFoundIfHidden(request, "properties", result.property.id);
-  return result;
+  // Each topic's picture from its staff report (the pipeline's pick, matters.meta.images), as a public URL.
+  const images: Record<number, string> = {};
+  for (const m of result.matters as any[]) {
+    const url = documentImageUrl(m.meta?.images?.lead?.r2_key ?? m.meta?.images?.layout?.r2_key);
+    if (url) images[m.id] = url;
+  }
+  return { ...result, images };
 }
 
 /** Admins remove a wrong link (the address parser misread a title). The pipeline keeps it hidden. */
@@ -98,7 +105,7 @@ function Unlink({ field, id, isStreet }: { field: "matter_id" | "agenda_item_id"
 const shortDate = (d: string | null | undefined) => (d ? formatDate(d, { year: "numeric", month: "short", day: "numeric" }) : "");
 
 export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
-  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity } = loaderData;
+  const { property, matters, items, nearby, lots, isStreet, streetSlug, activity, images } = loaderData;
   const isAdmin = !!(useRouteLoaderData("root") as { isAdmin?: boolean } | undefined)?.isAdmin;
   const geo = property.geo as { lat: number; lng: number } | null;
   const summary: string | undefined = (property as any).meta?.summary || undefined;
@@ -168,20 +175,32 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
               <ol className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {matters.map((m: any) => {
                   const variant = matterStatusVariant(m.status);
+                  const image = images?.[m.id];
+                  // Keyed for the review bar (matter-<id>): the check flags an entry by this key and the bar outlines it.
                   return (
-                    <li key={m.id}>
-                      <Link to={matterPath(m)} className="group block px-5 py-4 hover:bg-zinc-50">
-                        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums text-zinc-500">
-                          <span>
-                            {shortDate(m.first_seen)}
-                            {m.last_seen && m.last_seen !== m.first_seen ? ` – ${shortDate(m.last_seen)}` : ""}
-                          </span>
-                          {m.category && <span className="text-zinc-400">· {m.category}</span>}
-                          {variant && <Badge variant={variant}>{m.status}</Badge>}
-                        </p>
-                        <p className="mt-0.5 font-semibold leading-snug text-zinc-900 group-hover:text-brand-700">{matterTitle(m)}</p>
-                        {(m.meta?.status_line || m.plain_english_summary) && (
-                          <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{m.meta?.status_line || m.plain_english_summary}</p>
+                    <li key={m.id} id={`timeline-matter-${m.id}`} data-review-entry={`matter-${m.id}`}>
+                      <div>
+                      <Link to={matterPath(m)} className="group flex gap-4 px-5 py-4 hover:bg-zinc-50">
+                        <div className="min-w-0 flex-1">
+                          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs tabular-nums text-zinc-500">
+                            <span>
+                              {shortDate(m.first_seen)}
+                              {m.last_seen && m.last_seen !== m.first_seen ? ` – ${shortDate(m.last_seen)}` : ""}
+                            </span>
+                            {m.category && <span className="text-zinc-400">· {m.category}</span>}
+                            {variant && <Badge variant={variant}>{m.status}</Badge>}
+                          </p>
+                          <p className="mt-0.5 font-semibold leading-snug text-zinc-900 group-hover:text-brand-700">{matterTitle(m)}</p>
+                          {/* What it is, then where it stands: the topic's own summary and status line. */}
+                          {m.plain_english_summary && (
+                            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600">{(firstSentence(m.plain_english_summary) || m.plain_english_summary).replace(/([^.!?])$/, "$1.")}</p>
+                          )}
+                          {m.meta?.status_line && (
+                            <p className="mt-1 text-xs text-zinc-500">{m.meta.status_line}</p>
+                          )}
+                        </div>
+                        {image && (
+                          <img src={image} alt="" loading="lazy" className="hidden h-20 w-28 shrink-0 rounded-lg border border-zinc-200 object-cover sm:block" />
                         )}
                       </Link>
                       {isAdmin && (
@@ -189,6 +208,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                           <Unlink field="matter_id" id={m.id} isStreet={isStreet} />
                         </div>
                       )}
+                      </div>
                     </li>
                   );
                 })}
@@ -201,7 +221,8 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
               <SectionHeading title="Other mentions" icon={FileText} description="Other times this address came up in council meetings." />
               <ul className="divide-y divide-zinc-100 overflow-hidden rounded-2xl border border-zinc-200 bg-surface shadow-sm">
                 {items.map((item: any) => (
-                  <li key={item.id}>
+                  <li key={item.id} id={`timeline-item-${item.id}`} data-review-entry={`item-${item.id}`}>
+                    <div>
                     <Link to={`${meetingPath(item.meetings)}#item-${item.id}`} className="group block px-5 py-4 hover:bg-zinc-50">
                       <p className="text-xs tabular-nums text-zinc-500">
                         {shortDate(item.meetings?.meeting_date)} · {item.meetings?.title}
@@ -216,6 +237,7 @@ export default function PropertyDetail({ loaderData }: Route.ComponentProps) {
                         <Unlink field="agenda_item_id" id={item.id} isStreet={isStreet} />
                       </div>
                     )}
+                    </div>
                   </li>
                 ))}
               </ul>

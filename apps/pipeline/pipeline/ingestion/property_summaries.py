@@ -258,6 +258,8 @@ def is_property_stale(p: dict, version: str = PROPERTY_SUMMARY_VERSION) -> bool:
     from pipeline.stages import is_stale
 
     meta = p.get("meta") or {}
+    if meta.get("summary_locked"):  # a lead the site's fix agent wrote: never rewritten here
+        return False
     return eligible(p) and (
         not meta.get("summary")
         or is_stale(meta.get("summary_version"), version)
@@ -266,8 +268,10 @@ def is_property_stale(p: dict, version: str = PROPERTY_SUMMARY_VERSION) -> bool:
 
 
 def needs_clearing(p: dict) -> bool:
-    """A summary left over from when the property had more records (or wasn't known to be a resident's home)."""
-    return not eligible(p) and bool((p.get("meta") or {}).get("summary"))
+    """A summary left over from when the property had more records (or wasn't known to be a resident's home).
+    A lead the fix agent wrote (meta.summary_locked) stays."""
+    meta = p.get("meta") or {}
+    return not eligible(p) and bool(meta.get("summary")) and not meta.get("summary_locked")
 
 
 def load_inputs(supabase, props: list[dict]) -> dict[int, dict]:
@@ -402,7 +406,11 @@ def summarize(data: dict, closing: str = "") -> str:
 
 def summarize_properties(supabase, props: list[dict], *, write: bool = True, workers: int = 4) -> dict[int, str]:
     """Summarize ``props`` (rows from ``load_properties``). Model calls run in parallel; reads and
-    writes stay on the calling thread (the supabase client isn't thread-safe)."""
+    writes stay on the calling thread (the supabase client isn't thread-safe). A lead the site's fix agent
+    wrote (meta.summary_locked) is left alone."""
+    props = [p for p in props if not (p.get("meta") or {}).get("summary_locked")]
+    if not props:
+        return {}
     inputs = load_inputs(supabase, props)
 
     def one(p):

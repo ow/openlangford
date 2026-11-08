@@ -344,3 +344,13 @@ def test_no_retry_when_the_inputs_give_no_size(fake_ai):
     fake_ai.queue("generate", _summary("Council closed part of the road in 2019."))
     ps.summarize({"kind": "lot", "council_decisions_and_projects": [{"title": "Road closure", "summary": ""}]})
     assert len(fake_ai.calls) == 1
+
+
+def test_a_lead_the_fix_agent_wrote_is_neither_stale_nor_cleared():
+    from pipeline.ingestion.property_summaries import is_property_stale, needs_clearing, summarize_properties
+
+    locked = {"id": 1, "address": "1 Test St", "civic_number": "1", "records": [], "closing": "",
+              "meta": {"summary": "Staff's lead.", "summary_locked": {"by": "u", "at": "2026-11-08"}}}
+    assert is_property_stale(locked) is False
+    assert needs_clearing(locked) is False  # not eligible (no records), but locked stays
+    assert summarize_properties(None, [locked], write=False) == {}
