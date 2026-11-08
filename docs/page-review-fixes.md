@@ -187,8 +187,13 @@ The fix agent covers meeting pages too (`services/meeting-fix.server.ts`; `fixPa
 to it). A meeting page's own text is the highlights (`meetings.meta.highlights`: bullets with item links, and the
 description search results show) and each item's summary (`agenda_items.plain_english_summary`); titles, motions,
 votes and attendance are the record itself and are never edited. So the menu is: rewrite_item_summary,
-rewrite_highlight, remove_highlight, rewrite_description, no_change, cannot_fix (a wrong seconder or vote count, a
-document under the wrong item: a person's job, named exactly). Same flow as a topic page: investigate the agreed
+rewrite_highlight, remove_highlight, rewrite_description, set_item_start, no_change, cannot_fix (a wrong seconder or
+vote count, a document under the wrong item: a person's job, named exactly). set_item_start fixes a wrong "Watch
+discussion" time: the agent quotes the words spoken when the item begins, from a TIMED TRANSCRIPT block the plan
+gets (the flagged items' windows and ten minutes either side); the code finds that line in `transcript_segments`
+and takes its time, so the agent never types a number. The item starts there and the item before it ends there;
+a move that would put items out of order is refused. The times are marked `meta.manual.discussion_start_time` /
+`discussion_end_time`, which a re-ingest keeps (the alignment stage only ever fills empty times). Same flow as a topic page: investigate the agreed
 flags (keys `item-<id>`, or null for the page), plan in one call over the flagged items' records (every linked item's
 for a page-level problem), apply only rewrites whose quote is in those records, re-check each rewrite, write the note.
 

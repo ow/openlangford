@@ -27,16 +27,17 @@ export const MEETING_FIX_BUDGET_MS = 90_000;
 const DESCRIPTION_MAX = 155;
 
 const Action = z.object({
-  action: z.enum(["rewrite_item_summary", "rewrite_highlight", "remove_highlight", "rewrite_description", "no_change", "cannot_fix"]),
+  action: z.enum(["rewrite_item_summary", "rewrite_highlight", "remove_highlight", "rewrite_description", "set_item_start", "no_change", "cannot_fix"]),
   key: z.string().nullable().describe("The entry's key (item-<id>) for rewrite_item_summary, or the key of the flag answered; null for a highlight, the description or the whole page."),
   index: z.number().int().nullable().describe("rewrite_highlight and remove_highlight: the highlight's number as listed (0-based). Otherwise null."),
   new_text: z.string().nullable().describe("rewrite_item_summary: the item's new summary, one to three plain sentences, outcome first. rewrite_highlight: the new highlight, one sentence. rewrite_description: the new description, under 150 characters, starting with the date as the old one does. Otherwise null."),
-  source: z.string().nullable().describe("Where the action rewrites text: the record's own words that support it, quoted exactly, at most 250 characters. Otherwise null."),
+  source: z.string().nullable().describe("Where the action rewrites text: the record's own words that support it, quoted exactly, at most 250 characters. set_item_start: the words spoken at the moment the item begins, copied exactly from one TIMED TRANSCRIPT line (the text after the speaker's name, or a run of it at least 25 characters long). Otherwise null."),
   reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
 });
 const PlanSchema = z.object({ actions: z.array(Action) });
 
-type Item = { id: number; item_order: string | null; title: string | null; description: string | null; plain_english_summary: string | null; meta: Record<string, any> | null };
+type Item = { id: number; item_order: string | null; title: string | null; description: string | null; plain_english_summary: string | null; meta: Record<string, any> | null;
+  discussion_start_time: number | null; discussion_end_time: number | null };
 type Highlights = { bullets: string[]; links?: unknown[]; description?: string; version?: string; [k: string]: unknown };
 
 const itemOf = (key: string | null | undefined) => Number(key?.match(/^item-(\d+)$/)?.[1] ?? NaN);
@@ -75,6 +76,50 @@ export function dropHighlight(highlights: Highlights, index: number): Highlights
   return { ...highlights, bullets, links };
 }
 
+type Segment = { id?: number; start_time: number; speaker_name: string | null; text_content: string | null };
+const TRANSCRIPT_CHARS = 60_000;
+const clock = (s: number) => { const t = Math.max(0, Math.round(s)); const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), x = t % 60; return `${h}:${String(m).padStart(2, "0")}:${String(x).padStart(2, "0")}`; };
+
+/** The meeting's transcript with times, around the flagged items (their windows and ten minutes either side), one
+ * line a segment: "[1:04:36] Keith Yacucha: I'll move that council adopt…". What set_item_start quotes from. */
+export function timedTranscript(segments: Segment[], from: number, to: number): string {
+  const lines: string[] = [];
+  let used = 0;
+  for (const seg of segments) {
+    if (seg.start_time < from || seg.start_time > to || !seg.text_content) continue;
+    const line = `[${clock(seg.start_time)}] ${seg.speaker_name || "Speaker"}: ${squash(seg.text_content)}`;
+    if (used + line.length > TRANSCRIPT_CHARS) { lines.push("(the transcript goes on; ask for less)"); break; }
+    lines.push(line); used += line.length;
+  }
+  return lines.length ? `TIMED TRANSCRIPT (speaker names are a machine's guess; the time is when the line starts):\n${lines.join("\n")}` : "";
+}
+
+/** The transcript line the agent quoted: its words must be in one segment's text (or the segment's whole text in
+ * them), 25 characters or more; among several, the one nearest `near` seconds. Null when none. Exported for tests. */
+export function findSegment(segments: Segment[], quote: string | null | undefined, near: number): Segment | null {
+  const q = normal(quote || "");
+  if (q.length < 25) return null;
+  const hits = segments.filter((seg) => { const t = normal(seg.text_content || ""); return t.length >= 25 && (t.includes(q) || q.includes(t)); });
+  return hits.sort((a, b) => Math.abs(a.start_time - near) - Math.abs(b.start_time - near))[0] ?? null;
+}
+
+/** Moving an item's start to `at`: the item starts there and the item before it (the one whose window held that
+ * moment, or the previous one by start time) ends there. Null when the move would break the order of the items (the
+ * new start isn't after the previous item's start and before this item's end). Exported for tests. */
+export function moveItemStart(items: { id: number; discussion_start_time: number | null; discussion_end_time: number | null }[], itemId: number, at: number):
+  { id: number; discussion_start_time?: number; discussion_end_time?: number }[] | null {
+  const timed = items.filter((i) => i.discussion_start_time != null).sort((a, b) => a.discussion_start_time! - b.discussion_start_time!);
+  const idx = timed.findIndex((i) => i.id === itemId);
+  const item = items.find((i) => i.id === itemId);
+  if (!item) return null;
+  const prev = idx > 0 ? timed[idx - 1] : timed.filter((i) => i.id !== itemId && i.discussion_start_time! < at).at(-1) ?? null;
+  if (item.discussion_end_time != null && at >= item.discussion_end_time) return null;
+  if (prev && at <= prev.discussion_start_time!) return null;
+  const out: { id: number; discussion_start_time?: number; discussion_end_time?: number }[] = [{ id: itemId, discussion_start_time: at }];
+  if (prev) out.push({ id: prev.id, discussion_end_time: at });
+  return out;
+}
+
 export function meetingPlanPrompt(meeting: { title: string; meeting_date: string }, items: Item[], highlights: Highlights | null, description: string,
   flags: PageFlag[], note: string | null, records: string, findings: (string | undefined)[], noteFinding: string) {
   const itemLine = (i: Item) => `- [item-${i.id}] ${i.item_order ? `${i.item_order} · ` : ""}${squash(i.title || "")}\n  Summary now: ${squash(i.plain_english_summary || "") || "(none; the page shows the agenda's description instead)"}`;
@@ -102,6 +147,12 @@ What you can do:
 - remove_highlight: drop a highlight (index) the records don't support and that can't be made true by rewording.
 - rewrite_description: a new description, under ${DESCRIPTION_MAX} characters, starting with the date the way the
   old one does.
+- set_item_start: when an item's "Watch discussion" time is wrong (the item is shown as starting or lasting longer
+  than it did; a decision's video link falls inside another item's window): give the item's key and, in "source",
+  the words spoken at the moment the item begins, copied exactly from one TIMED TRANSCRIPT line (the chair calling
+  the item, or the first words about it). The item then starts at that line's time and the item before it ends
+  there. An item shown as lasting too long is fixed by setting the start of the item after it (give that item's
+  key). Only when the transcript is given below and the line is clearly that item's start.
 - no_change: when the editor asks a question and the answer is that the page is right as it is, or an agreed
   problem turns out not to be one. Say why in "reason", from the records. Give the key of the entry, or null.
 - cannot_fix: the problem is in the record itself (a wrong seconder or vote count, a document filed under the wrong
@@ -151,7 +202,7 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
     }
     const toResearch = agreed.filter((f) => !f.research && needsInvestigation(f)).length + (row?.note?.trim() ? 1 : 0);
     progress(toResearch ? `Reading the meeting's records and searching the City's records for ${toResearch === 1 ? "1 problem" : `${toResearch} problems`}…` : "Reading the meeting's records…");
-    const { data: itemRows } = await supabase.from("agenda_items").select("id, item_order, title, description, plain_english_summary, meta")
+    const { data: itemRows } = await supabase.from("agenda_items").select("id, item_order, title, description, plain_english_summary, meta, discussion_start_time, discussion_end_time")
       .eq("meeting_id", meeting.id).order("id");
     const items = (itemRows || []) as Item[];
     const meta = (meeting.meta || {}) as Record<string, any>;
@@ -163,6 +214,18 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
     const pageLevel = agreed.some((f) => !f.key) || !!row?.note;
     const linked = (highlightPoints({ meta }) || []).flatMap((p) => p.links.map((l) => l.agenda_item_id));
     const recordIds = [...new Set([...flaggedIds, ...(pageLevel ? (linked.length ? linked : items.map((i) => i.id)) : [])])];
+    // The transcript with times around the flagged items, for set_item_start (and for the plan to judge a time).
+    // A wrong window is fixed by moving a start: the flagged item's own, or the next item's (its end). So the next
+    // item by time is in scope too, and the transcript covers both.
+    const byTime = items.filter((i) => i.discussion_start_time != null).sort((a, b) => a.discussion_start_time! - b.discussion_start_time!);
+    const nextOf = (id: number) => { const i = byTime.findIndex((x) => x.id === id); return i >= 0 ? byTime[i + 1] ?? null : null; };
+    const timeScope = new Set(flaggedIds.flatMap((id) => [id, nextOf(id)?.id].filter((x): x is number => x != null)));
+    const flaggedItems = items.filter((i) => timeScope.has(i.id) && i.discussion_start_time != null);
+    const span = flaggedItems.length ? { from: Math.min(...flaggedItems.map((i) => i.discussion_start_time!)) - 600,
+      to: Math.max(...flaggedItems.map((i) => i.discussion_end_time ?? i.discussion_start_time! + 1800)) + 600 } : null;
+    const segments: Segment[] = span ? ((await supabase.from("transcript_segments").select("id, start_time, speaker_name, text_content")
+      .eq("meeting_id", meeting.id).gte("start_time", span.from).lte("start_time", span.to).order("start_time").limit(3000)).data || []) as Segment[] : [];
+    const transcript = span ? timedTranscript(segments, span.from, span.to) : "";
     const [covered, investigations] = await Promise.all([
       itemRecords(supabase, recordIds),
       investigate(supabase, { path, topic: `${meeting.title}, ${meeting.meeting_date}`, flags: agreed.map((flag) => ({ flag, index: flags.indexOf(flag) })),
@@ -173,7 +236,7 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${brief(i.finding!.explanation, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"), await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
-    const records = [covered.text, researchText].filter(Boolean).join("\n\n");
+    const records = [covered.text, transcript, researchText].filter(Boolean).join("\n\n");
     if (!records) return finish("needs_work", "The agent found no records for this meeting to work from. This one needs a person.");
 
     progress("Planning the fix…");
@@ -215,6 +278,39 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
         claims.push({ id: `item-${id}`, key, text: `Summary of item ${id}: ${text}` });
         done.push(`${capital(entryLabel(key, flags))} now reads: "${text}"`);
         await log("agent:rewrite_item_summary", { agenda_item_id: String(id), text: text.slice(0, 400), reason: step.reason.slice(0, 300) });
+        continue;
+      }
+      if (step.action === "set_item_start") {
+        const id = itemOf(step.key);
+        const item = items.find((i) => i.id === id);
+        // The flag this fixes: the item's own, or the flag on the item before it (whose end this start is).
+        const prevId = byTime[byTime.findIndex((x) => x.id === id) - 1]?.id;
+        const flagKey = step.key && agreedKeys.has(step.key) ? step.key : prevId != null && agreedKeys.has(`item-${prevId}`) ? `item-${prevId}` : null;
+        if (!item || !flagKey) { left.push(`${step.reason} (that entry isn't flagged on this page, so nothing changed)`); continue; }
+        const seg = findSegment(segments, step.source, item.discussion_start_time ?? 0);
+        if (!seg) { left.push(`${step.reason} (the words given aren't a line of the transcript, so the time stays; press Fix again)`); continue; }
+        const moves = moveItemStart(items, id, seg.start_time);
+        if (!moves) { left.push(`${step.reason} (starting at ${clock(seg.start_time)} would put the item out of order with its neighbours, so the time stays)`); continue; }
+        let failed = false;
+        for (const move of moves) {
+          const row = items.find((i) => i.id === move.id)!;
+          const rowMeta = { ...(row.meta || {}) };
+          const manual = { ...(rowMeta.manual || {}) };
+          for (const col of ["discussion_start_time", "discussion_end_time"] as const) {
+            if (move[col] === undefined) continue;
+            manual[col] = { by: requester.id, at, auto: manual[col]?.auto ?? row[col] ?? null, source: squash(step.source || "").slice(0, 300) };
+          }
+          const { error } = await supabase.from("agenda_items").update({ ...("discussion_start_time" in move ? { discussion_start_time: move.discussion_start_time } : {}),
+            ...("discussion_end_time" in move ? { discussion_end_time: move.discussion_end_time } : {}), meta: { ...rowMeta, manual } }).eq("id", move.id);
+          if (error) { failed = true; break; }
+          if (move.discussion_start_time !== undefined) row.discussion_start_time = move.discussion_start_time;
+          if (move.discussion_end_time !== undefined) row.discussion_end_time = move.discussion_end_time;
+        }
+        if (failed) { left.push(`${step.reason} (couldn't save the new time)`); continue; }
+        fixedKeys.add(flagKey);
+        claims.push({ id: `start-${id}`, key: flagKey, text: `Item ${id}'s discussion starts at ${clock(seg.start_time)}, when this was said: "${squash(seg.text_content || "")}"` });
+        done.push(`${flagKey === step.key ? capital(entryLabel(flagKey, flags)) : `The item after ${entryLabel(flagKey, flags)}`} now starts at ${clock(seg.start_time)}${moves.length > 1 ? ", where the item before it ends" : ""}: ${brief(step.reason, 160)}`);
+        await log("agent:set_item_start", { agenda_item_id: String(id), start: String(seg.start_time), reason: step.reason.slice(0, 300) });
         continue;
       }
       if (step.action === "rewrite_highlight" || step.action === "remove_highlight") {

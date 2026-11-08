@@ -2454,7 +2454,8 @@ class MeetingIngester:
                         item_data.pop(identity_key, None)
                     item_data["meta"] = {**(old_item.get("meta") or {}), **{key: value for key, value in item_data["meta"].items() if value is not None}}
                     # A summary a person wrote (the fix agent on the meeting page) stays; the refined one is kept as auto.
-                    item_data = keep_manual_text(old_item.get("meta"), item_data, {"summary": "plain_english_summary"})
+                    item_data = keep_manual_text(old_item.get("meta"), item_data, {"summary": "plain_english_summary",
+                        "discussion_start_time": "discussion_start_time", "discussion_end_time": "discussion_end_time"})
                     # Staff moved this item to another topic (or off every topic): re-processing keeps it there.
                     if staff_matter(old_item.get("meta")):
                         item_data["matter_id"] = locked_matter_id(old_item.get("meta"), item_data.get("matter_id"))

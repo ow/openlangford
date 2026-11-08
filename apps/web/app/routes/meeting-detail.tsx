@@ -730,7 +730,7 @@ function MeetingDetailContent({ loaderData }: any) {
               <section id="decisions" className="scroll-mt-20">
                 <SectionHeading
                   title="Decisions"
-                  description={substantiveMotions.length > 0 ? "What council voted on, in agenda order." : undefined}
+                  description={substantiveMotions.length > 0 ? "What council voted on, in the order they came up." : undefined}
                 />
                 <MeetingDecisions agendaItems={agendaItems} onWatch={hasVideo ? watchAt : undefined} />
               </section>
