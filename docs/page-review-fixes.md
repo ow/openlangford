@@ -15,8 +15,11 @@ carries out fixes for the flags staff agreed with. This page explains where each
    - a related topic: whether it is the same project;
    - a statement of fact: what the record actually says.
 
-   The investigations run at the same time, each capped at 4 turns, all within 40 s and the fix's deadline. A flag
-   the page check already researched keeps that finding. Each finding (the record's words and its ref) goes into the
+   The investigations run at the same time, each capped at 6 turns, all within 40 s and the fix's deadline. Each
+   session knows the deadline and gives its finding from what it has read when 15 s are left, rather than being cut
+   off with nothing. A flag the page check already researched keeps that finding. Flags the plan can judge from the
+   records it already holds are not researched (`needsInvestigation`): a related topic (the plan reads that topic's
+   own records), a duplicate, and a page-level problem such as a cut-off sentence. Each finding (the record's words and its ref) goes into the
    plan beside its flag. The note lists them under "Evidence behind the changes, from the City's records": each bullet is the record a change above rests on, named by the entry's date, not work left undone.
 3. **The agent plans the fix.** It reads the page's records and its findings and plans actions from a fixed menu,
    using one AI call on the `review` stage. The records include:
@@ -145,6 +148,14 @@ The fix before this change made 5 calls, about 26 s and $0.02: the plan, two wri
 the re-check. A typical two-flag fix now takes about 40 to 50 s and costs about $0.07. A four-flag fix investigates
 in about the same time, since the flags run in parallel and stop at 40 s. It costs about $0.10 to $0.12. Both fit
 within the 90 s deadline.
+
+Measured again on 2026-11-08 (`/matters/building-bylaw-violation-notice`, two flags: an unrelated related topic and
+a cut-off description): the fix took 65 s, of which the investigation 41 s. It ran to its 40 s cap because the
+turns carried everything read so far (72,000 to 76,000 tokens by the fifth turn, 7 to 13 s a call) and the last turn
+was cancelled by the deadline, unanswered. Neither flag needed the records searched: the plan held both topics'
+records already. Hence the skip rule above, the deadline-aware finish, and a reading budget of 400,000 characters
+per session instead of 1.5 million. The summary check and the re-check stay in sequence: the re-check reads the
+summary as the check left it.
 
 ## Signed bylaws as a record
 

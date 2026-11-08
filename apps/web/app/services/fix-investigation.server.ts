@@ -39,6 +39,18 @@ export type Investigation = {
 
 const itemOf = (key: string | null) => Number(key?.match(/^(?:agenda|mention|background)-(\d+)$/)?.[1] ?? NaN);
 
+/**
+ * Whether a flag needs the records searched before the plan. The plan already holds the topic's own records, the
+ * records of every related topic and of any topic holding an accepted entry, so a related-topic flag, a duplicate
+ * and a page-level problem (a cut-off sentence, a stale description) are judged from those: researching them again
+ * costs the whole investigation's time (run 2026-11-08: a related-topic question ran to the 40 s cap unanswered)
+ * and finds nothing the plan lacks.
+ */
+export function needsInvestigation(flag: PageFlag): boolean {
+  if (/^related-\d+$/.test(flag.key ?? "")) return false;
+  return flag.problem !== "duplicate" && flag.problem !== "page_issue";
+}
+
 /** The question to research for one agreed flag, by the kind of problem and the kind of entry. */
 export function investigationQuestion(flag: PageFlag, topic: string): string {
   const key = flag.key ?? "";
@@ -75,9 +87,10 @@ export function investigationLine(i: Investigation): string {
 }
 
 /**
- * Investigates every agreed flag without a stored finding (a check that raised a flag on a statement already
- * researched it) and the editor's note, in parallel. Never throws: an investigation that fails or runs out of time
- * leaves its finding null, and the plan goes ahead with the records it has.
+ * Investigates every agreed flag that needs it (`needsInvestigation`) and has no stored finding (a check that raised
+ * a flag on a statement already researched it), and the editor's note, in parallel. Each research session knows the
+ * deadline, so it gives its finding from what it has read rather than being cut off. Never throws: an investigation
+ * that fails or runs out of time leaves its finding null, and the plan goes ahead with the records it has.
  */
 export async function investigate(supabase: SupabaseClient, input: {
   path: string; topic: string; flags: { flag: PageFlag; index: number }[]; note: string | null; signal: AbortSignal;
@@ -85,8 +98,10 @@ export async function investigate(supabase: SupabaseClient, input: {
   /** Records every investigation starts with (the topic's signed bylaws). */
   records?: string;
 }): Promise<Investigation[]> {
-  const signal = AbortSignal.any([input.signal, AbortSignal.timeout(input.timeoutMs ?? INVESTIGATION_MS)]);
-  const jobs: Investigation[] = input.flags.map(({ flag, index }) => ({
+  const timeoutMs = input.timeoutMs ?? INVESTIGATION_MS;
+  const deadline = Date.now() + timeoutMs;
+  const signal = AbortSignal.any([input.signal, AbortSignal.timeout(timeoutMs)]);
+  const jobs: Investigation[] = input.flags.filter(({ flag }) => flag.research || needsInvestigation(flag)).map(({ flag, index }) => ({
     index, key: flag.key, question: investigationQuestion(flag, input.topic), finding: flag.research ?? null,
   }));
   if (input.note?.trim()) {
@@ -104,7 +119,7 @@ export async function investigate(supabase: SupabaseClient, input: {
       input.records ? `THE TOPIC'S SIGNED BYLAWS:\n${input.records}` : "",
       own ? `THE ENTRY'S OWN RECORDS (item:${item}):\n${own}` : ""].filter(Boolean).join("\n");
     try {
-      const found = await research(supabase, job.question, context, input.maxTurns ?? INVESTIGATION_TURNS, signal, ANSWER);
+      const found = await research(supabase, job.question, context, input.maxTurns ?? INVESTIGATION_TURNS, signal, ANSWER, deadline);
       job.finding = { verdict: found.verdict, explanation: found.explanation, quote: found.quote, ref: found.ref };
     } catch (error) {
       if (!signal.aborted) console.error("[page-fix] investigation failed:", error instanceof Error ? error.message : error);
