@@ -38,7 +38,7 @@ import "./app.css";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { PostHogProvider } from "./components/posthog-provider";
-import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/google-analytics";
+import { GA_INIT_SCRIPT, GA_MEASUREMENT_ID, GoogleAnalyticsPageViews, gaEnabledFor } from "./components/site-analytics";
 import { getStaffRole } from "./lib/auth.server";
 import { ReportIssue, ReportsEnabled } from "./components/report-issue";
 import { isReviewable } from "./lib/page-review-types";

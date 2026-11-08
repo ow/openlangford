@@ -5,7 +5,7 @@ function postHogCookieName(key: string | undefined) {
   return key ? `ph_${key.replace(/\+/g, "PL").replace(/\//g, "SL").replace(/=/g, "EQ")}_posthog` : null;
 }
 
-// Google Analytics' two first-party cookies for this site's one measurement id (components/google-analytics.tsx).
+// Google Analytics' two first-party cookies for this site's one measurement id (components/site-analytics.tsx).
 const GOOGLE_ANALYTICS_COOKIES = new Set(["_ga", "_ga_78T8YKCH1Y"]);
 
 /** The configured analytics cookies (PostHog's and Google Analytics'), by exact name: nothing else. */
