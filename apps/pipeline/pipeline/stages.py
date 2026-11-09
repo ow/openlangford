@@ -41,7 +41,7 @@ from pipeline.ingestion.matter_images import IMAGES_VERSION
 from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
 from pipeline.ingestion.meeting_highlights import HIGHLIGHTS_VERSION
 from pipeline.ingestion.motion_headlines import HEADLINE_VERSION
-from pipeline.ingestion.item_summaries import ITEM_SUMMARY_VERSION
+from pipeline.ingestion.item_summaries import ITEM_SUMMARY_VERSION, skip_item
 from pipeline.ingestion.participation_minutes import MINUTES_VERSION as MINUTES_PARTICIPATION_VERSION
 from pipeline.ingestion.participation_person_links import LINKS_VERSION as PARTICIPATION_LINKS_VERSION
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
@@ -673,22 +673,28 @@ def _item_summary_stamps(ctx: StageContext) -> list[dict]:
     when any item still needs its first summary, else the oldest version among the ones it wrote."""
     rows = paginate(
         lambda: ctx.supabase.table("agenda_items")
-        .select("id, meeting_id, summary:plain_english_summary, version:meta->>item_summary_version, manual:meta->manual")
+        .select("id, meeting_id, title, item_order, summary:plain_english_summary, version:meta->>item_summary_version, "
+                "text:meta->>item_summary_text, manual:meta->manual")
         .order("id")
     )
-    rows = [r for r in rows if not r["manual"] and (r["version"] is not None or not (r["summary"] or "").strip())]
-    empty = [r["id"] for r in rows if r["version"] is None]
+    # The same items the stage would write: not a person's edit, the catch-all container or housekeeping, and either blank
+    # or a summary this stage wrote (its stamp, and the stamped text still on the item).
+    def ours(r: dict) -> bool:
+        return r["version"] is not None and (r["summary"] or "") == r["text"]
+
+    rows = [r for r in rows if not skip_item({"title": r["title"], "item_order": r["item_order"], "meta": {"manual": r["manual"]}})
+            and (ours(r) or not (r["summary"] or "").strip())]
+    empty = [r["id"] for r in rows if not ours(r)]
     with_decision: set[int] = set()
-    for start in range(0, len(empty), 200):
-        for m in (
-            ctx.supabase.table("motions").select("agenda_item_id, disposition")
-            .in_("agenda_item_id", empty[start:start + 200]).not_.is_("result", "null").execute().data or []
-        ):
+    for start in range(0, len(empty), 100):
+        chunk = empty[start:start + 100]
+        for m in paginate(lambda: ctx.supabase.table("motions").select("agenda_item_id, disposition")
+                          .in_("agenda_item_id", chunk).not_.is_("result", "null").order("id")):
             if m.get("disposition") != "Procedural":
                 with_decision.add(m["agenda_item_id"])
     stamps: dict[int, list] = {}
     for r in rows:
-        if r["version"] is not None:
+        if ours(r):
             stamps.setdefault(r["meeting_id"], []).append(r["version"])
         elif r["id"] in with_decision:
             stamps.setdefault(r["meeting_id"], []).append(None)
@@ -716,7 +722,7 @@ def run_item_summaries(ctx: StageContext):
     done = 0
     for meeting_id in ids:
         try:  # one meeting failing shouldn't skip the rest
-            done += len(summarize_meeting_items(ctx.supabase, meeting_id))
+            done += len(summarize_meeting_items(ctx.supabase, meeting_id, force=ctx.force))
         except Exception as e:
             print(f"  [!] Item summaries for meeting {meeting_id} failed: {e}")
     if ids:

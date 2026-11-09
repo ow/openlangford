@@ -43,6 +43,9 @@ describe("what a step says under its title", () => {
     expect(stepNote({ stage: "Final approval.", title: "Latecomer payment interest-rate bylaw made final", summary: "Adopted the bylaw establishing interest rates for latecomer payments." }))
       .toEqual({ kind: "summary", text: "Adopted the bylaw establishing interest rates for latecomer payments." });
   });
+  it("ignores a blank summary, which would otherwise hide the stage line behind an empty row", () => {
+    expect(stepNote({ stage: "Introduced to council.", title: "Council gave first reading", summary: "   " })).toEqual({ kind: "stage", text: "Introduced to council." });
+  });
   it("ignores a summary that only repeats the title", () => {
     expect(stepNote({ stage: null, title: "Council adopts the policy", summary: "Council adopts the policy." })).toBeNull();
   });

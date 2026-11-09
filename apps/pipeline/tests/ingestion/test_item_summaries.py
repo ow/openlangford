@@ -1,7 +1,7 @@
 import json
 
 from pipeline.ingestion import item_summaries as mod
-from pipeline.ingestion.item_summaries import ITEM_SUMMARY_VERSION, ItemSummaries, _clean, _others, _prompt, decided, is_container, needs_summary
+from pipeline.ingestion.item_summaries import ITEM_SUMMARY_VERSION, ItemSummaries, _clean, _others, _prompt, decided, is_container, is_housekeeping, needs_summary, summarize_meeting_items, written_here
 
 
 def motion(result="CARRIED", disposition="Substantive", text="That Council adopt Bylaw No. 1334."):
@@ -33,9 +33,27 @@ def test_the_catch_all_container_is_not_an_item_to_summarise():
 
 
 def test_its_own_older_summaries_are_rewritten_but_current_ones_are_not():
-    mine = lambda v: {"id": 1, "plain_english_summary": "Adopted the bylaw.", "meta": {"item_summary_version": v}}
+    mine = lambda v: {"id": 1, "plain_english_summary": "Adopted the bylaw.", "meta": {"item_summary_version": v, "item_summary_text": "Adopted the bylaw."}}
     assert needs_summary(mine("0"), [motion()])
     assert not needs_summary(mine(ITEM_SUMMARY_VERSION), [motion()])
+    assert needs_summary(mine(ITEM_SUMMARY_VERSION), [motion()], force=True)
+
+
+def test_a_refiners_text_that_replaced_ours_on_re_ingest_is_never_rewritten():
+    # Re-ingest merges the old meta back, so the stamp survives while the refiner's new text replaces ours.
+    item = {"id": 1, "plain_english_summary": "Gave three readings to the bylaw.", "meta": {"item_summary_version": "0", "item_summary_text": "Adopted the bylaw."}}
+    assert not written_here(item)
+    assert not needs_summary(item, [motion()])
+    assert not needs_summary(item, [motion()], force=True)
+
+
+def test_agenda_minutes_and_adjournment_items_get_no_summary():
+    for title in ["APPROVAL OF THE AGENDA", "2. APPROVAL OF THE AGENDA", "Approval of the Agenda", "ADOPTION OF THE MINUTES",
+                  "ADOPTION OF THE MINUTES — Planning, Zoning & Affordable Housing Committee", "ADOPTION OF MINUTES", "ADJOURNMENT", "Call to Order", "Recess"]:
+        assert is_housekeeping({"title": title}), title
+        assert not needs_summary({"id": 1, "title": title, "plain_english_summary": None, "meta": {}}, [motion(disposition=None)]), title
+    for title in ["BYLAW NO. 1334 (File No. 3900-1334)", "Establish Interest Rate Bylaw for Latecomer Agreements", "Minutes of Settlement for 3680 Trans-Canada Highway"]:
+        assert not is_housekeeping({"title": title}), title
 
 
 def test_clean_drops_unusable_summaries_and_ends_each_with_a_full_stop():
@@ -75,3 +93,146 @@ def test_the_stage_is_registered_after_the_decisions_it_reads():
 
     names = [s.name for s in STAGES]
     assert names.index("item-summaries") > names.index("motion-headlines")
+
+
+# ---- Against a small fake of the database client ----
+
+class _Result:
+    def __init__(self, data):
+        self.data = data
+
+
+class _Query:
+    """Just enough of the supabase-py query builder: filters, paging and updates over lists of dict rows."""
+
+    def __init__(self, db, table):
+        self.db, self.table, self.rows, self.patch, self.lo, self.hi = db, table, list(db[table]), None, 0, None
+
+    def select(self, *a, **k): return self
+    def order(self, *a, **k): return self
+    def eq(self, col, val): self.rows = [r for r in self.rows if r.get(col) == val]; return self
+    def in_(self, col, vals): self.rows = [r for r in self.rows if r.get(col) in vals]; return self
+    def is_(self, col, val): self.rows = [r for r in self.rows if (r.get(col) is None) == (val == "null")]; return self
+    def or_(self, expr): self.rows = [r for r in self.rows if not (r.get("plain_english_summary") or "").strip()]; return self
+    def range(self, lo, hi): self.lo, self.hi = lo, hi; return self
+    def update(self, patch): self.patch = patch; return self
+
+    @property
+    def not_(self):
+        outer = self
+
+        class Not:
+            def is_(self, col, val): outer.rows = [r for r in outer.rows if (r.get(col) is None) != (val == "null")]; return outer
+
+        return Not()
+
+    def execute(self):
+        if self.patch is not None:
+            for r in self.rows:
+                r.update(self.patch)
+            return _Result([dict(r) for r in self.rows])
+        rows = self.rows[self.lo:(self.hi + 1) if self.hi is not None else None]
+        return _Result([dict(r) for r in rows])
+
+
+class _DB:
+    def __init__(self, **tables):
+        self.tables = tables
+
+    def table(self, name): return _Query(self.tables, name)
+
+
+def _meeting_db(items, motions):
+    return _DB(agenda_items=items, motions=motions, meetings=[{"id": 825, "title": "Regular Council", "meeting_date": "2011-07-18"}], matters=[])
+
+
+def _with_model(monkeypatch, summaries):
+    monkeypatch.setattr(mod.ai, "json", lambda *a, **k: ItemSummaries.model_validate({"items": [{"id": i, "summary": s} for i, s in summaries.items()]}))
+
+
+def _item(i, **over):
+    return {"id": i, "meeting_id": 825, "matter_id": None, "title": f"BYLAW NO. {i}", "item_order": None, "plain_english_summary": None, "meta": {}, **over}
+
+
+def test_writing_stamps_the_summary_and_the_text_and_counts_only_what_was_saved(monkeypatch):
+    db = _meeting_db([_item(1), _item(2, title="APPROVAL OF THE AGENDA"), _item(3, item_order="official-recorded-motions")],
+                     [{"agenda_item_id": i, **motion(disposition=None)} for i in (1, 2, 3)])
+    _with_model(monkeypatch, {1: "Adopted the latecomer interest-rate bylaw.", 2: "Approved the agenda.", 3: "Agreed to many things at once."})
+    out = summarize_meeting_items(db, 825)
+    assert out == {1: "Adopted the latecomer interest-rate bylaw."}  # housekeeping and the container never reach the model's answer
+    row = db.tables["agenda_items"][0]
+    assert row["plain_english_summary"] == "Adopted the latecomer interest-rate bylaw."
+    assert row["meta"] == {"item_summary_version": ITEM_SUMMARY_VERSION, "item_summary_text": "Adopted the latecomer interest-rate bylaw."}
+    assert db.tables["agenda_items"][1]["plain_english_summary"] is None and db.tables["agenda_items"][2]["plain_english_summary"] is None
+
+
+def test_a_blank_summary_is_filled_and_a_dry_run_saves_nothing(monkeypatch):
+    db = _meeting_db([_item(1, plain_english_summary="  ")], [{"agenda_item_id": 1, **motion()}])
+    _with_model(monkeypatch, {1: "Adopted the latecomer interest-rate bylaw."})
+    assert summarize_meeting_items(db, 825, dry_run=True) == {1: "Adopted the latecomer interest-rate bylaw."}
+    assert db.tables["agenda_items"][0]["plain_english_summary"] == "  "
+    assert summarize_meeting_items(db, 825) == {1: "Adopted the latecomer interest-rate bylaw."}
+    assert db.tables["agenda_items"][0]["plain_english_summary"] == "Adopted the latecomer interest-rate bylaw."
+
+
+def test_a_summary_that_landed_while_the_model_ran_is_left_alone(monkeypatch):
+    db = _meeting_db([_item(1)], [{"agenda_item_id": 1, **motion()}])
+
+    def model(*a, **k):
+        db.tables["agenda_items"][0]["plain_english_summary"] = "A person's text."  # written during the model call
+        return ItemSummaries.model_validate({"items": [{"id": 1, "summary": "Adopted the latecomer interest-rate bylaw."}]})
+
+    monkeypatch.setattr(mod.ai, "json", model)
+    assert summarize_meeting_items(db, 825) == {}
+    assert db.tables["agenda_items"][0]["plain_english_summary"] == "A person's text."
+
+
+def test_meta_another_stage_set_during_the_model_call_survives_the_write(monkeypatch):
+    db = _meeting_db([_item(1, meta={"key_quotes": []})], [{"agenda_item_id": 1, **motion()}])
+
+    def model(*a, **k):
+        db.tables["agenda_items"][0]["meta"] = {"key_quotes": [], "staff_stage": {"stage": "adopted"}}
+        return ItemSummaries.model_validate({"items": [{"id": 1, "summary": "Adopted the latecomer interest-rate bylaw."}]})
+
+    monkeypatch.setattr(mod.ai, "json", model)
+    summarize_meeting_items(db, 825)
+    assert db.tables["agenda_items"][0]["meta"]["staff_stage"] == {"stage": "adopted"}
+
+
+def _ctx(items, motions, force=False):
+    from types import SimpleNamespace
+    return SimpleNamespace(supabase=_DB(agenda_items=items, motions=motions), force=force)
+
+
+def _stamp_item(i, meeting, **over):
+    return {"id": i, "meeting_id": meeting, "title": f"BYLAW NO. {i}", "item_order": None, "summary": None, "version": None, "text": None, "manual": None, **over}
+
+
+def test_the_backfill_lists_a_meeting_once_there_is_something_to_write():
+    from pipeline.stages import _item_summary_stamps, stale_item_summaries
+
+    items = [
+        _stamp_item(1, 10),                                              # needs its first summary
+        _stamp_item(2, 11, summary="Refiner text."),                      # the refiner's: not ours, nothing to do
+        _stamp_item(3, 12, item_order="official-recorded-motions"),       # the container: never written, so never listed
+        _stamp_item(4, 13, title="APPROVAL OF THE AGENDA"),               # housekeeping
+        _stamp_item(5, 14, summary="Ours.", version="0", text="Ours."),   # ours, older version
+        _stamp_item(6, 15, summary="Refiner text.", version="0", text="Ours."),  # the stamp outlived our text
+    ]
+    motions = [{"agenda_item_id": i, "result": "CARRIED", "disposition": None} for i in range(1, 7)]
+    ctx = _ctx(items, motions)
+    listed = {r["id"]: r for r in _item_summary_stamps(ctx)}
+    assert set(listed) == {10, 14}
+    assert listed[10]["missing"] and not listed[14]["missing"]
+    assert stale_item_summaries(ctx) == [10, 14]
+
+
+def test_the_backfill_reads_every_page_of_decisions(monkeypatch):
+    from pipeline import postgrest
+    from pipeline.stages import _item_summary_stamps
+
+    monkeypatch.setattr(postgrest, "PAGE_SIZE", 3)
+    monkeypatch.setattr("pipeline.stages.paginate", lambda build: postgrest.paginate(build, page_size=3))
+    items = [_stamp_item(i, 10 + i) for i in range(1, 8)]
+    motions = [{"agenda_item_id": i, "result": "CARRIED", "disposition": None} for i in range(1, 8)]
+    assert {r["id"] for r in _item_summary_stamps(_ctx(items, motions))} == {11, 12, 13, 14, 15, 16, 17}

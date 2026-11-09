@@ -14,6 +14,7 @@ It only fills an empty summary, so nothing the refiner or a person wrote is touc
 from __future__ import annotations
 
 import json
+import re
 
 from pydantic import BaseModel
 from supabase import Client
@@ -21,6 +22,7 @@ from supabase import Client
 from pipeline import ai
 from pipeline.ai import glossary
 from pipeline.ingestion.record_sources import RECORD_RULE
+from pipeline.postgrest import paginate
 
 ITEM_SUMMARY_VERSION = "1"
 BATCH_SIZE = 20
@@ -57,24 +59,40 @@ def decided(motion: dict) -> bool:
     return bool(motion.get("result")) and motion.get("disposition") != "Procedural"
 
 
+# Agenda items that are housekeeping, not business: "Approval of the agenda", "Adoption of the minutes", "Adjournment".
+# History catch-up motions have no disposition, so the Procedural filter can't catch them; their titles are plain.
+HOUSEKEEPING = re.compile(r"^\W*(?:\d+\.?\s*)?(?:(?:adoption|approval) of (?:the )?(?:\w+\s+)?(?:agenda|minutes)\b|adjourn|call to order|recess\b)", re.I)
+
+
+def is_housekeeping(item: dict) -> bool:
+    return bool(HOUSEKEEPING.search(item.get("title") or ""))
+
+
+def skip_item(item: dict) -> bool:
+    """Never a summary for: a person's edit, the catch-all container, or a housekeeping item."""
+    return bool((item.get("meta") or {}).get("manual")) or is_container(item) or is_housekeeping(item)
+
+
 def is_container(item: dict) -> bool:
     """The history catch-up's catch-all for decisions it couldn't file under an item: not an agenda item to summarise."""
     return item.get("item_order") == "official-recorded-motions" or (item.get("title") or "").lower().startswith("official recorded motions")
 
 
 def written_here(item: dict) -> bool:
-    """A summary this stage wrote (it carries the stage's stamp), as opposed to the refiner's or a person's."""
-    return bool((item.get("meta") or {}).get("item_summary_version"))
-
-
-def needs_summary(item: dict, motions: list[dict]) -> bool:
-    """Items to write: no summary of their own, or one this stage wrote under an older version; never a person's edit
-    and never the refiner's text. Each needs at least one decision."""
+    """The summary on the item is the text this stage wrote: it carries the stage's stamp AND the stamped text still
+    matches. A re-ingest merges the old meta back, so the stamp can outlive the text when the refiner writes a new one."""
     meta = item.get("meta") or {}
-    if meta.get("manual") or is_container(item):
+    return bool(meta.get("item_summary_version")) and (item.get("plain_english_summary") or "") == meta.get("item_summary_text")
+
+
+def needs_summary(item: dict, motions: list[dict], *, force: bool = False) -> bool:
+    """Items to write: no summary of their own, or one this stage wrote under an older version (any version with
+    `force`); never a person's edit, the container, housekeeping, or the refiner's text. Each needs a decision."""
+    if skip_item(item):
         return False
+    meta = item.get("meta") or {}
     has_text = bool((item.get("plain_english_summary") or "").strip())
-    if has_text and not (written_here(item) and meta.get("item_summary_version") != ITEM_SUMMARY_VERSION):
+    if has_text and not (written_here(item) and (force or meta.get("item_summary_version") != ITEM_SUMMARY_VERSION)):
         return False
     return any(decided(m) for m in motions)
 
@@ -131,24 +149,21 @@ def _days(date: str) -> int:
         return 0
 
 
-def summarize_meeting_items(supabase: Client, meeting_id: int, *, dry_run: bool = False) -> dict[int, str]:
-    """Write the missing summaries for one meeting's items. Returns {item_id: summary}."""
+def summarize_meeting_items(supabase: Client, meeting_id: int, *, dry_run: bool = False, force: bool = False) -> dict[int, str]:
+    """Write the missing summaries for one meeting's items. Returns {item_id: summary} for the ones actually saved
+    (with `dry_run`, the ones it would write). `force` also rewrites this stage's own summaries at the current version."""
     items = (
         supabase.table("agenda_items").select("id, title, item_order, matter_id, meeting_id, plain_english_summary, meta")
         .eq("meeting_id", meeting_id).order("id").execute().data
     ) or []
-    items = [i for i in items if not (i.get("meta") or {}).get("manual") and not is_container(i)
-             and (not (i.get("plain_english_summary") or "").strip() or (written_here(i) and i["meta"].get("item_summary_version") != ITEM_SUMMARY_VERSION))]
+    items = [i for i in items if not skip_item(i)]
     if not items:
         return {}
-    motions = (
-        supabase.table("motions").select("agenda_item_id, text_content, result, disposition")
-        .in_("agenda_item_id", [i["id"] for i in items]).not_.is_("result", "null").order("id").execute().data
-    ) or []
+    motions = _motions(supabase, [i["id"] for i in items])
     by_item: dict[int, list[dict]] = {}
     for m in motions:
         by_item.setdefault(m["agenda_item_id"], []).append(m)
-    items = [i for i in items if needs_summary(i, by_item.get(i["id"], []))]
+    items = [i for i in items if needs_summary(i, by_item.get(i["id"], []), force=force)]
     if not items:
         return {}
 
@@ -161,18 +176,14 @@ def summarize_meeting_items(supabase: Client, meeting_id: int, *, dry_run: bool 
     if matter_ids:
         for row in supabase.table("matters").select("id, title, plain_english_summary").in_("id", matter_ids).execute().data or []:
             matters[row["id"]] = row
-        rows = (
-            supabase.table("agenda_items").select("id, matter_id, meeting_id, meetings!inner(meeting_date)").in_("matter_id", matter_ids).order("id").execute().data
-        ) or []
+        rows = paginate(lambda: supabase.table("agenda_items").select("id, matter_id, meeting_id, meetings!inner(meeting_date)").in_("matter_id", matter_ids).order("id"))
         for r in rows:
             siblings.setdefault(r["matter_id"], []).append(r)
             mt = r.get("meetings")
             dates[r["id"]] = (mt[0] if isinstance(mt, list) else mt or {}).get("meeting_date") or ""
         sibling_ids = [r["id"] for r in rows]
-        for start in range(0, len(sibling_ids), 200):
-            for m in (supabase.table("motions").select("agenda_item_id, text_content, result, disposition")
-                      .in_("agenda_item_id", sibling_ids[start:start + 200]).not_.is_("result", "null").order("id").execute().data or []):
-                sibling_motions.setdefault(m["agenda_item_id"], []).append(m)
+        for m in _motions(supabase, sibling_ids):
+            sibling_motions.setdefault(m["agenda_item_id"], []).append(m)
 
     prompts = []
     for i in items:
@@ -188,13 +199,30 @@ def summarize_meeting_items(supabase: Client, meeting_id: int, *, dry_run: bool 
     for start in range(0, len(prompts), BATCH_SIZE):
         result = ai.json(_prompt(prompts[start:start + BATCH_SIZE]), stage="writing", schema=ItemSummaries, system=SYSTEM)
         written.update({k: v for k, v in _clean(result).items() if k in {i["id"] for i in items}})
-    if not dry_run:
-        by_id = {i["id"]: i for i in items}
-        for item_id, summary in written.items():
-            meta = {**(by_id[item_id].get("meta") or {}), "item_summary_version": ITEM_SUMMARY_VERSION}
-            # Only over what was there when read (nothing, or this stage's older text): a refine or a person's text that
-            # landed meanwhile stays.
-            before = by_id[item_id].get("plain_english_summary")
-            query = supabase.table("agenda_items").update({"plain_english_summary": summary, "meta": meta}).eq("id", item_id).eq("meeting_id", meeting_id)
-            (query.eq("plain_english_summary", before) if before else query.is_("plain_english_summary", "null")).execute()
-    return written
+    if dry_run:
+        return written
+    by_id = {i["id"]: i for i in items}
+    saved: dict[int, str] = {}
+    for item_id, summary in written.items():
+        # The model calls took a while: read the item's meta again now, so a key another stage set meanwhile (a hand-set
+        # stage, participation) isn't written back as it was.
+        fresh = (supabase.table("agenda_items").select("meta").eq("id", item_id).execute().data or [{}])[0].get("meta") or {}
+        meta = {**fresh, "item_summary_version": ITEM_SUMMARY_VERSION, "item_summary_text": summary}
+        # Only over what was there when read (nothing or blank, or this stage's own text): a refine or a person's text
+        # that landed meanwhile stays.
+        before = by_id[item_id].get("plain_english_summary")
+        query = supabase.table("agenda_items").update({"plain_english_summary": summary, "meta": meta}).eq("id", item_id).eq("meeting_id", meeting_id)
+        query = query.eq("plain_english_summary", before) if (before or "").strip() else query.or_("plain_english_summary.is.null,plain_english_summary.eq.")
+        if query.execute().data:
+            saved[item_id] = summary
+    return saved
+
+
+def _motions(supabase: Client, item_ids: list[int]) -> list[dict]:
+    """Decided motions for these items, read in pages (the API returns at most 1000 rows a request)."""
+    out: list[dict] = []
+    for start in range(0, len(item_ids), 100):
+        chunk = item_ids[start:start + 100]
+        out.extend(paginate(lambda: supabase.table("motions").select("agenda_item_id, text_content, result, disposition")
+                            .in_("agenda_item_id", chunk).not_.is_("result", "null").order("id")))
+    return out

@@ -63,7 +63,7 @@ const plain = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 /** What a step says under its title. The item's own summary when it has one that adds to the title; otherwise the
  * stage's plain-language line, unless that only repeats the title; otherwise nothing. */
 export function stepNote({ stage, title, summary }: { stage: string | null; title: string; summary?: string | null }): { kind: "summary" | "stage"; text: string } | null {
-  if (summary && plain(summary) !== plain(title)) return { kind: "summary", text: summary };
+  if (summary?.trim() && plain(summary) !== plain(title)) return { kind: "summary", text: summary };
   const stageText = stageLineFor(stage, title);
   return stageText ? { kind: "stage", text: stageText } : null;
 }
