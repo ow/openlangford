@@ -58,7 +58,7 @@ Each prompt appends the matching block from `shared/glossary.json` (`pipeline/ai
 | Register | Prompts |
 |---|---|
 | record | `ai_refiner.py` (meeting ingest), `motion_summaries.py`, `summary.py` (meeting summary regeneration) |
-| resident | `meeting_highlights.py`, `matter_summaries.py` and its web port `topic-summaries.server.ts` (the block is named in `shared/prompts/topic-summaries.json`), `property_summaries.py`, `motion_headlines.py`, `langford_bylaws.py`, the Q&A answer in `rag.server.ts` |
+| resident | `meeting_highlights.py`, `matter_summaries.py` and its web port `topic-summaries.server.ts` (the block is named in `shared/prompts/topic-summaries.json`), `property_summaries.py`, `motion_headlines.py`, `item_summaries.py`, `langford_bylaws.py`, the Q&A answer in `rag.server.ts` |
 
 When editing a prompt, decide which layer it is before changing its wording. Moving a record-layer prompt to plain language breaks the checks that read it; copying record-layer wording into a resident-layer prompt breaks the guide. When a glossary `we_write` line changes, bump `shared/glossary.json` `version` and the version of each resident-register stage, then run them with `--stale`.
 

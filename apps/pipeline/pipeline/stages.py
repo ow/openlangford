@@ -41,6 +41,7 @@ from pipeline.ingestion.matter_images import IMAGES_VERSION
 from pipeline.ingestion.matter_summaries import SUMMARY_VERSION
 from pipeline.ingestion.meeting_highlights import HIGHLIGHTS_VERSION
 from pipeline.ingestion.motion_headlines import HEADLINE_VERSION
+from pipeline.ingestion.item_summaries import ITEM_SUMMARY_VERSION
 from pipeline.ingestion.participation_minutes import MINUTES_VERSION as MINUTES_PARTICIPATION_VERSION
 from pipeline.ingestion.participation_person_links import LINKS_VERSION as PARTICIPATION_LINKS_VERSION
 from pipeline.ingestion.participation_summaries import PARTICIPATION_VERSION
@@ -665,6 +666,62 @@ def _motion_headline_stamps(ctx: StageContext) -> list[dict]:
         oldest = None if missing else min(versions, key=_version_key)
         out.append({"id": meeting_id, "headline_version": oldest, "missing": missing})
     return out
+
+
+def _item_summary_stamps(ctx: StageContext) -> list[dict]:
+    """One row per meeting with an item this stage should write (no summary and a decision) or has written: `missing`
+    when any item still needs its first summary, else the oldest version among the ones it wrote."""
+    rows = paginate(
+        lambda: ctx.supabase.table("agenda_items")
+        .select("id, meeting_id, summary:plain_english_summary, version:meta->>item_summary_version, manual:meta->manual")
+        .order("id")
+    )
+    rows = [r for r in rows if not r["manual"] and (r["version"] is not None or not (r["summary"] or "").strip())]
+    empty = [r["id"] for r in rows if r["version"] is None]
+    with_decision: set[int] = set()
+    for start in range(0, len(empty), 200):
+        for m in (
+            ctx.supabase.table("motions").select("agenda_item_id, disposition")
+            .in_("agenda_item_id", empty[start:start + 200]).not_.is_("result", "null").execute().data or []
+        ):
+            if m.get("disposition") != "Procedural":
+                with_decision.add(m["agenda_item_id"])
+    stamps: dict[int, list] = {}
+    for r in rows:
+        if r["version"] is not None:
+            stamps.setdefault(r["meeting_id"], []).append(r["version"])
+        elif r["id"] in with_decision:
+            stamps.setdefault(r["meeting_id"], []).append(None)
+    out = []
+    for meeting_id, versions in stamps.items():
+        missing = any(v is None for v in versions)
+        out.append({"id": meeting_id, "item_summary_version": None if missing else min(versions, key=_version_key), "missing": missing})
+    return out
+
+
+def stale_item_summaries(ctx: StageContext) -> list[int]:
+    return select_stale(_item_summary_stamps(ctx), "item_summary_version", ITEM_SUMMARY_VERSION)
+
+
+def run_item_summaries(ctx: StageContext):
+    from pipeline.ingestion.item_summaries import summarize_meeting_items
+
+    def missing() -> list[int]:
+        return sorted(r["id"] for r in _item_summary_stamps(ctx) if ctx.force or r["missing"])
+
+    ids = _choose(ctx, "item-summaries", from_meetings=lambda: list(ctx.meeting_ids or []), backfill=missing)
+    if ctx.dry_run:
+        _preview("meetings to write missing item summaries for", ids)
+        return None
+    done = 0
+    for meeting_id in ids:
+        try:  # one meeting failing shouldn't skip the rest
+            done += len(summarize_meeting_items(ctx.supabase, meeting_id))
+        except Exception as e:
+            print(f"  [!] Item summaries for meeting {meeting_id} failed: {e}")
+    if ids:
+        print(f"  [Item summaries] {done} summary(ies) across {len(ids)} meeting(s)")
+    return {"meetings": len(ids), "summaries": done}
 
 
 def stale_motion_headlines(ctx: StageContext) -> list[int]:
@@ -1436,6 +1493,13 @@ STAGES: list[Stage] = [
         description="Short newspaper-style headline per decided, non-procedural motion (home page lead). --target is a meeting id.",
         run=run_motion_headlines, when="post_ingest", scope="meeting", version=HEADLINE_VERSION,
         stale=stale_motion_headlines,
+    ),
+    Stage(
+        name="item-summaries",
+        description="One-line summary for agenda items that have a decision but no summary (history catch-up items), from the item's "
+                    "own record and the topic's other decisions; fills empty summaries only. --target is a meeting id.",
+        run=run_item_summaries, when="post_ingest", scope="meeting", version=ITEM_SUMMARY_VERSION,
+        depends_on=("motion-headlines",), stale=stale_item_summaries,
     ),
     Stage(
         name="meeting-highlights",
