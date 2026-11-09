@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { THEME_SCRIPT } from "./lib/theme";
+import { ThemeSync } from "./components/theme-sync";
 import { bannerNotice } from "./lib/notices";
 import { civicToday } from "./lib/council-terms";
 import { getSearchBudgetForDisplay } from "./services/search-budget.server";
@@ -192,6 +193,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
       </head>
       <body className="bg-surface text-zinc-900 antialiased">
+        <ThemeSync />
         {children}
         <ScrollRestoration />
         <Scripts />
