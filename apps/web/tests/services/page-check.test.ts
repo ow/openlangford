@@ -9,6 +9,25 @@ const html = `<html><head><title>Flight Cannabis | Open Langford</title>
 <li id="timeline-background-2"><div><span>Part of <a>Renewal</a></span><p>Minutes &amp; more</p><svg><text>icon</text></svg></div></li>
 </ol></main></body></html>`;
 
+describe("readPage on a timeline with years", () => {
+  const page = (rows: string) => `<html><head><title>T</title></head><body><main><h1>A topic</h1><div>
+    <section aria-label="2026"><h3>2026</h3><ol>${rows}</ol></section></div></main></body></html>`;
+
+  it("ends a year's last row where its list ends, so the next year's heading is not part of it", () => {
+    const html = `<html><head><title>T</title></head><body><main><h1>A topic</h1>
+      <section aria-label="2026"><h3>2026</h3><ol><li id="timeline-source-1" class="x">First row about the site</li><li id="timeline-source-2">Second row</li></ol></section>
+      <section aria-label="2024"><h3>2024</h3><ol><li id="timeline-source-3">Third row</li></ol></section></main></body></html>`;
+    const entries = readPage(html).entries;
+    expect(entries.map((e) => e.key)).toEqual(["source-1", "source-2", "source-3"]);
+    expect(entries[1].text).toBe("Second row");
+    expect(entries[0].text).toBe("First row about the site");
+  });
+
+  it("still reads a page with no years", () => {
+    expect(readPage(page('<li id="timeline-agenda-4">Only row</li>')).entries).toEqual([{ key: "agenda-4", text: "Only row" }]);
+  });
+});
+
 describe("readPage", () => {
   it("reads the title, heading, description and each timeline entry by its key", () => {
     const page = readPage(html);

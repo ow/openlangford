@@ -7,6 +7,7 @@
  * editor confirmed the link. Otherwise the related topic stays in the Background list, one click away.
  */
 
+import type { Outcome } from "./timeline-entry";
 import { writtenLetters } from "./written";
 
 // City-wide bylaws that nearly every application cites; they never identify a project (pipeline CITY_WIDE_BYLAWS).
@@ -97,6 +98,17 @@ const hasSpeakers = (item: any) => Boolean(item.meta?.participation?.speakers?.l
  * bylaw. The folded item's documents join the step it folds into (``folded``); both records stay on the topic.
  * A public hearing, or anything with speakers or letters, is a step of its own and never folded.
  */
+/** How a night's decisions on an entry went, as one badge: defeated if any was, else postponed, else passed; null when
+ * nothing was decided. Shared by every timeline, so a decision looks the same wherever it is shown. */
+export function outcomeOf(motions: { result?: string | null }[] | null | undefined): Outcome | null {
+  const results = (motions || []).map((m) => m.result || "");
+  if (!results.length) return null;
+  if (results.some((r) => /defeated|failed|lost/i.test(r))) return { label: "Defeated", variant: "danger" };
+  if (results.some((r) => /defer|tabled|postpone|refer/i.test(r))) return { label: "Postponed", variant: "warning" };
+  if (results.some((r) => /carried|passed|approved|adopted/i.test(r))) return { label: "Passed", variant: "success" };
+  return null;
+}
+
 export function foldSameMeetingSteps<T extends Entry & { folded?: any[] }>(entries: T[], headlines: Record<string, string> = {}): T[] {
   const primary = entries.filter((e) => e.kind === "primary" && e.item?.meeting_id != null);
   const stage = (e: T) => readingStage(`${headlines[String(e.item.id)] || ""} ${motionText(e.item)}`);

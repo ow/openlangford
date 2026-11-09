@@ -71,7 +71,12 @@ export function readPage(html: string): ReadPage {
     // A Related topics card is one flat list item: it ends with its own </li>, before the timeline that follows.
     const close = m[1].startsWith("related-") ? html.indexOf("</li>", from) : -1;
     if (close > from && (next === undefined || close < next)) next = close;
-    return { key: m[1], text: plain(html.slice(from, next)) };
+    // The last row of a year ends where its year's list does: the next year's heading is not part of it
+    // (components/timeline/chrome.tsx closes every year with "</ol></section>").
+    let slice = html.slice(from, next);
+    const yearEnd = slice.indexOf("</ol></section>");
+    if (yearEnd >= 0) slice = slice.slice(0, yearEnd);
+    return { key: m[1], text: plain(slice) };
   }).filter(e => e.text);
   const mainStart = html.search(/<main\b/i);
   const main = html.match(/<main\b[^>]*>([\s\S]*)<\/main>/i)?.[1] || html;

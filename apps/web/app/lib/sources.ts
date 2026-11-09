@@ -5,6 +5,7 @@
  */
 
 import { formatDate } from "./utils";
+import type { TimelineEntry } from "./timeline-entry";
 
 export type SourceOrigin = "city" | "press" | "other";
 
@@ -119,4 +120,19 @@ export function publisherFor(url: string): { publisher: string; origin: SourceOr
 export function tidyQuote(q: string | null | undefined, max = 320): string {
   const flat = (q || "").replace(/\s+/g, " ").trim().replace(/^[“"']+|[”"']+$/g, "").trim();
   return flat.length > max ? flat.slice(0, max - 1).replace(/\s+\S*$/, "") + "…" : flat;
+}
+
+/** A source as a row on a timeline (an address's or a topic's): the label says who said it, the quote is its own
+ * words, and a link, an archive copy, a video, pictures and the small-row flag come with it. `urlFor` turns a stored
+ * picture key into its public address (server-side: lib/document-images.server). */
+export function sourceTimelineEntry(s: Source, urlFor: (key: string | null | undefined) => string | null): TimelineEntry {
+  const video = youtubeId(s.url);
+  return {
+    key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceByline(s), dateLabel: s.date_label || null,
+    headline: s.headline, detail: s.quote ? tidyQuote(s.quote, 700) : null, href: s.url, external: !!s.url,
+    archiveHref: s.archive_url && s.archive_url !== s.url ? s.archive_url : null,
+    linkTitle: video ? "Watch on YouTube" : s.publisher, linkHint: s.title, compact: s.compact === true || s.compact === "true",
+    images: sourceImages(s.images, urlFor),
+    video: video ? { id: video, title: s.title } : null,
+  };
 }

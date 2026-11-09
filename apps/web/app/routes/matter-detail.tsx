@@ -3,7 +3,7 @@ import { TermText } from "../components/term";
 import { hintPlan } from "../lib/glossary";
 import { SITE_NAME } from "../lib/site-name";
 import { labelSpeakerRoles } from "../services/speaker-roles.server";
-import { collapseListedReadings, foldSameMeetingSteps } from "../lib/timeline-story";
+import { collapseListedReadings, foldSameMeetingSteps, outcomeOf } from "../lib/timeline-story";
 import { getStaffRole } from "../lib/auth.server";
 import type { Route } from "./+types/matter-detail";
 import {
@@ -50,7 +50,6 @@ import {
   Clock,
   Info,
   MapPin,
-  ExternalLink, Newspaper,
 } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { SectionHeading } from "../components/ui/section-heading";
@@ -59,13 +58,14 @@ import { displayTitle, matterTitle } from "../lib/display-text";
 import { bylawLead, bylawStatus } from "../lib/bylaw-summary";
 import { ParticipationList, speakersAbout } from "../components/meeting/participation-list";
 import { crossNotes, writtenLetters } from "../lib/written";
-import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
+import { TimelineStep } from "../components/matter/timeline-step";
 import { sourcesFor } from "../services/sources.server";
-import { sourceByline, tidyQuote, youtubeId, type Source } from "../lib/sources";
-import { VideoEmbed } from "../components/video-embed";
+import { sourceTimelineEntry, type Source } from "../lib/sources";
+import { YearTimeline, FadedRow, RailItem, Disc } from "../components/timeline/chrome";
+import { EntryRow } from "../components/timeline/entry-rows";
+import { PullQuote } from "../components/pull-quote";
 
 /** The small pill the meeting page uses for its document and vote buttons. */
-const SOURCE_PILL = "inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-brand-200 hover:text-brand-700";
 import { getDocumentTypeLabel } from "../lib/document-types";
 import { MattersMap } from "../components/matters-map";
 import { matterStatusVariant, quietSince } from "../lib/matter-status";
@@ -423,7 +423,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       documentsPromise,
       timed("matter-roles", labelSpeakerRoles(supabase, [matter, story])),
     ]);
-    return { matter, matterDocuments, matterEvidence, story, images, properties, sameSite, sources };
+    // Sources from outside the record, as timeline rows (their pictures resolved to public URLs here).
+    const sourceRows = (sources as Source[]).map((s) => sourceTimelineEntry(s, documentImageUrl));
+    return { matter, matterDocuments, matterEvidence, story, images, properties, sameSite, sourceRows };
   } catch (error) {
     throw loaderFailure(error, "Matter Not Found");
   }
@@ -431,7 +433,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function MatterDetail({ loaderData }: Route.ComponentProps) {
   if ("removed" in loaderData) return <RemovedTopic {...loaderData.removed} />;
-  const { matter, matterDocuments, matterEvidence, story, images, properties = [], sameSite = [], sources = [] } = loaderData;
+  const { matter, matterDocuments, matterEvidence, story, images, properties = [], sameSite = [], sourceRows = [] } = loaderData;
 
   // Sort agenda items by meeting date
   const timeline = [...(matter.agenda_items || [])].sort(
@@ -530,7 +532,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
     // An annual report covers its year, so it sits at the year's end.
     ...(story.reports || []).map((report: ReportMention) => ({ kind: "report" as const, key: `report-${report.id}`, date: `${report.year}-12-31`, report })),
     // A source from outside the record (a City release, a news report), on the day it says the thing happened.
-    ...(sources as Source[]).map((source) => ({ kind: "source" as const, key: `source-${source.id}`, date: source.happened_on, source })),
+    ...sourceRows.map((row) => ({ kind: "source" as const, key: row.key, date: row.date, row })),
   ].sort(
     (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime(),
   ) as any[], matter.meta?.timeline_headlines || {});
@@ -863,144 +865,97 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
               </div>
             ) : (
               <>
-                <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-zinc-200">
-                  {timelineSteps.map((entry: any) => {
+                <YearTimeline rows={timelineSteps} dateOf={(e: any) => e.date}>
+                  {(entry: any) => {
                     // Staff-approved wording for a linked entry (the fix agent, quoting the record) replaces the generated text.
                     const override: { line?: string; heading?: string } | undefined = matter.meta?.entry_lines?.[entry.key];
                     if (entry.kind === "report") {
                       const report: ReportMention = entry.report;
                       return (
-                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
-                          <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
-                            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-                              <span className="tabular-nums">{report.year}</span>
-                              <span className="text-zinc-300">·</span>
-                              {report.url ? (
-                                <a href={report.url} target="_blank" rel="noopener noreferrer" className="hover:text-brand-700">
-                                  City annual report, page {report.page}
-                                </a>
-                              ) : <span>City annual report, page {report.page}</span>}
-                            </div>
-                            {override?.heading && <p className="mb-1 text-sm font-medium text-zinc-700">{override.heading}</p>}
-                            {override?.line ? (
-                              <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
-                            ) : (
-                              <blockquote className="border-l-2 border-brand-200 pl-3 text-sm italic leading-relaxed text-zinc-700">“{cleanQuote(report.quote)}”</blockquote>
-                            )}
-                          </div>
-                        </li>
+                        <EntryRow key={entry.key} entry={{
+                          key: entry.key, date: entry.date, dateLabel: String(report.year), kind: "report", label: "City annual report",
+                          lead: override?.heading || null, headline: override?.line || cleanQuote(report.quote), quoted: !override?.line,
+                          href: report.url, external: !!report.url, linkTitle: `Page ${report.page} of the report`,
+                        }} />
                       );
                     }
-                    if (entry.kind === "source") {
-                      const source: Source = entry.source;
-                      return (
-                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
-                          <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
-                            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-                              <span className="tabular-nums">{source.date_label || formatDate(source.happened_on)}</span>
-                              <span className="text-zinc-300">·</span>
-                              <span className="inline-flex items-center gap-1"><Newspaper className="h-3.5 w-3.5" aria-hidden="true" />{sourceByline(source)}</span>
-                            </div>
-                            <p className="text-sm font-medium text-zinc-800"><TermText text={source.headline} /></p>
-                            {source.quote && <blockquote className="mt-2 border-l-2 border-brand-200 pl-3 text-sm italic leading-relaxed text-zinc-700">“{tidyQuote(source.quote, 700)}”</blockquote>}
-                            {youtubeId(source.url) && <VideoEmbed id={youtubeId(source.url)!} title={source.title} className="mt-2" />}
-                            {source.url && (
-                              <p className="mt-2 flex flex-wrap items-center gap-1.5">
-                                <a href={source.url} target="_blank" rel="noopener noreferrer" title={source.title} className={`${SOURCE_PILL} max-w-full whitespace-nowrap`}>
-                                  <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{youtubeId(source.url) ? "Watch on YouTube" : source.publisher}</span>
-                                </a>
-                                {source.archive_url && source.archive_url !== source.url && (
-                                  <a href={source.archive_url} target="_blank" rel="noopener noreferrer" className={SOURCE_PILL}>Archived copy</a>
-                                )}
-                              </p>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    }
+                    // A source from outside the record (a City release, a news report): the same row an address's timeline draws.
+                    if (entry.kind === "source") return <EntryRow key={entry.key} entry={entry.row} />;
                     if (entry.kind === "mention") {
                       const item = entry.item;
                       return (
-                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
-                          <span className="absolute left-0 top-5 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                          <div className="rounded-2xl border border-dashed border-zinc-200 bg-surface/70 px-5 py-4">
-                            <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-                              <Link to={meetingPath({ id: item.meeting_id, slug: item.meetings?.slug })} className="tabular-nums hover:text-brand-700">
-                                {formatDate(item.meetings?.meeting_date)}
-                              </Link>
-                              <span className="text-zinc-300">·</span>
-                              {entry.relatedMatter ? (
-                                <span>Part of <Link to={matterPath(entry.relatedMatter)} className="font-medium text-zinc-700 hover:text-brand-700">{matterTitle(entry.relatedMatter)}</Link></span>
-                              ) : item.linkSource === "name_mention" ? (
-                                // Only mentioned here: the other item is context, the quote is the entry.
-                                <span>
-                                  {mentionLabel(item.title) === "Discussed in another item" ? "Mentioned" : mentionLabel(item.title)}
-                                  {!/^public participation$/i.test((item.title || "").trim()) && <> during <span className="italic">{displayTitle(item.title)}</span></>}
-                                </span>
-                              ) : <span>{mentionLabel(item.title)}</span>}
-                            </div>
-                            {override?.heading ? (
-                              <p className="mb-1 text-sm font-medium text-zinc-700">{override.heading}</p>
-                            ) : (entry.relatedMatter || (item.linkQuote && item.linkSource !== "name_mention")) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
-                            {override?.line ? (
-                              <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
-                            ) : judgedSpeakers(item).length > 0 ? (
-                              // Public comment judged speaker by speaker: only those who spoke about this topic.
-                              <ParticipationList speakers={judgedSpeakers(item)} note={notes.speaker} className="mt-1" />
-                            ) : item.linkQuote && !quoteIsTitle(item.linkQuote, item.title) ? (
-                              // Found by name: the passage that names this matter, not the item's own summary.
-                              <blockquote className="text-sm leading-relaxed text-zinc-600">“{cleanQuote(item.linkQuote)}”</blockquote>
-                            ) : (() => {
-                              const about = speakersAbout(item.meta?.participation, aboutMatter, matterIds);
-                              return about.length > 0 ? (
-                                <ParticipationList speakers={about} note={notes.speaker} className="mt-1" />
-                              ) : (
-                                item.plain_english_summary && (
-                                  <p className="text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>
-                                )
-                              );
-                            })()}
+                        <FadedRow key={entry.key} id={entry.key}>
+                          <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                            <Link to={meetingPath({ id: item.meeting_id, slug: item.meetings?.slug })} className="tabular-nums hover:text-brand-700">
+                              {formatDate(item.meetings?.meeting_date)}
+                            </Link>
+                            <span className="text-zinc-300">·</span>
+                            {entry.relatedMatter ? (
+                              <span>Part of <Link to={matterPath(entry.relatedMatter)} className="font-medium text-zinc-700 hover:text-brand-700">{matterTitle(entry.relatedMatter)}</Link></span>
+                            ) : item.linkSource === "name_mention" ? (
+                              // Only mentioned here: the other item is context, the quote is the entry.
+                              <span>
+                                {mentionLabel(item.title) === "Discussed in another item" ? "Mentioned" : mentionLabel(item.title)}
+                                {!/^public participation$/i.test((item.title || "").trim()) && <> during <span className="italic">{displayTitle(item.title)}</span></>}
+                              </span>
+                            ) : <span>{mentionLabel(item.title)}</span>}
                           </div>
-                        </li>
+                          {override?.heading ? (
+                            <p className="mb-1 text-sm font-medium text-zinc-700">{override.heading}</p>
+                          ) : (entry.relatedMatter || (item.linkQuote && item.linkSource !== "name_mention")) && <p className="mb-1 text-sm font-medium text-zinc-700">{displayTitle(item.title)}</p>}
+                          {override?.line ? (
+                            <p className="text-sm leading-relaxed text-zinc-600">{override.line}</p>
+                          ) : judgedSpeakers(item).length > 0 ? (
+                            // Public comment judged speaker by speaker: only those who spoke about this topic.
+                            <ParticipationList speakers={judgedSpeakers(item)} note={notes.speaker} className="mt-1" />
+                          ) : item.linkQuote && !quoteIsTitle(item.linkQuote, item.title) ? (
+                            // Found by name: the passage that names this matter, not the item's own summary.
+                            <PullQuote>“{cleanQuote(item.linkQuote)}”</PullQuote>
+                          ) : (() => {
+                            const about = speakersAbout(item.meta?.participation, aboutMatter, matterIds);
+                            return about.length > 0 ? (
+                              <ParticipationList speakers={about} note={notes.speaker} className="mt-1" />
+                            ) : (
+                              item.plain_english_summary && (
+                                <p className="text-sm leading-relaxed text-zinc-600">{item.plain_english_summary}</p>
+                              )
+                            );
+                          })()}
+                        </FadedRow>
                       );
                     }
                     if (entry.kind === "evidence") {
                       return (
-                        <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
-                          <span className="absolute left-0 top-6 h-[11px] w-[11px] rounded-full border-2 border-zinc-50 bg-zinc-300" />
-                          <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm">
-                            <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500">
-                              {entry.meetingId ? (
-                                <Link
-                                  to={meetingPath({ id: entry.meetingId, slug: entry.meetingSlug })}
-                                  className="tabular-nums hover:text-brand-700"
-                                >
-                                  {formatDate(entry.date)}
-                                </Link>
-                              ) : (
-                                <span className="tabular-nums">
-                                  {formatDate(entry.date)}
-                                </span>
-                              )}
-                              <Badge variant="muted">{entry.label}</Badge>
-                              {entry.matchCount > 1 && (
-                                <span className="text-xs tabular-nums">
-                                  {entry.matchCount} references
-                                </span>
-                              )}
-                            </div>
-                            <h3 className="text-base font-semibold leading-snug text-zinc-900">
-                              {override?.heading || displayTitle(entry.title)}
-                            </h3>
-                            {(override?.line || entry.snippet) && (
-                              <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-zinc-600">
-                                {override?.line || entry.snippet}
-                              </p>
+                        <FadedRow key={entry.key} id={entry.key}>
+                          <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                            {entry.meetingId ? (
+                              <Link
+                                to={meetingPath({ id: entry.meetingId, slug: entry.meetingSlug })}
+                                className="tabular-nums hover:text-brand-700"
+                              >
+                                {formatDate(entry.date)}
+                              </Link>
+                            ) : (
+                              <span className="tabular-nums">
+                                {formatDate(entry.date)}
+                              </span>
+                            )}
+                            <Badge variant="muted">{entry.label}</Badge>
+                            {entry.matchCount > 1 && (
+                              <span className="tabular-nums">
+                                {entry.matchCount} references
+                              </span>
                             )}
                           </div>
-                        </li>
+                          <h3 className="text-sm font-semibold leading-snug text-zinc-900">
+                            {override?.heading || displayTitle(entry.title)}
+                          </h3>
+                          {(override?.line || entry.snippet) && (
+                            <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-zinc-600">
+                              {override?.line || entry.snippet}
+                            </p>
+                          )}
+                        </FadedRow>
                       );
                     }
 
@@ -1011,23 +966,9 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     const headline: string | undefined = matter.meta?.timeline_headlines?.[String(item.id)];
                     const layout = images.layout && images.layout.agenda_item_id === item.id ? images.layout : null;
                     const chosenStage: string | undefined = (item as any).meta?.staff_stage?.stage;
-                    const procedural = isProceduralStep(item, {
-                      hasParticipation: Boolean(
-                        (item as any).meta?.participation?.speakers?.length ||
-                          writtenLetters((item as any).meta?.written_participation).length,
-                      ),
-                      hasImage: Boolean(layout),
-                      headline,
-                      stage: chosenStage,
-                    });
                     return (
-                      <li key={entry.key} id={`timeline-${entry.key}`} className="relative scroll-mt-24 pl-7">
-                        <span
-                          className={cn(
-                            "absolute left-0 h-[11px] w-[11px] rounded-full border-2 border-zinc-50",
-                            procedural ? "top-1.5 bg-zinc-300" : "top-6 bg-brand-600",
-                          )}
-                        />
+                      // The dot takes the colour of how the decision went (hollow when nothing was decided).
+                      <RailItem key={entry.key} id={entry.key} dot={<Disc outcome={outcomeOf(item.motions)} />}>
                         <TimelineStep
                           item={item}
                           headline={headline}
@@ -1039,10 +980,10 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                           notes={notes}
                           termHints={termPlan}
                         />
-                      </li>
+                      </RailItem>
                     );
-                  })}
-                </ol>
+                  }}
+                </YearTimeline>
               </>
             )}
           </section>

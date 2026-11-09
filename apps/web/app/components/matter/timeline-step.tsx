@@ -11,6 +11,7 @@ import { formatDate, cn } from "../../lib/utils";
 import { ParticipationList, WrittenSubmissions } from "../meeting/participation-list";
 import { writtenLetters } from "../../lib/written";
 import { documentPath, meetingPath, type SlugRef } from "../../lib/paths";
+import { FADED_CARD } from "../timeline/chrome";
 
 import { STAGE_LABELS, type StageKey } from "../../lib/glossary";
 
@@ -207,7 +208,7 @@ export function TimelineStep({
 
   if (procedural) {
     return (
-      <div className="py-1">
+      <div className={FADED_CARD}>
         {meetingLine}
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
           <h3 className="font-semibold leading-snug text-zinc-900">{title}</h3>

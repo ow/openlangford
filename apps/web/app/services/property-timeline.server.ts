@@ -1,8 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { TimelineEntry } from "../components/property/property-timeline";
+import type { TimelineEntry } from "../lib/timeline-entry";
+import { outcomeOf } from "../lib/timeline-story";
 import { closedReasons, type ClosedSessionMeta } from "../lib/closed-sessions";
 import { displayTitle, matterTitle } from "../lib/display-text";
-import { sourceByline, tidyQuote, youtubeId, sourceImages } from "../lib/sources";
+import { sourceTimelineEntry, tidyQuote } from "../lib/sources";
 import { meetingPath } from "../lib/paths";
 import { getMatterReportMentions } from "./matters";
 import { sourcesFor, sourcesForMatters } from "./sources.server";
@@ -21,14 +22,6 @@ const LAND = /\bland\b/i;
 
 const meetingRef = (m: Meeting) => ({ id: m.id, title: m.title ?? null, href: meetingPath(m), committee: /committee|commission|board/i.test(`${m.type || ""} ${m.title || ""}`) });
 
-function outcomeOf(motions: { result?: string | null }[] | null | undefined): TimelineEntry["outcome"] {
-  const results = (motions || []).map((m) => m.result || "");
-  if (!results.length) return null;
-  if (results.some((r) => /defeated|failed|lost/i.test(r))) return { label: "Defeated", variant: "danger" };
-  if (results.some((r) => /defer|tabled|postpone|refer/i.test(r))) return { label: "Postponed", variant: "warning" };
-  if (results.some((r) => /carried|passed|approved|adopted/i.test(r))) return { label: "Passed", variant: "success" };
-  return null;
-}
 
 /** Words that make a line worth quoting beyond naming the address: money, a purchase or sale, a recommendation. */
 const TELLING = /\b(sale|sell|sold|dispos\w*|purchas\w*|acquir\w*|bought|owed|debt|borrow\w*|recommend\w*|should|open\w*|close\w*)\b|\$|\d{1,3}(?:,\d{3})+/gi;
@@ -147,17 +140,13 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     });
   }
   for (const r of reports) {
-    entries.push({ key: `report-${r.id}`, date: `${r.year}-12-31`, kind: "report", label: `City annual report ${r.year}`, headline: byMatter.get((r as any).matter_id)?.meta?.entry_lines?.[`report-${r.id}`]?.line || tidyQuote(r.quote, 160), detail: null, href: r.url, external: true, linkTitle: `Page ${r.page} of the report` });
+    entries.push({ key: `report-${r.id}`, date: `${r.year}-12-31`, kind: "report", label: "City annual report", dateLabel: String(r.year), headline: byMatter.get((r as any).matter_id)?.meta?.entry_lines?.[`report-${r.id}`]?.line || tidyQuote(r.quote, 160), detail: null, href: r.url, external: true, linkTitle: `Page ${r.page} of the report` });
   }
   const seen = new Set<number>();
   for (const s of [...ownSources, ...[...topicSources.values()].flat()]) {
     if (seen.has(s.id)) continue;
     seen.add(s.id);
-    entries.push({ key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceByline(s), dateLabel: s.date_label || null, headline: s.headline, detail: s.quote ? tidyQuote(s.quote, 700) : null, href: s.url, external: !!s.url,
-      archiveHref: s.archive_url && s.archive_url !== s.url ? s.archive_url : null,
-      linkTitle: youtubeId(s.url) ? "Watch on YouTube" : s.publisher, linkHint: s.title, compact: s.compact === true || s.compact === "true",
-      images: sourceImages(s.images, imageUrl),
-      video: youtubeId(s.url) ? { id: youtubeId(s.url)!, title: s.title } : null });
+    entries.push(sourceTimelineEntry(s, imageUrl));
   }
   // A closed meeting about land on a night this address was before Council: the record shows a door closing.
   for (const meeting of meetingsSeen.values()) {
