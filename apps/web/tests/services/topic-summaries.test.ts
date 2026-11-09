@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import shared from "../../../../shared/prompts/topic-summaries.json";
-import { keepTextEdits } from "../../app/services/topic-summaries.server";
+import { keepTextEdits, keepTextEditsReport } from "../../app/services/topic-summaries.server";
 
 const stored = (row: Record<string, unknown>) => ({
   from: () => ({ select: () => ({ eq: () => ({ single: async () => ({ data: row }) }) }) }),
@@ -20,6 +20,25 @@ describe("keepTextEdits", () => {
   it("leaves an update alone when nothing was edited by hand", async () => {
     const update = { plain_english_summary: "x", meta: { display_title: "y" } };
     expect(await keepTextEdits(stored({ meta: {} }), 1, update)).toBe(update);
+  });
+});
+
+describe("keepTextEditsReport", () => {
+  const row = { plain_english_summary: "Staff wrote this.", meta: { display_title: "Staff title", status_line: "Old line", manual: { summary: { by: "u" }, status_line: { by: "u" } } } };
+
+  it("says which hand-edited fields the update would have changed", async () => {
+    const { held } = await keepTextEditsReport(stored(row), 1, { plain_english_summary: "Writer's summary.", meta: { display_title: "Writer title", status_line: "New line" } });
+    expect(held).toEqual(["status_line", "summary"]);
+  });
+
+  it("holds back nothing when the writer's text is what the person already has", async () => {
+    const { held } = await keepTextEditsReport(stored(row), 1, { plain_english_summary: "Staff wrote this.", meta: { display_title: "Staff title", status_line: "Old line" } });
+    expect(held).toEqual([]);
+  });
+
+  it("holds back nothing for a field nobody edited", async () => {
+    const { held } = await keepTextEditsReport(stored({ ...row, meta: { ...row.meta, manual: { title: { by: "u" } } } }), 1, { plain_english_summary: "Writer's summary.", meta: { status_line: "New line" } });
+    expect(held).toEqual([]);
   });
 });
 

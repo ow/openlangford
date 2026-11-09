@@ -8,7 +8,7 @@ import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForP
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { bylawRecords } from "./bylaw-records.server";
 import { sourceRecordLines, sourcesFor } from "./sources.server";
-import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, editSourceOnPage, loadSources, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
+import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, editSourceOnPage, heldByHandLine, loadSources, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
 import { findingText, investigate, investigatedRecords, investigationLine, needsInvestigation, type Investigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
@@ -867,7 +867,13 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         const said = u.note.split(" The record says:")[0].slice(0, 80);
         for (let i = done.length - 1; i >= 0; i--) if (done[i].includes(said)) done.splice(i, 1);
       }
-      summaryUnfollowed = report.unfollowed.length > 0;
+      // A summary or "where it stands" line a person edited by hand was kept, so an instruction about it wasn't carried out.
+      const blocked = (report.heldByHand.get(pageTopic?.merged_into || matterId) || []).filter((f) => f !== "title");
+      if (blocked.length && summaryNotes.length) {
+        left.push(heldByHandLine("this topic", blocked));
+        for (let i = done.length - 1; i >= 0; i--) if (done[i].startsWith("Rewrote the summary")) done.splice(i, 1);
+      }
+      summaryUnfollowed = report.unfollowed.length > 0 || (blocked.length > 0 && summaryNotes.length > 0);
       if (budget.aborted && (!rewrote.length || report.unfollowed.length)) {
         left.push("Ran out of time (about 90 seconds of model work) before the summary rewrite and its check finished. Press Fix again to finish it.");
       }

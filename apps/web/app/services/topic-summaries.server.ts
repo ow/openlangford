@@ -368,26 +368,38 @@ async function checkAll(batch: Loaded[], updates: Map<number, Update>, notes: Ma
 /** An update to a topic's title, summary or status line, with any field staff edited by hand kept as they left it
  * (pipeline manual_edits.keep_text_edits; see services/topic-edit.server.ts). */
 export async function keepTextEdits(supabase: SupabaseClient, matterId: number, update: { plain_english_summary?: string | null; meta?: Meta } & Record<string, any>) {
+  return (await keepTextEditsReport(supabase, matterId, update)).update;
+}
+
+/** The fields staff edited by hand: title, summary, "where it stands". */
+export type HandField = "title" | "summary" | "status_line";
+
+/** keepTextEdits, and which hand-edited fields it held back from this update (the update would have changed them). The
+ * fix agents read this: a rewrite that a hand edit overrode must not be reported as done. */
+export async function keepTextEditsReport(supabase: SupabaseClient, matterId: number, update: { plain_english_summary?: string | null; meta?: Meta } & Record<string, any>): Promise<{ update: typeof update; held: HandField[] }> {
   const { data: row } = await supabase.from("matters").select("plain_english_summary, meta").eq("id", matterId).single();
   const stored: Meta = row?.meta || {};
   const manual: Meta = stored.manual || {};
-  if (!["title", "summary", "status_line"].some((f) => f in manual)) return update;
+  if (!["title", "summary", "status_line"].some((f) => f in manual)) return { update, held: [] };
+  const held: HandField[] = [];
   const out = { ...update };
   const meta: Meta = { ...(out.meta || stored) };
   const kept: Meta = { ...manual };
   for (const [field, key] of [["title", "display_title"], ["status_line", "status_line"]] as const) {
     if (field in kept && key in meta) {
+      if ((meta[key] ?? null) !== (stored[key] ?? null)) held.push(field);
       kept[field] = { ...kept[field], auto: meta[key] ?? null };
       meta[key] = stored[key] ?? null;
     }
   }
   if ("summary" in kept && "plain_english_summary" in out) {
+    if ((out.plain_english_summary ?? null) !== (row?.plain_english_summary ?? null)) held.push("summary");
     kept.summary = { ...kept.summary, auto: out.plain_english_summary ?? null };
     out.plain_english_summary = row?.plain_english_summary ?? null;
   }
   meta.manual = kept;
   out.meta = meta;
-  return out;
+  return { update: out, held };
 }
 
 export type SummaryReport = {
@@ -399,6 +411,9 @@ export type SummaryReport = {
   unfollowed: Unfollowed[];
   /** Fact problems the final text still has, per topic. */
   problems: Map<number, Problem[]>;
+  /** Hand-edited fields the rewrite would have changed and didn't: the person's text was kept, the writer's version
+   * is stored as the field's automatic one (Reset to automatic uses it). */
+  heldByHand: Map<number, HandField[]>;
 };
 
 /** What a direct edit is told to fix: the instructions it wasn't followed on, and each statement the records contradict
@@ -418,7 +433,7 @@ export function editInstructions(unfollowed: string[], problems: Problem[]): str
 export async function rewriteSummaries(supabase: SupabaseClient, matterIds: Iterable<number>,
   opts: { notes?: { matter_id: number; note: string }[]; signal?: AbortSignal; dryRun?: boolean; onUpdate?: (matterId: number, update: Update) => void } = {}): Promise<SummaryReport> {
   const ids = [...new Set([...matterIds].map(Number))].sort((a, b) => a - b);
-  const report: SummaryReport = { written: [], edited: [], unfollowed: [], problems: new Map() };
+  const report: SummaryReport = { written: [], edited: [], unfollowed: [], problems: new Map(), heldByHand: new Map() };
   if (!ids.length) return report;
   const loaded = await loadTopicContext(supabase, ids);
   // A topic too large for one request is left as it was, never cut to fit.
@@ -453,9 +468,10 @@ export async function rewriteSummaries(supabase: SupabaseClient, matterIds: Iter
       for (const [mid, update] of updates) {
         stamp(update, first.problems.get(mid) || [], (first.problems.get(mid) || []).length, false);
         if (opts.dryRun) { opts.onUpdate?.(mid, update); report.written.push(mid); handled.add(mid); continue; }
-        const { error } = await supabase.from("matters").update(await keepTextEdits(supabase, mid, update)).eq("id", mid);
+        const kept = await keepTextEditsReport(supabase, mid, update);
+        const { error } = await supabase.from("matters").update(kept.update).eq("id", mid);
         if (error) console.error(`[topic-summaries] saving topic ${mid} failed:`, error.message);
-        else { report.written.push(mid); handled.add(mid); }
+        else { report.written.push(mid); handled.add(mid); if (kept.held.length) report.heldByHand.set(mid, kept.held); }
       }
       // Anything the check found goes straight to a direct edit of the saved text, then one more check.
       const failing = [...updates.keys()].filter((mid) => handled.has(mid)

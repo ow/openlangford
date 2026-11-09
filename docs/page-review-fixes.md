@@ -139,6 +139,12 @@ carries out fixes for the flags staff agreed with. This page explains where each
    | An item's summary, highlights, description | n/a | n/a | `rewrite_item_summary`, `rewrite_highlight`, `rewrite_description` |
    | Take an entry off the page | `remove_entry`, `unlink_related`, `move_item` | `unlink_entry` | n/a |
 
+   A topic's title, summary or "where it stands" line that staff edited by hand (the pencil, `meta.manual`) is never
+   overwritten by a rewrite: the writer's version is stored as that field's `auto` instead. `rewriteSummaries` reports
+   those fields (`heldByHand`), and an agent run that asked for a change to one says so in its note ("wasn't changed: it
+   was edited by hand, so that version was kept…") and leaves the flag open, rather than claiming a rewrite. Reset to
+   automatic in the pencil panel puts the agent's version on the page.
+
    Not editable on any page, because the page generates them from the record: the closed-meeting row on a property
    timeline, motions and votes, and titles. A flag on one of these is answered with `no_change` or `cannot_fix`.
 

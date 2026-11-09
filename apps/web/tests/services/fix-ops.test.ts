@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { checkFollowed, editSourceOnPage, loadSources, quoteInRecords, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "../../app/services/fix-ops.server";
+import { checkFollowed, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "../../app/services/fix-ops.server";
 
 let verdicts: { followed: boolean; missing: string }[] = [];
 vi.mock("../../app/services/ai/index.server", () => ({ getAiClient: () => ({ json: async () => ({ data: { checks: verdicts } }) }) }));
@@ -101,5 +101,15 @@ describe("checkFollowed", () => {
     const out = await checkFollowed(["one", "two"], "text", "records");
     expect(out[1]).toMatchObject({ followed: false });
     expect(await checkFollowed([], "text", "records")).toEqual([]);
+  });
+});
+
+describe("heldByHandLine", () => {
+  it("says the text was edited by hand, that it was kept, and how to use the agent's version", () => {
+    expect(heldByHandLine("this topic", ["summary"])).toBe("The summary of this topic wasn't changed: it was edited by hand, so that version was kept. The agent's version is saved as the automatic one; open the pencil and press Reset to automatic to use it.");
+  });
+  it("names the status line too, and says nothing about the title", () => {
+    expect(heldByHandLine("the budget topic", ["title", "summary", "status_line"])).toContain('summary and "where it stands" line of the budget topic');
+    expect(heldByHandLine("x", ["title", "summary"])).not.toContain("title");
   });
 });

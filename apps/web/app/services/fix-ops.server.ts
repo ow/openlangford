@@ -98,6 +98,13 @@ export async function saveEditorNotes(supabase: SupabaseClient, matterId: number
   await supabase.from("matters").update({ meta: { ...meta, editor_notes: [...(meta.editor_notes || []), ...notes].slice(-10) } }).eq("id", matterId);
 }
 
+/** The note's line when a rewrite was set aside because staff edited that text by hand: the person's version stays, so
+ * the instruction was not carried out, and the note says how to use the agent's version instead. */
+export function heldByHandLine(label: string, fields: ("title" | "summary" | "status_line")[]): string {
+  const what = [fields.includes("summary") ? "summary" : "", fields.includes("status_line") ? "\"where it stands\" line" : ""].filter(Boolean).join(" and ");
+  return `The ${what} of ${label} wasn't changed: it was edited by hand, so that version was kept. The agent's version is saved as the automatic one; open the pencil and press Reset to automatic to use it.`;
+}
+
 /** The note's line for an instruction the rewritten summary doesn't yet follow. */
 export function unfollowedLine(u: { note: string; missing?: string }): string {
   return `The summary was rewritten but doesn't yet say what was asked: "${u.note.split(" The record says:")[0].slice(0, 300)}"${u.missing ? ` Still missing: ${u.missing}` : ""}`;

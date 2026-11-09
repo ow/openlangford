@@ -9,7 +9,7 @@ import { logStaffAction } from "./staff.server";
 import { splitLead, withClosing } from "../lib/property-lead";
 import { rewriteSummaries } from "./topic-summaries.server";
 import { sourcesFor, sourcesForMatters, sourceRecordLines } from "./sources.server";
-import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, checkFollowed, editSourceOnPage, loadSources, quoteInRecords, saveEditorNotes, squash, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
+import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, checkFollowed, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, saveEditorNotes, squash, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
 import type { Source } from "../lib/sources";
 import { getMatterReportMentions, type ReportMention } from "./matters";
 import type { StaffRole } from "../lib/auth.server";
@@ -353,6 +353,9 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
         const report = await rewriteSummaries(supabase, summaryNotes.map((n) => n.matter_id), { notes: summaryNotes.map(({ matter_id, note }) => ({ matter_id, note })), signal: budget });
         const unfollowed = new Set(report.unfollowed.map((u) => u.note));
         for (const n of summaryNotes) {
+          // A summary a person edited by hand was kept, so the instruction wasn't carried out.
+          const held = (report.heldByHand.get(n.matter_id) || []).filter((f) => f !== "title");
+          if (held.length) { left.push(heldByHandLine(entryLabel(`matter-${n.matter_id}`, flags), held)); continue; }
           const reason = result.data.actions.find((a) => a.action === "rewrite_summary" && a.key === n.key)?.reason ?? "";
           if (unfollowed.has(n.note) || !report.written.includes(n.matter_id)) {
             left.push(unfollowedLine({ note: n.note, missing: report.unfollowed.find((u) => u.note === n.note)?.missing }));
