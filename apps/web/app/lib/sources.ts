@@ -8,6 +8,20 @@ import { formatDate } from "./utils";
 
 export type SourceOrigin = "city" | "press" | "other";
 
+/** A picture kept with a source (meta.images). `r2_key` is the picture shown; `file_key` is a document it previews (a
+ * PDF in the same bucket), which the picture then opens; `caption` replaces the default line under the pictures. */
+export type SourceImage = { r2_key: string; w: number; h: number; alt: string; file_key?: string | null; caption?: string | null };
+
+/** What a timeline row shows for a source's pictures: the picture, where a click goes (the PDF when there is one), and
+ * the caption. Entries whose picture has no public URL are left out. */
+export function sourceImages(images: SourceImage[] | null | undefined, urlFor: (key: string | null | undefined) => string | null) {
+  return (images || []).map((im) => {
+    const url = urlFor(im.r2_key) || "";
+    const file = im.file_key ? urlFor(im.file_key) : null;
+    return { url, href: file || url, pdf: !!file, w: im.w, h: im.h, alt: im.alt, caption: im.caption || null };
+  }).filter((im) => im.url);
+}
+
 export type Source = {
   id: number;
   origin: SourceOrigin;
@@ -24,7 +38,7 @@ export type Source = {
   /** How to show the date when the source gives only a season or a month ("Spring 2019"); happened_on still orders it. */
   date_label?: string | null;
   /** Pictures kept with the source (R2 keys), such as the City's FOI table and letter. meta.images. */
-  images?: { r2_key: string; w: number; h: number; alt: string }[] | null;
+  images?: SourceImage[] | null;
   /** Shown as a small one-line row on the timeline (thin context: a notice, an advisory). meta.compact, as text. */
   compact?: string | boolean | null;
 };

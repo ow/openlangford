@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { publisherFor, sourceLabel, tidyQuote } from "../../app/lib/sources";
+import { publisherFor, sourceImages, sourceLabel, tidyQuote } from "../../app/lib/sources";
 
 describe("publisherFor", () => {
   it("names the publishers the records cite, and the City's own site as the City", () => {
@@ -75,5 +75,25 @@ describe("youtubeId and the video label", () => {
     expect(sourceLabel({ origin: "other", publisher: "Province of British Columbia", url: "https://gov.bc.ca/x" })).toBe("From Province of British Columbia");
     expect(sourceLabel({ origin: "press", publisher: "CHEK News", url: "https://cheknews.ca/x" })).toBe("Reported by CHEK News");
     expect(sourceByline({ origin: "other", publisher: "Vancouver Island & BC", published_on: "2024-11-24", happened_on: "2024-11-24", url: "https://youtu.be/DHWFwIrqX6s" })).toBe("YouTube video by Vancouver Island & BC");
+  });
+});
+
+describe("sourceImages", () => {
+  const urlFor = (key: string | null | undefined) => (key ? `https://cdn.test/${key}` : null);
+
+  it("links a picture that previews a PDF to the PDF, and marks it", () => {
+    expect(sourceImages([{ r2_key: "s/12/table-preview.jpg", w: 1426, h: 1102, alt: "The City's table", file_key: "s/12/table.pdf", caption: "As released." }], urlFor))
+      .toEqual([{ url: "https://cdn.test/s/12/table-preview.jpg", href: "https://cdn.test/s/12/table.pdf", pdf: true, w: 1426, h: 1102, alt: "The City's table", caption: "As released." }]);
+  });
+
+  it("keeps a plain picture linking to itself", () => {
+    expect(sourceImages([{ r2_key: "s/12/photo.jpg", w: 10, h: 20, alt: "a" }], urlFor))
+      .toEqual([{ url: "https://cdn.test/s/12/photo.jpg", href: "https://cdn.test/s/12/photo.jpg", pdf: false, w: 10, h: 20, alt: "a", caption: null }]);
+  });
+
+  it("leaves out a picture with no public URL, and copes with none at all", () => {
+    expect(sourceImages([{ r2_key: "", w: 1, h: 1, alt: "x" }], urlFor)).toEqual([]);
+    expect(sourceImages(null, urlFor)).toEqual([]);
+    expect(sourceImages(undefined, urlFor)).toEqual([]);
   });
 });

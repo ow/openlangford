@@ -41,7 +41,7 @@ export type TimelineEntry = {
   /** The page's full title, shown on hover over the pill. */
   linkHint?: string | null;
   /** Pictures kept with a source (the City's FOI table and letter): thumbnails that open full size. */
-  images?: { url: string; w: number; h: number; alt: string }[] | null;
+  images?: { url: string; href: string; pdf: boolean; w: number; h: number; alt: string; caption: string | null }[] | null;
   /** A small one-line row on the rail instead of a card (thin context: a notice, an advisory). */
   compact?: boolean;
   /** A YouTube video to embed in the row. */
@@ -166,13 +166,14 @@ function GroupRow({ group: g, renderAdmin }: { group: Group; renderAdmin?: (entr
         <div className="mt-2.5">
           <div className="flex flex-wrap items-start gap-2.5">
             {e.images.map((im) => (
-              <a key={im.url} href={im.url} target="_blank" rel="noopener noreferrer" title="Open full size"
-                className="block overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+              <a key={im.url} href={im.href} target="_blank" rel="noopener noreferrer" title={im.pdf ? "Open the PDF" : "Open full size"}
+                className="relative block overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md">
                 <img src={im.url} alt={im.alt} width={im.w} height={im.h} loading="lazy" className="h-44 w-auto max-w-full object-contain" />
+                {im.pdf && <span className="absolute bottom-1.5 right-1.5 rounded bg-zinc-900/80 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-white">PDF</span>}
               </a>
             ))}
           </div>
-          <p className="mt-1 text-xs text-zinc-500">As posted with the City's response. Click to enlarge.</p>
+          <p className="mt-1 text-xs text-zinc-500">{e.images.find((im) => im.caption)?.caption || (e.images.some((im) => im.pdf) ? "As released by the City. Click to open the PDF." : "As posted with the City's response. Click to enlarge.")}</p>
         </div>
       )}
       {e.external && e.href && (

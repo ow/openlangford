@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TimelineEntry } from "../components/property/property-timeline";
 import { closedReasons, type ClosedSessionMeta } from "../lib/closed-sessions";
 import { displayTitle, matterTitle } from "../lib/display-text";
-import { sourceByline, tidyQuote, youtubeId } from "../lib/sources";
+import { sourceByline, tidyQuote, youtubeId, sourceImages } from "../lib/sources";
 import { meetingPath } from "../lib/paths";
 import { getMatterReportMentions } from "./matters";
 import { sourcesFor, sourcesForMatters } from "./sources.server";
@@ -156,7 +156,7 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     entries.push({ key: `source-${s.id}`, date: s.happened_on, kind: "source", label: sourceByline(s), dateLabel: s.date_label || null, headline: s.headline, detail: s.quote ? tidyQuote(s.quote, 700) : null, href: s.url, external: !!s.url,
       archiveHref: s.archive_url && s.archive_url !== s.url ? s.archive_url : null,
       linkTitle: youtubeId(s.url) ? "Watch on YouTube" : s.publisher, linkHint: s.title, compact: s.compact === true || s.compact === "true",
-      images: (s.images || []).map((im) => ({ url: imageUrl(im.r2_key) || "", w: im.w, h: im.h, alt: im.alt })).filter((im) => im.url),
+      images: sourceImages(s.images, imageUrl),
       video: youtubeId(s.url) ? { id: youtubeId(s.url)!, title: s.title } : null });
   }
   // A closed meeting about land on a night this address was before Council: the record shows a door closing.

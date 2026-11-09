@@ -289,6 +289,13 @@ paste the link (and, if they like, the words and the date), the draft reads the 
 (`services/sources.server.ts` `draftSource`, the writing model), staff change what they want and add it. The same link
 added to a second page reuses the row. Removing one hides its link to that page.
 
+A source can carry pictures (`meta.images`, shown on an address's timeline as thumbnails). A picture may preview a
+document: `file_key` is the PDF's key in the same R2 bucket, so the thumbnail opens the PDF (marked "PDF") and
+`caption` replaces the default line under the pictures. Put the PDF and a page-1 preview under fresh keys, since the
+CDN caches a key for a year. Before publishing a document someone sent, read all of it for personal details (the City's
+FOI letters carry the requester's personal email, and a hidden link behind it) and redact in the file itself, not with
+a box laid over the text; then check page text, every object and stream, links and metadata for what was removed.
+
 Where it shows and how it is weighed:
 
 - **Timelines.** A topic's timeline and a lot's chronology (`components/property/property-timeline.tsx`) show it as a
