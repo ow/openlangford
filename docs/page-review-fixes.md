@@ -103,6 +103,12 @@ carries out fixes for the flags staff agreed with. This page explains where each
    `editor_notes` and goes through the same `rewriteSummaries` write, check and direct edit the topic agent uses, so
    an instruction the result doesn't follow is reported as needing a person.
 
+   The review bar's pencil edits an address's summary by hand, as it edits a topic's fields (`services/property-edit.server.ts`).
+   A saved edit locks the lead (`meta.summary_locked`, with `hand: true`, the lead it replaced as `auto`, and the ids of the
+   address's links at that moment), so the pipeline's stage keeps it; the panel shows how many links came in since, and
+   "Reset to automatic" puts `auto` back. The closing "Mentioned in council meetings…" line is kept, not edited. The agent
+   is told when a lead was written by hand and changes it only as far as a flag or note asks.
+
    Pressing Check on a property page also searches the records for the address (`services/property-search.server.ts`:
    item titles, motions, attached reports and minutes, topic titles, and lines spoken at meetings, each tied to the
    entry whose discussion window holds it; plain text matching, no model) and lists what

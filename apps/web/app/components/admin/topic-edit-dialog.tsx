@@ -12,7 +12,7 @@ type Draft = { title: string; summary: string; statusLine: string; image: number
 
 const input = "w-full rounded-lg border border-zinc-300 bg-surface px-3 py-2 text-sm";
 
-/** Staff: edit a topic's title, summary, "where it stands" and feature photo. Fields saved here are the editor's: the
+/** Staff: edit a topic's title, summary, "where it stands" and feature photo, or an address's summary. Fields saved here are the editor's: the
  * pipeline leaves them alone until someone presses "Reset to automatic". */
 export function TopicEditDialog({ open, onOpenChange, path, onSaved }: {
   open: boolean; onOpenChange: (open: boolean) => void; path: string; onSaved: () => void;
@@ -55,14 +55,16 @@ export function TopicEditDialog({ open, onOpenChange, path, onSaved }: {
   };
   const busy = save.state === "submitting" || !!sent;
   const locked = (field: EditField) => state?.locked.includes(field);
+  const has = (field: EditField) => !state || state.fields.includes(field);
 
   const submit = () => {
     if (!state || !draft) return;
     const fields: Record<string, string> = {};
-    if (draft.title.trim() !== state.title) fields.topic_title = draft.title;
+    if (has("title") && draft.title.trim() !== state.title) fields.topic_title = draft.title;
     if (draft.summary.trim() !== state.summary) fields.summary = draft.summary;
-    if (draft.statusLine.trim() !== state.statusLine) fields.status_line = draft.statusLine;
-    if (draft.image !== "current") { fields.image = String(draft.image); fields.image_kind = draft.kind; }
+    if (has("status_line") && draft.statusLine.trim() !== state.statusLine) fields.status_line = draft.statusLine;
+    if (!has("image")) { /* an address has no photo to choose */ }
+    else if (draft.image !== "current") { fields.image = String(draft.image); fields.image_kind = draft.kind; }
     else if (state.image && draft.kind !== (state.image.kind ?? "")) {
       // Only the caption changed: send the same picture again.
       const same = state.candidates.find((c) => c.url === state.image!.url);
@@ -91,7 +93,7 @@ export function TopicEditDialog({ open, onOpenChange, path, onSaved }: {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent data-report-ignore className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Edit this topic</DialogTitle>
+          <DialogTitle>Edit this {state?.noun ?? "topic"}</DialogTitle>
           <DialogDescription>
             What you change here stays: the pipeline won't rewrite an edited field when new meetings come in, until you
             reset it to automatic.
@@ -104,26 +106,26 @@ export function TopicEditDialog({ open, onOpenChange, path, onSaved }: {
             {state.newEntries > 0 && (
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
                 <span>
-                  {state.newEntries} new {state.newEntries === 1 ? "entry" : "entries"} on this topic since the last edit
+                  {state.newEntries} new {state.newEntries === 1 ? "entry" : "entries"} on this {state.noun} since the last edit
                   {state.editedAt ? ` (${reviewTime(state.editedAt)})` : ""}. Check the edited text still holds.
                 </span>
                 <button type="button" disabled={busy} onClick={() => send("keep_edits")} className="text-xs font-medium text-amber-900 underline">It still holds</button>
               </div>
             )}
-            <label className="grid gap-1 text-sm">
+            {has("title") && <label className="grid gap-1 text-sm">
               {label("title")}
               <input value={draft.title} maxLength={200} required onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={input} />
-            </label>
+            </label>}
             <label className="grid gap-1 text-sm">
               {label("summary")}
               <textarea value={draft.summary} rows={5} maxLength={4000} required onChange={(e) => setDraft({ ...draft, summary: e.target.value })} className={input} />
             </label>
-            <label className="grid gap-1 text-sm">
+            {has("status_line") && <label className="grid gap-1 text-sm">
               {label("status_line", "(optional)")}
               <input value={draft.statusLine} maxLength={400} onChange={(e) => setDraft({ ...draft, statusLine: e.target.value })} className={input}
                 placeholder="e.g. Third reading given Sep 28, 2026; final adoption still to come." />
-            </label>
-            <fieldset className="grid gap-2 text-sm">
+            </label>}
+            {has("image") && <fieldset className="grid gap-2 text-sm">
               <legend className="mb-1 w-full">{label("image", state.candidates.length ? `· ${state.candidates.length} from this topic's reports` : "· no report pictures found")}</legend>
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 <button type="button" onClick={() => setDraft({ ...draft, image: "none" })}
@@ -151,7 +153,8 @@ export function TopicEditDialog({ open, onOpenChange, path, onSaved }: {
                   </select>
                 </label>
               )}
-            </fieldset>
+            </fieldset>}
+            {state.noun === "address" && <p className="-mt-2 text-xs text-zinc-500">The line counting how often the address came up is added for you.</p>}
             {save.data?.error && save.state === "idle" && <p className="text-sm text-red-700">{save.data.error}</p>}
             <DialogFooter className="gap-2">
               <button type="button" onClick={() => onOpenChange(false)} className="rounded-lg px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-100">Cancel</button>

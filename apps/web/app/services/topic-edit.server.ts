@@ -83,6 +83,7 @@ export async function topicEditState(supabase: SupabaseClient, matterId: number,
     newEntries = (await topicItemIds(supabase, matterId)).filter((id) => !before.has(id)).length;
   }
   return {
+    noun: "topic", fields: [...EDIT_FIELDS],
     title: (now.title as string | null) ?? topic.title,
     summary: (now.summary as string | null) ?? "",
     statusLine: (now.status_line as string | null) ?? "",

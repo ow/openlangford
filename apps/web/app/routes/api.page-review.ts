@@ -13,6 +13,7 @@ import {
   agreeSuggestion, decideSuggestion, latestFindJob, listSuggestions, matterForPath, removableKey, removeEntry, requestFindMissing,
 } from "../services/page-links.server";
 import { isPageHidden, setPageHidden } from "../services/page-visibility.server";
+import { confirmPropertyEdit, propertyEditState, resetPropertyLead, savePropertyLead } from "../services/property-edit.server";
 import { confirmTopicEdits, imageCandidates, resetTopicField, saveTopicEdit, topicEditState, type TopicEdit } from "../services/topic-edit.server";
 import { EDIT_FIELDS, type EditField } from "../lib/topic-edit";
 import { addSource, archiveSource, draftSource, removeSource, sourcesFor } from "../services/sources.server";
@@ -34,8 +35,9 @@ async function linkState(supabase: SupabaseClient, path: string) {
   const propertyId = await propertyForPath(supabase, path);
   if (propertyId) {
     // A property page: the records the address search found, waiting for a decision.
-    const [{ suggestions, searchedAt }, sources] = await Promise.all([listPropertySuggestions(supabase, propertyId), sourcesFor(supabase, { propertyId })]);
-    return { suggestions, findJob: searchedAt ? { status: "succeeded", requested_at: searchedAt, finished_at: searchedAt, suggested: suggestions.length } : null, sources };
+    const [{ suggestions, searchedAt }, sources, edit] = await Promise.all([listPropertySuggestions(supabase, propertyId), sourcesFor(supabase, { propertyId }), propertyEditState(supabase, propertyId)]);
+    return { suggestions, findJob: searchedAt ? { status: "succeeded", requested_at: searchedAt, finished_at: searchedAt, suggested: suggestions.length } : null, sources,
+      edited: { locked: edit.locked, newEntries: edit.newEntries, photos: 0, what: "summary" } };
   }
   const matterId = await matterForPath(supabase, path);
   if (!matterId) return null;
@@ -65,6 +67,8 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     const params = new URL(request.url).searchParams;
     // The edit panel asks for the topic's current text and the pictures it can choose from.
     if (path && params.get("edit") === "1") {
+      const propertyId = await propertyForPath(supabase, path);
+      if (propertyId) return { path, edit: await propertyEditState(supabase, propertyId) };
       const matterId = await matterForPath(supabase, path);
       return { path, edit: matterId ? await topicEditState(supabase, matterId, { withImages: true }) : null };
     }
@@ -147,6 +151,20 @@ export async function action({ request, context }: Route.ActionArgs) {
         if (!Number.isSafeInteger(id)) return bad("Unknown source.");
         await removeSource(supabase, id, target);
         message = "Removed from this page.";
+      }
+    } else if (["edit_topic", "reset_field", "keep_edits"].includes(intent) && await propertyForPath(supabase, path)) {
+      // The pencil on an address page: its summary (the lead), kept against the pipeline like a topic's edited fields.
+      const propertyId = (await propertyForPath(supabase, path))!;
+      if (intent === "edit_topic") {
+        const { changed } = form.has("summary") ? await savePropertyLead(supabase, propertyId, String(form.get("summary")), user.id) : { changed: false };
+        message = changed ? "Saved. The pipeline will leave the summary alone." : "Nothing changed.";
+      } else if (intent === "reset_field") {
+        if (String(form.get("field") || "") !== "summary") return bad("Unknown field.");
+        await resetPropertyLead(supabase, propertyId);
+        message = "Back to the automatic version.";
+      } else {
+        await confirmPropertyEdit(supabase, propertyId);
+        message = "Kept your edit.";
       }
     } else if (["find_missing", "accept", "reject"].includes(intent) && await propertyForPath(supabase, path)) {
       const propertyId = (await propertyForPath(supabase, path))!;

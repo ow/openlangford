@@ -16,6 +16,9 @@ export const IMAGE_KIND_LABELS: Record<(typeof IMAGE_KINDS)[number], string> = {
 export type ImageCandidate = { id: number; url: string; width: number | null; height: number | null; page: number | null; report: string | null };
 
 export type TopicEditState = {
+  /** What the page is, for the panel's title: topics edit four fields, an address its summary only. */
+  noun: "topic" | "address";
+  fields: EditField[];
   title: string;
   summary: string;
   statusLine: string;

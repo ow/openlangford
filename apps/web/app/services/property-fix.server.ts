@@ -6,6 +6,7 @@ import { recheckClaims, type Claim } from "./page-verify.server";
 import { findingText, investigate, investigatedRecords, investigationLine, needsInvestigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel } from "../lib/page-recheck";
 import { logStaffAction } from "./staff.server";
+import { splitLead, withClosing } from "../lib/property-lead";
 import { rewriteSummaries } from "./topic-summaries.server";
 import { sourcesFor, sourcesForMatters, sourceRecordLines } from "./sources.server";
 import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, checkFollowed, editSourceOnPage, loadSources, quoteInRecords, saveEditorNotes, squash, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
@@ -46,21 +47,12 @@ type Item = { id: number; title: string | null; plain_english_summary: string | 
 /** One meeting item filed under a topic: a row of the topic's own timeline, so a row on this page. `line` is what the page shows now. */
 export type Step = { id: number; matter_id: number; title: string | null; meeting_date: string | null; meeting_title: string | null; line: string | null };
 
-const CLOSING = /(?:^|\s)(Mentioned in council meetings[^.]*\.)\s*$/;
-
-/** The new lead with the old one's closing count line ("Mentioned in council meetings 12 times since 2009.") kept,
- * since the pipeline computes that line and the agent must not guess it. Exported for tests. */
-export function withClosing(oldLead: string | null | undefined, text: string): string {
-  const body = squash(text);
-  const closing = (oldLead || "").match(CLOSING)?.[1];
-  if (!closing || /Mentioned in council meetings/i.test(body)) return body;
-  return `${body.replace(/\s+$/, "")} ${closing}`;
-}
+export { withClosing };
 
 /** What the planner reads: the page's lead and each entry from its own record, keyed as the page keys them. */
 export function propertyRecords(property: Property, lead: string | null, topics: Topic[], items: Item[], steps: Step[] = [], sources: Source[] = [], reports: ReportMention[] = []): string {
   const lines = [`ADDRESS: ${property.address}${property.civic_number ? "" : " (a street: the topics below are about the street itself)"}`,
-    `LEAD (the page's own text): ${lead ? squash(lead) : "(none yet)"}`];
+    `LEAD (the page's own text${(property.meta as any)?.summary_locked?.hand ? "; written by hand by a person" : ""}): ${lead ? squash(lead) : "(none yet)"}`];
   for (const t of topics) {
     lines.push("", `TOPIC matter-${t.id} (${[t.first_seen, t.last_seen].filter(Boolean).map((d) => String(d).slice(0, 10)).join(" to ") || "no dates"}; ${t.status || "no status"}): ${squash(t.title)}`);
     if (t.plain_english_summary) lines.push(`  summary: ${squash(t.plain_english_summary)}`);
@@ -99,7 +91,8 @@ Actions, one entry in "actions" per flag (and per note):
   order things happened, more detail, particular facts), do what it asks instead, in plain sentences, up to 600
   characters. Use only what the records give. If part of the request isn't in the records (a claim about consultation
   or plans, say), leave that part out and name it in "not_supported", never state it. Quote the record the lead
-  rests on in "source". The closing count line is kept for you; don't write one.
+  rests on in "source". The closing count line is kept for you; don't write one. A lead marked as written by hand
+  was written by a person: change it only as far as a flag or the note asks.
   An entry counts as passing when the topic's record lists many addresses and this is one of them ("addresses the
   pipeline linked to this topic"), unless the records show something decided or done about this address in particular.
 ${EDIT_SOURCE_PROMPT}
@@ -122,7 +115,7 @@ ${records}`;
 
 /** One revision of a lead that didn't do what staff asked: the same lead with what is missing added, from the records only. */
 async function reviseLead(lead: string, unmet: { instruction: string; missing: string }[], records: string, signal?: AbortSignal): Promise<string> {
-  const body = lead.replace(CLOSING, "").trim();
+  const body = splitLead(lead).body;
   const { data } = await getAiClient().json({ stage: "review", signal, schema: z.object({ new_text: z.string() }), schemaName: "property_lead_revision",
     prompt: `Revise the lead (the short text at the top of a page about an address) so it does what staff asked. Keep what it already does well.
 Use only facts in the records below; leave out any part of the request the records don't support. Plain sentences, up to 600
