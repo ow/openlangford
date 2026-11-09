@@ -1505,7 +1505,7 @@ STAGES: list[Stage] = [
         description="One-line summary for agenda items that have a decision but no summary (history catch-up items), from the item's "
                     "own record and the topic's other decisions; fills empty summaries only. --target is a meeting id.",
         run=run_item_summaries, when="post_ingest", scope="meeting", version=ITEM_SUMMARY_VERSION,
-        depends_on=("motion-headlines",), stale=stale_item_summaries,
+        depends_on=("matter-history",), stale=stale_item_summaries,
     ),
     Stage(
         name="meeting-highlights",

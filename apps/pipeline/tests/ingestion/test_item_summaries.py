@@ -88,11 +88,12 @@ def test_the_prompt_keeps_the_record_apart_from_the_model_written_notes():
     assert "never what is true" in mod.SYSTEM
 
 
-def test_the_stage_is_registered_after_the_decisions_it_reads():
-    from pipeline.stages import STAGES
+def test_the_stage_runs_after_the_history_catch_up_that_files_the_items_it_reads():
+    from pipeline.stages import STAGES, get_stage
 
     names = [s.name for s in STAGES]
-    assert names.index("item-summaries") > names.index("motion-headlines")
+    assert get_stage("item-summaries").depends_on == ("matter-history",)
+    assert names.index("item-summaries") > names.index("matter-history")
 
 
 # ---- Against a small fake of the database client ----
