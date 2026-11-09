@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isCommitteeItem, stageExplanation } from "../timeline-step";
+import { isCommitteeItem, stageExplanation, stageLineFor, stepNote } from "../timeline-step";
 
 describe("stageExplanation", () => {
   it("calls Council's adoption final", () => {
@@ -35,5 +35,26 @@ describe("stageExplanation", () => {
   it("tells committee meetings from Council's", () => {
     expect(isCommitteeItem({ meetings: { organizations: { name: "Community Advisory Committee" } } })).toBe(true);
     expect(isCommitteeItem({ meetings: { organizations: { name: "Council" } } })).toBe(false);
+  });
+});
+
+describe("what a step says under its title", () => {
+  it("prefers the item's own summary to the stage line", () => {
+    expect(stepNote({ stage: "Final approval.", title: "Latecomer payment interest-rate bylaw made final", summary: "Adopted the bylaw establishing interest rates for latecomer payments." }))
+      .toEqual({ kind: "summary", text: "Adopted the bylaw establishing interest rates for latecomer payments." });
+  });
+  it("ignores a summary that only repeats the title", () => {
+    expect(stepNote({ stage: null, title: "Council adopts the policy", summary: "Council adopts the policy." })).toBeNull();
+  });
+  it("drops \"Final approval.\" beside a title that already says final", () => {
+    for (const title of ["New latecomer payment interest-rate bylaw made final", "Council adopts park sponsorship policy", "Rezoning approved"]) {
+      expect(stageLineFor("Final approval.", title)).toBeNull();
+      expect(stepNote({ stage: "Final approval.", title, summary: null })).toBeNull();
+    }
+  });
+  it("keeps \"Final approval.\" when the title doesn't say it, and keeps the lines that teach a term", () => {
+    expect(stageLineFor("Final approval.", "Latecomer bylaw No. 1334")).toBe("Final approval.");
+    expect(stepNote({ stage: "Introduced to council. A bylaw needs several readings before it becomes law.", title: "Council gave first reading", summary: null }))
+      .toEqual({ kind: "stage", text: "Introduced to council. A bylaw needs several readings before it becomes law." });
   });
 });

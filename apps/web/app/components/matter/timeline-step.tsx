@@ -54,6 +54,26 @@ export function stageExplanation(texts: (string | null | undefined)[], { committ
   return STAGES.find((s) => s.label === STAGE_LABELS.adopted ? adopts : s.test.test(text))?.label ?? null;
 }
 
+/** A headline that already says the step was final ("…made final", "Council adopts…"), so "Final approval." beside it
+ * would only repeat it. The other stage lines teach a term (what a second reading is), so they stay. */
+const SAYS_FINAL = /\badopt|\bmade final\b|\bfinal(ly)?\b|\bapproved\b/i;
+
+const plain = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+/** What a step says under its title. The item's own summary when it has one that adds to the title; otherwise the
+ * stage's plain-language line, unless that only repeats the title; otherwise nothing. */
+export function stepNote({ stage, title, summary }: { stage: string | null; title: string; summary?: string | null }): { kind: "summary" | "stage"; text: string } | null {
+  if (summary && plain(summary) !== plain(title)) return { kind: "summary", text: summary };
+  const stageText = stageLineFor(stage, title);
+  return stageText ? { kind: "stage", text: stageText } : null;
+}
+
+/** The stage's line, or null when the title already says it. */
+export function stageLineFor(stage: string | null, title: string): string | null {
+  if (!stage) return null;
+  return stage === STAGE_LABELS.adopted && SAYS_FINAL.test(title) ? null : stage;
+}
+
 /** Whether an item's meeting is a committee's rather than Council's. */
 export function isCommitteeItem(item: any): boolean {
   const meeting = item?.meetings || {};
@@ -158,6 +178,7 @@ export function TimelineStep({
   const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline, stage: chosenStage });
   const stage = stageExplanation([headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item), chosen: chosenStage });
   const title = headline || displayTitle(item.title);
+  const note = stepNote({ stage, title, summary: item.plain_english_summary });
   const itemHref = meetingPath({ id: item.meeting_id, slug: item.meetings?.slug }, `#item-${item.id}`);
   const meetingLine = (
     <p className="flex items-center gap-1.5 text-xs text-zinc-500">
@@ -192,7 +213,11 @@ export function TimelineStep({
           <h3 className="font-semibold leading-snug text-zinc-900">{title}</h3>
           {decisions[0]?.o.label && outcomeMark(decisions[0].o)}
         </div>
-        {stage && <p className="mt-0.5 text-sm text-zinc-600">{stage}</p>}
+        {note && (
+          <p className="mt-0.5 text-sm text-zinc-600">
+            {note.kind === "summary" ? <TermText text={note.text} only={termHints?.get(`item-${item.id}`)} /> : note.text}
+          </p>
+        )}
       </div>
     );
   }
@@ -205,7 +230,7 @@ export function TimelineStep({
         {single && outcomeMark(single)}
       </div>
       {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600"><TermText text={item.plain_english_summary} only={termHints?.get(`item-${item.id}`)} /></p>}
-      {stage && !item.plain_english_summary && <p className="mt-1.5 text-sm text-zinc-600">{stage}</p>}
+      {!item.plain_english_summary && stageLineFor(stage, title) && <p className="mt-1.5 text-sm text-zinc-600">{stageLineFor(stage, title)}</p>}
 
       {layoutImage && (
         <figure className="mt-4">
