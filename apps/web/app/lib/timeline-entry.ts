@@ -9,7 +9,7 @@ export type TimelineEntry = {
   key: string;
   date: string;             // YYYY-MM-DD
   kind: "step" | "mention" | "report" | "source" | "closed";
-  /** Who said it, for things outside a meeting: "City annual report 2019", "Reported by Victoria News",
+  /** Who said it, for things outside a meeting: "City annual report", "Reported by Victoria News",
    * "Closed meeting". Meeting rows are labelled from ``meeting`` and ``outcome``. */
   label: string;
   headline: string;
@@ -45,3 +45,18 @@ export type TimelineEntry = {
   /** data-review-entry key, so the review bar can outline the row ("item-12", "matter-5"). */
   reviewKey?: string | null;
 };
+
+/** An annual report page as a timeline row: the year as its date, the page's own words as a quote (or the line staff
+ * wrote, with `quoted: false`, under their `lead`), and a link to the page. A page with no link keeps its number in the
+ * label, so it is never lost. */
+export function reportTimelineEntry(
+  r: { id: number; year: number; page: number; url: string | null },
+  opts: { headline: string; lead?: string | null; quoted?: boolean },
+): TimelineEntry {
+  return {
+    key: `report-${r.id}`, date: `${r.year}-12-31`, dateLabel: String(r.year), kind: "report",
+    label: r.url ? "City annual report" : `City annual report, page ${r.page}`,
+    headline: opts.headline, lead: opts.lead ?? null, quoted: opts.quoted ?? true,
+    href: r.url, external: !!r.url, linkTitle: `Page ${r.page} of the report`,
+  };
+}

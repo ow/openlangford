@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { TimelineEntry } from "../lib/timeline-entry";
+import { reportTimelineEntry, type TimelineEntry } from "../lib/timeline-entry";
 import { outcomeOf } from "../lib/timeline-story";
 import { closedReasons, type ClosedSessionMeta } from "../lib/closed-sessions";
 import { displayTitle, matterTitle } from "../lib/display-text";
@@ -140,7 +140,8 @@ export async function propertyTimeline(supabase: SupabaseClient, property: { id:
     });
   }
   for (const r of reports) {
-    entries.push({ key: `report-${r.id}`, date: `${r.year}-12-31`, kind: "report", label: "City annual report", dateLabel: String(r.year), headline: byMatter.get((r as any).matter_id)?.meta?.entry_lines?.[`report-${r.id}`]?.line || tidyQuote(r.quote, 160), detail: null, href: r.url, external: true, linkTitle: `Page ${r.page} of the report` });
+    const staffLine = byMatter.get((r as any).matter_id)?.meta?.entry_lines?.[`report-${r.id}`]?.line;
+    entries.push(reportTimelineEntry(r, { headline: staffLine || tidyQuote(r.quote, 160), quoted: !staffLine }));
   }
   const seen = new Set<number>();
   for (const s of [...ownSources, ...[...topicSources.values()].flat()]) {

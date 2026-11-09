@@ -58,12 +58,13 @@ import { displayTitle, matterTitle } from "../lib/display-text";
 import { bylawLead, bylawStatus } from "../lib/bylaw-summary";
 import { ParticipationList, speakersAbout } from "../components/meeting/participation-list";
 import { crossNotes, writtenLetters } from "../lib/written";
-import { TimelineStep } from "../components/matter/timeline-step";
+import { TimelineStep, isProceduralStep } from "../components/matter/timeline-step";
 import { sourcesFor } from "../services/sources.server";
 import { sourceTimelineEntry, type Source } from "../lib/sources";
 import { YearTimeline, FadedRow, RailItem, Disc } from "../components/timeline/chrome";
 import { EntryRow } from "../components/timeline/entry-rows";
 import { PullQuote } from "../components/pull-quote";
+import { reportTimelineEntry } from "../lib/timeline-entry";
 
 /** The small pill the meeting page uses for its document and vote buttons. */
 import { getDocumentTypeLabel } from "../lib/document-types";
@@ -872,11 +873,7 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     if (entry.kind === "report") {
                       const report: ReportMention = entry.report;
                       return (
-                        <EntryRow key={entry.key} entry={{
-                          key: entry.key, date: entry.date, dateLabel: String(report.year), kind: "report", label: "City annual report",
-                          lead: override?.heading || null, headline: override?.line || cleanQuote(report.quote), quoted: !override?.line,
-                          href: report.url, external: !!report.url, linkTitle: `Page ${report.page} of the report`,
-                        }} />
+                        <EntryRow key={entry.key} entry={reportTimelineEntry(report, { headline: override?.line || cleanQuote(report.quote), lead: override?.heading, quoted: !override?.line })} />
                       );
                     }
                     // A source from outside the record (a City release, a news report): the same row an address's timeline draws.
@@ -947,9 +944,9 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                               </span>
                             )}
                           </div>
-                          <h3 className="text-sm font-semibold leading-snug text-zinc-900">
+                          <h4 className="text-sm font-semibold leading-snug text-zinc-900">
                             {override?.heading || displayTitle(entry.title)}
-                          </h3>
+                          </h4>
                           {(override?.line || entry.snippet) && (
                             <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-zinc-600">
                               {override?.line || entry.snippet}
@@ -966,9 +963,20 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                     const headline: string | undefined = matter.meta?.timeline_headlines?.[String(item.id)];
                     const layout = images.layout && images.layout.agenda_item_id === item.id ? images.layout : null;
                     const chosenStage: string | undefined = (item as any).meta?.staff_stage?.stage;
+                    // A routine step is a faded card; a step with its own story (a hearing, speakers, a picture) is a full one.
+                    const procedural = isProceduralStep(item, {
+                      hasParticipation: Boolean(
+                        (item as any).meta?.participation?.speakers?.length ||
+                          writtenLetters((item as any).meta?.written_participation).length,
+                      ),
+                      hasImage: Boolean(layout),
+                      headline,
+                      stage: chosenStage,
+                    });
                     return (
-                      // The dot takes the colour of how the decision went (hollow when nothing was decided).
-                      <RailItem key={entry.key} id={entry.key} dot={<Disc outcome={outcomeOf(item.motions)} />}>
+                      // The dot takes the colour of how the decision went; with no decision it is filled for a full card
+                      // and hollow for a faded one, so the dot always matches the card's weight.
+                      <RailItem key={entry.key} id={entry.key} dot={<Disc outcome={outcomeOf(item.motions)} decided={!procedural} />}>
                         <TimelineStep
                           item={item}
                           headline={headline}

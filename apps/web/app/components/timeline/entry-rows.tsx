@@ -65,7 +65,7 @@ export function EntryLinks({ entry: e }: { entry: TimelineEntry }) {
   return (
     <p className="mt-2 flex flex-wrap items-center gap-1.5">
       <a href={e.href} target="_blank" rel="noopener noreferrer" title={e.linkHint || undefined} className={cn(PILL, "max-w-full whitespace-nowrap")}>
-        <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{e.linkTitle || "Source"}</span>
+        <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" /><span className="truncate">{e.linkTitle || "Read it"}</span>
       </a>
       {e.archiveHref && <a href={e.archiveHref} target="_blank" rel="noopener noreferrer" className={cn(PILL, "whitespace-nowrap")}><FileText className="h-3 w-3 shrink-0" aria-hidden="true" />Archived copy</a>}
     </p>

@@ -92,12 +92,6 @@ const REPORT = /^\s*(?:\d+[.)]?\s*)?(?:staff\s+)?(?:report|application|memo|memo
 const motionText = (item: any) => (item.motions || []).map((m: any) => `${m.text_content || ""} ${m.plain_english_summary || ""}`).join(" ");
 const hasSpeakers = (item: any) => Boolean(item.meta?.participation?.speakers?.length || writtenLetters(item.meta?.written_participation).length);
 
-/**
- * One meeting's handling of a topic, filed as two agenda items, is one step: the staff report next to the bylaw
- * reading it recommended (the report has no decision of its own), or two items giving the same readings to the same
- * bylaw. The folded item's documents join the step it folds into (``folded``); both records stay on the topic.
- * A public hearing, or anything with speakers or letters, is a step of its own and never folded.
- */
 /** How a night's decisions on an entry went, as one badge: defeated if any was, else postponed, else passed; null when
  * nothing was decided. Shared by every timeline, so a decision looks the same wherever it is shown. */
 export function outcomeOf(motions: { result?: string | null }[] | null | undefined): Outcome | null {
@@ -109,6 +103,12 @@ export function outcomeOf(motions: { result?: string | null }[] | null | undefin
   return null;
 }
 
+/**
+ * One meeting's handling of a topic, filed as two agenda items, is one step: the staff report next to the bylaw
+ * reading it recommended (the report has no decision of its own), or two items giving the same readings to the same
+ * bylaw. The folded item's documents join the step it folds into (``folded``); both records stay on the topic.
+ * A public hearing, or anything with speakers or letters, is a step of its own and never folded.
+ */
 export function foldSameMeetingSteps<T extends Entry & { folded?: any[] }>(entries: T[], headlines: Record<string, string> = {}): T[] {
   const primary = entries.filter((e) => e.kind === "primary" && e.item?.meeting_id != null);
   const stage = (e: T) => readingStage(`${headlines[String(e.item.id)] || ""} ${motionText(e.item)}`);

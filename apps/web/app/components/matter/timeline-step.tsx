@@ -211,7 +211,7 @@ export function TimelineStep({
       <div className={FADED_CARD}>
         {meetingLine}
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-          <h3 className="font-semibold leading-snug text-zinc-900">{title}</h3>
+          <h4 className="font-semibold leading-snug text-zinc-900">{title}</h4>
           {decisions[0]?.o.label && outcomeMark(decisions[0].o)}
         </div>
         {note && (
@@ -227,7 +227,7 @@ export function TimelineStep({
     <div className="rounded-2xl border border-zinc-200 bg-surface p-5 shadow-sm sm:p-6">
       {meetingLine}
       <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-        <h3 className="text-lg font-semibold leading-snug text-zinc-900">{title}</h3>
+        <h4 className="text-lg font-semibold leading-snug text-zinc-900">{title}</h4>
         {single && outcomeMark(single)}
       </div>
       {item.plain_english_summary && <p className="mt-1.5 text-sm leading-relaxed text-zinc-600"><TermText text={item.plain_english_summary} only={termHints?.get(`item-${item.id}`)} /></p>}

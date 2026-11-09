@@ -7,7 +7,7 @@ import { EntryRow } from "../../app/components/timeline/entry-rows";
 import { TimelineStep } from "../../app/components/matter/timeline-step";
 import { outcomeOf } from "../../app/lib/timeline-story";
 import { sourceTimelineEntry, type Source } from "../../app/lib/sources";
-import type { TimelineEntry } from "../../app/lib/timeline-entry";
+import { reportTimelineEntry, type TimelineEntry } from "../../app/lib/timeline-entry";
 
 const html = (el: ReactElement) => renderToStaticMarkup(h(MemoryRouter, null, el));
 const entry = (over: Partial<TimelineEntry> = {}): TimelineEntry => ({ key: "source-1", date: "2026-08-26", kind: "source", label: "Reported by CHEK News", headline: "The City bought the land", ...over });
@@ -28,8 +28,10 @@ describe("YearTimeline", () => {
   }));
 
   it("draws one rail, a heading per year and a list per year", () => {
-    expect(out).toContain('<section aria-label="2026"');
-    expect(out).toContain('<section aria-label="2025"');
+    expect(out.match(/<section /g)).toHaveLength(2);
+    expect(out).not.toContain("aria-label=\"20");  // a named section is a landmark; a topic with fifteen years would add fifteen
+    expect(out).toMatch(/<h3[^>]*>2026<\/h3>/);
+    expect(out).toMatch(/<h3[^>]*>2025<\/h3>/);
     expect(out.match(/<h3[^>]*>20\d\d<\/h3>/g)).toHaveLength(2);
     expect(out.match(/<ol /g)).toHaveLength(2);
     expect(out).toContain('aria-hidden="true"');
@@ -158,5 +160,40 @@ describe("a routine step on a topic page", () => {
     expect(out).toContain(FADED_CARD.split(" ")[0]);
     expect(out).toContain("Latecomer interest-rate bylaw made final");
     expect(out).not.toContain("Final approval.");
+  });
+});
+
+describe("reportTimelineEntry", () => {
+  const report = { id: 5, year: 2019, page: 14, url: "https://city.test/report.pdf#page=14" };
+
+  it("dates the row by its year and links the page", () => {
+    expect(reportTimelineEntry(report, { headline: "Purchased the property" })).toMatchObject({
+      key: "report-5", date: "2019-12-31", dateLabel: "2019", kind: "report", label: "City annual report",
+      headline: "Purchased the property", quoted: true, lead: null, href: report.url, external: true, linkTitle: "Page 14 of the report",
+    });
+  });
+
+  it("keeps the page number in the label when the page has no link, so it is never lost", () => {
+    const row = reportTimelineEntry({ ...report, url: null }, { headline: "Purchased the property" });
+    expect(row.label).toBe("City annual report, page 14");
+    expect(row.external).toBe(false);
+    expect(html(h(EntryRow, { entry: row }))).toContain("City annual report, page 14");
+    expect(html(h(EntryRow, { entry: row }))).not.toContain("Page 14 of the report");
+  });
+
+  it("draws a line staff wrote as a line under their heading, not as a quote", () => {
+    const out = html(h(EntryRow, { entry: reportTimelineEntry(report, { headline: "The City bought the land", lead: "Land purchase", quoted: false }) }));
+    expect(out).toContain("Land purchase");
+    expect(out).toContain("The City bought the land");
+    expect(out).not.toContain("<blockquote");
+    expect(out).toContain("Page 14 of the report");
+  });
+});
+
+describe("the dot matches the card's weight", () => {
+  it("is filled for a full card that decided nothing, hollow for a faded one, and coloured by the outcome when there is one", () => {
+    expect(renderToStaticMarkup(h(Disc, { decided: true }))).toContain("border-brand-600 bg-brand-600");
+    expect(renderToStaticMarkup(h(Disc, { decided: false }))).toContain("border-zinc-300 bg-surface");
+    expect(renderToStaticMarkup(h(Disc, { outcome: { label: "Passed", variant: "success" }, decided: false }))).toContain("bg-emerald-600");
   });
 });

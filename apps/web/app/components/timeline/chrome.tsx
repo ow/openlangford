@@ -32,20 +32,22 @@ export function groupByYear<T>(rows: T[], dateOf: (row: T) => string | null | un
 /**
  * The rail and the years. One rail runs the whole length, through the year labels, and fades out below the last card
  * instead of stopping. On wide screens it hangs in the left margin (the rows indent by 2.5rem and the list pulls back
- * by as much), so the cards share the page's left edge with every other card; on a phone the rows indent instead.
+ * by as much), so the cards share the page's left edge with every other card; below that (a phone, a tablet, where the page
+ * has no margin to hang in) the rows indent instead. A year's `<section>` has no name of its own: a named one is a landmark,
+ * and a topic spanning fifteen years would add fifteen of them.
  * Each row is an <li> from RailItem. The `</ol></section>` pair is how the page check knows a year heading is not part
  * of the row before it.
  */
 export function YearTimeline<T>({ rows, dateOf, children }: { rows: T[]; dateOf: (row: T) => string | null | undefined; children: (row: T) => ReactNode }) {
   return (
     <div className="relative">
-      <span aria-hidden="true" className="absolute -bottom-12 left-[11px] top-3 w-px md:-left-[29px]"
+      <span aria-hidden="true" className="absolute -bottom-12 left-[11px] top-3 w-px lg:-left-[29px]"
         style={{ background: "linear-gradient(to bottom, var(--color-zinc-200) calc(100% - 5rem), transparent)" }} />
       <div className="space-y-8">
         {groupByYear(rows, dateOf).map(([year, inYear]) => (
-          <section key={year} aria-label={year} className="relative">
-            <h3 className="mb-4 pl-10 text-lg font-semibold tabular-nums tracking-tight text-zinc-500 md:pl-0">{year}</h3>
-            <ol className="relative space-y-5 md:-ml-10">{inYear.map(children)}</ol>
+          <section key={year} className="relative">
+            <h3 className="mb-4 pl-10 text-lg font-semibold tabular-nums tracking-tight text-zinc-500 lg:pl-0">{year}</h3>
+            <ol className="relative space-y-5 lg:-ml-10">{inYear.map(children)}</ol>
           </section>
         ))}
       </div>
