@@ -2608,6 +2608,10 @@ class MeetingIngester:
                 ballot_outcomes["complete" if motion_data["meta"].get("individual_vote_coverage") == "reconstructed_complete" else ballot_status] += 1
                 motion_id = 300
                 if not dry_run:
+                    if old_motion and ((old_motion.get("meta") or {}).get("manual") or {}).get("summary"):
+                        # A decision line set by hand (meta.manual.summary) is kept, with this run's stored as auto.
+                        motion_data["meta"] = {**motion_data["meta"], "manual": old_motion["meta"]["manual"]}
+                        motion_data = keep_manual_text(motion_data["meta"], motion_data, {"summary": "plain_english_summary"})
                     final_meta = motion_data["meta"]
                     publish_complete = final_meta.get("individual_vote_coverage") == "reconstructed_complete"
                     if publish_complete:

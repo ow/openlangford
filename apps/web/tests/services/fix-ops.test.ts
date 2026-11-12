@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { checkFollowed, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "../../app/services/fix-ops.server";
+import { addressesBlock, checkFollowed, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine, unlinkAddress,
+  writeEntryText } from "../../app/services/fix-ops.server";
 
 let verdicts: { followed: boolean; missing: string }[] = [];
 vi.mock("../../app/services/ai/index.server", () => ({ getAiClient: () => ({ json: async () => ({ data: { checks: verdicts } }) }) }));
@@ -111,5 +112,59 @@ describe("heldByHandLine", () => {
   it("names the status line too, and says nothing about the title", () => {
     expect(heldByHandLine("the budget topic", ["title", "summary", "status_line"])).toContain('summary and "where it stands" line of the budget topic');
     expect(heldByHandLine("x", ["title", "summary"])).not.toContain("title");
+  });
+});
+
+describe("rewriteDecision", () => {
+  const records = "ITEM 10632 (2012-03-05): DVP11-0036 - 245 Atkins Avenue\n  MOTION: That Council issue Development Variance Permit No. DVP11-0036 - 245 Atkins Avenue | RESULT: CARRIED";
+  const decision = () => ({ id: 6001, itemId: 10581, text: "Direct staff to proceed with consideration of the following variances for 245 Atkins Rd", summary: "Directed staff to consider a longer road at 245 Atkins Road." });
+  const step = (over: Record<string, any> = {}) => ({ decision_id: 6001, new_text: "Directed staff to consider a longer road at 245 Atkins Avenue.", source: "Development Variance Permit No. DVP11-0036 - 245 Atkins Avenue", ...over });
+
+  it("sets the plain line, marks it a person's and keeps the old line as auto", async () => {
+    const { client, updates } = fake({ motions: [{ id: 6001, meta: { headline: "h" }, plain_english_summary: "Directed staff to consider a longer road at 245 Atkins Road." }] });
+    const result = await rewriteDecision(client, step(), { decisions: [decision()], records, by: "u1" });
+    expect(result).toMatchObject({ ok: true, text: "Directed staff to consider a longer road at 245 Atkins Avenue." });
+    expect(updates[0].patch.plain_english_summary).toBe("Directed staff to consider a longer road at 245 Atkins Avenue.");
+    expect(updates[0].patch.meta).toMatchObject({ headline: "h", manual: { summary: { by: "u1", auto: "Directed staff to consider a longer road at 245 Atkins Road." } } });
+  });
+  it("refuses a decision not on the page, an unusable line, or a quote that isn't in the records", async () => {
+    const { client, updates } = fake({ motions: [{ id: 6001, meta: {} }] });
+    const ctx = { decisions: [decision()], records, by: "u1" };
+    expect(await rewriteDecision(client, step({ decision_id: 7 }), ctx)).toMatchObject({ ok: false });
+    expect(await rewriteDecision(client, step({ new_text: "Short." }), ctx)).toMatchObject({ ok: false });
+    expect(await rewriteDecision(client, step({ source: "Council refused the permit for 245 Atkins" }), ctx)).toMatchObject({ ok: false });
+    expect(updates).toEqual([]);
+  });
+  it("lists decisions under the entry key the page uses, and skips ones not on it", () => {
+    const block = decisionsBlock([decision(), { ...decision(), id: 9, itemId: 1 }], (id) => (id === 10581 ? "agenda-10581" : null));
+    expect(block).toContain("decision-6001 under [agenda-10581]");
+    expect(block).not.toContain("decision-9");
+  });
+});
+
+describe("unlinkAddress", () => {
+  const addresses = () => [{ id: 11274, address: "245 Atkins Avenue", slug: "245-atkins-avenue", itemIds: [10581, 10632] },
+    { id: 12734, address: "245 Atkins Road", slug: "245-atkins-road", itemIds: [10581] }];
+  const records = "ITEM 10632: DVP11-0036 - 245 Atkins Avenue";
+  function linkFake() {
+    const hidden: { property_id: number; matter_id: number }[] = [];
+    const client: any = { from: () => ({ update: () => ({ eq: (_a: string, property_id: number) => ({ eq: async (_b: string, matter_id: number) => { hidden.push({ property_id, matter_id }); return { error: null }; } }) }) }) };
+    return { client, hidden };
+  }
+  it("hides the address's links to this topic only", async () => {
+    const { client, hidden } = linkFake();
+    const list = addresses();
+    const result = await unlinkAddress(client, 2757, { property_id: 12734, source: "DVP11-0036 - 245 Atkins Avenue" }, { addresses: list, records });
+    expect(result).toMatchObject({ ok: true, address: { address: "245 Atkins Road" } });
+    expect(hidden).toEqual([{ property_id: 12734, matter_id: 2757 }]);
+    expect(list.map((a) => a.id)).toEqual([11274]);
+  });
+  it("keeps the topic's only address, an address not mapped to it, and one without a record quote", async () => {
+    const { client, hidden } = linkFake();
+    expect(await unlinkAddress(client, 2757, { property_id: 11274, source: "DVP11-0036 - 245 Atkins Avenue" }, { addresses: addresses().slice(0, 1), records })).toMatchObject({ ok: false });
+    expect(await unlinkAddress(client, 2757, { property_id: 1, source: "DVP11-0036 - 245 Atkins Avenue" }, { addresses: addresses(), records })).toMatchObject({ ok: false });
+    expect(await unlinkAddress(client, 2757, { property_id: 12734, source: "the street is Atkins Avenue" }, { addresses: addresses(), records })).toMatchObject({ ok: false });
+    expect(hidden).toEqual([]);
+    expect(addressesBlock(addresses())).toContain("address-12734: 245 Atkins Road (from item 10581)");
   });
 });

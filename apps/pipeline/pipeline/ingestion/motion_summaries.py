@@ -16,6 +16,7 @@ from supabase import Client
 
 from pipeline import ai
 from pipeline.ai import glossary
+from pipeline.ingestion.manual_edits import keep_manual_text
 from pipeline.ingestion.record_sources import RECORD_RULE
 
 SYSTEM = """You rewrite council motion summaries for residents of a small Canadian city.
@@ -68,7 +69,7 @@ def _clean(result: MotionSummaries) -> dict[int, str]:
 def regenerate_meeting_motion_summaries(supabase: Client, meeting_id: int, *, dry_run: bool = False) -> dict[int, str]:
     motions = (
         supabase.table("motions")
-        .select("id, text_content, result, plain_english_summary, agenda_item_id")
+        .select("id, text_content, result, plain_english_summary, agenda_item_id, meta")
         .eq("meeting_id", meeting_id)
         .order("id")
         .execute()
@@ -102,8 +103,9 @@ def regenerate_meeting_motion_summaries(supabase: Client, meeting_id: int, *, dr
     summaries = _clean(ai.json(_prompt(rows), stage="writing", schema=MotionSummaries, system=SYSTEM))
     valid = {mid: s for mid, s in summaries.items() if any(r["id"] == mid for r in rows)}
     if not dry_run:
+        stored = {m["id"]: m.get("meta") for m in motions}
         for mid, summary in valid.items():
-            supabase.table("motions").update({"plain_english_summary": summary}).eq("id", mid).eq(
-                "meeting_id", meeting_id
-            ).execute()
+            # A line staff (or the fix agent) set by hand is kept; this run's goes to meta.manual.summary.auto.
+            update = keep_manual_text(stored.get(mid), {"plain_english_summary": summary}, {"summary": "plain_english_summary"})
+            supabase.table("motions").update(update).eq("id", mid).eq("meeting_id", meeting_id).execute()
     return valid

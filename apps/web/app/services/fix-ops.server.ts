@@ -162,3 +162,105 @@ export async function writeEntryText(supabase: SupabaseClient, matterId: number,
   } }).eq("id", matterId);
   return error ? error.message : null;
 }
+
+// ---------- Rewording a decision's plain-language line ----------
+
+/** The plan field of rewrite_decision, spread into an agent's action schema. */
+export const REWRITE_DECISION_FIELDS = {
+  decision_id: z.number().int().nullable().describe("rewrite_decision: the decision's id (the number after \"decision-\"). Otherwise null."),
+};
+
+/** The menu entry for rewrite_decision, for an agent's prompt. */
+export const REWRITE_DECISION_PROMPT = `- rewrite_decision: the "Decision:" line under an entry is wrong (a misspelled street, a wrong figure, a slip the
+  minutes made that the rest of the record corrects, or wording that says more than the motion). Give decision_id and
+  the new line in new_text: one plain sentence of at most 160 characters saying what Council decided, outcome first.
+  Put in "source" the record's own words that back the new line. The motion's own wording (the minutes) is never
+  changed: only the plain-language line readers see beside it.`;
+
+export type DecisionLine = { id: number; itemId: number; text: string; summary: string | null };
+
+/** The decisions under the given items, for an agent's prompt ("DECISIONS ON THIS PAGE") and for rewriteDecision. */
+export async function decisionLines(supabase: SupabaseClient, itemIds: number[]): Promise<DecisionLine[]> {
+  if (!itemIds.length) return [];
+  const { data } = await supabase.from("motions").select("id, agenda_item_id, text_content, plain_english_summary").in("agenda_item_id", itemIds).order("id");
+  return ((data || []) as any[]).map((m) => ({ id: m.id, itemId: m.agenda_item_id, text: squash(m.text_content || ""), summary: m.plain_english_summary }));
+}
+
+/** The prompt block listing the decisions an agent may reword, each under the entry key the page uses for its item. */
+export function decisionsBlock(decisions: DecisionLine[], keyOf: (itemId: number) => string | null): string {
+  const lines = decisions.map((d) => {
+    const key = keyOf(d.itemId);
+    return key ? `- decision-${d.id} under [${key}]: "Decision: ${squash(d.summary || "") || "(no plain line; the page shows the motion)"}"\n  motion: ${d.text.slice(0, 400)}` : "";
+  }).filter(Boolean);
+  return lines.length ? `DECISIONS ON THIS PAGE (rewrite_decision by id):\n${lines.join("\n")}` : "";
+}
+
+/** Check a rewrite_decision step and make the change: motions.plain_english_summary, marked as a person's
+ * (motions.meta.manual.summary, see pipeline/ingestion/manual_edits.py) so a re-ingest or a motion-summary run keeps
+ * it and stores its own as `auto`. Only a decision listed for the page, and only on the record's words. */
+export async function rewriteDecision(supabase: SupabaseClient, step: { decision_id: number | null; new_text: string | null; source: string | null },
+  ctx: { decisions: DecisionLine[]; records: string; by: string }): Promise<{ ok: true; decision: DecisionLine; text: string } | { ok: false; why: string }> {
+  const decision = ctx.decisions.find((d) => d.id === step.decision_id);
+  if (!decision) return { ok: false, why: "that decision isn't on this page, so nothing changed" };
+  const text = squash(step.new_text || "");
+  if (text.length < 15 || text.length > 200) return { ok: false, why: "the new line wasn't usable, so nothing changed" };
+  if (!quoteInRecords(step.source, `${ctx.records}\n${decision.text}`)) return { ok: false, why: "its quote isn't the record's exact words, so the decision line stays" };
+  const { data: row } = await supabase.from("motions").select("meta, plain_english_summary").eq("id", decision.id).single();
+  const meta = (row?.meta || {}) as Record<string, any>;
+  const manual = { ...(meta.manual || {}) };
+  manual.summary = { by: ctx.by, at: new Date().toISOString(), auto: manual.summary?.auto ?? row?.plain_english_summary ?? null, source: squash(step.source || "").slice(0, 400) };
+  const { error } = await supabase.from("motions").update({ plain_english_summary: text, meta: { ...meta, manual } }).eq("id", decision.id);
+  if (error) return { ok: false, why: "couldn't save the decision line" };
+  decision.summary = text;
+  return { ok: true, decision, text };
+}
+
+// ---------- Taking a wrong address off a topic ----------
+
+/** The plan field of unlink_address, spread into an agent's action schema. */
+export const UNLINK_ADDRESS_FIELDS = {
+  property_id: z.number().int().nullable().describe("unlink_address: the address's id (the number after \"address-\"). Otherwise null."),
+};
+
+/** The menu entry for unlink_address, for an agent's prompt. */
+export const UNLINK_ADDRESS_PROMPT = `- unlink_address: an address mapped to this topic (listed under ADDRESSES MAPPED TO THIS TOPIC) isn't where it
+  happens: a misspelled street the rest of the record corrects ("Atkins Rd" for "Atkins Avenue"), a neighbouring lot
+  named only in passing, or a place the topic is not about. Give property_id and in "source" the record's words that
+  show the right address. The address stays on the site; it just stops being linked to this topic (and the map pin
+  and "at this address" link go). Never unlink the only address the records support.`;
+
+export type MappedAddress = { id: number; address: string; slug: string; itemIds: number[] };
+
+/** The addresses a topic is linked to (its own link and its items'), as its page maps them. */
+export async function mappedAddresses(supabase: SupabaseClient, matterId: number): Promise<MappedAddress[]> {
+  const { data } = await supabase.from("property_links").select("property_id, agenda_item_id, properties!inner(address, slug, hidden)")
+    .eq("matter_id", matterId).eq("hidden", false).eq("properties.hidden", false);
+  const out = new Map<number, MappedAddress>();
+  for (const r of (data || []) as any[]) {
+    const p = Array.isArray(r.properties) ? r.properties[0] : r.properties;
+    const a = out.get(r.property_id) ?? { id: r.property_id, address: p?.address || "", slug: p?.slug || "", itemIds: [] as number[] };
+    if (r.agenda_item_id && !a.itemIds.includes(r.agenda_item_id)) a.itemIds.push(r.agenda_item_id);
+    out.set(r.property_id, a);
+  }
+  return [...out.values()];
+}
+
+/** The prompt block listing a topic's addresses. */
+export function addressesBlock(addresses: MappedAddress[]): string {
+  return addresses.length ? `ADDRESSES MAPPED TO THIS TOPIC (unlink_address by id):\n${addresses.map((a) =>
+    `- address-${a.id}: ${a.address}${a.itemIds.length ? ` (from item${a.itemIds.length === 1 ? "" : "s"} ${a.itemIds.join(", ")})` : ""}`).join("\n")}` : "";
+}
+
+/** Check an unlink_address step and hide that address's links to the topic (property_links.hidden, which the
+ * pipeline's properties stage keeps). It refuses to take off the topic's last address. */
+export async function unlinkAddress(supabase: SupabaseClient, matterId: number, step: { property_id: number | null; source: string | null },
+  ctx: { addresses: MappedAddress[]; records: string }): Promise<{ ok: true; address: MappedAddress } | { ok: false; why: string }> {
+  const address = ctx.addresses.find((a) => a.id === step.property_id);
+  if (!address) return { ok: false, why: "that address isn't mapped to this topic, so nothing changed" };
+  if (ctx.addresses.length < 2) return { ok: false, why: "it's the topic's only address, so it stays" };
+  if (!quoteInRecords(step.source, ctx.records)) return { ok: false, why: "its quote isn't the record's exact words, so the address stays" };
+  const { error } = await supabase.from("property_links").update({ hidden: true }).eq("property_id", address.id).eq("matter_id", matterId);
+  if (error) return { ok: false, why: "couldn't unlink the address" };
+  ctx.addresses.splice(ctx.addresses.indexOf(address), 1);
+  return { ok: true, address };
+}

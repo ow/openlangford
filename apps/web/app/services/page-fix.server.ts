@@ -8,7 +8,9 @@ import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForP
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { bylawRecords } from "./bylaw-records.server";
 import { sourceRecordLines, sourcesFor } from "./sources.server";
-import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, editSourceOnPage, heldByHandLine, loadSources, saveEditorNotes, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
+import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, REWRITE_DECISION_FIELDS, REWRITE_DECISION_PROMPT, UNLINK_ADDRESS_FIELDS, UNLINK_ADDRESS_PROMPT, addressesBlock, capital,
+  decisionLines, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, mappedAddresses, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine,
+  unlinkAddress, writeEntryText } from "./fix-ops.server";
 import { findingText, investigate, investigatedRecords, investigationLine, needsInvestigation, type Investigation } from "./fix-investigation.server";
 import { applyRecheck, recheckSummary, flagLabel, type RecheckVerdicts } from "../lib/page-recheck";
 import { sameSiteTopics } from "./properties";
@@ -56,16 +58,18 @@ const brief = (text: string, max: number) => {
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "edit_source", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "no_change", "cannot_fix"]),
+      "rewrite_summary", "edit_source", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "rewrite_decision", "unlink_address", "no_change", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. unlink_related: the related topic's id. Otherwise null."),
     other_matter_id: z.number().int().nullable().describe("merge_topic only, when two related topics below duplicate each other but not this page: the second one's id (to_matter_id is the first). Otherwise null."),
     document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
     to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
-    new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. Otherwise null."),
-    source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading): the record's own words that support the new text, quoted exactly, at most 250 characters: the one sentence or clause that says it, never a whole passage. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
+    new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. rewrite_decision: the decision's new plain line. Otherwise null."),
+    source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, unlink_address, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading, rewrite_decision): the record's own words that support the new text, quoted exactly, at most 250 characters: the one sentence or clause that says it, never a whole passage. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
     ...EDIT_SOURCE_FIELDS,
+    ...REWRITE_DECISION_FIELDS,
+    ...UNLINK_ADDRESS_FIELDS,
     motion_id: z.number().int().nullable().describe("move_motion: the MOTION id from the list of decisions filed under no item. Otherwise null."),
     motion_text: z.string().nullable().describe("add_motion: the motion's wording exactly as the minutes give it (\"That Council adopt Bylaw No. 1239.\"). Otherwise null."),
     motion_result: z.enum(MOTION_RESULTS).nullable().describe("add_motion: the outcome the minutes record. Otherwise null."),
@@ -225,7 +229,7 @@ ${EDIT_SOURCE_PROMPT}
   A meeting item accepted here appears as "Discussed in another item"; if it is this topic's own step, the summary still won't
   rely on it, so say so in the reason and the editor can file it here.
 ${suggestions.length ? `Entries the search found, waiting for a decision:\n${suggestions.map((x) => `- [${suggestionKey(x)}] ${x.date ?? ""} ${x.title}${x.quote ? `: "${x.quote}"` : ""}${x.reason ? ` (found because: ${x.reason})` : ""}`).join("\n")}\n` : ""}${lookalikes.length ? `Related and same-named topics (those marked "listed under Related topics" show on this page):\n${lookalikes.map((c) => `- ${c.id} "${c.title}"${c.dates ? ` (${c.dates})` : ""}${c.related ? " [listed under Related topics; its records are below]" : ""}${c.owner ? " [holds an entry staff accepted for this page; its records are below]" : ""}${c.sameSite ? " [another application for the same site]" : ""}`).join("\n")}\n` : ""}
-Every rewrite (entry, heading or summary), add_motion and set_stage puts the records' own words it rests on in "source", quoted exactly; no other action needs a "source". A
+Every rewrite (entry, heading, summary or decision), add_motion, set_stage and unlink_address puts the records' own words it rests on in "source", quoted exactly; no other action needs a "source". A
 "Not backed by the record" problem quotes what the record says: fix it by rewriting to what the record supports.
 An entry with the wrong date usually means the record itself is filed at the wrong meeting: rewrite its line to state
 the right date with the quote that gives it, or, if no record gives the right date, say cannot_fix and name exactly
@@ -259,6 +263,8 @@ ${attachments || "(No flagged entry has documents attached.)"}
   the stage the records show: ${Object.entries(STAGE_LABELS).map(([k, v]) => `${k} ("${v}")`).join(", ")}, or none
   for a step that is no bylaw stage. "adopted" also gives a passed motion the Adopted badge. Quote the record in
   "source".
+${REWRITE_DECISION_PROMPT}
+${UNLINK_ADDRESS_PROMPT}
 - hide_page: when nothing in the records backs this page at all (no step of its own, nothing showing what it's
   about), hide it from the public. It can be undone, and the editor confirms it like every other change.
 Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what is wrong and
@@ -453,11 +459,17 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
       const text = (await itemRecords(supabase, await topicItemIds(supabase, c.id)).catch(() => ({ text: "" }))).text;
       return text ? `${c.related ? "RELATED TOPIC" : "TOPIC HOLDING AN ACCEPTED ENTRY"} ${c.id} "${c.title}": its own records\n${text.slice(0, 30000)}` : "";
     }))).filter(Boolean).join("\n\n");
+    // The decisions shown under the page's entries and the addresses mapped to it: rewrite_decision and unlink_address.
+    const entryKeyOf = (id: number) => ["agenda", "mention", "background"].map((k) => `${k}-${id}`).find((k) => pageKeys.has(k)) ?? null;
+    const [decisions, addresses] = await Promise.all([
+      decisionLines(supabase, [...new Set(page.entries.map((e) => itemId(e.key)).filter(Number.isSafeInteger))]),
+      mappedAddresses(supabase, matterId)]);
+    const pageParts = [decisionsBlock(decisions, entryKeyOf), addressesBlock(addresses)].filter(Boolean).join("\n\n");
     progress("Planning the fix…");
     const result = await getAiClient().json({
       stage: "review",
       prompt: planPrompt(heading, page.entries, agreed, [row?.note, addedNote].filter(Boolean).join("\n\n") || null, candidates,
-        [records, relatedRecords].filter(Boolean).join("\n\n"), lookalikes, suggestions,
+        [records, relatedRecords, pageParts].filter(Boolean).join("\n\n"), lookalikes, suggestions,
         (row as { internal_note?: string | null } | null)?.internal_note ?? null, attachmentLines.join("\n"),
         agreed.map((f) => findingFor(investigations.find((i) => i.index === flags.indexOf(f)))),
         findingFor(investigations.find((i) => i.index === null))),
@@ -662,6 +674,26 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         } catch (error) {
           left.push(`${step.reason} (the motion wasn't moved: ${error instanceof Error ? error.message : "unknown error"})`);
         }
+        continue;
+      }
+      if (step.action === "rewrite_decision") {
+        const result = await rewriteDecision(supabase, step, { decisions, records, by: requester.id });
+        if (!result.ok) { left.push(`${step.reason} (${result.why})`); continue; }
+        const key = entryKeyOf(result.decision.itemId);
+        if (key) fixedKeys.add(key);
+        done.push(`The decision under ${entryLabel(key, flags)} now reads: "${result.text}"`);
+        await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:rewrite_decision",
+          detail: { motion_id: String(result.decision.id), text: result.text, reason: step.reason.slice(0, 300) } });
+        continue;
+      }
+      if (step.action === "unlink_address") {
+        const result = await unlinkAddress(supabase, matterId, step, { addresses, records });
+        if (!result.ok) { left.push(`${step.reason} (${result.why})`); continue; }
+        if (step.key && onPage.has(step.key)) fixedKeys.add(step.key);
+        else answeredKeys.add(null);
+        done.push(`Took ${result.address.address} off this topic's addresses: ${brief(step.reason, 200)}`);
+        await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:unlink_address",
+          detail: { property_id: String(result.address.id), matter_id: String(matterId), reason: step.reason.slice(0, 300) } });
         continue;
       }
       if (step.action === "set_stage" && step.key?.startsWith("agenda-") && onPage.has(step.key) && step.stage) {

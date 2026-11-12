@@ -65,7 +65,13 @@ carries out fixes for the flags staff agreed with. This page explains where each
      of its distinctive words). It is a move, never a copy; the motion keeps a `placed_by` note saying where it came
      from. `set_stage` picks an entry's stage from the fixed list
      (`STAGE_LABELS` in `components/matter/timeline-step.tsx`) when the guess from its wording is wrong. It is kept on
-     the item (`agenda_items.meta.staff_stage`) so it follows the item when it moves.
+     the item (`agenda_items.meta.staff_stage`) so it follows the item when it moves. `rewrite_decision` rewords
+     the plain "Decision:" line under an entry (`motions.plain_english_summary`, never the motion's own wording),
+     for a slip the minutes made that the rest of the record corrects. It is marked as a person's
+     (`motions.meta.manual.summary`), so a re-ingest or a motion-summary run keeps it and stores its own as `auto`.
+   - **Addresses:** `unlink_address` takes an address off the topic (a misspelled street, a lot named in passing)
+     by hiding its `property_links` rows for that topic; the properties stage keeps hidden links. It never takes
+     off the topic's last address. Both actions live in `services/fix-ops.server.ts`.
    - **Moves and merges:** moving an agenda item to a named topic, and merging duplicate topics through the
      `merge_matters()` database function. The code is in `app/services/topic-moves.server.ts`.
    - **Status:** refreshing the status of the topics at each affected meeting, using the same rules as the
