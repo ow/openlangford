@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { PRECHECK_MAX, UNREVIEWED_SECTIONS, isReviewable } from "../lib/page-review-types";
 import { SITEMAP_SECTIONS, sitemapEntries, type SitemapSection } from "./sitemap.server";
-import { reviewKind, reviewPath } from "./page-reviews.server";
+import { reviewKind, reviewPath, sectionOf } from "./page-reviews.server";
 import { checkPage } from "./page-check.server";
 
 /**
@@ -37,22 +37,44 @@ export async function queuePrecheck(supabase: SupabaseClient, section: SitemapSe
   return picked.length;
 }
 
-/** How the queue stands: pages still waiting for their check, and checked pages nobody has reviewed yet. */
+/** Checked pages still in the public review inventory, oldest first. A merged/renamed/hidden page's
+ * historical review stays intact, but must not keep sending staff through a redirect to a page they finished.
+ * Use the same inventory as queuePrecheck, and the same list for both the counter and Next. */
+async function readyCheckedPaths(supabase: SupabaseClient): Promise<string[]> {
+  const rows: { path: string }[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await supabase.from("page_reviews").select("path")
+      .is("status", null).is("check_requested_at", null).not("ai_checked_at", "is", null)
+      .order("ai_checked_at", { ascending: true }).order("path", { ascending: true }).range(offset, offset + 999);
+    if (error) throw new Error("Could not load checked pages.");
+    rows.push(...(data || []));
+    if (!data || data.length < 1000) break;
+  }
+  if (!rows.length) return [];
+  const sections = new Set<SitemapSection>(["pages"]);
+  for (const { path } of rows) {
+    const section = sectionOf(path);
+    if (section) sections.add(section);
+  }
+  // Do not turn a failed inventory read into an apparently empty/finished queue.
+  const lists = await Promise.all([...sections].map((section) => sitemapEntries(supabase, section)));
+  const current = new Set(lists.flat().map((entry) => reviewPath(entry.path)).filter((path) => path && isReviewable(path)));
+  return rows.map(({ path }) => path).filter((path) => current.has(path));
+}
+
+/** How the queue stands: pages waiting for their check, and current checked pages nobody has reviewed yet. */
 export async function precheckState(supabase: SupabaseClient) {
   const [queued, ready] = await Promise.all([
     supabase.from("page_reviews").select("path", { count: "exact", head: true }).not("check_requested_at", "is", null),
-    supabase.from("page_reviews").select("path", { count: "exact", head: true })
-      .is("status", null).is("check_requested_at", null).not("ai_checked_at", "is", null),
+    readyCheckedPaths(supabase),
   ]);
-  return { queued: queued.count ?? 0, ready: ready.count ?? 0 };
+  if (queued.error) throw new Error("Could not load queued pages.");
+  return { queued: queued.count ?? 0, ready: ready.length };
 }
 
-/** The next checked page nobody has reviewed (oldest check first), other than the one just finished. */
+/** The next current checked page nobody has reviewed, excluding the page just finished or skipped. */
 export async function nextCheckedPath(supabase: SupabaseClient, from: string | null): Promise<string | null> {
-  const { data } = await supabase.from("page_reviews").select("path")
-    .is("status", null).is("check_requested_at", null).not("ai_checked_at", "is", null)
-    .neq("path", from || "").order("ai_checked_at", { ascending: true }).limit(1);
-  return data?.[0]?.path ?? null;
+  return (await readyCheckedPaths(supabase)).find((path) => path !== from) ?? null;
 }
 
 /** The cron's share of the queue: checks the oldest queued pages, a few at once, and clears each one's mark. */
