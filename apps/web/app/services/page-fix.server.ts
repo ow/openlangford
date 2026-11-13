@@ -4,7 +4,7 @@ import { getAiClient } from "./ai/index.server";
 import { renderPage } from "../lib/page-render.server";
 import { FLAG_PROBLEM_LABELS, entryLabel, keepStaffRatings, type PageFlag } from "../lib/page-review-types";
 import { judgeTopics, readPage, type TopicVerdict } from "./page-check.server";
-import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, listSuggestions, matterForPath, removableKey, removeEntry, setTopicHidden, type Suggestion } from "./page-links.server";
+import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, headingChildren, isHeadingOrder, listSuggestions, matterForPath, removableKey, removeEntry, repointMention, setTopicHidden, type Suggestion } from "./page-links.server";
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { bylawRecords } from "./bylaw-records.server";
 import { sourceRecordLines, sourcesFor } from "./sources.server";
@@ -58,13 +58,13 @@ const brief = (text: string, max: number) => {
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "edit_source", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "rewrite_decision", "unlink_address", "merge_address", "no_change", "cannot_fix"]),
+      "rewrite_summary", "edit_source", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "rewrite_decision", "unlink_address", "merge_address", "repoint_mention", "no_change", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. unlink_related: the related topic's id. Otherwise null."),
     other_matter_id: z.number().int().nullable().describe("merge_topic only, when two related topics below duplicate each other but not this page: the second one's id (to_matter_id is the first). Otherwise null."),
     document_ids: z.array(z.number().int()).nullable().describe("move_documents: the ids (doc-<id>) of the documents attached to the entry that belong to another item. Otherwise null."),
-    to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. Otherwise null."),
+    to_item_id: z.number().int().nullable().describe("move_documents: the id of the item at the same meeting they belong to, from the list given. repoint_mention: the id of the item under the heading that this topic is about. Otherwise null."),
     new_text: z.string().nullable().describe("rewrite_entry: the entry's new one-line description for this topic. rewrite_heading: the entry's new heading. rewrite_summary: the instruction for the summary writer. rewrite_decision: the decision's new plain line. Otherwise null."),
     source: z.string().nullable().describe("add_motion: the minutes passage word for word, from the motion through its outcome (\"That Council adopt Bylaw No. 1239. Carried.\"). set_stage, unlink_address, merge_address, and where the action rewrites text (rewrite_summary, rewrite_entry, rewrite_heading, rewrite_decision): the record's own words that support the new text, quoted exactly, at most 250 characters: the one sentence or clause that says it, never a whole passage. The summary writer only sees the topic's timeline, so without this quote it can't follow the instruction. Null for every other action."),
     ...EDIT_SOURCE_FIELDS,
@@ -255,6 +255,11 @@ ${attachments || "(No flagged entry has documents attached.)"}
   scanned copy put "CARRIED" under the item before). Give motion_text exactly as the minutes word it, motion_result, mover and seconder if named, and in
   "source" the minutes passage word for word from the motion through its outcome. It is saved only if that passage is
   in this meeting's minutes or reports and itself says the outcome; never add a motion the minutes don't record.
+- repoint_mention: a "mention-" entry that links only a section heading of the agenda ("5. PRESENTATIONS"), listed under
+  SECTION HEADINGS ON THIS PAGE with the items under it and their records. Give the entry's key and to_item_id, the
+  item under the heading this topic is about: the entry then links that item, with its own motions and reports
+  (a decision recorded under that item belongs to it: never add_motion or move_motion it onto the heading). If none
+  of the items is about this topic, remove_entry instead.
 - move_motion: an entry ("agenda-" or "mention-") whose decision is already recorded at its meeting but filed under
   no item: listed under "DECISIONS RECORDED AT THESE MEETINGS BUT FILED UNDER NO ITEM". Give the entry's key and the
   MOTION id. It is moved, never copied, and only when its wording names what the entry is about (the address, bylaw
@@ -447,7 +452,18 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"),
       await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
     const [heldBack, unfiled] = await Promise.all([heldBackMotions(supabase, ids), containerMotions(supabase, ids)]);
-    const records = [itemText, bylawText, sourceText, heldBack, unfiled, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
+    // A mention that links only a section heading: the items under it, with their records (repoint_mention).
+    const headings = new Map<string, Awaited<ReturnType<typeof headingChildren>>>();
+    const mentionIds = page.entries.filter((e) => e.key.startsWith("mention-")).map((e) => itemId(e.key)).filter(Number.isSafeInteger);
+    const { data: mentionRows } = mentionIds.length ? await supabase.from("agenda_items").select("id, item_order").in("id", mentionIds) : { data: [] };
+    for (const r of ((mentionRows || []) as any[]).filter((r) => isHeadingOrder(r.item_order))) {
+      const children = await headingChildren(supabase, r.id);
+      if (children.length) headings.set(`mention-${r.id}`, children);
+    }
+    const headingText = headings.size ? [`SECTION HEADINGS ON THIS PAGE (repoint_mention):\n${[...headings].map(([key, children]) =>
+      `- [${key}] is only a heading; under it: ${children.map((c) => `${c.id} "${c.item_order} ${c.title}"${c.matter_id ? ` (filed on topic ${c.matter_id}${c.matter_id === matterId ? ", this one" : ""})` : ""}`).join("; ")}`).join("\n")}`,
+      (await itemRecords(supabase, [...headings.values()].flat().map((c) => c.id))).text].join("\n") : "";
+    const records = [itemText, bylawText, sourceText, heldBack, unfiled, headingText, ...((reports || []) as any[]).map((r) => `REPORT ENTRY report-${r.id} (annual report page ${r.page}): ${r.quote}`),
       evidenceText, researchText].filter(Boolean).join("\n\n");
     // Topics holding entries staff accepted for this page (found entries just added, mentions kept earlier) are often
     // a topic of their own that's really this one (a lone 2019 extension of an agreement this page already has, a
@@ -696,6 +712,19 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         done.push(`Took ${result.address.address} off this topic's addresses: ${brief(step.reason, 200)}`);
         await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:unlink_address",
           detail: { property_id: String(result.address.id), matter_id: String(matterId), reason: step.reason.slice(0, 300) } });
+        continue;
+      }
+      if (step.action === "repoint_mention" && step.key && headings.has(step.key) && onPage.has(step.key) && step.to_item_id) {
+        try {
+          const said = await repointMention(supabase, matterId, itemId(step.key), step.to_item_id, requester.id);
+          fixedKeys.add(step.key);
+          delete lines[step.key];  // a line written for the heading would now describe another item
+          done.push(`${capital(entryLabel(step.key, flags))} linked only the agenda heading. ${said} ${brief(step.reason, 160)}`);
+          await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:repoint_mention",
+            detail: { from_item_id: String(itemId(step.key)), to_item_id: String(step.to_item_id), reason: step.reason.slice(0, 300) } });
+        } catch (error) {
+          left.push(`${step.reason} (${error instanceof Error ? error.message : "it didn't work"})`);
+        }
         continue;
       }
       if (step.action === "merge_address") {

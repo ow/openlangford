@@ -77,6 +77,10 @@ carries out fixes for the flags staff agreed with. This page explains where each
      alias's spelling onto the address it joined on every later run, and `property_privacy_flags()` keeps aliases
      hidden. The property page's agent has it too, offered the same civic number on a street of the same name.
      These actions live in `services/fix-ops.server.ts`.
+   - **Agenda headings:** `repoint_mention` re-points a mention that links only a section heading ("5.
+     PRESENTATIONS") at the item under it that the topic is about (`repointMention` in `page-links.server.ts`), or
+     drops it when the topic already shows that item. The planner sees each heading's items and their records, so a
+     motion recorded under the item stays there instead of being added to the heading.
    - **Moves and merges:** moving an agenda item to a named topic, and merging duplicate topics through the
      `merge_matters()` database function. The code is in `app/services/topic-moves.server.ts`.
    - **Status:** refreshing the status of the topics at each affected meeting, using the same rules as the

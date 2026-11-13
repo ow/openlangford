@@ -50,6 +50,36 @@ export function removableKey(key: string | null | undefined) {
 }
 
 /** Remove one timeline entry from a topic page. Returns what was removed, in words, for the bar. */
+/** An item that is only a section heading of its agenda ("5. PRESENTATIONS"): a bare number for its order. */
+export const isHeadingOrder = (order: string | null | undefined) => /^\d+\.?$/.test((order || "").trim());
+
+/** The items under a section heading at its meeting (5. → 5.1, 5.2…), for re-pointing a mention of the heading. */
+export async function headingChildren(supabase: SupabaseClient, itemId: number): Promise<{ id: number; item_order: string; title: string; matter_id: number | null }[]> {
+  const { data: heading } = await supabase.from("agenda_items").select("meeting_id, item_order").eq("id", itemId).maybeSingle();
+  if (!heading?.meeting_id || !isHeadingOrder(heading.item_order)) return [];
+  const prefix = `${String(heading.item_order).trim().replace(/\.$/, "")}.`;
+  const { data } = await supabase.from("agenda_items").select("id, item_order, title, matter_id").eq("meeting_id", heading.meeting_id).like("item_order", `${prefix}%`).order("id");
+  return ((data || []) as any[]).filter((i) => i.id !== itemId && String(i.item_order).length > prefix.length)
+    .map((i) => ({ id: i.id, item_order: i.item_order, title: String(i.title || "").split("\n")[0], matter_id: i.matter_id }));
+}
+
+/** A mention that links a section heading ("5. PRESENTATIONS") is re-pointed at the item under it that is about this
+ * topic. If the topic already shows that item (filed here, or mentioned), the heading's mention just comes off. */
+export async function repointMention(supabase: SupabaseClient, matterId: number, headingId: number, toItemId: number, userId: string): Promise<string> {
+  const children = await headingChildren(supabase, headingId);
+  const target = children.find((c) => c.id === toItemId);
+  if (!target) throw new Error("that item isn't under the heading at the same meeting");
+  const { data: existing } = await supabase.from("matter_links").select("id").eq("matter_id", matterId).eq("agenda_item_id", toItemId).eq("kind", "mention").eq("hidden", false);
+  if (target.matter_id === matterId || existing?.length) {
+    await removeEntry(supabase, matterId, `mention-${headingId}`, userId);
+    return `This topic already shows ${target.item_order} ${target.title}, so the heading's entry came off.`;
+  }
+  const { data, error } = await supabase.from("matter_links").update({ agenda_item_id: toItemId, ...decided(userId, "accepted") })
+    .eq("matter_id", matterId).eq("agenda_item_id", headingId).eq("kind", "mention").select("id");
+  if (error || !data?.length) throw new Error("the entry couldn't be re-pointed");
+  return `The entry now links ${target.item_order} ${target.title}.`;
+}
+
 export async function removeEntry(supabase: SupabaseClient, matterId: number, key: string, userId: string): Promise<string> {
   const [, kind, raw] = key.match(/^(mention|background|report|evidence)-(\d+)$/) || [];
   const id = Number(raw);

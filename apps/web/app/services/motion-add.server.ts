@@ -55,7 +55,7 @@ export async function addMotion(supabase: SupabaseClient, itemId: number, p: Mot
   const { data: existing } = await supabase.from("motions").select("id, agenda_item_id, text_content").eq("meeting_id", item.meeting_id);
   const twin = (existing || []).find((m: any) => normalise(m.text_content || "") === normalise(p.motion_text));
   if (twin) throw new Error(twin.agenda_item_id === itemId ? "the item already has that motion"
-    : `that motion is already recorded under item ${twin.agenda_item_id} at the same meeting (motion ${twin.id}); move it with move_motion, don't add it twice`);
+    : `that motion is already recorded under item ${twin.agenda_item_id} at the same meeting (motion ${twin.id}), so it stays there; if this entry is that item's heading, repoint_mention it to item ${twin.agenda_item_id}, and if the motion sits under the unfiled container, move_motion it`);
   // Every section of the meeting's minutes and reports: those of its documents, and those attached to its items.
   const [{ data: docs }, { data: items }] = await Promise.all([
     supabase.from("documents").select("id").eq("meeting_id", item.meeting_id),
