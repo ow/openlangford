@@ -229,16 +229,16 @@ export const UNLINK_ADDRESS_PROMPT = `- unlink_address: an address mapped to thi
   show the right address. The address stays on the site; it just stops being linked to this topic (and the map pin
   and "at this address" link go). Never unlink the only address the records support.`;
 
-export type MappedAddress = { id: number; address: string; slug: string; itemIds: number[] };
+export type MappedAddress = AddressRef & { itemIds: number[] };
 
 /** The addresses a topic is linked to (its own link and its items'), as its page maps them. */
 export async function mappedAddresses(supabase: SupabaseClient, matterId: number): Promise<MappedAddress[]> {
-  const { data } = await supabase.from("property_links").select("property_id, agenda_item_id, properties!inner(address, slug, hidden)")
+  const { data } = await supabase.from("property_links").select("property_id, agenda_item_id, properties!inner(address, slug, civic_number, hidden)")
     .eq("matter_id", matterId).eq("hidden", false).eq("properties.hidden", false);
   const out = new Map<number, MappedAddress>();
   for (const r of (data || []) as any[]) {
     const p = Array.isArray(r.properties) ? r.properties[0] : r.properties;
-    const a = out.get(r.property_id) ?? { id: r.property_id, address: p?.address || "", slug: p?.slug || "", itemIds: [] as number[] };
+    const a = out.get(r.property_id) ?? { id: r.property_id, address: p?.address || "", slug: p?.slug || "", civic_number: p?.civic_number || "", itemIds: [] as number[] };
     if (r.agenda_item_id && !a.itemIds.includes(r.agenda_item_id)) a.itemIds.push(r.agenda_item_id);
     out.set(r.property_id, a);
   }
@@ -247,7 +247,7 @@ export async function mappedAddresses(supabase: SupabaseClient, matterId: number
 
 /** The prompt block listing a topic's addresses. */
 export function addressesBlock(addresses: MappedAddress[]): string {
-  return addresses.length ? `ADDRESSES MAPPED TO THIS TOPIC (unlink_address by id):\n${addresses.map((a) =>
+  return addresses.length ? `ADDRESSES MAPPED TO THIS TOPIC (unlink_address or merge_address by id):\n${addresses.map((a) =>
     `- address-${a.id}: ${a.address}${a.itemIds.length ? ` (from item${a.itemIds.length === 1 ? "" : "s"} ${a.itemIds.join(", ")})` : ""}`).join("\n")}` : "";
 }
 
@@ -263,4 +263,59 @@ export async function unlinkAddress(supabase: SupabaseClient, matterId: number, 
   if (error) return { ok: false, why: "couldn't unlink the address" };
   ctx.addresses.splice(ctx.addresses.indexOf(address), 1);
   return { ok: true, address };
+}
+
+// ---------- Merging two spellings of one address ----------
+
+/** The plan field of merge_address (with UNLINK_ADDRESS_FIELDS' property_id, the address that goes away). */
+export const MERGE_ADDRESS_FIELDS = {
+  into_property_id: z.number().int().nullable().describe("merge_address: the id of the address that stays (property_id is the one merged into it). Otherwise null."),
+};
+
+/** The menu entry for merge_address, for an agent's prompt. */
+export const MERGE_ADDRESS_PROMPT = `- merge_address: two listed addresses are one lot spelled two ways (the same civic number on "Atkins Rd" and
+  "Atkins Avenue", where the rest of the record names it one way). Give property_id, the wrong spelling, and
+  into_property_id, the one that stays, and in "source" the record's words that give the right one. Everything linked
+  to the wrong spelling moves to the right one and its page redirects there; later meetings that use the wrong
+  spelling link to the right one too. Prefer this to unlink_address whenever the address is another spelling of one
+  that is listed. Never merge two different lots (different civic numbers) or a street.`;
+
+export type AddressRef = { id: number; address: string; slug: string; civic_number: string };
+
+/** Merge one address into another: its links (topics, items) and sources move to `into` (a link `into` already has
+ * is dropped, keeping `into`'s), and it becomes a hidden alias (properties.meta.merged_into) whose page redirects.
+ * The properties stage maps its spelling onto `into` from then on. Both must be lots with the same civic number. */
+export async function mergeAddress(supabase: SupabaseClient, from: AddressRef, into: AddressRef, by: string): Promise<string | null> {
+  if (from.id === into.id) return "they are the same address";
+  if (!from.civic_number || from.civic_number !== into.civic_number) return "they aren't the same civic number, so they're different lots";
+  const [{ data: fromLinks }, { data: intoLinks }, { data: row }] = await Promise.all([
+    supabase.from("property_links").select("id, agenda_item_id, matter_id").eq("property_id", from.id),
+    supabase.from("property_links").select("agenda_item_id, matter_id").eq("property_id", into.id),
+    supabase.from("properties").select("meta").eq("id", from.id).single(),
+  ]);
+  if ((row?.meta as any)?.merged_into) return "that address was already merged";
+  const has = new Set(((intoLinks || []) as any[]).map((l) => (l.agenda_item_id ? `i${l.agenda_item_id}` : `m${l.matter_id}`)));
+  const move: number[] = [], drop: number[] = [];
+  for (const l of (fromLinks || []) as any[]) (has.has(l.agenda_item_id ? `i${l.agenda_item_id}` : `m${l.matter_id}`) ? drop : move).push(l.id);
+  if (move.length) {
+    const { error } = await supabase.from("property_links").update({ property_id: into.id }).in("id", move);
+    if (error) return "couldn't move its links";
+  }
+  if (drop.length) await supabase.from("property_links").delete().in("id", drop);
+  // Sources: moved unless `into` already has the same one.
+  const [{ data: fromSources }, { data: intoSources }] = await Promise.all([
+    supabase.from("source_links").select("id, source_id").eq("property_id", from.id),
+    supabase.from("source_links").select("source_id").eq("property_id", into.id),
+  ]);
+  const hasSource = new Set(((intoSources || []) as any[]).map((s) => s.source_id));
+  const sourceMove = ((fromSources || []) as any[]).filter((s) => !hasSource.has(s.source_id)).map((s) => s.id);
+  const sourceDrop = ((fromSources || []) as any[]).filter((s) => hasSource.has(s.source_id)).map((s) => s.id);
+  if (sourceMove.length) await supabase.from("source_links").update({ property_id: into.id }).in("id", sourceMove);
+  if (sourceDrop.length) await supabase.from("source_links").delete().in("id", sourceDrop);
+  // Addresses merged into this one earlier now point at `into` directly.
+  const { data: earlier } = await supabase.from("properties").select("id, meta").contains("meta", { merged_into: from.id });
+  for (const e of (earlier || []) as any[]) await supabase.from("properties").update({ meta: { ...e.meta, merged_into: into.id } }).eq("id", e.id);
+  const { error } = await supabase.from("properties").update({ hidden: true,
+    meta: { ...((row?.meta || {}) as Record<string, any>), merged_into: into.id, merged: { by, at: new Date().toISOString(), from_address: from.address } } }).eq("id", from.id);
+  return error ? "couldn't mark it merged" : null;
 }

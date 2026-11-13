@@ -1,11 +1,11 @@
-import { Link, useFetcher, useRouteLoaderData } from "react-router";
+import { Link, redirect, useFetcher, useRouteLoaderData } from "react-router";
 import { requireModerator } from "../lib/auth.server";
 import { AdminOnly } from "../components/ui/admin-only";
 import { Clock, FileText, Landmark, MapPin } from "lucide-react";
 import type { Route } from "./+types/property-detail";
 import { getSupabaseAdminClient } from "../lib/supabase.server";
 import { unavailable } from "../lib/loader-errors";
-import { getPropertyBySlug, propertyPath } from "../services/properties";
+import { getPropertyBySlug, mergedAddressPath, propertyPath } from "../services/properties";
 import { MattersMap } from "../components/matters-map";
 import { RecordsSparkline } from "../components/records-sparkline";
 import { Badge } from "../components/ui/badge";
@@ -62,7 +62,12 @@ export const meta: Route.MetaFunction = ({ data }) => {
 export async function loader({ params, request }: Route.LoaderArgs) {
   // getPropertyBySlug throws on a failed query and returns null only when no row matched.
   const result = await getPropertyBySlug(getSupabaseAdminClient(), params.slug).catch((error) => { throw unavailable(error); });
-  if (!result) throw new Response("Property Not Found", { status: 404 });
+  if (!result) {
+    // A spelling merged into another address (properties.meta.merged_into) redirects to that address's page.
+    const target = await mergedAddressPath(getSupabaseAdminClient(), params.slug);
+    if (target) throw redirect(target, 301);
+    throw new Response("Property Not Found", { status: 404 });
+  }
   await notFoundIfHidden(request, "properties", result.property.id);
   // Each topic's picture from its staff report (the pipeline's pick, matters.meta.images), as a public URL.
   const images: Record<number, string> = {};

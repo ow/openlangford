@@ -9,7 +9,7 @@ import { logStaffAction } from "./staff.server";
 import { splitLead, withClosing } from "../lib/property-lead";
 import { rewriteSummaries } from "./topic-summaries.server";
 import { sourcesFor, sourcesForMatters, sourceRecordLines } from "./sources.server";
-import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, capital, checkFollowed, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, saveEditorNotes, squash, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
+import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, MERGE_ADDRESS_FIELDS, MERGE_ADDRESS_PROMPT, UNLINK_ADDRESS_FIELDS, mergeAddress, type AddressRef, capital, checkFollowed, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, saveEditorNotes, squash, summaryInstruction, unfollowedLine, writeEntryText } from "./fix-ops.server";
 import type { Source } from "../lib/sources";
 import { getMatterReportMentions, type ReportMention } from "./matters";
 import type { StaffRole } from "../lib/auth.server";
@@ -30,12 +30,14 @@ export const PROPERTY_FIX_BUDGET_MS = 90_000;
 const LEAD_MAX = 650;
 
 const Action = z.object({
-  action: z.enum(["unlink_entry", "rewrite_lead", "edit_source", "rewrite_entry", "rewrite_summary", "no_change", "cannot_fix"]),
+  action: z.enum(["unlink_entry", "rewrite_lead", "edit_source", "rewrite_entry", "rewrite_summary", "merge_address", "no_change", "cannot_fix"]),
   key: z.string().nullable().describe("The key of the flag this answers (matter-<id>, item-<id> or source-<id>), or null for the whole page or the note. unlink_entry: the entry to take off (matter-<id> or item-<id>)."),
   entry_key: z.string().nullable().describe("rewrite_entry: the row whose line changes, as RECORDS keys it: step-<id> (a step of a topic), item-<id> (a meeting item linked to this address) or report-<id> (an annual report row). Otherwise null."),
   ...EDIT_SOURCE_FIELDS,
+  ...UNLINK_ADDRESS_FIELDS,
+  ...MERGE_ADDRESS_FIELDS,
   new_text: z.string().nullable().describe("rewrite_summary: the instruction for the topic's summary writer, one or two sentences saying what the text must say or stop saying (it is followed on every later rewrite too). rewrite_entry: the row's new line, one plain sentence (under 140 characters) saying what happened at this address. rewrite_lead: the page's new lead. By default one or two plain sentences (under 320 characters), outcome first, saying what happened at this address and whether it affects the reader; when staff asked for another shape (a timeline, more detail), what they asked for, up to 600 characters. The closing \"Mentioned in council meetings…\" line is kept for you. Otherwise null."),
-  source: z.string().nullable().describe("rewrite_lead, rewrite_entry, edit_source, rewrite_summary: the record's (or the source text's) own words the change rests on, quoted exactly, at most 250 characters. Otherwise null."),
+  source: z.string().nullable().describe("rewrite_lead, rewrite_entry, edit_source, rewrite_summary, merge_address: the record's (or the source text's) own words the change rests on, quoted exactly, at most 250 characters. Otherwise null."),
   not_supported: z.string().nullable().describe("rewrite_lead: the parts of staff's request the records don't support, so you left them out (say which, in one sentence). null when everything asked is in the lead."),
   reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
 });
@@ -96,6 +98,9 @@ Actions, one entry in "actions" per flag (and per note):
   An entry counts as passing when the topic's record lists many addresses and this is one of them ("addresses the
   pipeline linked to this topic"), unless the records show something decided or done about this address in particular.
 ${EDIT_SOURCE_PROMPT}
+${MERGE_ADDRESS_PROMPT}
+  This page is address-${property.id}; the other spellings of its civic number are listed under OTHER SPELLINGS below.
+  Either way round works: merge this page into the right spelling, or a wrong spelling into this page.
 - rewrite_entry: one row's line is repetitive, vague or says more than the record does. entry_key is the row (step-<id>,
   item-<id> or report-<id> in RECORDS), key is the flag it answers. Write one plain sentence (under 140 characters) of what the
   record shows happened at this address; when the record is silent on the detail, say so ("Staff updated the
@@ -111,6 +116,22 @@ Work only from the records below. Never invent an outcome, a number or a date.
 
 RECORDS:
 ${records}`;
+}
+
+/** Other lots with this one's civic number on a street of the same name (another spelling of the same address),
+ * with the titles of the items that name each, for the planner. Exported for tests. */
+export async function otherSpellings(supabase: SupabaseClient, property: Property): Promise<{ list: AddressRef[]; text: string }> {
+  const name = (property.street || "").split(/\s+/)[0];
+  if (!property.civic_number || !name) return { list: [], text: "" };
+  const { data } = await supabase.from("properties").select("id, slug, address, civic_number, meta").eq("civic_number", property.civic_number)
+    .ilike("street", `${name} %`).eq("hidden", false).neq("id", property.id).limit(10);
+  const list = ((data || []) as any[]).filter((p) => !p.meta?.merged_into).map((p) => ({ id: p.id, slug: p.slug, address: p.address, civic_number: p.civic_number }));
+  if (!list.length) return { list, text: "" };
+  const { data: links } = await supabase.from("property_links").select("property_id, agenda_items(title)").in("property_id", list.map((p) => p.id)).eq("hidden", false).limit(60);
+  const titles = (id: number) => [...new Set(((links || []) as any[]).filter((l) => l.property_id === id)
+    .map((l) => squash(String((Array.isArray(l.agenda_items) ? l.agenda_items[0] : l.agenda_items)?.title || "").split("\n")[0])).filter(Boolean))].slice(0, 5);
+  return { list, text: `OTHER SPELLINGS OF THIS ADDRESS (merge_address by id; this page is address-${property.id}):\n${list.map((p) =>
+    `- address-${p.id}: ${p.address}${titles(p.id).length ? `\n  items that name it: ${titles(p.id).map((t) => `"${t}"`).join("; ")}` : " (nothing visible linked to it)"}`).join("\n")}` };
 }
 
 /** One revision of a lead that didn't do what staff asked: the same lead with what is missing added, from the records only. */
@@ -209,7 +230,9 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${squash(i.finding!.explanation).slice(0, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"), await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
-    const records = [propertyRecords(property as Property, lead, topics, items, steps, sources, reports), researchText].filter(Boolean).join("\n\n");
+    // The same civic number on a street of the same name ("245 Atkins Road" beside "245 Atkins Avenue"): merge_address.
+    const others = await otherSpellings(supabase, property as Property);
+    const records = [propertyRecords(property as Property, lead, topics, items, steps, sources, reports), others.text, researchText].filter(Boolean).join("\n\n");
 
     progress("Planning the fix…");
     const result = await getAiClient().json({
@@ -248,6 +271,20 @@ export async function fixPropertyPage(supabase: SupabaseClient, origin: string, 
         if (key) fixedKeys.add(key); else pageFixed = true;
         done.push(`Took ${entryLabel(step.key, flags)} off this page: ${step.reason}`);
         await log("agent:unlink_property_entry", { property_id: String(property.id), [m[1] === "matter" ? "matter_id" : "agenda_item_id"]: String(id), reason: step.reason.slice(0, 300) });
+        continue;
+      }
+      if (step.action === "merge_address") {
+        const self: AddressRef = { id: property.id, address: property.address, slug: property.slug, civic_number: property.civic_number || "" };
+        const pick = (id: number | null) => (id === property.id ? self : others.list.find((o) => o.id === id));
+        const from = pick(step.property_id), into = pick(step.into_property_id);
+        const why = !(key || pageLevel) ? "nothing flagged on this page asks for it"
+          : !from || !into || (from.id !== property.id && into.id !== property.id) ? "it can only merge this address with one of the other spellings listed"
+          : !quoteInRecords(step.source, records) ? "its quote isn't the record's exact words"
+          : await mergeAddress(supabase, from, into, requester.id);
+        if (why) { left.push(`${step.reason} (${why}, so nothing changed)`); continue; }
+        if (key) fixedKeys.add(key); else pageFixed = true;
+        done.push(`Merged ${from!.address} into ${into!.address}; ${from!.id === property.id ? "this page now redirects there" : "its page now redirects here"}: ${step.reason}`);
+        await log("agent:merge_address", { from: String(from!.id), into: String(into!.id), reason: step.reason.slice(0, 300) });
         continue;
       }
       if (step.action === "edit_source") {

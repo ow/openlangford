@@ -86,6 +86,18 @@ export async function sameSiteTopics(supabase: SupabaseClient, matterId: number)
     .sort((a, b) => String(a.first_seen || "").localeCompare(String(b.first_seen || "")));
 }
 
+/** The page an address merged into another now lives at (following earlier merges), or null. */
+export async function mergedAddressPath(supabase: SupabaseClient, slug: string): Promise<string | null> {
+  let { data: row } = await supabase.from("properties").select("meta").eq("slug", slug).maybeSingle();
+  for (let hops = 0; hops < 5 && (row?.meta as any)?.merged_into; hops++) {
+    const { data: next } = await supabase.from("properties").select("slug, hidden, meta").eq("id", (row!.meta as any).merged_into).maybeSingle();
+    if (!next) return null;
+    if (!(next.meta as any)?.merged_into) return next.hidden ? null : propertyPath(next);
+    row = next as any;
+  }
+  return null;
+}
+
 /** One property: its matters (newest activity first) and agenda items that named it outside any matter. */
 export async function getPropertyBySlug(supabase: SupabaseClient, slug: string) {
   // A hidden lot (a resident's home known only from public input) has no page: same as no lot at all.

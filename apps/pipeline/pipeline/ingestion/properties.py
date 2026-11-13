@@ -267,9 +267,15 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
         stats["sample"] = sorted(groups, key=lambda k: -len(groups[k]))[:15]
         return stats
 
-    existing = {p["slug"]: p for p in _pages(lambda: supabase.table("properties").select("id,slug,geo").order("id"))}
+    existing = {p["slug"]: p for p in _pages(lambda: supabase.table("properties").select("id,slug,geo,meta").order("id"))}
+    # An address staff (or a fix agent) merged into another (meta.merged_into, e.g. "245 Atkins Road" into
+    # "245 Atkins Avenue"): every mention of it links to the address it was merged into, and the alias row stays,
+    # hidden, so its old page redirects and the next run maps it the same way.
+    alias = {slug: p["meta"]["merged_into"] for slug, p in existing.items() if (p.get("meta") or {}).get("merged_into")}
     rows, now = [], datetime.now(timezone.utc).isoformat()
     for key in groups:
+        if slug_of(key) in alias:
+            continue
         geo = None
         if points.get(key):
             geo = {"lat": statistics.median(p["lat"] for p in points[key]), "lng": statistics.median(p["lng"] for p in points[key]),
@@ -286,7 +292,7 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
         for start in range(0, len(batch), 500):
             for row in supabase.table("properties").upsert(batch[start:start + 500], on_conflict="slug").execute().data or []:
                 ids[row["slug"]] = row["id"]
-    ids = {**{s: p["id"] for s, p in existing.items()}, **ids}
+    ids = {**{s: p["id"] for s, p in existing.items()}, **ids, **alias}
 
     links = _pages(lambda: supabase.table("property_links").select("id,property_id,agenda_item_id,matter_id,source,hidden").order("id"))
     have = {(l["property_id"], l["agenda_item_id"], None if l["agenda_item_id"] else l["matter_id"]): l for l in links}
@@ -305,6 +311,7 @@ def build_properties(supabase, *, dry_run: bool = False, geocode_limit: int | No
     for link_id, matter_id in updates:  # an item re-filed under another matter, or a matter merged
         supabase.table("property_links").update({"matter_id": matter_id}).eq("id", link_id).execute()
     linked = {pid for pid, _, _ in want} | {l["property_id"] for l in links if l["source"] == "admin" or l["hidden"]}
+    linked |= {existing[slug]["id"] for slug in alias}  # aliases stay: they redirect and keep the mapping
     linked |= {ids[slug_of(key)] for key in groups if is_street(key)}
     orphans = [pid for slug, pid in ids.items() if pid not in linked]
     for start in range(0, len(orphans), 200):

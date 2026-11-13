@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { addressesBlock, checkFollowed, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine, unlinkAddress,
+import { addressesBlock, mergeAddress, checkFollowed, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine, unlinkAddress,
   writeEntryText } from "../../app/services/fix-ops.server";
 
 let verdicts: { followed: boolean; missing: string }[] = [];
@@ -143,8 +143,8 @@ describe("rewriteDecision", () => {
 });
 
 describe("unlinkAddress", () => {
-  const addresses = () => [{ id: 11274, address: "245 Atkins Avenue", slug: "245-atkins-avenue", itemIds: [10581, 10632] },
-    { id: 12734, address: "245 Atkins Road", slug: "245-atkins-road", itemIds: [10581] }];
+  const addresses = () => [{ id: 11274, address: "245 Atkins Avenue", slug: "245-atkins-avenue", civic_number: "245", itemIds: [10581, 10632] },
+    { id: 12734, address: "245 Atkins Road", slug: "245-atkins-road", civic_number: "245", itemIds: [10581] }];
   const records = "ITEM 10632: DVP11-0036 - 245 Atkins Avenue";
   function linkFake() {
     const hidden: { property_id: number; matter_id: number }[] = [];
@@ -166,5 +166,48 @@ describe("unlinkAddress", () => {
     expect(await unlinkAddress(client, 2757, { property_id: 12734, source: "the street is Atkins Avenue" }, { addresses: addresses(), records })).toMatchObject({ ok: false });
     expect(hidden).toEqual([]);
     expect(addressesBlock(addresses())).toContain("address-12734: 245 Atkins Road (from item 10581)");
+  });
+});
+
+describe("mergeAddress", () => {
+  /** property_links, source_links and properties in memory, with the query shapes mergeAddress uses. */
+  function db() {
+    const t: Record<string, any[]> = {
+      property_links: [{ id: 1, property_id: 2, agenda_item_id: 10581, matter_id: 2757 }, { id: 2, property_id: 2, agenda_item_id: 99, matter_id: null },
+        { id: 3, property_id: 1, agenda_item_id: 10581, matter_id: 2757 }],
+      source_links: [], properties: [{ id: 1, meta: {} }, { id: 2, meta: {} }, { id: 3, meta: { merged_into: 2 } }],
+    };
+    const where = (rows: any[], f: (r: any) => boolean) => rows.filter(f);
+    const client: any = { from: (table: string) => {
+      const rows = t[table];
+      const q = (f: (r: any) => boolean) => ({
+        eq: (c: string, v: any) => q((r) => f(r) && r[c] === v),
+        in: (c: string, vs: any[]) => q((r) => f(r) && vs.includes(r[c])),
+        contains: (_c: string, v: any) => q((r) => f(r) && r.meta?.merged_into === v.merged_into),
+        single: async () => ({ data: where(rows, f)[0] ?? null }),
+        then: (ok: any) => Promise.resolve({ data: where(rows, f), error: null }).then(ok),
+      });
+      return {
+        select: () => q(() => true),
+        update: (patch: any) => ({ in: async (c: string, vs: any[]) => { for (const r of rows) if (vs.includes(r[c])) Object.assign(r, patch); return { error: null }; },
+          eq: async (c: string, v: any) => { for (const r of rows) if (r[c] === v) Object.assign(r, patch); return { error: null }; } }),
+        delete: () => ({ in: async (c: string, vs: any[]) => { t[table] = rows.filter((r) => !vs.includes(r[c])); return { error: null }; } }),
+      };
+    } };
+    return { client, t };
+  }
+  const road = { id: 2, address: "245 Atkins Road", slug: "245-atkins-road", civic_number: "245" };
+  const avenue = { id: 1, address: "245 Atkins Avenue", slug: "245-atkins-avenue", civic_number: "245" };
+
+  it("moves the links the right spelling lacks, drops the ones it has, and leaves a hidden alias", async () => {
+    const { client, t } = db();
+    expect(await mergeAddress(client, road, avenue, "u1")).toBeNull();
+    expect(t.property_links.map((l) => [l.id, l.property_id])).toEqual([[2, 1], [3, 1]]);
+    expect(t.properties.find((p) => p.id === 2)).toMatchObject({ hidden: true, meta: { merged_into: 1 } });
+    expect(t.properties.find((p) => p.id === 3)!.meta.merged_into).toBe(1);
+  });
+  it("refuses different civic numbers", async () => {
+    const { client } = db();
+    expect(await mergeAddress(client, road, { ...avenue, civic_number: "247" }, "u1")).toMatch(/different lots/);
   });
 });

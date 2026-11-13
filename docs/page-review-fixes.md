@@ -71,7 +71,12 @@ carries out fixes for the flags staff agreed with. This page explains where each
      (`motions.meta.manual.summary`), so a re-ingest or a motion-summary run keeps it and stores its own as `auto`.
    - **Addresses:** `unlink_address` takes an address off the topic (a misspelled street, a lot named in passing)
      by hiding its `property_links` rows for that topic; the properties stage keeps hidden links. It never takes
-     off the topic's last address. Both actions live in `services/fix-ops.server.ts`.
+     off the topic's last address. `merge_address` merges two spellings of one lot (same civic number, e.g.
+     "245 Atkins Road" into "245 Atkins Avenue"): links and sources move to the right spelling, and the wrong one
+     becomes a hidden alias (`properties.meta.merged_into`) whose page 301-redirects. The properties stage maps the
+     alias's spelling onto the address it joined on every later run, and `property_privacy_flags()` keeps aliases
+     hidden. The property page's agent has it too, offered the same civic number on a street of the same name.
+     These actions live in `services/fix-ops.server.ts`.
    - **Moves and merges:** moving an agenda item to a named topic, and merging duplicate topics through the
      `merge_matters()` database function. The code is in `app/services/topic-moves.server.ts`.
    - **Status:** refreshing the status of the topics at each affected meeting, using the same rules as the
