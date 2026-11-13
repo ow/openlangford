@@ -167,7 +167,7 @@ export async function writeEntryText(supabase: SupabaseClient, matterId: number,
 
 /** The plan field of rewrite_decision, spread into an agent's action schema. */
 export const REWRITE_DECISION_FIELDS = {
-  decision_id: z.number().int().nullable().describe("rewrite_decision: the decision's id (the number after \"decision-\"). fold_amended: the original wording's id. Otherwise null."),
+  decision_id: z.number().int().nullable().describe("rewrite_decision: the decision's id (the number after \"decision-\"). fold_amended: the original wording's id. fold_duplicate: the repeat's id. Otherwise null."),
 };
 
 /** The menu entry for rewrite_decision, for an agent's prompt. */
@@ -324,7 +324,7 @@ export async function mergeAddress(supabase: SupabaseClient, from: AddressRef, i
 
 /** The plan field of fold_amended (with REWRITE_DECISION_FIELDS' decision_id, the original motion). */
 export const FOLD_AMENDED_FIELDS = {
-  amended_decision_id: z.number().int().nullable().describe("fold_amended: the id of the decision that is the motion as amended (decision_id is the original wording it replaced). Otherwise null."),
+  amended_decision_id: z.number().int().nullable().describe("fold_amended: the id of the decision that is the motion as amended (decision_id is the original wording it replaced). fold_duplicate: the id of the copy that stays (decision_id is the repeat). Otherwise null."),
 };
 
 /** The menu entry for fold_amended, for an agent's prompt. */
@@ -347,4 +347,28 @@ export async function foldAmended(supabase: SupabaseClient, step: { decision_id:
   const { error } = await supabase.from("motions").update({ meta: { ...meta, amended_by: amended.id,
     amended_note: { by: ctx.by, at: new Date().toISOString(), source: squash(step.source || "").slice(0, 400) } } }).eq("id", original.id);
   return error ? { ok: false, why: "couldn't save it" } : { ok: true, original, amended };
+}
+
+/** The menu entry for fold_duplicate, for an agent's prompt. */
+export const FOLD_DUPLICATE_PROMPT = `- fold_duplicate: the same motion is stored twice under one entry (the same words and the same outcome, listed twice
+  in DECISIONS ON THIS PAGE). Give decision_id, the repeat, and amended_decision_id, the copy that stays (the one
+  with the mover, seconder or votes when only one has them). It is checked word for word; the repeat stays in the
+  record and the page shows the decision once. When the wording differs because of an amendment, use fold_amended.`;
+
+const sameWords = (a: string, b: string) => a.toLowerCase().replace(/\W+/g, "") === b.toLowerCase().replace(/\W+/g, "");
+
+/** Mark a motion as a repeat of another under the same item (motions.meta.duplicate_of): the same words and outcome. */
+export async function foldDuplicate(supabase: SupabaseClient, step: { decision_id: number | null; amended_decision_id: number | null },
+  ctx: { decisions: DecisionLine[]; by: string }): Promise<{ ok: true; repeat: DecisionLine; kept: DecisionLine } | { ok: false; why: string }> {
+  const repeat = ctx.decisions.find((d) => d.id === step.decision_id), kept = ctx.decisions.find((d) => d.id === step.amended_decision_id);
+  if (!repeat || !kept || repeat.id === kept.id) return { ok: false, why: "both decisions must be on this page" };
+  if (repeat.itemId !== kept.itemId) return { ok: false, why: "the two decisions are under different entries" };
+  const { data: rows } = await supabase.from("motions").select("id, text_content, result, meta").in("id", [repeat.id, kept.id]);
+  const a = ((rows || []) as any[]).find((r) => r.id === repeat.id), b = ((rows || []) as any[]).find((r) => r.id === kept.id);
+  if (!a || !b) return { ok: false, why: "a decision couldn't be read" };
+  if (!sameWords(a.text_content || "", b.text_content || "") || (a.result || "") !== (b.result || "")) return { ok: false, why: "their words or outcomes differ, so they aren't the same motion" };
+  if ((b.meta as any)?.duplicate_of === repeat.id || (b.meta as any)?.amended_by === repeat.id) return { ok: false, why: "the copy that stays is already folded into the other" };
+  const { error } = await supabase.from("motions").update({ meta: { ...((a.meta || {}) as Record<string, any>), duplicate_of: kept.id,
+    duplicate_note: { by: ctx.by, at: new Date().toISOString() } } }).eq("id", repeat.id);
+  return error ? { ok: false, why: "couldn't save it" } : { ok: true, repeat, kept };
 }

@@ -7,7 +7,7 @@ import { findingText, investigate, investigatedRecords, investigationLine, needs
 import { applyRecheck, recheckSummary, flagLabel } from "../lib/page-recheck";
 import { logStaffAction } from "./staff.server";
 import { highlightPoints } from "../lib/meeting-summary";
-import { capital, normal, quoteInRecords, squash } from "./fix-ops.server";
+import { FOLD_AMENDED_FIELDS, FOLD_AMENDED_PROMPT, FOLD_DUPLICATE_PROMPT, REWRITE_DECISION_FIELDS, capital, decisionLines, decisionsBlock, foldAmended, foldDuplicate, normal, quoteInRecords, squash } from "./fix-ops.server";
 import type { StaffRole } from "../lib/auth.server";
 
 /**
@@ -28,11 +28,13 @@ export const MEETING_FIX_BUDGET_MS = 90_000;
 const DESCRIPTION_MAX = 155;
 
 const Action = z.object({
-  action: z.enum(["rewrite_item_summary", "rewrite_highlight", "remove_highlight", "rewrite_description", "set_item_start", "no_change", "cannot_fix"]),
+  action: z.enum(["rewrite_item_summary", "rewrite_highlight", "remove_highlight", "rewrite_description", "set_item_start", "fold_amended", "fold_duplicate", "no_change", "cannot_fix"]),
   key: z.string().nullable().describe("The entry's key (item-<id>) for rewrite_item_summary, or the key of the flag answered; null for a highlight, the description or the whole page."),
   index: z.number().int().nullable().describe("rewrite_highlight and remove_highlight: the highlight's number as listed (0-based). Otherwise null."),
   new_text: z.string().nullable().describe("rewrite_item_summary: the item's new summary, one to three plain sentences, outcome first. rewrite_highlight: the new highlight, one sentence. rewrite_description: the new description, under 150 characters, starting with the date as the old one does. Otherwise null."),
-  source: z.string().nullable().describe("Where the action rewrites text: the record's own words that support it, quoted exactly, at most 250 characters. set_item_start: the words spoken at the moment the item begins, copied exactly from one TIMED TRANSCRIPT line (the text after the speaker's name, or a run of it at least 25 characters long). Otherwise null."),
+  ...REWRITE_DECISION_FIELDS,
+  ...FOLD_AMENDED_FIELDS,
+  source: z.string().nullable().describe("fold_amended: the minutes' words that show the amendment. Where the action rewrites text: the record's own words that support it, quoted exactly, at most 250 characters. set_item_start: the words spoken at the moment the item begins, copied exactly from one TIMED TRANSCRIPT line (the text after the speaker's name, or a run of it at least 25 characters long). Otherwise null."),
   reason: z.string().describe("One short sentence a resident would understand (under 30 words): what you're doing and why, or why it can't be done."),
 });
 const PlanSchema = z.object({ actions: z.array(Action) });
@@ -125,7 +127,7 @@ Before planning you searched and read the City's records for each problem ("What
 rests on are among the records below). Act on what you found: it is the record's own words, not a guess.
 
 What the page's own text is (everything else on it, titles, motions, votes, attendance, is the record itself and
-can't be edited here):
+can't be edited here, except that a decision shown twice can be folded so it shows once):
 The meeting's highlights, as listed (0-based):
 ${highlights?.bullets.length ? highlights.bullets.map((b, i) => `  ${i}. ${b}`).join("\n") : "  (none)"}
 The page's description (search results and share cards): "${description}"
@@ -148,6 +150,8 @@ What you can do:
   there. An item shown as lasting too long is fixed by setting the start of the item after it (give that item's
   key). The words may come from the TIMED TRANSCRIPT below or from a transcript passage you read while
   researching: they are looked up in the whole meeting's transcript. Only when the line is clearly that item's start.
+${FOLD_AMENDED_PROMPT.replace("the topic's timeline shows only the amended decision", "the page shows only the amended decision")}
+${FOLD_DUPLICATE_PROMPT}
 - no_change: when the editor asks a question and the answer is that the page is right as it is, or an agreed
   problem turns out not to be one. Say why in "reason", from the records. Give the key of the entry, or null.
 - cannot_fix: the problem is in the record itself (a wrong seconder or vote count, a document filed under the wrong
@@ -239,7 +243,9 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${brief(i.finding!.explanation, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"), await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
-    const records = [covered.text, transcript, researchText].filter(Boolean).join("\n\n");
+    // The decisions under the items in scope (fold_amended, fold_duplicate), each motion in full.
+    const decisions = await decisionLines(supabase, recordIds);
+    const records = [covered.text, decisionsBlock(decisions, (id) => `item-${id}`), transcript, researchText].filter(Boolean).join("\n\n");
     if (!records) return finish("needs_work", "The agent found no records for this meeting to work from. This one needs a person.");
 
     progress("Planning the fix…");
@@ -265,6 +271,17 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
       if (step.action === "no_change") { answered.push(step.reason); if (key) fixedKeys.add(key); else if (agreedKeys.has(null)) pageFixed = true; continue; }
       if (step.action === "cannot_fix") { left.push(step.reason); continue; }
       const text = squash(step.new_text || "");
+      if (step.action === "fold_amended" || step.action === "fold_duplicate") {
+        const result = step.action === "fold_amended"
+          ? await foldAmended(supabase, step, { decisions, records, by: requester.id })
+          : await foldDuplicate(supabase, step, { decisions, by: requester.id });
+        if (!result.ok) { left.push(`${step.reason} (${result.why}, so nothing changed)`); continue; }
+        const itemId = "original" in result ? result.original.itemId : result.kept.itemId;
+        if (key) fixedKeys.add(key); else if (agreedKeys.has(`item-${itemId}`)) fixedKeys.add(`item-${itemId}`); else pageFixed = true;
+        done.push(`${capital(entryLabel(`item-${itemId}`, flags))} now shows its decision once${step.action === "fold_amended" ? ", as amended" : ""}; the other stays in the record: ${brief(step.reason, 160)}`);
+        await log(`agent:${step.action}`, { motion_id: String(step.decision_id), into: String(step.amended_decision_id), reason: step.reason.slice(0, 300) });
+        continue;
+      }
       if (step.action === "rewrite_item_summary") {
         const id = itemOf(step.key);
         const item = items.find((i) => i.id === id);

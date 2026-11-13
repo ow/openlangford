@@ -84,7 +84,10 @@ carries out fixes for the flags staff agreed with. This page explains where each
    - **Amendments:** `fold_amended` handles minutes that record a motion, an amendment and then "the main motion
      as amended". The original wording gets `motions.meta.amended_by`, and the topic timeline shows only the amended
      decision while both sit under the same item; the record and the meeting page keep both, and re-ingest keeps the
-     mark. The planner sees each decision's motion in full, never cut.
+     mark. The planner sees each decision's motion in full, never cut. `fold_duplicate` folds the same motion
+     stored twice (checked word for word, same outcome) with `motions.meta.duplicate_of`. Both folds apply on topic
+     timelines and meeting pages (`withoutFoldedMotions` in `lib/motion-utils.ts`), and the meeting page's agent has
+     both actions too.
    - **Moves and merges:** moving an agenda item to a named topic, and merging duplicate topics through the
      `merge_matters()` database function. The code is in `app/services/topic-moves.server.ts`.
    - **Status:** refreshing the status of the topics at each affected meeting, using the same rules as the

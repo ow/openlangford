@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { addressesBlock, foldAmended, mergeAddress, checkFollowed, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine, unlinkAddress,
+import { addressesBlock, foldAmended, foldDuplicate, mergeAddress, checkFollowed, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine, unlinkAddress,
   writeEntryText } from "../../app/services/fix-ops.server";
 
 let verdicts: { followed: boolean; missing: string }[] = [];
@@ -227,5 +227,24 @@ describe("foldAmended", () => {
     expect(await foldAmended(client, { decision_id: 9504, amended_decision_id: 1, source: "On the Main Motion as Amended" }, { decisions: decisions(), records: minutes, by: "u1" })).toMatchObject({ ok: false });
     expect(await foldAmended(client, { decision_id: 9504, amended_decision_id: 9508, source: "the Sustainable Development Advisory Committee recommend" }, { decisions: decisions(), records: minutes, by: "u1" })).toMatchObject({ ok: false });
     expect(updates).toEqual([]);
+  });
+});
+
+describe("foldDuplicate", () => {
+  const decisions = () => [{ id: 7484, itemId: 13403, text: "THAT Council adopt the minutes.", summary: null }, { id: 7485, itemId: 13403, text: "THAT Council adopt the minutes", summary: null }];
+  function rows(b: string, result = "CARRIED") {
+    const updates: any[] = [];
+    const data = [{ id: 7484, text_content: "THAT Council adopt the minutes.", result: "CARRIED", meta: {} }, { id: 7485, text_content: b, result, meta: {} }];
+    const client: any = { from: () => ({ select: () => ({ in: async () => ({ data }) }), update: (patch: any) => ({ eq: async (_c: string, id: number) => { updates.push({ id, patch }); return { error: null }; } }) }) };
+    return { client, updates };
+  }
+  it("marks the repeat when the words and outcome match", async () => {
+    const { client, updates } = rows("THAT Council adopt the minutes");
+    expect(await foldDuplicate(client, { decision_id: 7484, amended_decision_id: 7485 }, { decisions: decisions(), by: "u1" })).toMatchObject({ ok: true });
+    expect(updates[0]).toMatchObject({ id: 7484, patch: { meta: { duplicate_of: 7485 } } });
+  });
+  it("refuses different words or outcomes", async () => {
+    expect(await foldDuplicate(rows("THAT Council adopt the amended minutes").client, { decision_id: 7484, amended_decision_id: 7485 }, { decisions: decisions(), by: "u1" })).toMatchObject({ ok: false });
+    expect(await foldDuplicate(rows("THAT Council adopt the minutes", "DEFEATED").client, { decision_id: 7484, amended_decision_id: 7485 }, { decisions: decisions(), by: "u1" })).toMatchObject({ ok: false });
   });
 });

@@ -75,7 +75,7 @@ import {
 } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { cn, formatDate, formatRelativeTime } from "../lib/utils";
-import { normalizeMotionResult } from "../lib/motion-utils";
+import { normalizeMotionResult, withoutFoldedMotions } from "../lib/motion-utils";
 import {
   getSpeakerColorIndex,
   SPEAKER_COLORS,
@@ -284,7 +284,8 @@ function MeetingDetailContent({ loaderData }: any) {
       rawAgendaItems.map((item: any) => ({
         ...item,
         meta: withLinkedPeople(item.meta, people),
-        motions: (item.motions || []).map((motion: any) => ({
+        // A motion folded into another (its amended version, or a duplicate) shows once, everywhere on the page.
+        motions: withoutFoldedMotions(item.motions || []).map((motion: any) => ({
           ...motion,
           mover_person: motion.mover_id ? people[motion.mover_id] : undefined,
           seconder_person: motion.seconder_id

@@ -6,7 +6,7 @@ import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { displayTitle } from "../../lib/display-text";
-import { isTranscribedMotion, TRANSCRIBED_NOTE, TRANSCRIBED_TITLE } from "../../lib/motion-utils";
+import { isTranscribedMotion, TRANSCRIBED_NOTE, TRANSCRIBED_TITLE, withoutFoldedMotions } from "../../lib/motion-utils";
 import { formatDate, cn } from "../../lib/utils";
 import { ParticipationList, WrittenSubmissions } from "../meeting/participation-list";
 import { writtenLetters } from "../../lib/written";
@@ -124,10 +124,8 @@ function outcome(motion: Motion) {
 }
 
 export function isProceduralStep(item: any, extra: { hasParticipation: boolean; hasImage: boolean; headline?: string; stage?: string | null }) {
-  // A motion the minutes then amended ("the main motion as amended", motions.meta.amended_by) is one decision: the
-  // timeline shows the amended one only, while it is under the same item.
-  const all: Motion[] = item.motions || [];
-  const motions = all.filter((m: any) => !(m.meta?.amended_by && all.some((x) => x.id === m.meta.amended_by)));
+  // A motion folded into another under the same item (its amended version, or the same motion stored twice) is one decision.
+  const motions = withoutFoldedMotions<Motion & { meta?: any }>(item.motions || []);
   return (
     Boolean(stageExplanation([extra.headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item), chosen: extra.stage })) &&
     !item.debate_summary &&
@@ -176,10 +174,8 @@ export function TimelineStep({
   written?: any;
   notes?: { speaker: (who: string) => string | null; letter: (who: string) => string | null };
 }) {
-  // A motion the minutes then amended ("the main motion as amended", motions.meta.amended_by) is one decision: the
-  // timeline shows the amended one only, while it is under the same item.
-  const all: Motion[] = item.motions || [];
-  const motions = all.filter((m: any) => !(m.meta?.amended_by && all.some((x) => x.id === m.meta.amended_by)));
+  // A motion folded into another under the same item (its amended version, or the same motion stored twice) is one decision.
+  const motions = withoutFoldedMotions<Motion & { meta?: any }>(item.motions || []);
   const letterCount = writtenLetters(written).length;
   const hasParticipation = Boolean(participation?.speakers?.length || letterCount);
   const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline, stage: chosenStage });

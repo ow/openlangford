@@ -8,7 +8,7 @@ import { INTERACTIVE_JOB_PRIORITY, decideSuggestion, headingChildren, isHeadingO
 import { fetchAll, itemRecords, recheckClaims, sentences, topicItemIds, type Claim } from "./page-verify.server";
 import { bylawRecords } from "./bylaw-records.server";
 import { sourceRecordLines, sourcesFor } from "./sources.server";
-import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, FOLD_AMENDED_FIELDS, FOLD_AMENDED_PROMPT, foldAmended, MERGE_ADDRESS_FIELDS, MERGE_ADDRESS_PROMPT, REWRITE_DECISION_FIELDS, REWRITE_DECISION_PROMPT, UNLINK_ADDRESS_FIELDS, UNLINK_ADDRESS_PROMPT, addressesBlock, capital,
+import { EDIT_SOURCE_FIELDS, EDIT_SOURCE_PROMPT, FOLD_AMENDED_FIELDS, FOLD_AMENDED_PROMPT, FOLD_DUPLICATE_PROMPT, foldAmended, foldDuplicate, MERGE_ADDRESS_FIELDS, MERGE_ADDRESS_PROMPT, REWRITE_DECISION_FIELDS, REWRITE_DECISION_PROMPT, UNLINK_ADDRESS_FIELDS, UNLINK_ADDRESS_PROMPT, addressesBlock, capital,
   decisionLines, decisionsBlock, editSourceOnPage, quoteInRecords, heldByHandLine, loadSources, mappedAddresses, mergeAddress, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine,
   unlinkAddress, writeEntryText } from "./fix-ops.server";
 import { findingText, investigate, investigatedRecords, investigationLine, needsInvestigation, type Investigation } from "./fix-investigation.server";
@@ -58,7 +58,7 @@ const brief = (text: string, max: number) => {
 const PlanSchema = z.object({
   actions: z.array(z.object({
     action: z.enum(["remove_entry", "move_item", "unfile_item", "file_here", "hide_duplicate", "rewrite_entry", "rewrite_heading",
-      "rewrite_summary", "edit_source", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "rewrite_decision", "unlink_address", "merge_address", "repoint_mention", "fold_amended", "no_change", "cannot_fix"]),
+      "rewrite_summary", "edit_source", "merge_topic", "unlink_related", "accept_suggestion", "move_documents", "hide_page", "add_motion", "move_motion", "set_stage", "rewrite_decision", "unlink_address", "merge_address", "repoint_mention", "fold_amended", "fold_duplicate", "no_change", "cannot_fix"]),
     key: z.string().nullable().describe("The entry's key exactly as given, or null."),
     keep_key: z.string().nullable().describe("hide_duplicate: the key of the entry that stays (it already says what this one says). Otherwise null."),
     to_matter_id: z.number().int().nullable().describe("move_item: a candidate topic's id, or null to have it re-filed the way new meetings are filed (never back here). merge_topic: the duplicate topic's id. unlink_related: the related topic's id. Otherwise null."),
@@ -274,6 +274,7 @@ ${REWRITE_DECISION_PROMPT}
 ${UNLINK_ADDRESS_PROMPT}
 ${MERGE_ADDRESS_PROMPT}
 ${FOLD_AMENDED_PROMPT}
+${FOLD_DUPLICATE_PROMPT}
 - hide_page: when nothing in the records backs this page at all (no step of its own, nothing showing what it's
   about), hide it from the public. It can be undone, and the editor confirms it like every other change.
 Use cannot_fix only for a genuine judgement call none of these actions can make, and say precisely what is wrong and
@@ -737,6 +738,16 @@ export async function fixPage(supabase: SupabaseClient, origin: string, path: st
         done.push(`${capital(entryLabel(key, flags))} now shows only the decision as amended; the original wording stays in the record: ${brief(step.reason, 160)}`);
         await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:fold_amended",
           detail: { motion_id: String(result.original.id), amended_by: String(result.amended.id), reason: step.reason.slice(0, 300) } });
+        continue;
+      }
+      if (step.action === "fold_duplicate") {
+        const result = await foldDuplicate(supabase, step, { decisions, by: requester.id });
+        if (!result.ok) { left.push(`${step.reason} (${result.why}, so nothing changed)`); continue; }
+        const key = entryKeyOf(result.kept.itemId);
+        if (key) fixedKeys.add(key);
+        done.push(`${capital(entryLabel(key, flags))} now shows its decision once; the repeat stays in the record: ${brief(step.reason, 160)}`);
+        await logStaffAction(supabase, { userId: requester.id, role: requester.staffRole, path, action: "agent:fold_duplicate",
+          detail: { motion_id: String(result.repeat.id), duplicate_of: String(result.kept.id), reason: step.reason.slice(0, 300) } });
         continue;
       }
       if (step.action === "merge_address") {

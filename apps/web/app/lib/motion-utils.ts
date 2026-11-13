@@ -85,3 +85,15 @@ export function isTranscribedMotion(motion: { meta?: any } | null | undefined): 
 
 export const TRANSCRIBED_NOTE = "Transcribed from scanned minutes";
 export const TRANSCRIBED_TITLE = "Read by machine from a scanned page of the minutes, so a word may be wrong.";
+
+/** The motions a page shows for one item: a motion folded into another under the same item is left out. That is the
+ * original wording of a motion the minutes then amended (meta.amended_by, the "main motion as amended" replaces it)
+ * or the same motion stored twice (meta.duplicate_of). Both stay in the record; the fold holds only while the motion
+ * it points at is under the same item. */
+export function withoutFoldedMotions<T extends { id: number; meta?: any }>(motions: T[]): T[] {
+  const ids = new Set(motions.map((m) => m.id));
+  return motions.filter((m) => {
+    const into = m.meta?.amended_by ?? m.meta?.duplicate_of;
+    return !(into && into !== m.id && ids.has(into));
+  });
+}
