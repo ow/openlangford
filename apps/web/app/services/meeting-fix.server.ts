@@ -243,8 +243,10 @@ export async function fixMeetingPage(supabase: SupabaseClient, origin: string, p
     const lookedInto = found.length ? `Evidence, from the City's records:\n${found.map((i) =>
       `• ${capital(entryLabel(i.key, flags))}: ${brief(i.finding!.explanation, 220)} (${i.finding!.ref})`).join("\n")}` : "";
     const researchText = [investigations.map(investigationLine).filter(Boolean).join("\n"), await investigatedRecords(supabase, investigations)].filter(Boolean).join("\n\n");
-    // The decisions under the items in scope (fold_amended, fold_duplicate), each motion in full.
-    const decisions = await decisionLines(supabase, recordIds);
+    // The decisions under every item of the meeting that has more than one (only those can repeat a decision:
+    // fold_amended, fold_duplicate), each motion in full, wherever they are filed.
+    const decisions = (await decisionLines(supabase, items.map((i) => i.id)))
+      .filter((d, _, all) => all.filter((x) => x.itemId === d.itemId).length > 1);
     const records = [covered.text, decisionsBlock(decisions, (id) => `item-${id}`), transcript, researchText].filter(Boolean).join("\n\n");
     if (!records) return finish("needs_work", "The agent found no records for this meeting to work from. This one needs a person.");
 
