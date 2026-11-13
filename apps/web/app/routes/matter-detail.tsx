@@ -705,7 +705,8 @@ export default function MatterDetail({ loaderData }: Route.ComponentProps) {
                 />
               </a>
               <figcaption className="mt-2 text-xs text-zinc-500">
-                {IMAGE_CAPTION[images.lead.kind] || "From the staff report"} · from the staff report
+                {/* "What's proposed · from the staff report"; a picture with no kind is just "From the staff report". */}
+                {IMAGE_CAPTION[images.lead.kind] ? `${IMAGE_CAPTION[images.lead.kind]} · from the staff report` : "From the staff report"}
                 {images.lead.meeting_id && images.lead.document_id ? (
                   <>
                     {" "}·{" "}
