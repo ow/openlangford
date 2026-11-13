@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { addressesBlock, mergeAddress, checkFollowed, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine, unlinkAddress,
+import { addressesBlock, foldAmended, mergeAddress, checkFollowed, decisionsBlock, editSourceOnPage, heldByHandLine, loadSources, quoteInRecords, rewriteDecision, saveEditorNotes, summaryInstruction, unfollowedLine, unlinkAddress,
   writeEntryText } from "../../app/services/fix-ops.server";
 
 let verdicts: { followed: boolean; missing: string }[] = [];
@@ -209,5 +209,23 @@ describe("mergeAddress", () => {
   it("refuses different civic numbers", async () => {
     const { client } = db();
     expect(await mergeAddress(client, road, { ...avenue, civic_number: "247" }, "u1")).toMatch(/different lots/);
+  });
+});
+
+describe("foldAmended", () => {
+  const minutes = "Motion CARRIED. **On the Main Motion as Amended:** THAT the Sustainable Development Advisory Committee recommend";
+  const decisions = () => [{ id: 9504, itemId: 13033, text: "THAT the committee recommend… iv.", summary: "Recommended renewal." },
+    { id: 9508, itemId: 13033, text: "THAT the committee recommend… vii.", summary: "Recommended renewal." }, { id: 1, itemId: 5, text: "x", summary: null }];
+  it("marks the original wording as replaced by the motion as amended", async () => {
+    const { client, updates } = fake({ motions: [{ id: 9504, meta: { headline: "h" } }] });
+    const result = await foldAmended(client, { decision_id: 9504, amended_decision_id: 9508, source: "On the Main Motion as Amended" }, { decisions: decisions(), records: minutes, by: "u1" });
+    expect(result).toMatchObject({ ok: true });
+    expect(updates[0]).toMatchObject({ id: 9504, patch: { meta: { headline: "h", amended_by: 9508, amended_note: { by: "u1" } } } });
+  });
+  it("refuses decisions under different entries, or a quote that doesn't show an amendment", async () => {
+    const { client, updates } = fake({ motions: [] });
+    expect(await foldAmended(client, { decision_id: 9504, amended_decision_id: 1, source: "On the Main Motion as Amended" }, { decisions: decisions(), records: minutes, by: "u1" })).toMatchObject({ ok: false });
+    expect(await foldAmended(client, { decision_id: 9504, amended_decision_id: 9508, source: "the Sustainable Development Advisory Committee recommend" }, { decisions: decisions(), records: minutes, by: "u1" })).toMatchObject({ ok: false });
+    expect(updates).toEqual([]);
   });
 });

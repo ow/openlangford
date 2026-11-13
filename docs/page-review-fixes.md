@@ -81,6 +81,10 @@ carries out fixes for the flags staff agreed with. This page explains where each
      PRESENTATIONS") at the item under it that the topic is about (`repointMention` in `page-links.server.ts`), or
      drops it when the topic already shows that item. The planner sees each heading's items and their records, so a
      motion recorded under the item stays there instead of being added to the heading.
+   - **Amendments:** `fold_amended` handles minutes that record a motion, an amendment and then "the main motion
+     as amended". The original wording gets `motions.meta.amended_by`, and the topic timeline shows only the amended
+     decision while both sit under the same item; the record and the meeting page keep both, and re-ingest keeps the
+     mark. The planner sees each decision's motion in full, never cut.
    - **Moves and merges:** moving an agenda item to a named topic, and merging duplicate topics through the
      `merge_matters()` database function. The code is in `app/services/topic-moves.server.ts`.
    - **Status:** refreshing the status of the topics at each affected meeting, using the same rules as the

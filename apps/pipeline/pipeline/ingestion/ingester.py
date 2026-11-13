@@ -2608,6 +2608,9 @@ class MeetingIngester:
                 ballot_outcomes["complete" if motion_data["meta"].get("individual_vote_coverage") == "reconstructed_complete" else ballot_status] += 1
                 motion_id = 300
                 if not dry_run:
+                    if old_motion and (old_motion.get("meta") or {}).get("amended_by"):
+                        # Staff (or the fix agent) folded this wording into the motion as amended: keep that.
+                        motion_data["meta"] = {**motion_data["meta"], **{k: old_motion["meta"][k] for k in ("amended_by", "amended_note") if k in old_motion["meta"]}}
                     if old_motion and ((old_motion.get("meta") or {}).get("manual") or {}).get("summary"):
                         # A decision line set by hand (meta.manual.summary) is kept, with this run's stored as auto.
                         motion_data["meta"] = {**motion_data["meta"], "manual": old_motion["meta"]["manual"]}

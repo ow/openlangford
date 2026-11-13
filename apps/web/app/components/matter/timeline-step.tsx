@@ -124,7 +124,10 @@ function outcome(motion: Motion) {
 }
 
 export function isProceduralStep(item: any, extra: { hasParticipation: boolean; hasImage: boolean; headline?: string; stage?: string | null }) {
-  const motions: Motion[] = item.motions || [];
+  // A motion the minutes then amended ("the main motion as amended", motions.meta.amended_by) is one decision: the
+  // timeline shows the amended one only, while it is under the same item.
+  const all: Motion[] = item.motions || [];
+  const motions = all.filter((m: any) => !(m.meta?.amended_by && all.some((x) => x.id === m.meta.amended_by)));
   return (
     Boolean(stageExplanation([extra.headline, item.title, ...motions.map((m) => m.text_content)], { committee: isCommitteeItem(item), chosen: extra.stage })) &&
     !item.debate_summary &&
@@ -173,7 +176,10 @@ export function TimelineStep({
   written?: any;
   notes?: { speaker: (who: string) => string | null; letter: (who: string) => string | null };
 }) {
-  const motions: Motion[] = item.motions || [];
+  // A motion the minutes then amended ("the main motion as amended", motions.meta.amended_by) is one decision: the
+  // timeline shows the amended one only, while it is under the same item.
+  const all: Motion[] = item.motions || [];
+  const motions = all.filter((m: any) => !(m.meta?.amended_by && all.some((x) => x.id === m.meta.amended_by)));
   const letterCount = writtenLetters(written).length;
   const hasParticipation = Boolean(participation?.speakers?.length || letterCount);
   const procedural = isProceduralStep(item, { hasParticipation, hasImage: Boolean(layoutImage), headline, stage: chosenStage });

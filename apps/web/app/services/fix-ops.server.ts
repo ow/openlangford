@@ -167,7 +167,7 @@ export async function writeEntryText(supabase: SupabaseClient, matterId: number,
 
 /** The plan field of rewrite_decision, spread into an agent's action schema. */
 export const REWRITE_DECISION_FIELDS = {
-  decision_id: z.number().int().nullable().describe("rewrite_decision: the decision's id (the number after \"decision-\"). Otherwise null."),
+  decision_id: z.number().int().nullable().describe("rewrite_decision: the decision's id (the number after \"decision-\"). fold_amended: the original wording's id. Otherwise null."),
 };
 
 /** The menu entry for rewrite_decision, for an agent's prompt. */
@@ -190,7 +190,7 @@ export async function decisionLines(supabase: SupabaseClient, itemIds: number[])
 export function decisionsBlock(decisions: DecisionLine[], keyOf: (itemId: number) => string | null): string {
   const lines = decisions.map((d) => {
     const key = keyOf(d.itemId);
-    return key ? `- decision-${d.id} under [${key}]: "Decision: ${squash(d.summary || "") || "(no plain line; the page shows the motion)"}"\n  motion: ${d.text.slice(0, 400)}` : "";
+    return key ? `- decision-${d.id} under [${key}]: "Decision: ${squash(d.summary || "") || "(no plain line; the page shows the motion)"}"\n  motion, in full: ${d.text}` : "";
   }).filter(Boolean);
   return lines.length ? `DECISIONS ON THIS PAGE (rewrite_decision by id):\n${lines.join("\n")}` : "";
 }
@@ -318,4 +318,33 @@ export async function mergeAddress(supabase: SupabaseClient, from: AddressRef, i
   const { error } = await supabase.from("properties").update({ hidden: true,
     meta: { ...((row?.meta || {}) as Record<string, any>), merged_into: into.id, merged: { by, at: new Date().toISOString(), from_address: from.address } } }).eq("id", from.id);
   return error ? "couldn't mark it merged" : null;
+}
+
+// ---------- Folding a motion into its amended version ----------
+
+/** The plan field of fold_amended (with REWRITE_DECISION_FIELDS' decision_id, the original motion). */
+export const FOLD_AMENDED_FIELDS = {
+  amended_decision_id: z.number().int().nullable().describe("fold_amended: the id of the decision that is the motion as amended (decision_id is the original wording it replaced). Otherwise null."),
+};
+
+/** The menu entry for fold_amended, for an agent's prompt. */
+export const FOLD_AMENDED_PROMPT = `- fold_amended: one entry shows the same decision twice because the minutes record a motion, an amendment to it,
+  and then "the main motion as amended": the original wording isn't a separate decision. Give decision_id, the
+  original wording, and amended_decision_id, the motion as amended (both under the same entry, in DECISIONS ON THIS
+  PAGE), and in "source" the minutes' words that show the amendment (e.g. "On the Main Motion as Amended"). The
+  original stays in the record and on the meeting page; the topic's timeline shows only the amended decision.`;
+
+/** Mark a motion as replaced by its amended version (motions.meta.amended_by), which the topic timeline folds away.
+ * Both must be listed for the page, under the same item, and the minutes' words must show the amendment. */
+export async function foldAmended(supabase: SupabaseClient, step: { decision_id: number | null; amended_decision_id: number | null; source: string | null },
+  ctx: { decisions: DecisionLine[]; records: string; by: string }): Promise<{ ok: true; original: DecisionLine; amended: DecisionLine } | { ok: false; why: string }> {
+  const original = ctx.decisions.find((d) => d.id === step.decision_id), amended = ctx.decisions.find((d) => d.id === step.amended_decision_id);
+  if (!original || !amended || original.id === amended.id) return { ok: false, why: "both decisions must be on this page" };
+  if (original.itemId !== amended.itemId) return { ok: false, why: "the two decisions are under different entries" };
+  if (!/amend/i.test(step.source || "") || !quoteInRecords(step.source, ctx.records)) return { ok: false, why: "its quote isn't the minutes' words showing the amendment" };
+  const { data: row } = await supabase.from("motions").select("meta").eq("id", original.id).single();
+  const meta = (row?.meta || {}) as Record<string, any>;
+  const { error } = await supabase.from("motions").update({ meta: { ...meta, amended_by: amended.id,
+    amended_note: { by: ctx.by, at: new Date().toISOString(), source: squash(step.source || "").slice(0, 400) } } }).eq("id", original.id);
+  return error ? { ok: false, why: "couldn't save it" } : { ok: true, original, amended };
 }
