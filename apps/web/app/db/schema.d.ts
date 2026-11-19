@@ -356,6 +356,7 @@ export interface AuthOneTimeTokens {
   created_at: Generated<Timestamp>;
   expires_at: Timestamp | null;
   id: string;
+  link_token_hash: string | null;
   relates_to: string;
   token_hash: string;
   token_type: AuthOneTimeTokenType;
@@ -378,6 +379,7 @@ export interface AuthRefreshTokens {
 export interface AuthSamlProviders {
   attribute_mapping: Json | null;
   created_at: Timestamp | null;
+  dedicated_scope: boolean | null;
   entity_id: string;
   id: string;
   metadata_url: string | null;
