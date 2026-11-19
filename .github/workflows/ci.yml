@@ -128,3 +128,5 @@ jobs:
       # baseline is fixed.
       - name: Lint new migrations
         run: .github/scripts/lint-migrations.sh "${{ github.event.pull_request.base.sha }}"
+      - name: Calendar identity SQL contracts
+        run: python3 -m unittest discover -s sql/tests -p test_calendar_sync.py -v

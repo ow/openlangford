@@ -37,6 +37,9 @@ lease prevents overlapping writes, and a replaced lease token cannot commit.
 Retries preserve IDs and slugs. A single exact date/type/organization/time match
 can bind an annual-schedule placeholder to an eSCRIBE GUID; multiple matches or
 possible nearby reschedules without an established identity are held for review.
+Cancelled annual-schedule entries do not hold publication or document ingestion of
+an independently published event on a nearby date; the cancelled record stays
+separate. Active entries (including unknown status) still require reschedule review.
 Once established, the GUID wins over annual fallback dates. Distinct published
 GUIDs may share a date. Only explicit cancellation changes status; disappearance
 from a feed never cancels or deletes an event.

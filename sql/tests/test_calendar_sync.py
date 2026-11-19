@@ -31,6 +31,7 @@ class CalendarSync(PostgresCase):
         """)
         self.sql(MIGRATION.read_text())
         self.sql((MIGRATION.parent / "20261020162205_47_16_calendar_document_reconciliation.sql").read_text())
+        self.sql((Path(__file__).resolve().parents[2] / 'supabase/migrations/20261119150000_cancelled_calendar_placeholder.sql').read_text())
         self.date = self.sql("SELECT ((now() AT TIME ZONE 'America/Vancouver')::date+7)::text")[0]
         self.event = dict(source_type='official_schedule', source_id='reviewed-entry', meeting_date=self.date,
                           title='Regular Council', type='Regular Council', organization_name='Council',
@@ -133,3 +134,62 @@ class CalendarSync(PostgresCase):
         self.sql("UPDATE meetings SET archive_path='archive/published',has_agenda=true WHERE id="+target)
         self.assertEqual(self.sql('SELECT id,slug FROM meetings')[0],before)
         self.assertEqual(self.sql('SELECT count(*) FROM meetings')[0],'1')
+
+    def published_next_day(self, **changes):
+        moved = self.sql("SELECT ((now() AT TIME ZONE 'America/Vancouver')::date+8)::text")[0]
+        return {**self.event, 'source_type': 'escribe', 'source_id': 'new-published-guid',
+                'source_url': 'https://pub-langford.escribemeetings.com/meetingscalendarview.aspx',
+                'meeting_date': moved, 'start_time': '17:30', **changes}
+
+    def test_cancelled_nearby_schedule_does_not_hide_new_published_meeting(self):
+        self.apply([self.event])
+        feed = self.published_next_day()
+        result, _ = self.apply([feed])
+        self.assertEqual(json.loads(result)['held'], 1)
+        # Release an already-discovered, unlinked source once the old date is cancelled.
+        self.apply([{**self.event, 'cancelled': True}])
+        old = self.sql('SELECT row_to_json(m) FROM meetings m')[0]
+        result, _ = self.apply([feed])
+        self.assertEqual(json.loads(result)['created'], 1)
+        self.assertEqual(json.loads(result)['held'], 0)
+        new_id = self.sql("SELECT ingested_meeting_id FROM source_meetings WHERE source_type='escribe'")[0]
+        self.assertEqual(self.sql(f"SELECT status,meeting_date,meta->'calendar'->>'start_time' FROM meetings WHERE id={new_id}")[0],
+                         'Planned|' + feed['meeting_date'] + '|17:30')
+        self.assertEqual(self.sql(f'SELECT row_to_json(m) FROM meetings m WHERE id<>{new_id}')[0], old)
+        result, _ = self.apply([feed])
+        self.assertEqual(json.loads(result)['created'], 0)
+        self.assertEqual(self.sql('SELECT count(*) FROM meetings')[0], '2')
+        source_id = self.sql("SELECT id FROM source_meetings WHERE source_type='escribe'")[0]
+        self.assertEqual(self.sql(f'SELECT reconcile_calendar_source({source_id})')[0], new_id)
+        self.assertEqual(self.sql(f'SELECT row_to_json(m) FROM meetings m WHERE id<>{new_id}')[0], old)
+
+    def insert_next_day_document_source(self):
+        return self.sql("""INSERT INTO source_meetings(municipality_id,source_type,source_id,meeting_date,title,meeting_type,raw,status)
+            VALUES(1,'escribe','new-documents',(now() AT TIME ZONE 'America/Vancouver')::date+8,
+                   'Council Meeting','Regular Council','{}','discovered') RETURNING id""")[0].splitlines()[0]
+
+    def test_documents_near_cancelled_schedule_do_not_link_or_raise_reschedule_hold(self):
+        self.apply([{**self.event, 'cancelled': True}])
+        old = self.sql('SELECT row_to_json(m) FROM meetings m')[0]
+        source_id = self.insert_next_day_document_source()
+        # NULL lets normal document ingestion create its own meeting; never reuse the cancellation.
+        self.assertEqual(self.sql(f'SELECT reconcile_calendar_source({source_id})')[0], '')
+        self.assertEqual(self.sql(f'SELECT ingested_meeting_id FROM source_meetings WHERE id={source_id}')[0], '')
+        self.assertEqual(self.sql('SELECT row_to_json(m) FROM meetings m')[0], old)
+
+    def test_active_nearby_schedule_still_holds_calendar_and_documents_alongside_cancellation(self):
+        self.apply([{**self.event, 'cancelled': True}])
+        active_date = self.sql("SELECT ((now() AT TIME ZONE 'America/Vancouver')::date+9)::text")[0]
+        self.apply([{**self.event, 'source_id': 'active-schedule', 'meeting_date': active_date}])
+        document_source = self.insert_next_day_document_source()
+        for status in ['Planned', None]:
+            with self.subTest(status=status):
+                value = 'NULL' if status is None else "'Planned'"
+                self.sql(f"UPDATE meetings SET status={value} WHERE meeting_date='{active_date}'")
+                result, _ = self.apply([self.published_next_day()])
+                self.assertEqual(json.loads(result)['held'], 1)
+                self.assertEqual(json.loads(result)['created'], 0)
+                _, error = self.sql(f'SELECT reconcile_calendar_source({document_source})', success=False)
+                self.assertIn('Possible calendar reschedule requires review before ingestion', error)
+                self.assertEqual(self.sql('SELECT count(*) FROM meetings')[0], '2')
+                self.assertEqual(self.sql("SELECT count(*) FROM source_meetings WHERE source_type='escribe' AND ingested_meeting_id IS NOT NULL")[0], '0')
