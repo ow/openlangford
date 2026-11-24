@@ -23,6 +23,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { agendaItemCopy } from "../../lib/agenda-item-copy";
 import { displayTitle } from "../../lib/display-text";
 import { cn } from "../../lib/utils";
 import type { AgendaItem, Motion, Vote, DocumentSection, ExtractedDocument } from "../../lib/types";
@@ -36,6 +37,7 @@ import { ItemRemarksList } from "./item-remarks";
 
 interface AgendaOverviewProps {
   items: AgendaItem[];
+  isPlanned?: boolean;
   /** Agenda item id -> property pages for the addresses it names. */
   itemProperties?: Record<number, { slug: string; address: string }[]>;
   /** Matter id -> its public matter page (services/matters getMatterLinks). */
@@ -52,6 +54,7 @@ interface AgendaOverviewProps {
 
 export function AgendaOverview({
   items,
+  isPlanned = false,
   documentSections,
   extractedDocuments,
   expandedItemId,
@@ -85,6 +88,7 @@ export function AgendaOverview({
               {group.parent ? (
                 <AgendaItemRow
                   item={group.parent}
+                  isPlanned={isPlanned}
                   documentSections={documentSections}
                   extractedDocuments={extractedDocuments}
                   displayOrder={cleanOrder(group.parent.item_order)}
@@ -137,6 +141,7 @@ export function AgendaOverview({
                     <AgendaItemRow
                       key={child.id}
                       item={child}
+                      isPlanned={isPlanned}
                       documentSections={documentSections}
                       extractedDocuments={extractedDocuments}
                       displayOrder={displayOrder}
@@ -287,6 +292,7 @@ interface AgendaItemRowProps {
   properties?: { slug: string; address: string }[];
   matter?: { id: number; slug: string | null; title: string };
   item: AgendaItem;
+  isPlanned: boolean;
   documentSections?: DocumentSection[];
   extractedDocuments?: ExtractedDocument[];
   displayOrder: string;
@@ -303,6 +309,7 @@ interface AgendaItemRowProps {
 
 function AgendaItemRow({
   item,
+  isPlanned,
   documentSections,
   extractedDocuments,
   displayOrder,
@@ -348,7 +355,8 @@ function AgendaItemRow({
   // Procedural housekeeping ("Call to order", "Adjournment") recedes so
   // the substantive business stands out.
   const isProcedural = item.category === "Procedural" && !item.is_controversial;
-  const preview = item.plain_english_summary || null;
+  const copy = agendaItemCopy(item, isPlanned && !isProcedural);
+  const preview = copy.summary || (isPlanned && !isProcedural ? copy.description : null);
 
   return (
     <div className="relative scroll-mt-24" id={`item-${item.id}`} data-review-entry={`item-${item.id}`}>
@@ -444,6 +452,7 @@ function AgendaItemRow({
 
       {/* Expanded Content */}
       <div
+        inert={!isExpanded}
         className={cn(
           "grid transition-all duration-200 ease-in-out relative z-10",
           isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
@@ -469,14 +478,14 @@ function AgendaItemRow({
               )}
 
               {/* Plain English Summary */}
-              {item.plain_english_summary && (
+              {copy.summary && (
                 <div className="space-y-1">
                   <h4 className="flex items-center gap-2 text-xs font-semibold text-zinc-500">
                     <Info className="w-3 h-3 text-brand-500" />
                     Summary
                   </h4>
                   <p className="text-sm text-zinc-800 leading-relaxed pl-5">
-                    {item.plain_english_summary}
+                    {copy.summary}
                   </p>
                 </div>
               )}
@@ -512,14 +521,19 @@ function AgendaItemRow({
               )}
 
               {/* Description fallback */}
-              {!item.plain_english_summary && item.description && (
+              {copy.description && (
                 <div className="space-y-1">
                   <h4 className="text-xs font-semibold text-zinc-500">
                     Description
                   </h4>
                   <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-line pl-0.5">
-                    {item.description}
+                    {copy.description}
                   </p>
+                  {copy.stage && (
+                    <p className="text-xs text-zinc-500 pl-0.5">
+                      Scheduled: {copy.stage}.
+                    </p>
+                  )}
                 </div>
               )}
 

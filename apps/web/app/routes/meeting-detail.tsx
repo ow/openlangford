@@ -745,6 +745,7 @@ function MeetingDetailContent({ loaderData }: any) {
                 />
                 <AgendaOverview
                   items={agendaItems}
+                  isPlanned={meeting.status === "Planned"}
                   documentSections={documentSections}
                   extractedDocuments={extractedDocuments}
                   expandedItemId={expandedAgendaItemId}

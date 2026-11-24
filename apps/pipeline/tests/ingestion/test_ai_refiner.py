@@ -8,6 +8,8 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from pipeline.ingestion.ai_refiner import (
+    AGENDA_ONLY_SYSTEM_INSTRUCTION,
+    SYSTEM_INSTRUCTION,
     refine_meeting_data,
     build_refinement_prompt,
     build_agenda_only_prompt,
@@ -59,6 +61,7 @@ class TestRefineMeetingData:
         assert kwargs["stage"] == "extraction"
         assert kwargs["schema"] is MeetingRefinement
         assert "TRANSCRIPT" in mock_json.call_args.args[0]
+        assert kwargs["system"] == SYSTEM_INSTRUCTION
 
     @patch("pipeline.ai.json")
     def test_agenda_only_mode(self, mock_json):
@@ -72,6 +75,39 @@ class TestRefineMeetingData:
         )
         assert result.status == "Planned"
         assert "UPCOMING" in mock_json.call_args.args[0]
+
+    @pytest.mark.parametrize("include_attachments", [True, False])
+    @patch("pipeline.ai.json")
+    def test_agenda_only_proposal_grounding_contract(self, mock_json, include_attachments):
+        # Neither effect is stated in the agenda index. Only the first belongs
+        # to item 10.1; the second belongs to a different reading.
+        index = (
+            "10.1 Procedure Bylaw 2304 — First, second and third readings\n"
+            "10.2 Fees Bylaw 2305 — Scheduled for adoption"
+        )
+        attachments = (
+            "Staff Report for 10.1 — Procedure Bylaw 2304: remove the fixed 7 p.m. start.\n"
+            "Draft Fees Bylaw 2305: raise the permit fee to $250."
+        )
+        mock_json.return_value = _make_refinement(status="Planned")
+        result = refine_meeting_data(
+            agenda_text=index + ("\n\n" + attachments if include_attachments else ""),
+            minutes_text="",
+            transcript_text="",
+        )
+
+        prompt = mock_json.call_args.args[0]
+        instructions, source = prompt.split("SOURCE: AGENDA PACKET", 1)
+        assert index in source
+        assert (attachments in source) is include_attachments
+        assert "exact bylaw/application identifier" in instructions
+        assert "borrow specifics from another item" in instructions
+        assert "what it would change" in instructions
+        assert "Attribute it to the named staff report or draft" in instructions
+        assert "packet does not specify the proposed changes" in instructions
+        assert "A scheduled adoption is not an adoption" in instructions
+        assert mock_json.call_args.kwargs["system"] == AGENDA_ONLY_SYSTEM_INSTRUCTION
+        assert result.status == "Planned"
 
     @patch("pipeline.ai.json")
     def test_ai_failure_returns_none_without_nested_retries(self, mock_json):
