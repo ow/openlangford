@@ -1,6 +1,10 @@
 from unittest.mock import patch
 
-from pipeline.ingestion.ai_refiner import MeetingRefinement, SYSTEM_INSTRUCTION, refine_meeting_data
+from pipeline.ingestion.ai_refiner import (
+    AGENDA_ONLY_SYSTEM_INSTRUCTION,
+    MeetingRefinement,
+    refine_meeting_data,
+)
 
 
 def test_agenda_only_refinement():
@@ -57,4 +61,4 @@ def test_agenda_only_refinement():
     prompt = mock_json.call_args.args[0]
     assert "UPCOMING" in prompt and "Bridge Repair" in prompt
     assert mock_json.call_args.kwargs["schema"] is MeetingRefinement
-    assert mock_json.call_args.kwargs["system"] == SYSTEM_INSTRUCTION
+    assert mock_json.call_args.kwargs["system"] == AGENDA_ONLY_SYSTEM_INSTRUCTION
