@@ -4,7 +4,7 @@ const readingIntro = /^(?:council\s+)?(?:will\s+|is scheduled to\s+)?(?:consider
 const readingStages = /^(?:first|second|third)(?:(?:,\s*(?:and\s+)?|\s+and\s+)(?:first|second|third))* readings?$/i;
 const concreteClause = /\b(?:would|could|will|that|which|by|from|add(?:s|ing)?|remov(?:es?|ing)|replac(?:es?|ing)|allow(?:s|ing)?|requir(?:es?|ing)|increas(?:es?|ing)|reduc(?:es?|ing)|rais(?:es?|ing)|lower(?:s|ing)?|end(?:s|ing)?|prohibit(?:s|ing)?|mak(?:es?|ing)|chang(?:es?|ing)|introduc(?:es?|ing)|extend(?:s|ing)?|shorten(?:s|ing)?|shift(?:s|ing)?|move(?:s|d)?|moving)\b|[\d$%:;]/i;
 
-function words(value: string) {
+function words(value: string): string[] {
   return value.toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
 }
 
