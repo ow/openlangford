@@ -11,7 +11,7 @@
  * belongs to a different provider, the provider is detected from the URL host.
  */
 
-export type VideoProviderId = "vimeo" | "escribe-isi";
+export type VideoProviderId = "vimeo" | "escribe-isi" | "minutes-emc2";
 
 export interface PrivacyWording {
   /** Phrase for "We use Supabase for …, ___, and PostHog for …", when the site itself uses the service. */
@@ -91,9 +91,33 @@ export const escribeIsiInfo: VideoProviderInfo = {
   }),
 };
 
+/** The external capture archive publishes same-slug MP4s on one fixed HTTPS origin. */
+export function isMinutesEmc2RecordingUrl(raw: string): boolean {
+  const u = parseHttps(raw);
+  if (!u || u.origin !== "https://minutes.emc2.build" || u.username || u.password || u.search) return false;
+  const match = /^\/media\/([a-z0-9]+(?:[-_][a-z0-9]+)*)\/([a-z0-9]+(?:[-_][a-z0-9]+)*)\.mp4$/.exec(u.pathname);
+  return Boolean(match && match[1] === match[2]);
+}
+
+export const minutesEmc2Info: VideoProviderInfo = {
+  id: "minutes-emc2",
+  label: "Community recording",
+  watchElsewhereLabel: "Watch the original recording",
+  matchesUrl: isMinutesEmc2RecordingUrl,
+  deepLink(url, seconds) {
+    if (!seconds || !Number.isFinite(seconds) || seconds <= 0) return url;
+    return `${url.split("#")[0]}#t=${Math.floor(seconds)}`;
+  },
+  privacy: () => ({
+    weUse: null,
+    note: "Some meeting recordings are hosted externally at minutes.emc2.build.",
+  }),
+};
+
 export const VIDEO_PROVIDERS: Record<VideoProviderId, VideoProviderInfo> = {
   vimeo: vimeoInfo,
   "escribe-isi": escribeIsiInfo,
+  "minutes-emc2": minutesEmc2Info,
 };
 
 /** Setting values accepted in `source_config.video_source.type`. "isilive" is the pipeline's name. */
