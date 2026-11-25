@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { DEFAULT_MUNICIPALITY } from "../../lib/site-config";
 import { normalizeVideoProviderId, selectVideoProvider, type VideoProviderId } from "./catalog";
 import { escribeIsiProvider } from "./escribe-isi.server";
+import { minutesEmc2Provider } from "./minutes-emc2.server";
 import type { ResolveContext, VideoProvider, VideoSource } from "./types";
 import { vimeoProvider } from "./vimeo.server";
 import { publicData } from "../public-data-cache.server";
@@ -12,6 +13,7 @@ export * from "./catalog";
 export const VIDEO_PROVIDER_IMPLS: Record<VideoProviderId, VideoProvider> = {
   vimeo: vimeoProvider,
   "escribe-isi": escribeIsiProvider,
+  "minutes-emc2": minutesEmc2Provider,
 };
 
 export interface VideoSourceSetting {

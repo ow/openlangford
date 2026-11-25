@@ -62,3 +62,27 @@ describe("provider details", () => {
     });
   });
 });
+
+describe("community meeting recording", () => {
+  const MP4 = "https://minutes.emc2.build/media/meeting-20261124-1730/meeting-20261124-1730.mp4";
+
+  it("selects the public MP4 provider even for an eSCRIBE municipality", async () => {
+    const { resolveVideoSource } = await import("~/services/video/index.server");
+    const result = await resolveVideoSource(MP4, { setting: { id: "escribe-isi", config: null } });
+    expect(result?.provider.id).toBe("minutes-emc2");
+    expect(result?.source).toEqual({ url: MP4, audioUrl: null, kind: "mp4", expiresAt: null });
+    expect(result?.provider.deepLink(MP4, 125.7)).toBe(`${MP4}#t=125`);
+  });
+
+  it.each([
+    MP4.replace("https:", "http:"),
+    MP4.replace("minutes.emc2.build", "minutes.emc2.build.example.org"),
+    MP4.replace("minutes.emc2.build", "user@minutes.emc2.build"),
+    MP4.replace("minutes.emc2.build", "minutes.emc2.build:8443"),
+    MP4.replace(/[^/]+\.mp4$/, "manifest.json"),
+    MP4.replace(/[^/]+\.mp4$/, "different-recording.mp4"),
+    MP4 + "?download=1",
+  ])("rejects a URL outside the supported recording format: %s", (url) => {
+    expect(detectVideoProvider(url)).toBeNull();
+  });
+});
