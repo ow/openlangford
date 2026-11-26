@@ -122,7 +122,11 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
     // Don't redirect if already on onboarding, login, logout, signup, admin,
     // speaker review, or API routes.
-    const skipRedirectPaths = ["/onboarding", "/login", "/logout", "/signup"];
+    const skipRedirectPaths = [
+      "/onboarding", "/login", "/logout", "/signup",
+      // Password recovery signs the person in first; it must work before onboarding is done.
+      "/forgot-password", "/reset-password", "/auth/recovery",
+    ];
     const isApiRoute = pathname.startsWith("/api/") || pathname.startsWith("/email/unsubscribe/");
     const isAdminRoute = pathname.startsWith("/admin") || pathname === "/speaker-alias";
     const shouldSkipRedirect =
@@ -153,7 +157,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 }
 
 // Paths whose visit can change who is signed in or their profile/onboarding state.
-const AUTH_PATHS = ["/login", "/logout", "/signup", "/onboarding", "/settings"];
+const AUTH_PATHS = [
+  "/login", "/logout", "/signup", "/onboarding", "/settings",
+  "/forgot-password", "/reset-password", "/auth",
+];
 const authPath = (pathname: string) => AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(path + "/"));
 
 /**

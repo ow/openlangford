@@ -50,7 +50,7 @@ enabled = false
 [auth]
 enabled = true
 site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173", "http://127.0.0.1:5173"]
+additional_redirect_urls = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5173/auth/recovery", "http://127.0.0.1:5173/auth/recovery"]
 jwt_expiry = 3600
 enable_signup = true
 minimum_password_length = 6

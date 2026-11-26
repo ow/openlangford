@@ -9,6 +9,9 @@ Disallow: /voice-fingerprints
 Disallow: /settings
 Disallow: /onboarding
 Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/
 Disallow: /logout
 Disallow: /api/search
 Disallow: /api/ask
